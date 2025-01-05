@@ -1911,7 +1911,8 @@ linting = [
 test = [
     { name = "covdefaults" },
     { name = "pytest" },
-    { name = "pytest-asyncio" },
+    { name = "pytest-asyncio", version = "0.1.dev895+g761f742", source = { git = "https://github.com/provinzkraut/pytest-asyncio.git?rev=shutdown-asyncgens#761f742c2b7c50bc0a03b5f3528e2738b18e2ac8" }, marker = "python_full_version >= '3.13'" },
+    { name = "pytest-asyncio", version = "0.23.8", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.13'" },
     { name = "pytest-cov" },
     { name = "pytest-lazy-fixtures" },
     { name = "pytest-mock" },
@@ -2023,7 +2024,8 @@ linting = [
 test = [
     { name = "covdefaults" },
     { name = "pytest" },
-    { name = "pytest-asyncio" },
+    { name = "pytest-asyncio", marker = "python_full_version < '3.13'" },
+    { name = "pytest-asyncio", marker = "python_full_version >= '3.13'", git = "https://github.com/provinzkraut/pytest-asyncio.git?rev=shutdown-asyncgens" },
     { name = "pytest-cov" },
     { name = "pytest-lazy-fixtures" },
     { name = "pytest-mock" },
@@ -3289,10 +3291,28 @@ wheels = [
 
 [[package]]
 name = "pytest-asyncio"
+version = "0.1.dev895+g761f742"
+source = { git = "https://github.com/provinzkraut/pytest-asyncio.git?rev=shutdown-asyncgens#761f742c2b7c50bc0a03b5f3528e2738b18e2ac8" }
+resolution-markers = [
+    "python_full_version >= '3.13' and sys_platform != 'win32'",
+    "python_full_version >= '3.13' and sys_platform == 'win32'",
+]
+dependencies = [
+    { name = "pytest", marker = "python_full_version >= '3.13'" },
+]
+
+[[package]]
+name = "pytest-asyncio"
 version = "0.23.8"
 source = { registry = "https://pypi.org/simple" }
+resolution-markers = [
+    "python_full_version >= '3.9' and python_full_version < '3.13' and sys_platform != 'win32'",
+    "python_full_version < '3.9' and sys_platform != 'win32'",
+    "python_full_version >= '3.9' and python_full_version < '3.13' and sys_platform == 'win32'",
+    "python_full_version < '3.9' and sys_platform == 'win32'",
+]
 dependencies = [
-    { name = "pytest" },
+    { name = "pytest", marker = "python_full_version < '3.13'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/de/b4/0b378b7bf26a8ae161c3890c0b48a91a04106c5713ce81b4b080ea2f4f18/pytest_asyncio-0.23.8.tar.gz", hash = "sha256:759b10b33a6dc61cce40a8bd5205e302978bbbcc00e279a8b61d9a6a3c82e4d3", size = 46920 }
 wheels = [

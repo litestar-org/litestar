@@ -1,9 +1,11 @@
 import logging
+import sys
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any, Awaitable, Callable, List, cast
 
 import pytest
 from _pytest.capture import CaptureFixture
+from _pytest.logging import LogCaptureFixture
 from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
 
 from litestar import Controller, Request, Response, Router, get, post
@@ -90,7 +92,7 @@ def test_custom_middleware_processing(middleware: Any) -> None:
             assert middleware_instance.arg == 1
 
 
-def test_request_body_logging_middleware(capsys: "CaptureFixture[str]") -> None:
+def test_request_body_logging_middleware(caplog: LogCaptureFixture, capsys: "CaptureFixture[str]") -> None:
     @dataclass
     class JSONRequest:
         name: str
@@ -101,11 +103,22 @@ def test_request_body_logging_middleware(capsys: "CaptureFixture[str]") -> None:
     def post_handler(data: JSONRequest) -> JSONRequest:
         return data
 
-    client = create_test_client(route_handlers=[post_handler], middleware=[MiddlewareProtocolRequestLoggingMiddleware])
-    response = client.post("/", json={"name": "moishe zuchmir", "age": 40, "programmer": True})
-    assert response.status_code == 201
-    log = capsys.readouterr()
-    assert "test logging" in log.err
+    if sys.version_info < (3, 13):
+        with caplog.at_level(logging.INFO):
+            client = create_test_client(
+                route_handlers=[post_handler], middleware=[MiddlewareProtocolRequestLoggingMiddleware]
+            )
+            response = client.post("/", json={"name": "moishe zuchmir", "age": 40, "programmer": True})
+            assert response.status_code == 201
+            assert "test logging" in caplog.text
+    else:
+        client = create_test_client(
+            route_handlers=[post_handler], middleware=[MiddlewareProtocolRequestLoggingMiddleware]
+        )
+        response = client.post("/", json={"name": "moishe zuchmir", "age": 40, "programmer": True})
+        assert response.status_code == 201
+        log = capsys.readouterr()
+        assert "test logging" in log.err
 
 
 def test_middleware_call_order() -> None:
