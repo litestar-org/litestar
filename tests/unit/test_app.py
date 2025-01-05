@@ -6,7 +6,7 @@ import logging
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 from dataclasses import fields
-from typing import TYPE_CHECKING, Callable, List, Tuple
+from typing import TYPE_CHECKING, Any, Callable, List, Tuple
 from unittest.mock import MagicMock, Mock, PropertyMock
 
 import pytest
@@ -258,7 +258,7 @@ def test_using_custom_http_exception_handler() -> None:
     @get("/{param:int}")
     def my_route_handler(param: int) -> None: ...
 
-    def my_custom_handler(_: Request, __: Exception) -> Response:
+    def my_custom_handler(_: Request[Any, Any, State], __: Exception) -> Response[str]:
         return Response(content="custom message", media_type=MediaType.TEXT, status_code=HTTP_400_BAD_REQUEST)
 
     with create_test_client(my_route_handler, exception_handlers={NotFoundException: my_custom_handler}) as client:
@@ -452,6 +452,11 @@ def test_lifespan_context_and_shutdown_hook_execution_order() -> None:
 def test_use_dto_codegen_feature_flag_warns() -> None:
     with pytest.warns(LitestarWarning, match="Use of redundant experimental feature flag DTO_CODEGEN"):
         Litestar(experimental_features=[ExperimentalFeatures.DTO_CODEGEN])
+
+
+def test_use_future_feature_flag_warns() -> None:
+    app = Litestar(experimental_features=[ExperimentalFeatures.FUTURE])
+    assert app.experimental_features == frozenset([ExperimentalFeatures.FUTURE])
 
 
 def test_using_custom_path_parameter() -> None:

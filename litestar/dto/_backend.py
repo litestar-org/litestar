@@ -805,8 +805,11 @@ def _create_struct_for_field_definitions(
         if field_definition.is_partial:
             field_type = Union[field_type, UnsetType]
 
-        if (field_meta := _create_struct_field_meta_for_field_definition(field_definition)) is not None:
-            field_type = Annotated[field_type, field_meta]
+        if field_definition.passthrough_constraints:
+            if (field_meta := _create_struct_field_meta_for_field_definition(field_definition)) is not None:
+                field_type = Annotated[field_type, field_meta]
+        elif field_definition.kwarg_definition:
+            field_type = Annotated[field_type, field_definition.kwarg_definition]
 
         struct_fields.append(
             (

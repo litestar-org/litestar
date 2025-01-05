@@ -68,6 +68,7 @@ class Router:
         "path",
         "registered_route_handler_ids",
         "request_class",
+        "request_max_body_size",
         "response_class",
         "response_cookies",
         "response_headers",
@@ -111,6 +112,7 @@ class Router:
         type_decoders: TypeDecodersSequence | None = None,
         type_encoders: TypeEncodersMap | None = None,
         websocket_class: type[WebSocket] | None = None,
+        request_max_body_size: int | None | EmptyType = Empty,
     ) -> None:
         """Initialize a ``Router``.
 
@@ -143,6 +145,8 @@ class Router:
                 with the router instance.
             request_class: A custom subclass of :class:`Request <.connection.Request>` to be used as the default for
                 all route handlers, controllers and other routers associated with the router instance.
+            request_max_body_size: Maximum allowed size of the request body in bytes. If this size is exceeded,
+                a '413 - Request Entity Too Large" error response is returned.
             response_class: A custom subclass of :class:`Response <.response.Response>` to be used as the default for
                 all route handlers, controllers and other routers associated with the router instance.
             response_cookies: A sequence of :class:`Cookie <.datastructures.Cookie>` instances.
@@ -197,6 +201,7 @@ class Router:
         self.type_encoders = dict(type_encoders) if type_encoders is not None else None
         self.type_decoders = list(type_decoders) if type_decoders is not None else None
         self.websocket_class = websocket_class
+        self.request_max_body_size = request_max_body_size
 
         for route_handler in route_handlers or []:
             self.register(value=route_handler)

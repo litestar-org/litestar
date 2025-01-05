@@ -21,7 +21,7 @@ _open_collective = "[OpenCollective](https://opencollective.com/litestar)"
 _github_sponsors = "[GitHub Sponsors](https://github.com/sponsors/litestar-org/)"
 
 
-class PullRequest(msgspec.Struct):
+class PullRequest(msgspec.Struct, kw_only=True):
     title: str
     number: int
     body: str
@@ -127,10 +127,15 @@ class _Thing:
             for edge in data["data"]["repository"]["pullRequest"]["closingIssuesReferences"]["edges"]
         ]
 
-    async def _get_pr_info_for_pr(self, number: int) -> PRInfo:
+    async def _get_pr_info_for_pr(self, number: int) -> PRInfo | None:
         res = await self._api_client.get(f"/pulls/{number}")
         res.raise_for_status()
-        pr = msgspec.convert(res.json(), type=PullRequest)
+        data = res.json()
+        if not data["body"]:
+            data["body"] = ""
+        if not data:
+            return None
+        pr = msgspec.convert(data, type=PullRequest)
 
         cc_prefix, clean_title = pr.title.split(":", maxsplit=1)
         cc_type = cc_prefix.split("(", maxsplit=1)[0].lower()
@@ -157,6 +162,8 @@ class _Thing:
 
         prs = defaultdict(list)
         for pr in pulls:
+            if not pr:
+                continue
             if pr.user.type != "Bot":
                 prs[pr.cc_type].append(pr)
         return prs
@@ -313,7 +320,7 @@ def build_changelog_entry(release_info: ReleaseInfo, interactive: bool = False) 
         for prs in release_info.pull_requests.values():
             for pr in prs:
                 cc_type = pr.cc_type
-                if cc_type in change_types or (interactive and click.confirm(f"Ignore PR #{pr.number} {pr.title!r}?")):
+                if cc_type in change_types or (interactive and click.confirm(f"Include PR #{pr.number} {pr.title!r}?")):
                     doc.add_change(pr)
                 else:
                     click.secho(f"Ignoring change with type {cc_type}", fg="yellow")

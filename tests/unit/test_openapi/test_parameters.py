@@ -15,12 +15,13 @@ from litestar.enums import ParamType
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.handlers import HTTPRouteHandler
 from litestar.openapi import OpenAPIConfig
-from litestar.openapi.spec import Example, OpenAPI, Schema
+from litestar.openapi.spec import Example, OpenAPI, Reference, Schema
 from litestar.openapi.spec.enums import OpenAPIType
 from litestar.params import Dependency, Parameter
 from litestar.routes import BaseRoute
 from litestar.testing import create_test_client
 from litestar.utils import find_index
+from tests.unit.test_openapi.utils import Gender, LuckyNumber
 
 if TYPE_CHECKING:
     from litestar.openapi.spec.parameter import Parameter as OpenAPIParameter
@@ -49,8 +50,10 @@ def test_create_parameters(person_controller: Type[Controller]) -> None:
     ExampleFactory.seed_random(10)
 
     parameters = _create_parameters(app=Litestar(route_handlers=[person_controller]), path="/{service_id}/person")
-    assert len(parameters) == 9
-    page, name, service_id, page_size, from_date, to_date, gender, secret_header, cookie_value = tuple(parameters)
+    assert len(parameters) == 10
+    page, name, service_id, page_size, from_date, to_date, gender, lucky_number, secret_header, cookie_value = tuple(
+        parameters
+    )
 
     assert service_id.name == "service_id"
     assert service_id.param_in == ParamType.PATH
@@ -104,23 +107,15 @@ def test_create_parameters(person_controller: Type[Controller]) -> None:
     assert is_schema_value(gender.schema)
     assert gender.schema == Schema(
         one_of=[
-            Schema(type=OpenAPIType.NULL),
-            Schema(
-                type=OpenAPIType.STRING,
-                enum=["M", "F", "O", "A"],
-                examples=["M"],
-            ),
+            Reference(ref="#/components/schemas/tests_unit_test_openapi_utils_Gender"),
             Schema(
                 type=OpenAPIType.ARRAY,
-                items=Schema(
-                    type=OpenAPIType.STRING,
-                    enum=["M", "F", "O", "A"],
-                    examples=["F"],
-                ),
-                examples=[["A"]],
+                items=Reference(ref="#/components/schemas/tests_unit_test_openapi_utils_Gender"),
+                examples=[[Gender.MALE]],
             ),
+            Schema(type=OpenAPIType.NULL),
         ],
-        examples=["M", ["M", "O"]],
+        examples=[Gender.MALE, [Gender.MALE, Gender.OTHER]],
     )
     assert not gender.required
 
@@ -135,6 +130,18 @@ def test_create_parameters(person_controller: Type[Controller]) -> None:
     assert cookie_value.schema.type == OpenAPIType.INTEGER
     assert cookie_value.required
     assert cookie_value.schema.examples
+
+    assert lucky_number.param_in == ParamType.QUERY
+    assert lucky_number.name == "lucky_number"
+    assert is_schema_value(lucky_number.schema)
+    assert lucky_number.schema == Schema(
+        one_of=[
+            Reference(ref="#/components/schemas/tests_unit_test_openapi_utils_LuckyNumber"),
+            Schema(type=OpenAPIType.NULL),
+        ],
+        examples=[LuckyNumber.SEVEN],
+    )
+    assert not lucky_number.required
 
 
 def test_deduplication_for_param_where_key_and_type_are_equal() -> None:
@@ -397,8 +404,8 @@ def test_unwrap_new_type() -> None:
     app = Litestar([handler])
     assert app.openapi_schema.paths["/{path_param}"].get.parameters[0].schema.type == OpenAPIType.STRING  # type: ignore[index, union-attr]
     assert app.openapi_schema.paths["/{path_param}"].get.parameters[1].schema.one_of == [  # type: ignore[index, union-attr]
-        Schema(type=OpenAPIType.NULL),
         Schema(type=OpenAPIType.STRING),
+        Schema(type=OpenAPIType.NULL),
     ]
     assert app.openapi_schema.paths["/{path_param}"].get.parameters[2].schema.type == OpenAPIType.STRING  # type: ignore[index, union-attr]
     assert (
@@ -438,3 +445,33 @@ def test_unwrap_annotated_new_type() -> None:
 
     testmodel_schema_name = app.openapi_schema.paths["/"].get.parameters[0].schema.value  # type: ignore[index, union-attr]
     assert app.openapi_schema.components.schemas[testmodel_schema_name].properties["param"].type == OpenAPIType.STRING  # type: ignore[index, union-attr]
+
+
+def test_query_param_only_properties() -> None:
+    # https://github.com/litestar-org/litestar/issues/3908
+    @get("/{path_param:str}")
+    def handler(
+        path_param: str,
+        query_param: str,
+        header_param: Annotated[str, Parameter(header="header_param")],
+        cookie_param: Annotated[str, Parameter(cookie="cookie_param")],
+    ) -> None:
+        pass
+
+    app = Litestar([handler])
+    params = {p.name: p for p in app.openapi_schema.paths["/{path_param}"].get.parameters}  # type: ignore[union-attr, index]
+
+    for key in ["path_param", "header_param", "cookie_param"]:
+        schema = params[key].to_schema()
+        assert "allowEmptyValue" not in schema
+        assert "allowReserved" not in schema
+
+    assert params["query_param"].to_schema() == {
+        "name": "query_param",
+        "in": "query",
+        "schema": {"type": "string"},
+        "required": True,
+        "deprecated": False,
+        "allowEmptyValue": False,
+        "allowReserved": False,
+    }

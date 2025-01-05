@@ -32,7 +32,6 @@ if TYPE_CHECKING:
 
 __all__ = ("CSRFMiddleware",)
 
-
 CSRF_SECRET_BYTES = 32
 CSRF_SECRET_LENGTH = CSRF_SECRET_BYTES * 2
 
@@ -81,7 +80,7 @@ class CSRFMiddleware(MiddlewareProtocol):
         """
         self.app = app
         self.config = config
-        self.exclude = build_exclude_path_pattern(exclude=config.exclude)
+        self.exclude = build_exclude_path_pattern(exclude=config.exclude, middleware_cls=type(self))
 
     async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
         """ASGI callable.
@@ -98,6 +97,15 @@ class CSRFMiddleware(MiddlewareProtocol):
             await self.app(scope, receive, send)
             return
 
+        if should_bypass_middleware(
+            scope=scope,
+            scopes=self.scopes,
+            exclude_opt_key=self.config.exclude_from_csrf_key,
+            exclude_path_pattern=self.exclude,
+        ):
+            await self.app(scope, receive, send)
+            return
+
         request: Request[Any, Any, Any] = scope["app"].request_class(scope=scope, receive=receive)
         content_type, _ = request.content_type
         csrf_cookie = request.cookies.get(self.config.cookie_name)
@@ -111,12 +119,7 @@ class CSRFMiddleware(MiddlewareProtocol):
             existing_csrf_token = form.get("_csrf_token", None)
 
         connection_state = ScopeState.from_scope(scope)
-        if request.method in self.config.safe_methods or should_bypass_middleware(
-            scope=scope,
-            scopes=self.scopes,
-            exclude_opt_key=self.config.exclude_from_csrf_key,
-            exclude_path_pattern=self.exclude,
-        ):
+        if request.method in self.config.safe_methods:
             token = connection_state.csrf_token = csrf_cookie or generate_csrf_token(secret=self.config.secret)
             await self.app(scope, receive, self.create_send_wrapper(send=send, csrf_cookie=csrf_cookie, token=token))
         elif (

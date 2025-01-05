@@ -4,15 +4,14 @@ import sys
 from dataclasses import dataclass
 from typing import Any, ForwardRef, Generic, List, Optional, Tuple, TypeVar, Union
 
-import annotated_types
 import msgspec
 import pytest
-from typing_extensions import Annotated, NotRequired, Required, TypedDict, get_type_hints
+from typing_extensions import Annotated, NotRequired, Required, TypeAliasType, TypedDict, get_type_hints
 
 from litestar import get
 from litestar.exceptions import LitestarWarning
 from litestar.params import DependencyKwarg, KwargDefinition, Parameter, ParameterKwarg
-from litestar.typing import FieldDefinition, _unpack_predicate
+from litestar.typing import FieldDefinition
 
 from .test_utils.test_signature import T, _check_field_definition, field_definition_int, test_type_hints
 
@@ -440,20 +439,6 @@ def test_field_definition_get_type_hints_dont_resolve_generics(
     )
 
 
-@pytest.mark.parametrize(
-    "predicate, expected_meta",
-    [
-        (annotated_types.LowerCase.__metadata__[0], {"lower_case": True}),  # pyright: ignore
-        (annotated_types.UpperCase.__metadata__[0], {"upper_case": True}),  # pyright: ignore
-        (annotated_types.IsAscii.__metadata__[0], {"pattern": "[[:ascii:]]"}),  # pyright: ignore
-        (annotated_types.IsDigits.__metadata__[0], {"pattern": "[[:digit:]]"}),  # pyright: ignore
-        (object(), {}),
-    ],
-)
-def test_unpack_predicate(predicate: Any, expected_meta: dict[str, Any]) -> None:
-    assert _unpack_predicate(predicate) == expected_meta
-
-
 def test_warn_ambiguous_default_values() -> None:
     with pytest.warns(LitestarWarning, match="Ambiguous default values"):
         FieldDefinition.from_annotation(Annotated[int, Parameter(default=1)], default=2)
@@ -476,3 +461,17 @@ def test_warn_default_inside_kwarg_definition_and_default_empty() -> None:
     (record,) = warnings
     assert record.category == DeprecationWarning
     assert "Deprecated default value specification" in str(record.message)
+
+
+def test_is_type_alias_type() -> None:
+    field_definition = FieldDefinition.from_annotation(TypeAliasType("IntAlias", int))  # pyright: ignore
+    assert field_definition.is_type_alias_type
+
+
+@pytest.mark.skipif(sys.version_info < (3, 12), reason="type keyword not available before 3.12")
+def test_unwrap_type_alias_type_keyword() -> None:
+    ctx: dict[str, Any] = {}
+    exec("type IntAlias = int", ctx, None)
+    annotation = ctx["IntAlias"]
+    field_definition = FieldDefinition.from_annotation(annotation)
+    assert field_definition.is_type_alias_type

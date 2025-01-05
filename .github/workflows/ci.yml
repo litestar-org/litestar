@@ -8,6 +8,9 @@ on:
       - main
       - v1.51
 
+env:
+  UV_LOCKED: 1
+
 jobs:
   validate:
     runs-on: ubuntu-latest
@@ -41,20 +44,14 @@ jobs:
           python-version: "3.8"
           allow-prereleases: true
 
-      - uses: pdm-project/setup-pdm@v4
-        name: Set up PDM
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
         with:
-          python-version: "3.8"
-          allow-python-prereleases: false
-          cache: true
-          cache-dependency-path: |
-            ./pdm.lock
-
-      - name: Install dependencies
-        run: pdm install -G:all
+          version: "0.5.4"
+          enable-cache: true
 
       - name: Run mypy
-        run: pdm run mypy
+        run: uv run mypy
 
   pyright:
     runs-on: ubuntu-latest
@@ -66,20 +63,14 @@ jobs:
           python-version: "3.8"
           allow-prereleases: true
 
-      - uses: pdm-project/setup-pdm@v4
-        name: Set up PDM
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
         with:
-          python-version: "3.8"
-          allow-python-prereleases: false
-          cache: true
-          cache-dependency-path: |
-            ./pdm.lock
-
-      - name: Install dependencies
-        run: pdm install -G:all
+          version: "0.5.4"
+          enable-cache: true
 
       - name: Run pyright
-        run: pdm run pyright
+        run: uv run pyright
 
   slotscheck:
     runs-on: ubuntu-latest
@@ -91,20 +82,14 @@ jobs:
           python-version: "3.8"
           allow-prereleases: false
 
-      - uses: pdm-project/setup-pdm@v4
-        name: Set up PDM
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
         with:
-          python-version: "3.8"
-          allow-python-prereleases: false
-          cache: true
-          cache-dependency-path: |
-            ./pdm.lock
-
-      - name: Install dependencies
-        run: pdm install -G:all
+          version: "0.5.4"
+          enable-cache: true
 
       - name: Run slotscheck
-        run: pdm run slotscheck litestar
+        run: uv run slotscheck litestar
 
   test:
     name: "test (${{ matrix.python-version }})"
@@ -132,25 +117,22 @@ jobs:
         with:
           python-version: 3.11
 
-      - uses: pdm-project/setup-pdm@v4
-        name: Set up PDM
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
         with:
-          python-version: 3.11
-          allow-python-prereleases: false
-          cache: true
-          cache-dependency-path: |
-            ./pdm.lock
+          version: "0.5.4"
+          enable-cache: true
 
       - name: Install dependencies
         run: |
-          pdm install -G:all
-          pip install -U "${{ matrix.uvicorn-version }}"
+          uv sync
+          uv pip install -U "${{ matrix.uvicorn-version }}"
 
       - name: Set PYTHONPATH
         run: echo "PYTHONPATH=$PWD" >> $GITHUB_ENV
 
       - name: Test
-        run: pdm run pytest tests -m server_integration
+        run: uv run --no-sync pytest tests -m server_integration
 
   test-platform-compat:
     if: github.event_name == 'push' || contains(github.event.pull_request.labels.*.name, 'test platform compat')
@@ -214,25 +196,19 @@ jobs:
           python-version: "3.12"
           allow-prereleases: true
 
-      - uses: pdm-project/setup-pdm@v4
-        name: Set up PDM
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
         with:
-          python-version: "3.12"
-          allow-python-prereleases: false
-          cache: true
-          cache-dependency-path: |
-            ./pdm.lock
-
-      - name: Install dependencies
-        run: pdm install -G:all
+          version: "0.5.4"
+          enable-cache: true
 
       - name: Build docs
-        run: pdm run make docs
+        run: uv run make docs
 
       - name: Check docs links
         env:
           LITESTAR_DOCS_IGNORE_MISSING_EXAMPLE_OUTPUT: 1
-        run: pdm run make docs-linkcheck
+        run: uv run make docs-linkcheck
 
       - name: Save PR number
         run: |
@@ -245,6 +221,7 @@ jobs:
           path: |
             docs/_build/html
             .pr_number
+          include-hidden-files: true
 
   test_minimal_app:
     name: Test Minimal Application with Base Dependencies
@@ -260,23 +237,19 @@ jobs:
         with:
           python-version: "3.12"
 
-      - uses: pdm-project/setup-pdm@v4
-        name: Set up PDM
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
         with:
-          python-version: "3.12"
-          allow-python-prereleases: false
-          cache: true
-          cache-dependency-path: |
-            ./pdm.lock
-
-      - name: Install dependencies
-        run: pdm install
+          version: "0.5.4"
+          enable-cache: true
 
       - name: Set pythonpath
         run: echo "PYTHONPATH=$PWD" >> $GITHUB_ENV
 
       - name: Test
-        run: mv tests/examples/test_hello_world.py test_hello_world.py && pdm run pytest test_hello_world.py
+        run: |
+          mv tests/examples/test_hello_world.py test_hello_world.py
+          uv run pytest test_hello_world.py
 
   test_pydantic_1_app:
     name: Test Minimal Pydantic 1 application
@@ -292,26 +265,22 @@ jobs:
         with:
           python-version: "3.12"
 
-      - uses: pdm-project/setup-pdm@v4
-        name: Set up PDM
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
         with:
-          python-version: "3.12"
-          allow-python-prereleases: false
-          cache: true
-          cache-dependency-path: |
-            ./pdm.lock
+          version: "0.5.4"
+          enable-cache: true
 
       - name: Install dependencies
         run: |
-          pdm install
-          pdm run python -m ensurepip
-          pdm run python -m pip install "pydantic==1.*"
+          uv sync
+          uv pip install "pydantic==1.*"
 
       - name: Set pythonpath
         run: echo "PYTHONPATH=$PWD" >> $GITHUB_ENV
 
       - name: Test
-        run: pdm run coverage run --branch -m unittest test_apps/pydantic_1_app.py
+        run: uv run --no-sync coverage run --branch -m unittest test_apps/pydantic_1_app.py
 
       - name: Rename coverage file
         run: mv .coverage* .coverage.pydantic_v1
@@ -320,6 +289,7 @@ jobs:
         with:
           name: coverage-data
           path: .coverage.pydantic_v1
+          include-hidden-files: true
 
   upload-test-coverage:
     runs-on: ubuntu-latest
@@ -347,7 +317,7 @@ jobs:
         run: sed -i "s/home\/runner\/work\/litestar\/litestar/github\/workspace/g" coverage.xml
 
       - name: Upload coverage reports to Codecov
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v5
         with:
           files: coverage.xml
           token: ${{ secrets.CODECOV_TOKEN }}

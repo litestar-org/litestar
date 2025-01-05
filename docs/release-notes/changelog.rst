@@ -3,6 +3,576 @@
 2.x Changelog
 =============
 
+
+.. changelog:: 2.13.0
+    :date: 2024-11-20
+
+    .. change:: Add ``request_max_body_size`` layered parameter
+        :type: feature
+
+        Add a new ``request_max_body_size`` layered parameter, which limits the
+        maximum size of a request body before returning a ``413 - Request Entity Too Large``.
+
+        .. seealso::
+            :ref:`usage/requests:limits`
+
+
+    .. change:: Send CSRF request header in OpenAPI plugins
+        :type: feature
+        :pr: 3754
+
+        Supported OpenAPI UI clients will extract the CSRF cookie value and attach it to
+        the request headers if CSRF is enabled on the application.
+
+    .. change:: deprecate `litestar.contrib.sqlalchemy`
+        :type: feature
+        :pr: 3755
+
+        Deprecate the ``litestar.contrib.sqlalchemy`` module in favor of ``litestar.plugins.sqlalchemy``
+
+
+    .. change:: implement `HTMX` plugin using `litestar-htmx`
+        :type: feature
+        :pr: 3837
+
+        This plugin migrates the HTMX integration to ``litestar.plugins.htmx``.
+
+        This logic has been moved to it's own repository named ``litestar-htmx``
+
+    .. change:: Pydantic: honor ``hide_input_in_errors`` in throwing validation exceptions
+        :type: feature
+        :pr: 3843
+
+        Pydantic's ``BaseModel`` supports configuration to hide data values when
+        throwing exceptions, via setting ``hide_input_in_errors`` -- see
+        https://docs.pydantic.dev/2.0/api/config/#pydantic.config.ConfigDict.hide_input_in_errors
+        and https://docs.pydantic.dev/latest/usage/model_config/#hide-input-in-errors
+
+        Litestar will now honour this setting
+
+    .. change:: deprecate``litestar.contrib.pydantic``
+        :type: feature
+        :pr: 3852
+        :issue: 3787
+
+        ## Description
+
+        Deprecate ``litestar.contrib.pydantic`` in favor of ``litestar.plugins.pydantic``
+
+
+    .. change:: Fix sign bug in rate limit middelware
+        :type: bugfix
+        :pr: 3776
+
+        Fix a bug in the rate limit middleware, that would cause the response header
+        fields ``RateLimit-Remaining`` and ``RateLimit-Reset`` to have negative values.
+
+
+    .. change:: OpenAPI: map JSONSchema spec naming convention to snake_case when names from ``schema_extra`` are not found
+        :type: bugfix
+        :pr: 3767
+        :issue: 3766
+
+        Address rejection of ``schema_extra`` values using JSONSchema spec-compliant
+        key names by mapping between the relevant naming conventions.
+
+    .. change:: Use correct path template for routes without path parameters
+        :type: bugfix
+        :pr: 3784
+
+        Fix a but where, when using ``PrometheusConfig.group_path=True``, the metrics
+        exporter response content would ignore all paths with no path parameters.
+
+    .. change:: Fix a dangling anyio stream in ``TestClient``
+        :type: bugfix
+        :pr: 3836
+        :issue: 3834
+
+        Fix a dangling anyio stream in ``TestClient`` that would cause a resource warning
+
+        Closes #3834.
+
+    .. change:: Fix bug in handling of missing ``more_body`` key in ASGI response
+        :type: bugfix
+        :pr: 3845
+
+        Some frameworks do not include the ``more_body`` key in the "http.response.body" ASGI event.
+        According to the ASGI specification, this key should be set to ``False`` when
+        there is no additional body content. Litestar expects ``more_body`` to be
+        explicitly defined, but others might not.
+
+        This leads to failures when an ASGI framework mounted on Litestar throws error
+        if this key is missing.
+
+
+    .. change:: Fix duplicate ``RateLimit-*`` headers with caching
+        :type: bugfix
+        :pr: 3855
+        :issue: 3625
+
+        Fix a bug where ``RateLimitMiddleware`` duplicate all ``RateLimit-*`` headers
+        when handler cache is enabled.
+
+
+.. changelog:: 2.12.1
+    :date: 2024-09-21
+
+    .. change:: Fix base package requiring ``annotated_types`` dependency
+        :type: bugfix
+        :pr: 3750
+        :issue: 3749
+
+        Fix a bug introduced in #3721 that was released with ``2.12.0`` caused an
+        :exc:`ImportError` when the ``annotated_types`` package was not installed.
+
+
+.. changelog:: 2.12.0
+    :date: 2024-09-21
+
+    .. change:: Fix overzealous warning for greedy middleware ``exclude`` pattern
+        :type: bugfix
+        :pr: 3712
+
+        Fix a bug introduced in ``2.11.0`` (https://github.com/litestar-org/litestar/pull/3700),
+        where the added warning for a greedy pattern use for the middleware ``exclude``
+        parameter was itself greedy, and would warn for non-greedy patterns, e.g.
+        ``^/$``.
+
+    .. change:: Fix dangling coroutines in request extraction handling cleanup
+        :type: bugfix
+        :pr: 3735
+        :issue: 3734
+
+        Fix a bug where, when a required header parameter was defined for a request that
+        also expects a request body, failing to provide the header resulted in a
+        :exc:`RuntimeWarning`.
+
+        .. code-block:: python
+
+            @post()
+            async def handler(data: str, secret: Annotated[str, Parameter(header="x-secret")]) -> None:
+                return None
+
+        If the ``x-secret`` header was not provided, warning like this would be seen:
+
+        .. code-block::
+
+            RuntimeWarning: coroutine 'json_extractor' was never awaited
+
+
+    .. change:: OpenAPI: Correctly handle ``type`` keyword
+        :type: bugfix
+        :pr: 3715
+        :issue: 3714
+
+        Fix a bug where a type alias created with the ``type`` keyword would create an
+        empty OpenAPI schema entry for that parameter
+
+    .. change:: OpenAPI: Ensure valid schema keys
+        :type: bugfix
+        :pr: 3635
+        :issue: 3630
+
+        Ensure that generated schema component keys are always valid according to
+        `§ 4.8.7.1 <https://spec.openapis.org/oas/latest.html#fixed-fields-5>`_ of the
+        OpenAPI specification.
+
+
+    .. change:: OpenAPI: Correctly handle ``msgspec.Struct`` tagged unions
+        :type: bugfix
+        :pr: 3742
+        :issue: 3659
+
+        Fix a bug where the OpenAPI schema would not include the struct fields
+        implicitly generated by msgspec for its
+        `tagged union <https://jcristharif.com/msgspec/structs.html#tagged-unions>`_
+        support.
+
+        The tag field of the struct will now be added as a ``const`` of the appropriate
+        type to the schema.
+
+
+    .. change:: OpenAPI: Fix Pydantic 1 constrained string with default factory
+        :type: bugfix
+        :pr: 3721
+        :issue: 3710
+
+        Fix a bug where using a Pydantic model with a ``default_factory`` set for a
+        constrained string field would raise a :exc:`SerializationException`.
+
+        .. code-block:: python
+
+            class Model(BaseModel):
+                field: str = Field(default_factory=str, max_length=600)
+
+
+    .. change:: OpenAPI/DTO: Fix missing Pydantic 2 computed fields
+        :type: bugfix
+        :pr: 3721
+        :issue: 3656
+
+        Fix a bug that would lead to Pydantic computed fields to be ignored during
+        schema generation when the model was using a
+        :class:`~litestar.contrib.pydantic.PydanticDTO`.
+
+        .. code-block:: python
+            :caption: Only the ``foo`` field would be included in the schema
+
+            class MyModel(BaseModel):
+                foo: int
+
+                @computed_field
+                def bar(self) -> int:
+                    return 123
+
+            @get(path="/", return_dto=PydanticDTO[MyModel])
+            async def test() -> MyModel:
+                return MyModel.model_validate({"foo": 1})
+
+    .. change:: OpenAPI: Fix Pydantic ``json_schema_extra`` overrides only being merged partially
+        :type: bugfix
+        :pr: 3721
+        :issue: 3656
+
+        Fix a bug where ``json_schema_extra`` were not reliably extracted from Pydantic
+        models and included in the OpenAPI schema.
+
+        .. code-block:: python
+            :caption: Only the title set directly on the field would be used for the schema
+
+            class Model(pydantic.BaseModel):
+                with_title: str = pydantic.Field(title="new_title")
+                with_extra_title: str = pydantic.Field(json_schema_extra={"title": "more_new_title"})
+
+
+            @get("/example")
+            async def example_route() -> Model:
+                return Model(with_title="1", with_extra_title="2")
+
+
+    .. change:: Support strings in ``media_type`` for ``ResponseSpec``
+        :type: feature
+        :pr: 3729
+        :issue: 3728
+
+        Accept strings for the ``media_type`` parameter of :class:`~litestar.openapi.datastructures.ResponseSpec`,
+        making it behave the same way as :paramref:`~litestar.response.Response.media_type`.
+
+
+    .. change:: OpenAPI: Allow customizing schema component keys
+        :type: feature
+        :pr: 3738
+
+        Allow customizing the schema key used for a component in the OpenAPI schema.
+        The supplied keys are enforced to be unique, and it is checked that they won't
+        be reused across different types.
+
+        The keys can be set with the newly introduced ``schema_component_key`` parameter,
+        which is available on :class:`~litestar.params.KwargDefinition`,
+        :func:`~litestar.params.Body` and :func:`~litestar.params.Parameter`.
+
+        .. code-block:: python
+            :caption: Two components will be generated: ``Data`` and ``not_data``
+
+            @dataclass
+            class Data:
+                pass
+
+            @post("/")
+            def handler(
+                data: Annotated[Data, Parameter(schema_component_key="not_data")],
+            ) -> Data:
+                return Data()
+
+            @get("/")
+            def handler_2() -> Annotated[Data, Parameter(schema_component_key="not_data")]:
+                return Data()
+
+    .. change:: Raise exception when body parameter is annotated with non-bytes type
+        :type: feature
+        :pr: 3740
+
+        Add an informative error message to help avoid the common mistake of attempting
+        to use the ``body`` parameter to receive validated / structured data by
+        annotating it with a type such as ``list[str]``, instead of ``bytes``.
+
+
+    .. change:: OpenAPI: Default to ``latest`` scalar version
+        :type: feature
+        :pr: 3747
+
+        Change the default version of the scalar OpenAPI renderer to ``latest``
+
+
+.. changelog:: 2.11.0
+    :date: 2024-08-27
+
+    .. change:: Use PyJWT instead of python-jose
+        :type: feature
+        :pr: 3684
+
+        The functionality in :mod:`litestar.security.jwt` is now backed by
+        `PyJWT <https://pyjwt.readthedocs.io/en/stable/>`_ instead of
+        `python-jose <https://github.com/mpdavis/python-jose/>`_, due to the unclear
+        maintenance status of the latter.
+
+    .. change:: DTO: Introduce ``forbid_unknown_fields`` config
+        :type: feature
+        :pr: 3690
+
+        Add a new config option to :class:`~litestar.dto.config.DTOConfig`:
+        :attr:`~litestar.dto.config.DTOConfig.forbid_unknown_fields`
+        When set to ``True``, a validation error response will be returned if the source
+        data contains fields not defined on the model.
+
+    .. change:: DTO: Support ``extra="forbid"`` model config for ``PydanticDTO``
+        :type: feature
+        :pr: 3691
+
+        For Pydantic models with `extra="forbid" <https://docs.pydantic.dev/latest/api/config/#pydantic.config.ConfigDict.extra>`_
+        in their configuration:
+
+        .. tab-set::
+
+            .. tab-item:: Pydantic 2
+
+                .. code-block:: python
+
+                    class User(BaseModel):
+                        model_config = ConfigDict(extra='ignore')
+                        name: str
+
+            .. tab-item:: Pydantic 1
+
+                .. code-block:: python
+
+                    class User(BaseModel):
+                        class Config:
+                            extra = "ignore"
+                        name: str
+
+        :attr:`~litestar.dto.config.DTOConfig.forbid_unknown_fields` will be set to ``True`` by default.
+
+        .. note::
+            It's still possible to override this configuration at the DTO level
+
+
+        To facilitate this feature, :meth:`~litestar.dto.base_dto.AbstractDTO.get_config_for_model_type`
+        has been added to :class:`~litestar.dto.base_dto.AbstractDTO`, allowing the
+        customization of the base config defined on the DTO factory for a specific model
+        type. It will be called on DTO factory initialization, and receives the concrete
+        DTO model type along side the :class:`~litestar.dto.config.DTOConfig` defined
+        on the base DTO, which it can alter and return a new version to be used within
+        the DTO instance.
+
+    .. change:: Custom JWT payload classes
+        :type: feature
+        :pr: 3692
+
+        Support extending the default :class:`~litestar.security.jwt.Token` class used
+        by the JWT backends decode the payload into.
+
+        - Add new ``token_cls`` field on the JWT auth config classes
+        - Add new ``token_cls`` parameter to JWT auth middlewares
+        - Switch to using msgspec to convert the JWT payload into instances of the token
+          class
+
+        .. code-block:: python
+
+            import dataclasses
+            import secrets
+            from typing import Any, Dict
+
+            from litestar import Litestar, Request, get
+            from litestar.connection import ASGIConnection
+            from litestar.security.jwt import JWTAuth, Token
+
+            @dataclasses.dataclass
+            class CustomToken(Token):
+                token_flag: bool = False
+
+            @dataclasses.dataclass
+            class User:
+                id: str
+
+            async def retrieve_user_handler(token: CustomToken, connection: ASGIConnection) -> User:
+                return User(id=token.sub)
+
+            TOKEN_SECRET = secrets.token_hex()
+
+            jwt_auth = JWTAuth[User](
+                token_secret=TOKEN_SECRET,
+                retrieve_user_handler=retrieve_user_handler,
+                token_cls=CustomToken,
+            )
+
+            @get("/")
+            def handler(request: Request[User, CustomToken, Any]) -> Dict[str, Any]:
+                return {"id": request.user.id, "token_flag": request.auth.token_flag}
+
+
+    .. change:: Extended JWT configuration options
+        :type: feature
+        :pr: 3695
+
+        **New JWT backend fields**
+
+        - :attr:`~litestar.security.jwt.JWTAuth.accepted_audiences`
+        - :attr:`~litestar.security.jwt.JWTAuth.accepted_issuers`
+        - :attr:`~litestar.security.jwt.JWTAuth.require_claims`
+        - :attr:`~litestar.security.jwt.JWTAuth.verify_expiry`
+        - :attr:`~litestar.security.jwt.JWTAuth.verify_not_before`
+        - :attr:`~litestar.security.jwt.JWTAuth.strict_audience`
+
+        **New JWT middleware parameters**
+
+        - :paramref:`~litestar.security.jwt.JWTAuthenticationMiddleware.token_audience`
+        - :paramref:`~litestar.security.jwt.JWTAuthenticationMiddleware.token_issuer`
+        - :paramref:`~litestar.security.jwt.JWTAuthenticationMiddleware.require_claims`
+        - :paramref:`~litestar.security.jwt.JWTAuthenticationMiddleware.verify_expiry`
+        - :paramref:`~litestar.security.jwt.JWTAuthenticationMiddleware.verify_not_before`
+        - :paramref:`~litestar.security.jwt.JWTAuthenticationMiddleware.strict_audience`
+
+        **New ``Token.decode`` parameters**
+
+        - :paramref:`~litestar.security.jwt.Token.decode.audience`
+        - :paramref:`~litestar.security.jwt.Token.decode.issuer`
+        - :paramref:`~litestar.security.jwt.Token.decode.require_claims`
+        - :paramref:`~litestar.security.jwt.Token.decode.verify_exp`
+        - :paramref:`~litestar.security.jwt.Token.decode.verify_nbf`
+        - :paramref:`~litestar.security.jwt.Token.decode.strict_audience`
+
+        **Other changes**
+
+        :meth`Token.decode_payload <~litestar.security.jwt.Token.decode_payload>` has
+        been added to make customization of payload decoding / verification easier
+        without having to re-implement the functionality of the base class method.
+
+        .. seealso::
+            :doc:`/usage/security/jwt`
+
+    .. change:: Warn about greedy exclude patterns in middlewares
+        :type: feature
+        :pr: 3700
+
+        Raise a warning when a middlewares ``exclude`` pattern greedily matches all
+        paths.
+
+        .. code-block:: python
+
+            from litestar.middlewares
+
+            class MyMiddleware(AbstractMiddleware):
+                exclude = ["/", "/home"]
+
+                async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
+                    await self.app(scope, receive, send)
+
+        Middleware like this would silently be disabled for every route, since the
+        exclude pattern ``/`` matches all paths. If a configuration like this is
+        detected, a warning will now be raised at application startup.
+
+    .. change:: RFC 9457 *Problem Details* plugin
+        :type: feature
+        :pr: 3323
+        :issue: 3199
+
+        Add a plugin to support `RFC 9457 <https://datatracker.ietf.org/doc/html/rfc9457>`_
+        *Problem Details*  responses for error response.
+
+        :class:`~litestar.plugins.problem_details.ProblemDetailsPlugin` enables to
+        selectively or collectively turn responses with an error status code into
+        *Problem Detail* responses.
+
+        .. seealso::
+            :doc:`/usage/plugins/problem_details`
+
+    .. change:: Fix creation of ``FormMultiDict`` in ``Request.form`` to properly handle multi-keys
+        :type: bugfix
+        :pr: 3639
+        :issue: 3627
+
+        Fix https://github.com/litestar-org/litestar/issues/3627 by properly handling
+        the creation of :class:`~litestar.datastructures.FormMultiDict` where multiple
+        values are given for a single key, to make
+        :meth:`~litestar.connection.Request.form` match the behaviour of receiving form
+        data via the ``data`` kwarg inside a route handler.
+
+        **Before**
+
+        .. code-block:: python
+
+            @post("/")
+            async def handler(request: Request) -> Any:
+                return (await request.form()).getall("foo")
+
+            with create_test_client(handler) as client:
+                print(client.post("/", data={"foo": ["1", "2"]}).json()) # [["1", "2"]]
+
+        **After**
+
+        .. code-block:: python
+
+            @post("/")
+            async def handler(request: Request) -> Any:
+                return (await request.form()).getall("foo")
+
+            with create_test_client(handler) as client:
+                print(client.post("/", data={"foo": ["1", "2"]}).json()) # ["1", "2"]
+
+    .. change:: DTO: Fix inconsistent use of strict decoding mode
+        :type: bugfix
+        :pr: 3685
+
+        Fix inconsistent usage of msgspec's ``strict`` mode in the base DTO backend.
+
+        ``strict=False`` was being used when transferring from builtins, while
+        ``strict=True`` was used transferring from raw data, causing an unwanted
+        discrepancy in behaviour.
+
+    .. change:: Use path template for prometheus metrics
+        :type: bugfix
+        :pr: 3687
+
+        Changed previous 1-by-1 replacement logic for
+        ``PrometheusMiddleware.group_path=true`` with a more robust and slightly faster
+        solution.
+
+    .. change:: Ensure OpenTelemetry captures exceptions in the outermost application layers
+        :type: bugfix
+        :pr: 3689
+        :issue: 3663
+
+        A bug was fixed that resulted in exception occurring in the outermost
+        application layer not being captured under the current request span, which led
+        to incomplete traces.
+
+    .. change:: Fix CSRFMiddleware sometimes setting cookies for excluded paths
+        :type: bugfix
+        :pr: 3698
+        :issue: 3688
+
+        Fix a bug that would cause :class:`~litestar.middleware.csrf.CSRFMiddleware` to
+        set a cookie (which would not be used subsequently) on routes it had been
+        excluded from via a path pattern.
+
+    .. change:: Make override behaviour consistent between ``signature_namespace`` and ``signature_types``
+        :type: bugfix
+        :pr: 3696
+        :issue: 3681
+
+        Ensure that adding signature types to ``signature_namespace`` and
+        ``signature_types`` behaves the same way when a name was already present in the
+        namespace.
+
+        Both will now issue a warning if a name is being overwritten with a different
+        type. If a name is registered again for the same type, no warning will be given.
+
+        .. note::
+
+            You can disable this warning globally by setting
+            ``LITESTAR_WARN_SIGNATURE_NAMESPACE_OVERRIDE=0`` in your environment
+
 .. changelog:: 2.10.0
     :date: 2024-07-26
 
@@ -1586,8 +2156,7 @@
         - ``--schema``, to include the routes serving OpenAPI schema and docs
         - ``--exclude`` to exclude routes matching a specified pattern
 
-        .. seealso::
-            :ref:`usage/cli:routes`
+        .. seealso:: Read more in the CLI :doc:`/reference/cli` section.
 
     .. change:: Improve performance of threaded synchronous execution
         :type: misc

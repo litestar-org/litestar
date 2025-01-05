@@ -27,9 +27,9 @@ class Template(Response[bytes]):
     """Template-based response, rendering a given template into a bytes string."""
 
     __slots__ = (
+        "context",
         "template_name",
         "template_str",
-        "context",
     )
 
     def __init__(

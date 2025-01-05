@@ -252,7 +252,12 @@ class ResponseFactory:
             content: dict[str, OpenAPIMediaType] | None
             if additional_response.data_container is not None:
                 schema = schema_creator.for_field_definition(field_def)
-                content = {additional_response.media_type: OpenAPIMediaType(schema=schema, examples=examples)}
+                media_type = additional_response.media_type
+                content = {
+                    get_enum_string_value(media_type)
+                    if not isinstance(media_type, str)
+                    else media_type: OpenAPIMediaType(schema=schema, examples=examples)
+                }
             else:
                 content = None
 

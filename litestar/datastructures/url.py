@@ -13,7 +13,7 @@ if TYPE_CHECKING:
 
     from litestar.types import EmptyType, Scope
 
-__all__ = ("Address", "URL")
+__all__ = ("URL", "Address")
 
 _DEFAULT_SCHEME_PORTS = {"http": 80, "https": 443, "ftp": 21, "ws": 80, "wss": 443}
 
@@ -47,8 +47,8 @@ class URL:
     """Representation and modification utilities of a URL."""
 
     __slots__ = (
-        "_query_params",
         "_parsed_url",
+        "_query_params",
         "fragment",
         "hostname",
         "netloc",

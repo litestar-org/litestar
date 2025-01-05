@@ -10,14 +10,14 @@ The body of HTTP requests can be accessed using the special ``data`` parameter i
     :language: python
 
 
-The type of ``data`` an be any supported type, including
+The type of ``data`` can be any supported type, including
 
 
 * :func:`dataclasses <dataclasses.dataclass>`
 * :class:`TypedDicts <typing.TypedDict>`
 * Pydantic models
 * Arbitrary stdlib types
-* Typed supported via :doc:`plugins </usage/plugins/index>`
+* Types supported via :doc:`plugins </usage/plugins/index>`
 
 .. literalinclude:: /examples/request_data/request_data_2.py
     :language: python
@@ -160,3 +160,52 @@ The example below illustrates how to implement custom request class for the whol
    class on multiple layers, the layer closest to the route handler will take precedence.
 
    You can read more about this in the :ref:`usage/applications:layered architecture` section
+
+
+Limits
+-------
+
+Body size
+^^^^^^^^^^
+
+A limit for the allowed request body size can be set on all layers via the
+``request_max_body_size`` parameter and defaults to 10MB. If a request body exceeds this
+limit, a ``413 - Request Entity Too Large``
+response will be returned. This limit applies to all methods of consuming the request
+body, including requesting it via the ``body`` parameter in a route handler and
+consuming it through a manually constructed :class:`~litestar.connection.Request`
+instance, e.g. in a middleware.
+
+To disable this limit for a specific handler / router / controller, it can be set to
+:obj:`None`.
+
+.. danger::
+    Setting ``request_max_body_size=None`` is strongly discouraged as it exposes the
+    application to a denial of service (DoS) attack by sending arbitrarily large
+    request bodies to the affected endpoint. Because Litestar has to read the whole body
+    to perform certain actions, such as parsing JSON, it will fill up all the available
+    memory / swap until the application / server crashes, should no outside limits be
+    imposed.
+
+    This is generally only recommended in environments where the application is running
+    behind a reverse proxy such as NGINX, where a size limit is already set.
+
+
+.. danger::
+    Since ``request_max_body_size`` is handled on a per-request basis, it won't affect
+    middlewares or ASGI handlers when they try to access the request body via the raw
+    ASGI events. To avoid this, middlewares and ASGI handlers should construct a
+    :class:`~litestar.connection.Request` instance and use the regular
+    :meth:`~litestar.connection.Request.stream` /
+    :meth:`~litestar.connection.Request.body` or content-appropriate method to consume
+    the request body in a safe manner.
+
+
+.. tip::
+    For requests that define a ``Content-Length`` header, Litestar will not attempt to
+    read the request body should the header value exceed the ``request_max_body_size``.
+
+    If the header value is within the allowed bounds, Litestar will verify during the
+    streaming of the request body that it does not exceed the size specified in the
+    header. Should the request exceed this size, it will abort the request with a
+    ``400 - Bad Request``.

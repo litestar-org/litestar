@@ -76,12 +76,13 @@ class HTTPRouteHandler(BaseRouteHandler):
     __slots__ = (
         "_resolved_after_response",
         "_resolved_before_request",
-        "_response_handler_mapping",
         "_resolved_include_in_schema",
-        "_resolved_response_class",
         "_resolved_request_class",
-        "_resolved_tags",
+        "_resolved_request_max_body_size",
+        "_resolved_response_class",
         "_resolved_security",
+        "_resolved_tags",
+        "_response_handler_mapping",
         "after_request",
         "after_response",
         "background",
@@ -102,6 +103,7 @@ class HTTPRouteHandler(BaseRouteHandler):
         "operation_id",
         "raises",
         "request_class",
+        "request_max_body_size",
         "response_class",
         "response_cookies",
         "response_description",
@@ -139,6 +141,7 @@ class HTTPRouteHandler(BaseRouteHandler):
         name: str | None = None,
         opt: Mapping[str, Any] | None = None,
         request_class: type[Request] | None = None,
+        request_max_body_size: int | None | EmptyType = Empty,
         response_class: type[Response] | None = None,
         response_cookies: ResponseCookies | None = None,
         response_headers: ResponseHeaders | None = None,
@@ -204,6 +207,8 @@ class HTTPRouteHandler(BaseRouteHandler):
                 :class:`ASGI Scope <.types.Scope>`.
             request_class: A custom subclass of :class:`Request <.connection.Request>` to be used as route handler's
                 default request.
+            request_max_body_size: Maximum allowed size of the request body in bytes. If this size is exceeded,
+                a '413 - Request Entity Too Large' error response is returned.
             response_class: A custom subclass of :class:`Response <.response.Response>` to be used as route handler's
                 default response.
             response_cookies: A sequence of :class:`Cookie <.datastructures.Cookie>` instances.
@@ -214,8 +219,9 @@ class HTTPRouteHandler(BaseRouteHandler):
             return_dto: :class:`AbstractDTO <.dto.base_dto.AbstractDTO>` to use for serializing
                 outbound response data.
             signature_namespace: A mapping of names to types for use in forward reference resolution during signature modelling.
-            status_code: An http status code for the response. Defaults to ``200`` for mixed method or ``GET``, ``PUT`` and
-                ``PATCH``, ``201`` for ``POST`` and ``204`` for ``DELETE``.
+            status_code: An http status code for the response. Defaults to ``200`` for ``GET``, ``PUT`` and ``PATCH``,
+                ``201`` for ``POST`` and ``204`` for ``DELETE``. For mixed method requests it will check for ``POST`` and ``DELETE`` first
+                then defaults to ``200``.
             sync_to_thread: A boolean dictating whether the handler function will be executed in a worker thread or the
                 main event loop. This has an effect only for sync handler functions. See using sync handler functions.
             content_encoding: A string describing the encoding of the content, e.g. ``"base64"``.
@@ -271,6 +277,7 @@ class HTTPRouteHandler(BaseRouteHandler):
         self.response_class = response_class
         self.response_cookies: Sequence[Cookie] | None = narrow_response_cookies(response_cookies)
         self.response_headers: Sequence[ResponseHeader] | None = narrow_response_headers(response_headers)
+        self.request_max_body_size = request_max_body_size
 
         self.sync_to_thread = sync_to_thread
         # OpenAPI related attributes
@@ -296,6 +303,7 @@ class HTTPRouteHandler(BaseRouteHandler):
         self._resolved_request_class: type[Request] | EmptyType = Empty
         self._resolved_security: list[SecurityRequirement] | EmptyType = Empty
         self._resolved_tags: list[str] | EmptyType = Empty
+        self._resolved_request_max_body_size: int | EmptyType | None = Empty
 
     def __call__(self, fn: AnyCallable) -> HTTPRouteHandler:
         """Replace a function with itself."""
@@ -472,6 +480,25 @@ class HTTPRouteHandler(BaseRouteHandler):
 
         return self._resolved_tags
 
+    def resolve_request_max_body_size(self) -> int | None:
+        if (resolved_limits := self._resolved_request_max_body_size) is not Empty:
+            return resolved_limits
+
+        max_body_size = self._resolved_request_max_body_size = next(  # pyright: ignore
+            (
+                max_body_size
+                for layer in reversed(self.ownership_layers)
+                if (max_body_size := layer.request_max_body_size) is not Empty
+            ),
+            Empty,
+        )
+        if max_body_size is Empty:
+            raise ImproperlyConfiguredException(
+                "'request_max_body_size' set to 'Empty' on all layers. To omit a limit, "
+                "set 'request_max_body_size=None'"
+            )
+        return max_body_size
+
     def get_response_handler(self, is_response_type_data: bool = False) -> Callable[[Any], Awaitable[ASGIApp]]:
         """Resolve the response_handler function for the route handler.
 
@@ -597,6 +624,13 @@ class HTTPRouteHandler(BaseRouteHandler):
 
         if "data" in self.parsed_fn_signature.parameters and "GET" in self.http_methods:
             raise ImproperlyConfiguredException("'data' kwarg is unsupported for 'GET' request handlers")
+
+        if (body_param := self.parsed_fn_signature.parameters.get("body")) and not body_param.is_subclass_of(bytes):
+            raise ImproperlyConfiguredException(
+                f"Invalid type annotation for 'body' parameter in route handler {self}. 'body' will always receive the "
+                f"raw request body as bytes but was annotated with '{body_param.raw!r}'. If you want to receive "
+                "processed request data, use the 'data' parameter."
+            )
 
 
 route = HTTPRouteHandler

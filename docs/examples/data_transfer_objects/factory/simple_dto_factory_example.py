@@ -3,12 +3,14 @@ from datetime import datetime
 from sqlalchemy.orm import Mapped
 
 from litestar import Litestar, post
-from litestar.contrib.sqlalchemy.dto import SQLAlchemyDTO
+from litestar.plugins.sqlalchemy import SQLAlchemyDTO
 
 from .my_lib import Base
 
 
 class User(Base):
+    # `Base` defines `id` field as:
+    # id: Mapped[UUID] = mapped_column(default=uuid4, primary_key=True)
     name: Mapped[str]
     password: Mapped[str]
     created_at: Mapped[datetime]

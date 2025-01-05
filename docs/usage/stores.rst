@@ -23,7 +23,7 @@ Built-in stores
 :class:`MemoryStore <litestar.stores.memory.MemoryStore>`
     A simple in-memory store, using a dictionary to hold data. This store offers no persistence and is not thread or multiprocess safe,
     but it is suitable for basic applications such as caching and has generally the lowest overhead. This is the default store used by
-    Litestar internally. If you plan to enable :ref:`multiple web workers<cli-run-options>` and you need inter-process communication
+    Litestar internally. If you plan to enable :doc:`multiple web workers </reference/cli>` and you need inter-process communication
     across multiple worker processes, you should use one of the other non-memory stores instead.
 
 :class:`FileStore <litestar.stores.file.FileStore>`
@@ -34,6 +34,12 @@ Built-in stores
 :class:`RedisStore <litestar.stores.redis.RedisStore>`
     A store backend by `redis <https://redis.io/>`_. It offers all the guarantees and features of Redis, making it
     suitable for almost all applications. Offers `namespacing`_.
+
+:class:`ValKeyStore <litestar.stores.valkey.ValkeyStore>`
+    A store backed by `valkey <https://valkey.io>`_, a fork of Redis created as the result of Redis' license changes.
+    Similarly to the RedisStore, it is suitable for almost all applications and supports `namespacing`_.
+    At the time of writing, :class:`Valkey <valkey.asyncio.Valkey>` is equivalent to :class:`redis.asyncio.Redis`,
+    and all notes pertaining to Redis also apply to Valkey.
 
 .. admonition:: Why not memcached?
     :class: info

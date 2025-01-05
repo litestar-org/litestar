@@ -42,6 +42,8 @@ We would then test it using the test client like so:
 
             from my_app.main import app
 
+            app.debug = True
+
 
             def test_health_check():
                 with TestClient(app=app) as client:
@@ -59,6 +61,8 @@ We would then test it using the test client like so:
             from litestar.testing import AsyncTestClient
 
             from my_app.main import app
+
+            app.debug = True
 
 
             async def test_health_check():
@@ -90,6 +94,8 @@ Since we would probably need to use the client in multiple places, it's better t
             if TYPE_CHECKING:
                 from litestar import Litestar
 
+            app.debug = True
+
 
             @pytest.fixture(scope="function")
             def test_client() -> Iterator[TestClient[Litestar]]:
@@ -113,6 +119,8 @@ Since we would probably need to use the client in multiple places, it's better t
 
             if TYPE_CHECKING:
                 from litestar import Litestar
+
+            app.debug = True
 
 
             @pytest.fixture(scope="function")
@@ -278,6 +286,31 @@ But also this:
             assert response.status_code == HTTP_200_OK
             assert response.text == "healthy"
 
+
+Running a live server
+---------------------
+
+The test clients make use of HTTPX's ability to directly call into an ASGI app, without
+having to run an actual server. In most cases this is sufficient but there are some
+exceptions where this won't work, due to the limitations of the emulated client-server
+communication.
+
+For example, when using server-sent events with an infinite generator, it will lock up
+the test client, since HTTPX tries to consume the full response before returning a
+request.
+
+Litestar offers two helper functions,
+:func:`litestar.testing.subprocess_sync_client` and
+:func:`litestar.testing.subprocess_async_client` that will
+launch a Litestar instance with in a subprocess and set up an httpx client for running
+tests. You can either load your actual app file or create subsets from it as you would
+with the regular test client setup:
+
+.. literalinclude:: /examples/testing/subprocess_sse_app.py
+    :language: python
+
+.. literalinclude:: /examples/testing/test_subprocess_sse.py
+    :language: python
 
 RequestFactory
 --------------

@@ -334,6 +334,7 @@ def test_openapi_to_typescript_converter(person_controller: Type[Controller], pe
 	export interface QueryParameters {
 	from_date?: null | number | string | string;
 	gender?: "A" | "F" | "M" | "O" | ("A" | "F" | "M" | "O")[] | null;
+	lucky_number?: 2 | 7 | null;
 	name?: null | string | string[];
 	page: number;
 	pageSize: number;

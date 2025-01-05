@@ -15,7 +15,7 @@ if TYPE_CHECKING:
 class OpenTelemetryPlugin(InitPluginProtocol):
     """OpenTelemetry Plugin."""
 
-    __slots__ = ("config", "_middleware")
+    __slots__ = ("_middleware", "config")
 
     def __init__(self, config: OpenTelemetryConfig | None = None) -> None:
         self.config = config or OpenTelemetryConfig()
@@ -42,7 +42,8 @@ class OpenTelemetryPlugin(InitPluginProtocol):
         for middleware in middlewares:
             if (
                 isinstance(middleware, DefineMiddleware)
-                and middleware.middleware is OpenTelemetryInstrumentationMiddleware
+                and isinstance(middleware.middleware, type)
+                and issubclass(middleware.middleware, OpenTelemetryInstrumentationMiddleware)
             ):
                 otel_middleware = middleware
             else:

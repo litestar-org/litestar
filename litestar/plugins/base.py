@@ -18,15 +18,15 @@ if TYPE_CHECKING:
     from litestar.typing import FieldDefinition
 
 __all__ = (
-    "SerializationPluginProtocol",
-    "InitPluginProtocol",
-    "OpenAPISchemaPluginProtocol",
-    "OpenAPISchemaPlugin",
-    "PluginProtocol",
     "CLIPlugin",
     "CLIPluginProtocol",
-    "PluginRegistry",
     "DIPlugin",
+    "InitPluginProtocol",
+    "OpenAPISchemaPlugin",
+    "OpenAPISchemaPluginProtocol",
+    "PluginProtocol",
+    "PluginRegistry",
+    "SerializationPluginProtocol",
 )
 
 
@@ -271,7 +271,7 @@ PluginT = TypeVar("PluginT", bound=PluginProtocol)
 
 
 class PluginRegistry:
-    __slots__ = {
+    __slots__ = {  # noqa: RUF023
         "init": "Plugins that implement the InitPluginProtocol",
         "openapi": "Plugins that implement the OpenAPISchemaPluginProtocol",
         "receive_route": "ReceiveRoutePlugin instances",

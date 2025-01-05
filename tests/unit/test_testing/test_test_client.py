@@ -42,9 +42,17 @@ def test_client_cls(request: FixtureRequest) -> Type[AnyTestClient]:
     return cast(Type[AnyTestClient], request.param)
 
 
+@pytest.mark.parametrize(
+    "anyio_backend",
+    [
+        pytest.param("asyncio"),
+        pytest.param("trio", marks=pytest.mark.xfail(reason="Known issue with trio backend", strict=False)),
+    ],
+)
 @pytest.mark.parametrize("with_domain", [False, True])
 async def test_test_client_set_session_data(
     with_domain: bool,
+    anyio_backend: str,
     session_backend_config: "BaseBackendConfig",
     test_client_backend: "AnyIOBackend",
     test_client_cls: Type[AnyTestClient],
@@ -55,7 +63,7 @@ async def test_test_client_set_session_data(
         session_backend_config.domain = "testserver.local"
 
     @get(path="/test")
-    def get_session_data(request: Request) -> Dict[str, Any]:
+    async def get_session_data(request: Request) -> Dict[str, Any]:
         return request.session
 
     app = Litestar(route_handlers=[get_session_data], middleware=[session_backend_config.middleware])
@@ -67,9 +75,17 @@ async def test_test_client_set_session_data(
         assert session_data == (await maybe_async(client.get("/test"))).json()  # type: ignore[attr-defined]
 
 
-@pytest.mark.parametrize("with_domain", [False, True])
+@pytest.mark.parametrize(
+    "anyio_backend",
+    [
+        pytest.param("asyncio"),
+        pytest.param("trio", marks=pytest.mark.xfail(reason="Known issue with trio backend", strict=False)),
+    ],
+)
+@pytest.mark.parametrize("with_domain", [True, False])
 async def test_test_client_get_session_data(
     with_domain: bool,
+    anyio_backend: str,
     session_backend_config: "BaseBackendConfig",
     test_client_backend: "AnyIOBackend",
     store: Store,
@@ -81,7 +97,7 @@ async def test_test_client_get_session_data(
         session_backend_config.domain = "testserver.local"
 
     @post(path="/test")
-    def set_session_data(request: Request) -> None:
+    async def set_session_data(request: Request) -> None:
         request.session.update(session_data)
 
     app = Litestar(

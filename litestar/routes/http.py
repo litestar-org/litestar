@@ -1,11 +1,11 @@
 from __future__ import annotations
 
 from itertools import chain
-from typing import TYPE_CHECKING, Any, cast
+from typing import TYPE_CHECKING, Any
 
 from msgspec.msgpack import decode as _decode_msgpack_plain
 
-from litestar.datastructures.upload_file import UploadFile
+from litestar.datastructures.multi_dicts import FormMultiDict
 from litestar.enums import HttpMethod, MediaType, ScopeType
 from litestar.exceptions import ClientException, ImproperlyConfiguredException, SerializationException
 from litestar.handlers.http_handlers import HTTPRouteHandler
@@ -77,17 +77,18 @@ class HTTPRoute(BaseRoute):
         if route_handler.resolve_guards():
             await route_handler.authorize_connection(connection=request)
 
-        response = await self._get_response_for_request(
-            scope=scope, request=request, route_handler=route_handler, parameter_model=parameter_model
-        )
+        try:
+            response = await self._get_response_for_request(
+                scope=scope, request=request, route_handler=route_handler, parameter_model=parameter_model
+            )
 
-        await response(scope, receive, send)
+            await response(scope, receive, send)
 
-        if after_response_handler := route_handler.resolve_after_response():
-            await after_response_handler(request)
-
-        if form_data := scope.get("_form", {}):
-            await self._cleanup_temporary_files(form_data=cast("dict[str, Any]", form_data))
+            if after_response_handler := route_handler.resolve_after_response():
+                await after_response_handler(request)
+        finally:
+            if (form_data := ScopeState.from_scope(scope).form) is not Empty:
+                await FormMultiDict.from_form_data(form_data).close()
 
     def create_handler_map(self) -> None:
         """Parse the ``router_handlers`` of this route and return a mapping of
@@ -169,21 +170,13 @@ class HTTPRoute(BaseRoute):
         cleanup_group: DependencyCleanupGroup | None = None
 
         if parameter_model.has_kwargs and route_handler.signature_model:
-            kwargs = parameter_model.to_kwargs(connection=request)
+            try:
+                kwargs = await parameter_model.to_kwargs(connection=request)
+            except SerializationException as e:
+                raise ClientException(str(e)) from e
 
-            if "data" in kwargs:
-                try:
-                    data = await kwargs["data"]
-                except SerializationException as e:
-                    raise ClientException(str(e)) from e
-
-                if data is Empty:
-                    del kwargs["data"]
-                else:
-                    kwargs["data"] = data
-
-            if "body" in kwargs:
-                kwargs["body"] = await kwargs["body"]
+            if kwargs.get("data") is Empty:
+                del kwargs["data"]
 
             if parameter_model.dependency_batches:
                 cleanup_group = await parameter_model.resolve_dependencies(request, kwargs)
@@ -266,9 +259,3 @@ class HTTPRoute(BaseRoute):
             include_in_schema=False,
             sync_to_thread=False,
         )(options_handler)
-
-    @staticmethod
-    async def _cleanup_temporary_files(form_data: dict[str, Any]) -> None:
-        for v in form_data.values():
-            if isinstance(v, UploadFile) and not v.file.closed:
-                await v.close()

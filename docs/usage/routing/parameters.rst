@@ -8,6 +8,7 @@ Path :term:`parameters <parameter>` are parameters declared as part of the ``pat
 the URL. They are declared using a simple syntax ``{param_name:param_type}`` :
 
 .. literalinclude:: /examples/parameters/path_parameters_1.py
+    :language: python
     :caption: Defining a path parameter in a route handler
 
 In the above there are two components:
@@ -32,8 +33,8 @@ Currently, the following types are supported:
 * :class:`int`: Accepts ints and floats.
 * :class:`path`: Accepts valid POSIX paths.
 * :class:`str`: Accepts all string values.
-* ``time``: Accepts time strings with optional timezone compatible with pydantic formats.
-* ``timedelta``: Accepts duration strings compatible with the pydantic formats.
+* ``time``: Accepts time strings with optional timezone compatible with standard (Pydantic/Msgspec) datetime formats.
+* ``timedelta``: Accepts duration strings compatible with the standard (Pydantic/Msgspec) timedelta formats.
 * ``uuid``: Accepts all uuid values.
 
 The types declared in the path :term:`parameter` and the function do not need to match 1:1 - as long as
@@ -41,14 +42,14 @@ parameter inside the function declaration is typed with a "higher" type to which
 this is fine. For example, consider this:
 
 .. literalinclude:: /examples/parameters/path_parameters_2.py
+    :language: python
     :caption: Coercing path parameters into different types
 
 The :term:`parameter` defined inside the ``path`` :term:`kwarg <argument>` is typed as :class:`int` , because the value
 passed as part of the request will be a timestamp in milliseconds without any decimals. The parameter in
 the function declaration though is typed as :class:`datetime.datetime`.
 
-This works because the int value will be passed to a pydantic model representing the function signature, which will
-coerce the :class:`int` into a :class:`~datetime.datetime`.
+This works because the int value will be automatically coerced from an :class:`int` into a :class:`~datetime.datetime`.
 
 Thus, when the function is called it will be called with a :class:`~datetime.datetime`-typed parameter.
 
@@ -69,6 +70,7 @@ If you want to add validation or enhance the OpenAPI documentation generated for
 you can do so using the `the parameter function`_:
 
 .. literalinclude:: /examples/parameters/path_parameters_3.py
+    :language: python
     :caption: Adding extra validation and documentation to a path parameter
 
 In the above example, :func:`~.params.Parameter` is used to restrict the value of :paramref:`~.params.Parameter.version`
@@ -84,16 +86,17 @@ Every :term:`keyword argument <argument>` that is not otherwise specified (for e
 :ref:`path parameter <usage/routing/parameters:path parameters>`) will be interpreted as a query parameter.
 
 .. literalinclude:: /examples/parameters/query_params.py
+    :language: python
     :caption: Defining query parameters in a route handler
 
 .. admonition:: Technical details
     :class: info
 
-    These :term:`parameters <parameter>` will be parsed from the function signature and used to generate a Pydantic model.
+    These :term:`parameters <parameter>` will be parsed from the function signature and used to generate an internal data model.
     This model in turn will be used to validate the parameters and generate the OpenAPI schema.
 
-    This means that you can also use any pydantic type in the signature, and it will
-    follow the same kind of validation and parsing as you would get from pydantic.
+    This ability allows you to use any number of schema/modelling libraries, including Pydantic, Msgspec, Attrs, and Dataclasses, and it will
+    follow the same kind of validation and parsing as you would get from these libraries.
 
 Query :term:`parameters <parameter>` come in three basic types:
 
@@ -111,6 +114,7 @@ In this example, ``param`` will have the value ``"hello"`` if it is not specifie
 If it is passed as a query :term:`parameter` however, it will be overwritten:
 
 .. literalinclude:: /examples/parameters/query_params_default.py
+    :language: python
     :caption: Defining a default value for a query parameter
 
 Optional :term:`parameters <parameter>`
@@ -125,6 +129,7 @@ If it is given, it has to be a :class:`string <str>`.
 If it is not given, it will have a default value of ``None``
 
 .. literalinclude:: /examples/parameters/query_params_optional.py
+    :language: python
     :caption: Defining an optional query parameter
 
 Type coercion
@@ -133,9 +138,8 @@ Type coercion
 It is possible to coerce query :term:`parameters <parameter>` into different types.
 A query starts out as a :class:`string <str>`, but its values can be parsed into all kinds of types.
 
-Since this is done by Pydantic, everything that works there will work for query parameters as well.
-
 .. literalinclude:: /examples/parameters/query_params_types.py
+    :language: python
     :caption: Coercing query parameters into different types
 
 Alternative names and constraints
@@ -145,6 +149,7 @@ Sometimes you might want to "remap" query :term:`parameters <parameter>` to allo
 than what is being used in the handler function. This can be done by making use of :func:`~.params.Parameter`.
 
 .. literalinclude:: /examples/parameters/query_params_remap.py
+    :language: python
     :caption: Remapping query parameters to different names
 
 Here, we remap from ``snake_case`` in the handler function to ``camelCase`` in the URL.
@@ -154,6 +159,7 @@ will be used for the value of the ``snake_case`` parameter.
 :func:`~.params.Parameter` also allows us to define additional constraints:
 
 .. literalinclude:: /examples/parameters/query_params_constraints.py
+    :language: python
     :caption: Constraints on query parameters
 
 In this case, ``param`` is validated to be an *integer larger than 5*.
@@ -165,6 +171,7 @@ Unlike *Query* :term:`parameters <parameter>`, *Header* and *Cookie* parameters 
 declared using `the parameter function`_ , for example:
 
 .. literalinclude:: /examples/parameters/header_and_cookie_parameters.py
+    :language: python
     :caption: Defining header and cookie parameters
 
 As you can see in the above, header parameters are declared using the ``header``
@@ -179,6 +186,7 @@ As part of Litestar's :ref:`layered architecture <usage/applications:layered arc
 of the application:
 
 .. literalinclude:: /examples/parameters/layered_parameters.py
+    :language: python
     :caption: Declaring parameters on different layers of the application
 
 In the above we declare :term:`parameters <parameter>` on the :class:`Litestar app <.app.Litestar>`,

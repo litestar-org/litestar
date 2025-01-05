@@ -19,6 +19,9 @@ on:
         type: number
         default: 10
 
+env:
+  UV_LOCKED: 1
+
 jobs:
   test:
     runs-on: ${{ inputs.os }}
@@ -35,28 +38,25 @@ jobs:
         with:
           python-version: ${{ inputs.python-version }}
 
-      - uses: pdm-project/setup-pdm@v4
-        name: Set up PDM
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
         with:
-          python-version: ${{ inputs.python-version }}
-          allow-python-prereleases: false
-          cache: true
-          cache-dependency-path: |
-            ./pdm.lock
+          version: "0.5.4"
+          enable-cache: true
 
       - name: Install dependencies
-        run: pdm install -G:all
+        run: uv sync
 
       - name: Set PYTHONPATH
         run: echo "PYTHONPATH=$PWD" >> $GITHUB_ENV
 
       - name: Test
         if: ${{ !inputs.coverage }}
-        run: pdm run pytest docs/examples tests -n auto
+        run: uv run pytest docs/examples tests -n auto
 
       - name: Test with coverage
         if: inputs.coverage
-        run: pdm run pytest docs/examples tests -n auto --cov
+        run: uv run pytest docs/examples tests -n auto --cov
 
       - name: Rename coverage file
         if: inputs.coverage
@@ -67,3 +67,4 @@ jobs:
         with:
           name: coverage-data
           path: .coverage.${{ inputs.python-version }}
+          include-hidden-files: true
