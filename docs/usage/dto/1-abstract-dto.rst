@@ -50,7 +50,7 @@ Fields marked as ``"private"`` or ``"read-only"`` will not be parsed from client
     :emphasize-lines: 6,14,15
     :linenos:
 
-Note that ``id`` field is handled specially, since it is a primary key.
+Note that ``id`` field is the primary key and is handled specially by the defined SQLAlchemy base.
 
 .. note:
 
