@@ -60,16 +60,16 @@ async def channels_backend_with_history(
     await channels_backend_instance_with_history.on_shutdown()
 
 
-# @pytest.mark.parametrize("channels", [{"foo"}, {"foo", "bar"}])
-# async def test_pub_sub(channels_backend: ChannelsBackend, channels: set[str]) -> None:
-#     await channels_backend.subscribe(channels)
-#     await channels_backend.publish(b"something", channels)
-#
-#     event_generator = channels_backend.stream_events()
-#     received = set()
-#     for _ in channels:
-#         received.add(await async_next(event_generator))
-#     assert received == {(c, b"something") for c in channels}
+@pytest.mark.parametrize("channels", [{"foo"}, {"foo", "bar"}])
+async def test_pub_sub(channels_backend: ChannelsBackend, channels: set[str]) -> None:
+    await channels_backend.subscribe(channels)
+    await channels_backend.publish(b"something", channels)
+
+    event_generator = channels_backend.stream_events()
+    received = set()
+    for _ in channels:
+        received.add(await async_next(event_generator))
+    assert received == {(c, b"something") for c in channels}
 
 
 async def test_pub_sub_unsubscribe(channels_backend: ChannelsBackend) -> None:

@@ -11,6 +11,7 @@ from litestar.utils.compat import async_next
 
 from .util import get_from_stream
 
+pytestmark = pytest.mark.anyio
 
 def test_subscriber_backlog_backoff() -> None:
     subscriber = Subscriber(plugin=MagicMock(), max_backlog=2, backlog_strategy="backoff")

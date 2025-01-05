@@ -37,6 +37,7 @@ def test_route_handler_validation_http_method() -> None:
         route(http_method=[HttpMethod.GET, "poft"], status_code=HTTP_200_OK)  # type: ignore[list-item]
 
 
+@pytest.mark.anyio
 async def test_function_validation() -> None:
     with pytest.raises(ImproperlyConfiguredException):
 

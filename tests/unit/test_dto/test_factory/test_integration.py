@@ -55,6 +55,7 @@ def test_url_encoded_form_data(use_experimental_dto_backend: bool) -> None:
         assert response.json() == {"name": "John", "age": 42, "read_only": "read-only"}
 
 
+@pytest.mark.anyio
 async def test_multipart_encoded_form_data(use_experimental_dto_backend: bool) -> None:
     default_file = UploadFile(content_type="text/plain", filename="forbidden", file_data=b"forbidden")
 

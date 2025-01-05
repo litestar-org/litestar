@@ -100,6 +100,7 @@ def test_config_assigned_via_subclassing() -> None:
     assert concrete_dto.config.exclude == {"a"}
 
 
+@pytest.mark.anyio
 async def test_from_bytes(asgi_connection: Request[Any, Any, Any]) -> None:
     dto_type = DataclassDTO[Model]
     dto_type.create_for_field_definition(
