@@ -271,75 +271,75 @@ suppress_warnings = [
 html_theme = "shibuya"
 html_static_path = ["_static"]
 html_js_files = ["versioning.js"]
-html_css_files = ["style.css"]
+# html_css_files = ["style.css"]
 html_show_sourcelink = False
 html_title = "Litestar Framework"
 
-html_theme_options = {
-    "use_page_nav": False,
-    "github_repo_name": "litestar",
-    "logo": {
-        "link": "https://litestar.dev",
-    },
-    "pygment_light_style": "xcode",
-    "pygment_dark_style": "lightbulb",
-    "navigation_with_keys": True,
-    "extra_navbar_items": {
-        "Documentation": "index",
-        "Community": {
-            "Contributing": {
-                "description": "Learn how to contribute to the Litestar project",
-                "link": "https://docs.litestar.dev/latest/contribution-guide.html",
-                "icon": "contributing",
-            },
-            "Code of Conduct": {
-                "description": "Review the etiquette for interacting with the Litestar community",
-                "link": "https://github.com/litestar-org/.github?tab=coc-ov-file",
-                "icon": "coc",
-            },
-            "Security": {
-                "description": "Overview of Litestar's security protocols",
-                "link": "https://github.com/litestar-org/.github?tab=coc-ov-file#security-ov-file",
-                "icon": "coc",
-            },
-        },
-        "About": {
-            "Litestar Organization": {
-                "description": "Details about the Litestar organization",
-                "link": "https://litestar.dev/about/organization",
-                "icon": "org",
-            },
-            "Releases": {
-                "description": "Explore the release process, versioning, and deprecation policy for Litestar",
-                "link": "https://litestar.dev/about/litestar-releases",
-                "icon": "releases",
-            },
-        },
-        "Release notes": {
-            "What's new in 2.0": "release-notes/whats-new-2",
-            "2.x Changelog": "https://docs.litestar.dev/2/release-notes/changelog.html",
-            "1.x Changelog": "https://docs.litestar.dev/1/release-notes/changelog.html",
-        },
-        "Help": {
-            "Discord Help Forum": {
-                "description": "Dedicated Discord help forum",
-                "link": "https://discord.gg/litestar",
-                "icon": "coc",
-            },
-            "GitHub Discussions": {
-                "description": "GitHub Discussions ",
-                "link": "https://github.com/orgs/litestar-org/discussions",
-                "icon": "coc",
-            },
-            "Stack Overflow": {
-                "description": "We monitor the <code><b>litestar</b></code> tag on Stack Overflow",
-                "link": "https://stackoverflow.com/questions/tagged/litestar",
-                "icon": "coc",
-            },
-        },
-    },
-}
-
+# html_theme_options = {
+#     "use_page_nav": False,
+#     "github_repo_name": "litestar",
+#     "logo": {
+#         "link": "https://litestar.dev",
+#     },
+#     "pygment_light_style": "xcode",
+#     "pygment_dark_style": "lightbulb",
+#     "navigation_with_keys": True,
+#     "extra_navbar_items": {
+#         "Documentation": "index",
+#         "Community": {
+#             "Contributing": {
+#                 "description": "Learn how to contribute to the Litestar project",
+#                 "link": "https://docs.litestar.dev/latest/contribution-guide.html",
+#                 "icon": "contributing",
+#             },
+#             "Code of Conduct": {
+#                 "description": "Review the etiquette for interacting with the Litestar community",
+#                 "link": "https://github.com/litestar-org/.github?tab=coc-ov-file",
+#                 "icon": "coc",
+#             },
+#             "Security": {
+#                 "description": "Overview of Litestar's security protocols",
+#                 "link": "https://github.com/litestar-org/.github?tab=coc-ov-file#security-ov-file",
+#                 "icon": "coc",
+#             },
+#         },
+#         "About": {
+#             "Litestar Organization": {
+#                 "description": "Details about the Litestar organization",
+#                 "link": "https://litestar.dev/about/organization",
+#                 "icon": "org",
+#             },
+#             "Releases": {
+#                 "description": "Explore the release process, versioning, and deprecation policy for Litestar",
+#                 "link": "https://litestar.dev/about/litestar-releases",
+#                 "icon": "releases",
+#             },
+#         },
+#         "Release notes": {
+#             "What's new in 2.0": "release-notes/whats-new-2",
+#             "2.x Changelog": "https://docs.litestar.dev/2/release-notes/changelog.html",
+#             "1.x Changelog": "https://docs.litestar.dev/1/release-notes/changelog.html",
+#         },
+#         "Help": {
+#             "Discord Help Forum": {
+#                 "description": "Dedicated Discord help forum",
+#                 "link": "https://discord.gg/litestar",
+#                 "icon": "coc",
+#             },
+#             "GitHub Discussions": {
+#                 "description": "GitHub Discussions ",
+#                 "link": "https://github.com/orgs/litestar-org/discussions",
+#                 "icon": "coc",
+#             },
+#             "Stack Overflow": {
+#                 "description": "We monitor the <code><b>litestar</b></code> tag on Stack Overflow",
+#                 "link": "https://stackoverflow.com/questions/tagged/litestar",
+#                 "icon": "coc",
+#             },
+#         },
+#     },
+# }
+#
 
 def update_html_context(
     app: Sphinx, pagename: str, templatename: str, context: dict[str, Any], doctree: document
@@ -363,6 +363,6 @@ def delayed_setup(app: Sphinx) -> None:
 def setup(app: Sphinx) -> dict[str, bool]:
     app.connect("builder-inited", delayed_setup, priority=0)  # type: ignore
 
-    app.setup_extension("litestar_sphinx_theme")
+    # app.setup_extension("litestar_sphinx_theme")
 
     return {"parallel_read_safe": True, "parallel_write_safe": True}
