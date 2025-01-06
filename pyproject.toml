@@ -170,7 +170,6 @@ test = [
   "pytest-cov",
   "pytest-lazy-fixtures",
   "pytest-mock",
-#  "pytest-rerunfailures",
   "pytest-timeout",
   "pytest-xdist",
   "time-machine",
