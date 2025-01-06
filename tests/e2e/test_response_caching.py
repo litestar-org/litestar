@@ -27,8 +27,6 @@ T = TypeVar("T")
 
 pytestmark = pytest.mark.anyio
 
-pytestmark = pytest.mark.anyio
-
 
 @pytest.fixture()
 def mock() -> MagicMock:
