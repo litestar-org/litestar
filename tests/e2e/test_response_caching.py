@@ -180,7 +180,7 @@ async def test_with_stores(store: Store, mock: MagicMock) -> None:
     def handler() -> str:
         return mock()  # type: ignore[no-any-return]
 
-    app = Litestar([handler], stores={"response_cache": store}, debug=True)
+    app = Litestar([handler], stores={"response_cache": store})
 
     with TestClient(app=app) as client:
         response_one = client.get("/")
