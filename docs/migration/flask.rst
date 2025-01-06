@@ -447,7 +447,7 @@ For redirects, instead of ``redirect`` use ``Redirect``:
 
             @get("/hello")
             def hello() -> Redirect:
-                return Redirect(path="/")
+                return Redirect(path="index")
 
 
             app = Litestar([index, hello])
