@@ -8,6 +8,7 @@ from litestar.utils.compat import async_next
 
 pytestmark = pytest.mark.anyio
 
+
 @pytest.fixture
 def cleanup_mock() -> MagicMock:
     return MagicMock()

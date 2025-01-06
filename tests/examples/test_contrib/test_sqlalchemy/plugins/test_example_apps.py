@@ -27,6 +27,7 @@ def sqlite_engine() -> Generator[None, Engine]:
 async def aiosqlite_engine() -> AsyncIterator[AsyncEngine]:
     yield create_async_engine("sqlite+aiosqlite://", connect_args={"check_same_thread": False})
 
+
 @pytest.mark.anyio
 async def test_sqlalchemy_async_plugin_example(
     data: dict[str, Any], monkeypatch: MonkeyPatch, aiosqlite_engine: AsyncEngine

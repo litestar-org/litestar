@@ -119,8 +119,6 @@ include = [
 [tool.uv]
 default-groups = ["dev", "linting", "test", "docs"]
 
-[tool.uv.sources]
-redis = { git = "https://github.com/redis/redis-py.git", branch = "vv-3431-fix" }
 
 [dependency-groups]
 dev = [
@@ -174,7 +172,7 @@ test = [
   "pytest-cov",
   "pytest-lazy-fixtures",
   "pytest-mock",
-  "pytest-rerunfailures",
+#  "pytest-rerunfailures",
   "pytest-timeout",
   "pytest-xdist",
   "time-machine",

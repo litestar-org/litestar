@@ -17,7 +17,7 @@ from litestar.middleware.response_cache import ResponseCacheMiddleware
 from litestar.status_codes import HTTP_200_OK, HTTP_201_CREATED, HTTP_400_BAD_REQUEST, HTTP_500_INTERNAL_SERVER_ERROR
 from litestar.stores.base import Store
 from litestar.stores.memory import MemoryStore
-from litestar.testing import TestClient, create_test_client, AsyncTestClient
+from litestar.testing import TestClient, create_test_client
 from litestar.types import HTTPScope
 
 if TYPE_CHECKING:

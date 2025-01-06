@@ -10,14 +10,14 @@ import sys
 from datetime import datetime, timezone
 from os import urandom
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, AsyncGenerator, Callable, Generator,  cast
+from typing import TYPE_CHECKING, Any, AsyncGenerator, Callable, Generator, Union, cast
 from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 from pytest_lazy_fixtures import lf
 from redis.asyncio import Redis
 from time_machine import travel
-from valkey.asyncio import Valkey as AsyncValkey
+from valkey.asyncio import Valkey
 
 from litestar.logging import LoggingConfig
 from litestar.middleware.session import SessionMiddleware
@@ -66,10 +66,12 @@ def async_mock() -> AsyncMock:
     return AsyncMock()
 
 
-@pytest.fixture(params=[pytest.param("asyncio", id="asyncio"),
-                        # pytest.param("trio", id="trio")
-                        ]
-                )
+@pytest.fixture(
+    scope="session",
+    params=[
+        pytest.param("asyncio", id="asyncio"),
+    ],
+)
 def anyio_backend(request: pytest.FixtureRequest) -> str:
     return request.param  # type: ignore[no-any-return]
 
@@ -87,8 +89,8 @@ def redis_store(redis_client: Redis) -> RedisStore:
 
 
 @pytest.fixture()
-def valkey_store(valkey_client: AsyncValkey) -> ValkeyStore:
-    return ValkeyStore(valkey=valkey_client)
+def valkey_store(valkey_client: Valkey) -> ValkeyStore:
+    return ValkeyStore(valkey=valkey_client, handle_client_shutdown=True)
 
 
 @pytest.fixture()
@@ -116,7 +118,7 @@ def file_store_create_directories_flag_false(tmp_path: Path) -> FileStore:
 @pytest.fixture(
     params=[
         pytest.param("redis_store", marks=pytest.mark.xdist_group("redis")),
-        # pytest.param("valkey_store", marks=pytest.mark.xdist_group("valkey")),
+        pytest.param("valkey_store", marks=pytest.mark.xdist_group("valkey")),
         "memory_store",
         "file_store",
     ]
@@ -329,20 +331,17 @@ def get_logger() -> GetLogger:
 
 @pytest.fixture()
 async def redis_client(redis_service: None, docker_ip: str):
-    # client = Redis(host=docker_ip, port=6397)
-    # try:
-    #     await client.flushall()
-    #     yield client
-    # finally:
-    #     await client.aclose()
     async with Redis(host=docker_ip, port=6397) as client:
-        return client
+        yield client
+        await client.flushall()
 
 
 @pytest.fixture()
-async def valkey_client(docker_ip: str, valkey_service: None) -> AsyncGenerator[AsyncValkey, None]:
-    client: AsyncValkey = AsyncValkey(host=docker_ip, port=6381)
-    yield client
+async def valkey_client(docker_ip: str, valkey_service: None) -> AsyncGenerator[Valkey, None]:
+    async with Valkey(host=docker_ip, port=6381) as client:
+        yield client
+        await client.flushall()
+
 
 @pytest.fixture(autouse=True)
 def _patch_openapi_config(monkeypatch: pytest.MonkeyPatch) -> None:

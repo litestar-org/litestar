@@ -29,6 +29,7 @@ if TYPE_CHECKING:
 
 pytestmark = pytest.mark.anyio
 
+
 @pytest.fixture()
 def mock_redis() -> None:
     patch("litestar.Store.redis_backend.Redis")
@@ -37,6 +38,7 @@ def mock_redis() -> None:
 @pytest.fixture()
 def mock_valkey() -> None:
     patch("litestar.Store.valkey_backend.Valkey")
+
 
 async def test_get(store: Store) -> None:
     key = "key"
@@ -47,7 +49,6 @@ async def test_get(store: Store) -> None:
 
     stored_value = await store.get(key)
     assert stored_value == value
-
 
 
 async def test_set(store: Store) -> None:
@@ -86,7 +87,6 @@ async def test_expires(store: Store, frozen_datetime: Coordinates) -> None:
     assert stored_value is None
 
 
-@pytest.mark.flaky(reruns=5)
 @pytest.mark.parametrize("renew_for", [10, timedelta(seconds=10)])
 async def test_get_and_renew(store: Store, renew_for: int | timedelta, frozen_datetime: Coordinates) -> None:
     if isinstance(store, (RedisStore, ValkeyStore)):
@@ -102,7 +102,6 @@ async def test_get_and_renew(store: Store, renew_for: int | timedelta, frozen_da
     assert stored_value is not None
 
 
-@pytest.mark.flaky(reruns=5)
 @pytest.mark.parametrize("renew_for", [10, timedelta(seconds=10)])
 @pytest.mark.xdist_group("redis")
 async def test_get_and_renew_redis(redis_store: RedisStore, renew_for: int | timedelta) -> None:
@@ -118,20 +117,19 @@ async def test_get_and_renew_redis(redis_store: RedisStore, renew_for: int | tim
     assert stored_value is not None
 
 
-# @pytest.mark.flaky(reruns=5)
-# @pytest.mark.parametrize("renew_for", [10, timedelta(seconds=10)])
-# @pytest.mark.xdist_group("valkey")
-# async def test_get_and_renew_valkey(valkey_store: ValkeyStore, renew_for: int | timedelta) -> None:
-#     # we can't sleep() in frozen datetime, and frozen datetime doesn't affect the redis
-#     # instance, so we test this separately
-#     await valkey_store.set("foo", b"bar", expires_in=1)
-#     await valkey_store.get("foo", renew_for=renew_for)
-#
-#     await asyncio.sleep(1.1)
-#
-#     stored_value = await valkey_store.get("foo")
-#
-#     assert stored_value is not None
+@pytest.mark.parametrize("renew_for", [10, timedelta(seconds=10)])
+@pytest.mark.xdist_group("valkey")
+async def test_get_and_renew_valkey(valkey_store: ValkeyStore, renew_for: int | timedelta) -> None:
+    # we can't sleep() in frozen datetime, and frozen datetime doesn't affect the redis
+    # instance, so we test this separately
+    await valkey_store.set("foo", b"bar", expires_in=1)
+    await valkey_store.get("foo", renew_for=renew_for)
+
+    await asyncio.sleep(1.1)
+
+    stored_value = await valkey_store.get("foo")
+
+    assert stored_value is not None
 
 
 async def test_delete(store: Store) -> None:
@@ -157,11 +155,11 @@ async def test_exists(store: Store) -> None:
     assert await store.exists("foo") is True
 
 
-# async def test_expires_in_not_set(store: Store) -> None:
-#     assert await store.expires_in("foo") is None
-#
-#     await store.set("foo", b"bar")
-#     assert await store.expires_in("foo") == -1
+async def test_expires_in_not_set(store: Store) -> None:
+    assert await store.expires_in("foo") is None
+
+    await store.set("foo", b"bar")
+    assert await store.expires_in("foo") == -1
 
 
 async def test_delete_all(store: Store) -> None:
@@ -299,12 +297,12 @@ async def test_redis_delete_all_no_namespace_raises(redis_client: Redis) -> None
         await redis_store.delete_all()
 
 
-# @pytest.mark.xdist_group("valkey")
-# async def test_valkey_delete_all_no_namespace_raises(valkey_client: Valkey) -> None:
-#     valkey_store = ValkeyStore(valkey=valkey_client, namespace=None)
-#
-#     with pytest.raises(ImproperlyConfiguredException):
-#         await valkey_store.delete_all()
+@pytest.mark.xdist_group("valkey")
+async def test_valkey_delete_all_no_namespace_raises(valkey_client: Valkey) -> None:
+    valkey_store = ValkeyStore(valkey=valkey_client, namespace=None)
+
+    with pytest.raises(ImproperlyConfiguredException):
+        await valkey_store.delete_all()
 
 
 @pytest.mark.xdist_group("redis")
@@ -387,7 +385,7 @@ def test_file_with_namespace_invalid_namespace_char(file_store: FileStore, inval
 @pytest.fixture(
     params=[
         pytest.param("redis_store", marks=pytest.mark.xdist_group("redis")),
-        # pytest.param("valkey_store", marks=pytest.mark.xdist_group("valkey")),
+        pytest.param("valkey_store", marks=pytest.mark.xdist_group("valkey")),
         "file_store",
     ]
 )

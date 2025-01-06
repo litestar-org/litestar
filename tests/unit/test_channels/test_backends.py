@@ -19,6 +19,7 @@ from litestar.utils.compat import async_next
 
 pytestmark = pytest.mark.anyio
 
+
 @pytest.fixture(
     params=[
         pytest.param("redis_pub_sub_backend", id="redis:pubsub", marks=pytest.mark.xdist_group("redis")),

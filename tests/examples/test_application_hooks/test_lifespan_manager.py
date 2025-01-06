@@ -1,7 +1,6 @@
 from unittest.mock import AsyncMock
 
 import pytest
-
 from docs.examples.application_hooks.lifespan_manager import app
 from pytest_mock import MockerFixture
 

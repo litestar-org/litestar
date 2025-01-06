@@ -16,6 +16,8 @@ pytestmark = pytest.mark.anyio
 
 
 pytestmark = pytest.mark.anyio
+
+
 @pytest.mark.parametrize("file_system", (BaseLocalFileSystem(), LocalFileSystem()))
 async def test_file_adapter_open(tmpdir: Path, file_system: "FileSystemProtocol") -> None:
     file = Path(tmpdir / "test.txt")

@@ -7,6 +7,7 @@ from litestar.types.asgi_types import Receive, Scope, Send
 
 pytestmark = pytest.mark.anyio
 
+
 @asgi("/")
 async def asgi_app(scope: Scope, receive: Receive, send: Send) -> None:
     await send(

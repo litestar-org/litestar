@@ -39,6 +39,7 @@ if TYPE_CHECKING:
 
 pytestmark = pytest.mark.anyio
 
+
 @pytest.fixture()
 def app_config_object() -> AppConfig:
     return AppConfig(

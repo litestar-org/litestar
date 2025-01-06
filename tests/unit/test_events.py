@@ -14,6 +14,7 @@ from litestar.types import AnyIOBackend
 
 pytestmark = pytest.mark.anyio
 
+
 @pytest.fixture()
 def mock() -> MagicMock:
     return MagicMock()

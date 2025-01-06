@@ -12,6 +12,7 @@ from litestar.testing import TestClient
 
 pytestmark = pytest.mark.anyio
 
+
 @patch("litestar.stores.redis.Redis")
 async def test_configure_integrations_set_names(mock_redis: MagicMock) -> None:
     from docs.examples.stores.configure_integrations_set_names import app

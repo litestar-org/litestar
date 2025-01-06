@@ -1,5 +1,4 @@
 import pytest
-
 from docs.examples.responses.sse_responses import app
 from httpx_sse import aconnect_sse
 

@@ -9,6 +9,7 @@ from litestar.testing import create_test_client
 
 pytestmark = pytest.mark.anyio
 
+
 async def test_background_tasks_regular_execution() -> None:
     values: List[int] = []
 
