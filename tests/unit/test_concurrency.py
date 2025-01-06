@@ -42,18 +42,18 @@ def test_sync_to_thread_trio() -> None:
     assert trio.run(sync_to_thread, func) == 1
 
 
-# def test_get_set_asyncio_executor() -> None:
-#     assert get_asyncio_executor() is None
-#     with ThreadPoolExecutor() as executor:
-#         set_asyncio_executor(executor)
-#         assert get_asyncio_executor() is executor
+def test_get_set_asyncio_executor() -> None:
+    assert get_asyncio_executor() is None
+    with ThreadPoolExecutor() as executor:
+        set_asyncio_executor(executor)
+        assert get_asyncio_executor() is executor
 
 
-# def test_get_set_trio_capacity_limiter() -> None:
-#     limiter = trio.CapacityLimiter(10)
-#     assert get_trio_capacity_limiter() is None
-#     set_trio_capacity_limiter(limiter)
-#     assert get_trio_capacity_limiter() is limiter
+def test_get_set_trio_capacity_limiter() -> None:
+    limiter = trio.CapacityLimiter(10)
+    assert get_trio_capacity_limiter() is None
+    set_trio_capacity_limiter(limiter)
+    assert get_trio_capacity_limiter() is limiter
 
 
 def test_asyncio_uses_executor(mocker: MockerFixture) -> None:
