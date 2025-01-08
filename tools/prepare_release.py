@@ -129,6 +129,12 @@ class _Thing:
 
     async def _get_pr_info_for_pr(self, number: int) -> PRInfo | None:
         res = await self._api_client.get(f"/pulls/{number}")
+        if res.is_client_error:
+            click.secho(
+                f"Could not get PR info for {number}.  Fetch request returned a status of {res.status_code}",
+                fg="yellow",
+            )
+            return None
         res.raise_for_status()
         data = res.json()
         if not data["body"]:

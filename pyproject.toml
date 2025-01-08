@@ -64,7 +64,7 @@ maintainers = [
 name = "litestar"
 readme = "README.md"
 requires-python = ">=3.8,<4.0"
-version = "2.13.0"
+version = "2.14.0"
 
 [project.urls]
 Blog = "https://blog.litestar.dev"
