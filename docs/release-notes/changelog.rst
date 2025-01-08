@@ -36,7 +36,7 @@
         :type: bugfix
         :pr: 3567
 
-        Fix a bug that caused the `.websocket_connect` methods on `TestClient` and `AsyncTestClient` to not respect the `base_url` set in the client's constructor, and instead would use the static `ws://testerver` URL as a base.
+        Fix a bug that caused the `.websocket_connect` methods on `TestClient` and `AsyncTestClient` to not respect the `base_url` set in the client's constructor, and instead would use the static `ws://testserver` URL as a base.
 
         Also removes most of the test client code as it was unneeded and in the way of this fix :)
 
@@ -49,11 +49,8 @@
         :pr: 3569
         :issue: 3552
 
-        ## Description
+        The warning being applied to the default handlers was unintended behavior due to subclassing. This PR establishes the intended behavior by defining separate __init_subclass__ methods for the default handlers.
 
-        - The warning being applied to the default handlers was unintended behavior due to subclassing. This PR establishes the intended behavior by defining separate `__init_subclass__`es for the default handlers.
-
-        ## Closes
         Closes #3552
 
     .. change:: Don't call `rich_click.patch` if `rich_click` is installed
@@ -70,7 +67,7 @@
         :type: bugfix
         :pr: 3580
 
-        When encountering a `typing.NewType` during OpenAPI schema generation, we currently treat it as an opaque type. This PR changes the behaviour such that `typing.NewType`s are always unwrapped during schema generation.
+        When encountering a `typing.NewType` during OpenAPI schema generation, we currently treat it as an opaque type. This PR changes the behaviour such that `typing.NewType`` is always unwrapped during schema generation.
 
     .. change:: encode response content object returned from an exception handler.
         :type: bugfix
@@ -92,8 +89,6 @@
 
         Resolves infinite loop in schema generation when a model has an Annotated NewType.
 
-        ## Closes
-
         Fixes #3614
 
     .. change:: use `ASGIConnection` instead of `Request` for `flash`
@@ -103,14 +98,15 @@
         Currently, the `FlashPlugin` expects the `request` parameter to be a type of `Request`.  However, there's no reason it can't use the parent class `ASGIConnection`.
 
         Doing this, allows for flash to be called in guards that expect an `ASGIConnection` instead of `Request`:
-        ```python
-        def requires_active_user(connection: ASGIConnection, _: BaseRouteHandler) -> None:
-            if connection.user.is_active:
-                return
-            msg = "Your user account is inactive."
-            flash(connection, msg, category="error")
-            raise PermissionDeniedException(msg)
-        ```
+
+        .. code-block:: python
+
+            def requires_active_user(connection: ASGIConnection, _: BaseRouteHandler) -> None:
+                if connection.user.is_active:
+                    return
+                msg = "Your user account is inactive."
+                flash(connection, msg, category="error")
+                raise PermissionDeniedException(msg)
 
     .. change:: Allow returning `Response[None]` from head route handlers
         :type: bugfix
@@ -128,29 +124,27 @@
 
         Fix #3627 by properly handling the creation of `FormMultiDict` where multiple values are given for a single key, to make `Request.form()` match the behaviour of receiving form data via the `data` kwarg.
 
-        <hr>
-
         **Before**
 
-        ```python
-        @post("/")
-        async def handler(request: Request) -> Any:
-            return (await request.form()).getall("foo")
+        .. code-block:: python
 
-        with create_test_client(handler) as client:
-            print(client.post("/", data={"foo": ["1", "2"]}).json()) # [["1", "2"]]
-        ```
+            @post("/")
+            async def handler(request: Request) -> Any:
+                return (await request.form()).getall("foo")
+
+            with create_test_client(handler) as client:
+                print(client.post("/", data={"foo": ["1", "2"]}).json()) # [["1", "2"]]
 
         **After**
 
-        ```python
-        @post("/")
-        async def handler(request: Request) -> Any:
-            return (await request.form()).getall("foo")
+        .. code-block:: python
 
-        with create_test_client(handler) as client:
-            print(client.post("/", data={"foo": ["1", "2"]}).json()) # ["1", "2"]
-        ```
+            @post("/")
+            async def handler(request: Request) -> Any:
+                return (await request.form()).getall("foo")
+
+            with create_test_client(handler) as client:
+                print(client.post("/", data={"foo": ["1", "2"]}).json()) # ["1", "2"]
 
     .. change:: Small docs update.
         :type: bugfix
@@ -334,13 +328,13 @@
 
         Address rejection of `schema_extra` values using JSONSchema spec-compliant key names by mapping between the relevant naming conventions.
 
-        ## Closes
-
         Fixes #3766
 
     .. change:: typo in a deprecation warning in `contrib/sqlalchemy/plugins/serialization.py`
         :type: bugfix
         :pr: 3809
+
+        Typo correction.
 
 
     .. change:: fix path template for routes without path parameters
@@ -386,7 +380,7 @@
 
         This leads to failures when an ASGI framework mounted on Litestar throws error for the "more_body" key in "http.response.body".
 
-        I have changed it to `message.get('more_body')`as @cofin suggests.
+        I have changed it to `message.get('more_body')` as @cofin suggests.
 
     .. change:: Duplicate `RateLimit-*` headers with caching
         :type: bugfix
@@ -398,49 +392,46 @@
         `RateLimitMiddleware` duplicate all `RateLimit-*` headers when handler cache is enabled because it's adding new rate limit headers to the new ones, instead of just updating their values.
 
         ### Response header before
-        ```
-        ❯ curl -i http://localhost:8000/
-        HTTP/1.1 200 OK
-        date: Tue, 12 Nov 2024 06:50:18 GMT
-        server: uvicorn
-        content-type: text/plain; charset=utf-8
-        content-length: 2
-        ratelimit-policy: 10; w=60
-        ratelimit-limit: 10
-        ratelimit-remaining: -8
-        ratelimit-reset: -54
-        ratelimit-policy: 10; w=60
-        ratelimit-limit: 10
-        ratelimit-remaining: 0
-        ratelimit-reset: -49
-        ```
+        .. code-block:: sh
+
+            ❯ curl -i http://localhost:8000/
+            HTTP/1.1 200 OK
+            date: Tue, 12 Nov 2024 06:50:18 GMT
+            server: uvicorn
+            content-type: text/plain; charset=utf-8
+            content-length: 2
+            ratelimit-policy: 10; w=60
+            ratelimit-limit: 10
+            ratelimit-remaining: -8
+            ratelimit-reset: -54
+            ratelimit-policy: 10; w=60
+            ratelimit-limit: 10
+            ratelimit-remaining: 0
+            ratelimit-reset: -49
 
         ### Response headers after
-        ```
-        ❯ curl -i http://localhost:8000/
-        HTTP/1.1 200 OK
-        date: Tue, 12 Nov 2024 06:50:18 GMT
-        server: uvicorn
-        content-type: text/plain; charset=utf-8
-        content-length: 2
-        ratelimit-policy: 10; w=60
-        ratelimit-limit: 10
-        ratelimit-remaining: 0
-        ratelimit-reset: -49
-        ```
+        .. code-block:: sh
+
+            ❯ curl -i http://localhost:8000/
+            HTTP/1.1 200 OK
+            date: Tue, 12 Nov 2024 06:50:18 GMT
+            server: uvicorn
+            content-type: text/plain; charset=utf-8
+            content-length: 2
+            ratelimit-policy: 10; w=60
+            ratelimit-limit: 10
+            ratelimit-remaining: 0
+            ratelimit-reset: -49
 
     .. change:: Fix typing in websocket listener class
         :type: bugfix
         :pr: 3765
         :issue: 3763
 
-        ## Description
         Fixes #3763
 
         It seems that declaring the actual method is the only way to comply with `mypy` in such cases.
         There is a `ruff` rule that forbids empty methods in abstract classes, had to disable that for the relevant module.
-
-        ## Closes
 
     .. change:: remove optional group for `litestar-htmx`
         :type: bugfix
@@ -504,10 +495,7 @@
 
         Changes described here #3518
 
-        ## Closes
         Closes #3518
-
-
 
     .. change:: typo in exception message for ImproperlyConfiguredException
         :type: bugfix
@@ -644,54 +632,54 @@
 
         ## Example:
 
-        ```python
-        import dataclasses
-        import secrets
-        from typing import Any, Dict
+        .. code-block:: python
 
-        from litestar import Litestar, Request, get
-        from litestar.connection import ASGIConnection
-        from litestar.security.jwt import JWTAuth, Token
+            import dataclasses
+            import secrets
+            from typing import Any, Dict
 
-
-        @dataclasses.dataclass
-        class CustomToken(Token):
-            token_flag: bool = False
+            from litestar import Litestar, Request, get
+            from litestar.connection import ASGIConnection
+            from litestar.security.jwt import JWTAuth, Token
 
 
-        @dataclasses.dataclass
-        class User:
-            id: str
+            @dataclasses.dataclass
+            class CustomToken(Token):
+                token_flag: bool = False
 
 
-        async def retrieve_user_handler(token: CustomToken, connection: ASGIConnection) -> User:
-            return User(id=token.sub)
+            @dataclasses.dataclass
+            class User:
+                id: str
 
 
-        TOKEN_SECRET = secrets.token_hex()
-
-        jwt_auth = JWTAuth[User](
-            token_secret=TOKEN_SECRET,
-            retrieve_user_handler=retrieve_user_handler,
-            token_cls=CustomToken,
-        )
+            async def retrieve_user_handler(token: CustomToken, connection: ASGIConnection) -> User:
+                return User(id=token.sub)
 
 
-        @get("/")
-        def handler(request: Request[User, CustomToken, Any]) -> Dict[str, Any]:
-            return {"id": request.user.id, "token_flag": request.auth.token_flag}
-        ```
+            TOKEN_SECRET = secrets.token_hex()
+
+            jwt_auth = JWTAuth[User](
+                token_secret=TOKEN_SECRET,
+                retrieve_user_handler=retrieve_user_handler,
+                token_cls=CustomToken,
+            )
+
+
+            @get("/")
+            def handler(request: Request[User, CustomToken, Any]) -> Dict[str, Any]:
+                return {"id": request.user.id, "token_flag": request.auth.token_flag}
 
     .. change:: Support `extra="forbid"` model config for `PydanticDTO`
         :type: feature
         :pr: 3691
 
-        Set `forbid_unkown_fields=True` for `PydanticDTOs` where the Pydantic model has an [`extra="forbid"`](https://docs.pydantic.dev/latest/api/config/#pydantic.config.ConfigDict.extra) config.
+        Set `forbid_unknown_fields=True` for `PydanticDTOs` where the Pydantic model has an [`extra="forbid"`](https://docs.pydantic.dev/latest/api/config/#pydantic.config.ConfigDict.extra) config.
 
         <hr>
 
         - Add a new `get_config_for_model_type` method to `AbstractDTO`, that allows to customise the base config defined on the DTO factory for a specific model type
-        - Use `get_config_for_model_type` to set `forbid_unkown_fields=True` for Pydantic models that use the `extra="forbid" config
+        - Use `get_config_for_model_type` to set `forbid_unknown_fields=True` for Pydantic models that use the `extra="forbid"`` config
 
         <hr>
 
@@ -730,7 +718,7 @@
         - [x] Config to verify `nbf`
         - [x] Config for strict `aud` verification
         - [x] Config for required claims
-        - [x] Update ocumentation
+        - [x] Update documentation
 
         <hr>
 
@@ -891,49 +879,49 @@
 
         Add a new `websocket_stream` route handler that supports streaming data *to* a WebSocket via an async generator.
 
-        ```python
-        @websocket_stream("/")
-        async def handler() -> AsyncGenerator[str, None]:
-            yield str(time.time())
-            await asyncio.sleep(.1)
-        ```
+        .. code-block:: python
+
+            @websocket_stream("/")
+            async def handler() -> AsyncGenerator[str, None]:
+                yield str(time.time())
+                await asyncio.sleep(.1)
 
         This is roughly equivalent to (with some edge case handling omitted):
-        ```python
-        @websocket("/")
-        async def handler(socket: WebSocket) -> None:
-          await socket.accept()
+        .. code-block:: python
 
-          try:
-            async with anyio.task_group() as tg:
-              # 'receive' in the background to catch client disconnects
-              tg.start_soon(socket.receive)
+            @websocket("/")
+            async def handler(socket: WebSocket) -> None:
+            await socket.accept()
 
-              while True:
-                socket.send_text(str(time.time()))
-                await asyncio.sleep(.1)
-          finally:
-            await socket.close()
-        ```
+            try:
+                async with anyio.task_group() as tg:
+                # 'receive' in the background to catch client disconnects
+                tg.start_soon(socket.receive)
+
+                while True:
+                    socket.send_text(str(time.time()))
+                    await asyncio.sleep(.1)
+            finally:
+                await socket.close()
 
         Just like the WebSocket listeners, it also supports dependency injection and serialization:
 
-        ```python
-        @dataclass
-        class Event:
-            time: float
-            data: str
+        .. code-block:: python
+
+            @dataclass
+            class Event:
+                time: float
+                data: str
 
 
-        async def provide_client_info(socket: WebSocket) -> str:
-            return f"{socket.client.host}:{socket.client.port}"
+            async def provide_client_info(socket: WebSocket) -> str:
+                return f"{socket.client.host}:{socket.client.port}"
 
 
-        @websocket_stream("/", dependencies={"client_info": provide_client_info})
-        async def handler(client_info: str) -> AsyncGenerator[Event, None]:
-            yield Event(time=time.time(), data="hello, world!")
-            await asyncio.sleep(.1)
-        ```
+            @websocket_stream("/", dependencies={"client_info": provide_client_info})
+            async def handler(client_info: str) -> AsyncGenerator[Event, None]:
+                yield Event(time=time.time(), data="hello, world!")
+                await asyncio.sleep(.1)
 
     .. change:: add query params to redirect response
         :type: feature
