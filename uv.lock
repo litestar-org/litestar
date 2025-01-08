@@ -1938,8 +1938,8 @@ linting = [
 test = [
     { name = "covdefaults" },
     { name = "pytest" },
-    { name = "pytest-asyncio", version = "0.1.dev895+g761f742", source = { git = "https://github.com/provinzkraut/pytest-asyncio.git?rev=shutdown-asyncgens#761f742c2b7c50bc0a03b5f3528e2738b18e2ac8" }, marker = "python_full_version >= '3.13'" },
-    { name = "pytest-asyncio", version = "0.23.8", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.13'" },
+    { name = "pytest-asyncio", version = "0.24.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.9'" },
+    { name = "pytest-asyncio", version = "0.25.2", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.9'" },
     { name = "pytest-cov" },
     { name = "pytest-lazy-fixtures" },
     { name = "pytest-mock" },
@@ -2049,8 +2049,7 @@ linting = [
 test = [
     { name = "covdefaults" },
     { name = "pytest" },
-    { name = "pytest-asyncio", marker = "python_full_version < '3.13'" },
-    { name = "pytest-asyncio", marker = "python_full_version >= '3.13'", git = "https://github.com/provinzkraut/pytest-asyncio.git?rev=shutdown-asyncgens" },
+    { name = "pytest-asyncio" },
     { name = "pytest-cov" },
     { name = "pytest-lazy-fixtures" },
     { name = "pytest-mock" },
@@ -3316,32 +3315,36 @@ wheels = [
 
 [[package]]
 name = "pytest-asyncio"
-version = "0.1.dev895+g761f742"
-source = { git = "https://github.com/provinzkraut/pytest-asyncio.git?rev=shutdown-asyncgens#761f742c2b7c50bc0a03b5f3528e2738b18e2ac8" }
+version = "0.24.0"
+source = { registry = "https://pypi.org/simple" }
 resolution-markers = [
-    "python_full_version >= '3.13' and sys_platform != 'win32'",
-    "python_full_version >= '3.13' and sys_platform == 'win32'",
+    "python_full_version < '3.9' and sys_platform != 'win32'",
+    "python_full_version < '3.9' and sys_platform == 'win32'",
 ]
 dependencies = [
-    { name = "pytest", marker = "python_full_version >= '3.13'" },
+    { name = "pytest", marker = "python_full_version < '3.9'" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/52/6d/c6cf50ce320cf8611df7a1254d86233b3df7cc07f9b5f5cbcb82e08aa534/pytest_asyncio-0.24.0.tar.gz", hash = "sha256:d081d828e576d85f875399194281e92bf8a68d60d72d1a2faf2feddb6c46b276", size = 49855 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/96/31/6607dab48616902f76885dfcf62c08d929796fc3b2d2318faf9fd54dbed9/pytest_asyncio-0.24.0-py3-none-any.whl", hash = "sha256:a811296ed596b69bf0b6f3dc40f83bcaf341b155a269052d82efa2b25ac7037b", size = 18024 },
 ]
 
 [[package]]
 name = "pytest-asyncio"
-version = "0.23.8"
+version = "0.25.2"
 source = { registry = "https://pypi.org/simple" }
 resolution-markers = [
     "python_full_version >= '3.9' and python_full_version < '3.13' and sys_platform != 'win32'",
-    "python_full_version < '3.9' and sys_platform != 'win32'",
+    "python_full_version >= '3.13' and sys_platform != 'win32'",
     "python_full_version >= '3.9' and python_full_version < '3.13' and sys_platform == 'win32'",
-    "python_full_version < '3.9' and sys_platform == 'win32'",
+    "python_full_version >= '3.13' and sys_platform == 'win32'",
 ]
 dependencies = [
-    { name = "pytest", marker = "python_full_version < '3.13'" },
+    { name = "pytest", marker = "python_full_version >= '3.9'" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/de/b4/0b378b7bf26a8ae161c3890c0b48a91a04106c5713ce81b4b080ea2f4f18/pytest_asyncio-0.23.8.tar.gz", hash = "sha256:759b10b33a6dc61cce40a8bd5205e302978bbbcc00e279a8b61d9a6a3c82e4d3", size = 46920 }
+sdist = { url = "https://files.pythonhosted.org/packages/72/df/adcc0d60f1053d74717d21d58c0048479e9cab51464ce0d2965b086bd0e2/pytest_asyncio-0.25.2.tar.gz", hash = "sha256:3f8ef9a98f45948ea91a0ed3dc4268b5326c0e7bce73892acc654df4262ad45f", size = 53950 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/ee/82/62e2d63639ecb0fbe8a7ee59ef0bc69a4669ec50f6d3459f74ad4e4189a2/pytest_asyncio-0.23.8-py3-none-any.whl", hash = "sha256:50265d892689a5faefb84df80819d1ecef566eb3549cf915dfb33569359d1ce2", size = 17663 },
+    { url = "https://files.pythonhosted.org/packages/61/d8/defa05ae50dcd6019a95527200d3b3980043df5aa445d40cb0ef9f7f98ab/pytest_asyncio-0.25.2-py3-none-any.whl", hash = "sha256:0d0bb693f7b99da304a0634afc0a4b19e49d5e0de2d670f38dc4bfa5727c5075", size = 19400 },
 ]
 
 [[package]]
