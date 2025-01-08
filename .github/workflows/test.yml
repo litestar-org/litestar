@@ -49,13 +49,9 @@ jobs:
         if: startsWith(inputs.os, 'macos')
 
       # Windows Source
-      - name: Install libpq from vcpkg and install pg_config.exe stub
-        run: .\tools\build\wheel_win32_before_build.bat
+      - name: Install Build Dependencies
+        uses: ikalnytskyi/action-setup-postgres@v7
         if: startsWith(inputs.os, 'windows')
-        shell: powershell
-        env:
-          # cache vcpkg
-          VCPKG_BINARY_SOURCES: "clear;x-gha,readwrite"
 
       - name: Install uv
         uses: astral-sh/setup-uv@v5
