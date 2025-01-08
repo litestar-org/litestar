@@ -4,6 +4,986 @@
 =============
 
 
+.. changelog:: 2.14.0
+    :date: 2025-01-08
+
+    .. change:: add OPTIONS to the default safe methods for CSRFConfig
+        :type: bugfix
+        :pr: 3538
+
+       Correction to the default safe methods for CSRFConfig to include OPTIONS.
+
+    .. change:: fixed typo in routing overview
+        :type: bugfix
+        :pr: 3555
+        :issue: 3550
+
+        This PR fixes a typo in the routing overview section of the documentation.
+
+        ## Fixes
+        Fixes #3550
+
+    .. change:: capture templated route name for metrics
+        :type: bugfix
+        :pr: 3533
+
+        Adding new extraction function for prometheus metrics to avoid high cardinality issue in prometheus, eg having metrics GET /v1/users/{id} is preferable over GET /v1/users/1, GET /v1/users/2,GET /v1/users/3
+
+        More info about prometheus high cardinality
+        https://grafana.com/blog/2022/02/15/what-are-cardinality-spikes-and-why-do-they-matter/
+
+    .. change:: `.websocket_connect` does not respect `base_url`
+        :type: bugfix
+        :pr: 3567
+
+        Fix a bug that caused the `.websocket_connect` methods on `TestClient` and `AsyncTestClient` to not respect the `base_url` set in the client's constructor, and instead would use the static `ws://testserver` URL as a base.
+
+        Also removes most of the test client code as it was unneeded and in the way of this fix :)
+
+        <hr>
+
+        Explanation for the last part: All the extra code we had was just proxying method calls to the `httpx.Client` / `httpx.AsyncClient`, while altering the base URL. Since we already set the base URL on the httpx Client's superclass instance, which in turn does this merging internally, this step isn't needed at all.
+
+    .. change:: Do not warn for default handlers
+        :type: bugfix
+        :pr: 3569
+        :issue: 3552
+
+        The warning being applied to the default handlers was unintended behavior due to subclassing. This PR establishes the intended behavior by defining separate __init_subclass__ methods for the default handlers.
+
+        Closes #3552
+
+    .. change:: Don't call `rich_click.patch` if `rich_click` is installed
+        :type: bugfix
+        :pr: 3570
+        :issue: 3534
+
+        Fix #3534.
+
+        Don't call `rich_click.patch` if `rich_click` is installed, and instead use conditional imports to refer to the correct library. External libraries will still be able to make use of `rich_click` implicitly when it's installed by inheriting from `LitestarGroup` / `LitestarExtensionGroup`, which they will by default.
+
+
+    .. change:: Correctly handle `typing.NewType`
+        :type: bugfix
+        :pr: 3580
+
+        When encountering a `typing.NewType` during OpenAPI schema generation, we currently treat it as an opaque type. This PR changes the behaviour such that `typing.NewType`` is always unwrapped during schema generation.
+
+    .. change:: encode response content object returned from an exception handler.
+        :type: bugfix
+        :pr: 3585
+
+        When an handler raises an exception and exception handler returns a Response with a model (e.g. pydantic) object, encode that object with the app type_encoders.
+
+    .. change:: Fix #3593: Ensure signature model internal function signatures don't clash with model signature
+        :type: bugfix
+        :pr: 3605
+        :issue: 3593
+
+        Fix #3593 by ensuring that the functions used by the signature model itself do not interfere with the signature model created.
+
+    .. change:: Correctly handle Annotated NewType
+        :type: bugfix
+        :pr: 3615
+        :issue: 3614
+
+        Resolves infinite loop in schema generation when a model has an Annotated NewType.
+
+        Fixes #3614
+
+    .. change:: use `ASGIConnection` instead of `Request` for `flash`
+        :type: bugfix
+        :pr: 3626
+
+        Currently, the `FlashPlugin` expects the `request` parameter to be a type of `Request`.  However, there's no reason it can't use the parent class `ASGIConnection`.
+
+        Doing this, allows for flash to be called in guards that expect an `ASGIConnection` instead of `Request`:
+
+        .. code-block:: python
+
+            def requires_active_user(connection: ASGIConnection, _: BaseRouteHandler) -> None:
+                if connection.user.is_active:
+                    return
+                msg = "Your user account is inactive."
+                flash(connection, msg, category="error")
+                raise PermissionDeniedException(msg)
+
+    .. change:: Allow returning `Response[None]` from head route handlers
+        :type: bugfix
+        :pr: 3641
+        :issue: 3640
+
+        Fix a bug where the validation of the return annotation for the `head` route handler was too strict and would not allow returning a `Response[None]`.
+
+        Fixes #3640.
+
+    .. change:: Fix creation of FormMultiDict in Request.form to properly handle multi-keys
+        :type: bugfix
+        :pr: 3639
+        :issue: 3627
+
+        Fix #3627 by properly handling the creation of `FormMultiDict` where multiple values are given for a single key, to make `Request.form()` match the behaviour of receiving form data via the `data` kwarg.
+
+        **Before**
+
+        .. code-block:: python
+
+            @post("/")
+            async def handler(request: Request) -> Any:
+                return (await request.form()).getall("foo")
+
+            with create_test_client(handler) as client:
+                print(client.post("/", data={"foo": ["1", "2"]}).json()) # [["1", "2"]]
+
+        **After**
+
+        .. code-block:: python
+
+            @post("/")
+            async def handler(request: Request) -> Any:
+                return (await request.form()).getall("foo")
+
+            with create_test_client(handler) as client:
+                print(client.post("/", data={"foo": ["1", "2"]}).json()) # ["1", "2"]
+
+    .. change:: Small docs update.
+        :type: bugfix
+        :pr: 3661
+
+        Starting from version 2, Pydantic uses `model_validate()` instead of `parse_obj()`.
+        https://docs.pydantic.dev/2.8/migration/#changes-to-pydanticbasemodel
+
+        I have updated 2 places in the docs where the old deprecated method is used.
+
+    .. change:: Inconsistent use of strict mode
+        :type: bugfix
+        :pr: 3685
+
+        Fix inconsistent usage of msgspec's `strict` mode in the base DTO backend.
+
+        `strict=False` was being used when transferring from builtins, while `strict=True` was used transferring from raw data, causing an unwanted discrepancy in behaviour,
+
+    .. change:: use path template for prometheus metrics
+        :type: bugfix
+        :pr: 3687
+
+        I changed previous 1-by-1 replacement logic for `PrometheusMiddleware.group_path=true` with a more robust and slightly faster solution
+
+    .. change:: OpenTelemetry doesn't capture exceptions in the outermost application layer
+        :type: bugfix
+        :pr: 3689
+        :issue: 3663
+
+        Extend the work done in #3665. For description / discussion, check over there.
+
+        Fixes #3663.
+
+    .. change:: updated sqlalchemy samples & unpin `advanced-alchemy`
+        :type: bugfix
+        :pr: 3693
+
+        This does this following:
+        - Uses `litestar.plugins.sqlalchemy` instead of the soon-to-be-deprecated `litestar.contrib.sqlalchemy`
+        - Unpin Advanced Alchemy
+        - Updated examples to use the plugins `create_all` functionality
+
+    .. change:: correct ``module_to_os_path`` to return directory paths
+        :type: bugfix
+        :pr: 3565
+
+        To resolve the issue, we need to update the `module_to_os_path` function to check if the found path is a file. If it is, we should return the parent directory instead. This can be done by using `Path(src.origin).parent` if `src.origin` is a file.
+
+    .. change:: csrf middleware excluding router
+        :type: bugfix
+        :pr: 3698
+        :issue: 3688
+
+        csrf middleware should skip router entirely on match exclude config
+
+        Fixes #3688
+
+    .. change:: inconsistent behavior between `signature_namespace` and `signature_types`
+        :type: bugfix
+        :pr: 3696
+        :issue: 3681
+
+        Fix a bug where the `signature_namespace` and `signature_types` would not be correctly merged when using both in the same signature model.
+
+        Fixes #3681
+
+
+    .. change:: Response with 401 on token payload validation
+        :type: bugfix
+        :pr: 3705
+
+        Fix a bug introduced in #3692 that would cause a `500` status response to be returned when `ValidationError` was raised during the token payload conversion.
+
+        This was caused by the switch to `msgspec` for converting the token payload after decoding and verification, and the lack of error handling for this case.
+
+    .. change:: the exclude pattern matching warned too much
+        :type: bugfix
+        :pr: 3712
+
+        Includes updated tests using the exclusion of `^/$`
+
+    .. change:: Correctly handle `type` keyword
+        :type: bugfix
+        :pr: 3715
+        :issue: 3714
+
+        Correctly handle OpenAPI schema generation for type aliases generated with the `type` keyword.
+
+        Fixes #3714.
+
+    .. change:: Fix dangling coroutines in request extraction handling cleanup
+        :type: bugfix
+        :pr: 3735
+        :issue: 3734
+
+        Fix #3734.
+
+        Ensure all data extractors are properly awaited by removing the delayed `await`
+
+    .. change:: `httponly` correction in CSRFMiddleware
+        :type: bugfix
+        :pr: 3739
+
+        When `httponly` is `True`, it's impossible to set the header.  This fix allows this configuration to correctly validate.
+
+    .. change:: handle invalid schema keys
+        :type: bugfix
+        :pr: 3635
+        :issue: 3630
+
+        ## Description
+        This PR changes OpenAPI schema key generation function [`_get_normalized_schema_key`](https://github.com/litestar-org/litestar/blob/8c4c15bb501879dabaecfbf0af541ac571c08cf3/litestar/_openapi/schema_generation/utils.py#L86) to use valid characters according to the [OpenAPI specification](https://spec.openapis.org/oas/latest.html#fixed-fields-5), section `4.8.7.1`.
+
+        The strategy adopted by this PR was to replace sequences of invalid characters with underscores. Examples:
+        - `Foo[Bar]` -> `Foo_Bar`
+        - `dict[str, int]` -> `dict_str_int_`
+
+        Some tests had to be changed, because they were expecting the use of invalid characters (like square brackets, spaces and colons).
+
+        ## Closes
+        Closes #3630
+
+    .. change:: Correctly handle `msgspec.Struct` tagged unions
+        :type: bugfix
+        :pr: 3742
+        :issue: 3659
+
+        Fix a bug where we would not include the struct fields implicitly generated by msgspec for its [tagged union](https://jcristharif.com/msgspec/structs.html#tagged-unions) support.
+
+        The change consists of an addition to the OpenAPI plugin where the tagged field will be added as a `const` to the schema.
+
+        Fixes #3659.
+
+    .. change:: `httponly` correction in CSRFMiddleware
+        :type: bugfix
+        :pr: 3743
+
+        Reverts litestar-org/litestar#3739
+
+        This is an incorrect usage of the protocol.  The correct approach is to embed the csrf token within the form or template itself, so that it can be attached to the header.
+
+    .. change:: Don't require annotated_types
+        :type: bugfix
+        :pr: 3750
+        :issue: 3749
+
+        Fix a bug introduced in #3721 that was released with [2.12.0](https://github.com/litestar-org/litestar/releases/tag/v2.12.0) and would cause an `ImportError` when the `annotated_types` package was not installed.
+
+        Fixes #3749
+
+    .. change:: (typo) changed emphasis from line 12 to 11 to highlight the correct plugin being added in tutorial
+        :type: bugfix
+        :pr: 3768
+
+        Tiny fix in line numbers to emphasis SQLAlchemyInitPlugin and not SQLAlchemySerializationPlugin is being added in this section of the tutorial.
+
+        SQLAlchemySerializationPlugin is currently being highlighted which was the plugin shown in the previous section and is not being added here.
+
+    .. change:: sign bug in rate limit middleware
+        :type: bugfix
+        :pr: 3776
+
+        When using the rate limit middleware, the response header fields `RateLimit-Remaining` and `RateLimit-Reset` have negative values. This branch fixes the issue.
+
+        This might be a breaking change for consumers of an API implemented with litestar.
+
+        I split the PR into four commits which might make it easier to review this PR.
+
+        Side note: Initially my commits didn't follow the conventional commits guidelines, but pre-commit didn't complain. See point 6 in https://github.com/litestar-org/litestar/blob/main/CONTRIBUTING.rst#workflow
+        Is this a bug in the pre-commit setup?
+
+
+    .. change:: map JSONSchema spec naming convention to snake_case when names from schema_extra are not found (#3766)
+        :type: bugfix
+        :pr: 3767
+        :issue: 3766
+
+        Map JSONSchema spec naming convention to snake_case when names from schema_extra are not found when property names from schema_extra are not found.
+
+        ## Description
+
+        Address rejection of `schema_extra` values using JSONSchema spec-compliant key names by mapping between the relevant naming conventions.
+
+        Fixes #3766
+
+    .. change:: typo in a deprecation warning in `contrib/sqlalchemy/plugins/serialization.py`
+        :type: bugfix
+        :pr: 3809
+
+        Typo correction.
+
+
+    .. change:: fix path template for routes without path parameters
+        :type: bugfix
+        :pr: 3784
+
+        When `PrometheusConfig.group_path=True` the metrics exporter response content ignores all paths with no path parameters.
+
+        - Example for path `/test/litestar` when `group_path=True`
+
+            > litestar_request_duration_seconds_bucket{app_name="litestar",le="0.075",method="GET",path="",status_code="200"} 1.0
+
+        - Example for path `/test/litestar` when `group_path=False`
+
+            > litestar_request_duration_seconds_bucket{app_name="litestar",le="2.5",method="GET",path="/test/litestar",status_code="200"} 1.0
+
+        So, when the path has no params return the actual path as template so Prometheus can use it when `group_path=True`.
+
+    .. change:: LifespanHandler memory stream cleanup
+        :type: bugfix
+        :pr: 3836
+        :issue: 3834
+
+        Fix a dangling anyio stream in `LifespanHandler`.
+
+        Closes #3834.
+
+    .. change:: set correct path_template value for trie node (#3806)
+        :type: bugfix
+        :pr: 3807
+        :issue: 3806
+
+        Closes #3806
+
+    .. change:: Safe Handling of "more_body" in ASGI Responses
+        :type: bugfix
+        :pr: 3845
+
+
+        ## Safe Access to "More Body"
+
+        I've encountered an issue in sqladmin-litestar-plugin where some ASGI frameworks (such as Starlette) do not include "more_body": false in the "http.response.body" event. According to the ASGI specification, this key should be set to False when there is no additional body content. Litestar expects "more_body" to be explicitly defined, but others might not.
+
+        This leads to failures when an ASGI framework mounted on Litestar throws error for the "more_body" key in "http.response.body".
+
+        I have changed it to `message.get('more_body')` as @cofin suggests.
+
+    .. change:: Duplicate `RateLimit-*` headers with caching
+        :type: bugfix
+        :pr: 3855
+        :issue: 3625
+
+        Fixes https://github.com/litestar-org/litestar/issues/3625
+
+        `RateLimitMiddleware` duplicate all `RateLimit-*` headers when handler cache is enabled because it's adding new rate limit headers to the new ones, instead of just updating their values.
+
+        ### Response header before
+        .. code-block:: sh
+
+            ❯ curl -i http://localhost:8000/
+            HTTP/1.1 200 OK
+            date: Tue, 12 Nov 2024 06:50:18 GMT
+            server: uvicorn
+            content-type: text/plain; charset=utf-8
+            content-length: 2
+            ratelimit-policy: 10; w=60
+            ratelimit-limit: 10
+            ratelimit-remaining: -8
+            ratelimit-reset: -54
+            ratelimit-policy: 10; w=60
+            ratelimit-limit: 10
+            ratelimit-remaining: 0
+            ratelimit-reset: -49
+
+        ### Response headers after
+        .. code-block:: sh
+
+            ❯ curl -i http://localhost:8000/
+            HTTP/1.1 200 OK
+            date: Tue, 12 Nov 2024 06:50:18 GMT
+            server: uvicorn
+            content-type: text/plain; charset=utf-8
+            content-length: 2
+            ratelimit-policy: 10; w=60
+            ratelimit-limit: 10
+            ratelimit-remaining: 0
+            ratelimit-reset: -49
+
+    .. change:: Fix typing in websocket listener class
+        :type: bugfix
+        :pr: 3765
+        :issue: 3763
+
+        Fixes #3763
+
+        It seems that declaring the actual method is the only way to comply with `mypy` in such cases.
+        There is a `ruff` rule that forbids empty methods in abstract classes, had to disable that for the relevant module.
+
+    .. change:: remove optional group for `litestar-htmx`
+        :type: bugfix
+        :pr: 3870
+
+        This PR removes the optional `htmx` group for the project dependencies.  HTMX is a built in feature and is not optional.
+
+    .. change:: Add moved URL types to type map
+        :type: bugfix
+        :pr: 3874
+
+        Pydantic `>=2.10` breaks because of the way we reference some types in our OpenAPI type map. This can be fixed by including the proper references. This fix is backwards compatible :)
+
+    .. change:: patching of otel middleware to work with subclasses
+        :type: bugfix
+        :pr: 3876
+
+        This should allow workarounds like OpenTelemetrySingletonMiddleware from https://github.com/litestar-org/litestar/issues/3056
+        to work with the patching applied in https://github.com/litestar-org/litestar/pull/3689
+
+    .. change:: Pin PDM version for 3.8
+        :type: bugfix
+        :pr: 3878
+
+        - [PDM dropped support for 3.8](https://github.com/pdm-project/pdm/pull/3298) in their [latest release](https://github.com/pdm-project/pdm/releases/tag/2.21.0)
+        - Pinning 3.8 actions to the latest PDM version that supports it (2.20.1)
+
+
+        Ref: [`ERROR: Ignored the following versions that require a different python version: 2.21.0 Requires-Python >=3.9`](https://github.com/litestar-org/litestar/actions/runs/12017810790/job/33553416399?pr=3525)
+
+    .. change:: update Makefile
+        :type: bugfix
+        :pr: 3880
+
+        Various updates to the Makefile:
+
+    .. change:: Replace PDM with UV
+        :type: bugfix
+        :pr: 3879
+
+        ~~Obviously next is Poetry 2 (@Kumzy )~~
+
+    .. change:: resource warnings
+        :type: bugfix
+        :pr: 3838
+        :issue: 3835
+
+
+        ## Description
+
+        - Fix `ResourceWarning` from unclosed `UploadFile` instances
+        - Fix `ResourceWarning` in `run_server` fixture
+        - Report all warnings as errors unless explicitly silenced
+
+        Closes #3835
+
+    .. change:: Enum OAS generation (#3518)
+        :type: bugfix
+        :pr: 3525
+        :issue: 3518
+
+        Changes described here #3518
+
+        Closes #3518
+
+    .. change:: typo in exception message for ImproperlyConfiguredException
+        :type: bugfix
+        :pr: 3885
+
+        Corrected the exception message from "Provider dependency must a callable value" to "Provider dependency must be a callable value". This ensures clarity and proper grammar in error messages.
+
+    .. change:: Support varying `mtime` semantics across different fsspec implementations
+        :type: bugfix
+        :pr: 3902
+        :issue: 3899
+
+        Change the implementation of `responses.File` to be able to handle most fsspec implementation's `mtime` equivalent.
+
+        This is necessary because fsspec implementations do not have a standardised way to retrieve an `mtime` equivalent; Some report an `mtime`, while some may use a different key (e.g. `Last-Modified`) and others do not report this value at all.
+
+
+        Fixes #3899
+
+    .. change:: Query-only properties included in path, cookie and header parameter schema and response headers (#3908)
+        :type: bugfix
+        :pr: 3909
+        :issue: 3908
+
+        Remove the inclusion of the query-only properties `allowEmptyValue` and `allowReserved` in path, cookie, header parameter and response header schemas.
+
+        Fixes #3908
+
+    .. change:: updates to documentation based on upstream changes
+        :type: bugfix
+        :pr: 3917
+
+        This PR updates the SQLAlchemy examples and documentation to align with current AA best practices.
+
+    .. change:: better handle unsupported environments
+        :type: bugfix
+        :pr: 3918
+
+        Picologging does not currently support Python 3.13.  This change proactively adds updates to ensure tests work when picologging is not supported in the python environment.
+
+    .. change:: use `SQL` function for `psycopg`
+        :type: bugfix
+        :pr: 3916
+
+        This PR updates the channels backend to use the native psycopg `SQL` API.
+
+        Additionally, it preemptively fixes some new warnings from upcoming pyright and ruff changes
+
+    .. change:: Fix resource handling
+        :type: bugfix
+        :pr: 3927
+
+        Fix a few cases where we didn't close resources in the right order, leading to either "unclosed resource" or "I/O on closed file" warnings
+
+    .. change:: only install dev tools in ubuntu
+        :type: bugfix
+        :pr: 3931
+
+        Only install dev tools in ubuntu.  This corrects an issues that caused the install to fail in other environments.
+
+    .. change:: allow creating parent directories for a file store
+        :type: feature
+        :pr: 3526
+
+        Allow mkdir True when creating a file store.
+
+        Use case is rather small - initially deploying an application with FileStores used.
+
+
+    .. change:: add param `logging_module` to `LoggingConfig`
+        :type: feature
+        :pr: 3578
+        :issue: 3536
+
+        `logging_module` provides a way to switch easily from `logging` to `picologging`.
+
+        Closes #3536
+
+    .. change:: add handler name to exceptions in handler validation.
+        :type: feature
+        :pr: 3575
+        :issue: 3548
+
+        Add handler name to exceptions raise by _validate_handler_function.
+
+        Closes #3548
+
+    .. change:: added parameters in pydantic plugin to support strict validation and all the `model_dump` args
+        :type: feature
+        :pr: 3608
+        :issue: 3572
+
+        Combines the following stale PRs:
+
+        - #3573
+        - #3327
+
+        Closes #3572 and #3147
+
+        Context: https://github.com/litestar-org/litestar/pull/3327#issuecomment-2171148195
+
+    .. change:: switched abandoned python-jose to pyjwt
+        :type: feature
+        :pr: 3684
+
+        This PR replaces the abandoned/obsolete python package:  python-jose.
+        This package has not been maintained since 2021.
+
+        looking at several issues on that project there are a couple CVE's im not comfortable with.
+        I went looking for a "drop-in" replacement and found pyjwt.  (project last updated 3 weeks ago).
+
+        This pull requests addresses that problem.
+
+        hope you agree with this.
+
+        kind regards.
+
+    .. change:: introduce `forbid_unknown_fields` config
+        :type: feature
+        :pr: 3690
+
+        Add a new config option to `DTOConfig`: `forbid_unknown_fields`.
+        When set to `True`, a validation error response will be returned if the source data contains fields not defined on the model.
+
+    .. change:: Custom JWT payload classes
+        :type: feature
+        :pr: 3692
+
+        Support customizing the `Token` class the JWT backends decode the payload into.
+
+        - Add new `token_cls` field on the JWT auth config classes
+        - Add new `token_cls` parameter to JWT auth middlewares
+        - Switch to using msgspec to convert the JWT payload into tokens, providing type coercion for custom token types without having to override the `Token.decode` method
+
+        ## Example:
+
+        .. code-block:: python
+
+            import dataclasses
+            import secrets
+            from typing import Any, Dict
+
+            from litestar import Litestar, Request, get
+            from litestar.connection import ASGIConnection
+            from litestar.security.jwt import JWTAuth, Token
+
+
+            @dataclasses.dataclass
+            class CustomToken(Token):
+                token_flag: bool = False
+
+
+            @dataclasses.dataclass
+            class User:
+                id: str
+
+
+            async def retrieve_user_handler(token: CustomToken, connection: ASGIConnection) -> User:
+                return User(id=token.sub)
+
+
+            TOKEN_SECRET = secrets.token_hex()
+
+            jwt_auth = JWTAuth[User](
+                token_secret=TOKEN_SECRET,
+                retrieve_user_handler=retrieve_user_handler,
+                token_cls=CustomToken,
+            )
+
+
+            @get("/")
+            def handler(request: Request[User, CustomToken, Any]) -> Dict[str, Any]:
+                return {"id": request.user.id, "token_flag": request.auth.token_flag}
+
+    .. change:: Support `extra="forbid"` model config for `PydanticDTO`
+        :type: feature
+        :pr: 3691
+
+        Set `forbid_unknown_fields=True` for `PydanticDTOs` where the Pydantic model has an [`extra="forbid"`](https://docs.pydantic.dev/latest/api/config/#pydantic.config.ConfigDict.extra) config.
+
+        <hr>
+
+        - Add a new `get_config_for_model_type` method to `AbstractDTO`, that allows to customise the base config defined on the DTO factory for a specific model type
+        - Use `get_config_for_model_type` to set `forbid_unknown_fields=True` for Pydantic models that use the `extra="forbid"`` config
+
+        <hr>
+
+        Depends on #3690. Don't merge before that one :)
+
+    .. change:: Warn about greedy exclude patterns
+        :type: feature
+        :pr: 3700
+
+        Raise a warning when a middlewares `exclude` pattern greedily matches all paths.
+
+        Also document this footgun more prominently.
+
+    .. change:: problem details plugin
+        :type: feature
+        :pr: 3323
+        :issue: 3199
+
+        A plugin to enable usage of problem details as the response.
+
+        The way this works is by injecting an exception handler into the app level exception handlers to convert `ProblemDetailsException` into a response following the specification as per RFC 9457.
+
+        Users can pass in a mapping of exception types to callables that will convert those exception types into `ProblemDetailsException` for handling specific exceptions such as pydantic's `ValidationError`. That converted `ProblemDetailsException` will then be used to create the response. This should allow for flexibility when needed.
+
+        Closes #3199.
+
+    .. change:: Customised token verification
+        :type: feature
+        :pr: 3695
+
+        Customise the automatic verification of JWTs.
+
+        - [x] Config to verify `aud`
+        - [x] Config to verify `iss`
+        - [x] Config to verify `iat`
+        - [x] Config to verify `nbf`
+        - [x] Config for strict `aud` verification
+        - [x] Config for required claims
+        - [x] Update documentation
+
+        <hr>
+
+        **JWT backend changes**
+
+        - Add `accepted_audiences` field
+        - Add `accepted_issuers` field
+        - Add `require_claims` field
+        - Add `verify_expiry` field
+        - Add `verify_not_before` field
+        - Add `strict_audience` field
+
+        **JWT middleware changes**
+
+        - Add token_audience` parameter
+        - Add `token_issuer` parameter
+        - Add `require_claims` parameter
+        - Add `verify_expiry` parameter
+        - Add `verify_not_before` parameter
+        - Add `strict_audience` parameter
+
+        **Token changes**
+
+        - Add `audience` parameter to `Token.decode`
+        - Add `issuer` parameter to `Token.decode`
+        - Add `require_claims` parameter to `Token.decode`
+        - Add `verify_exp` parameter to `Token.decode`
+        - Add `verify_nbf` parameter to `Token.decode`
+        - Add `strict_audience` parameter to `Token.decode`
+        - Add `decode_payload` method
+
+    .. change:: Support strings in `media_type` for `ResponseSpec`
+        :type: feature
+        :pr: 3729
+        :issue: 3728
+
+        Accept string for the `media_type` parameter of `ResponseSpec`, making it behave the same way as `Response.media_type` does.
+
+        Closes #3728.
+
+    .. change:: Allow customizing schema component keys
+        :type: feature
+        :pr: 3738
+
+        Allow customizing the schema key used for a component in the OpenAPI schema. The motivation is to give the user an escape hatch when we inevitably generate some less than pretty looking names for deeply nested types for the sake of uniqueness.
+
+        These supplied key are enforced to be unique, and it is checked that they won't be reused across different types.
+
+        <hr>
+
+        - Add a new `schema_component_key` to `KwargDefinition` and the `Body` and `Parameter` functions
+        - Add a friendly error message when keys are not unique / reused across different types
+
+    .. change:: Raise exception when body parameter is annotated with non-bytes type
+        :type: feature
+        :pr: 3740
+
+        Add an informative error message to help users avoid the common mistake of attempting to use the `body` parameter to receive validated / structured data, by annotating it with a type such as `list[str]`, instead of `bytes`. In such a case, the user will now be instructed to use the `data` parameter instead.
+
+    .. change:: bump `scalar` OpenAPI Plugin to `latest` release
+        :type: feature
+        :pr: 3747
+
+        Use `latest` as the version for the `scalar` OpenAPI plugin.
+
+    .. change:: OpenAPI plugins send CSRF request header
+        :type: feature
+        :pr: 3754
+
+        Supported OpenAPI UI clients will extract the CSRF cookie value and attach it to the request headers if CSRF is enabled on the application.
+
+        - [x] Swagger
+        - [x] RapiDoc
+        - [ ] Scalar
+        - [ ] Redoc
+        - [ ] Stoplight Elements
+
+        Scalar (https://github.com/scalar/scalar/discussions/2810), Redoc and (Stoplight) Elements does not seem to support interceptors or some other mechanism to achieve this.
+
+        Currently it also sends the header on "safe" methods but for both currently supported UI clients (Swagger and RapiDoc) it's possible to limit this to "unsafe" methods only, if required.
+
+    .. change:: deprecate `litestar.contrib.sqlalchemy`
+        :type: feature
+        :pr: 3755
+
+        This PR deprecates the `litestar.contrib.sqlalchemy` module in favor of `litestar.plugins.sqlalchemy`
+
+    .. change:: implement `HTMX` plugin using `litestar-htmx`
+        :type: feature
+        :pr: 3837
+
+        This plugin migrates the HTMX integration to `litestar.plugins.htmx`.
+
+        This logic has been moved to it's own repository named `litestar-htmx`
+
+        This is in preparation for 3.0 release where `contrib` will be deprecated.
+
+    .. change:: honor hide_input_in_errors in throwing validation exceptions
+        :type: feature
+        :pr: 3843
+
+        ## Description
+
+        Pydantic's `BaseModel` supports configuration to hide data values when throwing exceptions, via setting `hide_input_in_errors` -- see https://docs.pydantic.dev/2.0/api/config/#pydantic.config.ConfigDict.hide_input_in_errors and https://docs.pydantic.dev/latest/usage/model_config/#hide-input-in-errors (the value is also in 2.0, but not linkable in the non-`latest` version of the documentation build).
+
+        At present, Litestar does not honor this configuration when generating exceptions for validation errors, which can lead to sensitive data leaking into logs.
+
+    .. change:: deprecate `litestar.contrib.pydantic`
+        :type: feature
+        :pr: 3852
+        :issue: 3787
+
+        This PR continues preparation for 3.0 by deprecating `litestar.contrib.pydantic` in favor of `litestar.plugins.pydantic`
+
+    .. change:: move `litestar.contrib.prometheus` to `litestar.plugins.prometheus`
+        :type: feature
+        :pr: 3863
+
+        deprecate `litestar.contrib.prometheus` in favor of the new location of `litestar.plugins.prometheus`
+
+
+    .. change:: move `litestar.contrib.attrs` to `litestar.plugins.attrs`
+        :type: feature
+        :pr: 3862
+
+        deprecate `litestar.contrib.attrs` in favor of the new location of `litestar.plugins.attrs`
+
+
+    .. change:: add `future` flag to `experimental_features`
+        :type: feature
+        :pr: 3864
+
+        This adds a `future` flag to `experimental_features` to enable new features that may be otherwise considered breaking.
+
+
+    .. change:: Streaming multipart parser
+        :type: feature
+        :pr: 3872
+
+        Add a streaming multipart parser via the [multipart](https://github.com/defnull/multipart) lib.
+
+        This gives us:
+
+        - Ability to stream large / larger-than-memory file uploads
+        - Better / more correct edge case handling
+        - Still good performance
+
+    .. change:: upgrade minimum `litestar-htmx` version
+        :type: feature
+        :pr: 3884
+        :issue: 3868
+
+        Pin minimum `litestar-htmx` version to align with latest exports.
+
+    .. change:: WebSocket send stream
+        :type: feature
+        :pr: 3894
+
+        Add a new `websocket_stream` route handler that supports streaming data *to* a WebSocket via an async generator.
+
+        .. code-block:: python
+
+            @websocket_stream("/")
+            async def handler() -> AsyncGenerator[str, None]:
+                yield str(time.time())
+                await asyncio.sleep(.1)
+
+        This is roughly equivalent to (with some edge case handling omitted):
+        .. code-block:: python
+
+            @websocket("/")
+            async def handler(socket: WebSocket) -> None:
+            await socket.accept()
+
+            try:
+                async with anyio.task_group() as tg:
+                # 'receive' in the background to catch client disconnects
+                tg.start_soon(socket.receive)
+
+                while True:
+                    socket.send_text(str(time.time()))
+                    await asyncio.sleep(.1)
+            finally:
+                await socket.close()
+
+        Just like the WebSocket listeners, it also supports dependency injection and serialization:
+
+        .. code-block:: python
+
+            @dataclass
+            class Event:
+                time: float
+                data: str
+
+
+            async def provide_client_info(socket: WebSocket) -> str:
+                return f"{socket.client.host}:{socket.client.port}"
+
+
+            @websocket_stream("/", dependencies={"client_info": provide_client_info})
+            async def handler(client_info: str) -> AsyncGenerator[Event, None]:
+                yield Event(time=time.time(), data="hello, world!")
+                await asyncio.sleep(.1)
+
+    .. change:: add query params to redirect response
+        :type: feature
+        :pr: 3901
+        :issue: 3891
+
+        Closes https://github.com/litestar-org/litestar/issues/3891.
+
+    .. change:: add Valkey as a native store
+        :type: feature
+        :pr: 3892
+
+        Adds Valkey as a native store alternative to Redis.
+        Adds an optional Litestar install dependency: `litestar[valkey]` which installs `valkey` with `libvalkey` as an optimisation layer.
+
+
+    .. change:: use "path" as an error message source
+        :type: feature
+        :pr: 3920
+        :issue: 3919
+
+        Use "path" as the "source" property for an error message if the key is a path parameter
+
+        Closes #3919
+
+    .. change:: added subprocess test client
+        :type: feature
+        :pr: 3655
+        :issue: 3654
+
+        This introduces new helper functions to create sync and async test clients that can be used to test SSE endpoints with infinite generators as outlined in #3654 and https://github.com/orgs/litestar-org/discussions/3547.
+
+        The litestar cli is run in a subprocess to start a web app instance with a random port. The helper function then sets up a basic sync or async client.
+
+        The test code and doc example show how this can be used to test an SSE endpoint with an infinite generator.
+
+        Overview:
+        * Adds `subprocess_async_client` and `subprocess_sync_client`
+        * Tests both clients
+        * Adds general documentation. Adds docs example for `subprocess_async_client`
+
+        Closes #3654
+
+    .. change:: add support for Python 3.13
+        :type: feature
+        :pr: 3850
+
+        This PR implements support for Python 3.13.
+
+        **Note**
+        - Python 3.8 continues to be supported with the existing `msgspec` implementation, while all other versions prefer the pre-built litestar wheels.
+        - There are no Python 3.13 prebuilt wheels for `psycopg[binary]`.  If you rely on this for development, you'll need to have the postgres development libraries installed
+        - `picologging` does not currently support Python 3.13.  These tests are skipped automatically.
+        - uses an updated `pytest-asyncio`.  Once the branch has been merged upstream, we can remove this test dependency.
+        - Running `make install` will still install using Python 3.12.  This is done to ensure we don't get additional bug reports due to build dependencies missing.  If you want to use python 3.13, run `uv sync --all-extras --dev --python 3.13`
+
+    .. change:: implement `psycopg` client installation for macos and windows
+        :type: feature
+        :pr: 3932
+
+        this CI implements the necessary steps for installing psycopg in osx and windows environments.
+
 .. changelog:: 2.13.0
     :date: 2024-11-20
 

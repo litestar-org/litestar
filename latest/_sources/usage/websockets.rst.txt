@@ -1,20 +1,31 @@
 WebSockets
 ==========
 
+There are three ways to handle WebSockets in Litestar:
 
-Handling WebSockets in an application often involves dealing with low level constructs
-such as the socket itself, setting up a loop and listening for incoming data, handling
-exceptions, and parsing incoming and serializing outgoing data. In addition to the
-low-level :class:`WebSocket route handler <.handlers.websocket>`, Litestar offers two
-high level interfaces:
+1. The low-level :class:`~litestar.handlers.websocket` route handler, providing basic
+   abstractions over the ASGI WebSocket interface
+2. :class:`~litestar.handlers.websocket_listener` and :class:`~litestar.handlers.WebsocketListener`\  :
+   Reactive, event-driven WebSockets with full serialization and DTO support and support
+   for a synchronous interface
+3. :class:`~litestar.handlers.websocket_stream` and :func:`~litestar.handlers.send_websocket_stream`\ :
+   Proactive, stream oriented WebSockets with full serialization and DTO support
 
-- :class:`websocket_listener <.handlers.websocket_listener>`
-- :class:`WebSocketListener <.handlers.WebsocketListener>`
+
+The main difference between the low and high level interfaces is that, dealing with low
+level interface requires, setting up a loop and listening for incoming data, handling
+exceptions, client disconnects, and parsing incoming and serializing outgoing data.
 
 
-These treat a WebSocket handler like any other route handler: as a callable that takes
-in incoming data in an already pre-processed form and returns data to be serialized and
-sent over the connection. The low level details will be handled behind the curtains.
+
+WebSocket Listeners
+--------------------
+
+WebSocket Listeners can be used to interact with a WebSocket in an event-driven manner,
+using a callback style interface. They treat a WebSocket handler like any other route
+handler: A callable that takes in incoming data in an already pre-processed form and
+returns data to be serialized and sent over the connection. The low level details will
+be handled behind the curtains.
 
 
 .. code-block:: python
@@ -44,7 +55,7 @@ type of data which should be received, and it will be converted accordingly.
 
 
 Receiving data
---------------
+++++++++++++++
 
 Data can be received in the listener via the ``data`` parameter. The data passed to this
 will be converted / parsed according to the given type annotation and supports
@@ -78,7 +89,7 @@ form of JSON.
 
 
 Sending data
-------------
++++++++++++++
 
 Sending data is done by simply returning the value to be sent from the handler function.
 Similar to receiving data, type annotations configure how the data is being handled.
@@ -86,7 +97,8 @@ Values that are not :class:`str` or :class:`bytes` are assumed to be JSON encoda
 will be serialized accordingly before being sent. This serialization is available for
 all data types currently supported by Litestar (
 :doc:`dataclasses <python:library/dataclasses>`\ , :class:`TypedDict <typing.TypedDict>`,
-:class:`NamedTuple <typing.NamedTuple>`,  :class:`msgspec.Struct`, etc.).
+:class:`NamedTuple <typing.NamedTuple>`,  :class:`msgspec.Struct`, etc.), including
+DTOs.
 
 
 .. tab-set::
@@ -113,25 +125,12 @@ all data types currently supported by Litestar (
             :language: python
 
 
-Transport modes
----------------
-
-WebSockets have two transport modes: Text and binary. These can be specified
-individually for receiving and sending data.
-
-.. note::
-    It may seem intuitive that ``text`` and ``binary`` should map to :class:`str` and
-    :class:`bytes` respectively, but this is not the case. Listeners can receive and
-    send data in any format, independently of the mode. The mode only affects how
-    data is encoded during transport (i.e. on the protocol level). In most cases the
-    default mode - ``text`` - is all that's needed. Binary transport is usually employed
-    when sending binary blobs that don't have a meaningful string representation, such
-    as images.
+Setting transport modes
++++++++++++++++++++++++
 
 
-
-Setting the receive mode
-++++++++++++++++++++++++
+Receive mode
+~~~~~~~~~~~~
 
 .. tab-set::
 
@@ -156,8 +155,8 @@ Setting the receive mode
     it will not respond to WebSocket events sending data in the text channel.
 
 
-Setting the send mode
-++++++++++++++++++++++
+Send mode
+~~~~~~~~~
 
 .. tab-set::
 
@@ -179,10 +178,10 @@ Setting the send mode
 
 
 Dependency injection
---------------------
+++++++++++++++++++++
 
-:doc:`dependency-injection` is available as well and generally works the same as with
-regular route handlers:
+:doc:`dependency-injection` is available and generally works the same as in regular
+route handlers:
 
 .. literalinclude:: /examples/websockets/dependency_injection_simple.py
     :language: python
@@ -203,7 +202,7 @@ the ``yield`` will only be executed after the connection has been closed.
 
 
 Interacting with the WebSocket directly
----------------------------------------
++++++++++++++++++++++++++++++++++++++++
 
 Sometimes access to the socket instance is needed, in which case the
 :class:`WebSocket <.connection.WebSocket>` instance can be injected into the handler
@@ -220,7 +219,7 @@ function via the ``socket`` argument:
 
 
 Customising connection acceptance
----------------------------------
++++++++++++++++++++++++++++++++++
 
 By default, Litestar will accept all incoming connections by awaiting ``WebSocket.accept()`` without arguments.
 This behavior can be customized by passing a custom ``connection_accept_handler`` function. Litestar will await this
@@ -231,7 +230,7 @@ function to accept the connection.
 
 
 Class based WebSocket handling
-------------------------------
+++++++++++++++++++++++++++++++
 
 In addition to using a simple function as in the examples above, a class based approach
 is made possible by extending the
@@ -254,7 +253,7 @@ encapsulate more complex logic.
 
 
 Custom WebSocket
-----------------
+++++++++++++++++
 
 .. versionadded:: 2.7.0
 
@@ -273,3 +272,118 @@ The example below illustrates how to implement a custom WebSocket class for the 
    class on multiple layers, the layer closest to the route handler will take precedence.
 
    You can read more about this in the :ref:`usage/applications:layered architecture` section
+
+
+WebSocket Streams
+-----------------
+
+WebSocket streams can be used to proactively push data to a client, using an
+asynchronous generator function. Data will be sent via the socket every time the
+generator ``yield``\ s, until it is either exhausted or the client disconnects.
+
+.. literalinclude:: /examples/websockets/stream_basic.py
+    :language: python
+    :caption: Streaming the current time in 0.5 second intervals
+
+
+Serialization
++++++++++++++
+
+Just like with route handlers, type annotations configure how the data is being handled.
+:class:`str` or :class:`bytes` will be sent as-is, while everything else will be encoded
+as JSON before being sent. This serialization is available for all data types currently
+supported by Litestar (:doc:`dataclasses <python:library/dataclasses>`,
+:class:`TypedDict <typing.TypedDict>`, :class:`NamedTuple <typing.NamedTuple>`,
+:class:`msgspec.Struct`, etc.), including DTOs.
+
+
+Dependency Injection
+++++++++++++++++++++
+
+Dependency injection is available and works analogous to regular route handlers.
+
+.. important::
+    One thing to keep in mind, especially for long-lived streams, is that dependencies
+    are scoped to the lifetime of the handler. This means that if for example a
+    database connection is acquired in a dependency, it will be held until the generator
+    stops. This may not be desirable in all cases, and acquiring resources ad-hoc inside
+    the generator itself preferable
+
+    .. literalinclude:: /examples/websockets/stream_di_hog.py
+        :language: python
+        :caption: Bad: The lock will be held until the client disconnects
+
+
+    .. literalinclude:: /examples/websockets/stream_di_hog_fix.py
+        :language: python
+        :caption: Good: The lock will only be acquired when it's needed
+
+
+Interacting with the WebSocket directly
++++++++++++++++++++++++++++++++++++++++
+
+To interact with the :class:`WebSocket <.connection.WebSocket>` directly, it can be
+injected into the generator function via the ``socket`` argument:
+
+.. literalinclude:: /examples/websockets/stream_socket_access.py
+    :language: python
+
+
+Receiving data while streaming
+++++++++++++++++++++++++++++++
+
+By default, a stream will listen for a client disconnect in the background, and stop
+the generator once received. Since this requires receiving data from the socket, it can
+lead to data loss if the application is attempting to read from the same socket
+simultaneously.
+
+.. tip::
+    To prevent data loss, by default, ``websocket_stream`` will raise an
+    exception if it receives any data while listening for client disconnects. If
+    incoming data should be ignored, ``allow_data_discard`` should be set to ``True``
+
+If receiving data while streaming is desired,
+:func:`~litestar.handlers.send_websocket_stream` can be configured to not listen for
+disconnects by setting ``listen_for_disconnect=False``.
+
+.. important::
+    When using ``listen_for_disconnect=False``, the application needs to ensure the
+    disconnect event is received elsewhere, otherwise the stream will only terminate
+    when the generator is exhausted
+
+
+Combining streaming and receiving data
+---------------------------------------
+
+To stream and receive data concurrently, the stream can be set up manually using
+:func:`~litestar.handlers.send_websocket_stream` in combination with either a regular
+:class:`~litestar.handlers.websocket` handler or a WebSocket listener.
+
+.. tab-set::
+
+    .. tab-item:: websocket_listener
+
+        .. literalinclude:: /examples/websockets/stream_and_receive_listener.py
+            :language: python
+
+    .. tab-item:: websocket handler
+
+        .. literalinclude:: /examples/websockets/stream_and_receive_raw.py
+            :language: python
+
+
+Transport modes
+---------------
+
+WebSockets have two transport modes: ``text`` and ``binary``. They dictate how bytes are
+transferred over the wire and can be set independently from another, i.e. a socket can
+send ``binary`` and receive ``text``
+
+
+It may seem intuitive that ``text`` and ``binary`` should map to :class:`str` and
+:class:`bytes` respectively, but this is not the case. WebSockets can receive and
+send data in any format, independently of the mode. The mode only affects how the
+bytes are handled during transport (i.e. on the protocol level). In most cases the
+default mode - ``text`` - is all that's needed. Binary transport is usually employed
+when sending binary blobs that don't have a meaningful string representation, such
+as images.

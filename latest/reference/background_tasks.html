@@ -1361,9 +1361,11 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="pagination.html">pagination</a></li>
 <li class="toctree-l2"><a class="reference internal" href="params.html">params</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="plugins/index.html">plugins</a><input class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-22"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="plugins/attrs.html">attrs</a></li>
 <li class="toctree-l3"><a class="reference internal" href="plugins/flash_messages.html">flash</a></li>
 <li class="toctree-l3"><a class="reference internal" href="plugins/htmx.html">htmx</a></li>
 <li class="toctree-l3"><a class="reference internal" href="plugins/problem_details.html">problem details</a></li>
+<li class="toctree-l3"><a class="reference internal" href="plugins/prometheus.html">prometheus</a></li>
 <li class="toctree-l3"><a class="reference internal" href="plugins/pydantic.html">pydantic</a></li>
 <li class="toctree-l3"><a class="reference internal" href="plugins/structlog.html">structlog</a></li>
 <li class="toctree-l3"><a class="reference internal" href="plugins/sqlalchemy.html">sqlalchemy</a></li>
@@ -1402,6 +1404,7 @@ document.write(`
 <li class="toctree-l3"><a class="reference internal" href="stores/memory.html">memory</a></li>
 <li class="toctree-l3"><a class="reference internal" href="stores/redis.html">redis</a></li>
 <li class="toctree-l3"><a class="reference internal" href="stores/registry.html">registry</a></li>
+<li class="toctree-l3"><a class="reference internal" href="stores/valkey.html">valkey</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="template.html">template</a></li>
@@ -1589,7 +1592,7 @@ document.write(`
 <dd class="field-odd"><ul class="simple">
 <li><p><span class="target" id="litestar.background_tasks.BackgroundTasks.params.tasks"></span><strong>tasks</strong><a class="paramlink headerlink reference internal" href="#litestar.background_tasks.BackgroundTasks.params.tasks">¶</a> – An iterable of <a class="reference internal" href="#litestar.background_tasks.BackgroundTask" title="litestar.background_tasks.BackgroundTask"><code class="xref py py-class docutils literal notranslate"><span class="pre">BackgroundTask</span></code></a> instances.</p></li>
 <li><p><span class="target" id="litestar.background_tasks.BackgroundTasks.params.run_in_task_group"></span><strong>run_in_task_group</strong><a class="paramlink headerlink reference internal" href="#litestar.background_tasks.BackgroundTasks.params.run_in_task_group">¶</a> – If you set this value to <code class="docutils literal notranslate"><span class="pre">True</span></code> than the tasks will run concurrently, using
-a <a class="reference external" href="https://anyio.readthedocs.io/en/stable/api.html#anyio.abc.TaskGroup" title="(in AnyIO v4.6.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">TaskGroup</span></code></a>. Note: This will not preserve execution order.</p></li>
+a <a class="reference external" href="https://anyio.readthedocs.io/en/stable/api.html#anyio.abc.TaskGroup" title="(in AnyIO v4.8.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">TaskGroup</span></code></a>. Note: This will not preserve execution order.</p></li>
 </ul>
 </dd>
 </dl>

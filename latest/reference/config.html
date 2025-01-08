@@ -1361,9 +1361,11 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="pagination.html">pagination</a></li>
 <li class="toctree-l2"><a class="reference internal" href="params.html">params</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="plugins/index.html">plugins</a><input class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-22"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="plugins/attrs.html">attrs</a></li>
 <li class="toctree-l3"><a class="reference internal" href="plugins/flash_messages.html">flash</a></li>
 <li class="toctree-l3"><a class="reference internal" href="plugins/htmx.html">htmx</a></li>
 <li class="toctree-l3"><a class="reference internal" href="plugins/problem_details.html">problem details</a></li>
+<li class="toctree-l3"><a class="reference internal" href="plugins/prometheus.html">prometheus</a></li>
 <li class="toctree-l3"><a class="reference internal" href="plugins/pydantic.html">pydantic</a></li>
 <li class="toctree-l3"><a class="reference internal" href="plugins/structlog.html">structlog</a></li>
 <li class="toctree-l3"><a class="reference internal" href="plugins/sqlalchemy.html">sqlalchemy</a></li>
@@ -1402,6 +1404,7 @@ document.write(`
 <li class="toctree-l3"><a class="reference internal" href="stores/memory.html">memory</a></li>
 <li class="toctree-l3"><a class="reference internal" href="stores/redis.html">redis</a></li>
 <li class="toctree-l3"><a class="reference internal" href="stores/registry.html">registry</a></li>
+<li class="toctree-l3"><a class="reference internal" href="stores/valkey.html">valkey</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="template.html">template</a></li>
@@ -1953,6 +1956,18 @@ DoS attacks.</p>
 <span class="sig-name descname"><span class="pre">__new__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#litestar.config.app.ExperimentalFeatures.__new__" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
+<dl class="py attribute">
+<dt class="sig sig-object py" id="litestar.config.app.ExperimentalFeatures.DTO_CODEGEN">
+<span class="sig-name descname"><span class="pre">DTO_CODEGEN</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'DTO_CODEGEN'</span></em><a class="headerlink" href="#litestar.config.app.ExperimentalFeatures.DTO_CODEGEN" title="Permalink to this definition">#</a></dt>
+<dd><p>Enable DTO codegen.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="litestar.config.app.ExperimentalFeatures.FUTURE">
+<span class="sig-name descname"><span class="pre">FUTURE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'FUTURE'</span></em><a class="headerlink" href="#litestar.config.app.ExperimentalFeatures.FUTURE" title="Permalink to this definition">#</a></dt>
+<dd><p>Enable future features that may be considered breaking or changing.</p>
+</dd></dl>
+
 </dd></dl>
 
 <span class="target" id="module-litestar.config.compression"></span><dl class="py class">
@@ -2280,6 +2295,14 @@ the ‘csrf_config’ key.</p>
 </dd></dl>
 
 <span class="target" id="module-litestar.config.response_cache"></span><dl class="py class">
+<dt class="sig sig-object py" id="litestar.config.response_cache.CACHE_FOREVER">
+<em class="property"><span class="pre">final</span><span class="w"> </span><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.config.response_cache.</span></span><span class="sig-name descname"><span class="pre">CACHE_FOREVER</span></span><a class="headerlink" href="#litestar.config.response_cache.CACHE_FOREVER" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Sentinel value indicating that a cached response should be stored without an expiration, explicitly skipping the
+default expiration</p>
+</dd></dl>
+
+<dl class="py class">
 <dt class="sig sig-object py" id="litestar.config.response_cache.ResponseCacheConfig">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.config.response_cache.</span></span><span class="sig-name descname"><span class="pre">ResponseCacheConfig</span></span><a class="headerlink" href="#litestar.config.response_cache.ResponseCacheConfig" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
@@ -2337,14 +2360,6 @@ the request method and path with the sorted query params.</p>
 <dd class="field-even"><p>A combination of url path and query parameters</p>
 </dd>
 </dl>
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="litestar.config.response_cache.CACHE_FOREVER">
-<em class="property"><span class="pre">final</span><span class="w"> </span><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.config.response_cache.</span></span><span class="sig-name descname"><span class="pre">CACHE_FOREVER</span></span><a class="headerlink" href="#litestar.config.response_cache.CACHE_FOREVER" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
-<p>Sentinel value indicating that a cached response should be stored without an expiration, explicitly skipping the
-default expiration</p>
 </dd></dl>
 
 </section>
@@ -2460,6 +2475,8 @@ default expiration</p>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.config.app.ExperimentalFeatures"><code class="docutils literal notranslate"><span class="pre">ExperimentalFeatures</span></code></a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.config.app.ExperimentalFeatures.__new__"><code class="docutils literal notranslate"><span class="pre">ExperimentalFeatures.__new__()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.config.app.ExperimentalFeatures.DTO_CODEGEN"><code class="docutils literal notranslate"><span class="pre">ExperimentalFeatures.DTO_CODEGEN</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.config.app.ExperimentalFeatures.FUTURE"><code class="docutils literal notranslate"><span class="pre">ExperimentalFeatures.FUTURE</span></code></a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.config.compression.CompressionConfig"><code class="docutils literal notranslate"><span class="pre">CompressionConfig</span></code></a><ul class="visible nav section-nav flex-column">
@@ -2513,6 +2530,7 @@ default expiration</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.config.csrf.CSRFConfig.exclude_from_csrf_key"><code class="docutils literal notranslate"><span class="pre">CSRFConfig.exclude_from_csrf_key</span></code></a></li>
 </ul>
 </li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.config.response_cache.CACHE_FOREVER"><code class="docutils literal notranslate"><span class="pre">CACHE_FOREVER</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.config.response_cache.ResponseCacheConfig"><code class="docutils literal notranslate"><span class="pre">ResponseCacheConfig</span></code></a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.config.response_cache.ResponseCacheConfig.default_expiration"><code class="docutils literal notranslate"><span class="pre">ResponseCacheConfig.default_expiration</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.config.response_cache.ResponseCacheConfig.key_builder"><code class="docutils literal notranslate"><span class="pre">ResponseCacheConfig.key_builder()</span></code></a></li>
@@ -2523,7 +2541,6 @@ default expiration</p>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.config.response_cache.default_cache_key_builder"><code class="docutils literal notranslate"><span class="pre">default_cache_key_builder()</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.config.response_cache.CACHE_FOREVER"><code class="docutils literal notranslate"><span class="pre">CACHE_FOREVER</span></code></a></li>
 </ul>
   </nav></div>
 

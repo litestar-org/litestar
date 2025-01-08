@@ -1361,9 +1361,11 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../../../reference/pagination.html">pagination</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../reference/params.html">params</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../reference/plugins/index.html">plugins</a><input class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-22"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/plugins/attrs.html">attrs</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../reference/plugins/flash_messages.html">flash</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../reference/plugins/htmx.html">htmx</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../reference/plugins/problem_details.html">problem details</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/plugins/prometheus.html">prometheus</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../reference/plugins/pydantic.html">pydantic</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../reference/plugins/structlog.html">structlog</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../reference/plugins/sqlalchemy.html">sqlalchemy</a></li>
@@ -1402,6 +1404,7 @@ document.write(`
 <li class="toctree-l3"><a class="reference internal" href="../../../reference/stores/memory.html">memory</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../reference/stores/redis.html">redis</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../reference/stores/registry.html">registry</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/stores/valkey.html">valkey</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../../reference/template.html">template</a></li>
@@ -1549,7 +1552,7 @@ document.write(`
   <section id="sqlalchemy-models-repository">
 <h1>SQLAlchemy Models &amp; Repository<a class="headerlink" href="#sqlalchemy-models-repository" title="Permalink to this heading">#</a></h1>
 <p>Litestar comes with a built-in repository class
-(<a class="reference external" href="https://docs.advanced-alchemy.litestar.dev/latest/reference/repository.html#advanced_alchemy.repository.SQLAlchemyAsyncRepository" title="(in advanced_alchemy)"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyAsyncRepository</span></code></a>)
+(<code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyAsyncRepository</span></code>)
 for <a class="reference external" href="https://docs.sqlalchemy.org/">SQLAlchemy</a> to make CRUD operations easier.</p>
 <section id="features">
 <h2>Features<a class="headerlink" href="#features" title="Permalink to this heading">#</a></h2>
@@ -1576,7 +1579,7 @@ an optional version with audit columns.</p></li>
 </section>
 <section id="basic-use">
 <h2>Basic Use<a class="headerlink" href="#basic-use" title="Permalink to this heading">#</a></h2>
-<p>To use the <a class="reference external" href="https://docs.advanced-alchemy.litestar.dev/latest/reference/repository.html#advanced_alchemy.repository.SQLAlchemyAsyncRepository" title="(in advanced_alchemy)"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyAsyncRepository</span></code></a>
+<p>To use the <code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyAsyncRepository</span></code>
 repository, you must first define your models using one of the included built-in <code class="docutils literal notranslate"><span class="pre">DeclarativeBase</span></code> ORM base
 implementations:</p>
 <ul class="simple">
@@ -1614,13 +1617,13 @@ and <code class="docutils literal notranslate"><span class="pre">BigIntAuditBase
 <span class="kn">from</span> <span class="nn">sqlalchemy.orm</span> <span class="kn">import</span> <span class="n">Mapped</span><span class="p">,</span> <span class="n">mapped_column</span><span class="p">,</span> <span class="n">relationship</span>
 
 <span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
-<span class="kn">from</span> <span class="nn">litestar.contrib.sqlalchemy.base</span> <span class="kn">import</span> <span class="n">UUIDAuditBase</span><span class="p">,</span> <span class="n">UUIDBase</span>
-<span class="kn">from</span> <span class="nn">litestar.contrib.sqlalchemy.plugins</span> <span class="kn">import</span> <span class="n">AsyncSessionConfig</span><span class="p">,</span> <span class="n">SQLAlchemyAsyncConfig</span><span class="p">,</span> <span class="n">SQLAlchemyPlugin</span>
+<span class="kn">from</span> <span class="nn">litestar.plugins.sqlalchemy</span> <span class="kn">import</span> <span class="n">AsyncSessionConfig</span><span class="p">,</span> <span class="n">SQLAlchemyAsyncConfig</span><span class="p">,</span> <span class="n">SQLAlchemyPlugin</span><span class="p">,</span> <span class="n">base</span>
 
 
 <span class="c1"># The SQLAlchemy base includes a declarative model for you to use in your models.</span>
 <span class="c1"># The `UUIDBase` class includes a `UUID` based primary key (`id`)</span>
-<span class="k">class</span> <span class="nc">Author</span><span class="p">(</span><span class="n">UUIDBase</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">Author</span><span class="p">(</span><span class="n">base</span><span class="o">.</span><span class="n">UUIDBase</span><span class="p">):</span>
+    <span class="n">__tablename__</span> <span class="o">=</span> <span class="s2">&quot;author&quot;</span>
     <span class="n">name</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
     <span class="n">dob</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="n">date</span><span class="p">]</span>
     <span class="n">books</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">Book</span><span class="p">]]</span> <span class="o">=</span> <span class="n">relationship</span><span class="p">(</span><span class="n">back_populates</span><span class="o">=</span><span class="s2">&quot;author&quot;</span><span class="p">,</span> <span class="n">lazy</span><span class="o">=</span><span class="s2">&quot;selectin&quot;</span><span class="p">)</span>
@@ -1629,7 +1632,8 @@ and <code class="docutils literal notranslate"><span class="pre">BigIntAuditBase
 <span class="c1"># The `UUIDAuditBase` class includes the same UUID` based primary key (`id`) and 2</span>
 <span class="c1"># additional columns: `created_at` and `updated_at`. `created_at` is a timestamp of when the</span>
 <span class="c1"># record created, and `updated_at` is the last time the record was modified.</span>
-<span class="k">class</span> <span class="nc">Book</span><span class="p">(</span><span class="n">UUIDAuditBase</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">Book</span><span class="p">(</span><span class="n">base</span><span class="o">.</span><span class="n">UUIDAuditBase</span><span class="p">):</span>
+    <span class="n">__tablename__</span> <span class="o">=</span> <span class="s2">&quot;book&quot;</span>
     <span class="n">title</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
     <span class="n">author_id</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="n">UUID</span><span class="p">]</span> <span class="o">=</span> <span class="n">mapped_column</span><span class="p">(</span><span class="n">ForeignKey</span><span class="p">(</span><span class="s2">&quot;author.id&quot;</span><span class="p">))</span>
     <span class="n">author</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="n">Author</span><span class="p">]</span> <span class="o">=</span> <span class="n">relationship</span><span class="p">(</span><span class="n">lazy</span><span class="o">=</span><span class="s2">&quot;joined&quot;</span><span class="p">,</span> <span class="n">innerjoin</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">viewonly</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -1641,7 +1645,7 @@ and <code class="docutils literal notranslate"><span class="pre">BigIntAuditBase
 <span class="p">)</span>  <span class="c1"># Create &#39;async_session&#39; dependency.</span>
 
 
-<span class="k">async</span> <span class="k">def</span> <span class="nf">on_startup</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">on_startup</span><span class="p">(</span><span class="n">app</span><span class="p">:</span> <span class="n">Litestar</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Adds some dummy data if no data is present.&quot;&quot;&quot;</span>
     <span class="k">async</span> <span class="k">with</span> <span class="n">sqlalchemy_config</span><span class="o">.</span><span class="n">get_session</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
         <span class="n">statement</span> <span class="o">=</span> <span class="n">select</span><span class="p">(</span><span class="n">func</span><span class="o">.</span><span class="n">count</span><span class="p">())</span><span class="o">.</span><span class="n">select_from</span><span class="p">(</span><span class="n">Author</span><span class="p">)</span>

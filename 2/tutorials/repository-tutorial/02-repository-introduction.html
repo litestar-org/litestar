@@ -1361,9 +1361,11 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../../reference/pagination.html">pagination</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/params.html">params</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../reference/plugins/index.html">plugins</a><input class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-22"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/attrs.html">attrs</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/flash_messages.html">flash</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/htmx.html">htmx</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/problem_details.html">problem details</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/prometheus.html">prometheus</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/pydantic.html">pydantic</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/structlog.html">structlog</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/sqlalchemy.html">sqlalchemy</a></li>
@@ -1402,6 +1404,7 @@ document.write(`
 <li class="toctree-l3"><a class="reference internal" href="../../reference/stores/memory.html">memory</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/stores/redis.html">redis</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/stores/registry.html">registry</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/stores/valkey.html">valkey</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/template.html">template</a></li>
@@ -1645,7 +1648,7 @@ your applications.</p>
 <section id="model-repository">
 <h2>Model Repository<a class="headerlink" href="#model-repository" title="Permalink to this heading">#</a></h2>
 <p>Here we import the
-<a class="reference external" href="https://docs.advanced-alchemy.litestar.dev/latest/reference/repository.html#advanced_alchemy.repository.SQLAlchemyAsyncRepository" title="(in advanced_alchemy)"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyAsyncRepository</span></code></a>
+<code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyAsyncRepository</span></code>
 class and create an <code class="docutils literal notranslate"><span class="pre">AuthorRepository</span></code> repository class. This is all that’s required
 to include all of the integrated repository features.</p>
 <div class="literal-block-wrapper docutils container" id="id1">
