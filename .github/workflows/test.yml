@@ -38,9 +38,24 @@ jobs:
         with:
           python-version: ${{ inputs.python-version }}
 
+      # Linux Source
       - name: Install Build Dependencies
         run: sudo apt-get install build-essential libpq-dev python3-dev -y
         if: startsWith(inputs.os, 'ubuntu')
+
+      # MacOS Source
+      - name: Install Build Dependencies
+        run: brew install libpq && brew link --force libpq
+        if: startsWith(inputs.os, 'macos')
+
+      # Windows Source
+      - name: Install libpq from vcpkg and install pg_config.exe stub
+        run: .\tools\build\wheel_win32_before_build.bat
+        if: startsWith(inputs.os, 'windows')
+        shell: powershell
+        env:
+          # cache vcpkg
+          VCPKG_BINARY_SOURCES: "clear;x-gha,readwrite"
 
       - name: Install uv
         uses: astral-sh/setup-uv@v5
