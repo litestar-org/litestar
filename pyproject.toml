@@ -175,7 +175,8 @@ linting = [
 test = [
   "covdefaults",
   "pytest",
-  "pytest-asyncio",
+  "pytest-asyncio<=0.24.0; python_version < \"3.9\"",
+  "pytest-asyncio>0.24.0; python_version >= \"3.9\"",
   "pytest-cov",
   "pytest-lazy-fixtures",
   "pytest-mock",

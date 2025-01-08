@@ -2049,7 +2049,8 @@ linting = [
 test = [
     { name = "covdefaults" },
     { name = "pytest" },
-    { name = "pytest-asyncio" },
+    { name = "pytest-asyncio", marker = "python_full_version < '3.9'", specifier = "<=0.24.0" },
+    { name = "pytest-asyncio", marker = "python_full_version >= '3.9'", specifier = ">0.24.0" },
     { name = "pytest-cov" },
     { name = "pytest-lazy-fixtures" },
     { name = "pytest-mock" },
