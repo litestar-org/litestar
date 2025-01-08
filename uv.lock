@@ -3,7 +3,8 @@ requires-python = ">=3.8, <4.0"
 resolution-markers = [
     "python_full_version >= '3.9' and python_full_version < '3.13' and sys_platform != 'win32'",
     "python_full_version < '3.9' and sys_platform != 'win32'",
-    "python_full_version >= '3.13' and sys_platform != 'win32'",
+    "python_full_version >= '3.13' and sys_platform == 'linux'",
+    "python_full_version >= '3.13' and sys_platform != 'linux' and sys_platform != 'win32'",
     "python_full_version >= '3.9' and python_full_version < '3.13' and sys_platform == 'win32'",
     "python_full_version < '3.9' and sys_platform == 'win32'",
     "python_full_version >= '3.13' and sys_platform == 'win32'",
@@ -111,7 +112,8 @@ version = "4.8.0"
 source = { registry = "https://pypi.org/simple" }
 resolution-markers = [
     "python_full_version >= '3.9' and python_full_version < '3.13' and sys_platform != 'win32'",
-    "python_full_version >= '3.13' and sys_platform != 'win32'",
+    "python_full_version >= '3.13' and sys_platform == 'linux'",
+    "python_full_version >= '3.13' and sys_platform != 'linux' and sys_platform != 'win32'",
     "python_full_version >= '3.9' and python_full_version < '3.13' and sys_platform == 'win32'",
     "python_full_version >= '3.13' and sys_platform == 'win32'",
 ]
@@ -1903,7 +1905,7 @@ dev = [
     { name = "opentelemetry-sdk" },
     { name = "psutil" },
     { name = "psycopg", extra = ["binary"], marker = "python_full_version < '3.13'" },
-    { name = "psycopg", extra = ["c"], marker = "python_full_version >= '3.13'" },
+    { name = "psycopg", extra = ["c"], marker = "python_full_version >= '3.13' and sys_platform == 'linux'" },
     { name = "psycopg", extra = ["pool"] },
     { name = "psycopg2-binary" },
     { name = "python-dotenv" },
@@ -2014,8 +2016,9 @@ dev = [
     { name = "litestar", extras = ["full"] },
     { name = "opentelemetry-sdk" },
     { name = "psutil", specifier = ">=5.9.8" },
+    { name = "psycopg", extras = ["pool"], marker = "python_full_version >= '3.13' and sys_platform != 'linux'" },
     { name = "psycopg", extras = ["pool", "binary"], marker = "python_full_version < '3.13'", specifier = ">=3.1.10,<3.2" },
-    { name = "psycopg", extras = ["pool", "c"], marker = "python_full_version >= '3.13'" },
+    { name = "psycopg", extras = ["pool", "c"], marker = "python_full_version >= '3.13' and sys_platform == 'linux'" },
     { name = "psycopg2-binary" },
     { name = "python-dotenv" },
     { name = "starlette" },
@@ -2341,7 +2344,8 @@ version = "0.19.0"
 source = { registry = "https://pypi.org/simple" }
 resolution-markers = [
     "python_full_version >= '3.9' and python_full_version < '3.13' and sys_platform != 'win32'",
-    "python_full_version >= '3.13' and sys_platform != 'win32'",
+    "python_full_version >= '3.13' and sys_platform == 'linux'",
+    "python_full_version >= '3.13' and sys_platform != 'linux' and sys_platform != 'win32'",
     "python_full_version >= '3.9' and python_full_version < '3.13' and sys_platform == 'win32'",
     "python_full_version >= '3.13' and sys_platform == 'win32'",
 ]
@@ -2836,7 +2840,7 @@ binary = [
     { name = "psycopg-binary", marker = "python_full_version < '3.13' and implementation_name != 'pypy'" },
 ]
 c = [
-    { name = "psycopg-c", marker = "python_full_version >= '3.13' and implementation_name != 'pypy'" },
+    { name = "psycopg-c", marker = "python_full_version >= '3.13' and implementation_name != 'pypy' and sys_platform == 'linux'" },
 ]
 pool = [
     { name = "psycopg-pool" },
@@ -3336,7 +3340,8 @@ version = "0.25.2"
 source = { registry = "https://pypi.org/simple" }
 resolution-markers = [
     "python_full_version >= '3.9' and python_full_version < '3.13' and sys_platform != 'win32'",
-    "python_full_version >= '3.13' and sys_platform != 'win32'",
+    "python_full_version >= '3.13' and sys_platform == 'linux'",
+    "python_full_version >= '3.13' and sys_platform != 'linux' and sys_platform != 'win32'",
     "python_full_version >= '3.9' and python_full_version < '3.13' and sys_platform == 'win32'",
     "python_full_version >= '3.13' and sys_platform == 'win32'",
 ]
@@ -4311,7 +4316,7 @@ version = "0.27.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "attrs" },
-    { name = "cffi", marker = "implementation_name != 'pypy' and os_name == 'nt'" },
+    { name = "cffi", marker = "(python_full_version < '3.13' and implementation_name != 'pypy' and os_name == 'nt') or (implementation_name != 'pypy' and os_name == 'nt' and sys_platform != 'linux')" },
     { name = "exceptiongroup", marker = "python_full_version < '3.11'" },
     { name = "idna" },
     { name = "outcome" },

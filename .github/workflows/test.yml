@@ -38,9 +38,20 @@ jobs:
         with:
           python-version: ${{ inputs.python-version }}
 
+      # Linux Source
       - name: Install Build Dependencies
         run: sudo apt-get install build-essential libpq-dev python3-dev -y
         if: startsWith(inputs.os, 'ubuntu')
+
+      # MacOS Source
+      - name: Install Build Dependencies
+        run: brew install libpq && brew link --force libpq
+        if: startsWith(inputs.os, 'macos')
+
+      # Windows Source
+      - name: Install Build Dependencies
+        uses: ikalnytskyi/action-setup-postgres@v7
+        if: startsWith(inputs.os, 'windows')
 
       - name: Install uv
         uses: astral-sh/setup-uv@v5

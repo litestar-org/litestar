@@ -145,7 +145,7 @@ jobs:
         os: ["macos-latest", "windows-latest"]
     uses: ./.github/workflows/test.yml
     with:
-      python-version: "3.12"
+      python-version: "3.13"
       os: ${{ matrix.os }}
       timeout: 30
 
