@@ -40,6 +40,7 @@ class PsycoPgChannelsBackend(ChannelsBackend):
         for channel in channels:
             await self._listener_conn.execute(SQL("UNLISTEN {channel}").format(channel=Identifier(channel)))
             await self._listener_conn.commit()
+
         self._subscribed_channels = self._subscribed_channels - set(channels)
 
     async def stream_events(self) -> AsyncGenerator[tuple[str, bytes], None]:

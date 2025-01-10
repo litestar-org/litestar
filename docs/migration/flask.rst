@@ -202,11 +202,11 @@ Request methods
 +---------------------------------+-------------------------------------------------------------------------------------------------------+
 | ``request.environ``             | ``request.scope``                                                                                     |
 +---------------------------------+-------------------------------------------------------------------------------------------------------+
-| ``request.files``               | Use ```UploadFile`` <usage/requests/file-uploads>`__                                                  |
+| ``request.files``               | Use ``UploadFile`` see in :doc:`/usage/requests`                                                      |
 +---------------------------------+-------------------------------------------------------------------------------------------------------+
-| ``request.form``                | ``request.form()``, prefer ```Body`` <usage/requests/content-type>`__                                 |
+| ``request.form``                | ``request.form()``, prefer ``Body`` see in :doc:`/usage/requests`                                     |
 +---------------------------------+-------------------------------------------------------------------------------------------------------+
-| ``request.get_json``            | ``request.json()``, prefer the ```data keyword argument`` <usage/requests/request-body>`__            |
+| ``request.get_json``            | ``request.json()``, prefer the ``data`` keyword argument, see in :doc:`/usage/requests`               |
 +---------------------------------+-------------------------------------------------------------------------------------------------------+
 | ``request.headers``             | ``request.headers``                                                                                   |
 +---------------------------------+-------------------------------------------------------------------------------------------------------+
@@ -276,11 +276,11 @@ in Litestar.
 .. code-block:: python
 
    from litestar import Litestar
-   from litestar.static_files import StaticFilesConfig
+   from litestar.static_files import create_static_files_router
 
-   app = Litestar(
-       [], static_files_config=[StaticFilesConfig(path="/static", directories=["static"])]
-   )
+    app = Litestar route_handlers=[
+        create_static_files_router(path="/static", directories=["assets"]),
+    ])
 
 ..  seealso::
 
@@ -447,7 +447,7 @@ For redirects, instead of ``redirect`` use ``Redirect``:
 
             @get("/hello")
             def hello() -> Redirect:
-                return Redirect(path="index")
+                return Redirect(path="/")
 
 
             app = Litestar([index, hello])

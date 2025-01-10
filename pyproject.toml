@@ -17,6 +17,7 @@ classifiers = [
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
   "Programming Language :: Python",
   "Topic :: Internet :: WWW/HTTP",
   "Topic :: Software Development :: Libraries",
@@ -46,7 +47,7 @@ dependencies = [
   "rich-click",
   "multipart>=1.2.0",
   # default litestar plugins
-    "litestar-htmx>=0.4.0"
+  "litestar-htmx>=0.4.0"
 ]
 description = "Litestar - A production-ready, highly performant, extensible ASGI API Framework"
 keywords = ["api", "rest", "asgi", "litestar", "starlite"]
@@ -63,7 +64,7 @@ maintainers = [
 name = "litestar"
 readme = "README.md"
 requires-python = ">=3.8,<4.0"
-version = "2.13.0"
+version = "2.14.0"
 
 [project.urls]
 Blog = "https://blog.litestar.dev"
@@ -83,7 +84,8 @@ brotli = ["brotli"]
 cli = ["jsbeautifier", "uvicorn[standard]", "uvloop>=0.18.0; sys_platform != 'win32'"]
 cryptography = ["cryptography"]
 full = [
-  "litestar[annotated-types,attrs,brotli,cli,cryptography,jinja,jwt,mako,minijinja,opentelemetry,piccolo,picologging,prometheus,pydantic,redis,sqlalchemy,standard,structlog,valkey]",
+  "litestar[annotated-types,attrs,brotli,cli,cryptography,jinja,jwt,mako,minijinja,opentelemetry,piccolo,picologging,prometheus,pydantic,redis,sqlalchemy,standard,structlog,valkey]; python_version < \"3.13\"",
+  "litestar[annotated-types,attrs,brotli,cli,cryptography,jinja,jwt,mako,minijinja,opentelemetry,piccolo,prometheus,pydantic,redis,sqlalchemy,standard,structlog,valkey]; python_version >= \"3.13\"",
 ]
 jinja = ["jinja2>=3.1.2"]
 jwt = [
@@ -94,9 +96,14 @@ mako = ["mako>=1.2.4"]
 minijinja = ["minijinja>=1.0.0"]
 opentelemetry = ["opentelemetry-instrumentation-asgi"]
 piccolo = ["piccolo"]
-picologging = ["picologging"]
+picologging = ["picologging; python_version < \"3.13\""]
 prometheus = ["prometheus-client"]
-pydantic = ["pydantic", "email-validator", "pydantic-extra-types"]
+pydantic = [
+  "pydantic",
+  "email-validator",
+  "pydantic-extra-types!=2.9.0; python_version < \"3.9\"",
+  "pydantic-extra-types; python_version >= \"3.9\"",
+]
 redis = ["redis[hiredis]>=4.4.4"]
 valkey = ["valkey[libvalkey]>=6.0.2"]
 sqlalchemy = ["advanced-alchemy>=0.2.2"]
@@ -130,7 +137,9 @@ dev = [
   "trio",
   "aiosqlite",
   "asyncpg>=0.29.0",
-  "psycopg[pool,binary]>=3.1.10,<3.2",
+  "psycopg[pool,binary]>=3.1.10,<3.2; python_version < \"3.13\"",
+  "psycopg[pool,c]; python_version >= \"3.13\" and sys_platform == 'linux'",
+  "psycopg[pool]; python_version >= \"3.13\" and sys_platform != 'linux'",
   "psycopg2-binary",
   "psutil>=5.9.8",
   "hypercorn>=0.16.0",
@@ -166,8 +175,9 @@ linting = [
 ]
 test = [
   "covdefaults",
-  "pytest<8.0.0",
-  "pytest-asyncio",
+  "pytest",
+  "pytest-asyncio<=0.24.0; python_version < \"3.9\"",
+  "pytest-asyncio>0.24.0; python_version >= \"3.9\"",
   "pytest-cov",
   "pytest-lazy-fixtures",
   "pytest-mock",
@@ -203,6 +213,7 @@ fail_under = 50
 [tool.pytest.ini_options]
 addopts = "--strict-markers --strict-config --dist=loadgroup -m 'not server_integration'"
 asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
 filterwarnings = [
   "error",
   # https://github.com/pytest-dev/pytest-asyncio/issues/724
@@ -285,6 +296,8 @@ module = [
   "pytimeparse.*",
   "importlib_resources",
   "exceptiongroup",
+  "picologging",
+  "picologging.*",
 ]
 
 [[tool.mypy.overrides]]

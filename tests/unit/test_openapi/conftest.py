@@ -136,14 +136,14 @@ def create_pet_controller() -> Type[Controller]:
 
 
 @pytest.fixture
-@pytest.mark.usefixtures("disable_warn_implicit_sync_to_thread")
-def person_controller() -> Type[Controller]:
+def person_controller(disable_warn_implicit_sync_to_thread: None) -> Type[Controller]:
+    """Fixture without a top-level mark."""
     return create_person_controller()
 
 
 @pytest.fixture
-@pytest.mark.usefixtures("disable_warn_implicit_sync_to_thread")
-def pet_controller() -> Type[Controller]:
+def pet_controller(disable_warn_implicit_sync_to_thread: None) -> Type[Controller]:
+    """Fixture without a top-level mark."""
     return create_pet_controller()
 
 
