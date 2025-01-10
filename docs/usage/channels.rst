@@ -299,7 +299,8 @@ provides two methods to handle this stream:
     to ``False`` in :meth:`run_in_background <Subscriber.run_in_background>`, which will lead to the cancellation of
     the task. By default this only happens when the context is left with an exception.
 
-.. important:: The :term:`events <event>` in the :term:`event streams <event stream>` are always
+.. important::
+    The :term:`events <event>` in the :term:`event streams <event stream>` are always
     bytes; When calling :meth:`ChannelsPlugin.publish`, data will be serialized before
     being sent to the backend.
 
