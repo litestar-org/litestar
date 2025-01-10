@@ -261,7 +261,8 @@ be used to fetch this :term:`history` and put it into a subscriber's :term:`even
     :caption: Retrieving :term:`channel` :term:`history` for a :term:`subscriber` and putting it into the
       :term:`stream <event stream>`
 
-.. note:: The publication of the :term:`history` happens sequentially, one :term:`channel` and one
+.. note:: 
+    The publication of the :term:`history` happens sequentially, one :term:`channel` and one
     :term:`event` at a time. This is done to ensure the correct ordering of events and to avoid
     filling up a :term:`subscriber`'s backlog, which would result in dropped :term:`history` entries. Should the
     amount of entries exceed the maximum backlog size, the execution will wait until
