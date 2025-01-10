@@ -1559,7 +1559,7 @@ to make working with models easier.</p>
 <h1>Modeling<a class="headerlink" href="#modeling" title="Permalink to this heading">#</a></h1>
 <p>We’ll begin by modelling the entities and relationships between authors and books.
 We’ll start by creating the <code class="docutils literal notranslate"><span class="pre">Author</span></code> table, utilizing the
-<a class="reference external" href="https://docs.advanced-alchemy.litestar.dev/latest/reference/base.html#advanced_alchemy.base.UUIDBase" title="(in advanced_alchemy)"><code class="xref py py-class docutils literal notranslate"><span class="pre">UUIDBase</span></code></a> class. To keep things
+<code class="xref py py-class docutils literal notranslate"><span class="pre">UUIDBase</span></code> class. To keep things
 simple, our first model will encompass only three fields: <code class="docutils literal notranslate"><span class="pre">id</span></code>, <code class="docutils literal notranslate"><span class="pre">name</span></code>, and <code class="docutils literal notranslate"><span class="pre">dob</span></code>.</p>
 <div class="literal-block-wrapper docutils container" id="id1">
 <div class="code-block-caption"><span class="caption-text">app.py</span><a class="headerlink" href="#id1" title="Permalink to this code">#</a></div>
@@ -1592,7 +1592,7 @@ key constraints when using the <code class="docutils literal notranslate"><span 
 <p>By using the audit model, we can automatically record the time a record was created and
 last updated.</p>
 <p>To implement this, we will define a new <code class="docutils literal notranslate"><span class="pre">Book</span></code> model via the
-<a class="reference external" href="https://docs.advanced-alchemy.litestar.dev/latest/reference/base.html#advanced_alchemy.base.UUIDAuditBase" title="(in advanced_alchemy)"><code class="xref py py-class docutils literal notranslate"><span class="pre">UUIDAuditBase</span></code></a> class. Observe
+<code class="xref py py-class docutils literal notranslate"><span class="pre">UUIDAuditBase</span></code> class. Observe
 that the only modification here is the parent class from which we inherit. This minor
 change endows the <cite>book</cite> table with automatic timestamp columns
 (<cite>created</cite> and <cite>updated</cite>) upon deployment!</p>
@@ -1600,8 +1600,8 @@ change endows the <cite>book</cite> table with automatic timestamp columns
 <p class="admonition-title">Note</p>
 <p>If your application requires integer-based primary keys, equivalent base model
 and base audit model implementations can be found at
-<a class="reference external" href="https://docs.advanced-alchemy.litestar.dev/latest/reference/base.html#advanced_alchemy.base.BigIntAuditBase" title="(in advanced_alchemy)"><code class="xref py py-class docutils literal notranslate"><span class="pre">BigIntBase</span></code></a> and
-<a class="reference external" href="https://docs.advanced-alchemy.litestar.dev/latest/reference/base.html#advanced_alchemy.base.UUIDAuditBase" title="(in advanced_alchemy)"><code class="xref py py-class docutils literal notranslate"><span class="pre">BigIntAuditBase</span></code></a>
+<code class="xref py py-class docutils literal notranslate"><span class="pre">BigIntBase</span></code> and
+<code class="xref py py-class docutils literal notranslate"><span class="pre">BigIntAuditBase</span></code>
 respectively.</p>
 </div>
 <div class="admonition important">
