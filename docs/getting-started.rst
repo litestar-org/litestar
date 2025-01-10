@@ -80,7 +80,7 @@ At a minimum, make sure you have installed ``litestar[standard]``, which include
 First, create a file named ``app.py`` with the following contents:
 
 .. code-block:: python
-   :caption: This is a caption
+   :caption: app.py
 
    from litestar import Litestar, get
 
