@@ -193,6 +193,11 @@ nitpick_ignore = [
     (PY_CLASS, "advanced_alchemy.types.BigIntIdentity"),
     (PY_CLASS, "advanced_alchemy.types.JsonB"),
     (PY_CLASS, "advanced_alchemy.repository.SQLAlchemyAsyncRepository"),
+    # docs in flux as we prepare for `advanced_alchemy` 1.0 release. re-enable when finished
+    (PY_CLASS, "advanced_alchemy.base.UUIDBase"),
+    (PY_CLASS, "advanced_alchemy.base.UUIDAuditBase"),
+    (PY_CLASS, "advanced_alchemy.base.BigIntBase"),
+    (PY_CLASS, "advanced_alchemy.base.BigIntAuditBase"),
 ]
 
 nitpick_ignore_regex = [
