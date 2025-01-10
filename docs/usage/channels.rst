@@ -189,7 +189,8 @@ follows that there is no guarantee that an event will be available in the backen
 Alternatively, the asynchronous :meth:`~ChannelsPlugin.wait_published` method can be used, which skips the
 internal message queue, publishing the data to the backend directly.
 
-.. note:: While calling :meth:`~ChannelsPlugin.publish` does not guarantee the
+.. note::
+    While calling :meth:`~ChannelsPlugin.publish` does not guarantee the
     message is sent to the backend immediately, it will be sent there *eventually*; On
     shutdown, the plugin will wait for all queues to empty
 
