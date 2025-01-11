@@ -38,7 +38,7 @@ def test_response_cookies() -> None:
         route_handlers=[first_router, second_router],
     )
     route_handler = app.routes[0].route_handler_map["GET"]  # type: ignore[union-attr]
-    response_cookies = {cookie.key: cookie.value for cookie in route_handler.resolve_response_cookies()}
+    response_cookies = {cookie.key: cookie.value for cookie in route_handler.response_cookies}
     assert response_cookies["first"] == local_first.value
     assert response_cookies["second"] == controller_second.value
     assert response_cookies["third"] == router_second.value
@@ -55,7 +55,7 @@ def test_response_cookies_mapping() -> None:
     def handler_two() -> None:
         pass
 
-    assert handler_one.resolve_response_cookies() == handler_two.resolve_response_cookies()
+    assert handler_one.resolve_response_cookies() == handler_two.response_cookies
 
 
 def test_response_cookie_rendering() -> None:

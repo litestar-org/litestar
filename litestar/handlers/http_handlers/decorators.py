@@ -614,7 +614,7 @@ def patch(
     type_decoders: TypeDecodersSequence | None = None,
     type_encoders: TypeEncodersMap | None = None,
     handler_class: type[HTTPRouteHandler] = HTTPRouteHandler,
-    handler_class: type[HTTPRouteHandler] = HTTPRouteHandler,**kwargs: Any,
+    **kwargs: Any,
 ) -> Callable[[AnyCallable], HTTPRouteHandler]:
     """Create an :class:`HTTPRouteHandler` with a ``PATCH`` method.
 
@@ -786,7 +786,7 @@ def post(
     type_decoders: TypeDecodersSequence | None = None,
     type_encoders: TypeEncodersMap | None = None,
     handler_class: type[HTTPRouteHandler] = HTTPRouteHandler,
-    handler_class: type[HTTPRouteHandler] = HTTPRouteHandler,**kwargs: Any,
+    **kwargs: Any,
 ) -> Callable[[AnyCallable], HTTPRouteHandler]:
     """Create an :class:`HTTPRouteHandler` with a ``POST`` method.
 
@@ -958,7 +958,7 @@ def put(
     type_decoders: TypeDecodersSequence | None = None,
     type_encoders: TypeEncodersMap | None = None,
     handler_class: type[HTTPRouteHandler] = HTTPRouteHandler,
-    handler_class: type[HTTPRouteHandler] = HTTPRouteHandler,**kwargs: Any,
+    **kwargs: Any,
 ) -> Callable[[AnyCallable], HTTPRouteHandler]:
     """Create an :class:`HTTPRouteHandler` with a ``PUT`` method.
 

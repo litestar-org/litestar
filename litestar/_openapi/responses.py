@@ -223,7 +223,7 @@ class ResponseFactory:
 
             response.headers[response_header.name] = header
 
-        if cookies := self.route_handler.resolve_response_cookies():
+        if cookies := self.route_handler.response_cookies:
             response.headers["Set-Cookie"] = OpenAPIHeader(
                 schema=Schema(
                     all_of=[create_cookie_schema(cookie=cookie) for cookie in sorted(cookies, key=attrgetter("key"))]

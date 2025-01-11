@@ -538,7 +538,7 @@ class HTTPRouteHandler(BaseRouteHandler):
         self._default_response_handler, self._response_type_handler = self._create_response_handlers(
             media_type=self.media_type,
             response_class=self.response_class,
-            cookies=self.resolve_response_cookies(),
+            cookies=self.response_cookies,
             headers=self.response_headers,
             type_encoders=self.type_encoders,
             return_type=self.parsed_fn_signature.return_type,
