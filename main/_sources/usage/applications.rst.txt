@@ -110,10 +110,10 @@ is accessible.
 :ref:`reserved keyword arguments <usage/routing/handlers:"reserved" keyword arguments>`.
 
 It is important to understand in this context that the application instance is injected into the ASGI ``scope`` mapping
-for each connection (i.e. request or websocket connection) as ``scope["app"]``. This makes the application
-accessible wherever the scope mapping is available, e.g. in middleware, on :class:`~.connection.request.Request` and
-:class:`~.connection.websocket.WebSocket` instances (accessible as ``request.app`` / ``socket.app``), and many
-other places.
+for each connection (i.e. request or websocket connection) as ``scope["litestar_app"]``, and can be retrieved using
+:meth:`~.Litestar.from_scope`. This makes the application accessible wherever the scope mapping is available,
+e.g. in middleware, on :class:`~.connection.request.Request` and :class:`~.connection.websocket.WebSocket` instances
+(accessible as ``request.app`` / ``socket.app``), and many other places.
 
 Therefore, :paramref:`~.app.Litestar.state` offers an easy way to share contextual data between disparate parts
 of the application, as seen below:
