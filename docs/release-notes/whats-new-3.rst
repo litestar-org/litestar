@@ -205,3 +205,24 @@ Change the media type of :attr:`~enums.MediaType.MESSAGEPACK` and
 newly introduced official ``application/vnd.msgpack``.
 
 https://www.iana.org/assignments/media-types/application/vnd.msgpack
+
+
+Deprecated ``resolve_`` methods on route handlers
+-------------------------------------------------
+
+All ``resolve_`` methods on the route handlers
+(e.g. :meth:`~litestar.handlers.HTTPRouteHandler.resolve_response_headers`) have been
+deprecated and will be removed in ``4.0``. The attributes can now safely be accessed
+directly (e.g. `HTTPRouteHandlers.response_headers`).
+
+
+Moved routing related methods from ``Router`` to ``Litestar``
+-------------------------------------------------------------
+
+:class:`~litestar.router.Router` now only holds route handlers and configuration, while
+the actual routing is done in :class:`~litestar.app.Litestar`. With this, several
+methods and properties have been moved from ``Router`` to ``Litestar``:
+
+- ``route_handler_method_map``
+- ``get_route_handler_map``
+- ``routes``
