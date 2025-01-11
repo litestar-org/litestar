@@ -111,7 +111,7 @@ is accessible.
 
 It is important to understand in this context that the application instance is injected into the ASGI ``scope`` mapping
 for each connection (i.e. request or websocket connection) as ``scope["litestar_app"]``, and can be retrieved using
-:meth:`~litestar.Litestar.from_scope`. This makes the application accessible wherever the scope mapping is available,
+:meth:`~.Litestar.from_scope`. This makes the application accessible wherever the scope mapping is available,
 e.g. in middleware, on :class:`~.connection.request.Request` and :class:`~.connection.websocket.WebSocket` instances
 (accessible as ``request.app`` / ``socket.app``), and many other places.
 
