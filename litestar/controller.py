@@ -218,7 +218,7 @@ class Controller:
 
         router = Router(
             path=self.path,
-            route_handlers=self.get_route_handlers(),
+            route_handlers=self.get_route_handlers(),  # type: ignore[arg-type]
             after_request=self.after_request,
             after_response=self.after_response,
             before_request=self.before_request,
@@ -268,7 +268,7 @@ class Controller:
             route_handler = deepcopy(self_handler)
             # at the point we get a reference to the handler function, it's unbound, so
             # we replace it with a regular bound method here
-            route_handler._fn = types.MethodType(route_handler._fn, self)
+            route_handler.fn = types.MethodType(route_handler.fn, self)
             route_handler.owner = self
             route_handlers.append(route_handler)
 

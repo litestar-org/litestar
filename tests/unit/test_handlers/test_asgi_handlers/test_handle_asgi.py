@@ -1,5 +1,6 @@
 from litestar import Controller, MediaType, asgi
 from litestar.enums import ScopeType
+from litestar.handlers import ASGIRouteHandler
 from litestar.response.base import ASGIResponse
 from litestar.status_codes import HTTP_200_OK
 from litestar.testing import create_test_client
@@ -51,3 +52,14 @@ def test_asgi_signature_namespace() -> None:
         response = client.get("/asgi")
         assert response.status_code == HTTP_200_OK
         assert response.text == "/asgi"
+
+
+def test_custom_handler_class() -> None:
+    class MyHandlerClass(ASGIRouteHandler):
+        pass
+
+    @asgi("/", handler_class=MyHandlerClass)
+    async def handler() -> None:
+        pass
+
+    assert isinstance(handler, MyHandlerClass)

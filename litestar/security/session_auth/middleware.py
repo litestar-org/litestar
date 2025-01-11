@@ -54,7 +54,7 @@ class MiddlewareWrapper:
                 scopes=self.config.scopes,
                 retrieve_user_handler=self.config.retrieve_user_handler,  # type: ignore[arg-type]
             )
-            exception_middleware = ExceptionHandlerMiddleware(app=auth_middleware, debug=None)
+            exception_middleware = ExceptionHandlerMiddleware(app=auth_middleware)
             self.app = self.config.session_backend_config.middleware.middleware(
                 app=exception_middleware,
                 backend=self.config.session_backend,

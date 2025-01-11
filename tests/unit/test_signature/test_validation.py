@@ -66,7 +66,7 @@ def test_validation_failure_raises_400() -> None:
     dependencies = {"dep": Provide(lambda: 13, sync_to_thread=False)}
 
     @get("/")
-    def test(dep: int, param: int, optional_dep: Optional[int] = Dependency()) -> None: ...
+    def test(dep: int, param: int, optional_dep: Optional[int] = Dependency(default=None)) -> None: ...
 
     with create_test_client(route_handlers=[test], dependencies=dependencies) as client:
         response = client.get("/?param=thirteen")
@@ -134,7 +134,7 @@ def test_validation_error_exception_key() -> None:
 
     model = SignatureModel.create(
         dependency_name_set=set(),
-        fn=handler,
+        fn=handler,  # type: ignore[arg-type]
         data_dto=None,
         parsed_signature=ParsedSignature.from_fn(handler.fn, {}),
         type_decoders=[],
