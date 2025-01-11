@@ -52,7 +52,8 @@ from litestar.types import (
     TypeEncodersMap,
 )
 from litestar.types.builtin_types import NoneType
-from litestar.utils import deprecated, ensure_async_callable
+from litestar.utils import deprecated as litestar_deprecated
+from litestar.utils import ensure_async_callable
 from litestar.utils.empty import value_or_default
 from litestar.utils.predicates import is_async_callable
 from litestar.utils.scope.state import ScopeState
@@ -393,7 +394,7 @@ class HTTPRouteHandler(BaseRouteHandler):
 
         return merge_opts
 
-    @deprecated("3.0", removal_in="4.0", alternative=".request_class property")
+    @litestar_deprecated("3.0", removal_in="4.0", alternative=".request_class property")
     def resolve_request_class(self) -> type[Request]:
         """Return the closest custom Request class in the owner graph or the default Request class.
 
@@ -409,7 +410,7 @@ class HTTPRouteHandler(BaseRouteHandler):
     def request_class(self) -> type[Request]:
         return self._request_class or Request
 
-    @deprecated("3.0", removal_in="4.0", alternative=".response_class property")
+    @litestar_deprecated("3.0", removal_in="4.0", alternative=".response_class property")
     def resolve_response_class(self) -> type[Response]:
         """Return the closest custom Response class in the owner graph or the default Response class.
 
@@ -424,7 +425,7 @@ class HTTPRouteHandler(BaseRouteHandler):
     def response_class(self) -> type[Response]:
         return self._response_class or Response
 
-    @deprecated("3.0", removal_in="4.0", alternative=".response_headers attribute")
+    @litestar_deprecated("3.0", removal_in="4.0", alternative=".response_headers attribute")
     def resolve_response_headers(self) -> frozenset[ResponseHeader]:
         return self.response_headers
 
@@ -453,11 +454,11 @@ class HTTPRouteHandler(BaseRouteHandler):
 
         return frozenset(resolved_response_headers.values())
 
-    @deprecated("3.0", removal_in="4.0", alternative=".response_cookies attribute")
+    @litestar_deprecated("3.0", removal_in="4.0", alternative=".response_cookies attribute")
     def resolve_response_cookies(self) -> frozenset[Cookie]:
         return self.response_cookies
 
-    @deprecated("3.0", removal_in="4.0", alternative=".before_request attribute")
+    @litestar_deprecated("3.0", removal_in="4.0", alternative=".before_request attribute")
     def resolve_before_request(self) -> AsyncAnyCallable | None:
         """Resolve the before_handler handler by starting from the route handler and moving up.
 
@@ -469,7 +470,7 @@ class HTTPRouteHandler(BaseRouteHandler):
         """
         return self.before_request
 
-    @deprecated("3.0", removal_in="4.0", alternative=".after_response attribute")
+    @litestar_deprecated("3.0", removal_in="4.0", alternative=".after_response attribute")
     def resolve_after_response(self) -> AsyncAnyCallable | None:
         """Resolve the after_response handler by starting from the route handler and moving up.
 
@@ -481,7 +482,7 @@ class HTTPRouteHandler(BaseRouteHandler):
         """
         return self.after_response
 
-    @deprecated("3.0", removal_in="4.0", alternative=".include_in_schema property")
+    @litestar_deprecated("3.0", removal_in="4.0", alternative=".include_in_schema property")
     def resolve_include_in_schema(self) -> bool:
         """Resolve the 'include_in_schema' property by starting from the route handler and moving up.
 
@@ -497,7 +498,7 @@ class HTTPRouteHandler(BaseRouteHandler):
     def include_in_schema(self) -> bool:
         return self._include_in_schema if self._include_in_schema is not Empty else True
 
-    @deprecated("3.0", removal_in="4.0", alternative=".security attribute")
+    @litestar_deprecated("3.0", removal_in="4.0", alternative=".security attribute")
     def resolve_security(self) -> tuple[SecurityRequirement, ...]:
         """Resolve the security property by starting from the route handler and moving up.
 
@@ -509,7 +510,7 @@ class HTTPRouteHandler(BaseRouteHandler):
         """
         return self.security
 
-    @deprecated("3.0", removal_in="4.0", alternative=".tags attribute")
+    @litestar_deprecated("3.0", removal_in="4.0", alternative=".tags attribute")
     def resolve_tags(self) -> frozenset[str]:
         """Resolve the tags property by starting from the route handler and moving up.
 
@@ -517,13 +518,13 @@ class HTTPRouteHandler(BaseRouteHandler):
         """
         return self.tags
 
-    @deprecated("3.0", removal_in="4.0", alternative=".request_max_body_size property")
+    @litestar_deprecated("3.0", removal_in="4.0", alternative=".request_max_body_size property")
     def resolve_request_max_body_size(self) -> int | None:
         return self.request_max_body_size
 
     @property
     def request_max_body_size(self) -> int | None:
-        return value_or_default(self._request_max_body_size, None)
+        return value_or_default(self._request_max_body_size, None)  # pyright: ignore
 
     def on_registration(self, route: BaseRoute, app: Litestar) -> None:
         super().on_registration(route=route, app=app)

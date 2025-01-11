@@ -52,7 +52,7 @@ from litestar.routes import ASGIRoute, BaseRoute, HTTPRoute, WebSocketRoute
 from litestar.stores.registry import StoreRegistry
 from litestar.types import Empty, TypeDecodersSequence
 from litestar.types.internal_types import PathParameterDefinition, RouteHandlerMapItem, TemplateConfigType
-from litestar.utils import deprecated, ensure_async_callable, find_index, join_paths, unique
+from litestar.utils import deprecated, ensure_async_callable, join_paths, unique
 from litestar.utils.dataclass import extract_dataclass_items
 from litestar.utils.predicates import is_async_callable, is_class_and_subclass
 from litestar.utils.warnings import warn_pdb_on_exception
@@ -730,9 +730,9 @@ class Litestar(Router):
                     ]
                 ):
                     http_handlers.extend(existing_handlers)
-                    existing_route_index = find_index(self.routes, lambda x: x.path == path)  # noqa: B023
+                    existing_route_index = next((i for i, r in enumerate(self.routes) if r.path == path), None)
 
-                    if existing_route_index == -1:  # pragma: no cover
+                    if existing_route_index is None:  # pragma: no cover
                         raise ImproperlyConfiguredException("unable to find_index existing route index")
 
                     route: WebSocketRoute | ASGIRoute | HTTPRoute = HTTPRoute(

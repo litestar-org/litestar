@@ -28,12 +28,12 @@ class Provide:
     """Wrapper class for dependency injection"""
 
     __slots__ = (
+        "_parsed_fn_signature",
+        "_signature_model",
         "dependency",
         "has_async_generator_dependency",
         "has_sync_callable",
         "has_sync_generator_dependency",
-        "parsed_fn_signature",
-        "signature_model",
         "sync_to_thread",
         "use_cache",
         "value",
@@ -91,8 +91,20 @@ class Provide:
         self.sync_to_thread = bool(sync_to_thread)
         self.use_cache = use_cache
         self.value: Any = Empty
-        self.parsed_fn_signature: ParsedSignature | None = None
-        self.signature_model: type[SignatureModel] | None = None
+        self._parsed_fn_signature: ParsedSignature | None = None
+        self._signature_model: type[SignatureModel] | None = None
+
+    @property
+    def signature_model(self) -> type[SignatureModel]:
+        if self._signature_model is None:
+            raise ValueError(f"Cannot access signature model of Provider {self} because it is not finalized")
+        return self._signature_model
+
+    @property
+    def parsed_fn_signature(self) -> ParsedSignature:
+        if self._parsed_fn_signature is None:
+            raise ValueError(f"Cannot access parsed signature of Provider {self} because it is not finalized")
+        return self._parsed_fn_signature
 
     def finalize(
         self,
@@ -103,7 +115,7 @@ class Provide:
         data_dto: type[AbstractDTO] | None,
         type_decoders: TypeDecodersSequence,
     ) -> None:
-        if self.parsed_fn_signature is None:
+        if self._parsed_fn_signature is None:
             dependency = unwrap_partial(self.dependency)
             plugin: DIPlugin | None = None
             if plugins is not None:
@@ -113,12 +125,12 @@ class Provide:
                 )
             if plugin:
                 signature, init_type_hints = plugin.get_typed_init(dependency)
-                self.parsed_fn_signature = ParsedSignature.from_signature(signature, init_type_hints)
+                self._parsed_fn_signature = ParsedSignature.from_signature(signature, init_type_hints)
             else:
-                self.parsed_fn_signature = ParsedSignature.from_fn(dependency, signature_namespace)
+                self._parsed_fn_signature = ParsedSignature.from_fn(dependency, signature_namespace)
 
-        if self.signature_model is None:
-            self.signature_model = SignatureModel.create(
+        if self._signature_model is None:
+            self._signature_model = SignatureModel.create(
                 dependency_name_set=dependency_keys,
                 fn=self.dependency,
                 parsed_signature=self.parsed_fn_signature,

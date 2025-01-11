@@ -341,7 +341,7 @@ class BaseRouteHandler:
         self._check_registered()
         return self.dependencies
 
-    def _finalize_dependencies(self, app: Litestar | None = None) -> None:
+    def _finalize_dependencies(self, app: Litestar) -> None:
         dependencies: dict[str, Provide] = {}
 
         # keep track of which providers are available for each dependency

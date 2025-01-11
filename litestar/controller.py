@@ -254,14 +254,14 @@ class Controller:
         for self_handler in self_handlers:
             # at the point we get a reference to the handler function, it's unbound, so
             # we replace it with a regular bound method here
-
             original_fn = self_handler.fn
+
             # in case this was bound before (happens during handler subclassing), we
             # need to create a new bound method with the current instance
             if isinstance(original_fn, types.MethodType):
                 original_fn = original_fn.__func__
 
-            self_handler.fn = types.MethodType(original_fn, self)
+            self_handler.fn = types.MethodType(original_fn, self)  # pyright: ignore
             route_handlers.append(self_handler)
 
         self.validate_route_handlers(route_handlers=route_handlers)
