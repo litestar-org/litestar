@@ -190,6 +190,11 @@ class BaseRouteHandler:
         merge_opts["dto"] = value_or_default(self._dto, merge_opts.get("dto", Empty))
         merge_opts["return_dto"] = value_or_default(self._return_dto, merge_opts.get("return_dto", Empty))
 
+        # due to the way we're traversing over the app layers, the middleware stack is
+        # constructed in the wrong order (handler > application). reversing the order
+        # here is easier than handling it correctly at every intermediary step
+        merge_opts["middleware"] = tuple(reversed(merge_opts["middleware"]))
+
         return merge_opts
 
     def merge(self, *others: Router) -> Self:
@@ -502,10 +507,6 @@ class BaseRouteHandler:
         """
         self._registered = True
 
-        # due to the way we're traversing over the app layers, the middleware stack is
-        # constructed in the wrong order (handler > application). reversing the order
-        # here is easier than handling it correctly at every intermediary step
-        self.middleware = tuple(reversed(self.middleware))
         self._dto = self._resolve_data_dto(app=app)
         self._return_dto = self._resolve_return_dto(app=app, data_dto=self._dto)
 
