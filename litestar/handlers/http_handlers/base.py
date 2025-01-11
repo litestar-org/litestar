@@ -715,7 +715,7 @@ class HTTPRouteHandler(BaseRouteHandler):
         cleanup_group: DependencyCleanupGroup | None = None
         kwargs_models_model = self._get_kwargs_model_for_route(request.scope["path_params"].keys())
 
-        if kwargs_models_model.has_kwargs and self._signature_model:
+        if kwargs_models_model.has_kwargs and self.signature_model:
             try:
                 kwargs = await kwargs_models_model.to_kwargs(connection=request)
             except SerializationException as e:
@@ -727,7 +727,7 @@ class HTTPRouteHandler(BaseRouteHandler):
             if kwargs_models_model.dependency_batches:
                 cleanup_group = await kwargs_models_model.resolve_dependencies(request, kwargs)
 
-            parsed_kwargs = self._signature_model.parse_values_from_connection_kwargs(
+            parsed_kwargs = self.signature_model.parse_values_from_connection_kwargs(
                 connection=request,
                 kwargs=kwargs,
             )

@@ -147,7 +147,7 @@ class ASGIRouter:
 
         This map is used in the asgi router to route requests.
         """
-        if self._trie_initialized:
+        if self._trie_initialized:  # pragma: no cover
             self._mount_paths_regex = None
             self._mount_routes = {}
             self._plain_routes = set()

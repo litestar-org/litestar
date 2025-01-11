@@ -1,6 +1,9 @@
+from unittest.mock import Mock
+
 import pytest
 
-from litestar import Controller, Litestar, Router, post
+from litestar import Controller, Litestar, Request, Response, Router, get, post
+from litestar.datastructures import ResponseHeader
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.types import Empty
 
@@ -23,15 +26,12 @@ def test_resolve_request_max_body_size() -> None:
 
     router = Router("/", route_handlers=[router_handler], request_max_body_size=1)
     app = Litestar(route_handlers=[app_handler, router, MyController], request_max_body_size=3)
-    assert (
-        next(r for r in app.routes if r.path == "/1").route_handler_map["POST"].request_max_body_size == 1  # type: ignore[union-attr]
-    )
-    assert (
-        next(r for r in app.routes if r.path == "/2").route_handler_map["POST"].request_max_body_size == 3  # type: ignore[union-attr]
-    )
-    assert (
-        next(r for r in app.routes if r.path == "/3").route_handler_map["POST"].request_max_body_size == 2  # type: ignore[union-attr]
-    )
+    handler_1 = next(r for r in app.routes if r.path == "/1").route_handler_map["POST"]
+    handler_2 = next(r for r in app.routes if r.path == "/2").route_handler_map["POST"]
+    handler_3 = next(r for r in app.routes if r.path == "/3").route_handler_map["POST"]
+    assert handler_1.request_max_body_size == handler_1.resolve_request_max_body_size() == 1
+    assert handler_2.request_max_body_size == handler_2.resolve_request_max_body_size() == 3
+    assert handler_3.request_max_body_size == handler_3.resolve_request_max_body_size() == 2
 
 
 def test_resolve_request_max_body_size_none() -> None:
@@ -64,3 +64,87 @@ def test_resolve_request_max_body_size_empty_on_all_layers_raises() -> None:
 
     with pytest.raises(ImproperlyConfiguredException, match="'request_max_body_size' set to 'Empty'"):
         Litestar([handler_one], request_max_body_size=Empty)  # type: ignore[arg-type]
+
+
+def test_resolve_request_class() -> None:
+    @get()
+    async def handler() -> None:
+        pass
+
+    app = Litestar(route_handlers=[handler])
+    assert app.route_handler_method_map["/"]["GET"].resolve_request_class() is Request
+
+
+def test_resolve_response_class() -> None:
+    @get()
+    async def handler() -> None:
+        pass
+
+    app = Litestar(route_handlers=[handler])
+    assert app.route_handler_method_map["/"]["GET"].resolve_response_class() is Response
+
+
+def test_resolve_response_headers() -> None:
+    @get(response_headers={"foo": "bar"})
+    async def handler() -> None:
+        pass
+
+    app = Litestar(route_handlers=[handler])
+    assert app.route_handler_method_map["/"]["GET"].resolve_response_headers() == frozenset(
+        [ResponseHeader(name="foo", value="bar")]
+    )
+
+
+def test_resolve_before_request() -> None:
+    before_request = Mock()
+
+    @get(before_request=before_request)
+    async def handler() -> None:
+        pass
+
+    app = Litestar(route_handlers=[handler])
+    resolved_handler = app.route_handler_method_map["/"]["GET"]
+    assert resolved_handler.resolve_before_request() is resolved_handler.before_request
+
+
+def test_resolve_after_response() -> None:
+    after_response = Mock()
+
+    @get(after_response=after_response)
+    async def handler() -> None:
+        pass
+
+    app = Litestar(route_handlers=[handler])
+    resolved_handler = app.route_handler_method_map["/"]["GET"]
+    assert resolved_handler.resolve_after_response() is resolved_handler.after_response
+
+
+def test_resolve_include_in_schema() -> None:
+    @get(include_in_schema=False)
+    async def handler() -> None:
+        pass
+
+    app = Litestar(route_handlers=[handler])
+    assert app.route_handler_method_map["/"]["GET"].resolve_include_in_schema() is False
+
+
+def test_resolve_security() -> None:
+    security = {"foo": ["bar"]}
+
+    @get(security=security)
+    async def handler() -> None:
+        pass
+
+    app = Litestar(route_handlers=[handler])
+    resolved_handler = app.route_handler_method_map["/"]["GET"]
+    assert resolved_handler.resolve_security() == resolved_handler.security
+
+
+def test_resolve_tags() -> None:
+    @get(tags=["foo"])
+    async def handler() -> None:
+        pass
+
+    app = Litestar(route_handlers=[handler])
+    resolved_handler = app.route_handler_method_map["/"]["GET"]
+    assert resolved_handler.resolve_tags() == resolved_handler.tags

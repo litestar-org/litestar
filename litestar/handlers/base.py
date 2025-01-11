@@ -228,7 +228,7 @@ class BaseRouteHandler:
         return partial(default_serializer, type_encoders=self.type_encoders)
 
     @property
-    def _signature_model(self) -> type[SignatureModel]:
+    def signature_model(self) -> type[SignatureModel]:
         """Get the signature model for the route handler.
 
         Returns:
@@ -283,10 +283,6 @@ class BaseRouteHandler:
         """
         return get_name(unwrap_partial(self.fn))
 
-    def _check_registered(self) -> None:
-        if not self._registered:
-            self._raise_not_registered()
-
     def _raise_not_registered(self) -> NoReturn:
         raise LitestarException(
             f"Handler {self!r}: Accessing this attribute is unsafe until the handler has been"
@@ -300,7 +296,7 @@ class BaseRouteHandler:
         Returns:
             A dict of type encoders
         """
-        self._check_registered()
+
         return self.type_encoders
 
     @deprecated("3.0", removal_in="4.0", alternative=".type_decoders attribute")
@@ -310,19 +306,17 @@ class BaseRouteHandler:
         Returns:
             A dict of type encoders
         """
-        self._check_registered()
+
         return self.type_decoders
 
     @deprecated("3.0", removal_in="4.0", alternative=".parameter_field_definitions property")
     def resolve_layered_parameters(self) -> dict[str, FieldDefinition]:
-        self._check_registered()
         return self.parameter_field_definitions
 
     @property
     def parameter_field_definitions(self) -> dict[str, FieldDefinition]:
         """Return all parameters declared above the handler."""
         if self._parameter_field_definitions is Empty:
-            self._check_registered()
             self._parameter_field_definitions = {
                 key: FieldDefinition.from_kwarg(name=key, annotation=parameter.annotation, kwarg_definition=parameter)
                 for key, parameter in self.parameters.items()
@@ -332,13 +326,13 @@ class BaseRouteHandler:
     @deprecated("3.0", removal_in="4.0", alternative=".guards attribute")
     def resolve_guards(self) -> tuple[Guard, ...]:
         """Return all guards in the handlers scope, starting from highest to current layer."""
-        self._check_registered()
+
         return self.guards
 
     @deprecated("3.0", removal_in="4.0", alternative=".dependencies attribute")
     def resolve_dependencies(self) -> dict[str, Provide]:
         """Return all dependencies correlating to handler function's kwargs that exist in the handler's scope."""
-        self._check_registered()
+
         return self.dependencies
 
     def _finalize_dependencies(self, app: Litestar) -> None:
@@ -370,7 +364,7 @@ class BaseRouteHandler:
     @deprecated("3.0", removal_in="4.0", alternative=".middleware attribute")
     def resolve_middleware(self) -> tuple[Middleware, ...]:
         """Return registered middlewares"""
-        self._check_registered()
+
         return self.middleware
 
     @deprecated("3.0", removal_in="4.0", alternative=".exception_handlers attribute")
@@ -379,13 +373,13 @@ class BaseRouteHandler:
 
         This method is memoized so the computation occurs only once.
         """
-        self._check_registered()
+
         return self.exception_handlers
 
     @deprecated("3.0", removal_in="4.0", alternative=".signature_namespace attribute")
     def resolve_signature_namespace(self) -> dict[str, Any]:
         """Build the route handler signature namespace dictionary by going from top to bottom"""
-        self._check_registered()
+
         return self.signature_namespace
 
     @property
@@ -523,7 +517,7 @@ class BaseRouteHandler:
         from litestar._kwargs import KwargsModel
 
         return KwargsModel.create_for_signature_model(
-            signature_model=self._signature_model,
+            signature_model=self.signature_model,
             parsed_signature=self.parsed_fn_signature,
             dependencies=self.dependencies,
             path_parameters=set(path_parameters),

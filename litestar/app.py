@@ -511,18 +511,6 @@ class Litestar(Router):
             pass
         return config
 
-    def _reduce_handlers(self, route_handlers: Sequence[ControllerRouterHandler]) -> list[RouteHandlerType]:
-        reduced_handlers = []
-        handlers_to = list(route_handlers)
-        while handlers_to:
-            handler = self._validate_registration_value(handlers_to.pop(0))
-            if isinstance(handler, Router):
-                handlers_to.extend(handler.route_handlers)
-            else:
-                reduced_handlers.append(handler)
-
-        return reduced_handlers
-
     @property
     @deprecated(version="2.0", alternative="Litestar.plugins.cli", kind="property")
     def cli_plugins(self) -> list[CLIPluginProtocol]:
@@ -697,13 +685,8 @@ class Litestar(Router):
         return route_map
 
     @classmethod
-    def get_route_handler_map(
-        cls,
-        value: BaseRouteHandler | Litestar,
-    ) -> dict[str, RouteHandlerMapItem]:
+    def get_route_handler_map(cls, value: BaseRouteHandler) -> dict[str, RouteHandlerMapItem]:
         """Map route handlers to HTTP methods."""
-        if isinstance(value, Litestar):
-            return value.route_handler_method_map
 
         if isinstance(value, HTTPRouteHandler):
             return {path: {http_method: value for http_method in value.http_methods} for path in value.paths}
