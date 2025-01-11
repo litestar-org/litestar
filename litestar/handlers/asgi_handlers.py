@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import warnings
 from typing import TYPE_CHECKING, Any, Mapping, Sequence
 
 from litestar.exceptions import ImproperlyConfiguredException
@@ -11,6 +12,7 @@ __all__ = ("ASGIRouteHandler", "asgi")
 
 
 if TYPE_CHECKING:
+    from litestar import Litestar
     from litestar.types import (
         ExceptionHandlersMap,
         Guard,
@@ -24,7 +26,7 @@ class ASGIRouteHandler(BaseRouteHandler):
     Use this decorator to decorate ASGI applications.
     """
 
-    __slots__ = ("is_mount", "is_static")
+    __slots__ = ("copy_scope", "is_mount", "is_static")
 
     def __init__(
         self,
@@ -37,6 +39,7 @@ class ASGIRouteHandler(BaseRouteHandler):
         is_mount: bool = False,
         is_static: bool = False,
         signature_namespace: Mapping[str, Any] | None = None,
+        copy_scope: bool | None = None,
         **kwargs: Any,
     ) -> None:
         """Initialize ``ASGIRouteHandler``.
@@ -58,10 +61,14 @@ class ASGIRouteHandler(BaseRouteHandler):
                 are used to deliver static files.
             signature_namespace: A mapping of names to types for use in forward reference resolution during signature modelling.
             type_encoders: A mapping of types to callables that transform them into types supported for serialization.
+            copy_scope: Copy the ASGI 'scope' before calling the mounted application. Should be set to 'True' unless
+                side effects via scope mutations by the mounted ASGI application are intentional
             **kwargs: Any additional kwarg - will be set in the opt dictionary.
         """
         self.is_mount = is_mount or is_static
         self.is_static = is_static
+        self.copy_scope = copy_scope
+
         super().__init__(
             path,
             exception_handlers=exception_handlers,
@@ -71,6 +78,19 @@ class ASGIRouteHandler(BaseRouteHandler):
             signature_namespace=signature_namespace,
             **kwargs,
         )
+
+    def on_registration(self, app: Litestar) -> None:
+        super().on_registration(app)
+
+        if self.copy_scope is None:
+            warnings.warn(
+                f"{self}: 'copy_scope' not set for ASGI handler. Leaving 'copy_scope' unset will warn about mounted "
+                "ASGI applications modifying the scope. Set 'copy_scope=True' to ensure calling into mounted ASGI apps "
+                "does not cause any side effects via scope mutations, or set 'copy_scope=False' if those mutations are "
+                "desired. 'copy'scope' will default to 'True' in Litestar 3",
+                category=DeprecationWarning,
+                stacklevel=1,
+            )
 
     def _validate_handler_function(self) -> None:
         """Validate the route handler function once it's set by inspecting its return annotations."""

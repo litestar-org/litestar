@@ -24,7 +24,7 @@ async def before_send_hook_handler(message: Message, scope: Scope) -> None:
     """
     if message["type"] == "http.response.start":
         headers = MutableScopeHeaders.from_message(message=message)
-        headers["My Header"] = scope["app"].state.message
+        headers["My Header"] = Litestar.from_scope(scope).state.message
 
 
 def on_startup(app: Litestar) -> None:

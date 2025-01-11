@@ -100,7 +100,7 @@ class LoggingMiddleware(AbstractMiddleware):
             None
         """
         if not hasattr(self, "logger"):
-            self.logger = scope["app"].get_logger(self.config.logger_name)
+            self.logger = scope["litestar_app"].get_logger(self.config.logger_name)
             self.is_struct_logger = structlog_installed and repr(self.logger).startswith("<BoundLoggerLazyProxy")
 
         if self.config.response_log_fields:
@@ -121,7 +121,7 @@ class LoggingMiddleware(AbstractMiddleware):
         Returns:
             None
         """
-        extracted_data = await self.extract_request_data(request=scope["app"].request_class(scope, receive))
+        extracted_data = await self.extract_request_data(request=scope["litestar_app"].request_class(scope, receive))
         self.log_message(values=extracted_data)
 
     def log_response(self, scope: Scope) -> None:

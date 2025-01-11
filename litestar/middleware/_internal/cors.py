@@ -44,7 +44,7 @@ class CORSMiddleware(AbstractMiddleware):
         origin = headers.get("origin")
 
         if scope["type"] == ScopeType.HTTP and scope["method"] == HttpMethod.OPTIONS and origin:
-            request = scope["app"].request_class(scope=scope, receive=receive, send=send)
+            request = scope["litestar_app"].request_class(scope=scope, receive=receive, send=send)
             asgi_response = self._create_preflight_response(origin=origin, request_headers=headers).to_asgi_response(
                 app=None, request=request
             )

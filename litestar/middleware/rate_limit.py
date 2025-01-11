@@ -67,7 +67,7 @@ class RateLimitMiddleware(AbstractMiddleware):
         Returns:
             None
         """
-        app = scope["app"]
+        app = scope["litestar_app"]
         request: Request[Any, Any, Any] = app.request_class(scope)
         store = self.config.get_store_from_app(app)
         if await self.should_check_request(request=request):

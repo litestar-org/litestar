@@ -211,6 +211,7 @@ def create_scope() -> Callable[..., Scope]:
     ) -> Scope:
         scope = {
             "app": app,
+            "litestar_app": app,
             "asgi": asgi or {"spec_version": "2.0", "version": "3.0"},
             "auth": auth,
             "type": type,

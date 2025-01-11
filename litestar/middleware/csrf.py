@@ -106,7 +106,7 @@ class CSRFMiddleware(MiddlewareProtocol):
             await self.app(scope, receive, send)
             return
 
-        request: Request[Any, Any, Any] = scope["app"].request_class(scope=scope, receive=receive)
+        request: Request[Any, Any, Any] = scope["litestar_app"].request_class(scope=scope, receive=receive)
         content_type, _ = request.content_type
         csrf_cookie = request.cookies.get(self.config.cookie_name)
         existing_csrf_token = request.headers.get(self.config.header_name)
