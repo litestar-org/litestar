@@ -24,7 +24,7 @@ def get_serializer_from_scope(scope: Scope) -> Serializer:
         A serializer function
     """
     route_handler = scope["route_handler"]
-    app = scope["app"]
+    app = scope["litestar_app"]
 
     if hasattr(route_handler, "resolve_type_encoders"):
         type_encoders = route_handler.resolve_type_encoders()

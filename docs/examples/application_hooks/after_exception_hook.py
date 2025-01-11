@@ -19,7 +19,7 @@ def my_handler() -> None:
 
 async def after_exception_handler(exc: Exception, scope: "Scope") -> None:
     """Hook function that will be invoked after each exception."""
-    state = scope["app"].state
+    state = Litestar.from_scope(scope).state
     if not hasattr(state, "error_count"):
         state.error_count = 1
     else:

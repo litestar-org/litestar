@@ -610,9 +610,14 @@ class Litestar(Router):
             await self.asgi_router.lifespan(receive=receive, send=send)  # type: ignore[arg-type]
             return
 
-        scope["app"] = self
+        scope["app"] = scope["litestar_app"] = self
         scope.setdefault("state", {})
         await self.asgi_handler(scope, receive, self._wrap_send(send=send, scope=scope))  # type: ignore[arg-type]
+
+    @classmethod
+    def from_scope(cls, scope: Scope) -> Litestar:
+        """Retrieve the Litestar application from the current ASGI scope"""
+        return scope["litestar_app"]
 
     async def _call_lifespan_hook(self, hook: LifespanHook) -> None:
         ret = hook(self) if inspect.signature(hook).parameters else hook()  # type: ignore[call-arg]
