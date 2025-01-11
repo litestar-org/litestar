@@ -8,7 +8,6 @@ from litestar._signature import SignatureModel
 from litestar.di import Provide
 from litestar.dto import DTOData
 from litestar.exceptions import ImproperlyConfiguredException, LitestarException
-from litestar.plugins import DIPlugin
 from litestar.router import Router
 from litestar.serialization import default_deserializer, default_serializer
 from litestar.types import (
@@ -358,31 +357,14 @@ class BaseRouteHandler:
                     f"{existing_key!r}. If you wish to override a provider, it must have the same key."
                 )
 
+            provider.finalize(
+                plugins=app.plugins,
+                signature_namespace=self.signature_namespace,
+                data_dto=self.data_dto,
+                dependency_keys=set(self.dependencies),
+                type_decoders=self.type_decoders,
+            )
             provider_keys[provider.dependency] = key
-
-            # TODO: Move this part to 'Provide'
-            if not getattr(provider, "parsed_fn_signature", None):
-                dependency = unwrap_partial(provider.dependency)
-                plugin: DIPlugin | None = None
-                if app:
-                    plugin = next(
-                        (p for p in app.plugins.di if isinstance(p, DIPlugin) and p.has_typed_init(dependency)),
-                        None,
-                    )
-                if plugin:
-                    signature, init_type_hints = plugin.get_typed_init(dependency)
-                    provider.parsed_fn_signature = ParsedSignature.from_signature(signature, init_type_hints)
-                else:
-                    provider.parsed_fn_signature = ParsedSignature.from_fn(dependency, self.signature_namespace)
-
-            if not getattr(provider, "signature_model", None):
-                provider.signature_model = SignatureModel.create(
-                    dependency_name_set=set(self.dependencies.keys()),
-                    fn=provider.dependency,
-                    parsed_signature=provider.parsed_fn_signature,
-                    data_dto=self.data_dto,
-                    type_decoders=self.type_decoders,
-                )
             dependencies[key] = provider
 
     @deprecated("3.0", removal_in="4.0", alternative=".middleware attribute")
