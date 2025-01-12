@@ -8,6 +8,7 @@ from typing import (
     Iterable,
     Iterator,
     TypeVar,
+    overload,
 )
 
 from typing_extensions import ParamSpec
@@ -22,7 +23,15 @@ P = ParamSpec("P")
 T = TypeVar("T")
 
 
-def ensure_async_callable(fn: Callable[P, T]) -> Callable[P, Awaitable[T]]:
+@overload
+def ensure_async_callable(fn: Callable[P, Awaitable[T]]) -> Callable[P, Awaitable[T]]: ...
+
+
+@overload
+def ensure_async_callable(fn: Callable[P, T]) -> Callable[P, Awaitable[T]]: ...
+
+
+def ensure_async_callable(fn: Callable[P, T]) -> Callable[P, Awaitable[T]]:  # pyright: ignore
     """Ensure that ``fn`` is an asynchronous callable.
     If it is an asynchronous, return the original object, else wrap it in an
     ``AsyncCallable``

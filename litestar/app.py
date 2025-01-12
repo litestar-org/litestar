@@ -4,6 +4,7 @@ import inspect
 import logging
 import os
 import warnings
+from collections import defaultdict
 from contextlib import (
     AbstractAsyncContextManager,
     AsyncExitStack,
@@ -14,7 +15,7 @@ from datetime import date, datetime, time, timedelta
 from functools import partial
 from itertools import chain
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, AsyncGenerator, Callable, Iterable, Mapping, Sequence, TypedDict, cast
+from typing import TYPE_CHECKING, Any, AsyncGenerator, Callable, Generator, Iterable, Mapping, Sequence, TypedDict, cast
 
 from litestar._asgi import ASGIRouter
 from litestar._asgi.utils import get_route_handlers, wrap_in_exception_handler
@@ -27,10 +28,13 @@ from litestar.connection import Request, WebSocket
 from litestar.datastructures.state import State
 from litestar.events.emitter import BaseEventEmitterBackend, SimpleEventEmitter
 from litestar.exceptions import (
+    ImproperlyConfiguredException,
     LitestarWarning,
     MissingDependencyException,
     NoRouteMatchFoundException,
 )
+from litestar.handlers import ASGIRouteHandler, BaseRouteHandler, HTTPRouteHandler, WebsocketRouteHandler
+from litestar.handlers.http_handlers._options import create_options_handler
 from litestar.logging.config import LoggingConfig, get_logger_placeholder
 from litestar.middleware._internal.cors import CORSMiddleware
 from litestar.openapi.config import OpenAPIConfig
@@ -44,12 +48,13 @@ from litestar.plugins import (
 )
 from litestar.plugins.base import CLIPlugin
 from litestar.router import Router
+from litestar.routes import ASGIRoute, BaseRoute, HTTPRoute, WebSocketRoute
 from litestar.stores.registry import StoreRegistry
 from litestar.types import Empty, TypeDecodersSequence
-from litestar.types.internal_types import PathParameterDefinition, TemplateConfigType
+from litestar.types.internal_types import PathParameterDefinition, RouteHandlerMapItem, TemplateConfigType
 from litestar.utils import deprecated, ensure_async_callable, join_paths, unique
 from litestar.utils.dataclass import extract_dataclass_items
-from litestar.utils.predicates import is_async_callable
+from litestar.utils.predicates import is_async_callable, is_class_and_subclass
 from litestar.utils.warnings import warn_pdb_on_exception
 
 if TYPE_CHECKING:
@@ -66,7 +71,6 @@ if TYPE_CHECKING:
     from litestar.openapi.spec import SecurityRequirement
     from litestar.openapi.spec.open_api import OpenAPI
     from litestar.response import Response
-    from litestar.routes import ASGIRoute, HTTPRoute, WebSocketRoute
     from litestar.stores.base import Store
     from litestar.types import (
         AfterExceptionHookHandler,
@@ -158,6 +162,7 @@ class Litestar(Router):
         "plugins",
         "response_cache_config",
         "route_map",
+        "routes",
         "state",
         "stores",
         "template_engine",
@@ -465,8 +470,7 @@ class Litestar(Router):
             response_cookies=config.response_cookies,
             response_headers=config.response_headers,
             return_dto=config.return_dto,
-            # route handlers are registered below
-            route_handlers=[],
+            route_handlers=config.route_handlers,
             security=config.security,
             signature_namespace=config.signature_namespace,
             signature_types=config.signature_types,
@@ -479,8 +483,10 @@ class Litestar(Router):
 
         self.asgi_router = ASGIRouter(app=self)
 
-        for route_handler in config.route_handlers:
-            self.register(route_handler)
+        for route_handler in self._merge_handlers(self.route_handlers):
+            self._finalize_routes(route_handler)
+
+        self.asgi_router.construct_routing_trie()
 
         if self.logging_config:
             self.get_logger = self.logging_config.configure()
@@ -547,7 +553,7 @@ class Litestar(Router):
             if not pydantic_plugin_found and not pydantic_serialization_plugin_found:
                 plugins.append(PydanticDIPlugin())
         with suppress(MissingDependencyException):
-            from litestar.contrib.attrs import AttrsSchemaPlugin
+            from litestar.plugins.attrs import AttrsSchemaPlugin
 
             pre_configured = any(isinstance(plugin, AttrsSchemaPlugin) for plugin in plugins)
             if not pre_configured:
@@ -655,28 +661,146 @@ class Litestar(Router):
         """
         return cls(**dict(extract_dataclass_items(config)))
 
-    def register(self, value: ControllerRouterHandler) -> None:  # type: ignore[override]
-        """Register a route handler on the app.
-
-        This method can be used to dynamically add endpoints to an application.
-
-        Args:
-            value: An instance of :class:`Router <.router.Router>`, a subclass of
-                :class:`Controller <.controller.Controller>` or any function decorated by the route handler decorators.
+    @property
+    def route_handler_method_map(self) -> dict[str, RouteHandlerMapItem]:
+        """Map route paths to :class:`~litestar.types.internal_types.RouteHandlerMapItem`
 
         Returns:
-            None
+             A dictionary mapping paths to route handlers
         """
-        routes = super().register(value=value)
+        route_map: defaultdict[str, RouteHandlerMapItem] = defaultdict(dict)
+        for route in self.routes:
+            if isinstance(route, HTTPRoute):
+                route_map[route.path] = route.route_handler_map  # type: ignore[assignment]
+            else:
+                route_map[route.path]["websocket" if isinstance(route, WebSocketRoute) else "asgi"] = (
+                    route.route_handler
+                )
 
-        for route in routes:
-            route_handlers = get_route_handlers(route)
+        return route_map
+
+    @classmethod
+    def get_route_handler_map(cls, value: BaseRouteHandler) -> dict[str, RouteHandlerMapItem]:
+        """Map route handlers to HTTP methods."""
+
+        if isinstance(value, HTTPRouteHandler):
+            return {path: {http_method: value for http_method in value.http_methods} for path in value.paths}
+
+        return {
+            path: {"websocket" if isinstance(value, WebsocketRouteHandler) else "asgi": value} for path in value.paths
+        }
+
+    def _finalize_routes(self, value: BaseRouteHandler) -> None:
+        from litestar.handlers import HTTPRouteHandler
+        from litestar.routes import ASGIRoute, HTTPRoute, WebSocketRoute
+
+        finalized_routes: list[BaseRoute] = []
+
+        for path, handlers_map in self.get_route_handler_map(value=value).items():
+            if http_handlers := unique(
+                [handler for handler in handlers_map.values() if isinstance(handler, HTTPRouteHandler)]
+            ):
+                if existing_handlers := unique(
+                    [
+                        handler
+                        for handler in self.route_handler_method_map.get(path, {}).values()
+                        if isinstance(handler, HTTPRouteHandler)
+                    ]
+                ):
+                    http_handlers.extend(existing_handlers)
+                    existing_route_index = next((i for i, r in enumerate(self.routes) if r.path == path), None)
+
+                    if existing_route_index is None:  # pragma: no cover
+                        raise ImproperlyConfiguredException("unable to find_index existing route index")
+
+                    route: WebSocketRoute | ASGIRoute | HTTPRoute = HTTPRoute(
+                        path=path,
+                        route_handlers=_maybe_add_options_handler(path, http_handlers, root=self),
+                    )
+                    self.routes[existing_route_index] = route
+                else:
+                    route = HTTPRoute(
+                        path=path, route_handlers=_maybe_add_options_handler(path, http_handlers, root=self)
+                    )
+                    self.routes.append(route)
+
+                finalized_routes.append(route)
+
+            if websocket_handler := handlers_map.get("websocket"):
+                route = WebSocketRoute(path=path, route_handler=cast(WebsocketRouteHandler, websocket_handler))
+                self.routes.append(route)
+                finalized_routes.append(route)
+
+            if asgi_handler := handlers_map.get("asgi"):
+                route = ASGIRoute(path=path, route_handler=cast(ASGIRouteHandler, asgi_handler))
+                self.routes.append(route)
+                finalized_routes.append(route)
+
+        for finalized_route in finalized_routes:
+            route_handlers = get_route_handlers(finalized_route)
 
             for route_handler in route_handlers:
-                route_handler.on_registration(self, route=route)
+                route_handler.on_registration(route=finalized_route, app=self)
 
             for plugin in self.plugins.receive_route:
-                plugin.receive_route(route)
+                plugin.receive_route(finalized_route)
+
+    def _iter_handlers(
+        self, handlers: Iterable[ControllerRouterHandler], bases: list[Router]
+    ) -> Generator[tuple[BaseRouteHandler, list[Router]], None, None]:
+        for handler in handlers:
+            handler = self._validate_registration_value(handler)
+            if isinstance(handler, Router):
+                yield from self._iter_handlers(handler.route_handlers, bases=[handler, *bases])
+            else:
+                yield handler, bases
+
+    def _merge_handlers(self, handlers: list[ControllerRouterHandler]) -> list[BaseRouteHandler]:
+        merged_handlers = []
+        for handler, bases in self._iter_handlers(handlers, bases=[self]):
+            merged_handlers.append(handler.merge(*bases))
+        return merged_handlers
+
+    def _validate_registration_value(self, value: ControllerRouterHandler) -> RouteHandlerType | Router:
+        """Ensure values passed to the register method are supported."""
+        from litestar.controller import Controller
+        from litestar.handlers import ASGIRouteHandler, WebsocketListener
+
+        if is_class_and_subclass(value, Controller):
+            return value().as_router()
+
+        # this narrows down to an ABC, but we assume a non-abstract subclass of the ABC superclass
+        if is_class_and_subclass(value, WebsocketListener):
+            return value().to_handler()  # pyright: ignore
+
+        if isinstance(value, Router):
+            if value is self:
+                raise ImproperlyConfiguredException("Cannot register a router on itself")
+
+            return value
+
+        if isinstance(value, (ASGIRouteHandler, HTTPRouteHandler, WebsocketRouteHandler)):
+            return value
+
+        raise ImproperlyConfiguredException(
+            "Unsupported value passed to `Router.register`. "
+            "If you passed in a function or method, "
+            "make sure to decorate it first with one of the routing decorators"
+        )
+
+    def register(self, value: ControllerRouterHandler) -> None:
+        warnings.warn(
+            "Registering routes after the application instance has been "
+            "created is discouraged, as it might lead to unexpected behaviour "
+            "and is a costly operation. To register routes dynamically, a "
+            "plugin should be used where routes can be added to the "
+            "application via 'AppConfig' 'route_handlers' property",
+            category=LitestarWarning,
+            stacklevel=2,
+        )
+        handlers = self._merge_handlers([value])
+        for h in handlers:
+            self._finalize_routes(h)
 
         self.asgi_router.construct_routing_trie()
 
@@ -851,3 +975,14 @@ class Litestar(Router):
             None
         """
         self.event_emitter.emit(event_id, *args, **kwargs)
+
+
+def _maybe_add_options_handler(
+    path: str, http_handlers: list[HTTPRouteHandler], root: Router
+) -> list[HTTPRouteHandler]:
+    handler_methods = {method for handler in http_handlers for method in handler.http_methods}
+    if "OPTIONS" not in handler_methods:
+        options_handler = create_options_handler(path=path, allow_methods={*handler_methods, "OPTIONS"})  # pyright: ignore
+        options_handler = options_handler.merge(root)
+        return [*http_handlers, options_handler]
+    return http_handlers

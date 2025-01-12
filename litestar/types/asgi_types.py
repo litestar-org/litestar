@@ -104,7 +104,8 @@ if TYPE_CHECKING:
     from .internal_types import RouteHandlerType
     from .serialization import DataContainerType
 
-Method: TypeAlias = Union[Literal["GET", "POST", "DELETE", "PATCH", "PUT", "HEAD", "TRACE", "OPTIONS"], HttpMethod]
+HttpMethodName: TypeAlias = Literal["GET", "POST", "DELETE", "PATCH", "PUT", "HEAD", "TRACE", "OPTIONS"]
+Method: TypeAlias = Union[HttpMethodName, HttpMethod]
 ScopeSession: TypeAlias = "EmptyType | Dict[str, Any] | DataContainerType | None"
 
 
@@ -147,7 +148,7 @@ class BaseScope(HeaderScope):
 class HTTPScope(BaseScope):
     """HTTP-ASGI-scope."""
 
-    method: Method
+    method: HttpMethodName
     type: Literal[ScopeType.HTTP]
 
 

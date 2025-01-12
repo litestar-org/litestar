@@ -101,4 +101,4 @@ def test_resolve_type_decoders(
     path: str, method: Union[HttpMethod, Literal["websocket"]], type_decoders: TypeDecodersSequence, app: Litestar
 ) -> None:
     handler = app.route_handler_method_map[path][method]
-    assert handler.resolve_type_decoders() == type_decoders
+    assert handler.type_decoders == handler.resolve_type_decoders() == tuple(type_decoders)

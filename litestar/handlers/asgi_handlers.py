@@ -11,11 +11,13 @@ __all__ = ("ASGIRouteHandler", "asgi")
 
 
 if TYPE_CHECKING:
+    from litestar import Router
     from litestar.connection import ASGIConnection
     from litestar.types import (
         AsyncAnyCallable,
         ExceptionHandlersMap,
         Guard,
+        ParametersMap,
     )
 
 
@@ -33,6 +35,7 @@ class ASGIRouteHandler(BaseRouteHandler):
         opt: Mapping[str, Any] | None = None,
         is_mount: bool = False,
         signature_namespace: Mapping[str, Any] | None = None,
+        parameters: ParametersMap | None = None,
         **kwargs: Any,
     ) -> None:
         """Route handler for ASGI routes.
@@ -55,6 +58,7 @@ class ASGIRouteHandler(BaseRouteHandler):
                 ``/some-path/sub-path/`` etc.
             signature_namespace: A mapping of names to types for use in forward reference resolution during signature modelling.
             type_encoders: A mapping of types to callables that transform them into types supported for serialization.
+            parameters: A mapping of :func:`Parameter <.params.Parameter>` definitions
             **kwargs: Any additional kwarg - will be set in the opt dictionary.
         """
         self.is_mount = is_mount
@@ -66,8 +70,14 @@ class ASGIRouteHandler(BaseRouteHandler):
             name=name,
             opt=opt,
             signature_namespace=signature_namespace,
+            parameters=parameters,
             **kwargs,
         )
+
+    def _get_merge_opts(self, others: tuple[Router, ...]) -> dict[str, Any]:
+        merge_opts = super()._get_merge_opts(others)
+        merge_opts["is_mount"] = self.is_mount
+        return merge_opts
 
     def _validate_handler_function(self) -> None:
         """Validate the route handler function once it's set by inspecting its return annotations."""
@@ -95,7 +105,7 @@ class ASGIRouteHandler(BaseRouteHandler):
                 None
         """
 
-        if self.resolve_guards():
+        if self.guards:
             await self.authorize_connection(connection=connection)
 
         await self.fn(scope=connection.scope, receive=connection.receive, send=connection.send)
