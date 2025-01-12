@@ -26,9 +26,9 @@ def test_resolve_request_max_body_size() -> None:
 
     router = Router("/", route_handlers=[router_handler], request_max_body_size=1)
     app = Litestar(route_handlers=[app_handler, router, MyController], request_max_body_size=3)
-    handler_1 = next(r for r in app.routes if r.path == "/1").route_handler_map["POST"]
-    handler_2 = next(r for r in app.routes if r.path == "/2").route_handler_map["POST"]
-    handler_3 = next(r for r in app.routes if r.path == "/3").route_handler_map["POST"]
+    handler_1 = next(r for r in app.routes if r.path == "/1").route_handler_map["POST"]  # type: ignore[union-attr]
+    handler_2 = next(r for r in app.routes if r.path == "/2").route_handler_map["POST"]  # type: ignore[union-attr]
+    handler_3 = next(r for r in app.routes if r.path == "/3").route_handler_map["POST"]  # type: ignore[union-attr]
     assert handler_1.request_max_body_size == handler_1.resolve_request_max_body_size() == 1
     assert handler_2.request_max_body_size == handler_2.resolve_request_max_body_size() == 3
     assert handler_3.request_max_body_size == handler_3.resolve_request_max_body_size() == 2
@@ -72,7 +72,7 @@ def test_resolve_request_class() -> None:
         pass
 
     app = Litestar(route_handlers=[handler])
-    assert app.route_handler_method_map["/"]["GET"].resolve_request_class() is Request
+    assert app.route_handler_method_map["/"]["GET"].resolve_request_class() is Request  # type: ignore[attr-defined]
 
 
 def test_resolve_response_class() -> None:
@@ -81,7 +81,7 @@ def test_resolve_response_class() -> None:
         pass
 
     app = Litestar(route_handlers=[handler])
-    assert app.route_handler_method_map["/"]["GET"].resolve_response_class() is Response
+    assert app.route_handler_method_map["/"]["GET"].resolve_response_class() is Response  # type: ignore[attr-defined]
 
 
 def test_resolve_response_headers() -> None:
@@ -90,7 +90,7 @@ def test_resolve_response_headers() -> None:
         pass
 
     app = Litestar(route_handlers=[handler])
-    assert app.route_handler_method_map["/"]["GET"].resolve_response_headers() == frozenset(
+    assert app.route_handler_method_map["/"]["GET"].resolve_response_headers() == frozenset(  # type: ignore[attr-defined]
         [ResponseHeader(name="foo", value="bar")]
     )
 
@@ -104,7 +104,7 @@ def test_resolve_before_request() -> None:
 
     app = Litestar(route_handlers=[handler])
     resolved_handler = app.route_handler_method_map["/"]["GET"]
-    assert resolved_handler.resolve_before_request() is resolved_handler.before_request
+    assert resolved_handler.resolve_before_request() is resolved_handler.before_request  # type: ignore[attr-defined]
 
 
 def test_resolve_after_response() -> None:
@@ -116,7 +116,7 @@ def test_resolve_after_response() -> None:
 
     app = Litestar(route_handlers=[handler])
     resolved_handler = app.route_handler_method_map["/"]["GET"]
-    assert resolved_handler.resolve_after_response() is resolved_handler.after_response
+    assert resolved_handler.resolve_after_response() is resolved_handler.after_response  # type: ignore[attr-defined]
 
 
 def test_resolve_include_in_schema() -> None:
@@ -125,11 +125,11 @@ def test_resolve_include_in_schema() -> None:
         pass
 
     app = Litestar(route_handlers=[handler])
-    assert app.route_handler_method_map["/"]["GET"].resolve_include_in_schema() is False
+    assert app.route_handler_method_map["/"]["GET"].resolve_include_in_schema() is False  # type: ignore[attr-defined]
 
 
 def test_resolve_security() -> None:
-    security = {"foo": ["bar"]}
+    security = [{"foo": ["bar"]}]
 
     @get(security=security)
     async def handler() -> None:
@@ -137,7 +137,7 @@ def test_resolve_security() -> None:
 
     app = Litestar(route_handlers=[handler])
     resolved_handler = app.route_handler_method_map["/"]["GET"]
-    assert resolved_handler.resolve_security() == resolved_handler.security
+    assert resolved_handler.resolve_security() == resolved_handler.security  # type: ignore[attr-defined]
 
 
 def test_resolve_tags() -> None:
@@ -147,4 +147,4 @@ def test_resolve_tags() -> None:
 
     app = Litestar(route_handlers=[handler])
     resolved_handler = app.route_handler_method_map["/"]["GET"]
-    assert resolved_handler.resolve_tags() == resolved_handler.tags
+    assert resolved_handler.resolve_tags() == resolved_handler.tags  # type: ignore[attr-defined]
