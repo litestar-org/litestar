@@ -563,7 +563,7 @@ class Litestar(Router):
             if not pydantic_plugin_found and not pydantic_serialization_plugin_found:
                 plugins.append(PydanticDIPlugin())
         with suppress(MissingDependencyException):
-            from litestar.contrib.attrs import AttrsSchemaPlugin
+            from litestar.plugins.attrs import AttrsSchemaPlugin
 
             pre_configured = any(isinstance(plugin, AttrsSchemaPlugin) for plugin in plugins)
             if not pre_configured:
