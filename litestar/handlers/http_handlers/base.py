@@ -342,6 +342,8 @@ class HTTPRouteHandler(BaseRouteHandler):
 
     def _get_merge_opts(self, others: tuple[Router, ...]) -> dict[str, Any]:
         merge_opts = super()._get_merge_opts(others)
+
+        # these only exist on the handler, and therefore don't need merging
         merge_opts.update(
             background=self.background,
             http_method=tuple(self.http_methods),
@@ -374,6 +376,13 @@ class HTTPRouteHandler(BaseRouteHandler):
             merge_opts["response_headers"] = (*other.response_headers, *merge_opts.get("response_headers", ()))
             merge_opts["security"] = (*other.security, *merge_opts.get("security", ()))
             merge_opts["tags"] = (*other.tags, *merge_opts.get("tags", ()))
+
+            # these are all properties which return a safe default if the corresponding
+            # config value is not set, so we only merge the router configs and determine
+            # the final value after that.
+            # ideally, a route handler wouldn't be able to take these in as optional,
+            # but that would require another 'finalized' route handler, which differs
+            # from the config object. this is planned for version 4
             if other is not self:
                 merge_opts["request_class"] = merge_opts.get("request_class") or other.request_class
                 merge_opts["response_class"] = merge_opts.get("response_class") or other.response_class

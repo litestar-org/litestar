@@ -155,7 +155,25 @@ class BaseRouteHandler:
         self.parameters = parameters or {}
 
     def _get_merge_opts(self, others: tuple[Router, ...]) -> dict[str, Any]:
-        """Get kwargs for .merge."""
+        """Get kwargs for .merge.
+
+        This is effectively the same as doing:
+
+        for other in others:
+            handler = handler.merge(other)
+
+        The downside of that approach is that it creates a bunch of intermediate
+        instances requires every subclass that adds properties to re-implement all the
+        merging logic.
+        With this approach, the subclass can instead override this method, call
+        super()._get_merge_opts(), and extend the dict returned by it.
+
+        The downside here is that we don't get type safety (as long as annotating
+        **kwargs with TypedDicts isn't supported anyway).
+
+        The plan is for this to go away in version 4, where we can move to fully static
+        handler config, separating the logic and configuration entirely.
+        """
         path = functools.reduce(
             lambda a, b: join_paths([a, b]),
             (o.path for o in reversed(others)),
@@ -181,6 +199,9 @@ class BaseRouteHandler:
                 merge_opts.get("signature_namespace", {}), other.signature_namespace
             )
 
+            # '.dto' on the router is the dto config value supplied by the users,
+            # whereas '.dto' on the handler is the fully resolved dto. The dto config on
+            # the handler is stored under '._dto', so we have to do this little workaround
             if other is not self:
                 other = cast(Router, other)  # mypy cannot narrow with the 'is not self' check
                 merge_opts["dto"] = value_or_default(merge_opts.get("dto", Empty), other.dto)
@@ -198,9 +219,6 @@ class BaseRouteHandler:
 
     def merge(self, *others: Router) -> Self:
         return type(self)(**self._get_merge_opts(others))
-
-    def finalize(self) -> Self:
-        return self
 
     @property
     def handler_id(self) -> str:
