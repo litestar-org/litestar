@@ -486,6 +486,10 @@ class Litestar(Router):
         for route_handler in self._reduce_handlers(self.route_handlers):
             self._finalize_routes(route_handler)
 
+        # we have merged everything registered initially, so let's ensure we don't keep
+        # unnecessary references to temporary objects around and let them be gc'ed
+        self.route_handlers = ()
+
         self.asgi_router.construct_routing_trie()
 
         if self.logging_config:
