@@ -195,10 +195,10 @@ class Router:
         self.websocket_class = websocket_class
         self.request_max_body_size = request_max_body_size
 
-        self.route_handlers = list(route_handlers)
+        self.route_handlers = tuple(route_handlers)
 
     def register(self, value: ControllerRouterHandler) -> None:
         """Register a Controller, Route instance or RouteHandler on the router"""
         if value is self:
             raise ImproperlyConfiguredException("Cannot register a router on itself")
-        self.route_handlers.append(value)
+        self.route_handlers = (*self.route_handlers, value)
