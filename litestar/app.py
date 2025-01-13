@@ -483,7 +483,7 @@ class Litestar(Router):
 
         self.asgi_router = ASGIRouter(app=self)
 
-        for route_handler in self._merge_handlers(self.route_handlers):
+        for route_handler in self._reduce_handlers(self.route_handlers):
             self._finalize_routes(route_handler)
 
         self.asgi_router.construct_routing_trie()
@@ -753,6 +753,27 @@ class Litestar(Router):
     def _iter_handlers(
         self, handlers: Iterable[ControllerRouterHandler], bases: list[Router]
     ) -> Generator[tuple[BaseRouteHandler, list[Router]], None, None]:
+        """Recursively iterate over 'handlers', returning tuples of all sub-handlers
+        (i.e. handlers included in a Router / Controller) and their preceding layers.
+
+        handlers = [
+            Router(
+                path="/one",
+                route_handlers=[
+                    Router(path="/two", route_handlers=[handler_one]),
+                    handler_two,
+                ],
+            )
+        ]
+
+        would return:
+
+        [
+            (handler_one, [<router path="/two">, <router path="/one">]),
+            (handler_two, [<router path="/one">]),
+        ]
+
+        """
         for handler in handlers:
             handler = self._validate_registration_value(handler)
             if isinstance(handler, Router):
@@ -760,11 +781,48 @@ class Litestar(Router):
             else:
                 yield handler, bases
 
-    def _merge_handlers(self, handlers: list[ControllerRouterHandler]) -> list[BaseRouteHandler]:
-        merged_handlers = []
+    def _reduce_handlers(self, handlers: list[ControllerRouterHandler]) -> Generator[BaseRouteHandler, None, None]:
+        """Reduce possibly nested 'handlers' by recursively iterating over them and their
+        sub-handlers (e.g. handlers inside a router), and merging all the options of all
+        the layers above into one new handler. This allows us to eliminate all the
+        intermediate layers and keep the configuration only on the handlers.
+
+        Using path merging as an example:
+
+        .. code-block:: python
+
+            @get("/handler-one")
+            async def handler_one() -> None:
+                pass
+
+
+            @get("/handler-two")
+            async def handler_two() -> None:
+                pass
+
+
+            router = Router(
+                path="/router-one",
+                route_handlers=[
+                    handler_one,
+                    Router(path="/router-two", route_handlers=[handler_two]),
+                ],
+            )
+
+        would be the equivalent of writing:
+
+        .. code-block:: python
+
+           @get("/router-one/handler-one")
+            async def handler_one() -> None:
+                pass
+
+            @get("/router-one/router-two/handler-two")
+            async def handler_two() -> None:
+                pass
+        """
         for handler, bases in self._iter_handlers(handlers, bases=[self]):
-            merged_handlers.append(handler.merge(*bases))
-        return merged_handlers
+            yield handler.merge(*bases)
 
     def _validate_registration_value(self, value: ControllerRouterHandler) -> RouteHandlerType | Router:
         """Ensure values passed to the register method are supported."""
@@ -803,8 +861,7 @@ class Litestar(Router):
             category=LitestarWarning,
             stacklevel=2,
         )
-        handlers = self._merge_handlers([value])
-        for h in handlers:
+        for h in self._reduce_handlers([value]):
             self._finalize_routes(h)
 
         self.asgi_router.construct_routing_trie()
