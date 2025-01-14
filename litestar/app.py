@@ -785,7 +785,7 @@ class Litestar(Router):
             else:
                 yield handler, bases
 
-    def _reduce_handlers(self, handlers: list[ControllerRouterHandler]) -> Generator[BaseRouteHandler, None, None]:
+    def _reduce_handlers(self, handlers: Iterable[ControllerRouterHandler]) -> Generator[BaseRouteHandler, None, None]:
         """Reduce possibly nested 'handlers' by recursively iterating over them and their
         sub-handlers (e.g. handlers inside a router), and merging all the options of all
         the layers above into one new handler. This allows us to eliminate all the
