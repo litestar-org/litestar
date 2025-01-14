@@ -107,7 +107,6 @@ __all__ = (
     "Guard",
     "HTTPDisconnectEvent",
     "HTTPHandlerDecorator",
-    "HTTPHandlerDecorator",
     "HTTPReceiveMessage",
     "HTTPRequestEvent",
     "HTTPResponseBodyEvent",

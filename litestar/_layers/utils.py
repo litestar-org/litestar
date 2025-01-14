@@ -13,7 +13,7 @@ if TYPE_CHECKING:
 
 
 def narrow_response_headers(headers: ResponseHeaders | None) -> Sequence[ResponseHeader]:
-    """Given :class:`.types.ResponseHeaders` as a :class:`typing.Mapping`, create a list of
+    """Given :class:`.types.ResponseHeaders` as a :class:`typing.Mapping`, create a tuple of
     :class:`.datastructures.response_header.ResponseHeader` from it, otherwise return ``headers`` unchanged
     """
     return (
