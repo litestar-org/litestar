@@ -174,9 +174,13 @@ class BaseRouteHandler:
         The plan is for this to go away in version 4, where we can move to fully static
         handler config, separating the logic and configuration entirely.
         """
-        path = functools.reduce(
-            lambda a, b: join_paths([a, b]),
-            (o.path for o in reversed(others)),
+        path = (
+            functools.reduce(
+                lambda a, b: join_paths([a, b]),
+                (o.path for o in reversed(others)),
+            )
+            if others
+            else ""
         )
         merge_opts: dict[str, Any] = {
             "fn": self.fn,
@@ -212,10 +216,20 @@ class BaseRouteHandler:
 
         # due to the way we're traversing over the app layers, the middleware stack is
         # constructed in the wrong order (handler > application). reversing the order
-        # here is easier than handling it correctly at every intermediary step
-        merge_opts["middleware"] = tuple(reversed(merge_opts["middleware"]))
+        # here is easier than handling it correctly at every intermediary step.
+        #
+        # we only call this if 'others' is non-empty, to ensure we don't change anything
+        # if no layers have been merged (happens in '._with_changes' for example)
+        if others:
+            merge_opts["middleware"] = tuple(reversed(merge_opts["middleware"]))
 
         return merge_opts
+
+    def _with_changes(self, **kwargs) -> Self:
+        """Return a new instance of the handler, replacing attributes specified in **kwargs"""
+        opts = self._get_merge_opts(())
+        opts.update(kwargs)
+        return type(self)(**opts)
 
     def merge(self, *others: Router) -> Self:
         return type(self)(**self._get_merge_opts(others))
