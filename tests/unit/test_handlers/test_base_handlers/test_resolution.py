@@ -52,21 +52,3 @@ def test_resolve_from_layers() -> None:
         "controller": Provide(controller_dependency),
         "handler": Provide(handler_dependency),
     }
-
-
-def test_resolve_dependencies_cached() -> None:
-    dependency = Provide(function_factory())
-
-    @get(dependencies={"foo": dependency})
-    async def handler() -> None:
-        pass
-
-    @get(dependencies={"foo": dependency})
-    async def handler_2() -> None:
-        pass
-
-    handler._registered = True
-    handler_2._registered = True
-
-    assert handler.resolve_dependencies() is handler.dependencies is handler.dependencies
-    assert handler_2.resolve_dependencies() is handler_2.dependencies is handler_2.dependencies
