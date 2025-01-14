@@ -54,7 +54,6 @@ class BaseRouteHandler:
         "_parsed_data_field",
         "_parsed_fn_signature",
         "_parsed_return_field",
-        "_registered",
         "_resolved_signature_model",
         "_return_dto",
         "dependencies",
@@ -125,7 +124,6 @@ class BaseRouteHandler:
         self._parsed_data_field: FieldDefinition | None | EmptyType = Empty
         self._parameter_field_definitions: dict[str, FieldDefinition] | EmptyType = Empty
         self._resolved_signature_model: type[SignatureModel] | EmptyType = Empty
-        self._registered = False
 
         self.dependencies = (
             {
@@ -225,7 +223,7 @@ class BaseRouteHandler:
 
         return merge_opts
 
-    def _with_changes(self, **kwargs) -> Self:
+    def _with_changes(self, **kwargs: Any) -> Self:
         """Return a new instance of the handler, replacing attributes specified in **kwargs"""
         opts = self._get_merge_opts(())
         opts.update(kwargs)
@@ -317,7 +315,7 @@ class BaseRouteHandler:
 
     def _raise_not_registered(self) -> NoReturn:
         raise LitestarException(
-            f"Handler {self!r}: Accessing this attribute is unsafe until the handler has been"
+            f"Handler {self!r}: Accessing this attribute is unsafe until the handler has been "
             "registered with an application, as it may yield different results after registration."
         )
 
@@ -513,7 +511,6 @@ class BaseRouteHandler:
         Returns:
             None
         """
-        self._registered = True
 
         self._dto = self._resolve_data_dto(app=app)
         self._return_dto = self._resolve_return_dto(app=app, data_dto=self._dto)
