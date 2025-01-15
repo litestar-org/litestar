@@ -290,7 +290,7 @@ class WebSocketStreamHandler(WebsocketRouteHandler):
                 send_handler=send_handler,
             )
 
-        self.fn = handler_fn
+        self.fn = handler_fn  # pyright: ignore
 
         super().on_registration(app, route)
 
