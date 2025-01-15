@@ -50,7 +50,7 @@ from litestar.plugins import (
 )
 from litestar.plugins.base import CLIPlugin
 from litestar.router import Router
-from litestar.routes import ASGIRoute, BaseRoute, HTTPRoute, WebSocketRoute
+from litestar.routes import ASGIRoute, HTTPRoute, WebSocketRoute
 from litestar.stores.registry import StoreRegistry
 from litestar.types import Empty, TypeDecodersSequence
 from litestar.types.internal_types import PathParameterDefinition, RouteHandlerMapItem, TemplateConfigType
@@ -675,7 +675,9 @@ class Litestar(Router):
         return cls(**dict(extract_dataclass_items(config)))
 
     @staticmethod
-    def _create_route_handler_method_map(routes: Sequence[BaseRoute]) -> dict[str, RouteHandlerMapItem]:
+    def _create_route_handler_method_map(
+        routes: Sequence[HTTPRoute | ASGIRoute | WebSocketRoute],
+    ) -> dict[str, RouteHandlerMapItem]:
         """Map route paths to :class:`~litestar.types.internal_types.RouteHandlerMapItem`
 
         Returns:
