@@ -945,18 +945,6 @@ class Litestar(Router):
 
         return join_paths(output)
 
-    @property
-    def route_handler_method_view(self) -> dict[str, list[str]]:
-        """Map route handlers to paths.
-
-        Returns:
-            A dictionary of router handlers and lists of paths as strings
-        """
-        route_map: dict[str, list[str]] = {
-            handler: [route.path for route in routes] for handler, routes in self.asgi_router.route_mapping.items()
-        }
-        return route_map
-
     def _create_asgi_handler(self) -> ASGIApp:
         """Create an ASGIApp that wraps the ASGI router inside an exception handler.
 
