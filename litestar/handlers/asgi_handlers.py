@@ -12,9 +12,7 @@ __all__ = ("ASGIRouteHandler", "asgi")
 
 
 if TYPE_CHECKING:
-    from litestar import Router
-    from litestar.connection import ASGIConnection
-    from litestar import Litestar
+    from litestar import Litestar, Router
     from litestar.connection import ASGIConnection
     from litestar.routes import BaseRoute
     from litestar.types import (
@@ -28,7 +26,8 @@ if TYPE_CHECKING:
 class ASGIRouteHandler(BaseRouteHandler):
     __slots__ = (
         "copy_scope",
-        "is_mount",)
+        "is_mount",
+    )
 
     def __init__(
         self,
@@ -85,8 +84,8 @@ class ASGIRouteHandler(BaseRouteHandler):
             **kwargs,
         )
 
-    def on_registration(self, app: Litestar, route: BaseRoute) -> None:
-        super().on_registration(app, route=route)
+    def on_registration(self, route: BaseRoute, app: Litestar) -> None:
+        super().on_registration(app=app, route=route)
 
         if self.copy_scope is None:
             warnings.warn(
@@ -101,6 +100,7 @@ class ASGIRouteHandler(BaseRouteHandler):
     def _get_merge_opts(self, others: tuple[Router, ...]) -> dict[str, Any]:
         merge_opts = super()._get_merge_opts(others)
         merge_opts["is_mount"] = self.is_mount
+        merge_opts["copy_scope"] = self.copy_scope
         return merge_opts
 
     def _validate_handler_function(self) -> None:

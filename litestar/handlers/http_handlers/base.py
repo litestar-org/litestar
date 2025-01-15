@@ -18,7 +18,6 @@ from litestar.exceptions import (
 )
 from litestar.handlers.base import BaseRouteHandler
 from litestar.handlers.http_handlers._utils import (
-    cleanup_temporary_files,
     create_data_handler,
     create_generic_asgi_response_handler,
     create_response_handler,
@@ -55,8 +54,6 @@ from litestar.types.builtin_types import NoneType
 from litestar.utils import deprecated as litestar_deprecated
 from litestar.utils import ensure_async_callable
 from litestar.utils.empty import value_or_default
-from litestar.utils.predicates import is_async_callable
-from litestar.utils.scope.state import ScopeState
 from litestar.utils.predicates import is_async_callable, is_class_and_subclass
 from litestar.utils.scope.state import ScopeState
 from litestar.utils.warnings import warn_implicit_sync_to_thread, warn_sync_to_thread_with_async_callable
