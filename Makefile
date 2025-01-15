@@ -29,7 +29,7 @@ upgrade:       										## Upgrade all dependencies to the latest stable versio
 
 .PHONY: install
 install:
-	@uv sync --all-extras --dev --python 3.12
+	@uv sync --python 3.12
 
 .PHONY: clean
 clean: 												## Cleanup temporary build artifacts
