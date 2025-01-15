@@ -695,7 +695,13 @@ class Litestar(Router):
         return route_map
 
     def _build_routes(self, route_handlers: Iterable[BaseRouteHandler]) -> list[HTTPRoute | ASGIRoute | WebSocketRoute]:
+        """Create routes for all the handlers"""
         routes: list[HTTPRoute | ASGIRoute | WebSocketRoute] = []
+
+        # since http routes can have multiple handlers (the case when one path handles
+        # multiple methods - we do the last mile of the routing outside the trie and on
+        # the route itself), we first group them by path and then create one route for
+        # each path
         http_path_groups: dict[str, list[HTTPRouteHandler]] = collections.defaultdict(list)
 
         for handler in route_handlers:
