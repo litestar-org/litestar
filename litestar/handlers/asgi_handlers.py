@@ -12,8 +12,9 @@ __all__ = ("ASGIRouteHandler", "asgi")
 
 
 if TYPE_CHECKING:
-    from litestar.connection import ASGIConnection
     from litestar import Litestar
+    from litestar.connection import ASGIConnection
+    from litestar.routes import BaseRoute
     from litestar.types import (
         AsyncAnyCallable,
         ExceptionHandlersMap,
@@ -22,7 +23,10 @@ if TYPE_CHECKING:
 
 
 class ASGIRouteHandler(BaseRouteHandler):
-    __slots__ = ("copy_scope", "is_mount",)
+    __slots__ = (
+        "copy_scope",
+        "is_mount",
+    )
 
     def __init__(
         self,
@@ -76,8 +80,8 @@ class ASGIRouteHandler(BaseRouteHandler):
             **kwargs,
         )
 
-    def on_registration(self, app: Litestar) -> None:
-        super().on_registration(app)
+    def on_registration(self, app: Litestar, route: BaseRoute) -> None:
+        super().on_registration(app, route=route)
 
         if self.copy_scope is None:
             warnings.warn(
