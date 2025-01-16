@@ -1,7 +1,9 @@
 from typing import Awaitable, Callable
+from unittest.mock import AsyncMock
 
 from litestar import Controller, Litestar, Router, get
 from litestar.di import Provide
+from litestar.params import Parameter
 
 
 def test_resolve_dependencies_without_provide() -> None:
@@ -52,3 +54,82 @@ def test_resolve_from_layers() -> None:
         "controller": Provide(controller_dependency),
         "handler": Provide(handler_dependency),
     }
+
+
+def test_resolve_type_encoders() -> None:
+    @get("/", type_encoders={int: str})
+    def handler() -> None:
+        pass
+
+    assert handler.resolve_type_encoders() == {int: str}
+
+
+def test_resolve_type_decoders() -> None:
+    type_decoders = [(lambda t: True, lambda v, t: t)]
+
+    @get("/", type_decoders=type_decoders)
+    def handler() -> None:
+        pass
+
+    assert handler.resolve_type_decoders() == type_decoders
+
+
+def test_resolve_parameters() -> None:
+    parameters = {"foo": Parameter()}
+
+    @get("/")
+    def handler() -> None:
+        pass
+
+    handler = handler.merge(Router("/", parameters=parameters, route_handlers=[]))
+    assert handler.resolve_layered_parameters() == handler.parameter_field_definitions
+
+
+def test_resolve_guards() -> None:
+    guard = AsyncMock()
+
+    @get("/", guards=[guard])
+    def handler() -> None:
+        pass
+
+    assert handler.resolve_guards() == (guard,)
+
+
+def test_resolve_dependencies() -> None:
+    dependency = AsyncMock()
+
+    @get("/", dependencies={"foo": dependency})
+    def handler() -> None:
+        pass
+
+    assert handler.resolve_dependencies() == handler.dependencies
+
+
+def test_resolve_middleware() -> None:
+    middleware = AsyncMock()
+
+    @get("/", middleware=[middleware])
+    def handler() -> None:
+        pass
+
+    assert handler.resolve_middleware() == handler.middleware
+
+
+def test_exception_handlers() -> None:
+    exception_handler = AsyncMock()
+
+    @get("/", exception_handlers={ValueError: exception_handler})
+    def handler() -> None:
+        pass
+
+    assert handler.resolve_exception_handlers() == {ValueError: exception_handler}
+
+
+def test_resolve_signature_namespace() -> None:
+    namespace = {"foo": object()}
+
+    @get("/", signature_namespace=namespace)
+    def handler() -> None:
+        pass
+
+    assert handler.resolve_signature_namespace() == namespace

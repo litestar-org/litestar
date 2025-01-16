@@ -143,7 +143,7 @@ class WebsocketRouteHandler(BaseRouteHandler):
         parsed_kwargs: dict[str, Any] = {}
         cleanup_group: DependencyCleanupGroup | None = None
 
-        if handler_kwargs_model.has_kwargs and self.signature_model:
+        if handler_kwargs_model.has_kwargs:
             parsed_kwargs = await handler_kwargs_model.to_kwargs(connection=connection)
 
             if handler_kwargs_model.dependency_batches:
