@@ -73,7 +73,7 @@ class OpenAPIRenderPlugin(ABC):
         Returns:
             The rendered JSON.
         """
-        return encode_json(openapi_schema, serializer=get_serializer(request.route_handler.resolve_type_encoders()))
+        return encode_json(openapi_schema, serializer=get_serializer(request.route_handler.type_encoders))
 
     @abstractmethod
     def render(self, request: Request, openapi_schema: dict[str, Any]) -> bytes:
@@ -186,7 +186,7 @@ class YamlRenderPlugin(OpenAPIRenderPlugin):
         # UNSET value (possible if the examples are being generated for a partial DTO model which makes
         # every type a union with UNSET) are stripped out.
         openapi_schema = msgspec.to_builtins(
-            openapi_schema, enc_hook=get_serializer(request.route_handler.resolve_type_encoders())
+            openapi_schema, enc_hook=get_serializer(request.route_handler.type_encoders)
         )
         return yaml.dump(openapi_schema, default_flow_style=False).encode("utf-8")
 
