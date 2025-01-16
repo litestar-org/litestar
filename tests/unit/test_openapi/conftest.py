@@ -20,7 +20,7 @@ def create_person_controller() -> Type[Controller]:
     class PersonController(Controller):
         path = "/{service_id:int}/person"
 
-        @get(sync_to_thread=False)
+        @get("/", sync_to_thread=False)
         def get_persons(
             self,
             # expected to be ignored
@@ -54,7 +54,7 @@ def create_person_controller() -> Type[Controller]:
         ) -> List[DataclassPerson]:
             return []
 
-        @post(media_type=MediaType.TEXT, sync_to_thread=False)
+        @post("/", media_type=MediaType.TEXT, sync_to_thread=False)
         def create_person(
             self, data: DataclassPerson, secret_header: str = Parameter(header="secret")
         ) -> DataclassPerson:
