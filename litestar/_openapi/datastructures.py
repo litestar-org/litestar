@@ -243,6 +243,6 @@ class OpenAPIContext:
         if operation_id in self.operation_ids:
             raise ImproperlyConfiguredException(
                 "operation_ids must be unique, "
-                f"please ensure the value of 'operation_id' is either not set or unique for {operation_id}"
+                f"please ensure the value of 'operation_id' is either not set or unique for {operation_id!r}"
             )
         self.operation_ids.add(operation_id)
