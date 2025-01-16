@@ -137,7 +137,7 @@ class Request(Generic[UserT, AuthT, StateT], ASGIConnection["HTTPRouteHandler", 
             else:
                 body = await self.body()
                 self._json = self._connection_state.json = decode_json(
-                    body or b"null", type_decoders=self.route_handler.resolve_type_decoders()
+                    body or b"null", type_decoders=self.route_handler.type_decoders
                 )
         return self._json
 
@@ -153,7 +153,7 @@ class Request(Generic[UserT, AuthT, StateT], ASGIConnection["HTTPRouteHandler", 
             else:
                 body = await self.body()
                 self._msgpack = self._connection_state.msgpack = decode_msgpack(
-                    body or b"\xc0", type_decoders=self.route_handler.resolve_type_decoders()
+                    body or b"\xc0", type_decoders=self.route_handler.type_decoders
                 )
         return self._msgpack
 
@@ -190,7 +190,7 @@ class Request(Generic[UserT, AuthT, StateT], ASGIConnection["HTTPRouteHandler", 
             # float is slightly faster than checking if a value is 'None' and then
             # comparing it to an int. since we expect a limit to be set most of the
             # time, this is a bit more efficient
-            max_content_length = self.route_handler.resolve_request_max_body_size() or math.inf
+            max_content_length = self.route_handler.request_max_body_size or math.inf
 
             # if the 'content-length' header is set, and exceeds the limit, we can bail
             # out early before reading anything
