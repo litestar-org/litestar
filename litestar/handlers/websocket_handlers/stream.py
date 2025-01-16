@@ -211,11 +211,11 @@ class WebSocketStreamHandler(WebsocketRouteHandler):
     __slots__ = ("_ws_stream_options",)
     _ws_stream_options: _WebSocketStreamOptions
 
-    def on_registration(self, app: Litestar, route: BaseRoute) -> None:
+    def on_registration(self, route: BaseRoute, app: Litestar) -> None:
         self._ws_stream_options = self.opt["stream_options"]
 
         parsed_handler_signature = parsed_stream_fn_signature = ParsedSignature.from_fn(
-            self.fn, self.resolve_signature_namespace()
+            self.fn, self.signature_namespace
         )
 
         if not parsed_stream_fn_signature.return_type.is_subclass_of(AsyncGenerator):
@@ -254,7 +254,8 @@ class WebSocketStreamHandler(WebsocketRouteHandler):
         self._parsed_return_field = parsed_stream_fn_signature.return_type.inner_types[0]
 
         json_encoder = JsonEncoder(enc_hook=self.default_serializer)
-        return_dto = self.resolve_return_dto()
+        self._dto = self._resolve_data_dto(app=app)
+        self._return_dto = return_dto = self._resolve_return_dto(app=app, data_dto=self._dto)
 
         # make sure the closure doesn't capture self._ws_stream / self
         send_mode: WebSocketMode = self._ws_stream_options.send_mode  # pyright: ignore
@@ -292,7 +293,7 @@ class WebSocketStreamHandler(WebsocketRouteHandler):
 
         self.fn = handler_fn  # pyright: ignore
 
-        super().on_registration(app, route)
+        super().on_registration(route, app)
 
 
 class _WebSocketStreamOptions:

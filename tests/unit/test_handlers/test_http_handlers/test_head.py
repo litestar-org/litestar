@@ -28,8 +28,7 @@ def test_head_decorator_raises_validation_error_if_body_is_declared() -> None:
         def handler() -> dict:
             return {}
 
-        handler.on_registration(Litestar(), HTTPRoute(path="/", route_handlers=[handler]))
-        Litestar(route_handlers=[handler])
+        handler.on_registration(HTTPRoute(path="/", route_handlers=[handler]), app=Litestar())
 
 
 def test_head_decorator_none_response_return_value_allowed() -> None:
@@ -39,15 +38,17 @@ def test_head_decorator_none_response_return_value_allowed() -> None:
     class MyResponse(Generic[T], Response[T]):
         pass
 
-    @head("/1")
+    @head("/")
     def handler() -> Response[None]:
         return Response(None)
 
-    @head("/2")
+    Litestar([handler])
+
+    @head("/")
     def handler_subclass() -> MyResponse[None]:
         return MyResponse(None)
 
-    Litestar(route_handlers=[handler, handler_subclass])
+    Litestar([handler_subclass])
 
 
 def test_head_decorator_does_not_raise_for_file_response() -> None:
@@ -57,8 +58,6 @@ def test_head_decorator_does_not_raise_for_file_response() -> None:
 
     Litestar(route_handlers=[handler])
 
-    handler.on_registration(Litestar(), HTTPRoute(path="/", route_handlers=[handler]))
-
 
 def test_head_decorator_does_not_raise_for_asgi_file_response() -> None:
     @head("/")
@@ -66,5 +65,3 @@ def test_head_decorator_does_not_raise_for_asgi_file_response() -> None:
         return ASGIFileResponse(file_path=Path("test_head.py"))
 
     Litestar(route_handlers=[handler])
-
-    handler.on_registration(Litestar(), HTTPRoute(path="/", route_handlers=[handler]))

@@ -3,7 +3,6 @@ from __future__ import annotations
 import dataclasses
 import warnings
 from collections import abc
-from copy import deepcopy
 from dataclasses import dataclass, is_dataclass, replace
 from enum import Enum
 from inspect import Parameter, Signature
@@ -21,14 +20,12 @@ from typing_extensions import (
     NewType,
     NotRequired,
     Required,
+    TypeAliasType  as TeTypeAliasType,
     Self,
     get_args,
     get_origin,
     get_type_hints,
     is_typeddict,
-)
-from typing_extensions import (
-    TypeAliasType as TeTypeAliasType,
 )
 
 try:
@@ -152,9 +149,6 @@ class FieldDefinition:
     """Kwarg Parameter."""
     name: str
     """Field name."""
-
-    def __deepcopy__(self, memo: dict[str, Any]) -> Self:
-        return type(self)(**{attr: deepcopy(getattr(self, attr)) for attr in self.__slots__})
 
     def __eq__(self, other: Any) -> bool:
         if not isinstance(other, FieldDefinition):

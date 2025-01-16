@@ -40,7 +40,7 @@ def test_merged_components_correct() -> None:
 
 def test_allows_customization_of_operation_id_creator() -> None:
     def operation_id_creator(handler: "HTTPRouteHandler", _: Any, __: Any) -> str:
-        return handler.name or ""
+        return f"id_{handler.name}" if handler.name else ""
 
     @get(path="/1", name="x")
     def handler_1() -> None:
@@ -59,7 +59,7 @@ def test_allows_customization_of_operation_id_creator() -> None:
         "/1": {
             "get": {
                 "deprecated": False,
-                "operationId": "x",
+                "operationId": "id_x",
                 "responses": {"200": {"description": "Request fulfilled, document follows", "headers": {}}},
                 "summary": "Handler1",
             }
@@ -67,7 +67,7 @@ def test_allows_customization_of_operation_id_creator() -> None:
         "/2": {
             "get": {
                 "deprecated": False,
-                "operationId": "y",
+                "operationId": "id_y",
                 "responses": {"200": {"description": "Request fulfilled, document follows", "headers": {}}},
                 "summary": "Handler2",
             }

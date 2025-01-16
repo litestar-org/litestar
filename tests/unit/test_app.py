@@ -14,7 +14,6 @@ from click import Group
 from pytest import MonkeyPatch
 
 from litestar import Litestar, MediaType, Request, Response, get
-from litestar._asgi.asgi_router import ASGIRouter
 from litestar.config.app import AppConfig, ExperimentalFeatures
 from litestar.config.response_cache import ResponseCacheConfig
 from litestar.contrib.sqlalchemy.plugins import SQLAlchemySerializationPlugin
@@ -28,7 +27,6 @@ from litestar.exceptions import (
 )
 from litestar.logging.config import LoggingConfig
 from litestar.plugins import CLIPluginProtocol
-from litestar.router import Router
 from litestar.status_codes import HTTP_200_OK, HTTP_400_BAD_REQUEST, HTTP_500_INTERNAL_SERVER_ERROR
 from litestar.testing import TestClient, create_test_client
 
@@ -171,8 +169,6 @@ def test_app_config_object_used(app_config_object: AppConfig, monkeypatch: pytes
     # Things that we don't actually need to call for this test
     monkeypatch.setattr(Litestar, "register", MagicMock())
     monkeypatch.setattr(Litestar, "_create_asgi_handler", MagicMock())
-    monkeypatch.setattr(Router, "__init__", MagicMock())
-    monkeypatch.setattr(ASGIRouter, "__init__", MagicMock(return_value=None))
 
     # instantiates the app with an `on_app_config` that returns our patched `AppConfig` object.
     Litestar(on_app_init=[MagicMock(return_value=app_config_object)])

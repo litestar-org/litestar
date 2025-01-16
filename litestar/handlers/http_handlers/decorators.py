@@ -54,7 +54,7 @@ if TYPE_CHECKING:
     )
     from litestar.types.callable_types import AnyCallable, OperationIDCreator
 
-__all__ = ("delete", "get", "head", "patch", "post", "put")
+__all__ = ("delete", "get", "head", "patch", "post", "put", "route")
 
 
 def route(
@@ -1030,7 +1030,6 @@ def put(
             hook for deserialization.
         type_encoders: A mapping of types to callables that transform them into types supported for serialization.
         handler_class: Route handler class instantiated by the decorator
-
         **kwargs: Any additional kwarg - will be set in the opt dictionary.
     """
 

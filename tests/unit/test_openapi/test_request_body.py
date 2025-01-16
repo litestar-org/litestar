@@ -41,7 +41,7 @@ def create_request(openapi_context: OpenAPIContext) -> RequestBodyFactory:
         return create_request_body(
             context=openapi_context,
             handler_id=route_handler.handler_id,
-            resolved_data_dto=route_handler.resolve_data_dto(),
+            resolved_data_dto=route_handler.data_dto,
             data_field=data_field,
         )
 
@@ -175,9 +175,10 @@ def test_request_body_generation_with_dto(create_request: RequestBodyFactory) ->
     async def handler(data: Dict[str, Any]) -> None:
         return None
 
-    Litestar(route_handlers=[handler])
+    app = Litestar(route_handlers=[handler])
+    resolved_handler = app.route_handler_method_map["/form-upload"]["POST"]
     field_definition = FieldDefinition.from_annotation(Dict[str, Any])
-    create_request(handler, field_definition)
+    create_request(resolved_handler, field_definition)
     mock_dto.create_openapi_schema.assert_called_once_with(
-        field_definition=field_definition, handler_id=handler.handler_id, schema_creator=ANY
+        field_definition=field_definition, handler_id=resolved_handler.handler_id, schema_creator=ANY
     )
