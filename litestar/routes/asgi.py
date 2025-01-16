@@ -49,7 +49,7 @@ class ASGIRoute(BaseRoute[Scope]):
         copy_scope = self.route_handler.copy_scope
 
         connection = ASGIConnection["ASGIRouteHandler", Any, Any, Any](
-            scope=handler_scope if copy_scope else scope,
+            scope=handler_scope if copy_scope is True else scope,
             receive=receive,
             send=send,
         )
