@@ -109,7 +109,7 @@ class Provide:
     def finalize(
         self,
         *,
-        plugins: PluginRegistry | None = None,
+        plugins: PluginRegistry,
         signature_namespace: dict[str, Any],
         dependency_keys: set[str],
         data_dto: type[AbstractDTO] | None,
@@ -117,12 +117,10 @@ class Provide:
     ) -> None:
         if self._parsed_fn_signature is None:
             dependency = unwrap_partial(self.dependency)
-            plugin: DIPlugin | None = None
-            if plugins is not None:
-                plugin = next(
-                    (p for p in plugins.di if isinstance(p, DIPlugin) and p.has_typed_init(dependency)),
-                    None,
-                )
+            plugin = next(
+                (p for p in plugins.di if isinstance(p, DIPlugin) and p.has_typed_init(dependency)),
+                None,
+            )
             if plugin:
                 signature, init_type_hints = plugin.get_typed_init(dependency)
                 self._parsed_fn_signature = ParsedSignature.from_signature(signature, init_type_hints)
