@@ -22,14 +22,11 @@ def get_serializer_from_scope(scope: Scope) -> Serializer:
     route_handler = scope["route_handler"]
     app = scope["litestar_app"]
 
-    if hasattr(route_handler, "resolve_type_encoders"):
-        type_encoders = route_handler.resolve_type_encoders()
-    else:
-        type_encoders = app.type_encoders or {}
+    type_encoders = route_handler.type_encoders if hasattr(route_handler, "type_encoders") else app.type_encoders or {}
 
     if response_class := (
-        route_handler.resolve_response_class()  # pyright: ignore
-        if hasattr(route_handler, "resolve_response_class")
+        route_handler.response_class  # pyright: ignore
+        if hasattr(route_handler, "response_class")
         else app.response_class
     ):
         type_encoders = {**type_encoders, **(response_class.type_encoders or {})}

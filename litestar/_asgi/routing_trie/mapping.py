@@ -189,7 +189,7 @@ def build_route_middleware_stack(
     from litestar.routes import HTTPRoute
 
     asgi_handler: ASGIApp = route.handle  # type: ignore[assignment]
-    handler_middleware = route_handler.resolve_middleware()
+    handler_middleware = route_handler.middleware
     has_cached_route = isinstance(route, HTTPRoute) and any(r.cache for r in route.route_handlers)
     has_middleware = (
         app.csrf_config or app.compression_config or has_cached_route or app.allowed_hosts or handler_middleware

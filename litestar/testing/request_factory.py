@@ -41,9 +41,7 @@ def _create_default_route_handler(
 
     def _default_route_handler() -> None: ...
 
-    handler = handler_decorator("/", sync_to_thread=False, **(handler_kwargs or {}))(_default_route_handler)
-    handler.owner = app
-    return handler
+    return handler_decorator("/", sync_to_thread=False, **(handler_kwargs or {}))(_default_route_handler).merge(app)
 
 
 def _create_default_app() -> Litestar:
@@ -304,7 +302,7 @@ class RequestFactory:
                 body += chunk
         scope_state = ScopeState.from_scope(scope)
         scope_state.body = body
-        scope_state.exception_handlers = scope["route_handler"].resolve_exception_handlers()
+        scope_state.exception_handlers = scope["route_handler"].exception_handlers
         self._create_cookie_header(headers, cookies)
         scope["headers"] = self._build_headers(headers)
         return Request(scope=scope)
