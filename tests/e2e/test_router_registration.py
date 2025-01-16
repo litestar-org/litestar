@@ -11,7 +11,6 @@ from litestar import (
     get,
     patch,
     post,
-    put,
     websocket,
 )
 from litestar import (
@@ -135,44 +134,6 @@ def test_register_app_on_itself() -> None:
 
     with pytest.raises(ImproperlyConfiguredException):
         app.register(app)
-
-
-def test_route_handler_method_view(controller: Type[Controller]) -> None:
-    @get(path="/root")
-    def handler() -> None: ...
-
-    def _handler() -> None: ...
-
-    put_handler = put("/modify")(_handler)
-    post_handler = post("/send")(_handler)
-
-    first_router = Router(path="/first", route_handlers=[controller, post_handler, put_handler])
-    second_router = Router(path="/second", route_handlers=[controller, post_handler, put_handler])
-
-    app = Litestar(route_handlers=[first_router, second_router, handler])
-
-    assert app.route_handler_method_view[str(handler)] == ["/root"]
-    assert app.route_handler_method_view[str(controller.get_method)] == [  # type: ignore[attr-defined]
-        "/first/test",
-        "/second/test",
-    ]
-
-    assert app.route_handler_method_view[str(controller.ws)] == [  # type: ignore[attr-defined]
-        "/first/test/socket",
-        "/second/test/socket",
-    ]
-    assert app.route_handler_method_view[str(put_handler)] == [
-        "/first/send",
-        "/first/modify",
-        "/second/send",
-        "/second/modify",
-    ]
-    assert app.route_handler_method_view[str(post_handler)] == [
-        "/first/send",
-        "/first/modify",
-        "/second/send",
-        "/second/modify",
-    ]
 
 
 def test_missing_path_param_type(controller: Type[Controller]) -> None:

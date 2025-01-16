@@ -1,6 +1,8 @@
 from __future__ import annotations
 
+import collections
 import inspect
+import itertools
 import logging
 import os
 import warnings
@@ -48,7 +50,7 @@ from litestar.plugins import (
 )
 from litestar.plugins.base import CLIPlugin
 from litestar.router import Router
-from litestar.routes import ASGIRoute, BaseRoute, HTTPRoute, WebSocketRoute
+from litestar.routes import ASGIRoute, HTTPRoute, WebSocketRoute
 from litestar.stores.registry import StoreRegistry
 from litestar.types import Empty, TypeDecodersSequence
 from litestar.types.internal_types import PathParameterDefinition, RouteHandlerMapItem, TemplateConfigType
@@ -161,6 +163,7 @@ class Litestar(Router):
         "pdb_on_exception",
         "plugins",
         "response_cache_config",
+        "route_handler_method_map",
         "route_map",
         "routes",
         "state",
@@ -416,7 +419,6 @@ class Litestar(Router):
 
         self.get_logger: GetLogger = get_logger_placeholder
         self.logger: Logger | None = None
-        self.routes: list[HTTPRoute | ASGIRoute | WebSocketRoute] = []
 
         self.after_exception = [ensure_async_callable(h) for h in config.after_exception]
         self.allowed_hosts = cast("AllowedHostsConfig | None", config.allowed_hosts)
@@ -483,8 +485,10 @@ class Litestar(Router):
 
         self.asgi_router = ASGIRouter(app=self)
 
-        for route_handler in self._reduce_handlers(self.route_handlers):
-            self._finalize_routes(route_handler)
+        self.routes: list[HTTPRoute | ASGIRoute | WebSocketRoute] = self._build_routes(
+            self._reduce_handlers(self.route_handlers)
+        )
+        self.route_handler_method_map = self._create_route_handler_method_map(self.routes)
 
         # we have merged everything registered initially, so let's ensure we don't keep
         # unnecessary references to temporary objects around and let them be gc'ed
@@ -670,15 +674,17 @@ class Litestar(Router):
         """
         return cls(**dict(extract_dataclass_items(config)))
 
-    @property
-    def route_handler_method_map(self) -> dict[str, RouteHandlerMapItem]:
+    @staticmethod
+    def _create_route_handler_method_map(
+        routes: Sequence[HTTPRoute | ASGIRoute | WebSocketRoute],
+    ) -> dict[str, RouteHandlerMapItem]:
         """Map route paths to :class:`~litestar.types.internal_types.RouteHandlerMapItem`
 
         Returns:
              A dictionary mapping paths to route handlers
         """
         route_map: defaultdict[str, RouteHandlerMapItem] = defaultdict(dict)
-        for route in self.routes:
+        for route in routes:
             if isinstance(route, HTTPRoute):
                 route_map[route.path] = route.route_handler_map  # type: ignore[assignment]
             else:
@@ -688,64 +694,33 @@ class Litestar(Router):
 
         return route_map
 
-    @classmethod
-    def get_route_handler_map(cls, value: BaseRouteHandler) -> dict[str, RouteHandlerMapItem]:
-        """Map route handlers to HTTP methods."""
+    def _build_routes(self, route_handlers: Iterable[BaseRouteHandler]) -> list[HTTPRoute | ASGIRoute | WebSocketRoute]:
+        """Create routes for all the handlers"""
+        routes: list[HTTPRoute | ASGIRoute | WebSocketRoute] = []
 
-        if isinstance(value, HTTPRouteHandler):
-            return {path: {http_method: value for http_method in value.http_methods} for path in value.paths}
+        # since http routes can have multiple handlers (the case when one path handles
+        # multiple methods - we do the last mile of the routing outside the trie and on
+        # the route itself), we first group them by path and then create one route for
+        # each path
+        http_path_groups: dict[str, list[HTTPRouteHandler]] = collections.defaultdict(list)
 
-        return {
-            path: {"websocket" if isinstance(value, WebsocketRouteHandler) else "asgi": value} for path in value.paths
-        }
+        for handler in route_handlers:
+            if isinstance(handler, HTTPRouteHandler):
+                for path in handler.paths:
+                    http_path_groups[path].append(handler)
+            elif isinstance(handler, WebsocketRouteHandler):
+                for path in handler.paths:
+                    routes.append(WebSocketRoute(path=path, route_handler=handler))
+            elif isinstance(handler, ASGIRouteHandler):
+                for path in handler.paths:
+                    routes.append(ASGIRoute(path=path, route_handler=handler))
 
-    def _finalize_routes(self, value: BaseRouteHandler) -> None:
-        from litestar.handlers import HTTPRouteHandler
-        from litestar.routes import ASGIRoute, HTTPRoute, WebSocketRoute
+        for path, http_handlers in http_path_groups.items():
+            routes.append(
+                HTTPRoute(path=path, route_handlers=_maybe_add_options_handler(path, http_handlers, root=self))
+            )
 
-        finalized_routes: list[BaseRoute] = []
-
-        for path, handlers_map in self.get_route_handler_map(value=value).items():
-            if http_handlers := unique(
-                [handler for handler in handlers_map.values() if isinstance(handler, HTTPRouteHandler)]
-            ):
-                if existing_handlers := unique(
-                    [
-                        handler
-                        for handler in self.route_handler_method_map.get(path, {}).values()
-                        if isinstance(handler, HTTPRouteHandler)
-                    ]
-                ):
-                    http_handlers.extend(existing_handlers)
-                    existing_route_index = next((i for i, r in enumerate(self.routes) if r.path == path), None)
-
-                    if existing_route_index is None:  # pragma: no cover
-                        raise ImproperlyConfiguredException("unable to find_index existing route index")
-
-                    route: WebSocketRoute | ASGIRoute | HTTPRoute = HTTPRoute(
-                        path=path,
-                        route_handlers=_maybe_add_options_handler(path, http_handlers, root=self),
-                    )
-                    self.routes[existing_route_index] = route
-                else:
-                    route = HTTPRoute(
-                        path=path, route_handlers=_maybe_add_options_handler(path, http_handlers, root=self)
-                    )
-                    self.routes.append(route)
-
-                finalized_routes.append(route)
-
-            if websocket_handler := handlers_map.get("websocket"):
-                route = WebSocketRoute(path=path, route_handler=cast(WebsocketRouteHandler, websocket_handler))
-                self.routes.append(route)
-                finalized_routes.append(route)
-
-            if asgi_handler := handlers_map.get("asgi"):
-                route = ASGIRoute(path=path, route_handler=cast(ASGIRouteHandler, asgi_handler))
-                self.routes.append(route)
-                finalized_routes.append(route)
-
-        for finalized_route in finalized_routes:
+        for finalized_route in routes:
             route_handlers = get_route_handlers(finalized_route)
 
             for route_handler in route_handlers:
@@ -753,6 +728,8 @@ class Litestar(Router):
 
             for plugin in self.plugins.receive_route:
                 plugin.receive_route(finalized_route)
+
+        return routes
 
     def _iter_handlers(
         self, handlers: Iterable[ControllerRouterHandler], bases: list[Router]
@@ -865,8 +842,13 @@ class Litestar(Router):
             category=LitestarWarning,
             stacklevel=2,
         )
-        for h in self._reduce_handlers([value]):
-            self._finalize_routes(h)
+        self.routes = []
+        self.routes = self._build_routes(
+            itertools.chain(
+                self._reduce_handlers([value]), (h for route in self.routes for h in get_route_handlers(route))
+            )
+        )
+        self.route_handler_method_map = self._create_route_handler_method_map(self.routes)
 
         self.asgi_router.construct_routing_trie()
 
@@ -970,18 +952,6 @@ class Litestar(Router):
                 output.append(component)
 
         return join_paths(output)
-
-    @property
-    def route_handler_method_view(self) -> dict[str, list[str]]:
-        """Map route handlers to paths.
-
-        Returns:
-            A dictionary of router handlers and lists of paths as strings
-        """
-        route_map: dict[str, list[str]] = {
-            handler: [route.path for route in routes] for handler, routes in self.asgi_router.route_mapping.items()
-        }
-        return route_map
 
     def _create_asgi_handler(self) -> ASGIApp:
         """Create an ASGIApp that wraps the ASGI router inside an exception handler.
