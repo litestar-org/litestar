@@ -232,6 +232,7 @@ filterwarnings = [
   "ignore: Dropping max_length:litestar.exceptions.LitestarWarning:litestar.contrib.piccolo",
   "ignore: Python Debugger on exception enabled:litestar.exceptions.LitestarWarning:",
   "ignore: datetime.datetime.utcnow:DeprecationWarning:time_machine",
+  "ignore:Registering routes.*:litestar.exceptions.base_exceptions.LitestarWarning"
 ]
 markers = [
   "sqlalchemy_integration: SQLAlchemy integration tests",
@@ -398,7 +399,7 @@ lint.select = [
   "SIM", # flake8-simplify
   "T10", # flake8-debugger
   "T20", # flake8-print
-  "TC",  # flake8-type-checking
+  "TCH",  # flake8-type-checking
   "TID", # flake8-tidy-imports
   "UP",  # pyupgrade
   "W",   # pycodestyle - warning
@@ -449,7 +450,7 @@ classmethod-decorators = [
 known-first-party = ["litestar", "tests", "examples"]
 
 [tool.ruff.lint.per-file-ignores]
-"docs/**/*.*" = ["S", "B", "DTZ", "A", "TC", "ERA", "D", "RET"]
+"docs/**/*.*" = ["S", "B", "DTZ", "A", "TCH", "ERA", "D", "RET"]
 "docs/examples/**" = ["T201"]
 "docs/examples/application_hooks/before_send_hook.py" = ["UP006"]
 "docs/examples/contrib/sqlalchemy/plugins/**/*.*" = ["UP006"]
@@ -482,7 +483,7 @@ known-first-party = ["litestar", "tests", "examples"]
   "S",
   "S101",
   "SIM",
-  "TC",
+  "TCH",
   "TRY",
   "E721",
 ]

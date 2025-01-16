@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import sys
 import typing
-from copy import deepcopy
 from dataclasses import dataclass, replace
 from inspect import Signature, getmembers, isclass, ismethod
 from itertools import chain
@@ -192,13 +191,6 @@ class ParsedSignature:
     """The return annotation of the callable."""
     original_signature: Signature
     """The raw signature as returned by :func:`inspect.signature`"""
-
-    def __deepcopy__(self, memo: dict[str, Any]) -> Self:
-        return type(self)(
-            parameters={k: deepcopy(v) for k, v in self.parameters.items()},
-            return_type=deepcopy(self.return_type),
-            original_signature=deepcopy(self.original_signature),
-        )
 
     @classmethod
     def from_fn(cls, fn: AnyCallable, signature_namespace: dict[str, Any]) -> Self:
