@@ -67,7 +67,7 @@ async def test_accept_set_headers(headers: Any) -> None:
         assert dict(ws.scope["headers"])[b"test"] == b"hello-world"
 
 
-async def test_custom_request_class() -> None:
+async def test_custom_websocket_class() -> None:
     value: Any = {}
 
     class MyWebSocket(WebSocket[Any, Any, State]):
