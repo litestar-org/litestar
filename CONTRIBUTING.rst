@@ -45,7 +45,7 @@ the environment will bootstrap itself automatically. The steps below are for loc
    .. code-block:: shell
         :caption: Installing the development dependencies
 
-        uv sync --python 3.12
+        uv sync
 
 
 .. tip:: Many modern IDEs like PyCharm or VS Code will enable the uv-managed virtualenv that is created in step 2
