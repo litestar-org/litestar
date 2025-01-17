@@ -168,8 +168,6 @@ You can serve the documentation locally with
 
     make docs-serve
 
-The docs will be served at http://127.0.0.1:8002/.
-
 or build it with
 
 .. code-block:: shell
