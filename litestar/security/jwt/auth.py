@@ -48,7 +48,7 @@ class BaseJWTAuth(Generic[UserType, TokenT], AbstractSecurityConfig[UserType, To
         - The callable can be sync or async. If it is sync, it will be wrapped to support async.
 
     """
-    revoked_token_handler: Callable[[Any, ASGIConnection], SyncOrAsyncUnion[bool]] | None = None
+    revoked_token_handler: Callable[[Any, ASGIConnection], SyncOrAsyncUnion[bool]] | None = field(default=None)
     """Callable that receives the auth value from the authentication middleware and checks whether the token has been revoked,
     returning True if revoked, False otherwise."""
     algorithm: str
@@ -280,7 +280,7 @@ class JWTAuth(Generic[UserType, TokenT], BaseJWTAuth[UserType, TokenT]):
         - The callable can be sync or async. If it is sync, it will be wrapped to support async.
 
     """
-    revoked_token_handler: Callable[[Any, ASGIConnection], SyncOrAsyncUnion[bool]] | None = None
+    revoked_token_handler: Callable[[Any, ASGIConnection], SyncOrAsyncUnion[bool]] | None = field(default=None)
     """Callable that receives the auth value from the authentication middleware and checks whether the token has been revoked,
     returning True if revoked, False otherwise."""
     guards: Iterable[Guard] | None = field(default=None)
@@ -371,7 +371,7 @@ class JWTCookieAuth(Generic[UserType, TokenT], BaseJWTAuth[UserType, TokenT]):
         - The callable can be sync or async. If it is sync, it will be wrapped to support async.
 
     """
-    revoked_token_handler: Callable[[Any, ASGIConnection], SyncOrAsyncUnion[bool]] | None = None
+    revoked_token_handler: Callable[[Any, ASGIConnection], SyncOrAsyncUnion[bool]] | None = field(default=None)
     """Callable that receives the auth value from the authentication middleware and checks whether the token has been revoked,
     returning True if revoked, False otherwise."""
     guards: Iterable[Guard] | None = field(default=None)
@@ -609,7 +609,7 @@ class OAuth2PasswordBearerAuth(Generic[UserType, TokenT], BaseJWTAuth[UserType, 
         - The callable can be sync or async. If it is sync, it will be wrapped to support async.
 
     """
-    revoked_token_handler: Callable[[Any, ASGIConnection], SyncOrAsyncUnion[bool]] | None = None
+    revoked_token_handler: Callable[[Any, ASGIConnection], SyncOrAsyncUnion[bool]] | None = field(default=None)
     """Callable that receives the auth value from the authentication middleware and checks whether the token has been revoked,
     returning True if revoked, False otherwise."""
     guards: Iterable[Guard] | None = field(default=None)
