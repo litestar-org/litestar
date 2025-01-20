@@ -76,6 +76,8 @@ Homepage = "https://litestar.dev/"
 Reddit = "https://www.reddit.com/r/LitestarAPI"
 Repository = "https://github.com/litestar-org/litestar"
 Twitter = "https://twitter.com/LitestarAPI"
+Funding = "https://github.com/sponsors/litestar-org"
+Discussions = "https://github.com/litestar-org/litestar/discussions"
 
 [project.optional-dependencies]
 annotated-types = ["annotated-types"]
