@@ -586,6 +586,9 @@ see [the contribution guide](CONTRIBUTING.rst).
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/ftsartek"><img src="https://avatars.githubusercontent.com/u/20253317?v=4?s=100" width="100px;" alt="Jordan Russell"/><br /><sub><b>Jordan Russell</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=ftsartek" title="Documentation">📖</a> <a href="https://github.com/litestar-org/litestar/commits?author=ftsartek" title="Tests">⚠️</a> <a href="https://github.com/litestar-org/litestar/commits?author=ftsartek" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://stevenloria.com"><img src="https://avatars.githubusercontent.com/u/2379650?v=4?s=100" width="100px;" alt="Steven Loria"/><br /><sub><b>Steven Loria</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=sloria" title="Documentation">📖</a></td>
     </tr>
+    <tr>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/oek1ng"><img src="https://avatars.githubusercontent.com/u/193062679?v=4?s=100" width="100px;" alt="oek1ng"/><br /><sub><b>oek1ng</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=oek1ng" title="Code">💻</a></td>
+    </tr>
   </tbody>
 </table>
 
