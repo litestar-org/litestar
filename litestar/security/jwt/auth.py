@@ -48,6 +48,9 @@ class BaseJWTAuth(Generic[UserType, TokenT], AbstractSecurityConfig[UserType, To
         - The callable can be sync or async. If it is sync, it will be wrapped to support async.
 
     """
+    revoked_token_handler: Callable[[Any, ASGIConnection], SyncOrAsyncUnion[bool]] | None = None
+    """Callable that receives the auth value from the authentication middleware and checks whether the token has been revoked,
+    returning True if revoked, False otherwise."""
     algorithm: str
     """Algorithm to use for JWT hashing."""
     auth_header: str
@@ -138,6 +141,7 @@ class BaseJWTAuth(Generic[UserType, TokenT], AbstractSecurityConfig[UserType, To
             exclude_opt_key=self.exclude_opt_key,
             exclude_http_methods=self.exclude_http_methods,
             retrieve_user_handler=self.retrieve_user_handler,
+            revoked_token_handler=self.revoked_token_handler,
             scopes=self.scopes,
             token_secret=self.token_secret,
             token_cls=self.token_cls,
@@ -276,6 +280,9 @@ class JWTAuth(Generic[UserType, TokenT], BaseJWTAuth[UserType, TokenT]):
         - The callable can be sync or async. If it is sync, it will be wrapped to support async.
 
     """
+    revoked_token_handler: Callable[[Any, ASGIConnection], SyncOrAsyncUnion[bool]] | None = None
+    """Callable that receives the auth value from the authentication middleware and checks whether the token has been revoked,
+    returning True if revoked, False otherwise."""
     guards: Iterable[Guard] | None = field(default=None)
     """An iterable of guards to call for requests, providing authorization functionalities."""
     exclude: str | list[str] | None = field(default=None)
@@ -364,6 +371,9 @@ class JWTCookieAuth(Generic[UserType, TokenT], BaseJWTAuth[UserType, TokenT]):
         - The callable can be sync or async. If it is sync, it will be wrapped to support async.
 
     """
+    revoked_token_handler: Callable[[Any, ASGIConnection], SyncOrAsyncUnion[bool]] | None = None
+    """Callable that receives the auth value from the authentication middleware and checks whether the token has been revoked,
+    returning True if revoked, False otherwise."""
     guards: Iterable[Guard] | None = field(default=None)
     """An iterable of guards to call for requests, providing authorization functionalities."""
     exclude: str | list[str] | None = field(default=None)
@@ -477,6 +487,7 @@ class JWTCookieAuth(Generic[UserType, TokenT], BaseJWTAuth[UserType, TokenT]):
             exclude_opt_key=self.exclude_opt_key,
             exclude_http_methods=self.exclude_http_methods,
             retrieve_user_handler=self.retrieve_user_handler,
+            revoked_token_handler=self.revoked_token_handler,
             scopes=self.scopes,
             token_secret=self.token_secret,
             token_cls=self.token_cls,
@@ -598,6 +609,9 @@ class OAuth2PasswordBearerAuth(Generic[UserType, TokenT], BaseJWTAuth[UserType, 
         - The callable can be sync or async. If it is sync, it will be wrapped to support async.
 
     """
+    revoked_token_handler: Callable[[Any, ASGIConnection], SyncOrAsyncUnion[bool]] | None = None
+    """Callable that receives the auth value from the authentication middleware and checks whether the token has been revoked,
+    returning True if revoked, False otherwise."""
     guards: Iterable[Guard] | None = field(default=None)
     """An iterable of guards to call for requests, providing authorization functionalities."""
     exclude: str | list[str] | None = field(default=None)
@@ -693,6 +707,7 @@ class OAuth2PasswordBearerAuth(Generic[UserType, TokenT], BaseJWTAuth[UserType, 
             exclude_opt_key=self.exclude_opt_key,
             exclude_http_methods=self.exclude_http_methods,
             retrieve_user_handler=self.retrieve_user_handler,
+            revoked_token_handler=self.revoked_token_handler,
             scopes=self.scopes,
             token_secret=self.token_secret,
             token_cls=self.token_cls,
