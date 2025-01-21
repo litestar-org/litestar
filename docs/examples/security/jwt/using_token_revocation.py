@@ -82,7 +82,7 @@ async def logout_handler(request: Request["User", Token, Any]) -> Dict[str, str]
 def some_route_handler(request: "Request[User, Token, Any]") -> Any:
     # request.user is set to the instance of user returned by the middleware
     assert isinstance(request.user, User)
-    # request.auth is the instance of 'litestar_jwt.Token' created from the data encoded in the auth header
+    # request.auth is the instance of 'litestar.security.jwt.Token' created from the data encoded in the auth header
     assert isinstance(request.auth, Token)
     # do stuff ...
 
