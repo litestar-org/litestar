@@ -81,6 +81,7 @@ if TYPE_CHECKING:
         BeforeMessageSendHookHandler,
         BeforeRequestHookHandler,
         ControllerRouterHandler,
+        Debugger,
         Dependencies,
         EmptyType,
         ExceptionHandlersMap,
@@ -101,7 +102,6 @@ if TYPE_CHECKING:
         Scope,
         Send,
         TypeEncodersMap,
-        Debugger,
     )
     from litestar.types.callable_types import LifespanHook
 
