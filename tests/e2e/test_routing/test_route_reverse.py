@@ -1,5 +1,7 @@
-from datetime import time
+from datetime import date, datetime, time, timedelta
+from pathlib import Path
 from typing import Type
+from uuid import UUID
 
 import pytest
 
@@ -102,3 +104,41 @@ def test_route_reverse_validation() -> None:
 
     with pytest.raises(NoRouteMatchFoundException):
         app.route_reverse("another-handler-name", param=1)
+
+
+def test_route_reverse_allow_string_params() -> None:
+    @get(
+        "/strings-everywhere/{datetime_param:datetime}/{date_param:date}/"
+        "{time_param:time}/{timedelta_param:timedelta}/"
+        "{float_param:float}/{uuid_param:uuid}/{path_param:path}",
+        name="strings-everywhere-handler",
+    )
+    def strings_everywhere_handler(
+        datetime_param: datetime,
+        date_param: date,
+        time_param: time,
+        timedelta_param: timedelta,
+        float_param: float,
+        uuid_param: UUID,
+        path_param: Path,
+    ) -> None:
+        return None
+
+    app = Litestar(route_handlers=[strings_everywhere_handler])
+
+    reversed_url_path = app.route_reverse(
+        "strings-everywhere-handler",
+        datetime_param="0001-01-01T01:01:01.000001Z",  # datetime(1, 1, 1, 1, 1, 1, 1, tzinfo=UTC)
+        date_param="0001-01-01",  # date(1,1,1)
+        time_param="01:01:01.000001Z",  # time(1, 1, 1, 1, tzinfo=UTC)
+        timedelta_param="P8DT3661.001001S",  # timedelta(1, 1, 1, 1, 1, 1, 1)
+        float_param="0.1",
+        uuid_param="00000000-0000-0000-0000-000000000000",  # UUID(int=0)
+        path_param="/home/user",  # Path("/home/user/"),
+    )
+
+    assert (
+        reversed_url_path == "/strings-everywhere/0001-01-01T01:01:01.000001Z/"
+        "0001-01-01/01:01:01.000001Z/P8DT3661.001001S/0.1/"
+        "00000000-0000-0000-0000-000000000000/home/user"
+    )

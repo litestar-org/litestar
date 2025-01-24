@@ -15,6 +15,7 @@ from functools import partial
 from itertools import chain
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, AsyncGenerator, Callable, Iterable, Mapping, Sequence, TypedDict, cast
+from uuid import UUID
 
 from litestar._asgi import ASGIRouter
 from litestar._asgi.utils import get_route_handlers, wrap_in_exception_handler
@@ -768,7 +769,9 @@ class Litestar(Router):
 
         Args:
             name: A route handler unique name.
-            **path_parameters: Actual values for path parameters in the route.
+            **path_parameters: Actual values for path parameters in the route. Parameters of type
+                `datetime`, `date`, `time`, `timedelta`, `float`, `Path`, `UUID`
+                may be passed in their string representations.
 
         Raises:
             NoRouteMatchFoundException: If route with 'name' does not exist, path parameters are missing in
@@ -781,7 +784,7 @@ class Litestar(Router):
         if handler_index is None:
             raise NoRouteMatchFoundException(f"Route {name} can not be found")
 
-        allow_str_instead = {datetime, date, time, timedelta, float, Path}
+        allow_str_instead = {datetime, date, time, timedelta, float, Path, UUID}
         routes = sorted(
             self.asgi_router.route_mapping[handler_index["identifier"]],
             key=lambda r: len(r.path_parameters),
