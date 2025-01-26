@@ -1,7 +1,9 @@
 Gunicorn with Uvicorn workers
 =============================
 
-Gunicorn (Green Unicorn) is a Python WSGI HTTP Server that can be used with uvicorn workers to deploy ASGI applications.
+Gunicorn (Green Unicorn) is mainly an application server using the WSGI standard. That means that Gunicorn can serve applications like Flask and Django. Gunicorn by itself is not compatible with Litestar, as Litestar uses the newest ASGI standard.
+
+But Gunicorn supports working as a process manager and allowing users to tell it which specific worker process class to use. Then Gunicorn would start one or more worker processes using that class. And Uvicorn has a Gunicorn-compatible worker class, so you can use Uvicorn workers with Gunicorn to deploy ASGI applications.
 
 Use When
 --------
