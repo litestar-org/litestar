@@ -24,7 +24,7 @@ These features make it particularly suitable for production environments where r
 
     - Uvicorn added a new multiprocess manager, that is meant to replace Gunicorn entirely.
     - The main goal is to be able to have a proper process manager that can handle multiple workers and restart them when needed.
-    - You can see more details on the the pull request `#2183 <https://github.com/encode/uvicorn/pull/2183/>`_.
+    - Refer to the pull request `#2183 <https://github.com/encode/uvicorn/pull/2183/>`_ for implementation details.
 
     For new deployments, use Uvicorn directly:
 
@@ -87,9 +87,9 @@ Run Gunicorn with Uvicorn Workers
 
     .. tab-item:: Integration
 
-        For advanced usage, you can use the ``BaseApplication`` class directly. It will allow us to to do some additional work, such as overriding Gunicorn's own logging configuration.
+        For advanced deployment configurations, developers can leverage the ``BaseApplication`` class to customize Gunicorn's operational parameters. This approach provides enhanced flexibility, particularly for implementing custom logging configurations and fine-tuned application initialization.
 
-        Create a management script in your project (e.g. ``gunicorn_runner.py``).
+        Create a dedicated management script within your project (e.g., ``gunicorn_runner.py``):
 
         .. code-block:: python
             :caption: gunicorn_runner.py
@@ -97,20 +97,17 @@ Run Gunicorn with Uvicorn Workers
             from __future__ import annotations
 
             import os
-            from typing import TYPE_CHECKING
+            from typing import Callable
 
             from gunicorn.app.base import BaseApplication
 
             from app import app
-            
-            if TYPE_CHECKING:
-                from litestar import Litestar
 
 
             class StandaloneApplication(BaseApplication):
                 """Our Gunicorn application."""
 
-                def __init__(self, app: Litestar, options: dict[str, str] | None = None) -> None:
+                def __init__(self, app: Callable, options: dict[str, str] | None = None) -> None:
                     self.options = options or {}
                     self.application = app
                     super().__init__()
@@ -119,21 +116,32 @@ Run Gunicorn with Uvicorn Workers
                     if self.cfg is None:
                         raise AssertionError("StandaloneApplication must be loaded by a parent class")
 
-                    config = {key: value for key, value in self.options.items() if key in self.cfg.settings and value is not None}
-                    for key, value in config.items():
-                        self.cfg.set(key.lower(), value)
+                    for key, value in self.options.items():
+                        if key in self.cfg.settings and value is not None:
+                            self.cfg.set(key.lower(), value)
 
-                def load(self) -> None:
+                def load(self) -> Callable:
                     return self.application
 
 
-            if __name__ == "__main__":
+            def main() -> None:
                 options = {
                     "bind": f"{os.environ.get('HOST', '127.0.0.1')}:{os.environ.get('PORT', '8000')}",
                     "workers": int(os.environ.get("WORKERS", "1")),
                     "worker_class": "uvicorn.workers.UvicornWorker",
                 }
                 StandaloneApplication(app, options).run()
+
+            if __name__ == "__main__":
+                main()
+
+        Optionally, you can register this script in your ``pyproject.toml`` for streamlined project management:
+
+        .. code-block:: toml
+            :caption: pyproject.toml
+
+            [project.scripts]
+            gunicorn_runner = "gunicorn_runner:main"
 
 
 .. code-block:: console
