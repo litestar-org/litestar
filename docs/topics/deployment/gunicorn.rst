@@ -63,10 +63,8 @@ Create a ``app.py`` file containing the reference of your Litestar app
     :language: python
     :caption: app.py
 
-Command Line Usage
-------------------
-
-Basic startup command:
+Run Gunicorn with Uvicorn Workers
+---------------------------------
 
 .. tab-set::
 
@@ -83,83 +81,15 @@ Basic startup command:
             :caption: Production-ready configuration with Docker
 
             gunicorn app:app \
-                --bind 127.0.0.1:8000 \
+                --bind ${HOST:-127.0.0.1}:${PORT:-8000} \
                 --worker-class uvicorn.workers.UvicornWorker \
-                --workers ${WORKERS_PER_CORE:-4} \
-                --max-workers ${MAX_WORKERS:-8} \
-                --timeout 120 \
-                --keep-alive 5
+                --workers ${WORKERS:-4}
 
-.. code-block:: console
-    :caption: Console Output
+    .. tab-item:: Integration
 
-    [2025-01-24 23:51:22 +0800] [35955] [INFO] Starting gunicorn 23.0.0
-    [2025-01-24 23:51:22 +0800] [35955] [INFO] Listening at: http://127.0.0.1:8000 (35955)
-    [2025-01-24 23:51:22 +0800] [35955] [INFO] Using worker: uvicorn.workers.UvicornWorker
-    [2025-01-24 23:51:22 +0800] [35962] [INFO] Booting worker with pid: 35962
-    [2025-01-24 23:51:22 +0800] [35963] [INFO] Booting worker with pid: 35963
-    [2025-01-24 23:51:22 +0800] [35964] [INFO] Booting worker with pid: 35964
-    [2025-01-24 23:51:22 +0800] [35965] [INFO] Booting worker with pid: 35965
-    [2025-01-24 23:51:23 +0800] [35962] [INFO] Started server process [35962]
-    [2025-01-24 23:51:23 +0800] [35962] [INFO] Waiting for application startup.
-    [2025-01-24 23:51:23 +0800] [35962] [INFO] Application startup complete.
-    [2025-01-24 23:51:23 +0800] [35963] [INFO] Started server process [35963]
-    [2025-01-24 23:51:23 +0800] [35963] [INFO] Waiting for application startup.
-    [2025-01-24 23:51:23 +0800] [35963] [INFO] Application startup complete.
-    [2025-01-24 23:51:23 +0800] [35964] [INFO] Started server process [35964]
-    [2025-01-24 23:51:23 +0800] [35964] [INFO] Waiting for application startup.
-    [2025-01-24 23:51:23 +0800] [35964] [INFO] Application startup complete.
-    [2025-01-24 23:51:23 +0800] [35965] [INFO] Started server process [35965]
-    [2025-01-24 23:51:23 +0800] [35965] [INFO] Waiting for application startup.
-    [2025-01-24 23:51:23 +0800] [35965] [INFO] Application startup complete.
+        For advanced usage, you can use the ``BaseApplication`` class directly. It will allow us to to do some additional work, such as overriding Gunicorn's own logging configuration.
 
-Integration with Project Code
------------------------------
-
-Create a management script in your project (e.g. ``gunicorn_runner.py``):
-
-.. tab-set::
-
-    .. tab-item:: subprocess
-
-        .. code-block:: python
-            :caption: gunicorn_runner.py
-
-            import subprocess
-            import sys
-            import os
-
-
-            def main() -> None:
-                proc = subprocess.Popen(
-                    [
-                        sys.executable,
-                        "-m",
-                        "gunicorn",
-                        "app:app",
-                        "--workers",
-                        os.environ.get("WORKERS", "1"),
-                        "--bind",
-                        f"{os.environ.get('HOST', '127.0.0.1')}:{os.environ.get('PORT', '8000')}",
-                        "--worker-class",
-                        "uvicorn.workers.UvicornWorker",
-                    ]
-                )
-
-                try:
-                    proc.wait()
-                
-                except KeyboardInterrupt:
-                    proc.terminate()
-                    proc.wait(timeout=5)
-
-
-            if __name__ == "__main__":
-                main()
-
-    .. tab-item:: BaseApplication
-
-        For advanced usage, you can use the ``BaseApplication`` class directly. It will allow us to override Gunicorn's own logging configuration.
+        Create a management script in your project (e.g. ``gunicorn_runner.py``).
 
         .. code-block:: python
             :caption: gunicorn_runner.py
@@ -204,3 +134,27 @@ Create a management script in your project (e.g. ``gunicorn_runner.py``):
                     "worker_class": "uvicorn.workers.UvicornWorker",
                 }
                 StandaloneApplication(app, options).run()
+
+
+.. code-block:: console
+    :caption: Console Output
+
+    [2025-01-24 23:51:22 +0800] [35955] [INFO] Starting gunicorn 23.0.0
+    [2025-01-24 23:51:22 +0800] [35955] [INFO] Listening at: http://127.0.0.1:8000 (35955)
+    [2025-01-24 23:51:22 +0800] [35955] [INFO] Using worker: uvicorn.workers.UvicornWorker
+    [2025-01-24 23:51:22 +0800] [35962] [INFO] Booting worker with pid: 35962
+    [2025-01-24 23:51:22 +0800] [35963] [INFO] Booting worker with pid: 35963
+    [2025-01-24 23:51:22 +0800] [35964] [INFO] Booting worker with pid: 35964
+    [2025-01-24 23:51:22 +0800] [35965] [INFO] Booting worker with pid: 35965
+    [2025-01-24 23:51:23 +0800] [35962] [INFO] Started server process [35962]
+    [2025-01-24 23:51:23 +0800] [35962] [INFO] Waiting for application startup.
+    [2025-01-24 23:51:23 +0800] [35962] [INFO] Application startup complete.
+    [2025-01-24 23:51:23 +0800] [35963] [INFO] Started server process [35963]
+    [2025-01-24 23:51:23 +0800] [35963] [INFO] Waiting for application startup.
+    [2025-01-24 23:51:23 +0800] [35963] [INFO] Application startup complete.
+    [2025-01-24 23:51:23 +0800] [35964] [INFO] Started server process [35964]
+    [2025-01-24 23:51:23 +0800] [35964] [INFO] Waiting for application startup.
+    [2025-01-24 23:51:23 +0800] [35964] [INFO] Application startup complete.
+    [2025-01-24 23:51:23 +0800] [35965] [INFO] Started server process [35965]
+    [2025-01-24 23:51:23 +0800] [35965] [INFO] Waiting for application startup.
+    [2025-01-24 23:51:23 +0800] [35965] [INFO] Application startup complete.
