@@ -180,12 +180,12 @@ Create a management script in your project (e.g. ``gunicorn_runner.py``):
             class StandaloneApplication(BaseApplication):
                 """Our Gunicorn application."""
 
-                def __init__(self, app: Litestar, options: dict[str, str] | None = None):
+                def __init__(self, app: Litestar, options: dict[str, str] | None = None) -> None:
                     self.options = options or {}
                     self.application = app
                     super().__init__()
 
-                def load_config(self):
+                def load_config(self) -> None:
                     if self.cfg is None:
                         raise AssertionError("StandaloneApplication must be loaded by a parent class")
 
@@ -193,7 +193,7 @@ Create a management script in your project (e.g. ``gunicorn_runner.py``):
                     for key, value in config.items():
                         self.cfg.set(key.lower(), value)
 
-                def load(self):
+                def load(self) -> None:
                     return self.application
 
 
