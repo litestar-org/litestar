@@ -12,6 +12,5 @@ Contents
 
     nginx-unit
     manually-with-asgi-server
-    gunicorn
     docker
     supervisor

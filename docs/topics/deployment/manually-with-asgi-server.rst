@@ -160,3 +160,46 @@ ASGI server with the following command:
 
             [INFO] Starting granian
             [INFO] Listening at: 127.0.0.1:8000
+
+Gunicorn with Uvicorn workers
+-----------------------------
+
+.. important:: **Deprecation Notice**
+
+    The Gunicorn+Uvicorn pattern is considered legacy for ASGI deployments since `Uvicorn 0.30.0+ <https://github.com/encode/uvicorn/releases/tag/0.30.0/>`_ includes native worker management.
+
+    Uvicorn added a new multiprocess manager, that is meant to replace Gunicorn entirely. Refer to the pull request `#2183 <https://github.com/encode/uvicorn/pull/2183/>`_ for implementation details.
+
+    For new deployments, use `Uvicorn <#run-the-asgi-server>`_ directly.
+
+Gunicorn (Green Unicorn) is WSGI server which can serve applications like Flask and Django. Gunicorn by itself is not compatible with Litestar, as Litestar uses the newest ASGI standard.
+
+But Gunicorn supports working as a process manager and allowing users to tell it which specific worker process class to use. Then Gunicorn would start one or more worker processes using that class. And Uvicorn has a Gunicorn-compatible worker class, so you can use Uvicorn workers with Gunicorn to deploy ASGI applications.
+
+.. code-block:: shell
+    :caption: Start with 4 worker processes
+
+    gunicorn app:app -w 4 -k uvicorn.workers.UvicornWorker
+
+.. code-block:: console
+    :caption: Console Output
+
+    [2025-01-24 23:51:22 +0800] [35955] [INFO] Starting gunicorn 23.0.0
+    [2025-01-24 23:51:22 +0800] [35955] [INFO] Listening at: http://127.0.0.1:8000 (35955)
+    [2025-01-24 23:51:22 +0800] [35955] [INFO] Using worker: uvicorn.workers.UvicornWorker
+    [2025-01-24 23:51:22 +0800] [35962] [INFO] Booting worker with pid: 35962
+    [2025-01-24 23:51:22 +0800] [35963] [INFO] Booting worker with pid: 35963
+    [2025-01-24 23:51:22 +0800] [35964] [INFO] Booting worker with pid: 35964
+    [2025-01-24 23:51:22 +0800] [35965] [INFO] Booting worker with pid: 35965
+    [2025-01-24 23:51:23 +0800] [35962] [INFO] Started server process [35962]
+    [2025-01-24 23:51:23 +0800] [35962] [INFO] Waiting for application startup.
+    [2025-01-24 23:51:23 +0800] [35962] [INFO] Application startup complete.
+    [2025-01-24 23:51:23 +0800] [35963] [INFO] Started server process [35963]
+    [2025-01-24 23:51:23 +0800] [35963] [INFO] Waiting for application startup.
+    [2025-01-24 23:51:23 +0800] [35963] [INFO] Application startup complete.
+    [2025-01-24 23:51:23 +0800] [35964] [INFO] Started server process [35964]
+    [2025-01-24 23:51:23 +0800] [35964] [INFO] Waiting for application startup.
+    [2025-01-24 23:51:23 +0800] [35964] [INFO] Application startup complete.
+    [2025-01-24 23:51:23 +0800] [35965] [INFO] Started server process [35965]
+    [2025-01-24 23:51:23 +0800] [35965] [INFO] Waiting for application startup.
+    [2025-01-24 23:51:23 +0800] [35965] [INFO] Application startup complete.
