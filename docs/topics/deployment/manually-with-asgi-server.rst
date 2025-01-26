@@ -170,7 +170,7 @@ Gunicorn with Uvicorn workers
 
     Uvicorn added a new multiprocess manager, that is meant to replace Gunicorn entirely. Refer to the pull request `#2183 <https://github.com/encode/uvicorn/pull/2183/>`_ for implementation details.
 
-    For new deployments, use `Uvicorn <#run-the-asgi-server>`_ directly.
+    For new deployments, use Uvicorn directly.
 
 Gunicorn (Green Unicorn) is WSGI server which can serve applications like Flask and Django. Gunicorn by itself is not compatible with Litestar, as Litestar uses the newest ASGI standard.
 
