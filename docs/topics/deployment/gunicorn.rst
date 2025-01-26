@@ -20,7 +20,7 @@ These features make it particularly suitable for production environments where r
 
 .. important:: **Deprecation Notice**
 
-    The Gunicorn+Uvicorn pattern is considered legacy for ASGI deployments since `Uvicorn 0.30.0+ <https://github.com/encode/uvicorn/releases/tag/0.30.0/>`_ includes native worker management. 
+    The Gunicorn+Uvicorn pattern is considered legacy for ASGI deployments since `Uvicorn 0.30.0+ <https://github.com/encode/uvicorn/releases/tag/0.30.0/>`_ includes native worker management.
 
     - Uvicorn added a new multiprocess manager, that is meant to replace Gunicorn entirely.
     - The main goal is to be able to have a proper process manager that can handle multiple workers and restart them when needed.
