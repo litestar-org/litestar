@@ -26,7 +26,7 @@ These features make it particularly suitable for production environments where r
     - The main goal is to be able to have a proper process manager that can handle multiple workers and restart them when needed.
     - Refer to the pull request `#2183 <https://github.com/encode/uvicorn/pull/2183/>`_ for implementation details.
 
-    For new deployments, use Uvicorn directly:
+    For new deployments, use :doc:`Uvicorn <manually-with-asgi-server>` directly.
 
     .. code-block:: shell
 
