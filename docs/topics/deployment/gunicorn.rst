@@ -45,10 +45,6 @@ For different deployment scenarios, consider these alternatives:
     .. note:: Official documentation coming soon
 - :doc:`Manually with an ASGI server <manually-with-asgi-server>`:
     Direct control by running the application with an ASGI server like Uvicorn, Hypercorn, Daphne, etc.
-- `systemd <https://www.freedesktop.org/wiki/Software/systemd/>`_:
-    A system and service manager, integrated into many Linux distributions for managing system processes.
-
-    .. note:: Official documentation coming soon
 - :doc:`Supervisor <supervisor>`:
     A process control system that can be used to automatically start, stop and restart processes; includes a web UI.
 - :doc:`Docker <docker>`:
