@@ -277,15 +277,17 @@ def _bool_from_env(key: str, default: bool = False) -> bool:
 def _validate_app_path(app_path: str) -> tuple[ModuleType, str]:
     try:
         module_path, app_name = app_path.split(":")
-        module = importlib.import_module(module_path)
     except ValueError:
-        console.print(f"Invalid argument passed --app {app_path!r}[bold red] Expected 'module:app'")
+        console.print(f"[bold red] Invalid argument passed --app {app_path!r}: Expected 'module_path:app'")
         sys.exit(1)
+
+    try:
+        module = importlib.import_module(module_path)
     except ModuleNotFoundError:
-        console.print(f"Invalid argument passed --app {app_path!r}:[bold red] Module Not Found")
+        console.print(f"[bold red] Invalid argument passed --app {app_path!r}: Module not found")
         sys.exit(1)
-    else:
-        return module, app_name
+
+    return module, app_name
 
 
 def _load_app_from_path(app_path: str) -> LoadedApp:
