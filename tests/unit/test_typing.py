@@ -12,6 +12,7 @@ from litestar import get
 from litestar.exceptions import LitestarWarning
 from litestar.params import DependencyKwarg, KwargDefinition, Parameter, ParameterKwarg
 from litestar.typing import FieldDefinition
+from litestar.utils.typing import unwrap_annotation
 from tests.unit.test_utils.test_signature import T, _check_field_definition, field_definition_int, test_type_hints
 
 
@@ -465,6 +466,7 @@ def test_warn_default_inside_kwarg_definition_and_default_empty() -> None:
 def test_is_type_alias_type() -> None:
     field_definition = FieldDefinition.from_annotation(TypeAliasType("IntAlias", int))  # pyright: ignore
     assert field_definition.is_type_alias_type
+    assert field_definition.annotation == int
 
 
 @pytest.mark.skipif(sys.version_info < (3, 12), reason="type keyword not available before 3.12")
@@ -474,3 +476,34 @@ def test_unwrap_type_alias_type_keyword() -> None:
     annotation = ctx["IntAlias"]
     field_definition = FieldDefinition.from_annotation(annotation)
     assert field_definition.is_type_alias_type
+    assert field_definition.annotation == int
+
+
+def test_unwrap_annotation_type_alias_type() -> None:
+    annotation, metadata, wrappers = unwrap_annotation(TypeAliasType("SomeAlias", int))
+    assert annotation == int
+    assert not metadata
+    assert TypeAliasType in wrappers
+
+
+NestedAlias = TypeAliasType("Outer", Union[Annotated[int, "meta"], list["Outer"]])
+
+
+@pytest.mark.parametrize(
+    "annotation, expected_meta, expected_type",
+    [
+        (Annotated[TypeAliasType("SomeAlias", int), "meta"], ("meta",), int),
+        (TypeAliasType("SomeAlias", TypeAliasType("InnerAlias", int)), (), int),
+        (TypeAliasType("SomeAlias", Annotated[int, "meta"]), ("meta",), int),
+        (TypeAliasType("SomeAlias", Annotated[TypeAliasType("InnerAlias", int), "meta"]), ("meta",), int),
+        (Annotated[TypeAliasType("SomeAlias", Annotated[int, "inner meta"]), "meta"], ("meta", "inner meta"), int),
+        (NestedAlias, ("meta",), NestedAlias),
+    ],
+)
+def test_unwrap_annotation_type_alias_type_nested(
+    annotation: Any, expected_meta: tuple[str, ...], expected_type: Any
+) -> None:
+    annotation, metadata, wrappers = unwrap_annotation(annotation)
+    assert annotation == expected_type
+    assert metadata == expected_meta
+    assert TypeAliasType in wrappers
