@@ -81,7 +81,7 @@ def test_dataclass_field_definitions_38(dto_type: type[DataclassDTO[Model]]) -> 
                 ),
                 default_factory=None,
                 model_name=Model.__name__,
-                dto_field=DTOField(),
+                dto_field=DTOField(mark="read-only"),
             ),
             metadata=ANY,
             type_wrappers=ANY,
