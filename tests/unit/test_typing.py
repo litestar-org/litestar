@@ -483,7 +483,7 @@ def type_kw_or(src: str) -> Any:
     if sys.version_info < (3, 12):
         return None
 
-    ctx: dict[str, Any] = {}
+    ctx: dict[str, Any] = {}  # type: ignore[unreachable]
 
     exec(src, ctx, None)
     return ctx["Alias"]
@@ -506,7 +506,7 @@ def test_unwrap_annotation_type_alias_type(annotation: Any) -> None:
     assert TypeAliasType in wrappers
 
 
-NestedAlias = TypeAliasType("Outer", Union[Annotated[int, "meta"], list["Outer"]])  # noqa: F821
+NestedAlias = TypeAliasType("NestedAlias", Union[Annotated[int, "meta"], List["NestedAlias"]])  # type: ignore[misc]
 
 
 @pytest.mark.parametrize(
@@ -530,7 +530,7 @@ def test_unwrap_annotation_type_alias_type_nested(
 
 
 def test_unwrap_annotation_type_alias_type_nested_with_type_kw() -> None:
-    annotation = Annotated[type_kw_or("type Alias = int"), "meta"]
+    annotation = Annotated[type_kw_or("type Alias = int"), "meta"]  # type: ignore[valid-type]
     unwrapped, metadata, wrappers = unwrap_annotation(annotation)
     assert unwrapped == int
     assert metadata == ("meta",)
