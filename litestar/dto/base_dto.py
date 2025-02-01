@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import dataclasses
 import typing
 from abc import abstractmethod
 from inspect import getmodule
@@ -17,6 +18,7 @@ from litestar.exceptions.dto_exceptions import InvalidAnnotationException
 from litestar.types.builtin_types import NoneType
 from litestar.types.composite_types import TypeEncodersMap
 from litestar.typing import FieldDefinition
+from litestar.utils.signature import ParsedSignature
 
 if TYPE_CHECKING:
     from typing import Any, ClassVar, Generator
@@ -278,18 +280,7 @@ class AbstractDTO(Generic[T]):
         return None
 
     @staticmethod
-    def get_model_type_hints(
-        model_type: type[Any], namespace: dict[str, Any] | None = None
-    ) -> dict[str, FieldDefinition]:
-        """Retrieve type annotations for ``model_type``.
-
-        Args:
-            model_type: Any type-annotated class.
-            namespace: Optional namespace to use for resolving type hints.
-
-        Returns:
-            Parsed type hints for ``model_type`` resolved within the scope of its module.
-        """
+    def get_model_namespace(model_type: type[Any], namespace: dict[str, Any] | None = None) -> dict[str, Any]:
         namespace = namespace or {}
         namespace.update(vars(typing))
         namespace.update(
@@ -303,6 +294,33 @@ class AbstractDTO(Generic[T]):
 
         if model_module := getmodule(model_type):
             namespace.update(vars(model_module))
+        return namespace
+
+    @classmethod
+    def get_property_fields(cls, model_type: type[Any]) -> dict[str, FieldDefinition]:
+        return {
+            name: dataclasses.replace(
+                ParsedSignature.from_fn(attr.fget, cls.get_model_namespace(model_type)).return_type,
+                name=name,
+            )
+            for name, attr in vars(model_type).items()
+            if isinstance(attr, property) and attr.fget is not None
+        }
+
+    @staticmethod
+    def get_model_type_hints(
+        model_type: type[Any], namespace: dict[str, Any] | None = None
+    ) -> dict[str, FieldDefinition]:
+        """Retrieve type annotations for ``model_type``.
+
+        Args:
+            model_type: Any type-annotated class.
+            namespace: Optional namespace to use for resolving type hints.
+
+        Returns:
+            Parsed type hints for ``model_type`` resolved within the scope of its module.
+        """
+        namespace = AbstractDTO.get_model_namespace(model_type, namespace)
 
         return {
             k: FieldDefinition.from_kwarg(annotation=v, name=k)
