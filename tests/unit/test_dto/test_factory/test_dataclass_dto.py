@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import itertools
 import sys
 from dataclasses import dataclass, field, replace
 from typing import ClassVar, List
@@ -19,6 +20,10 @@ class Model:
     b: str = field(default="b")
     c: List[int] = field(default_factory=list)  # noqa: UP006
     d: ClassVar[float] = 1.0
+
+    @property
+    def computed(self) -> str:
+        return "i am a property"
 
 
 @pytest.fixture(name="dto_type")
@@ -68,8 +73,22 @@ def test_dataclass_field_definitions_38(dto_type: type[DataclassDTO[Model]]) -> 
             type_wrappers=ANY,
             raw=ANY,
         ),
+        replace(
+            DTOFieldDefinition.from_field_definition(
+                field_definition=FieldDefinition.from_kwarg(
+                    name="computed",
+                    annotation=str,
+                ),
+                default_factory=None,
+                model_name=Model.__name__,
+                dto_field=DTOField(mark="read-only"),
+            ),
+            metadata=ANY,
+            type_wrappers=ANY,
+            raw=ANY,
+        ),
     ]
-    for field_def, exp in zip(dto_type.generate_field_definitions(Model), expected):
+    for field_def, exp in itertools.zip_longest(expected, dto_type.generate_field_definitions(Model), fillvalue=None):
         assert field_def == exp
 
 
@@ -114,8 +133,22 @@ def test_dataclass_field_definitions(dto_type: type[DataclassDTO[Model]]) -> Non
             type_wrappers=ANY,
             raw=ANY,
         ),
+        replace(
+            DTOFieldDefinition.from_field_definition(
+                field_definition=FieldDefinition.from_kwarg(
+                    name="computed",
+                    annotation=str,
+                ),
+                default_factory=None,
+                model_name=Model.__name__,
+                dto_field=DTOField(mark="read-only"),
+            ),
+            metadata=ANY,
+            type_wrappers=ANY,
+            raw=ANY,
+        ),
     ]
-    for field_def, exp in zip(dto_type.generate_field_definitions(Model), expected):
+    for field_def, exp in itertools.zip_longest(expected, dto_type.generate_field_definitions(Model), fillvalue=None):
         assert field_def == exp
 
 
@@ -128,8 +161,6 @@ ReadOnlyInt = Annotated[int, DTOField("read-only")]
 
 
 def test_dataclass_dto_annotated_dto_field() -> None:
-    Annotated[int, DTOField("read-only")]
-
     @dataclass
     class Model:
         a: Annotated[int, DTOField("read-only")]
@@ -139,3 +170,22 @@ def test_dataclass_dto_annotated_dto_field() -> None:
     fields = list(dto_type.generate_field_definitions(Model))
     assert fields[0].dto_field == DTOField("read-only")
     assert fields[1].dto_field == DTOField("read-only")
+
+
+def test_property_underscore_exclude() -> None:
+    @dataclass
+    class Model:
+        one: str
+
+        @property
+        def _computed(self) -> int:
+            return 1
+
+        @property
+        def __also_computed(self) -> int:
+            return 1
+
+    dto_type = DataclassDTO[Model]
+    fields = list(dto_type.generate_field_definitions(Model))
+    assert fields[0].name == "one"
+    assert len(fields) == 1
