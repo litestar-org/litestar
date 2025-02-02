@@ -123,6 +123,10 @@ def test_field_definition_generation(
         def computed(self) -> str:
             return "i am computed"
 
+        @property
+        def _private_computed(self) -> str:
+            return ""
+
     field_defs = list(MsgspecDTO.generate_field_definitions(TestStruct))
     assert field_defs[0].model_name == "TestStruct"
     for field_def, exp in itertools.zip_longest(expected_field_defs, field_defs, fillvalue=None):
