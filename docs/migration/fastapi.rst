@@ -457,7 +457,7 @@ If migrating you just change your HTTPException import this will break.
 
 
 Authentication
-^^^^^^^^^^^^^^
+~~~~~~~~~~~~~~
 
 FastAPI promotes a pattern of using dependency injection for authentication. You can do the same in Litestar, but the
 preferred way of handling this is extending :doc:`/usage/security/abstract-authentication-middleware`.
@@ -506,7 +506,7 @@ preferred way of handling this is extending :doc:`/usage/security/abstract-authe
     * :doc:`/usage/security/index`
 
 Dependency overrides
-^^^^^^^^^^^^^^^^^^^^
+~~~~~~~~~~~~~~~~~~~~
 
 While FastAPI includes a mechanism to override dependencies on an existing application object,
 Litestar promotes architectural solutions to the issue this is aimed to solve. Therefore, overriding
