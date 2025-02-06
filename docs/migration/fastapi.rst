@@ -174,6 +174,66 @@ and to easily access dependencies from higher levels.
 
     * :doc:`/usage/dependency-injection`
 
+Lifespan
+~~~~~~~~
+
+If you're using an async context manager and pass parameters to it, most likely the order of parameters is inversed between FastAPI and Litestar.
+
+.. tab-set::
+
+    .. tab-item:: FastAPI
+        :sync: fastapi
+
+        .. code-block:: python
+
+            @asynccontextmanager
+            async def lifespan(
+                _app: FastAPI,
+                app_settings: AppSettings,
+            ):
+                # Setup code here
+                yield
+                # Teardown code here
+
+    .. tab-item:: Litestar
+        :sync: litestar
+
+        .. code-block:: python
+
+            @asynccontextmanager
+            async def lifespan(
+                app_settings: AppSettings,
+                _app: Litestar,
+            ):
+                # Setup code here
+                yield
+                # Teardown code here
+Cookies
+~~~~~~~
+
+Dependencies parameters
+~~~~~~~~~~~~~~~~~~~~~~~
+
+Post json
+~~~~~~~~~
+
+Default status codes
+~~~~~~~~~~~~~~~~~~~~
+
+Templates
+~~~~~~~~~
+
+url_for / handler names
+~~~~~~~~~~~~~~~~~~~~~~~
+
+uploads
+~~~~~~~
+
+exceptions signature
+~~~~~~~~~~~~~~~~~~~~
+
+
+
 Authentication
 ^^^^^^^^^^^^^^
 
