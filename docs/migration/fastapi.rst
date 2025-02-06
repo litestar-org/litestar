@@ -316,6 +316,7 @@ In FastAPI, you specify the response type using `-> HTMLResponse` for instance. 
         :sync: litestar
 
         .. code-block:: python
+
             from litestar.enums import MediaType
 
             @get(path="/page", media_type=MediaType.HTML)
@@ -387,6 +388,7 @@ In FastAPI, the `url_for` function automatically gets the endpoint name. In Lite
         .. code-block:: html
 
             <a href="{{ url_for('blabla') }}">Blabla</a>
+
 Uploads
 ~~~~~~~
 In FastAPI, you use the `File` class to handle file uploads. In Litestar, you use the `data` keyword argument with `Body` and specify the `media_type` as `RequestEncodingType.MULTI_PART`.
