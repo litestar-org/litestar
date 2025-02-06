@@ -239,25 +239,221 @@ While with FastAPI you usually set cookies on the response `Response` object, in
 
 Dependencies parameters
 ~~~~~~~~~~~~~~~~~~~~~~~
+The way dependencies parameters are passed differs between FastAPI and Litestar, note the `state: State` parameter in the Litestar example.
+
+.. tab-set::
+
+    .. tab-item:: FastAPI
+        :sync: fastapi
+
+        .. code-block:: python
+
+            from fastapi import Request
+
+            async def get_arqredis(request: Request) -> ArqRedis:
+                return request.state.arqredis
+
+    .. tab-item:: Litestar
+        :sync: litestar
+
+        .. code-block:: python
+
+            from litestar import State
+
+            async def get_arqredis(state: State) -> ArqRedis:
+                return state.arqredis
 
 Post json
 ~~~~~~~~~
+In FastAPI, you pass the JSON object directly as a parameter to the endpoint, you are forced to use pydantic. In Litestar, you use the `data` keyword argument and can pass whatever library supported.
+
+.. tab-set::
+
+    .. tab-item:: FastAPI
+        :sync: fastapi
+
+        .. code-block:: python
+
+
+            class ObjectType(BaseModel):
+                name: str
+
+            @app.post("/items/")
+            async def create_item(object_name: ObjectType) -> dict[str, str]:
+                return {"name": object_name.name}
+
+    .. tab-item:: Litestar
+        :sync: litestar
+
+        .. code-block:: python
+
+            from litestar import Litestar, post
+            from pydantic import BaseModel
+
+            class ObjectType(BaseModel):
+                name: str
+
+            @post("/items/")
+            async def create_item(data: ObjectType) -> dict[str, str]:
+                return {"name": data.name}
+
+
+Media type
+~~~~~~~~~~
+In FastAPI, you specify the response type using `-> HTMLResponse` for instance. In Litestar, you use the `media_type` parameter in the decorator.
+
+.. tab-set::
+
+    .. tab-item:: FastAPI
+        :sync: fastapi
+
+        .. code-block:: python
+
+            @app.get("/page")
+            async def get_page() -> HTMLResponse:
+
+    .. tab-item:: Litestar
+        :sync: litestar
+
+        .. code-block:: python
+            from litestar.enums import MediaType
+
+            @get(path="/page", media_type=MediaType.HTML)
+            async def get_page() -> str:
+                return "<html><body><h1>Hello, World!</h1></body></html>"
+
 
 Default status codes
 ~~~~~~~~~~~~~~~~~~~~
 
+Post defaults to 200 in FastApi and 201 in Litestar.
+
 Templates
 ~~~~~~~~~
+In FastAPI, you use `TemplateResponse` to render templates. In Litestar, you use the `Template` class.
+Also FastAPI let you pass a dictionary while in Litestar you need to explicitly pass the context kwarg.
 
-url_for / handler names
+.. tab-set::
+
+    .. tab-item:: FastAPI
+        :sync: fastapi
+
+        .. code-block:: python
+
+            @app.get("/uploads")
+            async def get_uploads(request: Request):
+                return templates.TemplateResponse(
+                    "uploads.html", {"request": request, "debug": app.state.debug}
+                )
+
+    .. tab-item:: Litestar
+        :sync: litestar
+
+        .. code-block:: python
+
+            @get("/uploads")
+            async def get_uploads(app_settings) -> Template:
+                return Template(
+                    name="uploads.html", context={"debug": app_settings.debug}
+                )
+
+Default handler names
 ~~~~~~~~~~~~~~~~~~~~~~~
+In FastAPI, the `url_for` function automatically gets the endpoint name. In Litestar, you need to explicitly declare the `name` parameter in the route decorator.
 
-uploads
+.. tab-set::
+
+    .. tab-item:: FastAPI
+        :sync: fastapi
+
+        .. code-block:: python
+
+            @app.get("/blabla")
+            async def blabla() -> str:
+                return "Blabla"
+        .. code-block:: html
+
+            <a href="{{ url_for('blabla') }}">Blabla</a>
+
+    .. tab-item:: Litestar
+        :sync: litestar
+
+        .. code-block:: python
+
+            @get(path="/blabla", name="blabla")
+            async def blabla() -> str:
+                return "Blabla"
+
+        .. code-block:: html
+
+            <a href="{{ url_for('blabla') }}">Blabla</a>
+Uploads
 ~~~~~~~
+In FastAPI, you use the `File` class to handle file uploads. In Litestar, you use the `data` keyword argument with `Body` and specify the `media_type` as `RequestEncodingType.MULTI_PART`.
+So Litestar is more verbose but less magic let you understand quicker what you are doing.
 
-exceptions signature
+.. tab-set::
+
+    .. tab-item:: FastAPI
+        :sync: fastapi
+
+        .. code-block:: python
+
+            @app.post("/upload/")
+            async def upload_file(files: list[UploadFile] = File(...)) -> dict[str, str]:
+                return {"file_names": [file.filename for file in files]}
+
+    .. tab-item:: Litestar
+        :sync: litestar
+
+        .. code-block:: python
+
+            @post("/upload/")
+            async def upload_file(data: Annotated[list[UploadFile], Body(media_type=RequestEncodingType.MULTI_PART)]) -> dict[str, str]:
+                return {"file_names": [file.filename for file in data]}
+
+            app = Litestar([upload_file])
+
+
+Exceptions signature
 ~~~~~~~~~~~~~~~~~~~~
+In FastAPI, you can pass arguments directly to `HTTPException`. In Litestar, you need to use keyword arguments, including `status_code`.
+If migrating you just change your HTTPException import this will break.
 
+.. tab-set::
+
+    .. tab-item:: FastAPI
+        :sync: fastapi
+
+        .. code-block:: python
+
+            from fastapi import FastAPI, HTTPException
+
+            app = FastAPI()
+
+            @app.get("/")
+            async def index() -> None:
+                response_fields = {"array": "value"}
+                raise HTTPException(
+                    400, detail=f"can't get that field: {response_fields.get('array')}"
+                )
+
+    .. tab-item:: Litestar
+        :sync: litestar
+
+        .. code-block:: python
+
+            from litestar import Litestar, get
+            from litestar.exceptions import HTTPException
+
+            @get("/")
+            async def index() -> None:
+                response_fields = {"array": "value"}
+                raise HTTPException(
+                    status_code=400, detail=f"can't get that field: {response_fields.get('array')}"
+                )
+
+            app = Litestar([index])
 
 
 Authentication
