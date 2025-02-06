@@ -208,8 +208,34 @@ If you're using an async context manager and pass parameters to it, most likely 
                 # Setup code here
                 yield
                 # Teardown code here
+
+~~~~~~~
 Cookies
 ~~~~~~~
+
+While with FastAPI you usually set cookies on the response `Response` object, in Litestar it will be set at the decorator level.
+
+.. tab-set::
+
+    .. tab-item:: FastAPI
+        :sync: fastapi
+
+        .. code-block:: python
+
+            @app.get("/")
+            async def index(response: Response) -> dict[str, str]:
+                response.set_cookie(key="my_cookie", value="cookie_value")
+                ...
+
+    .. tab-item:: Litestar
+        :sync: litestar
+
+        .. code-block:: python
+
+            @get(response_cookies={"my-cookie": "cookie-value"})
+            async def handler() -> str:
+                ...
+
 
 Dependencies parameters
 ~~~~~~~~~~~~~~~~~~~~~~~
