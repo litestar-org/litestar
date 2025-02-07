@@ -10,14 +10,14 @@ from rich import get_console
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 from sqlalchemy.orm import Mapped
 
-from litestar.contrib.sqlalchemy.base import UUIDBase
-from litestar.contrib.sqlalchemy.repository import SQLAlchemyAsyncRepository
+from litestar.plugins.sqlalchemy.base import UUIDBase
+from litestar.plugins.sqlalchemy.repository import SQLAlchemyAsyncRepository
 
 console = get_console()
 
 
-# the SQLAlchemy base includes a declarative model for you to use in your models.
-# The `Base` class includes a `UUID` based primary key (`id`)
+# The SQLAlchemy base includes a declarative model for you to use in your
+# models. The `Base` class includes an `UUID` based primary key (`id`).
 class Author(UUIDBase):
     name: Mapped[str]
     dob: Mapped[date]
@@ -30,10 +30,7 @@ class AuthorRepository(SQLAlchemyAsyncRepository[Author]):
     model_type = Author
 
 
-engine = create_async_engine(
-    "sqlite+aiosqlite:///test.sqlite",
-    future=True,
-)
+engine = create_async_engine("sqlite+aiosqlite:///test.sqlite", future=True)
 session_factory = async_sessionmaker(engine, expire_on_commit=False)
 
 

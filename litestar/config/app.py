@@ -188,9 +188,9 @@ class AppConfig:
     :data:`SecurityRequirement <.openapi.spec.SecurityRequirement>` for details.
     """
     signature_namespace: dict[str, Any] = field(default_factory=dict)
-    """A mapping of names to types for use in forward reference resolution during signature modeling."""
+    """A mapping of names to types for use in forward reference resolution during signature modelling."""
     signature_types: list[Any] = field(default_factory=list)
-    """A sequence of types for use in forward reference resolution during signature modeling.
+    """A sequence of types for use in forward reference resolution during signature modelling.
 
     These types will be added to the signature namespace using their ``__name__`` attribute.
     """

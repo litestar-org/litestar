@@ -529,7 +529,7 @@ class Schema(BaseSchemaObject):
     title: str | None = None
     """The value of "title" MUST be a string.
 
-    The title can be used to decorate a user interface with information about the data produced by this user interface.
+    The title can be used to decorate an user interface with information about the data produced by this user interface.
     A title will preferably be short.
     """
 
@@ -541,7 +541,7 @@ class Schema(BaseSchemaObject):
     From JSON Schema:
     The value "description" MUST be a string.
 
-    The description can be used to decorate a user interface with information about the data produced by this user
+    The description can be used to decorate an user interface with information about the data produced by this user
     interface. A description will provide explanation about the purpose of the instance described by this schema.
     """
 

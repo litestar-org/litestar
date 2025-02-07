@@ -13,10 +13,17 @@ from sqlalchemy.orm import Mapped, declarative_mixin, mapped_column
 from sqlalchemy.types import String
 
 from litestar import Litestar, get, post
-from litestar.contrib.sqlalchemy.base import UUIDAuditBase
-from litestar.contrib.sqlalchemy.plugins import AsyncSessionConfig, SQLAlchemyAsyncConfig, SQLAlchemyInitPlugin
-from litestar.contrib.sqlalchemy.repository import ModelT, SQLAlchemyAsyncRepository
 from litestar.di import Provide
+from litestar.plugins.sqlalchemy.base import UUIDAuditBase
+from litestar.plugins.sqlalchemy.plugins import (
+    AsyncSessionConfig,
+    SQLAlchemyAsyncConfig,
+    SQLAlchemyInitPlugin,
+)
+from litestar.plugins.sqlalchemy.repository import (
+    ModelT,
+    SQLAlchemyAsyncRepository,
+)
 
 if TYPE_CHECKING:
     from sqlalchemy.ext.asyncio import AsyncSession
@@ -28,8 +35,8 @@ class BaseModel(_BaseModel):
     model_config = {"from_attributes": True}
 
 
-# we are going to add a simple "slug" to our model that is a URL safe surrogate key to
-# our database record.
+# We are going to add a simple "slug" to our model that is an URL safe
+# surrogate key to our database record.
 @declarative_mixin
 class SlugKey:
     """Slug unique Field Model Mixin."""
@@ -38,7 +45,7 @@ class SlugKey:
     slug: Mapped[str] = mapped_column(String(length=100), nullable=False, unique=True, sort_order=-9)
 
 
-# this class can be re-used with any model that has the `SlugKey` Mixin
+# This class can be reused with any model that has the `SlugKey` mixin.
 class SQLAlchemyAsyncSlugRepository(SQLAlchemyAsyncRepository[ModelT]):
     """Extends the repository to include slug model features.."""
 
@@ -47,7 +54,7 @@ class SQLAlchemyAsyncSlugRepository(SQLAlchemyAsyncRepository[ModelT]):
         value_to_slugify: str,
         **kwargs: Any,
     ) -> str:
-        """Get a unique slug for the supplied value.
+        """Get an unique slug for the supplied value.
 
         If the value is found to exist, a random 4 digit character is appended to the end.
         There may be a better way to do this, but I wanted to limit the number of
@@ -58,25 +65,25 @@ class SQLAlchemyAsyncSlugRepository(SQLAlchemyAsyncRepository[ModelT]):
             **kwargs: stuff
 
         Returns:
-            str: a unique slug for the supplied value. This is safe for URLs and other
-            unique identifiers.
+            str: An unique slug for the supplied value. This is safe for URLs
+            and other unique identifiers.
         """
         slug = self._slugify(value_to_slugify)
         if await self._is_slug_unique(slug):
             return slug
-        # generate a random 4 digit alphanumeric string to make the slug unique and
+        # Generate a random 4 digit alphanumeric string to make the slug unique and
         # avoid another DB lookup.
         random_string = "".join(random.choices(string.ascii_lowercase + string.digits, k=4))
         return f"{slug}-{random_string}"
 
     @staticmethod
     def _slugify(value: str) -> str:
-        """slugify.
+        """Slugify.
 
-        Convert to ASCII if 'allow_unicode' is False. Convert spaces or repeated
-        dashes to single dashes. Remove characters that aren't alphanumerics,
-        underscores, or hyphens. Convert to lowercase. Also strip leading and
-        trailing whitespace, dashes, and underscores.
+        Convert to ASCII if ``allow_unicode`` is ``False``. Convert spaces or
+        repeated dashes to single dashes. Remove characters that are not
+        alphanumerics, underscores, or hyphens. Convert to lowercase. Also
+        strip leading and trailing whitespace, dashes, and underscores.
 
         Args:
             value (str): the string to slugify
@@ -96,9 +103,10 @@ class SQLAlchemyAsyncSlugRepository(SQLAlchemyAsyncRepository[ModelT]):
         return await self.get_one_or_none(slug=slug) is None
 
 
-# The `UUIDAuditBase` class includes the same UUID` based primary key (`id`) and 2
-# additional columns: `created_at` and `updated_at`. `created_at` is a timestamp of when the
-# record created, and `updated_at` is the last time the record was modified.
+# The `UUIDAuditBase` class includes the same `UUID` based primary key (`id`)
+# and 2 additional columns: `created_at` and `updated_at`. `created_at` is a
+# timestamp of when the record created, and `updated_at` is the last time the
+# record was modified.
 class BlogPost(UUIDAuditBase, SlugKey):
     title: Mapped[str]
     content: Mapped[str]
@@ -122,8 +130,8 @@ class BlogPostCreate(BaseModel):
     content: str
 
 
-# we can optionally override the default `select` used for the repository to pass in
-# specific SQL options such as join details
+# We can optionally override the default `select` used for the repository to
+# pass in specific SQL options such as join details.
 async def provide_blog_post_repo(db_session: AsyncSession) -> BlogPostRepository:
     """This provides a simple example demonstrating how to override the join options
     for the repository."""

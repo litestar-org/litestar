@@ -1,12 +1,13 @@
 Interacting with repositories
 -----------------------------
-Now that we've covered the modeling basics, we are able to create our first repository
-class.  The repository classes include all of the standard CRUD operations as well as a
-few advanced features such as pagination, filtering and bulk operations.
+Now that we have covered the modelling basics, we are able to create our first
+repository class. The repository classes include all of the standard CRUD
+operations as well as a few advanced features such as pagination, filtering and
+bulk operations.
 
 .. tip:: The full code for this tutorial can be found below in the :ref:`Full Code <02-repo-full-code>` section.
 
-Before we jump in to the code, let's take a look at the available functions available in
+Before we jump into the code, let's take a look at the functions available in
 the the synchronous and asynchronous repositories.
 
 .. dropdown:: Available Functions in the Repositories
@@ -52,7 +53,7 @@ the the synchronous and asynchronous repositories.
       SQLAlchemy driver, so no additional interaction is required to enable this.
 
     - SQL engines generally have a limit to the number of elements that can be appended
-      into an `IN` clause. The repository operations will automatically break lists that
+      into an ``IN`` clause. The repository operations will automatically break lists that
       exceed this limit into multiple queries that are concatenated together before
       return. You do not need to account for this in your own code.
 
@@ -69,8 +70,8 @@ to include all of the integrated repository features.
 
 .. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_repository_crud.py
     :language: python
-    :caption: app.py
-    :lines: 14,27-30
+    :caption: ``app.py``
+    :lines: 14, 25-30
     :linenos:
 
 Repository Context Manager
@@ -80,51 +81,54 @@ Since we'll be using the repository outside of a Litestar application in this sc
 we'll make a simple context manager to automatically handle the creation (and cleanup)
 of our Author repository.
 
-The ``repository_factory`` method will do the following for us:
-    - Automatically create a new DB session from the SQLAlchemy configuration.
-    - Rollback session when any exception occurs.
-    - Automatically commit after function call completes.
+The function ``repository_factory`` will do the following for us:
+    - automatically create a new DB session from the SQLAlchemy configuration;
+    - rollback session when any exception occurs;
+    - automatically commit after function call completes.
 
 
 .. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_repository_crud.py
     :language: python
-    :caption: app.py
-    :lines: 39-47
+    :caption: ``app.py``
+    :lines: 3, 5, 7, 10, 15, 34-36, 38-46
     :linenos:
 
 
 Creating, Updating and Removing Data
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-To illustrate a few ways you can manipulate data in your database, we'll go through the
-various CRUD operations:
+To illustrate a few ways you can manipulate data in your database, we will go
+through the various CRUD operations:
 
-Creating Data: Here's a simple insert operation to populate our new Author table:
-
-    .. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_repository_crud.py
-        :language: python
-        :caption: app.py
-        :lines: 52-61
-        :linenos:
-
-Updating Data: The ``update`` method will ensure any updates made to the model object are executed on the database:
+Creating Data: here is a simple insert operation to populate our new Author
+table:
 
     .. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_repository_crud.py
         :language: python
-        :caption: app.py
-        :lines: 64-68
+        :caption: ``app.py``
+        :lines: 4, 7, 9, 15-16, 47-58
         :linenos:
 
-Removing Data: The ``remove`` method accepts the primary key of the row you want to delete:
+Updating Data: the function ``update`` will ensure any updates made to the model
+object are executed on the database:
 
     .. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_repository_crud.py
         :language: python
-        :caption: app.py
-        :lines: 71-75
+        :caption: ``app.py``
+        :lines: 9, 15-16, 59-65
         :linenos:
 
-Now that we've seen how to do single-row operations, let's look at the bulk methods we
-can use.
+Removing Data: the function ``remove`` accepts the primary key of the row you
+want to delete:
+
+    .. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_repository_crud.py
+        :language: python
+        :caption: ``app.py``
+        :lines: 9, 15-16, 66-72
+        :linenos:
+
+Now that we have seen how to do single-row operations, let's look at the bulk
+methods we can use.
 
 
 Working with Bulk Data Operations
@@ -145,8 +149,8 @@ conditions. This pattern can be extended and adjusted to meet your needs.
 
 .. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_repository_bulk_operations.py
     :language: python
-    :caption: app.py
-    :lines: 37-55
+    :caption: ``app.py``
+    :lines: 1-3, 35-55
     :linenos:
 
 You can review the JSON source file here:
@@ -158,7 +162,7 @@ You can review the JSON source file here:
 
     .. literalinclude:: /examples/contrib/sqlalchemy/us_state_lookup.json
         :language: json
-        :caption: us_state_lookup.json
+        :caption: ``us_state_lookup.json``
 
 
 Bulk Insert
@@ -170,8 +174,8 @@ performance when working with larger data sets.
 
 .. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_repository_bulk_operations.py
     :language: python
-    :caption: app.py
-    :lines: 66-71
+    :caption: ``app.py``
+    :lines: 1-27, 56-71
     :linenos:
 
 Paginated Data Selection
@@ -184,8 +188,8 @@ repository.
 
 .. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_repository_bulk_operations.py
     :language: python
-    :caption: app.py
-    :lines: 73-75
+    :caption: ``app.py``
+    :lines: 11, 56-57, 73-75
     :linenos:
 
 Bulk Delete
@@ -197,7 +201,7 @@ executing row-by-row.
 
 .. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_repository_bulk_operations.py
     :language: python
-    :caption: app.py
+    :caption: ``app.py``
     :lines: 77-79
     :linenos:
 
@@ -208,7 +212,7 @@ Finally, we'll demonstrate how to count the number of records remaining in the d
 
 .. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_repository_bulk_operations.py
     :language: python
-    :caption: app.py
+    :caption: ``app.py``
     :lines: 81-83
     :linenos:
 
@@ -221,10 +225,10 @@ functionality to a :class:`~litestar.controller.Controller`!
 Full Code
 ---------
 
-.. dropdown:: Full Code (click to expand)
+.. dropdown:: Full Code (click to toggle)
 
     .. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_repository_crud.py
         :language: python
-        :caption: app.py
-        :emphasize-lines: 14, 27-30, 37-55, 61, 64-71, 71-75, 77-79, 81-83
+        :caption: ``app.py``
+        :emphasize-lines: 10, 14, 27-30, 33-34, 39-46, 49-52, 58, 61-63, 65, 68-70, 72, 75-78, 80, 82
         :linenos:

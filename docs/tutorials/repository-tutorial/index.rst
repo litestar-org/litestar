@@ -17,7 +17,7 @@ databases a breeze. Lets get started!
 .. toctree::
     :hidden:
 
-    01-modeling-and-features
+    01-modelling-and-features
     02-repository-introduction
     03-repository-controller
     04-repository-other

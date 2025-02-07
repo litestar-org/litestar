@@ -15,7 +15,7 @@ console = get_console()
 
 
 class USState(UUIDBase):
-    # you can optionally override the generated table name by manually setting it.
+    # You can optionally override the generated table name by manually setting it.
     __tablename__ = "us_state_lookup"  # type: ignore[assignment]
     abbreviation: Mapped[str]
     name: Mapped[str]
@@ -58,7 +58,7 @@ def open_fixture(fixtures_path: Path, fixture_name: str) -> Any:
 def run_script() -> None:
     """Load data from a fixture."""
 
-    # Initializes the database.
+    # Initialize the database.
     with engine.begin() as conn:
         USState.metadata.create_all(conn)
 

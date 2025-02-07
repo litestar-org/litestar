@@ -25,7 +25,7 @@ class AuthenticationResult:
     __slots__ = ("auth", "user")
 
     user: Any
-    """The user model, this can be any value corresponding to a user of the API."""
+    """The user model, this can be any value corresponding to an user of the API."""
     auth: Any
     """The auth value, this can for example be a JWT token."""
 

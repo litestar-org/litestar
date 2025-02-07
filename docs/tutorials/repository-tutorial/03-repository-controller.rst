@@ -13,36 +13,36 @@ parameters.
 
 .. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_async_repository.py
     :language: python
-    :caption: app.py
-    :lines: 78-80
+    :caption: ``app.py``
+    :lines: 25-28, 75-85
     :linenos:
 
 Because we'll be using the SQLAlchemy plugin in Litestar, the session is automatically
 configured as a dependency.
 
-By default, the repository doesn't add any additional query options to your base
-statement, but provides the flexibility to override it, allowing you to pass your own
-statement:
+By default, the repository does not add any additional query options to your
+base statement, but provides the flexibility to override it, allowing you to
+pass your own statement:
 
 .. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_async_repository.py
     :language: python
-    :caption: app.py
-    :lines: 83-90
+    :caption: ``app.py``
+    :lines: 9-11, 27-28, 81-95
     :linenos:
 
 In this instance, we enhance the repository function by adding a ``selectinload``
 option. This option configures the specified relationship to load via
-`SELECT .. IN ...` loading pattern, optimizing the query execution.
+``SELECT … IN …`` loading pattern, optimizing the query execution.
 
-Next, we define the ``AuthorController``. This controller exposes five routes for
-interacting with the ``Author`` model:
+Next, we define the controller class ``AuthorController``. This controller
+exposes five routes for interacting with the model ``Author``:
 
-.. dropdown:: AuthorController (click to expand)
+.. dropdown:: ``AuthorController`` (click to toggle)
 
     .. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_async_repository.py
         :language: python
-        :caption: app.py
-        :lines: 116-194
+        :caption: ``app.py``
+        :lines: 8, 11, 13-14, 16-17, 24, 119-202
         :linenos:
 
 In our list detail endpoint, we use the pagination filter for limiting the amount of
@@ -50,13 +50,13 @@ data returned, allowing us to retrieve large datasets in smaller, more manageabl
 
 In the above examples, we've used the asynchronous repository implementation. However,
 Litestar also supports synchronous database drivers with an identical implementation.
-Here's a corresponding synchronous version of the previous example:
+Here is a corresponding synchronous version of the previous example:
 
-.. dropdown:: Synchronous Repository (click to expand)
+.. dropdown:: Synchronous Repository (click to toggle)
 
     .. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_sync_repository.py
         :language: python
-        :caption: app.py
+        :caption: ``app.py``
         :linenos:
 
 The examples above enable a feature-complete CRUD service that includes pagination! In
@@ -68,10 +68,10 @@ functionality to our application.
 Full Code
 ---------
 
-.. dropdown:: Full Code (click to expand)
+.. dropdown:: Full Code (click to toggle)
 
     .. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_async_repository.py
         :language: python
-        :caption: app.py
-        :emphasize-lines: 78-80, 83-90, 116-194
+        :caption: ``app.py``
+        :emphasize-lines: 77-80, 83-85, 90-95, 121-202
         :linenos:

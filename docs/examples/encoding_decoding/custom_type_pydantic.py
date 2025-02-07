@@ -5,7 +5,7 @@ from litestar import Litestar, post
 
 
 class TenantUser:
-    """Custom Type that represents a user associated to a tenant
+    """Custom Type that represents an user associated to a tenant
 
     Parsed from / serialized to a combined tenant + user id string of the form
 

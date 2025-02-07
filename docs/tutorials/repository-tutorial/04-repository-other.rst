@@ -10,18 +10,18 @@ Slug Fields
 -----------
 .. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_repository_extension.py
     :language: python
-    :caption: app.py
-    :lines: 12,33-40,101-106
+    :caption: ``app.py``
+    :lines: 12-14, 17, 36-37, 40-47, 109-111
     :linenos:
 
 In this example, we are using a ``BlogPost`` model to hold blog post titles and
-contents.  The primary key for this model is a ``UUID`` type. ``UUID`` and ``int`` are
-good options for primary keys, but there are a number of reasons you may not want to use
-them in your routes. For instance, it can be a security problem to expose integer-based
-primary keys in the URL.  While UUIDs don't have this same problem, they are not
-user-friendly or easy-to-remember, and create complex URLs. One way to solve this is to
-add a user friendly unique identifier to the table that can be used for urls.  This is
-often called a "slug".
+contents. The primary key for this model is an ``UUID`` type. ``UUID`` and
+``int`` are good options for primary keys, but there are a number of reasons you
+may not want to use them in your routes. For instance, it can be a security
+problem to expose integer-based primary keys in the URL. While UUIDs don't have
+the same problem, they are not user-friendly or easy to remember, and create
+complex URLs. One way to solve this is to add an user friendly unique identifier
+to the table that can be used for URLs. This is often called a "slug".
 
 First, we'll create a ``SlugKey`` field mixin that adds a text-based, URL-friendly,
 unique column ``slug`` to the table. We want to ensure we create a slug value based on
@@ -31,18 +31,19 @@ to have the slugified value of "follow-the-yellow-brick-road".
 
 .. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_repository_extension.py
     :language: python
-    :caption: app.py
-    :lines: 43-98
+    :caption: ``app.py``
+    :lines: 3-7, 9, 23-26, 46-47, 49-103
     :linenos:
 
-Since the ``BlogPost.title`` field is not marked as unique, this means that we'll have
-to test the slug value for uniqueness before the insert.  If the initial slug is found,
-a random set of digits are appended to the end of the slug to make it unique.
+Since the ``BlogPost.title`` field is not marked as unique, this means that
+we'll have to test the slug value for uniqueness before the insert. If the
+initial slug is found, a random set of digits is appended to the end of the slug
+to make it unique.
 
 .. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_repository_extension.py
     :language: python
-    :caption: app.py
-    :lines: 171,172,173
+    :caption: ``app.py``
+    :lines: 180-183
     :linenos:
 
 We are all set to use this in our routes now.  First, we'll convert our incoming
@@ -59,10 +60,10 @@ Finally, we insert the model with the added slug.
 Full Code
 ---------
 
-.. dropdown:: Full Code (click to expand)
+.. dropdown:: Full Code (click to toggle)
 
     .. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_repository_extension.py
         :language: python
-        :caption: app.py
-        :lines: 12,33-40,101-106, 43-98, 171,172,173
+        :caption: ``app.py``
+        :emphasize-lines: 3-7, 12-13, 17, 23-26, 40-45, 49-103, 110-112, 180-183
         :linenos:

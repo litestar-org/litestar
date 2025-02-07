@@ -10,14 +10,14 @@ from sqlalchemy import ForeignKey, select
 from sqlalchemy.orm import Mapped, mapped_column, relationship, selectinload
 
 from litestar import Litestar, get
-from litestar.contrib.sqlalchemy import SQLAlchemyInitPlugin, SQLAlchemySyncConfig
-from litestar.contrib.sqlalchemy.base import UUIDAuditBase, UUIDBase
-from litestar.contrib.sqlalchemy.repository import SQLAlchemySyncRepository
 from litestar.controller import Controller
 from litestar.di import Provide
 from litestar.handlers.http_handlers.decorators import delete, patch, post
 from litestar.pagination import OffsetPagination
 from litestar.params import Parameter
+from litestar.plugins.sqlalchemy import SQLAlchemyInitPlugin, SQLAlchemySyncConfig
+from litestar.plugins.sqlalchemy.base import UUIDAuditBase, UUIDBase
+from litestar.plugins.sqlalchemy.repository import SQLAlchemySyncRepository
 from litestar.repository.filters import LimitOffset
 
 if TYPE_CHECKING:
@@ -30,19 +30,20 @@ class BaseModel(_BaseModel):
     model_config = {"from_attributes": True}
 
 
-# The SQLAlchemy base includes a declarative model for you to use in your models.
-# The `UUIDBase` class includes a `UUID` based primary key (`id`)
+# The SQLAlchemy base includes a declarative model for you to use in your
+# models. The `UUIDBase` class includes an `UUID` based primary key (`id`).
 class AuthorModel(UUIDBase):
-    # we can optionally provide the table name instead of auto-generating it
+    # We can optionally provide the table name instead of auto-generating it.
     __tablename__ = "author"  #  type: ignore[assignment]
     name: Mapped[str]
     dob: Mapped[date | None]
     books: Mapped[list[BookModel]] = relationship(back_populates="author", lazy="noload")
 
 
-# The `UUIDAuditBase` class includes the same UUID` based primary key (`id`) and 2
-# additional columns: `created_at` and `updated_at`. `created_at` is a timestamp of when the
-# record created, and `updated_at` is the last time the record was modified.
+# The `UUIDAuditBase` class includes the same `UUID` based primary key (`id`)
+# and 2 additional columns: `created_at` and `updated_at`. `created_at` is a
+# timestamp of when the record created, and `updated_at` is the last time the
+# record was modified.
 class BookModel(UUIDAuditBase):
     __tablename__ = "book"  #  type: ignore[assignment]
     title: Mapped[str]
@@ -50,7 +51,7 @@ class BookModel(UUIDAuditBase):
     author: Mapped[AuthorModel] = relationship(lazy="joined", innerjoin=True, viewonly=True)
 
 
-# we will explicitly define the schema instead of using DTO objects for clarity.
+# We will explicitly define the schema instead of using DTO objects for clarity.
 
 
 class Author(BaseModel):
@@ -80,8 +81,8 @@ async def provide_authors_repo(db_session: Session) -> AuthorRepository:
     return AuthorRepository(session=db_session)
 
 
-# we can optionally override the default `select` used for the repository to pass in
-# specific SQL options such as join details
+# We can optionally override the default `select` used for the repository to
+# pass in specific SQL options such as join details.
 async def provide_author_details_repo(db_session: Session) -> AuthorRepository:
     """This provides a simple example demonstrating how to override the join options
     for the repository."""
@@ -118,8 +119,9 @@ class AuthorController(Controller):
     """Author CRUD"""
 
     dependencies = {"authors_repo": Provide(provide_authors_repo, sync_to_thread=False)}
+    path = "/authors"
 
-    @get(path="/authors")
+    @get()
     def list_authors(
         self,
         authors_repo: AuthorRepository,
@@ -135,7 +137,7 @@ class AuthorController(Controller):
             offset=limit_offset.offset,
         )
 
-    @post(path="/authors")
+    @post()
     def create_author(
         self,
         authors_repo: AuthorRepository,
@@ -148,10 +150,16 @@ class AuthorController(Controller):
         authors_repo.session.commit()
         return Author.model_validate(obj)
 
-    # we override the authors_repo to use the version that joins the Books in
+    # We override the `authors_repo` to use the version that joins the `Book`
+    # records in.
     @get(
-        path="/authors/{author_id:uuid}",
-        dependencies={"authors_repo": Provide(provide_author_details_repo, sync_to_thread=False)},
+        path="/{author_id:uuid}",
+        dependencies={
+            "authors_repo": Provide(
+                provide_author_details_repo,
+                sync_to_thread=False,
+            )
+        },
     )
     def get_author(
         self,
@@ -166,7 +174,7 @@ class AuthorController(Controller):
         return Author.model_validate(obj)
 
     @patch(
-        path="/authors/{author_id:uuid}",
+        path="/{author_id:uuid}",
         dependencies={"authors_repo": Provide(provide_author_details_repo, sync_to_thread=False)},
     )
     def update_author(
@@ -185,7 +193,7 @@ class AuthorController(Controller):
         authors_repo.session.commit()
         return Author.model_validate(obj)
 
-    @delete(path="/authors/{author_id:uuid}")
+    @delete(path="/{author_id:uuid}")
     def delete_author(
         self,
         authors_repo: AuthorRepository,

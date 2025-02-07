@@ -29,8 +29,8 @@ As you can see, ``authenticate_request`` is an async function that receives a co
 an :class:`~.middleware.authentication.AuthenticationResult` instance, which is a
 :doc:`dataclass <python:library/dataclasses>` that has two attributes:
 
-1. ``user``: a non-optional value representing a user. It is typed as ``Any`` so it receives any value,
-   including ``None``.
+1. ``user``: a non-optional value representing an user. It is typed as ``Any``
+   so it receives any value, including ``None``.
 2. ``auth``: an optional value representing the authentication scheme. Defaults to ``None``.
 
 These values are then set as part of the ``scope`` dictionary, and they are made available as
@@ -44,8 +44,9 @@ Creating a Custom JWT Authentication Middleware
 
 Since the above is quite hard to grasp in the abstract, let us see an example.
 
-We start off by creating a user model. It can be implemented using Pydantic, an ODM, ORM, etc. For the sake of the
-example here let us say it is a `SQLAlchemy <https://docs.sqlalchemy.org/>`_ model:
+We start off by creating an user model. It can be implemented using Pydantic, an
+ODM, ORM, etc. For the sake of the example here let us say it is a
+`SQLAlchemy <https://docs.sqlalchemy.org/>`_ model:
 
 .. code-block:: python
     :caption: my_app/db/models.py

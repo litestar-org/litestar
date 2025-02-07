@@ -170,7 +170,7 @@ class BaseJWTAuth(Generic[UserType, TokenT], AbstractSecurityConfig[UserType, To
         """Create a response with a JWT header.
 
         Args:
-            identifier: Unique identifier of the token subject. Usually this is a user ID or equivalent kind of value.
+            identifier: Unique identifier of the token subject. Usually this is an user ID or equivalent kind of value.
             response_body: An optional response body to send.
             response_media_type: An optional ``Content-Type``. Defaults to ``application/json``.
             response_status_code: An optional status code for the response. Defaults to ``201``.
@@ -221,7 +221,7 @@ class BaseJWTAuth(Generic[UserType, TokenT], AbstractSecurityConfig[UserType, To
         """Create a Token instance from the passed in parameters, persists and returns it.
 
         Args:
-            identifier: Unique identifier of the token subject. Usually this is a user ID or equivalent kind of value.
+            identifier: Unique identifier of the token subject. Usually this is an user ID or equivalent kind of value.
             token_expiration: An optional timedelta for the token expiration.
             token_issuer: An optional value of the token ``iss`` field.
             token_audience: An optional value for the token ``aud`` field.
@@ -516,7 +516,7 @@ class JWTCookieAuth(Generic[UserType, TokenT], BaseJWTAuth[UserType, TokenT]):
         """Create a response with a JWT header.
 
         Args:
-            identifier: Unique identifier of the token subject. Usually this is a user ID or equivalent kind of value.
+            identifier: Unique identifier of the token subject. Usually this is an user ID or equivalent kind of value.
             response_body: An optional response body to send.
             response_media_type: An optional 'Content-Type'. Defaults to 'application/json'.
             response_status_code: An optional status code for the response. Defaults to '201 Created'.
@@ -769,7 +769,7 @@ class OAuth2PasswordBearerAuth(Generic[UserType, TokenT], BaseJWTAuth[UserType, 
         """Create a response with a JWT header.
 
         Args:
-            identifier: Unique identifier of the token subject. Usually this is a user ID or equivalent kind of value.
+            identifier: Unique identifier of the token subject. Usually this is an user ID or equivalent kind of value.
             response_body: An optional response body to send.
             response_media_type: An optional ``Content-Type``. Defaults to ``application/json``.
             response_status_code: An optional status code for the response. Defaults to ``201``.

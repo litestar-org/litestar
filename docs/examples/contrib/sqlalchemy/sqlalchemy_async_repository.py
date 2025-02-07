@@ -19,42 +19,43 @@ from litestar.plugins.sqlalchemy import (
     AsyncSessionConfig,
     SQLAlchemyAsyncConfig,
     SQLAlchemyInitPlugin,
-    base,
-    filters,
-    repository,
 )
+from litestar.plugins.sqlalchemy.base import UUIDAuditBase, UUIDBase
+from litestar.plugins.sqlalchemy.filters import LimitOffset
+from litestar.plugins.sqlalchemy.repository import SQLAlchemyAsyncRepository
 
 if TYPE_CHECKING:
     from sqlalchemy.ext.asyncio import AsyncSession
 
 
 class BaseModel(_BaseModel):
-    """Extend Pydantic's BaseModel to enable ORM mode"""
+    """Extended Pydantic's `BaseModel` to enable the ORM mode."""
 
     model_config = {"from_attributes": True}
 
 
-# The SQLAlchemy base includes a declarative model for you to use in your models.
-# The `UUIDBase` class includes a `UUID` based primary key (`id`)
-class AuthorModel(base.UUIDBase):
-    # we can optionally provide the table name instead of auto-generating it
+# The SQLAlchemy base includes a declarative model for you to use in your
+# models. The `UUIDBase` class includes an `UUID` based primary key (`id`).
+class AuthorModel(UUIDBase):
+    # We can optionally provide the table name instead of auto-generating it.
     __tablename__ = "author"  #  type: ignore[assignment]
     name: Mapped[str]
     dob: Mapped[date | None]
     books: Mapped[list[BookModel]] = relationship(back_populates="author", lazy="noload")
 
 
-# The `UUIDAuditBase` class includes the same UUID` based primary key (`id`) and 2
-# additional columns: `created_at` and `updated_at`. `created_at` is a timestamp of when the
-# record created, and `updated_at` is the last time the record was modified.
-class BookModel(base.UUIDAuditBase):
+# The `UUIDAuditBase` class includes the same `UUID` based primary key (`id`)
+# and 2 additional columns: `created_at` and `updated_at`. `created_at` is a
+# timestamp of when the record was created, and `updated_at` is the last time
+# the record was modified.
+class BookModel(UUIDAuditBase):
     __tablename__ = "book"  #  type: ignore[assignment]
     title: Mapped[str]
     author_id: Mapped[UUID] = mapped_column(ForeignKey("author.id"))
     author: Mapped[AuthorModel] = relationship(lazy="joined", innerjoin=True, viewonly=True)
 
 
-# we will explicitly define the schema instead of using DTO objects for clarity.
+# We will explicitly define the schema instead of using DTO objects for clarity.
 
 
 class Author(BaseModel):
@@ -73,7 +74,7 @@ class AuthorUpdate(BaseModel):
     dob: date | None = None
 
 
-class AuthorRepository(repository.SQLAlchemyAsyncRepository[AuthorModel]):
+class AuthorRepository(SQLAlchemyAsyncRepository[AuthorModel]):
     """Author repository."""
 
     model_type = AuthorModel
@@ -84,8 +85,8 @@ async def provide_authors_repo(db_session: AsyncSession) -> AuthorRepository:
     return AuthorRepository(session=db_session)
 
 
-# we can optionally override the default `select` used for the repository to pass in
-# specific SQL options such as join details
+# We can optionally override the default `select` used for the repository to
+# pass in specific SQL options such as join details
 async def provide_author_details_repo(db_session: AsyncSession) -> AuthorRepository:
     """This provides a simple example demonstrating how to override the join options for the repository."""
     return AuthorRepository(
@@ -102,7 +103,7 @@ def provide_limit_offset_pagination(
         default=10,
         required=False,
     ),
-) -> filters.LimitOffset:
+) -> LimitOffset:
     """Add offset/limit pagination.
 
     Return type consumed by `Repository.apply_limit_offset_pagination()`.
@@ -110,23 +111,24 @@ def provide_limit_offset_pagination(
     Parameters
     ----------
     current_page : int
-        LIMIT to apply to select.
+        Page number; used to calculate `OFFSET` for the `SELECT` query.
     page_size : int
-        OFFSET to apply to select.
+        Number of items in a page; `LIMIT` for the `SELECT` query.
     """
-    return filters.LimitOffset(page_size, page_size * (current_page - 1))
+    return LimitOffset(page_size, page_size * (current_page - 1))
 
 
 class AuthorController(Controller):
     """Author CRUD"""
 
     dependencies = {"authors_repo": Provide(provide_authors_repo)}
+    path = "/authors"
 
-    @get(path="/authors")
+    @get()
     async def list_authors(
         self,
         authors_repo: AuthorRepository,
-        limit_offset: filters.LimitOffset,
+        limit_offset: LimitOffset,
     ) -> OffsetPagination[Author]:
         """List authors."""
         results, total = await authors_repo.list_and_count(limit_offset)
@@ -138,7 +140,7 @@ class AuthorController(Controller):
             offset=limit_offset.offset,
         )
 
-    @post(path="/authors")
+    @post()
     async def create_author(
         self,
         authors_repo: AuthorRepository,
@@ -151,8 +153,9 @@ class AuthorController(Controller):
         await authors_repo.session.commit()
         return Author.model_validate(obj)
 
-    # we override the authors_repo to use the version that joins the Books in
-    @get(path="/authors/{author_id:uuid}", dependencies={"authors_repo": Provide(provide_author_details_repo)})
+    # We override the `authors_repo` to use the version that joins the `Book`
+    # records in.
+    @get(path="/{author_id:uuid}", dependencies={"authors_repo": Provide(provide_author_details_repo)})
     async def get_author(
         self,
         authors_repo: AuthorRepository,
@@ -166,7 +169,7 @@ class AuthorController(Controller):
         return Author.model_validate(obj)
 
     @patch(
-        path="/authors/{author_id:uuid}",
+        path="/{author_id:uuid}",
         dependencies={"authors_repo": Provide(provide_author_details_repo)},
     )
     async def update_author(
@@ -185,7 +188,7 @@ class AuthorController(Controller):
         await authors_repo.session.commit()
         return Author.from_orm(obj)
 
-    @delete(path="/authors/{author_id:uuid}")
+    @delete(path="/{author_id:uuid}")
     async def delete_author(
         self,
         authors_repo: AuthorRepository,
@@ -209,7 +212,7 @@ sqlalchemy_plugin = SQLAlchemyInitPlugin(config=sqlalchemy_config)
 async def on_startup() -> None:
     """Initializes the database."""
     async with sqlalchemy_config.get_engine().begin() as conn:
-        await conn.run_sync(base.UUIDBase.metadata.create_all)
+        await conn.run_sync(UUIDBase.metadata.create_all)
 
 
 app = Litestar(

@@ -29,7 +29,7 @@ class _LazyEvent:
     It ensures that the Event is created within a running event loop. If it's not, there can be an issue where a future
     within the event itself is attached to a different loop.
 
-    This happens in our tests and could also happen when a user creates an instance of the backend outside an event loop
+    This happens in our tests and could also happen when an user creates an instance of the backend outside an event loop
     in their application.
     """
 

@@ -30,13 +30,14 @@ Litestar supports a simple implementation of the event emitter / listener patter
 
     @post("/users")
     async def create_user_handler(data: UserDTO, request: Request) -> None:
-        # do something here to create a new user
-        # e.g. insert the user into a database
+        # Do something here to create a new user.
+        # E.g. insert the user into the database.
         await user_repository.insert(data)
 
-        # assuming we have now inserted a user, we want to send a welcome email.
-        # To do this in a none-blocking fashion, we will emit an event to a listener, which will send the email,
-        # using a different async block than the one where we are returning a response.
+        # Assuming we have now inserted an user, we want to send a welcome
+        # email. To do this in a none-blocking fashion, we will emit an event
+        # to a listener, which will send the email, using a different async
+        # block than the one where we are returning a response.
         request.app.emit("user_created", email=data.email)
 
 

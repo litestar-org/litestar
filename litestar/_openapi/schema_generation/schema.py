@@ -467,7 +467,7 @@ class SchemaCreator:
             )
 
         if field_definition.is_non_string_sequence or field_definition.is_non_string_iterable:
-            # filters out ellipsis from tuple[int, ...] type annotations
+            # Filter out ellipsis from `tuple[int, ...]` type annotations.
             inner_types = (f for f in field_definition.inner_types if f.annotation is not Ellipsis)
             items = list(map(self.for_field_definition, inner_types))
 
@@ -477,8 +477,8 @@ class SchemaCreator:
             )
 
         raise ImproperlyConfiguredException(  # pragma: no cover
-            f"Parameter '{field_definition.name}' with type '{field_definition.annotation}' could not be mapped to an Open API type. "
-            f"This can occur if a user-defined generic type is resolved as a parameter. If '{field_definition.name}' should "
+            f"Parameter '{field_definition.name}' with type '{field_definition.annotation}' could not be mapped to an OpenAPI type. "
+            f"This can occur if an user-defined generic type is resolved as a parameter. If '{field_definition.name}' should "
             "not be documented as a parameter, annotate it using the `Dependency` function, e.g., "
             f"`{field_definition.name}: ... = Dependency(...)`."
         )

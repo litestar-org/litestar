@@ -844,8 +844,9 @@ the :class:`AbstractAsyncOffsetPaginator <.pagination.AbstractAsyncOffsetPaginat
 Offset Pagination With SQLAlchemy
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-When retrieving paginated data from the database using SQLAlchemy, the Paginator instance requires an SQLAlchemy session
-instance to make queries. This can be achieved with :doc:`/usage/dependency-injection`
+When retrieving paginated data from the database using SQLAlchemy, the paginator
+instance requires a SQLAlchemy session instance to make queries. This can be
+achieved with :doc:`/usage/dependency-injection`
 
 .. literalinclude:: /examples/pagination/using_offset_pagination_with_sqlalchemy.py
     :caption: Offset Pagination With SQLAlchemy

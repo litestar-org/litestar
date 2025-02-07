@@ -21,12 +21,16 @@ of :class:`~litestar.config.cors.CORSConfig` to :class:`~litestar.app.Litestar`:
 CSRF
 ----
 
-`CSRF (Cross-site request forgery) <https://owasp.org/www-community/attacks/csrf>`_ is a type of attack where unauthorized commands are submitted from a user that the web
-application trusts. This attack often uses social engineering that tricks the victim into clicking a URL that contains a
-maliciously crafted, unauthorized request for a particular Web application. The user’s browser then sends this
-maliciously crafted request to the targeted Web application. If the user is in an active session with the Web application,
-the application treats this new request as an authorized request submitted by the user. Thus, the attacker can force the
-user to perform an action the user didn't intend, for example:
+`CSRF (Cross-site request forgery) <https://owasp.org/www-community/attacks/csrf>`_
+is a type of attack where unauthorized commands are submitted from an user that
+the web application trusts. This attack often uses social engineering that
+tricks the victim into clicking a URL that contains a maliciously crafted,
+unauthorized request for a particular Web application. The user’s browser then
+sends this maliciously crafted request to the targeted Web application. If the
+user is in an active session with the Web application, the application treats
+this new request as an authorized request submitted by the user. Thus, the
+attacker can force the user to perform an action the user didn't intend, for
+example:
 
 
 .. code-block:: text

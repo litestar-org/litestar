@@ -50,7 +50,8 @@ the application:
        route_handlers=[my_router], dependencies={"app_dependency": Provide(bool_fn)}
    )
 
-The above example illustrates how dependencies are declared on the different layers of the application.
+The example above illustrates how dependencies are declared on the different
+layers of the application.
 
 .. note::
 
@@ -71,19 +72,20 @@ Dependencies can be either callables - sync or async functions, methods, or clas
 Pre-requisites and scope
 ------------------------
 
-The pre-requisites for dependency injection are these:
+The pre-requisites for dependency injection:
 
-
-#. dependencies must be callables.
-#. dependencies can receive kwargs and a ``self`` arg but not positional args.
-#. the kwarg name and the dependency key must be identical.
-#. the dependency must be declared using the ``Provide`` class.
+#. dependencies must be callables;
+#. dependencies can receive kwargs and a ``self`` arg but not positional args;
+#. the kwarg name and the dependency key must be identical;
+#. the dependency must be declared using the class ``Provide``;
 #. the dependency must be in the *scope* of the handler function.
 
-What is *scope* in this context? Dependencies are **isolated** to the context in which they are declared. Thus, in the
-above example, the ``local_dependency`` can only be accessed within the specific route handler on which it was declared;
-The ``controller_dependency`` is available only for route handlers on that specific controller; And the ``router
-dependency`` is available only to the route handlers registered on that particular router. Only the ``app_dependency``
+What is *scope* in this context? Dependencies are **isolated** to the context in
+which they are declared. Thus, in the above example, the ``local_dependency``
+can only be accessed within the specific route handler on which it was declared.
+The ``controller_dependency`` is available only for route handlers on that
+specific controller, and the ``router_dependency`` is available only to the
+route handlers registered on that particular router. Only the ``app_dependency``
 is available to all route handlers.
 
 .. _yield_dependencies:
@@ -106,12 +108,12 @@ A basic example
 ~~~~~~~~~~~~~~~
 
 .. literalinclude:: /examples/dependency_injection/dependency_yield_simple.py
-    :caption: dependencies.py
+    :caption: ``dependencies.py``
     :language: python
 
 
-If you run the code you'll see that ``CONNECTION`` has been reset after the handler function
-returned:
+If you run the code you will see that ``CONNECTION`` has been reset after the
+handler function returned:
 
 .. code-block:: python
 
@@ -125,13 +127,13 @@ returned:
 Handling exceptions
 ~~~~~~~~~~~~~~~~~~~
 
-If an exception occurs within the handler function, it will be raised **within** the
-generator, at the point where it first ``yield`` ed. This makes it possible to adapt behaviour
-of the dependency based on exceptions, for example rolling back a database session on error
-and committing otherwise.
+If an exception occurs within the handler function, it will be raised **within**
+the generator, at the point where it first ``yield``\ ed. This makes it possible
+to adapt behaviour of the dependency based on exceptions, for example rolling
+back a database session on error and committing otherwise.
 
 .. literalinclude:: /examples/dependency_injection/dependency_yield_exceptions.py
-    :caption: dependencies.py
+    :caption: ``dependencies.py``
     :language: python
 
 
@@ -153,9 +155,9 @@ and committing otherwise.
 .. admonition:: Best Practice
     :class: tip
 
-    You should always wrap `yield` in a `try`/`finally` block, regardless of whether you
-    want to handle exceptions, to ensure that the cleanup code is run even when exceptions
-    occurred:
+    You should always wrap ``yield`` in a ``try``/``finally`` block, regardless
+    of whether you want to handle exceptions, to ensure that the cleanup code is
+    run even when exceptions occurred:
 
     .. code-block:: python
 
@@ -247,7 +249,7 @@ The lower scoped route handler function declares a dependency with the same key 
 controller. The lower scoped dependency therefore overrides the higher scoped one.
 
 
-The ``Provide`` class
+The class ``Provide``
 ----------------------
 
 The :class:`Provide <.di.Provide>` class is a wrapper used for dependency injection. To inject a callable you must wrap
@@ -322,7 +324,7 @@ You can inject dependencies into other dependencies - exactly like you would int
    The rules for `dependency overrides`_ apply here as well.
 
 
-The ``Dependency`` function
+The function ``Dependency``
 ----------------------------
 
 Dependency validation
@@ -336,7 +338,8 @@ internal server error:
     :language: python
 
 
-Dependency validation can be toggled using the :class:`Dependency <litestar.params.Dependency>` function.
+Dependency validation can be toggled using the function
+:class:`Dependency <litestar.params.Dependency>`.
 
 .. literalinclude:: /examples/dependency_injection/dependency_skip_validation.py
     :caption: Dependency validation error
@@ -348,8 +351,8 @@ This may be useful for reasons of efficiency, or if pydantic cannot validate a c
 Dependency function as a marker
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The :class:`Dependency <litestar.params.Dependency>` function can also be used as a marker that gives us a bit more detail
-about your application.
+The function :class:`Dependency <litestar.params.Dependency>` can also be used
+as a marker that gives us a bit more detail about your application.
 
 Exclude dependencies with default values from OpenAPI docs
 ***********************************************************
