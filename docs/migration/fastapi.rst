@@ -298,32 +298,6 @@ In FastAPI, you pass the JSON object directly as a parameter to the endpoint, wh
                 return {"name": data.name}
 
 
-Media type
-~~~~~~~~~~
-In FastAPI, you specify the response type using `-> HTMLResponse` for instance. In Litestar, you use the `media_type` parameter in the decorator.
-
-.. tab-set::
-
-    .. tab-item:: FastAPI
-        :sync: fastapi
-
-        .. code-block:: python
-
-            @app.get("/page")
-            async def get_page() -> HTMLResponse:
-
-    .. tab-item:: Litestar
-        :sync: litestar
-
-        .. code-block:: python
-
-            from litestar.enums import MediaType
-
-            @get(path="/page", media_type=MediaType.HTML)
-            async def get_page() -> str:
-                return "<html><body><h1>Hello, World!</h1></body></html>"
-
-
 Default status codes
 ~~~~~~~~~~~~~~~~~~~~
 
