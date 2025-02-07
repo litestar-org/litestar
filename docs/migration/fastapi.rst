@@ -213,7 +213,13 @@ If you're using an async context manager and pass parameters to it, most likely 
 Cookies
 ~~~~~~~
 
-While with FastAPI you usually set cookies on the response `Response` object, in Litestar it will be set at the decorator level.
+While with FastAPI you usually set cookies on the response `Response` object, in Litestar it will be set at the decorator level using the `response_cookies` keyword argument.
+
+.. seealso::
+
+    You can also set cookies in the handler itself also
+
+    * :ref:`Setting Cookies dynamically <usage/responses:setting cookies dynamically>`
 
 .. tab-set::
 
