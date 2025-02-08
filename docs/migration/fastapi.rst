@@ -246,6 +246,7 @@ While with FastAPI you usually set cookies on the response `Response` object, in
 Dependencies parameters
 ~~~~~~~~~~~~~~~~~~~~~~~
 The way dependencies parameters are passed differs between FastAPI and Litestar, note the `state: State` parameter in the Litestar example.
+You can get the state either with the state kwarg in the handler or request.state but those are different from the app.state, in fact request.state just inherits from app.state.
 
 .. tab-set::
 
