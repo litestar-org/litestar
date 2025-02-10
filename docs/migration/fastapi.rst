@@ -312,6 +312,7 @@ Post defaults to 200 in FastApi and 201 in Litestar.
 
 Templates
 ~~~~~~~~~
+
 In FastAPI, you use `TemplateResponse` to render templates. In Litestar, you use the `Template` class.
 Also FastAPI let you pass a dictionary while in Litestar you need to explicitly pass the context kwarg.
 
