@@ -127,7 +127,7 @@ The above example is the same as using logging without the litestar ``LoggingCon
     )
 
 Formatter like JSON string
-----------------
+--------------------------
 
 * printf-style String Formatting
 
