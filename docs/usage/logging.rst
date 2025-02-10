@@ -80,7 +80,7 @@ below:
         logging_config=logging_config,
     )
 
-If you want to use ``LoggingConfig`` with another format string style, you need add a key "style" 
+If you want to use ``LoggingConfig`` with another format string style, you need add a key "style"
 
 .. code-block:: python
 
@@ -134,7 +134,7 @@ Formatter like JSON string
 .. code-block:: python
 
    format = ('{"asctime": "%(asctime)s", "name": "%(name)s", "level": "%(levelname)s", "message": "%(message)s"}')
-   
+
    ch.setFormatter(logging.Formatter(format))
 
 * str.format() String Formatting
