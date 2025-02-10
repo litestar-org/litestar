@@ -272,6 +272,7 @@ You can get the state either with the state kwarg in the handler or ``request.st
 
 Post json
 ~~~~~~~~~
+
 In FastAPI, you pass the JSON object directly as a parameter to the endpoint, which will then be validated by Pydantic. In Litestar, you use the `data` keyword argument. The data will be parsed and validated by the associated modelling library.
 
 .. tab-set::
