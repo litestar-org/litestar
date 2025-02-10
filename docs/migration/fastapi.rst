@@ -403,6 +403,7 @@ While this is more verbose, it's also more explicit and communicates the intent 
 
 Exceptions signature
 ~~~~~~~~~~~~~~~~~~~~
+
 In FastAPI, status code and exception details can be passed to `HTTPException` as positional arguments, while in Litestar they are set with keywords arguments, e.g. `status_code`. Positional arguments to `HTTPException` in Litestar will be added to the exception detail.
 If migrating you just change your HTTPException import this will break.
 
