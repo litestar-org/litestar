@@ -374,6 +374,7 @@ In FastAPI, the handler name defaults to the local name of the function. In Lite
 
 Uploads
 ~~~~~~~
+
 In FastAPI, you use the `File` class to handle file uploads. In Litestar, you use the `data` keyword argument with `Body` and specify the `media_type` as `RequestEncodingType.MULTI_PART`.
 While this is more verbose, it's also more explicit and communicates the intent more clearly.
 
