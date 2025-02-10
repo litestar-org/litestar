@@ -341,6 +341,7 @@ Also FastAPI let you pass a dictionary while in Litestar you need to explicitly 
 
 Default handler names
 ~~~~~~~~~~~~~~~~~~~~~~~
+
 In FastAPI, the handler name defaults to the local name of the function. In Litestar, you need to explicitly declare the `name` parameter in the route decorator. This is important when using e.g. `url_for`.
 
 .. tab-set::
