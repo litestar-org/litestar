@@ -1540,302 +1540,27 @@ document.write(`
 <h1>2.x Changelog<a class="headerlink" href="#x-changelog" title="Permalink to this heading">#</a></h1>
 <section id="2.14.0">
 <h2>2.14.0<a class="headerlink" href="#2.14.0" title="Permalink to this heading">#</a></h2>
-<strong>Released: </strong>2025-01-08<section id="2.14.0-feature">
+<strong>Released: </strong>2025-02-12<section id="2.14.0-feature">
 <h3>Features<a class="headerlink" href="#2.14.0-feature" title="Permalink to this heading">#</a></h3>
 <dl>
-<dt>allow creating parent directories for a file store<a class="headerlink reference internal" href="#2.14.0-allow creating parent directories for a file store" id="2.14.0-allow creating parent directories for a file store">#</a></dt><dd><div class="changelog-change docutils container">
-<p>Allow mkdir True when creating a file store.</p>
-<p>Use case is rather small - initially deploying an application with FileStores used.</p>
-<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3526">litestar-org/litestar#3526</a></span></p>
-</div>
-</dd>
-<dt>add param <cite>logging_module</cite> to <cite>LoggingConfig</cite><a class="headerlink reference internal" href="#2.14.0-add param" id="2.14.0-add param">#</a></dt><dd><div class="changelog-change docutils container">
-<p><cite>logging_module</cite> provides a way to switch easily from <cite>logging</cite> to <cite>picologging</cite>.</p>
-<p>Closes #3536</p>
-<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/3536">litestar-org/litestar#3536</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3578">litestar-org/litestar#3578</a></span></p>
-</div>
-</dd>
-<dt>add handler name to exceptions in handler validation.<a class="headerlink reference internal" href="#2.14.0-add handler name to exceptions in handler validation." id="2.14.0-add handler name to exceptions in handler validation.">#</a></dt><dd><div class="changelog-change docutils container">
-<p>Add handler name to exceptions raise by _validate_handler_function.</p>
-<p>Closes #3548</p>
-<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/3548">litestar-org/litestar#3548</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3575">litestar-org/litestar#3575</a></span></p>
-</div>
-</dd>
-<dt>added parameters in pydantic plugin to support strict validation and all the <cite>model_dump</cite> args<a class="headerlink reference internal" href="#2.14.0-added parameters in pydantic plugin to support strict validation and all the" id="2.14.0-added parameters in pydantic plugin to support strict validation and all the">#</a></dt><dd><div class="changelog-change docutils container">
-<p>Combines the following stale PRs:</p>
-<ul class="simple">
-<li><p>#3573</p></li>
-<li><p>#3327</p></li>
-</ul>
-<p>Closes #3572 and #3147</p>
-<p>Context: <a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3327#issuecomment-2171148195">litestar-org/litestar#3327</a></p>
-<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/3572">litestar-org/litestar#3572</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3608">litestar-org/litestar#3608</a></span></p>
-</div>
-</dd>
-<dt>switched abandoned python-jose to pyjwt<a class="headerlink reference internal" href="#2.14.0-switched abandoned python-jose to pyjwt" id="2.14.0-switched abandoned python-jose to pyjwt">#</a></dt><dd><div class="changelog-change docutils container">
-<p>This PR replaces the abandoned/obsolete python package:  python-jose.
-This package has not been maintained since 2021.</p>
-<p>looking at several issues on that project there are a couple CVE’s im not comfortable with.
-I went looking for a “drop-in” replacement and found pyjwt.  (project last updated 3 weeks ago).</p>
-<p>This pull requests addresses that problem.</p>
-<p>hope you agree with this.</p>
-<p>kind regards.</p>
-<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3684">litestar-org/litestar#3684</a></span></p>
-</div>
-</dd>
-<dt>introduce <cite>forbid_unknown_fields</cite> config<a class="headerlink reference internal" href="#2.14.0-introduce" id="2.14.0-introduce">#</a></dt><dd><div class="changelog-change docutils container">
-<p>Add a new config option to <cite>DTOConfig</cite>: <cite>forbid_unknown_fields</cite>.
-When set to <cite>True</cite>, a validation error response will be returned if the source data contains fields not defined on the model.</p>
-<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3690">litestar-org/litestar#3690</a></span></p>
-</div>
-</dd>
-<dt>Custom JWT payload classes<a class="headerlink reference internal" href="#2.14.0-custom jwt payload classes" id="2.14.0-custom jwt payload classes">#</a></dt><dd><div class="changelog-change docutils container">
-<p>Support customizing the <cite>Token</cite> class the JWT backends decode the payload into.</p>
-<ul class="simple">
-<li><p>Add new <cite>token_cls</cite> field on the JWT auth config classes</p></li>
-<li><p>Add new <cite>token_cls</cite> parameter to JWT auth middlewares</p></li>
-<li><p>Switch to using msgspec to convert the JWT payload into tokens, providing type coercion for custom token types without having to override the <cite>Token.decode</cite> method</p></li>
-</ul>
-<p>## Example:</p>
-<div class="sd-tab-set docutils">
-<input id="sd-tab-item-0" name="sd-tab-set-0" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-0">
-Python 3.8+</label><div class="sd-tab-content docutils">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">dataclasses</span>
-<span class="kn">import</span> <span class="nn">secrets</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span>
-
-<span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Request</span><span class="p">,</span> <span class="n">get</span>
-<span class="kn">from</span> <span class="nn">litestar.connection</span> <span class="kn">import</span> <span class="n">ASGIConnection</span>
-<span class="kn">from</span> <span class="nn">litestar.security.jwt</span> <span class="kn">import</span> <span class="n">JWTAuth</span><span class="p">,</span> <span class="n">Token</span>
-
-
-<span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span>
-<span class="k">class</span> <span class="nc">CustomToken</span><span class="p">(</span><span class="n">Token</span><span class="p">):</span>
-    <span class="n">token_flag</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
-
-
-<span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span>
-<span class="k">class</span> <span class="nc">User</span><span class="p">:</span>
-    <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span>
-
-
-<span class="k">async</span> <span class="k">def</span> <span class="nf">retrieve_user_handler</span><span class="p">(</span><span class="n">token</span><span class="p">:</span> <span class="n">CustomToken</span><span class="p">,</span> <span class="n">connection</span><span class="p">:</span> <span class="n">ASGIConnection</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">User</span><span class="p">:</span>
-    <span class="k">return</span> <span class="n">User</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">token</span><span class="o">.</span><span class="n">sub</span><span class="p">)</span>
-
-
-<span class="n">TOKEN_SECRET</span> <span class="o">=</span> <span class="n">secrets</span><span class="o">.</span><span class="n">token_hex</span><span class="p">()</span>
-
-<span class="n">jwt_auth</span> <span class="o">=</span> <span class="n">JWTAuth</span><span class="p">[</span><span class="n">User</span><span class="p">](</span>
-    <span class="n">token_secret</span><span class="o">=</span><span class="n">TOKEN_SECRET</span><span class="p">,</span>
-    <span class="n">retrieve_user_handler</span><span class="o">=</span><span class="n">retrieve_user_handler</span><span class="p">,</span>
-    <span class="n">token_cls</span><span class="o">=</span><span class="n">CustomToken</span><span class="p">,</span>
-<span class="p">)</span>
-
-
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">handler</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">[</span><span class="n">User</span><span class="p">,</span> <span class="n">CustomToken</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
-    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="s2">&quot;token_flag&quot;</span><span class="p">:</span> <span class="n">request</span><span class="o">.</span><span class="n">auth</span><span class="o">.</span><span class="n">token_flag</span><span class="p">}</span>
-</pre></div>
-</div>
-</div>
-<input checked="checked" id="sd-tab-item-1" name="sd-tab-set-0" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.9" for="sd-tab-item-1">
-Python 3.9+</label><div class="sd-tab-content docutils">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">dataclasses</span>
-<span class="kn">import</span> <span class="nn">secrets</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span>
-
-<span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Request</span><span class="p">,</span> <span class="n">get</span>
-<span class="kn">from</span> <span class="nn">litestar.connection</span> <span class="kn">import</span> <span class="n">ASGIConnection</span>
-<span class="kn">from</span> <span class="nn">litestar.security.jwt</span> <span class="kn">import</span> <span class="n">JWTAuth</span><span class="p">,</span> <span class="n">Token</span>
-
-
-<span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span>
-<span class="k">class</span> <span class="nc">CustomToken</span><span class="p">(</span><span class="n">Token</span><span class="p">):</span>
-    <span class="n">token_flag</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
-
-
-<span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span>
-<span class="k">class</span> <span class="nc">User</span><span class="p">:</span>
-    <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span>
-
-
-<span class="k">async</span> <span class="k">def</span> <span class="nf">retrieve_user_handler</span><span class="p">(</span><span class="n">token</span><span class="p">:</span> <span class="n">CustomToken</span><span class="p">,</span> <span class="n">connection</span><span class="p">:</span> <span class="n">ASGIConnection</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">User</span><span class="p">:</span>
-    <span class="k">return</span> <span class="n">User</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">token</span><span class="o">.</span><span class="n">sub</span><span class="p">)</span>
-
-
-<span class="n">TOKEN_SECRET</span> <span class="o">=</span> <span class="n">secrets</span><span class="o">.</span><span class="n">token_hex</span><span class="p">()</span>
-
-<span class="n">jwt_auth</span> <span class="o">=</span> <span class="n">JWTAuth</span><span class="p">[</span><span class="n">User</span><span class="p">](</span>
-    <span class="n">token_secret</span><span class="o">=</span><span class="n">TOKEN_SECRET</span><span class="p">,</span>
-    <span class="n">retrieve_user_handler</span><span class="o">=</span><span class="n">retrieve_user_handler</span><span class="p">,</span>
-    <span class="n">token_cls</span><span class="o">=</span><span class="n">CustomToken</span><span class="p">,</span>
-<span class="p">)</span>
-
-
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">handler</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">[</span><span class="n">User</span><span class="p">,</span> <span class="n">CustomToken</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
-    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="s2">&quot;token_flag&quot;</span><span class="p">:</span> <span class="n">request</span><span class="o">.</span><span class="n">auth</span><span class="o">.</span><span class="n">token_flag</span><span class="p">}</span>
-</pre></div>
-</div>
-</div>
-</div>
-<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3692">litestar-org/litestar#3692</a></span></p>
-</div>
-</dd>
-<dt>Support <cite>extra=”forbid”</cite> model config for <cite>PydanticDTO</cite><a class="headerlink reference internal" href="#2.14.0-support" id="2.14.0-support">#</a></dt><dd><div class="changelog-change docutils container">
-<p>Set <cite>forbid_unknown_fields=True</cite> for <cite>PydanticDTOs</cite> where the Pydantic model has an [<cite>extra=”forbid”</cite>](<a class="reference external" href="https://docs.pydantic.dev/latest/api/config/#pydantic.config.ConfigDict.extra">https://docs.pydantic.dev/latest/api/config/#pydantic.config.ConfigDict.extra</a>) config.</p>
-<p>&lt;hr&gt;</p>
-<ul class="simple">
-<li><p>Add a new <cite>get_config_for_model_type</cite> method to <cite>AbstractDTO</cite>, that allows to customise the base config defined on the DTO factory for a specific model type</p></li>
-<li><p>Use <cite>get_config_for_model_type</cite> to set <cite>forbid_unknown_fields=True</cite> for Pydantic models that use the <cite>extra=”forbid”`</cite> config</p></li>
-</ul>
-<p>&lt;hr&gt;</p>
-<p>Depends on #3690. Don’t merge before that one :)</p>
-<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3691">litestar-org/litestar#3691</a></span></p>
-</div>
-</dd>
-<dt>Warn about greedy exclude patterns<a class="headerlink reference internal" href="#2.14.0-warn about greedy exclude patterns" id="2.14.0-warn about greedy exclude patterns">#</a></dt><dd><div class="changelog-change docutils container">
-<p>Raise a warning when a middlewares <cite>exclude</cite> pattern greedily matches all paths.</p>
-<p>Also document this footgun more prominently.</p>
-<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3700">litestar-org/litestar#3700</a></span></p>
-</div>
-</dd>
-<dt>problem details plugin<a class="headerlink reference internal" href="#2.14.0-problem details plugin" id="2.14.0-problem details plugin">#</a></dt><dd><div class="changelog-change docutils container">
-<p>A plugin to enable usage of problem details as the response.</p>
-<p>The way this works is by injecting an exception handler into the app level exception handlers to convert <cite>ProblemDetailsException</cite> into a response following the specification as per RFC 9457.</p>
-<p>Users can pass in a mapping of exception types to callables that will convert those exception types into <cite>ProblemDetailsException</cite> for handling specific exceptions such as pydantic’s <cite>ValidationError</cite>. That converted <cite>ProblemDetailsException</cite> will then be used to create the response. This should allow for flexibility when needed.</p>
-<p>Closes #3199.</p>
-<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/3199">litestar-org/litestar#3199</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3323">litestar-org/litestar#3323</a></span></p>
-</div>
-</dd>
-<dt>Customised token verification<a class="headerlink reference internal" href="#2.14.0-customised token verification" id="2.14.0-customised token verification">#</a></dt><dd><div class="changelog-change docutils container">
-<p>Customise the automatic verification of JWTs.</p>
-<ul class="simple">
-<li><p>[x] Config to verify <cite>aud</cite></p></li>
-<li><p>[x] Config to verify <cite>iss</cite></p></li>
-<li><p>[x] Config to verify <cite>iat</cite></p></li>
-<li><p>[x] Config to verify <cite>nbf</cite></p></li>
-<li><p>[x] Config for strict <cite>aud</cite> verification</p></li>
-<li><p>[x] Config for required claims</p></li>
-<li><p>[x] Update documentation</p></li>
-</ul>
-<p>&lt;hr&gt;</p>
-<p><strong>JWT backend changes</strong></p>
-<ul class="simple">
-<li><p>Add <cite>accepted_audiences</cite> field</p></li>
-<li><p>Add <cite>accepted_issuers</cite> field</p></li>
-<li><p>Add <cite>require_claims</cite> field</p></li>
-<li><p>Add <cite>verify_expiry</cite> field</p></li>
-<li><p>Add <cite>verify_not_before</cite> field</p></li>
-<li><p>Add <cite>strict_audience</cite> field</p></li>
-</ul>
-<p><strong>JWT middleware changes</strong></p>
-<ul class="simple">
-<li><p>Add token_audience` parameter</p></li>
-<li><p>Add <cite>token_issuer</cite> parameter</p></li>
-<li><p>Add <cite>require_claims</cite> parameter</p></li>
-<li><p>Add <cite>verify_expiry</cite> parameter</p></li>
-<li><p>Add <cite>verify_not_before</cite> parameter</p></li>
-<li><p>Add <cite>strict_audience</cite> parameter</p></li>
-</ul>
-<p><strong>Token changes</strong></p>
-<ul class="simple">
-<li><p>Add <cite>audience</cite> parameter to <cite>Token.decode</cite></p></li>
-<li><p>Add <cite>issuer</cite> parameter to <cite>Token.decode</cite></p></li>
-<li><p>Add <cite>require_claims</cite> parameter to <cite>Token.decode</cite></p></li>
-<li><p>Add <cite>verify_exp</cite> parameter to <cite>Token.decode</cite></p></li>
-<li><p>Add <cite>verify_nbf</cite> parameter to <cite>Token.decode</cite></p></li>
-<li><p>Add <cite>strict_audience</cite> parameter to <cite>Token.decode</cite></p></li>
-<li><p>Add <cite>decode_payload</cite> method</p></li>
-</ul>
-<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3695">litestar-org/litestar#3695</a></span></p>
-</div>
-</dd>
-<dt>Support strings in <cite>media_type</cite> for <cite>ResponseSpec</cite><a class="headerlink reference internal" href="#2.14.0-support strings in" id="2.14.0-support strings in">#</a></dt><dd><div class="changelog-change docutils container">
-<p>Accept string for the <cite>media_type</cite> parameter of <cite>ResponseSpec</cite>, making it behave the same way as <cite>Response.media_type</cite> does.</p>
-<p>Closes #3728.</p>
-<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/3728">litestar-org/litestar#3728</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3729">litestar-org/litestar#3729</a></span></p>
-</div>
-</dd>
-<dt>Allow customizing schema component keys<a class="headerlink reference internal" href="#2.14.0-allow customizing schema component keys" id="2.14.0-allow customizing schema component keys">#</a></dt><dd><div class="changelog-change docutils container">
-<p>Allow customizing the schema key used for a component in the OpenAPI schema. The motivation is to give the user an escape hatch when we inevitably generate some less than pretty looking names for deeply nested types for the sake of uniqueness.</p>
-<p>These supplied key are enforced to be unique, and it is checked that they won’t be reused across different types.</p>
-<p>&lt;hr&gt;</p>
-<ul class="simple">
-<li><p>Add a new <cite>schema_component_key</cite> to <cite>KwargDefinition</cite> and the <cite>Body</cite> and <cite>Parameter</cite> functions</p></li>
-<li><p>Add a friendly error message when keys are not unique / reused across different types</p></li>
-</ul>
-<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3738">litestar-org/litestar#3738</a></span></p>
-</div>
-</dd>
-<dt>Raise exception when body parameter is annotated with non-bytes type<a class="headerlink reference internal" href="#2.14.0-raise exception when body parameter is annotated with non-bytes type" id="2.14.0-raise exception when body parameter is annotated with non-bytes type">#</a></dt><dd><div class="changelog-change docutils container">
-<p>Add an informative error message to help users avoid the common mistake of attempting to use the <cite>body</cite> parameter to receive validated / structured data, by annotating it with a type such as <cite>list[str]</cite>, instead of <cite>bytes</cite>. In such a case, the user will now be instructed to use the <cite>data</cite> parameter instead.</p>
-<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3740">litestar-org/litestar#3740</a></span></p>
-</div>
-</dd>
-<dt>bump <cite>scalar</cite> OpenAPI Plugin to <cite>latest</cite> release<a class="headerlink reference internal" href="#2.14.0-bump" id="2.14.0-bump">#</a></dt><dd><div class="changelog-change docutils container">
-<p>Use <cite>latest</cite> as the version for the <cite>scalar</cite> OpenAPI plugin.</p>
-<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3747">litestar-org/litestar#3747</a></span></p>
-</div>
-</dd>
-<dt>OpenAPI plugins send CSRF request header<a class="headerlink reference internal" href="#2.14.0-openapi plugins send csrf request header" id="2.14.0-openapi plugins send csrf request header">#</a></dt><dd><div class="changelog-change docutils container">
-<p>Supported OpenAPI UI clients will extract the CSRF cookie value and attach it to the request headers if CSRF is enabled on the application.</p>
-<ul class="simple">
-<li><p>[x] Swagger</p></li>
-<li><p>[x] RapiDoc</p></li>
-<li><p>[ ] Scalar</p></li>
-<li><p>[ ] Redoc</p></li>
-<li><p>[ ] Stoplight Elements</p></li>
-</ul>
-<p>Scalar (<a class="github reference external" href="https://github.com/scalar/scalar/discussions/2810">scalar/scalar#2810</a>), Redoc and (Stoplight) Elements does not seem to support interceptors or some other mechanism to achieve this.</p>
-<p>Currently it also sends the header on “safe” methods but for both currently supported UI clients (Swagger and RapiDoc) it’s possible to limit this to “unsafe” methods only, if required.</p>
-<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3754">litestar-org/litestar#3754</a></span></p>
-</div>
-</dd>
-<dt>deprecate <cite>litestar.contrib.sqlalchemy</cite><a class="headerlink reference internal" href="#2.14.0-deprecate" id="2.14.0-deprecate">#</a></dt><dd><div class="changelog-change docutils container">
-<p>This PR deprecates the <cite>litestar.contrib.sqlalchemy</cite> module in favor of <cite>litestar.plugins.sqlalchemy</cite></p>
-<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3755">litestar-org/litestar#3755</a></span></p>
-</div>
-</dd>
-<dt>implement <cite>HTMX</cite> plugin using <cite>litestar-htmx</cite><a class="headerlink reference internal" href="#2.14.0-implement" id="2.14.0-implement">#</a></dt><dd><div class="changelog-change docutils container">
-<p>This plugin migrates the HTMX integration to <cite>litestar.plugins.htmx</cite>.</p>
-<p>This logic has been moved to it’s own repository named <cite>litestar-htmx</cite></p>
-<p>This is in preparation for 3.0 release where <cite>contrib</cite> will be deprecated.</p>
-<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3837">litestar-org/litestar#3837</a></span></p>
-</div>
-</dd>
-<dt>honor hide_input_in_errors in throwing validation exceptions<a class="headerlink reference internal" href="#2.14.0-honor hide_input_in_errors in throwing validation exceptions" id="2.14.0-honor hide_input_in_errors in throwing validation exceptions">#</a></dt><dd><div class="changelog-change docutils container">
-<p>## Description</p>
-<p>Pydantic’s <cite>BaseModel</cite> supports configuration to hide data values when throwing exceptions, via setting <cite>hide_input_in_errors</cite> – see <a class="reference external" href="https://docs.pydantic.dev/2.0/api/config/#pydantic.config.ConfigDict.hide_input_in_errors">https://docs.pydantic.dev/2.0/api/config/#pydantic.config.ConfigDict.hide_input_in_errors</a> and <a class="reference external" href="https://docs.pydantic.dev/latest/usage/model_config/#hide-input-in-errors">https://docs.pydantic.dev/latest/usage/model_config/#hide-input-in-errors</a> (the value is also in 2.0, but not linkable in the non-<cite>latest</cite> version of the documentation build).</p>
-<p>At present, Litestar does not honor this configuration when generating exceptions for validation errors, which can lead to sensitive data leaking into logs.</p>
-<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3843">litestar-org/litestar#3843</a></span></p>
-</div>
-</dd>
-<dt>deprecate <cite>litestar.contrib.pydantic</cite><a class="headerlink reference internal" href="#2.14.0-deprecate" id="2.14.0-deprecate">#</a></dt><dd><div class="changelog-change docutils container">
-<p>This PR continues preparation for 3.0 by deprecating <cite>litestar.contrib.pydantic</cite> in favor of <cite>litestar.plugins.pydantic</cite></p>
-<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/3787">litestar-org/litestar#3787</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3852">litestar-org/litestar#3852</a></span></p>
-</div>
-</dd>
-<dt>move <cite>litestar.contrib.prometheus</cite> to <cite>litestar.plugins.prometheus</cite><a class="headerlink reference internal" href="#2.14.0-move" id="2.14.0-move">#</a></dt><dd><div class="changelog-change docutils container">
-<p>deprecate <cite>litestar.contrib.prometheus</cite> in favor of the new location of <cite>litestar.plugins.prometheus</cite></p>
+<dt>Deprecate <code class="docutils literal notranslate"><span class="pre">litestar.contrib.prometheus</span></code> in favour of  <code class="docutils literal notranslate"><span class="pre">litestar.plugins.prometheus</span></code><a class="headerlink reference internal" href="#2.14.0-deprecate" id="2.14.0-deprecate">#</a></dt><dd><div class="changelog-change docutils container">
+<p>The module <code class="docutils literal notranslate"><span class="pre">litestar.contrib.prometheus</span></code> has been moved to
+<code class="docutils literal notranslate"><span class="pre">litestar.plugins.prometheus</span></code>. <code class="docutils literal notranslate"><span class="pre">litestar.contrib.prometheus</span></code> will be
+deprecated in the next major version</p>
 <p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3863">litestar-org/litestar#3863</a></span></p>
 </div>
 </dd>
-<dt>move <cite>litestar.contrib.attrs</cite> to <cite>litestar.plugins.attrs</cite><a class="headerlink reference internal" href="#2.14.0-move" id="2.14.0-move">#</a></dt><dd><div class="changelog-change docutils container">
-<p>deprecate <cite>litestar.contrib.attrs</cite> in favor of the new location of <cite>litestar.plugins.attrs</cite></p>
+<dt>Deprecate <code class="docutils literal notranslate"><span class="pre">litestar.contrib.attrs</span></code> in favour of <code class="docutils literal notranslate"><span class="pre">litestar.plugins.attrs</span></code><a class="headerlink reference internal" href="#2.14.0-deprecate" id="2.14.0-deprecate">#</a></dt><dd><div class="changelog-change docutils container">
+<p>The module <code class="docutils literal notranslate"><span class="pre">litestar.contrib.attrs</span></code> has been moved to
+<code class="docutils literal notranslate"><span class="pre">litestar.plugins.attrs</span></code>. <code class="docutils literal notranslate"><span class="pre">litestar.contrib.attrs</span></code> will be
+deprecated in the next major version</p>
 <p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3862">litestar-org/litestar#3862</a></span></p>
 </div>
 </dd>
-<dt>add <cite>future</cite> flag to <cite>experimental_features</cite><a class="headerlink reference internal" href="#2.14.0-add" id="2.14.0-add">#</a></dt><dd><div class="changelog-change docutils container">
-<p>This adds a <cite>future</cite> flag to <cite>experimental_features</cite> to enable new features that may be otherwise considered breaking.</p>
-<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3864">litestar-org/litestar#3864</a></span></p>
-</div>
-</dd>
-<dt>Streaming multipart parser<a class="headerlink reference internal" href="#2.14.0-streaming multipart parser" id="2.14.0-streaming multipart parser">#</a></dt><dd><div class="changelog-change docutils container">
-<p>Add a streaming multipart parser via the [multipart](<a class="github reference external" href="https://github.com/defnull/multipart">defnull/multipart</a>) lib.</p>
-<p>This gives us:</p>
+<dt>Add a streaming multipart parser<a class="headerlink reference internal" href="#2.14.0-add a streaming multipart parser" id="2.14.0-add a streaming multipart parser">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Add a streaming multipart parser via the
+<a class="reference external" href="https://github.com/defnull/multipart">multipart</a> library</p>
+<p>This provides</p>
 <ul class="simple">
 <li><p>Ability to stream large / larger-than-memory file uploads</p></li>
 <li><p>Better / more correct edge case handling</p></li>
@@ -1844,40 +1569,34 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3872">litestar-org/litestar#3872</a></span></p>
 </div>
 </dd>
-<dt>upgrade minimum <cite>litestar-htmx</cite> version<a class="headerlink reference internal" href="#2.14.0-upgrade minimum" id="2.14.0-upgrade minimum">#</a></dt><dd><div class="changelog-change docutils container">
-<p>Pin minimum <cite>litestar-htmx</cite> version to align with latest exports.</p>
-<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/3868">litestar-org/litestar#3868</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3884">litestar-org/litestar#3884</a></span></p>
-</div>
-</dd>
-<dt>WebSocket send stream<a class="headerlink reference internal" href="#2.14.0-websocket send stream" id="2.14.0-websocket send stream">#</a></dt><dd><div class="changelog-change docutils container">
-<p>Add a new <cite>websocket_stream</cite> route handler that supports streaming data <em>to</em> a WebSocket via an async generator.</p>
+<dt>Add WebSocket send stream<a class="headerlink reference internal" href="#2.14.0-add websocket send stream" id="2.14.0-add websocket send stream">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Add a new <a class="reference internal" href="../reference/handlers.html#litestar.handlers.websocket_stream" title="litestar.handlers.websocket_stream"><code class="xref py py-func docutils literal notranslate"><span class="pre">websocket_stream()</span></code></a> route
+handler that supports streaming data <em>to</em> a WebSocket via an async generator.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@websocket_stream</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span> <span class="nf">handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">AsyncGenerator</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
     <span class="k">yield</span> <span class="nb">str</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">())</span>
     <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">.1</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>This is roughly equivalent to (with some edge case handling omitted):
-.. code-block:: python</p>
-<blockquote>
-<div><p>&#64;websocket(“/”)
-async def handler(socket: WebSocket) -&gt; None:
-await socket.accept()</p>
-<dl>
-<dt>try:</dt><dd><p>async with anyio.task_group() as tg:
-# ‘receive’ in the background to catch client disconnects
-tg.start_soon(socket.receive)</p>
-<dl class="simple">
-<dt>while True:</dt><dd><p>socket.send_text(str(time.time()))
-await asyncio.sleep(.1)</p>
-</dd>
-</dl>
-</dd>
-<dt>finally:</dt><dd><p>await socket.close()</p>
-</dd>
-</dl>
-</div></blockquote>
-<p>Just like the WebSocket listeners, it also supports dependency injection and serialization:</p>
+<p>This is roughly equivalent to (with some edge case handling omitted):</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@websocket</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">handler</span><span class="p">(</span><span class="n">socket</span><span class="p">:</span> <span class="n">WebSocket</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+  <span class="k">await</span> <span class="n">socket</span><span class="o">.</span><span class="n">accept</span><span class="p">()</span>
+
+  <span class="k">try</span><span class="p">:</span>
+    <span class="k">async</span> <span class="k">with</span> <span class="n">anyio</span><span class="o">.</span><span class="n">task_group</span><span class="p">()</span> <span class="k">as</span> <span class="n">tg</span><span class="p">:</span>
+      <span class="c1"># &#39;receive&#39; in the background to catch client disconnects</span>
+      <span class="n">tg</span><span class="o">.</span><span class="n">start_soon</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">receive</span><span class="p">)</span>
+
+      <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="n">socket</span><span class="o">.</span><span class="n">send_text</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()))</span>
+        <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">.1</span><span class="p">)</span>
+  <span class="k">finally</span><span class="p">:</span>
+    <span class="k">await</span> <span class="n">socket</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Just like the WebSocket listeners, it also supports dependency injection and
+serialization:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@dataclass</span>
 <span class="k">class</span> <span class="nc">Event</span><span class="p">:</span>
     <span class="n">time</span><span class="p">:</span> <span class="nb">float</span>
@@ -1894,52 +1613,57 @@ await asyncio.sleep(.1)</p>
     <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">.1</span><span class="p">)</span>
 </pre></div>
 </div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="../usage/websockets.html#websocket-streams"><span class="std std-ref">WebSocket Streams</span></a></p>
+</div>
 <p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3894">litestar-org/litestar#3894</a></span></p>
 </div>
 </dd>
-<dt>add query params to redirect response<a class="headerlink reference internal" href="#2.14.0-add query params to redirect response" id="2.14.0-add query params to redirect response">#</a></dt><dd><div class="changelog-change docutils container">
-<p>Closes <a class="github reference external" href="https://github.com/litestar-org/litestar/issues/3891">litestar-org/litestar#3891</a>.</p>
+<dt>Add query params to <code class="docutils literal notranslate"><span class="pre">Redirect</span></code><a class="headerlink reference internal" href="#2.14.0-add query params to" id="2.14.0-add query params to">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Add a <code class="docutils literal notranslate"><span class="pre">query_params</span></code> parameter to <a class="reference internal" href="../reference/response/index.html#litestar.response.Redirect" title="litestar.response.Redirect"><code class="xref py py-class docutils literal notranslate"><span class="pre">Redirect</span></code></a>, to
+supply query parameters for a redirect</p>
 <p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/3891">litestar-org/litestar#3891</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3901">litestar-org/litestar#3901</a></span></p>
 </div>
 </dd>
-<dt>add Valkey as a native store<a class="headerlink reference internal" href="#2.14.0-add valkey as a native store" id="2.14.0-add valkey as a native store">#</a></dt><dd><div class="changelog-change docutils container">
-<p>Adds Valkey as a native store alternative to Redis.
-Adds an optional Litestar install dependency: <cite>litestar[valkey]</cite> which installs <cite>valkey</cite> with <cite>libvalkey</cite> as an optimisation layer.</p>
+<dt>Add Valkey as a native store<a class="headerlink reference internal" href="#2.14.0-add valkey as a native store" id="2.14.0-add valkey as a native store">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Add a new <a class="reference internal" href="../reference/stores/valkey.html#litestar.stores.valkey.ValkeyStore" title="litestar.stores.valkey.ValkeyStore"><code class="xref py py-class docutils literal notranslate"><span class="pre">ValkeyStore</span></code></a>, which provides the same
+functionality as the <a class="reference internal" href="../reference/stores/redis.html#litestar.stores.redis.RedisStore" title="litestar.stores.redis.RedisStore"><code class="xref py py-class docutils literal notranslate"><span class="pre">RedisStore</span></code></a> but using valkey
+instead.</p>
+<p>The necessary dependencies can be installed with the <code class="docutils literal notranslate"><span class="pre">litestar[valkey]</span></code> extra,
+which includes <code class="docutils literal notranslate"><span class="pre">valkey</span></code> as well as <code class="docutils literal notranslate"><span class="pre">libvalkey</span></code> as an optimisation layer.</p>
 <p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3892">litestar-org/litestar#3892</a></span></p>
 </div>
 </dd>
-<dt>use “path” as an error message source<a class="headerlink reference internal" href="#2.14.0-use &quot;path&quot; as an error message source" id="2.14.0-use &quot;path&quot; as an error message source">#</a></dt><dd><div class="changelog-change docutils container">
-<p>Use “path” as the “source” property for an error message if the key is a path parameter</p>
-<p>Closes #3919</p>
+<dt>Correctly specify <code class="docutils literal notranslate"><span class="pre">&quot;path&quot;</span></code> as an error message source for validation errors<a class="headerlink reference internal" href="#2.14.0-correctly specify" id="2.14.0-correctly specify">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Use <code class="docutils literal notranslate"><span class="pre">&quot;path&quot;</span></code> as the <code class="docutils literal notranslate"><span class="pre">&quot;source&quot;</span></code> property of a validation error message if the
+key is a path parameter.</p>
 <p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/3919">litestar-org/litestar#3919</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3920">litestar-org/litestar#3920</a></span></p>
 </div>
 </dd>
-<dt>added subprocess test client<a class="headerlink reference internal" href="#2.14.0-added subprocess test client" id="2.14.0-added subprocess test client">#</a></dt><dd><div class="changelog-change docutils container">
-<p>This introduces new helper functions to create sync and async test clients that can be used to test SSE endpoints with infinite generators as outlined in #3654 and <a class="github reference external" href="https://github.com/orgs/litestar-org/discussions/3547">orgs/litestar-org#3547</a>.</p>
-<p>The litestar cli is run in a subprocess to start a web app instance with a random port. The helper function then sets up a basic sync or async client.</p>
-<p>The test code and doc example show how this can be used to test an SSE endpoint with an infinite generator.</p>
-<p>Overview:
-* Adds <cite>subprocess_async_client</cite> and <cite>subprocess_sync_client</cite>
-* Tests both clients
-* Adds general documentation. Adds docs example for <cite>subprocess_async_client</cite></p>
-<p>Closes #3654</p>
+<dt>Add subprocess test client<a class="headerlink reference internal" href="#2.14.0-add subprocess test client" id="2.14.0-add subprocess test client">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Add new <a class="reference internal" href="../reference/testing.html#litestar.testing.subprocess_async_client" title="litestar.testing.subprocess_async_client"><code class="xref py py-func docutils literal notranslate"><span class="pre">subprocess_async_client()</span></code></a> and <a class="reference internal" href="../reference/testing.html#litestar.testing.subprocess_sync_client" title="litestar.testing.subprocess_sync_client"><code class="xref py py-func docutils literal notranslate"><span class="pre">subprocess_sync_client()</span></code></a>,
+which can run an application in a new process, primarily for the purpose of
+end-to-end testing.</p>
+<p>The application will be run with <code class="docutils literal notranslate"><span class="pre">uvicorn</span></code>, which has to be installed separately or via the
+<code class="docutils literal notranslate"><span class="pre">litestar[standard]</span></code> group.</p>
 <p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/3654">litestar-org/litestar#3654</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3655">litestar-org/litestar#3655</a></span></p>
 </div>
 </dd>
-<dt>add support for Python 3.13<a class="headerlink reference internal" href="#2.14.0-add support for python 3.13" id="2.14.0-add support for python 3.13">#</a></dt><dd><div class="changelog-change docutils container">
-<p>This PR implements support for Python 3.13.</p>
-<p><strong>Note</strong>
-- Python 3.8 continues to be supported with the existing <cite>msgspec</cite> implementation, while all other versions prefer the pre-built litestar wheels.
-- There are no Python 3.13 prebuilt wheels for <cite>psycopg[binary]</cite>.  If you rely on this for development, you’ll need to have the postgres development libraries installed
-- <cite>picologging</cite> does not currently support Python 3.13.  These tests are skipped automatically.
-- uses an updated <cite>pytest-asyncio</cite>.  Once the branch has been merged upstream, we can remove this test dependency.
-- Running <cite>make install</cite> will still install using Python 3.12.  This is done to ensure we don’t get additional bug reports due to build dependencies missing.  If you want to use python 3.13, run <cite>uv sync –all-extras –dev –python 3.13</cite></p>
-<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3850">litestar-org/litestar#3850</a></span></p>
+<dt>Support for Python 3.13<a class="headerlink reference internal" href="#2.14.0-support for python 3.13" id="2.14.0-support for python 3.13">#</a></dt><dd><div class="changelog-change docutils container">
+<blockquote>
+<div><p>Support Python 3.13</p>
+</div></blockquote>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<ul class="simple">
+<li><p>There are no Python 3.13 prebuilt wheels for <code class="docutils literal notranslate"><span class="pre">psycopg[binary]</span></code>.  If you
+rely on this for development, you’ll need to have the postgres development
+libraries installed</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">picologging</span></code> does not currently support Python 3.13</p></li>
+</ul>
 </div>
-</dd>
-<dt>implement <cite>psycopg</cite> client installation for macos and windows<a class="headerlink reference internal" href="#2.14.0-implement" id="2.14.0-implement">#</a></dt><dd><div class="changelog-change docutils container">
-<p>this CI implements the necessary steps for installing psycopg in osx and windows environments.</p>
-<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3932">litestar-org/litestar#3932</a></span></p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3850">litestar-org/litestar#3850</a></span></p>
 </div>
 </dd>
 </dl>
@@ -1947,428 +1671,32 @@ Adds an optional Litestar install dependency: <cite>litestar[valkey]</cite> whic
 <section id="2.14.0-bugfix">
 <h3>Bugfixes<a class="headerlink" href="#2.14.0-bugfix" title="Permalink to this heading">#</a></h3>
 <dl>
-<dt>fixed typo in routing overview<a class="headerlink reference internal" href="#2.14.0-fixed typo in routing overview" id="2.14.0-fixed typo in routing overview">#</a></dt><dd><div class="changelog-change docutils container">
-<p>This PR fixes a typo in the routing overview section of the documentation.</p>
-<p>## Fixes
-Fixes #3550</p>
-<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/3550">litestar-org/litestar#3550</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3555">litestar-org/litestar#3555</a></span></p>
-</div>
-</dd>
-<dt>capture templated route name for metrics<a class="headerlink reference internal" href="#2.14.0-capture templated route name for metrics" id="2.14.0-capture templated route name for metrics">#</a></dt><dd><div class="changelog-change docutils container">
-<p>Adding new extraction function for prometheus metrics to avoid high cardinality issue in prometheus, eg having metrics GET /v1/users/{id} is preferable over GET /v1/users/1, GET /v1/users/2,GET /v1/users/3</p>
-<p>More info about prometheus high cardinality
-<a class="reference external" href="https://grafana.com/blog/2022/02/15/what-are-cardinality-spikes-and-why-do-they-matter/">https://grafana.com/blog/2022/02/15/what-are-cardinality-spikes-and-why-do-they-matter/</a></p>
-<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3533">litestar-org/litestar#3533</a></span></p>
-</div>
-</dd>
-<dt><cite>.websocket_connect</cite> does not respect <cite>base_url</cite><a class="headerlink reference internal" href="#2.14.0-.websocket_connect" id="2.14.0-.websocket_connect">#</a></dt><dd><div class="changelog-change docutils container">
-<p>Fix a bug that caused the <cite>.websocket_connect</cite> methods on <cite>TestClient</cite> and <cite>AsyncTestClient</cite> to not respect the <cite>base_url</cite> set in the client’s constructor, and instead would use the static <cite>ws://testserver</cite> URL as a base.</p>
-<p>Also removes most of the test client code as it was unneeded and in the way of this fix :)</p>
-<p>&lt;hr&gt;</p>
-<p>Explanation for the last part: All the extra code we had was just proxying method calls to the <cite>httpx.Client</cite> / <cite>httpx.AsyncClient</cite>, while altering the base URL. Since we already set the base URL on the httpx Client’s superclass instance, which in turn does this merging internally, this step isn’t needed at all.</p>
-<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3567">litestar-org/litestar#3567</a></span></p>
-</div>
-</dd>
-<dt>Do not warn for default handlers<a class="headerlink reference internal" href="#2.14.0-do not warn for default handlers" id="2.14.0-do not warn for default handlers">#</a></dt><dd><div class="changelog-change docutils container">
-<p>The warning being applied to the default handlers was unintended behavior due to subclassing. This PR establishes the intended behavior by defining separate __init_subclass__ methods for the default handlers.</p>
-<p>Closes #3552</p>
-<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/3552">litestar-org/litestar#3552</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3569">litestar-org/litestar#3569</a></span></p>
-</div>
-</dd>
-<dt>Don’t call <cite>rich_click.patch</cite> if <cite>rich_click</cite> is installed<a class="headerlink reference internal" href="#2.14.0-don't call" id="2.14.0-don't call">#</a></dt><dd><div class="changelog-change docutils container">
-<p>Fix #3534.</p>
-<p>Don’t call <cite>rich_click.patch</cite> if <cite>rich_click</cite> is installed, and instead use conditional imports to refer to the correct library. External libraries will still be able to make use of <cite>rich_click</cite> implicitly when it’s installed by inheriting from <cite>LitestarGroup</cite> / <cite>LitestarExtensionGroup</cite>, which they will by default.</p>
-<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/3534">litestar-org/litestar#3534</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3570">litestar-org/litestar#3570</a></span></p>
-</div>
-</dd>
-<dt>Correctly handle <cite>typing.NewType</cite><a class="headerlink reference internal" href="#2.14.0-correctly handle" id="2.14.0-correctly handle">#</a></dt><dd><div class="changelog-change docutils container">
-<p>When encountering a <cite>typing.NewType</cite> during OpenAPI schema generation, we currently treat it as an opaque type. This PR changes the behaviour such that <cite>typing.NewType`</cite> is always unwrapped during schema generation.</p>
-<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3580">litestar-org/litestar#3580</a></span></p>
-</div>
-</dd>
-<dt>encode response content object returned from an exception handler.<a class="headerlink reference internal" href="#2.14.0-encode response content object returned from an exception handler." id="2.14.0-encode response content object returned from an exception handler.">#</a></dt><dd><div class="changelog-change docutils container">
-<p>When an handler raises an exception and exception handler returns a Response with a model (e.g. pydantic) object, encode that object with the app type_encoders.</p>
-<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3585">litestar-org/litestar#3585</a></span></p>
-</div>
-</dd>
-<dt>Fix #3593: Ensure signature model internal function signatures don’t clash with model signature<a class="headerlink reference internal" href="#2.14.0-fix #3593: ensure signature model internal function signatures don't clash with model signature" id="2.14.0-fix #3593: ensure signature model internal function signatures don't clash with model signature">#</a></dt><dd><div class="changelog-change docutils container">
-<p>Fix #3593 by ensuring that the functions used by the signature model itself do not interfere with the signature model created.</p>
-<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/3593">litestar-org/litestar#3593</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3605">litestar-org/litestar#3605</a></span></p>
-</div>
-</dd>
-<dt>Correctly handle Annotated NewType<a class="headerlink reference internal" href="#2.14.0-correctly handle annotated newtype" id="2.14.0-correctly handle annotated newtype">#</a></dt><dd><div class="changelog-change docutils container">
-<p>Resolves infinite loop in schema generation when a model has an Annotated NewType.</p>
-<p>Fixes #3614</p>
-<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/3614">litestar-org/litestar#3614</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3615">litestar-org/litestar#3615</a></span></p>
-</div>
-</dd>
-<dt>use <cite>ASGIConnection</cite> instead of <cite>Request</cite> for <cite>flash</cite><a class="headerlink reference internal" href="#2.14.0-use" id="2.14.0-use">#</a></dt><dd><div class="changelog-change docutils container">
-<p>Currently, the <cite>FlashPlugin</cite> expects the <cite>request</cite> parameter to be a type of <cite>Request</cite>.  However, there’s no reason it can’t use the parent class <cite>ASGIConnection</cite>.</p>
-<p>Doing this, allows for flash to be called in guards that expect an <cite>ASGIConnection</cite> instead of <cite>Request</cite>:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">requires_active_user</span><span class="p">(</span><span class="n">connection</span><span class="p">:</span> <span class="n">ASGIConnection</span><span class="p">,</span> <span class="n">_</span><span class="p">:</span> <span class="n">BaseRouteHandler</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="k">if</span> <span class="n">connection</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">is_active</span><span class="p">:</span>
-        <span class="k">return</span>
-    <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;Your user account is inactive.&quot;</span>
-    <span class="n">flash</span><span class="p">(</span><span class="n">connection</span><span class="p">,</span> <span class="n">msg</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;error&quot;</span><span class="p">)</span>
-    <span class="k">raise</span> <span class="n">PermissionDeniedException</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3626">litestar-org/litestar#3626</a></span></p>
-</div>
-</dd>
-<dt>Allow returning <cite>Response[None]</cite> from head route handlers<a class="headerlink reference internal" href="#2.14.0-allow returning" id="2.14.0-allow returning">#</a></dt><dd><div class="changelog-change docutils container">
-<p>Fix a bug where the validation of the return annotation for the <cite>head</cite> route handler was too strict and would not allow returning a <cite>Response[None]</cite>.</p>
-<p>Fixes #3640.</p>
-<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/3640">litestar-org/litestar#3640</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3641">litestar-org/litestar#3641</a></span></p>
-</div>
-</dd>
-<dt>Fix creation of FormMultiDict in Request.form to properly handle multi-keys<a class="headerlink reference internal" href="#2.14.0-fix creation of formmultidict in request.form to properly handle multi-keys" id="2.14.0-fix creation of formmultidict in request.form to properly handle multi-keys">#</a></dt><dd><div class="changelog-change docutils container">
-<p>Fix #3627 by properly handling the creation of <cite>FormMultiDict</cite> where multiple values are given for a single key, to make <cite>Request.form()</cite> match the behaviour of receiving form data via the <cite>data</cite> kwarg.</p>
-<p><strong>Before</strong></p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
-<span class="k">async</span> <span class="k">def</span> <span class="nf">handler</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
-    <span class="k">return</span> <span class="p">(</span><span class="k">await</span> <span class="n">request</span><span class="o">.</span><span class="n">form</span><span class="p">())</span><span class="o">.</span><span class="n">getall</span><span class="p">(</span><span class="s2">&quot;foo&quot;</span><span class="p">)</span>
-
-<span class="k">with</span> <span class="n">create_test_client</span><span class="p">(</span><span class="n">handler</span><span class="p">)</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;foo&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;1&quot;</span><span class="p">,</span> <span class="s2">&quot;2&quot;</span><span class="p">]})</span><span class="o">.</span><span class="n">json</span><span class="p">())</span> <span class="c1"># [[&quot;1&quot;, &quot;2&quot;]]</span>
-</pre></div>
-</div>
-<p><strong>After</strong></p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
-<span class="k">async</span> <span class="k">def</span> <span class="nf">handler</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
-    <span class="k">return</span> <span class="p">(</span><span class="k">await</span> <span class="n">request</span><span class="o">.</span><span class="n">form</span><span class="p">())</span><span class="o">.</span><span class="n">getall</span><span class="p">(</span><span class="s2">&quot;foo&quot;</span><span class="p">)</span>
-
-<span class="k">with</span> <span class="n">create_test_client</span><span class="p">(</span><span class="n">handler</span><span class="p">)</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;foo&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;1&quot;</span><span class="p">,</span> <span class="s2">&quot;2&quot;</span><span class="p">]})</span><span class="o">.</span><span class="n">json</span><span class="p">())</span> <span class="c1"># [&quot;1&quot;, &quot;2&quot;]</span>
-</pre></div>
-</div>
-<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/3627">litestar-org/litestar#3627</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3639">litestar-org/litestar#3639</a></span></p>
-</div>
-</dd>
-<dt>Small docs update.<a class="headerlink reference internal" href="#2.14.0-small docs update." id="2.14.0-small docs update.">#</a></dt><dd><div class="changelog-change docutils container">
-<p>Starting from version 2, Pydantic uses <cite>model_validate()</cite> instead of <cite>parse_obj()</cite>.
-<a class="reference external" href="https://docs.pydantic.dev/2.8/migration/#changes-to-pydanticbasemodel">https://docs.pydantic.dev/2.8/migration/#changes-to-pydanticbasemodel</a></p>
-<p>I have updated 2 places in the docs where the old deprecated method is used.</p>
-<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3661">litestar-org/litestar#3661</a></span></p>
-</div>
-</dd>
-<dt>Inconsistent use of strict mode<a class="headerlink reference internal" href="#2.14.0-inconsistent use of strict mode" id="2.14.0-inconsistent use of strict mode">#</a></dt><dd><div class="changelog-change docutils container">
-<p>Fix inconsistent usage of msgspec’s <cite>strict</cite> mode in the base DTO backend.</p>
-<p><cite>strict=False</cite> was being used when transferring from builtins, while <cite>strict=True</cite> was used transferring from raw data, causing an unwanted discrepancy in behaviour,</p>
-<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3685">litestar-org/litestar#3685</a></span></p>
-</div>
-</dd>
-<dt>use path template for prometheus metrics<a class="headerlink reference internal" href="#2.14.0-use path template for prometheus metrics" id="2.14.0-use path template for prometheus metrics">#</a></dt><dd><div class="changelog-change docutils container">
-<p>I changed previous 1-by-1 replacement logic for <cite>PrometheusMiddleware.group_path=true</cite> with a more robust and slightly faster solution</p>
-<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3687">litestar-org/litestar#3687</a></span></p>
-</div>
-</dd>
-<dt>OpenTelemetry doesn’t capture exceptions in the outermost application layer<a class="headerlink reference internal" href="#2.14.0-opentelemetry doesn't capture exceptions in the outermost application layer" id="2.14.0-opentelemetry doesn't capture exceptions in the outermost application layer">#</a></dt><dd><div class="changelog-change docutils container">
-<p>Extend the work done in #3665. For description / discussion, check over there.</p>
-<p>Fixes #3663.</p>
-<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/3663">litestar-org/litestar#3663</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3689">litestar-org/litestar#3689</a></span></p>
-</div>
-</dd>
-<dt>updated sqlalchemy samples &amp; unpin <cite>advanced-alchemy</cite><a class="headerlink reference internal" href="#2.14.0-updated sqlalchemy samples &amp; unpin" id="2.14.0-updated sqlalchemy samples &amp; unpin">#</a></dt><dd><div class="changelog-change docutils container">
-<p>This does this following:
-- Uses <cite>litestar.plugins.sqlalchemy</cite> instead of the soon-to-be-deprecated <cite>litestar.contrib.sqlalchemy</cite>
-- Unpin Advanced Alchemy
-- Updated examples to use the plugins <cite>create_all</cite> functionality</p>
-<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3693">litestar-org/litestar#3693</a></span></p>
-</div>
-</dd>
-<dt>correct <code class="docutils literal notranslate"><span class="pre">module_to_os_path</span></code> to return directory paths<a class="headerlink reference internal" href="#2.14.0-correct" id="2.14.0-correct">#</a></dt><dd><div class="changelog-change docutils container">
-<p>To resolve the issue, we need to update the <cite>module_to_os_path</cite> function to check if the found path is a file. If it is, we should return the parent directory instead. This can be done by using <cite>Path(src.origin).parent</cite> if <cite>src.origin</cite> is a file.</p>
-<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3565">litestar-org/litestar#3565</a></span></p>
-</div>
-</dd>
-<dt>csrf middleware excluding router<a class="headerlink reference internal" href="#2.14.0-csrf middleware excluding router" id="2.14.0-csrf middleware excluding router">#</a></dt><dd><div class="changelog-change docutils container">
-<p>csrf middleware should skip router entirely on match exclude config</p>
-<p>Fixes #3688</p>
-<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/3688">litestar-org/litestar#3688</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3698">litestar-org/litestar#3698</a></span></p>
-</div>
-</dd>
-<dt>inconsistent behavior between <cite>signature_namespace</cite> and <cite>signature_types</cite><a class="headerlink reference internal" href="#2.14.0-inconsistent behavior between" id="2.14.0-inconsistent behavior between">#</a></dt><dd><div class="changelog-change docutils container">
-<p>Fix a bug where the <cite>signature_namespace</cite> and <cite>signature_types</cite> would not be correctly merged when using both in the same signature model.</p>
-<p>Fixes #3681</p>
-<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/3681">litestar-org/litestar#3681</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3696">litestar-org/litestar#3696</a></span></p>
-</div>
-</dd>
-<dt>Response with 401 on token payload validation<a class="headerlink reference internal" href="#2.14.0-response with 401 on token payload validation" id="2.14.0-response with 401 on token payload validation">#</a></dt><dd><div class="changelog-change docutils container">
-<p>Fix a bug introduced in #3692 that would cause a <cite>500</cite> status response to be returned when <cite>ValidationError</cite> was raised during the token payload conversion.</p>
-<p>This was caused by the switch to <cite>msgspec</cite> for converting the token payload after decoding and verification, and the lack of error handling for this case.</p>
-<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3705">litestar-org/litestar#3705</a></span></p>
-</div>
-</dd>
-<dt>the exclude pattern matching warned too much<a class="headerlink reference internal" href="#2.14.0-the exclude pattern matching warned too much" id="2.14.0-the exclude pattern matching warned too much">#</a></dt><dd><div class="changelog-change docutils container">
-<p>Includes updated tests using the exclusion of <cite>^/$</cite></p>
-<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3712">litestar-org/litestar#3712</a></span></p>
-</div>
-</dd>
-<dt>Correctly handle <cite>type</cite> keyword<a class="headerlink reference internal" href="#2.14.0-correctly handle" id="2.14.0-correctly handle">#</a></dt><dd><div class="changelog-change docutils container">
-<p>Correctly handle OpenAPI schema generation for type aliases generated with the <cite>type</cite> keyword.</p>
-<p>Fixes #3714.</p>
-<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/3714">litestar-org/litestar#3714</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3715">litestar-org/litestar#3715</a></span></p>
-</div>
-</dd>
-<dt>Fix dangling coroutines in request extraction handling cleanup<a class="headerlink reference internal" href="#2.14.0-fix dangling coroutines in request extraction handling cleanup" id="2.14.0-fix dangling coroutines in request extraction handling cleanup">#</a></dt><dd><div class="changelog-change docutils container">
-<p>Fix #3734.</p>
-<p>Ensure all data extractors are properly awaited by removing the delayed <cite>await</cite></p>
-<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/3734">litestar-org/litestar#3734</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3735">litestar-org/litestar#3735</a></span></p>
-</div>
-</dd>
-<dt><cite>httponly</cite> correction in CSRFMiddleware<a class="headerlink reference internal" href="#2.14.0-httponly" id="2.14.0-httponly">#</a></dt><dd><div class="changelog-change docutils container">
-<p>When <cite>httponly</cite> is <cite>True</cite>, it’s impossible to set the header.  This fix allows this configuration to correctly validate.</p>
-<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3739">litestar-org/litestar#3739</a></span></p>
-</div>
-</dd>
-<dt>handle invalid schema keys<a class="headerlink reference internal" href="#2.14.0-handle invalid schema keys" id="2.14.0-handle invalid schema keys">#</a></dt><dd><div class="changelog-change docutils container">
-<p>## Description
-This PR changes OpenAPI schema key generation function [<cite>_get_normalized_schema_key</cite>](<a class="github reference external" href="https://github.com/litestar-org/litestar/blob/8c4c15bb501879dabaecfbf0af541ac571c08cf3/litestar/_openapi/schema_generation/utils.py#L86">litestar-org/litestar</a>) to use valid characters according to the [OpenAPI specification](<a class="reference external" href="https://spec.openapis.org/oas/latest.html#fixed-fields-5">https://spec.openapis.org/oas/latest.html#fixed-fields-5</a>), section <cite>4.8.7.1</cite>.</p>
-<p>The strategy adopted by this PR was to replace sequences of invalid characters with underscores. Examples:
-- <cite>Foo[Bar]</cite> -&gt; <cite>Foo_Bar</cite>
-- <cite>dict[str, int]</cite> -&gt; <cite>dict_str_int_</cite></p>
-<p>Some tests had to be changed, because they were expecting the use of invalid characters (like square brackets, spaces and colons).</p>
-<p>## Closes
-Closes #3630</p>
-<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/3630">litestar-org/litestar#3630</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3635">litestar-org/litestar#3635</a></span></p>
-</div>
-</dd>
-<dt>Correctly handle <cite>msgspec.Struct</cite> tagged unions<a class="headerlink reference internal" href="#2.14.0-correctly handle" id="2.14.0-correctly handle">#</a></dt><dd><div class="changelog-change docutils container">
-<p>Fix a bug where we would not include the struct fields implicitly generated by msgspec for its [tagged union](<a class="reference external" href="https://jcristharif.com/msgspec/structs.html#tagged-unions">https://jcristharif.com/msgspec/structs.html#tagged-unions</a>) support.</p>
-<p>The change consists of an addition to the OpenAPI plugin where the tagged field will be added as a <cite>const</cite> to the schema.</p>
-<p>Fixes #3659.</p>
-<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/3659">litestar-org/litestar#3659</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3742">litestar-org/litestar#3742</a></span></p>
-</div>
-</dd>
-<dt><cite>httponly</cite> correction in CSRFMiddleware<a class="headerlink reference internal" href="#2.14.0-httponly" id="2.14.0-httponly">#</a></dt><dd><div class="changelog-change docutils container">
-<p>Reverts litestar-org/litestar#3739</p>
-<p>This is an incorrect usage of the protocol.  The correct approach is to embed the csrf token within the form or template itself, so that it can be attached to the header.</p>
-<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3743">litestar-org/litestar#3743</a></span></p>
-</div>
-</dd>
-<dt>Don’t require annotated_types<a class="headerlink reference internal" href="#2.14.0-don't require annotated_types" id="2.14.0-don't require annotated_types">#</a></dt><dd><div class="changelog-change docutils container">
-<p>Fix a bug introduced in #3721 that was released with [2.12.0](<a class="github reference external" href="https://github.com/litestar-org/litestar/releases/tag/v2.12.0">litestar-org/litestar</a>) and would cause an <cite>ImportError</cite> when the <cite>annotated_types</cite> package was not installed.</p>
-<p>Fixes #3749</p>
-<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/3749">litestar-org/litestar#3749</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3750">litestar-org/litestar#3750</a></span></p>
-</div>
-</dd>
-<dt>(typo) changed emphasis from line 12 to 11 to highlight the correct plugin being added in tutorial<a class="headerlink reference internal" href="#2.14.0-(typo) changed emphasis from line 12 to 11 to highlight the correct plugin being added in tutorial" id="2.14.0-(typo) changed emphasis from line 12 to 11 to highlight the correct plugin being added in tutorial">#</a></dt><dd><div class="changelog-change docutils container">
-<p>Tiny fix in line numbers to emphasis SQLAlchemyInitPlugin and not SQLAlchemySerializationPlugin is being added in this section of the tutorial.</p>
-<p>SQLAlchemySerializationPlugin is currently being highlighted which was the plugin shown in the previous section and is not being added here.</p>
-<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3768">litestar-org/litestar#3768</a></span></p>
-</div>
-</dd>
-<dt>sign bug in rate limit middleware<a class="headerlink reference internal" href="#2.14.0-sign bug in rate limit middleware" id="2.14.0-sign bug in rate limit middleware">#</a></dt><dd><div class="changelog-change docutils container">
-<p>When using the rate limit middleware, the response header fields <cite>RateLimit-Remaining</cite> and <cite>RateLimit-Reset</cite> have negative values. This branch fixes the issue.</p>
-<p>This might be a breaking change for consumers of an API implemented with litestar.</p>
-<p>I split the PR into four commits which might make it easier to review this PR.</p>
-<p>Side note: Initially my commits didn’t follow the conventional commits guidelines, but pre-commit didn’t complain. See point 6 in <a class="github reference external" href="https://github.com/litestar-org/litestar/blob/main/CONTRIBUTING.rst#workflow">litestar-org/litestar</a>
-Is this a bug in the pre-commit setup?</p>
-<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3776">litestar-org/litestar#3776</a></span></p>
-</div>
-</dd>
-<dt>map JSONSchema spec naming convention to snake_case when names from schema_extra are not found (#3766)<a class="headerlink reference internal" href="#2.14.0-map jsonschema spec naming convention to snake_case when names from schema_extra are not found (#3766)" id="2.14.0-map jsonschema spec naming convention to snake_case when names from schema_extra are not found (#3766)">#</a></dt><dd><div class="changelog-change docutils container">
-<p>Map JSONSchema spec naming convention to snake_case when names from schema_extra are not found when property names from schema_extra are not found.</p>
-<p>## Description</p>
-<p>Address rejection of <cite>schema_extra</cite> values using JSONSchema spec-compliant key names by mapping between the relevant naming conventions.</p>
-<p>Fixes #3766</p>
-<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/3766">litestar-org/litestar#3766</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3767">litestar-org/litestar#3767</a></span></p>
-</div>
-</dd>
-<dt>typo in a deprecation warning in <cite>contrib/sqlalchemy/plugins/serialization.py</cite><a class="headerlink reference internal" href="#2.14.0-typo in a deprecation warning in" id="2.14.0-typo in a deprecation warning in">#</a></dt><dd><div class="changelog-change docutils container">
-<p>Typo correction.</p>
-<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3809">litestar-org/litestar#3809</a></span></p>
-</div>
-</dd>
-<dt>fix path template for routes without path parameters<a class="headerlink reference internal" href="#2.14.0-fix path template for routes without path parameters" id="2.14.0-fix path template for routes without path parameters">#</a></dt><dd><div class="changelog-change docutils container">
-<p>When <cite>PrometheusConfig.group_path=True</cite> the metrics exporter response content ignores all paths with no path parameters.</p>
-<ul>
-<li><p>Example for path <cite>/test/litestar</cite> when <cite>group_path=True</cite></p>
-<blockquote>
-<div><p>&gt; litestar_request_duration_seconds_bucket{app_name=”litestar”,le=”0.075”,method=”GET”,path=””,status_code=”200”} 1.0</p>
-</div></blockquote>
-</li>
-<li><p>Example for path <cite>/test/litestar</cite> when <cite>group_path=False</cite></p>
-<blockquote>
-<div><p>&gt; litestar_request_duration_seconds_bucket{app_name=”litestar”,le=”2.5”,method=”GET”,path=”/test/litestar”,status_code=”200”} 1.0</p>
-</div></blockquote>
-</li>
-</ul>
-<p>So, when the path has no params return the actual path as template so Prometheus can use it when <cite>group_path=True</cite>.</p>
-<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3784">litestar-org/litestar#3784</a></span></p>
-</div>
-</dd>
-<dt>LifespanHandler memory stream cleanup<a class="headerlink reference internal" href="#2.14.0-lifespanhandler memory stream cleanup" id="2.14.0-lifespanhandler memory stream cleanup">#</a></dt><dd><div class="changelog-change docutils container">
-<p>Fix a dangling anyio stream in <cite>LifespanHandler</cite>.</p>
-<p>Closes #3834.</p>
-<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/3834">litestar-org/litestar#3834</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3836">litestar-org/litestar#3836</a></span></p>
-</div>
-</dd>
-<dt>set correct path_template value for trie node (#3806)<a class="headerlink reference internal" href="#2.14.0-set correct path_template value for trie node (#3806)" id="2.14.0-set correct path_template value for trie node (#3806)">#</a></dt><dd><div class="changelog-change docutils container">
-<p>Closes #3806</p>
-<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/3806">litestar-org/litestar#3806</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3807">litestar-org/litestar#3807</a></span></p>
-</div>
-</dd>
-<dt>Safe Handling of “more_body” in ASGI Responses<a class="headerlink reference internal" href="#2.14.0-safe handling of &quot;more_body&quot; in asgi responses" id="2.14.0-safe handling of &quot;more_body&quot; in asgi responses">#</a></dt><dd><div class="changelog-change docutils container">
-<p>## Safe Access to “More Body”</p>
-<p>I’ve encountered an issue in sqladmin-litestar-plugin where some ASGI frameworks (such as Starlette) do not include “more_body”: false in the “http.response.body” event. According to the ASGI specification, this key should be set to False when there is no additional body content. Litestar expects “more_body” to be explicitly defined, but others might not.</p>
-<p>This leads to failures when an ASGI framework mounted on Litestar throws error for the “more_body” key in “http.response.body”.</p>
-<p>I have changed it to <cite>message.get(‘more_body’)</cite> as &#64;cofin suggests.</p>
-<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3845">litestar-org/litestar#3845</a></span></p>
-</div>
-</dd>
-<dt>Duplicate <cite>RateLimit-*</cite> headers with caching<a class="headerlink reference internal" href="#2.14.0-duplicate" id="2.14.0-duplicate">#</a></dt><dd><div class="changelog-change docutils container">
-<p>Fixes <a class="github reference external" href="https://github.com/litestar-org/litestar/issues/3625">litestar-org/litestar#3625</a></p>
-<p><cite>RateLimitMiddleware</cite> duplicate all <cite>RateLimit-*</cite> headers when handler cache is enabled because it’s adding new rate limit headers to the new ones, instead of just updating their values.</p>
-<p>### Response header before
-.. code-block:: sh</p>
-<blockquote>
-<div><p>❯ curl -i <a class="reference external" href="http://localhost:8000/">http://localhost:8000/</a>
-HTTP/1.1 200 OK
-date: Tue, 12 Nov 2024 06:50:18 GMT
-server: uvicorn
-content-type: text/plain; charset=utf-8
-content-length: 2
-ratelimit-policy: 10; w=60
-ratelimit-limit: 10
-ratelimit-remaining: -8
-ratelimit-reset: -54
-ratelimit-policy: 10; w=60
-ratelimit-limit: 10
-ratelimit-remaining: 0
-ratelimit-reset: -49</p>
-</div></blockquote>
-<p>### Response headers after
-.. code-block:: sh</p>
-<blockquote>
-<div><p>❯ curl -i <a class="reference external" href="http://localhost:8000/">http://localhost:8000/</a>
-HTTP/1.1 200 OK
-date: Tue, 12 Nov 2024 06:50:18 GMT
-server: uvicorn
-content-type: text/plain; charset=utf-8
-content-length: 2
-ratelimit-policy: 10; w=60
-ratelimit-limit: 10
-ratelimit-remaining: 0
-ratelimit-reset: -49</p>
-</div></blockquote>
-<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/3625">litestar-org/litestar#3625</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3855">litestar-org/litestar#3855</a></span></p>
-</div>
-</dd>
-<dt>Fix typing in websocket listener class<a class="headerlink reference internal" href="#2.14.0-fix typing in websocket listener class" id="2.14.0-fix typing in websocket listener class">#</a></dt><dd><div class="changelog-change docutils container">
-<p>Fixes #3763</p>
-<p>It seems that declaring the actual method is the only way to comply with <cite>mypy</cite> in such cases.
-There is a <cite>ruff</cite> rule that forbids empty methods in abstract classes, had to disable that for the relevant module.</p>
-<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/3763">litestar-org/litestar#3763</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3765">litestar-org/litestar#3765</a></span></p>
-</div>
-</dd>
-<dt>remove optional group for <cite>litestar-htmx</cite><a class="headerlink reference internal" href="#2.14.0-remove optional group for" id="2.14.0-remove optional group for">#</a></dt><dd><div class="changelog-change docutils container">
-<p>This PR removes the optional <cite>htmx</cite> group for the project dependencies.  HTMX is a built in feature and is not optional.</p>
-<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3870">litestar-org/litestar#3870</a></span></p>
-</div>
-</dd>
-<dt>Add moved URL types to type map<a class="headerlink reference internal" href="#2.14.0-add moved url types to type map" id="2.14.0-add moved url types to type map">#</a></dt><dd><div class="changelog-change docutils container">
-<p>Pydantic <cite>&gt;=2.10</cite> breaks because of the way we reference some types in our OpenAPI type map. This can be fixed by including the proper references. This fix is backwards compatible :)</p>
-<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3874">litestar-org/litestar#3874</a></span></p>
-</div>
-</dd>
-<dt>patching of otel middleware to work with subclasses<a class="headerlink reference internal" href="#2.14.0-patching of otel middleware to work with subclasses" id="2.14.0-patching of otel middleware to work with subclasses">#</a></dt><dd><div class="changelog-change docutils container">
-<p>This should allow workarounds like OpenTelemetrySingletonMiddleware from <a class="github reference external" href="https://github.com/litestar-org/litestar/issues/3056">litestar-org/litestar#3056</a>
-to work with the patching applied in <a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3689">litestar-org/litestar#3689</a></p>
-<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3876">litestar-org/litestar#3876</a></span></p>
-</div>
-</dd>
-<dt>Pin PDM version for 3.8<a class="headerlink reference internal" href="#2.14.0-pin pdm version for 3.8" id="2.14.0-pin pdm version for 3.8">#</a></dt><dd><div class="changelog-change docutils container">
-<ul class="simple">
-<li><p>[PDM dropped support for 3.8](<a class="github reference external" href="https://github.com/pdm-project/pdm/pull/3298">pdm-project/pdm#3298</a>) in their [latest release](<a class="github reference external" href="https://github.com/pdm-project/pdm/releases/tag/2.21.0">pdm-project/pdm</a>)</p></li>
-<li><p>Pinning 3.8 actions to the latest PDM version that supports it (2.20.1)</p></li>
-</ul>
-<p>Ref: [<cite>ERROR: Ignored the following versions that require a different python version: 2.21.0 Requires-Python &gt;=3.9</cite>](<a class="github reference external" href="https://github.com/litestar-org/litestar/actions/runs/12017810790/job/33553416399?pr=3525">litestar-org/litestar</a>)</p>
-<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3878">litestar-org/litestar#3878</a></span></p>
-</div>
-</dd>
-<dt>update Makefile<a class="headerlink reference internal" href="#2.14.0-update makefile" id="2.14.0-update makefile">#</a></dt><dd><div class="changelog-change docutils container">
-<p>Various updates to the Makefile:</p>
-<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3880">litestar-org/litestar#3880</a></span></p>
-</div>
-</dd>
-<dt>Replace PDM with UV<a class="headerlink reference internal" href="#2.14.0-replace pdm with uv" id="2.14.0-replace pdm with uv">#</a></dt><dd><div class="changelog-change docutils container">
-<p>~~Obviously next is Poetry 2 (&#64;Kumzy )~~</p>
-<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3879">litestar-org/litestar#3879</a></span></p>
-</div>
-</dd>
-<dt>resource warnings<a class="headerlink reference internal" href="#2.14.0-resource warnings" id="2.14.0-resource warnings">#</a></dt><dd><div class="changelog-change docutils container">
-<p>## Description</p>
-<ul class="simple">
-<li><p>Fix <cite>ResourceWarning</cite> from unclosed <cite>UploadFile</cite> instances</p></li>
-<li><p>Fix <cite>ResourceWarning</cite> in <cite>run_server</cite> fixture</p></li>
-<li><p>Report all warnings as errors unless explicitly silenced</p></li>
-</ul>
-<p>Closes #3835</p>
-<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/3835">litestar-org/litestar#3835</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3838">litestar-org/litestar#3838</a></span></p>
-</div>
-</dd>
-<dt>Enum OAS generation (#3518)<a class="headerlink reference internal" href="#2.14.0-enum oas generation (#3518)" id="2.14.0-enum oas generation (#3518)">#</a></dt><dd><div class="changelog-change docutils container">
-<p>Changes described here #3518</p>
-<p>Closes #3518</p>
+<dt>OpenAPI: Always generate refs for enums<a class="headerlink reference internal" href="#2.14.0-openapi: always generate refs for enums" id="2.14.0-openapi: always generate refs for enums">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Ensure that enums always generate a schema reference instead of being inlined</p>
 <p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/3518">litestar-org/litestar#3518</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3525">litestar-org/litestar#3525</a></span></p>
 </div>
 </dd>
-<dt>typo in exception message for ImproperlyConfiguredException<a class="headerlink reference internal" href="#2.14.0-typo in exception message for improperlyconfiguredexception" id="2.14.0-typo in exception message for improperlyconfiguredexception">#</a></dt><dd><div class="changelog-change docutils container">
-<p>Corrected the exception message from “Provider dependency must a callable value” to “Provider dependency must be a callable value”. This ensures clarity and proper grammar in error messages.</p>
-<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3885">litestar-org/litestar#3885</a></span></p>
-</div>
-</dd>
-<dt>Support varying <cite>mtime</cite> semantics across different fsspec implementations<a class="headerlink reference internal" href="#2.14.0-support varying" id="2.14.0-support varying">#</a></dt><dd><div class="changelog-change docutils container">
-<p>Change the implementation of <cite>responses.File</cite> to be able to handle most fsspec implementation’s <cite>mtime</cite> equivalent.</p>
-<p>This is necessary because fsspec implementations do not have a standardised way to retrieve an <cite>mtime</cite> equivalent; Some report an <cite>mtime</cite>, while some may use a different key (e.g. <cite>Last-Modified</cite>) and others do not report this value at all.</p>
-<p>Fixes #3899</p>
+<dt>Support varying <code class="docutils literal notranslate"><span class="pre">mtime</span></code> semantics across different fsspec implementations<a class="headerlink reference internal" href="#2.14.0-support varying" id="2.14.0-support varying">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Change the implementation of <a class="reference internal" href="../reference/response/index.html#litestar.response.File" title="litestar.response.File"><code class="xref py py-class docutils literal notranslate"><span class="pre">File</span></code></a> to be able to
+handle most fsspec implementation’s <code class="docutils literal notranslate"><span class="pre">mtime</span></code> equivalent.</p>
+<p>This is necessary because fsspec implementations do not have a standardised way
+to retrieve an <code class="docutils literal notranslate"><span class="pre">mtime</span></code> equivalent; Some report an <code class="docutils literal notranslate"><span class="pre">mtime</span></code>, while some may
+use a different key (e.g. <code class="docutils literal notranslate"><span class="pre">Last-Modified</span></code>) and others do not report this value
+at all.</p>
 <p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/3899">litestar-org/litestar#3899</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3902">litestar-org/litestar#3902</a></span></p>
 </div>
 </dd>
-<dt>Query-only properties included in path, cookie and header parameter schema and response headers (#3908)<a class="headerlink reference internal" href="#2.14.0-query-only properties included in path, cookie and header parameter schema and response headers (#3908)" id="2.14.0-query-only properties included in path, cookie and header parameter schema and response headers (#3908)">#</a></dt><dd><div class="changelog-change docutils container">
-<p>Remove the inclusion of the query-only properties <cite>allowEmptyValue</cite> and <cite>allowReserved</cite> in path, cookie, header parameter and response header schemas.</p>
-<p>Fixes #3908</p>
+<dt>OpenAPI: Ensure query-only properties are only included in queries<a class="headerlink reference internal" href="#2.14.0-openapi: ensure query-only properties are only included in queries" id="2.14.0-openapi: ensure query-only properties are only included in queries">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Remove the inclusion of the query-only properties <code class="docutils literal notranslate"><span class="pre">allowEmptyValue</span></code>
+and <code class="docutils literal notranslate"><span class="pre">allowReserved</span></code> in path, cookie, header parameter and response header
+schemas</p>
 <p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/3908">litestar-org/litestar#3908</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3909">litestar-org/litestar#3909</a></span></p>
 </div>
 </dd>
-<dt>updates to documentation based on upstream changes<a class="headerlink reference internal" href="#2.14.0-updates to documentation based on upstream changes" id="2.14.0-updates to documentation based on upstream changes">#</a></dt><dd><div class="changelog-change docutils container">
-<p>This PR updates the SQLAlchemy examples and documentation to align with current AA best practices.</p>
-<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3917">litestar-org/litestar#3917</a></span></p>
-</div>
-</dd>
-<dt>better handle unsupported environments<a class="headerlink reference internal" href="#2.14.0-better handle unsupported environments" id="2.14.0-better handle unsupported environments">#</a></dt><dd><div class="changelog-change docutils container">
-<p>Picologging does not currently support Python 3.13.  This change proactively adds updates to ensure tests work when picologging is not supported in the python environment.</p>
-<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3918">litestar-org/litestar#3918</a></span></p>
-</div>
-</dd>
-<dt>use <cite>SQL</cite> function for <cite>psycopg</cite><a class="headerlink reference internal" href="#2.14.0-use" id="2.14.0-use">#</a></dt><dd><div class="changelog-change docutils container">
-<p>This PR updates the channels backend to use the native psycopg <cite>SQL</cite> API.</p>
-<p>Additionally, it preemptively fixes some new warnings from upcoming pyright and ruff changes</p>
+<dt>Channels: Use <code class="docutils literal notranslate"><span class="pre">SQL</span></code> function for in psycopg backend<a class="headerlink reference internal" href="#2.14.0-channels: use" id="2.14.0-channels: use">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Update the <a class="reference internal" href="../reference/channels/backends/psycopg.html#litestar.channels.backends.psycopg.PsycoPgChannelsBackend" title="litestar.channels.backends.psycopg.PsycoPgChannelsBackend"><code class="xref py py-class docutils literal notranslate"><span class="pre">PsycoPgChannelsBackend</span></code></a>
+backend to use the native psycopg <code class="docutils literal notranslate"><span class="pre">SQL</span></code> API</p>
 <p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3916">litestar-org/litestar#3916</a></span></p>
-</div>
-</dd>
-<dt>Fix resource handling<a class="headerlink reference internal" href="#2.14.0-fix resource handling" id="2.14.0-fix resource handling">#</a></dt><dd><div class="changelog-change docutils container">
-<p>Fix a few cases where we didn’t close resources in the right order, leading to either “unclosed resource” or “I/O on closed file” warnings</p>
-<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3927">litestar-org/litestar#3927</a></span></p>
-</div>
-</dd>
-<dt>only install dev tools in ubuntu<a class="headerlink reference internal" href="#2.14.0-only install dev tools in ubuntu" id="2.14.0-only install dev tools in ubuntu">#</a></dt><dd><div class="changelog-change docutils container">
-<p>Only install dev tools in ubuntu.  This corrects an issues that caused the install to fail in other environments.</p>
-<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3931">litestar-org/litestar#3931</a></span></p>
-</div>
-</dd>
-</dl>
-</section>
-<section id="2.14.0-misc">
-<h3>Other changes<a class="headerlink" href="#2.14.0-misc" title="Permalink to this heading">#</a></h3>
-<dl>
-<dt>add OPTIONS to the default safe methods for CSRFConfig
- :type: bugfix
- :pr: 3538<a class="headerlink reference internal" href="#2.14.0-add options to the default safe methods for csrfconfig :type: bugfix :pr: 3538" id="2.14.0-add options to the default safe methods for csrfconfig :type: bugfix :pr: 3538">#</a></dt><dd><div class="changelog-change docutils container">
-<p>Correction to the default safe methods for CSRFConfig to include OPTIONS.</p>
-<p>References: </p>
 </div>
 </dd>
 </dl>
@@ -2665,8 +1993,8 @@ data contains fields not defined on the model.</p>
 <p>For Pydantic models with <a class="reference external" href="https://docs.pydantic.dev/latest/api/config/#pydantic.config.ConfigDict.extra">extra=”forbid”</a>
 in their configuration:</p>
 <div class="sd-tab-set docutils">
-<input checked="checked" id="sd-tab-item-2" name="sd-tab-set-1" type="radio">
-</input><label class="sd-tab-label" for="sd-tab-item-2">
+<input checked="checked" id="sd-tab-item-0" name="sd-tab-set-0" type="radio">
+</input><label class="sd-tab-label" for="sd-tab-item-0">
 Pydantic 2</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">User</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
     <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">extra</span><span class="o">=</span><span class="s1">&#39;ignore&#39;</span><span class="p">)</span>
@@ -2674,8 +2002,8 @@ Pydantic 2</label><div class="sd-tab-content docutils">
 </pre></div>
 </div>
 </div>
-<input id="sd-tab-item-3" name="sd-tab-set-1" type="radio">
-</input><label class="sd-tab-label" for="sd-tab-item-3">
+<input id="sd-tab-item-1" name="sd-tab-set-0" type="radio">
+</input><label class="sd-tab-label" for="sd-tab-item-1">
 Pydantic 1</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">User</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
     <span class="k">class</span> <span class="nc">Config</span><span class="p">:</span>
@@ -2710,8 +2038,8 @@ by the JWT backends decode the payload into.</p>
 class</p></li>
 </ul>
 <div class="sd-tab-set docutils">
-<input id="sd-tab-item-4" name="sd-tab-set-2" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-4">
+<input id="sd-tab-item-2" name="sd-tab-set-1" type="radio">
+</input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-2">
 Python 3.8+</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">dataclasses</span>
 <span class="kn">import</span> <span class="nn">secrets</span>
@@ -2746,8 +2074,8 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 </pre></div>
 </div>
 </div>
-<input checked="checked" id="sd-tab-item-5" name="sd-tab-set-2" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.9" for="sd-tab-item-5">
+<input checked="checked" id="sd-tab-item-3" name="sd-tab-set-1" type="radio">
+</input><label class="sd-tab-label" data-sync-id="3.9" for="sd-tab-item-3">
 Python 3.9+</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">dataclasses</span>
 <span class="kn">import</span> <span class="nn">secrets</span>
@@ -4849,8 +4177,8 @@ an error response</p>
 <p>OpenAPI schemas are now correctly generated when a response type annotation
 contains a generic type such as</p>
 <div class="sd-tab-set docutils">
-<input id="sd-tab-item-6" name="sd-tab-set-3" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-6">
+<input id="sd-tab-item-4" name="sd-tab-set-2" type="radio">
+</input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-4">
 Python 3.8+</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">msgspec</span> <span class="kn">import</span> <span class="n">Struct</span>
 <span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">get</span><span class="p">,</span> <span class="n">Response</span>
@@ -4872,8 +4200,8 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 </pre></div>
 </div>
 </div>
-<input checked="checked" id="sd-tab-item-7" name="sd-tab-set-3" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.10" for="sd-tab-item-7">
+<input checked="checked" id="sd-tab-item-5" name="sd-tab-set-2" type="radio">
+</input><label class="sd-tab-label" data-sync-id="3.10" for="sd-tab-item-5">
 Python 3.10+</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">msgspec</span> <span class="kn">import</span> <span class="n">Struct</span>
 <span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">get</span><span class="p">,</span> <span class="n">Response</span>
@@ -6214,8 +5542,8 @@ natively encode</p></li>
 can otherwise manage</p></li>
 </ul>
 <div class="sd-tab-set docutils">
-<input id="sd-tab-item-8" name="sd-tab-set-4" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-8">
+<input id="sd-tab-item-6" name="sd-tab-set-3" type="radio">
+</input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-6">
 Python 3.8+</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Generic</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">TypeVar</span>
@@ -6257,8 +5585,8 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 </pre></div>
 </div>
 </div>
-<input checked="checked" id="sd-tab-item-9" name="sd-tab-set-4" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.9" for="sd-tab-item-9">
+<input checked="checked" id="sd-tab-item-7" name="sd-tab-set-3" type="radio">
+</input><label class="sd-tab-label" data-sync-id="3.9" for="sd-tab-item-7">
 Python 3.9+</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Generic</span><span class="p">,</span> <span class="n">TypeVar</span>
@@ -7594,7 +6922,6 @@ the time it takes to <code class="docutils literal notranslate"><span class="pre
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#2.14.0">2.14.0</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#2.14.0-feature">Features</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#2.14.0-bugfix">Bugfixes</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#2.14.0-misc">Other changes</a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#2.13.0">2.13.0</a><ul class="visible nav section-nav flex-column">
