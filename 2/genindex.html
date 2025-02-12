@@ -31,7 +31,7 @@
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
     <link rel="stylesheet" type="text/css" href="_static/sphinx_paramlinks.css" />
-    <link rel="stylesheet" type="text/css" href="_static/style.css?v=1d4867fe" />
+    <link rel="stylesheet" type="text/css" href="_static/style.css?v=b5051ef4" />
     <link rel="stylesheet" type="text/css" href="_static/litestar-sphinx-theme.css?v=9e3812bb" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
@@ -2862,10 +2862,10 @@ document.write(`
         <li><a href="reference/typing.html#litestar.typing.FieldDefinition.from_kwarg.params.annotation">(litestar.typing.FieldDefinition.from_kwarg parameter)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/openapi/spec.html#litestar.openapi.spec.Schema.any_of">any_of (litestar.openapi.spec.Schema attribute)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/types.html#litestar.types.AnyCallable">AnyCallable (in module litestar.types)</a>
 </li>
       <li><a href="reference/types.html#litestar.types.AnyIOBackend">AnyIOBackend (in module litestar.types)</a>
@@ -2874,6 +2874,8 @@ document.write(`
 
       <ul>
         <li><a href="reference/contrib/opentelemetry.html#litestar.contrib.opentelemetry.OpenTelemetryInstrumentationMiddleware.params.app">(litestar.contrib.opentelemetry.OpenTelemetryInstrumentationMiddleware parameter)</a>
+</li>
+        <li><a href="reference/handlers.html#litestar.handlers.ASGIRouteHandler.on_registration.params.app">(litestar.handlers.ASGIRouteHandler.on_registration parameter)</a>
 </li>
         <li><a href="reference/handlers.html#litestar.handlers.BaseRouteHandler.on_registration.params.app">(litestar.handlers.BaseRouteHandler.on_registration parameter)</a>
 </li>
@@ -3226,6 +3228,10 @@ document.write(`
 </li>
       <li><a href="reference/background_tasks.html#litestar.background_tasks.BackgroundTasks">BackgroundTasks (class in litestar.background_tasks)</a>
 </li>
+      <li><a href="usage/channels.html#term-backoff"><strong>backoff</strong></a>
+</li>
+      <li><a href="usage/channels.html#term-backpressure"><strong>backpressure</strong></a>
+</li>
       <li><a href="reference/connection.html#litestar.connection.ASGIConnection.base_url">base_url (litestar.connection.ASGIConnection property)</a>
 
       <ul>
@@ -3471,6 +3477,8 @@ document.write(`
 </li>
       </ul></li>
       <li><a href="reference/channels/backends/redis.html#litestar.channels.backends.redis.RedisChannelsStreamBackend.params.cap_streams_approximate">cap_streams_approximate (litestar.channels.backends.redis.RedisChannelsStreamBackend parameter)</a>
+</li>
+      <li><a href="usage/channels.html#term-channel"><strong>channel</strong></a>
 </li>
       <li><a href="reference/channels/backends/memory.html#litestar.channels.backends.memory.MemoryChannelsBackend.publish.params.channels">channels (litestar.channels.backends.memory.MemoryChannelsBackend.publish parameter)</a>
 
@@ -3962,6 +3970,8 @@ document.write(`
         <li><a href="reference/datastructures/index.html#litestar.datastructures.State.copy">(litestar.datastructures.State method)</a>
 </li>
       </ul></li>
+      <li><a href="reference/handlers.html#litestar.handlers.ASGIRouteHandler.params.copy_scope">copy_scope (litestar.handlers.ASGIRouteHandler parameter)</a>
+</li>
       <li><a href="reference/app.html#litestar.app.Litestar.params.cors_config">cors_config (litestar.app.Litestar parameter)</a>
 
       <ul>
@@ -4912,6 +4922,8 @@ document.write(`
       </ul></li>
       <li><a href="reference/events.html#litestar.events.EventListener">EventListener (class in litestar.events)</a>
 </li>
+      <li><a href="usage/channels.html#term-eviction"><strong>eviction</strong></a>
+</li>
       <li><a href="reference/openapi/spec.html#litestar.openapi.spec.Example">Example (class in litestar.openapi.spec)</a>
 </li>
       <li><a href="reference/datastructures/index.html#litestar.datastructures.ResponseHeader.example">example (litestar.datastructures.ResponseHeader attribute)</a>
@@ -5380,6 +5392,8 @@ document.write(`
 <h2 id="F">F</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="usage/channels.html#term-fanout"><strong>fanout</strong></a>
+</li>
       <li><a href="reference/types.html#litestar.types.Logger.fatal">fatal() (litestar.types.Logger method)</a>
 </li>
       <li><a href="reference/openapi/openapi.html#litestar.openapi.OpenAPIController.favicon">favicon (litestar.openapi.OpenAPIController property)</a>
@@ -5588,9 +5602,11 @@ document.write(`
 </li>
       <li><a href="reference/typing.html#litestar.typing.FieldDefinition.from_parameter">from_parameter() (litestar.typing.FieldDefinition class method)</a>
 </li>
-      <li><a href="reference/datastructures/index.html#litestar.datastructures.Headers.from_scope">from_scope() (litestar.datastructures.Headers class method)</a>
+      <li><a href="reference/app.html#litestar.app.Litestar.from_scope">from_scope() (litestar.app.Litestar class method)</a>
 
       <ul>
+        <li><a href="reference/datastructures/index.html#litestar.datastructures.Headers.from_scope">(litestar.datastructures.Headers class method)</a>
+</li>
         <li><a href="reference/datastructures/index.html#litestar.datastructures.URL.from_scope">(litestar.datastructures.URL class method)</a>
 </li>
       </ul></li>
@@ -6066,9 +6082,11 @@ document.write(`
         <li><a href="reference/testing.html#litestar.testing.TestClient.websocket_connect.params.headers">(litestar.testing.TestClient.websocket_connect parameter)</a>
 </li>
       </ul></li>
-      <li><a href="reference/channels/backends/redis.html#litestar.channels.backends.redis.RedisChannelsStreamBackend.params.history">history (litestar.channels.backends.redis.RedisChannelsStreamBackend parameter)</a>
+      <li><a href="usage/channels.html#term-history"><strong>history</strong></a>
 
       <ul>
+        <li><a href="reference/channels/backends/redis.html#litestar.channels.backends.redis.RedisChannelsStreamBackend.params.history">(litestar.channels.backends.redis.RedisChannelsStreamBackend parameter)</a>
+</li>
         <li><a href="reference/channels/plugin.html#litestar.channels.plugin.ChannelsPlugin.start_subscription.params.history">(litestar.channels.plugin.ChannelsPlugin.start_subscription parameter)</a>
 </li>
         <li><a href="reference/channels/plugin.html#litestar.channels.plugin.ChannelsPlugin.subscribe.params.history">(litestar.channels.plugin.ChannelsPlugin.subscribe parameter)</a>
@@ -8601,9 +8619,11 @@ document.write(`
 </li>
       <li><a href="reference/handlers.html#litestar.handlers.WebsocketListener.on_receive">on_receive() (litestar.handlers.WebsocketListener method)</a>
 </li>
-      <li><a href="reference/handlers.html#litestar.handlers.BaseRouteHandler.on_registration">on_registration() (litestar.handlers.BaseRouteHandler method)</a>
+      <li><a href="reference/handlers.html#litestar.handlers.ASGIRouteHandler.on_registration">on_registration() (litestar.handlers.ASGIRouteHandler method)</a>
 
       <ul>
+        <li><a href="reference/handlers.html#litestar.handlers.BaseRouteHandler.on_registration">(litestar.handlers.BaseRouteHandler method)</a>
+</li>
         <li><a href="reference/handlers.html#litestar.handlers.HTTPRouteHandler.on_registration">(litestar.handlers.HTTPRouteHandler method)</a>
 </li>
       </ul></li>
@@ -9821,8 +9841,6 @@ document.write(`
         <li><a href="reference/security/jwt.html#litestar.security.jwt.Token.decode.params.require_claims">(litestar.security.jwt.Token.decode parameter)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/datastructures/index.html#litestar.datastructures.ResponseHeader.required">required (litestar.datastructures.ResponseHeader attribute)</a>
 
       <ul>
@@ -9839,6 +9857,8 @@ document.write(`
         <li><a href="reference/params.html#litestar.params.ParameterKwarg.required">(litestar.params.ParameterKwarg attribute)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/handlers.html#litestar.handlers.HTTPRouteHandler.resolve_after_response">resolve_after_response() (litestar.handlers.HTTPRouteHandler method)</a>
 </li>
       <li><a href="reference/handlers.html#litestar.handlers.HTTPRouteHandler.resolve_before_request">resolve_before_request() (litestar.handlers.HTTPRouteHandler method)</a>
@@ -10169,6 +10189,20 @@ document.write(`
         <li><a href="reference/testing.html#litestar.testing.create_async_test_client.params.return_dto">(litestar.testing.create_async_test_client parameter)</a>
 </li>
         <li><a href="reference/testing.html#litestar.testing.create_test_client.params.return_dto">(litestar.testing.create_test_client parameter)</a>
+</li>
+      </ul></li>
+      <li><a href="reference/security/jwt.html#litestar.security.jwt.BaseJWTAuth.revoked_token_handler">revoked_token_handler (litestar.security.jwt.BaseJWTAuth attribute)</a>
+
+      <ul>
+        <li><a href="reference/security/jwt.html#litestar.security.jwt.JWTAuth.revoked_token_handler">(litestar.security.jwt.JWTAuth attribute)</a>
+</li>
+        <li><a href="reference/security/jwt.html#litestar.security.jwt.JWTAuthenticationMiddleware.params.revoked_token_handler">(litestar.security.jwt.JWTAuthenticationMiddleware parameter)</a>
+</li>
+        <li><a href="reference/security/jwt.html#litestar.security.jwt.JWTCookieAuth.revoked_token_handler">(litestar.security.jwt.JWTCookieAuth attribute)</a>
+</li>
+        <li><a href="reference/security/jwt.html#litestar.security.jwt.JWTCookieAuthenticationMiddleware.params.revoked_token_handler">(litestar.security.jwt.JWTCookieAuthenticationMiddleware parameter)</a>
+</li>
+        <li><a href="reference/security/jwt.html#litestar.security.jwt.OAuth2PasswordBearerAuth.revoked_token_handler">(litestar.security.jwt.OAuth2PasswordBearerAuth attribute)</a>
 </li>
       </ul></li>
       <li>
@@ -10839,10 +10873,10 @@ document.write(`
       </ul></li>
       <li><a href="reference/concurrency.html#litestar.concurrency.set_asyncio_executor">set_asyncio_executor() (in module litestar.concurrency)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/middleware/rate_limit.html#litestar.middleware.rate_limit.RateLimitMiddleware.set_cached_history">set_cached_history() (litestar.middleware.rate_limit.RateLimitMiddleware method)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/response/base.html#litestar.response.base.Response.set_cookie">set_cookie() (litestar.response.base.Response method)</a>
 
       <ul>
@@ -11324,6 +11358,8 @@ document.write(`
       <li><a href="reference/channels/plugin.html#litestar.channels.plugin.ChannelsPlugin.params.subscriber_class">subscriber_class (litestar.channels.plugin.ChannelsPlugin parameter)</a>
 </li>
       <li><a href="reference/channels/plugin.html#litestar.channels.plugin.ChannelsPlugin.params.subscriber_max_backlog">subscriber_max_backlog (litestar.channels.plugin.ChannelsPlugin parameter)</a>
+</li>
+      <li><a href="usage/channels.html#term-subscription"><strong>subscription</strong></a>
 </li>
       <li><a href="reference/handlers.html#litestar.handlers.delete.params.summary">summary (litestar.handlers.delete parameter)</a>
 
@@ -12411,7 +12447,7 @@ document.write(`
 
   <p class="copyright">
     
-      © Copyright 2024, Litestar-Org.
+      © Copyright 2025, Litestar-Org.
       <br/>
     
   </p>

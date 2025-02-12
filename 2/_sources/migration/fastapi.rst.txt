@@ -174,8 +174,272 @@ and to easily access dependencies from higher levels.
 
     * :doc:`/usage/dependency-injection`
 
+Lifespan
+~~~~~~~~
+
+If you're using an async context manager and pass parameters to it, most likely the order of parameters is inversed between FastAPI and Litestar.
+
+.. tab-set::
+
+    .. tab-item:: FastAPI
+        :sync: fastapi
+
+        .. code-block:: python
+
+            @asynccontextmanager
+            async def lifespan(
+                _app: FastAPI,
+                app_settings: AppSettings,
+            ):
+                # Setup code here
+                yield
+                # Teardown code here
+
+    .. tab-item:: Litestar
+        :sync: litestar
+
+        .. code-block:: python
+
+            @asynccontextmanager
+            async def lifespan(
+                app_settings: AppSettings,
+                _app: Litestar,
+            ):
+                # Setup code here
+                yield
+                # Teardown code here
+
+
+Cookies
+~~~~~~~
+
+While with FastAPI you usually set cookies on the response ``Response`` object, in Litestar there are two options: At the decorator level, using the ``response_cookies`` keyword argument, or dynamically at the response level (see: :ref:`Setting Cookies dynamically <usage/responses:setting cookies dynamically>`)
+
+.. tab-set::
+
+    .. tab-item:: FastAPI
+        :sync: fastapi
+
+        .. code-block:: python
+
+            @app.get("/")
+            async def index(response: Response) -> dict[str, str]:
+                response.set_cookie(key="my_cookie", value="cookie_value")
+                ...
+
+    .. tab-item:: Litestar
+        :sync: litestar
+
+        .. code-block:: python
+
+            @get(response_cookies={"my-cookie": "cookie-value"})
+            async def handler() -> str:
+                ...
+
+
+Dependencies parameters
+~~~~~~~~~~~~~~~~~~~~~~~
+The way dependencies parameters are passed differs between FastAPI and Litestar, note the `state: State` parameter in the Litestar example.
+You can get the state either with the state kwarg in the handler or ``request.state`` (which point to the same object, a request local state, inherited from the application's state), or via `request.app.state`, the application's state.
+
+.. tab-set::
+
+    .. tab-item:: FastAPI
+        :sync: fastapi
+
+        .. code-block:: python
+
+            from fastapi import Request
+
+            async def get_arqredis(request: Request) -> ArqRedis:
+                return request.state.arqredis
+
+    .. tab-item:: Litestar
+        :sync: litestar
+
+        .. code-block:: python
+
+            from litestar import State
+
+            async def get_arqredis(state: State) -> ArqRedis:
+                return state.arqredis
+
+Post json
+~~~~~~~~~
+
+In FastAPI, you pass the JSON object directly as a parameter to the endpoint, which will then be validated by Pydantic. In Litestar, you use the `data` keyword argument. The data will be parsed and validated by the associated modelling library.
+
+.. tab-set::
+
+    .. tab-item:: FastAPI
+        :sync: fastapi
+
+        .. code-block:: python
+
+
+            class ObjectType(BaseModel):
+                name: str
+
+            @app.post("/items/")
+            async def create_item(object_name: ObjectType) -> dict[str, str]:
+                return {"name": object_name.name}
+
+    .. tab-item:: Litestar
+        :sync: litestar
+
+        .. code-block:: python
+
+            from litestar import Litestar, post
+            from pydantic import BaseModel
+
+            class ObjectType(BaseModel):
+                name: str
+
+            @post("/items/")
+            async def create_item(data: ObjectType) -> dict[str, str]:
+                return {"name": data.name}
+
+
+Default status codes
+~~~~~~~~~~~~~~~~~~~~
+
+Post defaults to 200 in FastApi and 201 in Litestar.
+
+Templates
+~~~~~~~~~
+
+In FastAPI, you use `TemplateResponse` to render templates. In Litestar, you use the `Template` class.
+Also FastAPI let you pass a dictionary while in Litestar you need to explicitly pass the context kwarg.
+
+.. tab-set::
+
+    .. tab-item:: FastAPI
+        :sync: fastapi
+
+        .. code-block:: python
+
+            @app.get("/uploads")
+            async def get_uploads(request: Request):
+                return templates.TemplateResponse(
+                    "uploads.html", {"request": request, "debug": app.state.debug}
+                )
+
+    .. tab-item:: Litestar
+        :sync: litestar
+
+        .. code-block:: python
+
+            @get("/uploads")
+            async def get_uploads(app_settings) -> Template:
+                return Template(
+                    name="uploads.html", context={"debug": app_settings.debug}
+                )
+
+Default handler names
+~~~~~~~~~~~~~~~~~~~~~~~
+
+In FastAPI, the handler name defaults to the local name of the function. In Litestar, you need to explicitly declare the `name` parameter in the route decorator. This is important when using e.g. `url_for`.
+
+.. tab-set::
+
+    .. tab-item:: FastAPI
+        :sync: fastapi
+
+        .. code-block:: python
+
+            @app.get("/blabla")
+            async def blabla() -> str:
+                return "Blabla"
+        .. code-block:: html
+
+            <a href="{{ url_for('blabla') }}">Blabla</a>
+
+    .. tab-item:: Litestar
+        :sync: litestar
+
+        .. code-block:: python
+
+            @get(path="/blabla", name="blabla")
+            async def blabla() -> str:
+                return "Blabla"
+
+        .. code-block:: html
+
+            <a href="{{ url_for('blabla') }}">Blabla</a>
+
+Uploads
+~~~~~~~
+
+In FastAPI, you use the `File` class to handle file uploads. In Litestar, you use the `data` keyword argument with `Body` and specify the `media_type` as `RequestEncodingType.MULTI_PART`.
+While this is more verbose, it's also more explicit and communicates the intent more clearly.
+
+.. tab-set::
+
+    .. tab-item:: FastAPI
+        :sync: fastapi
+
+        .. code-block:: python
+
+            @app.post("/upload/")
+            async def upload_file(files: list[UploadFile] = File(...)) -> dict[str, str]:
+                return {"file_names": [file.filename for file in files]}
+
+    .. tab-item:: Litestar
+        :sync: litestar
+
+        .. code-block:: python
+
+            @post("/upload/")
+            async def upload_file(data: Annotated[list[UploadFile], Body(media_type=RequestEncodingType.MULTI_PART)]) -> dict[str, str]:
+                return {"file_names": [file.filename for file in data]}
+
+            app = Litestar([upload_file])
+
+
+Exceptions signature
+~~~~~~~~~~~~~~~~~~~~
+
+In FastAPI, status code and exception details can be passed to `HTTPException` as positional arguments, while in Litestar they are set with keywords arguments, e.g. `status_code`. Positional arguments to `HTTPException` in Litestar will be added to the exception detail.
+If migrating you just change your HTTPException import this will break.
+
+.. tab-set::
+
+    .. tab-item:: FastAPI
+        :sync: fastapi
+
+        .. code-block:: python
+
+            from fastapi import FastAPI, HTTPException
+
+            app = FastAPI()
+
+            @app.get("/")
+            async def index() -> None:
+                response_fields = {"array": "value"}
+                raise HTTPException(
+                    400, detail=f"can't get that field: {response_fields.get('array')}"
+                )
+
+    .. tab-item:: Litestar
+        :sync: litestar
+
+        .. code-block:: python
+
+            from litestar import Litestar, get
+            from litestar.exceptions import HTTPException
+
+            @get("/")
+            async def index() -> None:
+                response_fields = {"array": "value"}
+                raise HTTPException(
+                    status_code=400, detail=f"can't get that field: {response_fields.get('array')}"
+                )
+
+            app = Litestar([index])
+
+
 Authentication
-^^^^^^^^^^^^^^
+~~~~~~~~~~~~~~
 
 FastAPI promotes a pattern of using dependency injection for authentication. You can do the same in Litestar, but the
 preferred way of handling this is extending :doc:`/usage/security/abstract-authentication-middleware`.
@@ -224,7 +488,7 @@ preferred way of handling this is extending :doc:`/usage/security/abstract-authe
     * :doc:`/usage/security/index`
 
 Dependency overrides
-^^^^^^^^^^^^^^^^^^^^
+~~~~~~~~~~~~~~~~~~~~
 
 While FastAPI includes a mechanism to override dependencies on an existing application object,
 Litestar promotes architectural solutions to the issue this is aimed to solve. Therefore, overriding

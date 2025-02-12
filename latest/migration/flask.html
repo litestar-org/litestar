@@ -32,7 +32,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx_paramlinks.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/style.css?v=1d4867fe" />
+    <link rel="stylesheet" type="text/css" href="../_static/style.css?v=b5051ef4" />
     <link rel="stylesheet" type="text/css" href="../_static/litestar-sphinx-theme.css?v=9e3812bb" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
@@ -1750,13 +1750,13 @@ Litestar</label><div class="sd-tab-content docutils">
 <td><p><code class="docutils literal notranslate"><span class="pre">request.scope</span></code></p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">request.files</span></code></p></td>
-<td><p>Use <code class="docutils literal notranslate"><span class="pre">`UploadFile</span></code> &lt;usage/requests/file-uploads&gt;`__</p></td>
+<td><p>Use <code class="docutils literal notranslate"><span class="pre">UploadFile</span></code> see in <a class="reference internal" href="../usage/requests.html"><span class="doc">Requests</span></a></p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">request.form</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">request.form()</span></code>, prefer <code class="docutils literal notranslate"><span class="pre">`Body</span></code> &lt;usage/requests/content-type&gt;`__</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">request.form()</span></code>, prefer <code class="docutils literal notranslate"><span class="pre">Body</span></code> see in <a class="reference internal" href="../usage/requests.html"><span class="doc">Requests</span></a></p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">request.get_json</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">request.json()</span></code>, prefer the <code class="docutils literal notranslate"><span class="pre">`data</span> <span class="pre">keyword</span> <span class="pre">argument</span></code> &lt;usage/requests/request-body&gt;`__</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">request.json()</span></code>, prefer the <code class="docutils literal notranslate"><span class="pre">data</span></code> keyword argument, see in <a class="reference internal" href="../usage/requests.html"><span class="doc">Requests</span></a></p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">request.headers</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">request.headers</span></code></p></td>
@@ -1851,11 +1851,11 @@ Litestar</label><div class="sd-tab-content docutils">
 will automatically serve files from a <code class="docutils literal notranslate"><span class="pre">static</span></code> folder, this has to be configured explicitly
 in Litestar.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span>
-<span class="kn">from</span> <span class="nn">litestar.static_files</span> <span class="kn">import</span> <span class="n">StaticFilesConfig</span>
+<span class="kn">from</span> <span class="nn">litestar.static_files</span> <span class="kn">import</span> <span class="n">create_static_files_router</span>
 
-<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
-    <span class="p">[],</span> <span class="n">static_files_config</span><span class="o">=</span><span class="p">[</span><span class="n">StaticFilesConfig</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/static&quot;</span><span class="p">,</span> <span class="n">directories</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;static&quot;</span><span class="p">])]</span>
-<span class="p">)</span>
+ <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span> <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span>
+     <span class="n">create_static_files_router</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/static&quot;</span><span class="p">,</span> <span class="n">directories</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;assets&quot;</span><span class="p">]),</span>
+ <span class="p">])</span>
 </pre></div>
 </div>
 <div class="admonition seealso">
@@ -2016,7 +2016,7 @@ Litestar</label><div class="sd-tab-content docutils">
 
 <span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/hello&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">hello</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Redirect</span><span class="p">:</span>
-    <span class="k">return</span> <span class="n">Redirect</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;index&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">Redirect</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
 
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">([</span><span class="n">index</span><span class="p">,</span> <span class="n">hello</span><span class="p">])</span>
@@ -2299,7 +2299,7 @@ Litestar</label><div class="sd-tab-content docutils">
 
   <p class="copyright">
     
-      © Copyright 2024, Litestar-Org.
+      © Copyright 2025, Litestar-Org.
       <br/>
     
   </p>

@@ -32,7 +32,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx_paramlinks.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/style.css?v=1d4867fe" />
+    <link rel="stylesheet" type="text/css" href="../_static/style.css?v=b5051ef4" />
     <link rel="stylesheet" type="text/css" href="../_static/litestar-sphinx-theme.css?v=9e3812bb" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
@@ -1773,10 +1773,10 @@ is accessible.</p>
 <p><a class="reference internal" href="../reference/app.html#litestar.app.Litestar.params.state" title="litestar.app.Litestar"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">state</span></code></a> is one of the
 <a class="reference internal" href="routing/handlers.html#reserved-keyword-arguments"><span class="std std-ref">reserved keyword arguments</span></a>.</p>
 <p>It is important to understand in this context that the application instance is injected into the ASGI <code class="docutils literal notranslate"><span class="pre">scope</span></code> mapping
-for each connection (i.e. request or websocket connection) as <code class="docutils literal notranslate"><span class="pre">scope[&quot;app&quot;]</span></code>. This makes the application
-accessible wherever the scope mapping is available, e.g. in middleware, on <a class="reference internal" href="../reference/connection.html#litestar.connection.Request" title="litestar.connection.request.Request"><code class="xref py py-class docutils literal notranslate"><span class="pre">Request</span></code></a> and
-<a class="reference internal" href="../reference/connection.html#litestar.connection.WebSocket" title="litestar.connection.websocket.WebSocket"><code class="xref py py-class docutils literal notranslate"><span class="pre">WebSocket</span></code></a> instances (accessible as <code class="docutils literal notranslate"><span class="pre">request.app</span></code> / <code class="docutils literal notranslate"><span class="pre">socket.app</span></code>), and many
-other places.</p>
+for each connection (i.e. request or websocket connection) as <code class="docutils literal notranslate"><span class="pre">scope[&quot;litestar_app&quot;]</span></code>, and can be retrieved using
+<a class="reference internal" href="../reference/app.html#litestar.app.Litestar.from_scope" title="litestar.app.Litestar.from_scope"><code class="xref py py-meth docutils literal notranslate"><span class="pre">from_scope()</span></code></a>. This makes the application accessible wherever the scope mapping is available,
+e.g. in middleware, on <a class="reference internal" href="../reference/connection.html#litestar.connection.Request" title="litestar.connection.request.Request"><code class="xref py py-class docutils literal notranslate"><span class="pre">Request</span></code></a> and <a class="reference internal" href="../reference/connection.html#litestar.connection.WebSocket" title="litestar.connection.websocket.WebSocket"><code class="xref py py-class docutils literal notranslate"><span class="pre">WebSocket</span></code></a> instances
+(accessible as <code class="docutils literal notranslate"><span class="pre">request.app</span></code> / <code class="docutils literal notranslate"><span class="pre">socket.app</span></code>), and many other places.</p>
 <p>Therefore, <a class="reference internal" href="../reference/app.html#litestar.app.Litestar.params.state" title="litestar.app.Litestar"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">state</span></code></a> offers an easy way to share contextual data between disparate parts
 of the application, as seen below:</p>
 <div class="literal-block-wrapper docutils container" id="id10">
@@ -1803,7 +1803,7 @@ of the application, as seen below:</p>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;A middleware can access application state via `scope`.&quot;&quot;&quot;</span>
 
     <span class="k">async</span> <span class="k">def</span> <span class="nf">my_middleware</span><span class="p">(</span><span class="n">scope</span><span class="p">:</span> <span class="s2">&quot;Scope&quot;</span><span class="p">,</span> <span class="n">receive</span><span class="p">:</span> <span class="s2">&quot;Receive&quot;</span><span class="p">,</span> <span class="n">send</span><span class="p">:</span> <span class="s2">&quot;Send&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">state</span> <span class="o">=</span> <span class="n">scope</span><span class="p">[</span><span class="s2">&quot;app&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">state</span>
+        <span class="n">state</span> <span class="o">=</span> <span class="n">Litestar</span><span class="o">.</span><span class="n">from_scope</span><span class="p">(</span><span class="n">scope</span><span class="p">)</span><span class="o">.</span><span class="n">state</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;state value in middleware: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">state</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
         <span class="k">await</span> <span class="n">app</span><span class="p">(</span><span class="n">scope</span><span class="p">,</span> <span class="n">receive</span><span class="p">,</span> <span class="n">send</span><span class="p">)</span>
 
@@ -1995,7 +1995,7 @@ the <code class="docutils literal notranslate"><span class="pre">exception</span
 
 <span class="k">async</span> <span class="k">def</span> <span class="nf">after_exception_handler</span><span class="p">(</span><span class="n">exc</span><span class="p">:</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">scope</span><span class="p">:</span> <span class="s2">&quot;Scope&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Hook function that will be invoked after each exception.&quot;&quot;&quot;</span>
-    <span class="n">state</span> <span class="o">=</span> <span class="n">scope</span><span class="p">[</span><span class="s2">&quot;app&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">state</span>
+    <span class="n">state</span> <span class="o">=</span> <span class="n">Litestar</span><span class="o">.</span><span class="n">from_scope</span><span class="p">(</span><span class="n">scope</span><span class="p">)</span><span class="o">.</span><span class="n">state</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="s2">&quot;error_count&quot;</span><span class="p">):</span>
         <span class="n">state</span><span class="o">.</span><span class="n">error_count</span> <span class="o">=</span> <span class="mi">1</span>
     <span class="k">else</span><span class="p">:</span>
@@ -2051,7 +2051,7 @@ sent. The hook receives the message instance and the ASGI <code class="docutils 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">message</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;http.response.start&quot;</span><span class="p">:</span>
         <span class="n">headers</span> <span class="o">=</span> <span class="n">MutableScopeHeaders</span><span class="o">.</span><span class="n">from_message</span><span class="p">(</span><span class="n">message</span><span class="o">=</span><span class="n">message</span><span class="p">)</span>
-        <span class="n">headers</span><span class="p">[</span><span class="s2">&quot;My Header&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">scope</span><span class="p">[</span><span class="s2">&quot;app&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">message</span>
+        <span class="n">headers</span><span class="p">[</span><span class="s2">&quot;My Header&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Litestar</span><span class="o">.</span><span class="n">from_scope</span><span class="p">(</span><span class="n">scope</span><span class="p">)</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">message</span>
 
 
 <span class="k">def</span> <span class="nf">on_startup</span><span class="p">(</span><span class="n">app</span><span class="p">:</span> <span class="n">Litestar</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -2236,7 +2236,7 @@ overriding of parameters.</p>
 
   <p class="copyright">
     
-      © Copyright 2024, Litestar-Org.
+      © Copyright 2025, Litestar-Org.
       <br/>
     
   </p>

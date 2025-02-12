@@ -32,7 +32,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx_paramlinks.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/style.css?v=1d4867fe" />
+    <link rel="stylesheet" type="text/css" href="../_static/style.css?v=b5051ef4" />
     <link rel="stylesheet" type="text/css" href="../_static/litestar-sphinx-theme.css?v=9e3812bb" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
@@ -1558,46 +1558,85 @@ clients.</p>
 <ol class="arabic simple">
 <li><p>Independent <a class="reference internal" href="#term-broker"><span class="xref std std-term">broker</span></a> backends, optionally handling inter-process communication
 and data persistence on demand</p></li>
-<li><p>“Channel” based subscription management</p></li>
+<li><p>“Channel” based <a class="reference internal" href="#term-subscription"><span class="xref std std-term">subscription</span></a> management</p></li>
 <li><p>Subscriber objects as an abstraction over an individualized <a class="reference internal" href="#term-event-stream"><span class="xref std std-term">event stream</span></a>,
 providing background workers and managed subscriptions</p></li>
 <li><p>Synchronous and asynchronous data publishing</p></li>
-<li><p>Optional history management on a per-channel basis</p></li>
+<li><p>Optional <a class="reference internal" href="#term-history"><span class="xref std std-term">history</span></a> management on a per-<a class="reference internal" href="#term-channel"><span class="xref std std-term">channel</span></a> basis</p></li>
 <li><p><a class="reference internal" href="websockets.html"><span class="doc">WebSocket</span></a> integration, generating WebSocket route
-handlers for an application, to handle the subscription and publishing of incoming
+handlers for an application, to handle the <a class="reference internal" href="#term-subscription"><span class="xref std std-term">subscription</span></a> and publishing of incoming
 events to the connected client</p></li>
 </ol>
 <section id="basic-concepts">
 <h2>Basic concepts<a class="headerlink" href="#basic-concepts" title="Permalink to this heading">#</a></h2>
-<p>Utilizing channels involves a few moving parts, of which the most important ones are:</p>
+<p>Utilizing Channels involves a few moving parts. To better familiarize with the concepts,
+terminology, and the flow of data, the following glossary and flowcharts are provided</p>
+<section id="glossary">
+<h3>Glossary<a class="headerlink" href="#glossary" title="Permalink to this heading">#</a></h3>
+<details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
+<summary class="sd-summary-title sd-card-header">
+Click to expand glossary<div class="sd-summary-down docutils">
+<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-down" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M5.22 8.72a.75.75 0 000 1.06l6.25 6.25a.75.75 0 001.06 0l6.25-6.25a.75.75 0 00-1.06-1.06L12 14.44 6.28 8.72a.75.75 0 00-1.06 0z"></path></svg></div>
+<div class="sd-summary-up docutils">
+<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-up" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M18.78 15.28a.75.75 0 000-1.06l-6.25-6.25a.75.75 0 00-1.06 0l-6.25 6.25a.75.75 0 101.06 1.06L12 9.56l5.72 5.72a.75.75 0 001.06 0z"></path></svg></div>
+</summary><div class="sd-summary-content sd-card-body docutils">
 <dl class="simple glossary">
-<dt id="term-event">event<a class="headerlink" href="#term-event" title="Permalink to this term">#</a></dt><dd><p>A single piece of data published to, or received from a <a class="reference internal" href="#term-backend"><span class="xref std std-term">backend</span></a> bound
-to the channel it was originally published to</p>
+<dt id="term-event">event<a class="headerlink" href="#term-event" title="Permalink to this term">#</a></dt><dd><p class="sd-card-text">A single piece of data published to, or received from a <a class="reference internal" href="#term-backend"><span class="xref std std-term">backend</span></a> bound
+to the <a class="reference internal" href="#term-channel"><span class="xref std std-term">channel</span></a> it was originally published to</p>
 </dd>
-<dt id="term-event-stream">event stream<a class="headerlink" href="#term-event-stream" title="Permalink to this term">#</a></dt><dd><p>A stream of <a class="reference internal" href="#term-event"><span class="xref std std-term">events</span></a>, consisting of events from all the channels a
+<dt id="term-event-stream">event stream<a class="headerlink" href="#term-event-stream" title="Permalink to this term">#</a></dt><dd><p class="sd-card-text">A stream of <a class="reference internal" href="#term-event"><span class="xref std std-term">events</span></a>, consisting of events from all the channels a
 <a class="reference internal" href="#term-subscriber"><span class="xref std std-term">Subscriber</span></a> has previously subscribed to</p>
 </dd>
-<dt id="term-subscriber">subscriber<a class="headerlink" href="#term-subscriber" title="Permalink to this term">#</a></dt><dd><p>A <a class="reference internal" href="../reference/channels/subscriber.html#litestar.channels.subscriber.Subscriber" title="litestar.channels.subscriber.Subscriber"><code class="xref py py-class docutils literal notranslate"><span class="pre">Subscriber</span></code></a>: An object wrapping an
+<dt id="term-subscriber">subscriber<a class="headerlink" href="#term-subscriber" title="Permalink to this term">#</a></dt><dd><p class="sd-card-text">A <a class="reference internal" href="../reference/channels/subscriber.html#litestar.channels.subscriber.Subscriber" title="litestar.channels.subscriber.Subscriber"><code class="xref py py-class docutils literal notranslate"><span class="pre">Subscriber</span></code></a>: An object wrapping an
 <a class="reference internal" href="#term-event-stream"><span class="xref std std-term">event stream</span></a> and providing access to it through various methods</p>
 </dd>
-<dt id="term-backend">backend<a class="headerlink" href="#term-backend" title="Permalink to this term">#</a></dt><dd><p>A <a class="reference internal" href="../reference/channels/backends/base.html#litestar.channels.backends.base.ChannelsBackend" title="litestar.channels.backends.base.ChannelsBackend"><code class="xref py py-class docutils literal notranslate"><span class="pre">ChannelsBackend</span></code></a>. This object
+<dt id="term-backend">backend<a class="headerlink" href="#term-backend" title="Permalink to this term">#</a></dt><dd><p class="sd-card-text">A <a class="reference internal" href="../reference/channels/backends/base.html#litestar.channels.backends.base.ChannelsBackend" title="litestar.channels.backends.base.ChannelsBackend"><code class="xref py py-class docutils literal notranslate"><span class="pre">ChannelsBackend</span></code></a>. This object
 manages communication between the plugin and the <a class="reference internal" href="#term-broker"><span class="xref std std-term">broker</span></a>, publishing
 messages to and receiving messages from it. Each plugin instance is associated
 with exactly one backend.</p>
 </dd>
-<dt id="term-broker">broker<a class="headerlink" href="#term-broker" title="Permalink to this term">#</a></dt><dd><p>Responsible for receiving and publishing messages to all connected
+<dt id="term-broker">broker<a class="headerlink" href="#term-broker" title="Permalink to this term">#</a></dt><dd><p class="sd-card-text">Responsible for receiving and publishing messages to all connected
 <a class="reference internal" href="#term-backend"><span class="xref std std-term">backends</span></a>; All backends sharing the same broker will have
 access to the same messages, allowing for inter-process communication. This is
 typically handled by a separate entity like <a class="reference external" href="https://redis.io/">Redis</a></p>
 </dd>
-<dt id="term-plugin">plugin<a class="headerlink" href="#term-plugin" title="Permalink to this term">#</a></dt><dd><p>The <a class="reference internal" href="../reference/channels/plugin.html#litestar.channels.plugin.ChannelsPlugin" title="litestar.channels.plugin.ChannelsPlugin"><code class="xref py py-class docutils literal notranslate"><span class="pre">ChannelsPlugin</span></code></a>, a central instance
+<dt id="term-plugin">plugin<a class="headerlink" href="#term-plugin" title="Permalink to this term">#</a></dt><dd><p class="sd-card-text">The <a class="reference internal" href="../reference/channels/plugin.html#litestar.channels.plugin.ChannelsPlugin" title="litestar.channels.plugin.ChannelsPlugin"><code class="xref py py-class docutils literal notranslate"><span class="pre">ChannelsPlugin</span></code></a>, a central instance
 managing <a class="reference internal" href="#term-subscriber"><span class="xref std std-term">subscribers</span></a>, reading messages from the
 <a class="reference internal" href="#term-backend"><span class="xref std std-term">backend</span></a>, putting them in the appropriate <a class="reference internal" href="#term-event-stream"><span class="xref std std-term">event stream</span></a>, and
 publishing data to the backend</p>
 </dd>
+<dt id="term-channel">channel<a class="headerlink" href="#term-channel" title="Permalink to this term">#</a></dt><dd><p class="sd-card-text">A named group of subscribers, to which data can be published. Subscribers can
+subscribe to multiple channels, and channels can have multiple subscribers</p>
+</dd>
+<dt id="term-subscription">subscription<a class="headerlink" href="#term-subscription" title="Permalink to this term">#</a></dt><dd><p class="sd-card-text">A connection between a <a class="reference internal" href="#term-subscriber"><span class="xref std std-term">subscriber</span></a> and a <a class="reference internal" href="#term-channel"><span class="xref std std-term">channel</span></a>, allowing the
+subscriber to receive events from the channel</p>
+</dd>
+<dt id="term-backpressure">backpressure<a class="headerlink" href="#term-backpressure" title="Permalink to this term">#</a></dt><dd><p class="sd-card-text">A mechanism to prevent the backlog of a <a class="reference internal" href="#term-subscriber"><span class="xref std std-term">subscriber</span></a> from growing
+indefinitely, by either dropping new messages or evicting old ones</p>
+</dd>
+<dt id="term-history">history<a class="headerlink" href="#term-history" title="Permalink to this term">#</a></dt><dd><p class="sd-card-text">A set of previously published <a class="reference internal" href="#term-event"><span class="xref std std-term">events</span></a>, stored by the <a class="reference internal" href="#term-backend"><span class="xref std std-term">backend</span></a>
+and available to be pushed to a <a class="reference internal" href="#term-subscriber"><span class="xref std std-term">subscriber</span></a></p>
+</dd>
+<dt id="term-fanout">fanout<a class="headerlink" href="#term-fanout" title="Permalink to this term">#</a></dt><dd><p class="sd-card-text">The process of sending a message to all subscribers of a channel</p>
+</dd>
+<dt id="term-eviction">eviction<a class="headerlink" href="#term-eviction" title="Permalink to this term">#</a></dt><dd><p class="sd-card-text">A <a class="reference internal" href="#term-backpressure"><span class="xref std std-term">backpressure</span></a> strategy, dropping the oldest message in the backlog when
+a new one is added while the backlog is full</p>
+</dd>
+<dt id="term-backoff">backoff<a class="headerlink" href="#term-backoff" title="Permalink to this term">#</a></dt><dd><p class="sd-card-text">A <a class="reference internal" href="#term-backpressure"><span class="xref std std-term">backpressure</span></a> strategy, dropping newly incoming messages as long as the
+backlog is full</p>
+</dd>
 </dl>
+</div>
+</details></section>
 <section id="flowcharts">
 <h3>Flowcharts<a class="headerlink" href="#flowcharts" title="Permalink to this heading">#</a></h3>
+<details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
+<summary class="sd-summary-title sd-card-header">
+Click to expand flowcharts<div class="sd-summary-down docutils">
+<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-down" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M5.22 8.72a.75.75 0 000 1.06l6.25 6.25a.75.75 0 001.06 0l6.25-6.25a.75.75 0 00-1.06-1.06L12 14.44 6.28 8.72a.75.75 0 00-1.06 0z"></path></svg></div>
+<div class="sd-summary-up docutils">
+<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-up" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M18.78 15.28a.75.75 0 000-1.06l-6.25-6.25a.75.75 0 00-1.06 0l-6.25 6.25a.75.75 0 101.06 1.06L12 9.56l5.72 5.72a.75.75 0 001.06 0z"></path></svg></div>
+</summary><div class="sd-summary-content sd-card-body docutils">
 <figure class="align-center" id="id1">
 <pre  class="mermaid">
         flowchart LR
@@ -1632,24 +1671,26 @@ publishing data to the backend</p>
 <p><span class="caption-text">Fanout flow of data from the <a class="reference internal" href="#term-broker"><span class="xref std std-term">broker</span></a> to the sockets, showing multiple plugin instances</span><a class="headerlink" href="#id2" title="Permalink to this image">#</a></p>
 </figcaption>
 </figure>
-</section>
+</div>
+</details></section>
 </section>
 <section id="the-channelsplugin">
-<h2>The <code class="docutils literal notranslate"><span class="pre">ChannelsPlugin</span></code><a class="headerlink" href="#the-channelsplugin" title="Permalink to this heading">#</a></h2>
-<p>The <a class="reference internal" href="../reference/channels/plugin.html#litestar.channels.plugin.ChannelsPlugin" title="litestar.channels.plugin.ChannelsPlugin"><code class="xref py py-class docutils literal notranslate"><span class="pre">ChannelsPlugin</span></code></a> acts as the central entity for managing channels and
-subscribers. It’s used to publish messages, control how data is stored, and manage
-subscribers, route handlers, and configuration.</p>
+<h2>The <a class="reference internal" href="../reference/channels/plugin.html#litestar.channels.plugin.ChannelsPlugin" title="litestar.channels.plugin.ChannelsPlugin"><code class="xref py py-class docutils literal notranslate"><span class="pre">ChannelsPlugin</span></code></a><a class="headerlink" href="#the-channelsplugin" title="Permalink to this heading">#</a></h2>
+<p>The <a class="reference internal" href="../reference/channels/plugin.html#litestar.channels.plugin.ChannelsPlugin" title="litestar.channels.plugin.ChannelsPlugin"><code class="xref py py-class docutils literal notranslate"><span class="pre">ChannelsPlugin</span></code></a> acts as the central entity for managing channels and subscribers.
+It is used to publish messages, control how data is stored, and manage <a class="reference internal" href="#term-subscriber"><span class="xref std std-term">subscribers</span></a>,
+route handlers, and configuration.</p>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
-<p>The plugin makes itself available as a dependency under the <code class="docutils literal notranslate"><span class="pre">channels</span></code> key, which
-means it’s not necessary to import it and instead, it can be used from within route
-handlers or other callables within the dependency tree directly</p>
+<p>The plugin makes itself available as a dependency under the <a class="reference internal" href="../reference/channels/plugin.html#litestar.channels.plugin.ChannelsPlugin.params.channels" title="litestar.channels.plugin.ChannelsPlugin"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">channels</span></code></a> key, which
+means it is not necessary to import it and instead, it can be used from within route handlers or other callables
+within the dependency tree directly</p>
 </div>
 <section id="configuring-the-channels">
-<h3>Configuring the channels<a class="headerlink" href="#configuring-the-channels" title="Permalink to this heading">#</a></h3>
-<p>The channels managed by the plugin can be either defined upfront, passing them to the
-<code class="docutils literal notranslate"><span class="pre">channels</span></code> argument, or created “on the fly” (i.e. on the first subscription to a
-channel) by setting <code class="docutils literal notranslate"><span class="pre">arbitrary_channels_allowed=True</span></code>.</p>
+<h3>Configuring the <a class="reference internal" href="#term-channel"><span class="xref std std-term">channels</span></a><a class="headerlink" href="#configuring-the-channels" title="Permalink to this heading">#</a></h3>
+<p>The <a class="reference internal" href="#term-channel"><span class="xref std std-term">channels</span></a> managed by the plugin can be either defined upfront, passing them to the
+<a class="reference internal" href="../reference/channels/plugin.html#litestar.channels.plugin.ChannelsPlugin.params.channels" title="litestar.channels.plugin.ChannelsPlugin"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">channels</span></code></a> parameter, or created “on the fly”
+(i.e., on the first <a class="reference internal" href="#term-subscription"><span class="xref std std-term">subscription</span></a> to a channel) by setting
+<a class="reference internal" href="../reference/channels/plugin.html#litestar.channels.plugin.ChannelsPlugin.params.arbitrary_channels_allowed" title="litestar.channels.plugin.ChannelsPlugin"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">arbitrary_channels_allowed</span></code></a> to <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
 <div class="literal-block-wrapper docutils container" id="id3">
 <div class="code-block-caption"><span class="caption-text">Passing channels explicitly</span><a class="headerlink" href="#id3" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar.channels</span> <span class="kn">import</span> <span class="n">ChannelsPlugin</span>
@@ -1666,53 +1707,50 @@ channel) by setting <code class="docutils literal notranslate"><span class="pre"
 </pre></div>
 </div>
 </div>
-<p>If <code class="docutils literal notranslate"><span class="pre">arbitrary_channels_allowed</span></code> is not <code class="docutils literal notranslate"><span class="pre">True</span></code>, trying to publish or subscribe to a
-channel not passed to <code class="docutils literal notranslate"><span class="pre">channels</span></code> will raise a <a class="reference internal" href="../reference/channels/plugin.html#litestar.channels.plugin.ChannelsException" title="litestar.channels.plugin.ChannelsException"><code class="xref py py-exc docutils literal notranslate"><span class="pre">ChannelsException</span></code></a>.</p>
+<p>If <a class="reference internal" href="../reference/channels/plugin.html#litestar.channels.plugin.ChannelsPlugin.params.arbitrary_channels_allowed" title="litestar.channels.plugin.ChannelsPlugin"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">arbitrary_channels_allowed</span></code></a> is not <code class="docutils literal notranslate"><span class="pre">True</span></code>, trying to publish or subscribe to a
+<a class="reference internal" href="#term-channel"><span class="xref std std-term">channel</span></a> not passed to <a class="reference internal" href="../reference/channels/plugin.html#litestar.channels.plugin.ChannelsPlugin.params.channels" title="litestar.channels.plugin.ChannelsPlugin"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">channels</span></code></a> will raise a <a class="reference internal" href="../reference/channels/plugin.html#litestar.channels.plugin.ChannelsException" title="litestar.channels.plugin.ChannelsException"><code class="xref py py-exc docutils literal notranslate"><span class="pre">ChannelsException</span></code></a>.</p>
 </section>
 <section id="publishing-data">
 <h3>Publishing data<a class="headerlink" href="#publishing-data" title="Permalink to this heading">#</a></h3>
 <p>One of the core aspects of the plugin is publishing data, which is done through its
-<a class="reference internal" href="../reference/channels/plugin.html#litestar.channels.plugin.ChannelsPlugin.publish" title="litestar.channels.plugin.ChannelsPlugin.publish"><code class="xref py py-meth docutils literal notranslate"><span class="pre">publish</span></code></a> method:</p>
+<a class="reference internal" href="../reference/channels/plugin.html#litestar.channels.plugin.ChannelsPlugin.publish" title="litestar.channels.plugin.ChannelsPlugin.publish"><code class="xref py py-meth docutils literal notranslate"><span class="pre">publish()</span></code></a> method:</p>
+<div class="literal-block-wrapper docutils container" id="id5">
+<div class="code-block-caption"><span class="caption-text">Publishing data to a channel with <a class="reference internal" href="../reference/channels/plugin.html#litestar.channels.plugin.ChannelsPlugin.publish" title="litestar.channels.plugin.ChannelsPlugin.publish"><code class="xref py py-meth docutils literal notranslate"><span class="pre">publish()</span></code></a></span><a class="headerlink" href="#id5" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">channels</span><span class="o">.</span><span class="n">publish</span><span class="p">({</span><span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="s2">&quot;Hello&quot;</span><span class="p">},</span> <span class="s2">&quot;general&quot;</span><span class="p">)</span>
 </pre></div>
+</div>
 </div>
 <p>The above example will publish the data to the channel <code class="docutils literal notranslate"><span class="pre">general</span></code>, subsequently putting
 it into all subscriber’s <a class="reference internal" href="#term-event-stream"><span class="xref std std-term">event stream</span></a> to be consumed.</p>
 <p>This method is non-blocking, even though channels and the associated
 <a class="reference internal" href="#term-backend"><span class="xref std std-term">backends</span></a> are fundamentally asynchronous.</p>
-<p>Calling <code class="docutils literal notranslate"><span class="pre">publish</span></code> effectively enqueues a message to be sent to the backend, from which
-follows that there’s no guarantee that an event will be available in the backend
-immediately after this call.</p>
-<p>Alternatively, the asynchronous <a class="reference internal" href="../reference/channels/plugin.html#litestar.channels.plugin.ChannelsPlugin.wait_published" title="litestar.channels.plugin.ChannelsPlugin.wait_published"><code class="xref py py-meth docutils literal notranslate"><span class="pre">wait_published</span></code></a>
-method can be used, which skips the internal message queue, publishing the data to the
-backend directly.</p>
+<p>Calling <a class="reference internal" href="../reference/channels/plugin.html#litestar.channels.plugin.ChannelsPlugin.publish" title="litestar.channels.plugin.ChannelsPlugin.publish"><code class="xref py py-meth docutils literal notranslate"><span class="pre">publish()</span></code></a> effectively enqueues a message to be sent to the backend, from which
+follows that there is no guarantee that an event will be available in the backend immediately after this call.</p>
+<p>Alternatively, the asynchronous <a class="reference internal" href="../reference/channels/plugin.html#litestar.channels.plugin.ChannelsPlugin.wait_published" title="litestar.channels.plugin.ChannelsPlugin.wait_published"><code class="xref py py-meth docutils literal notranslate"><span class="pre">wait_published()</span></code></a> method can be used, which skips the
+internal message queue, publishing the data to the backend directly.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>While calling <a class="reference internal" href="../reference/channels/plugin.html#litestar.channels.plugin.ChannelsPlugin.publish" title="litestar.channels.plugin.ChannelsPlugin.publish"><code class="xref py py-meth docutils literal notranslate"><span class="pre">publish</span></code></a> does not guarantee the
+<p>While calling <a class="reference internal" href="../reference/channels/plugin.html#litestar.channels.plugin.ChannelsPlugin.publish" title="litestar.channels.plugin.ChannelsPlugin.publish"><code class="xref py py-meth docutils literal notranslate"><span class="pre">publish()</span></code></a> does not guarantee the
 message is sent to the backend immediately, it will be sent there <em>eventually</em>; On
 shutdown, the plugin will wait for all queues to empty</p>
 </div>
 </section>
 <section id="managing-subscriptions">
-<h3>Managing subscriptions<a class="headerlink" href="#managing-subscriptions" title="Permalink to this heading">#</a></h3>
-<p>Another core functionality of the plugin is managing subscriptions, for which two
+<h3>Managing <a class="reference internal" href="#term-subscription"><span class="xref std std-term">subscriptions</span></a><a class="headerlink" href="#managing-subscriptions" title="Permalink to this heading">#</a></h3>
+<p>Another core functionality of the plugin is managing <a class="reference internal" href="#term-subscription"><span class="xref std std-term">subscriptions</span></a>, for which two
 different approaches exist:</p>
 <ol class="arabic simple">
-<li><p>Manually through the <a class="reference internal" href="../reference/channels/plugin.html#litestar.channels.plugin.ChannelsPlugin.subscribe" title="litestar.channels.plugin.ChannelsPlugin.subscribe"><code class="xref py py-meth docutils literal notranslate"><span class="pre">subscribe</span></code></a> and
-<a class="reference internal" href="../reference/channels/plugin.html#litestar.channels.plugin.ChannelsPlugin.unsubscribe" title="litestar.channels.plugin.ChannelsPlugin.unsubscribe"><code class="xref py py-meth docutils literal notranslate"><span class="pre">unsubscribe</span></code></a> methods</p></li>
-<li><p>By using the <a class="reference internal" href="../reference/channels/plugin.html#litestar.channels.plugin.ChannelsPlugin.start_subscription" title="litestar.channels.plugin.ChannelsPlugin.start_subscription"><code class="xref py py-meth docutils literal notranslate"><span class="pre">start_subscription</span></code></a> context
-manager</p></li>
+<li><p>Manually through the <a class="reference internal" href="../reference/channels/plugin.html#litestar.channels.plugin.ChannelsPlugin.subscribe" title="litestar.channels.plugin.ChannelsPlugin.subscribe"><code class="xref py py-meth docutils literal notranslate"><span class="pre">subscribe()</span></code></a> and <a class="reference internal" href="../reference/channels/plugin.html#litestar.channels.plugin.ChannelsPlugin.unsubscribe" title="litestar.channels.plugin.ChannelsPlugin.unsubscribe"><code class="xref py py-meth docutils literal notranslate"><span class="pre">unsubscribe()</span></code></a> methods</p></li>
+<li><p>By using the <a class="reference internal" href="../reference/channels/plugin.html#litestar.channels.plugin.ChannelsPlugin.start_subscription" title="litestar.channels.plugin.ChannelsPlugin.start_subscription"><code class="xref py py-meth docutils literal notranslate"><span class="pre">start_subscription()</span></code></a> context manager</p></li>
 </ol>
-<p>Both <a class="reference internal" href="../reference/channels/plugin.html#litestar.channels.plugin.ChannelsPlugin.subscribe" title="litestar.channels.plugin.ChannelsPlugin.subscribe"><code class="xref py py-meth docutils literal notranslate"><span class="pre">subscribe</span></code></a> and
-<a class="reference internal" href="../reference/channels/plugin.html#litestar.channels.plugin.ChannelsPlugin.start_subscription" title="litestar.channels.plugin.ChannelsPlugin.start_subscription"><code class="xref py py-meth docutils literal notranslate"><span class="pre">start_subscription</span></code></a> produce a
-<a class="reference internal" href="../reference/channels/subscriber.html#litestar.channels.subscriber.Subscriber" title="litestar.channels.subscriber.Subscriber"><code class="xref py py-class docutils literal notranslate"><span class="pre">Subscriber</span></code></a>, which can be used to interact with the streams of events subscribed
-to.</p>
-<p>The context manager should be preferred, since it ensures that channels are being
-unsubscribed. Using the <code class="docutils literal notranslate"><span class="pre">subscriber</span></code> and <code class="docutils literal notranslate"><span class="pre">unsubscribe</span></code> methods directly should only
-be done when a context manager cannot be used, e.g. when the subscription would span
-different contexts.</p>
-<div class="literal-block-wrapper docutils container" id="id5">
-<div class="code-block-caption"><span class="caption-text">Calling the subscription methods manually</span><a class="headerlink" href="#id5" title="Permalink to this code">#</a></div>
+<p>Both <a class="reference internal" href="../reference/channels/plugin.html#litestar.channels.plugin.ChannelsPlugin.subscribe" title="litestar.channels.plugin.ChannelsPlugin.subscribe"><code class="xref py py-meth docutils literal notranslate"><span class="pre">subscribe()</span></code></a> and <a class="reference internal" href="../reference/channels/plugin.html#litestar.channels.plugin.ChannelsPlugin.start_subscription" title="litestar.channels.plugin.ChannelsPlugin.start_subscription"><code class="xref py py-meth docutils literal notranslate"><span class="pre">start_subscription()</span></code></a> produce a <a class="reference internal" href="../reference/channels/subscriber.html#litestar.channels.subscriber.Subscriber" title="litestar.channels.subscriber.Subscriber"><code class="xref py py-class docutils literal notranslate"><span class="pre">Subscriber</span></code></a>,
+which can be used to interact with the streams of events subscribed to.</p>
+<p>The context manager should be preferred, since it ensures that channels are being unsubscribed.
+Using the <a class="reference internal" href="../reference/channels/plugin.html#litestar.channels.plugin.ChannelsPlugin.subscribe" title="litestar.channels.plugin.ChannelsPlugin.subscribe"><code class="xref py py-meth docutils literal notranslate"><span class="pre">subscribe()</span></code></a> and <a class="reference internal" href="../reference/channels/plugin.html#litestar.channels.plugin.ChannelsPlugin.unsubscribe" title="litestar.channels.plugin.ChannelsPlugin.unsubscribe"><code class="xref py py-meth docutils literal notranslate"><span class="pre">unsubscribe()</span></code></a> methods directly should only be
+one when a <a class="reference external" href="https://docs.python.org/3/glossary.html#term-asynchronous-context-manager" title="(in Python v3.13)"><span class="xref std std-term">context manager</span></a> cannot be used, e.g., when the <a class="reference internal" href="#term-subscription"><span class="xref std std-term">subscription</span></a>
+would span different contexts.</p>
+<div class="literal-block-wrapper docutils container" id="id6">
+<div class="code-block-caption"><span class="caption-text">Calling the <a class="reference internal" href="#term-subscription"><span class="xref std std-term">subscription</span></a> methods manually</span><a class="headerlink" href="#id6" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">subscriber</span> <span class="o">=</span> <span class="k">await</span> <span class="n">channels</span><span class="o">.</span><span class="n">subscribe</span><span class="p">([</span><span class="s2">&quot;foo&quot;</span><span class="p">,</span> <span class="s2">&quot;bar&quot;</span><span class="p">])</span>
 <span class="k">try</span><span class="p">:</span>
     <span class="o">...</span>  <span class="c1"># do some stuff here</span>
@@ -1721,15 +1759,17 @@ different contexts.</p>
 </pre></div>
 </div>
 </div>
-<div class="literal-block-wrapper docutils container" id="id6">
-<div class="code-block-caption"><span class="caption-text">Using the context manager</span><a class="headerlink" href="#id6" title="Permalink to this code">#</a></div>
+<div class="literal-block-wrapper docutils container" id="id7">
+<div class="code-block-caption"><span class="caption-text">Using the <a class="reference external" href="https://docs.python.org/3/glossary.html#term-asynchronous-context-manager" title="(in Python v3.13)"><span class="xref std std-term">async context manager</span></a></span><a class="headerlink" href="#id7" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">async</span> <span class="k">with</span> <span class="n">channels</span><span class="o">.</span><span class="n">start_subscription</span><span class="p">([</span><span class="s2">&quot;foo&quot;</span><span class="p">,</span> <span class="s2">&quot;bar&quot;</span><span class="p">])</span> <span class="k">as</span> <span class="n">subscriber</span><span class="p">:</span>
     <span class="o">...</span>  <span class="c1"># do some stuff here</span>
 </pre></div>
 </div>
 </div>
-<p>It is also possible to unsubscribe from individual channels, which may be desirable if
-subscriptions need to be managed dynamically.</p>
+<p>It is also possible to unsubscribe from individual <a class="reference internal" href="#term-channel"><span class="xref std std-term">channels</span></a>, which may be desirable if
+<a class="reference internal" href="#term-subscription"><span class="xref std std-term">subscriptions</span></a> need to be managed dynamically.</p>
+<div class="literal-block-wrapper docutils container" id="id8">
+<div class="code-block-caption"><span class="caption-text">Unsubscribing from a channel manually</span><a class="headerlink" href="#id8" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">subscriber</span> <span class="o">=</span> <span class="k">await</span> <span class="n">channels</span><span class="o">.</span><span class="n">subscribe</span><span class="p">([</span><span class="s2">&quot;foo&quot;</span><span class="p">,</span> <span class="s2">&quot;bar&quot;</span><span class="p">])</span>
 <span class="k">try</span><span class="p">:</span>
     <span class="o">...</span>  <span class="c1"># do some stuff here</span>
@@ -1737,21 +1777,28 @@ subscriptions need to be managed dynamically.</p>
     <span class="k">await</span> <span class="n">channels</span><span class="o">.</span><span class="n">unsubscribe</span><span class="p">(</span><span class="n">subscriber</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;foo&quot;</span><span class="p">])</span>
 </pre></div>
 </div>
+</div>
 <p>Or, using the context manager</p>
+<div class="literal-block-wrapper docutils container" id="id9">
+<div class="code-block-caption"><span class="caption-text">Using the <a class="reference external" href="https://docs.python.org/3/glossary.html#term-asynchronous-context-manager" title="(in Python v3.13)"><span class="xref std std-term">async context manager</span></a> to unsubscribe from a
+<a class="reference internal" href="#term-channel"><span class="xref std std-term">channel</span></a></span><a class="headerlink" href="#id9" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">async</span> <span class="k">with</span> <span class="n">channels</span><span class="o">.</span><span class="n">start_subscription</span><span class="p">([</span><span class="s2">&quot;foo&quot;</span><span class="p">,</span> <span class="s2">&quot;bar&quot;</span><span class="p">])</span> <span class="k">as</span> <span class="n">subscriber</span><span class="p">:</span>
     <span class="o">...</span>  <span class="c1"># do some stuff here</span>
     <span class="k">await</span> <span class="n">channels</span><span class="o">.</span><span class="n">unsubscribe</span><span class="p">(</span><span class="n">subscriber</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;foo&quot;</span><span class="p">])</span>
 </pre></div>
 </div>
+</div>
 </section>
 <section id="managing-history">
-<h3>Managing history<a class="headerlink" href="#managing-history" title="Permalink to this heading">#</a></h3>
-<p>Some backends support per-channel history, keeping a certain amount of
-<a class="reference internal" href="#term-event"><span class="xref std std-term">events</span></a> in storage. This history can then be pushed to a
-<a class="reference internal" href="#term-subscriber"><span class="xref std std-term">subscriber</span></a>.</p>
+<h3>Managing <a class="reference internal" href="#term-history"><span class="xref std std-term">history</span></a><a class="headerlink" href="#managing-history" title="Permalink to this heading">#</a></h3>
+<p>Some backends support per-<a class="reference internal" href="#term-channel"><span class="xref std std-term">channel</span></a> <a class="reference internal" href="#term-history"><span class="xref std std-term">history</span></a>, keeping a certain amount of <a class="reference internal" href="#term-event"><span class="xref std std-term">events</span></a> in storage.
+This <a class="reference internal" href="#term-history"><span class="xref std std-term">history</span></a> can then be pushed to a <a class="reference internal" href="#term-subscriber"><span class="xref std std-term">subscriber</span></a>.</p>
 <p>The plugin’s <a class="reference internal" href="../reference/channels/plugin.html#litestar.channels.plugin.ChannelsPlugin.put_subscriber_history" title="litestar.channels.plugin.ChannelsPlugin.put_subscriber_history"><code class="xref py py-meth docutils literal notranslate"><span class="pre">put_subscriber_history</span></code></a> can
-be used to fetch this history and put it into a subscriber’s <a class="reference internal" href="#term-event-stream"><span class="xref std std-term">event stream</span></a>.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">WebSocket</span><span class="p">,</span> <span class="n">websocket</span>
+be used to fetch this <a class="reference internal" href="#term-history"><span class="xref std std-term">history</span></a> and put it into a subscriber’s <a class="reference internal" href="#term-event-stream"><span class="xref std std-term">event stream</span></a>.</p>
+<div class="literal-block-wrapper docutils container" id="id10">
+<div class="code-block-caption"><span class="caption-text">Retrieving <a class="reference internal" href="#term-channel"><span class="xref std std-term">channel</span></a> <a class="reference internal" href="#term-history"><span class="xref std std-term">history</span></a> for a <a class="reference internal" href="#term-subscriber"><span class="xref std std-term">subscriber</span></a> and putting it into the
+<a class="reference internal" href="#term-event-stream"><span class="xref std std-term">stream</span></a></span><a class="headerlink" href="#id10" title="Permalink to this code">#</a></div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">WebSocket</span><span class="p">,</span> <span class="n">websocket</span>
 <span class="kn">from</span> <span class="nn">litestar.channels</span> <span class="kn">import</span> <span class="n">ChannelsPlugin</span>
 <span class="kn">from</span> <span class="nn">litestar.channels.backends.memory</span> <span class="kn">import</span> <span class="n">MemoryChannelsBackend</span>
 
@@ -1770,48 +1817,41 @@ be used to fetch this history and put it into a subscriber’s <a class="referen
 <span class="p">)</span>
 </pre></div>
 </div>
+</div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>The publication of the history happens sequentially, one channel and one
-event at a time. This is done to ensure the correct ordering of events and to avoid
-filling up a subscriber’s backlog, which would result in dropped history entries. Should the
+<blockquote>
+<div><p>The publication of the <a class="reference internal" href="#term-history"><span class="xref std std-term">history</span></a> happens sequentially, one <a class="reference internal" href="#term-channel"><span class="xref std std-term">channel</span></a> and one
+<a class="reference internal" href="#term-event"><span class="xref std std-term">event</span></a> at a time. This is done to ensure the correct ordering of events and to avoid
+filling up a <a class="reference internal" href="#term-subscriber"><span class="xref std std-term">subscriber</span></a>’s backlog, which would result in dropped <a class="reference internal" href="#term-history"><span class="xref std std-term">history</span></a> entries. Should the
 amount of entries exceed the maximum backlog size, the execution will wait until
 previous events have been processed.</p>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<ul class="simple">
-<li><p><a class="reference internal" href="#managing-backpressure">Managing backpressure</a></p></li>
-</ul>
-</div>
+</div></blockquote>
+<p>Read more: <a class="reference internal" href="#managing-backpressure">Managing backpressure</a></p>
 </div>
 </section>
 </section>
 <section id="the-subscriber">
-<h2>The <code class="docutils literal notranslate"><span class="pre">Subscriber</span></code><a class="headerlink" href="#the-subscriber" title="Permalink to this heading">#</a></h2>
-<p>The <a class="reference internal" href="../reference/channels/subscriber.html#litestar.channels.subscriber.Subscriber" title="litestar.channels.subscriber.Subscriber"><code class="xref py py-class docutils literal notranslate"><span class="pre">Subscriber</span></code></a> manages an individual <a class="reference internal" href="#term-event-stream"><span class="xref std std-term">event stream</span></a>, provided to it by
-the plugin, representing the sum of events from all channels the subscriber has
-subscribed to.</p>
-<p>It can be considered the endpoint of all events, while the backends act as the source,
+<h2>The <a class="reference internal" href="../reference/channels/subscriber.html#litestar.channels.subscriber.Subscriber" title="litestar.channels.subscriber.Subscriber"><code class="xref py py-class docutils literal notranslate"><span class="pre">Subscriber</span></code></a><a class="headerlink" href="#the-subscriber" title="Permalink to this heading">#</a></h2>
+<p>The <a class="reference internal" href="../reference/channels/subscriber.html#litestar.channels.subscriber.Subscriber" title="litestar.channels.subscriber.Subscriber"><code class="xref py py-class docutils literal notranslate"><span class="pre">Subscriber</span></code></a> manages an individual <a class="reference internal" href="#term-event-stream"><span class="xref std std-term">event stream</span></a>, provided to it by the plugin,
+representing the sum of events from all <a class="reference internal" href="#term-channel"><span class="xref std std-term">channels</span></a> the subscriber has subscribed to.</p>
+<p>It can be considered the endpoint of all <a class="reference internal" href="#term-event"><span class="xref std std-term">events</span></a>, while the backends act as the source,
 and the plugin as a router, being responsible for supplying events gathered from the
 backend into the appropriate subscriber’s streams.</p>
 <p>In addition to being an abstraction of an <a class="reference internal" href="#term-event-stream"><span class="xref std std-term">event stream</span></a>, the <a class="reference internal" href="../reference/channels/subscriber.html#litestar.channels.subscriber.Subscriber" title="litestar.channels.subscriber.Subscriber"><code class="xref py py-class docutils literal notranslate"><span class="pre">Subscriber</span></code></a>
 provides two methods to handle this stream:</p>
 <dl>
-<dt><a class="reference internal" href="../reference/channels/subscriber.html#litestar.channels.subscriber.Subscriber.iter_events" title="litestar.channels.subscriber.Subscriber.iter_events"><code class="xref py py-meth docutils literal notranslate"><span class="pre">iter_events</span></code></a></dt><dd><p>An asynchronous generator, producing one event from the stream at a time, waiting
+<dt><a class="reference internal" href="../reference/channels/subscriber.html#litestar.channels.subscriber.Subscriber.iter_events" title="litestar.channels.subscriber.Subscriber.iter_events"><code class="xref py py-meth docutils literal notranslate"><span class="pre">iter_events</span></code></a></dt><dd><p>An <a class="reference external" href="https://docs.python.org/3/glossary.html#term-asynchronous-generator" title="(in Python v3.13)"><span class="xref std std-term">asynchronous generator</span></a>, producing one event from the stream at a time, waiting
 until the next one becomes available</p>
 </dd>
-<dt><a class="reference internal" href="../reference/channels/subscriber.html#litestar.channels.subscriber.Subscriber.run_in_background" title="litestar.channels.subscriber.Subscriber.run_in_background"><code class="xref py py-meth docutils literal notranslate"><span class="pre">run_in_background</span></code></a></dt><dd><p>A context manager, wrapping an <a class="reference external" href="https://docs.python.org/3/library/asyncio-task.html#asyncio.Task" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">asyncio.Task</span></code></a>, consuming events yielded by
-<a class="reference internal" href="../reference/channels/subscriber.html#litestar.channels.subscriber.Subscriber.iter_events" title="litestar.channels.subscriber.Subscriber.iter_events"><code class="xref py py-meth docutils literal notranslate"><span class="pre">iter_events</span></code></a>, invoking a provided callback for each
-of them. Upon exit, it will attempt a graceful shutdown of the running task, waiting
-for all currently enqueued events in the stream to be processed. If the context
-exits with an error, the task will be cancelled instead.</p>
-<div class="admonition tip">
-<p class="admonition-title">Tip</p>
-<p>It’s possible to force the task to stop immediately, by passing <code class="docutils literal notranslate"><span class="pre">join=False</span></code> to
-<a class="reference internal" href="../reference/channels/subscriber.html#litestar.channels.subscriber.Subscriber.run_in_background" title="litestar.channels.subscriber.Subscriber.run_in_background"><code class="xref py py-meth docutils literal notranslate"><span class="pre">run_in_background</span></code></a>, which will
-lead to the cancellation of the task. By default this only happens when the context is
-left with an exception.</p>
-</div>
+<dt><a class="reference internal" href="../reference/channels/subscriber.html#litestar.channels.subscriber.Subscriber.run_in_background" title="litestar.channels.subscriber.Subscriber.run_in_background"><code class="xref py py-meth docutils literal notranslate"><span class="pre">run_in_background</span></code></a></dt><dd><p>A <a class="reference external" href="https://docs.python.org/3/glossary.html#term-asynchronous-context-manager" title="(in Python v3.13)"><span class="xref std std-term">context manager</span></a>, wrapping an <a class="reference external" href="https://docs.python.org/3/library/asyncio-task.html#asyncio.Task" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">asyncio.Task</span></code></a>,
+consuming events yielded by <a class="reference internal" href="../reference/channels/subscriber.html#litestar.channels.subscriber.Subscriber.iter_events" title="litestar.channels.subscriber.Subscriber.iter_events"><code class="xref py py-meth docutils literal notranslate"><span class="pre">iter_events</span></code></a>, invoking a provided <a class="reference external" href="https://docs.python.org/3/glossary.html#term-callback" title="(in Python v3.13)"><span class="xref std std-term">callback</span></a>
+for each of them. Upon exit, it will attempt a graceful shutdown of the running task, waiting
+for all currently enqueued events in the stream to be processed.
+If the context exits with an error, the task will be cancelled instead.</p>
+<p>It is possible to force the task to stop immediately, by setting <a class="reference internal" href="../reference/channels/subscriber.html#litestar.channels.subscriber.Subscriber.run_in_background.params.join" title="litestar.channels.subscriber.Subscriber.run_in_background"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">join</span></code></a>
+to <code class="docutils literal notranslate"><span class="pre">False</span></code> in <a class="reference internal" href="../reference/channels/subscriber.html#litestar.channels.subscriber.Subscriber.run_in_background" title="litestar.channels.subscriber.Subscriber.run_in_background"><code class="xref py py-meth docutils literal notranslate"><span class="pre">run_in_background</span></code></a>, which will lead to the cancellation of
+the task. By default this only happens when the context is left with an exception.</p>
 </dd>
 </dl>
 <div class="admonition important">
@@ -1821,7 +1861,7 @@ bytes; When calling <a class="reference internal" href="../reference/channels/pl
 being sent to the backend.</p>
 </div>
 <section id="consuming-the-event-stream">
-<h3>Consuming the event stream<a class="headerlink" href="#consuming-the-event-stream" title="Permalink to this heading">#</a></h3>
+<h3>Consuming the <a class="reference internal" href="#term-event-stream"><span class="xref std std-term">event stream</span></a><a class="headerlink" href="#consuming-the-event-stream" title="Permalink to this heading">#</a></h3>
 <p>There are two general methods of consuming the <a class="reference internal" href="#term-event-stream"><span class="xref std std-term">event stream</span></a>:</p>
 <ol class="arabic simple">
 <li><p>By iterating over it directly, using <a class="reference internal" href="../reference/channels/subscriber.html#litestar.channels.subscriber.Subscriber.iter_events" title="litestar.channels.subscriber.Subscriber.iter_events"><code class="xref py py-meth docutils literal notranslate"><span class="pre">iter_events</span></code></a></p></li>
@@ -1829,11 +1869,13 @@ being sent to the backend.</p>
 which starts a background task, iterating over the stream, invoking a provided
 callback for every <a class="reference internal" href="#term-event"><span class="xref std std-term">event</span></a> received</p></li>
 </ol>
-<p>Iterating over the stream directly is mostly useful if processing the events is the only
+<p>Iterating over the <a class="reference internal" href="#term-event-stream"><span class="xref std std-term">steam</span></a> directly is mostly useful if processing the events is the only
 concern, since <a class="reference internal" href="../reference/channels/subscriber.html#litestar.channels.subscriber.Subscriber.iter_events" title="litestar.channels.subscriber.Subscriber.iter_events"><code class="xref py py-meth docutils literal notranslate"><span class="pre">iter_events</span></code></a> is effectively an infinite
 loop. For all other applications, using the context manager is preferable, since it
 allows to easily run other code concurrently.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">WebSocket</span><span class="p">,</span> <span class="n">websocket</span>
+<div class="literal-block-wrapper docutils container" id="id11">
+<div class="code-block-caption"><span class="caption-text">Iterating over the <a class="reference internal" href="#term-event-stream"><span class="xref std std-term">event stream</span></a> to send data to a WebSocket</span><a class="headerlink" href="#id11" title="Permalink to this code">#</a></div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">WebSocket</span><span class="p">,</span> <span class="n">websocket</span>
 <span class="kn">from</span> <span class="nn">litestar.channels</span> <span class="kn">import</span> <span class="n">ChannelsPlugin</span>
 <span class="kn">from</span> <span class="nn">litestar.channels.backends.memory</span> <span class="kn">import</span> <span class="n">MemoryChannelsBackend</span>
 
@@ -1853,15 +1895,16 @@ allows to easily run other code concurrently.</p>
 <span class="p">)</span>
 </pre></div>
 </div>
+</div>
 <p>In the above example, the stream is used to send data to a
 <a class="reference internal" href="../reference/connection.html#litestar.connection.WebSocket" title="litestar.connection.WebSocket"><code class="xref py py-class docutils literal notranslate"><span class="pre">WebSocket</span></code></a>.</p>
-<p>The same can be achieve by passing
-<a class="reference internal" href="../reference/connection.html#litestar.connection.WebSocket.send_text" title="litestar.connection.WebSocket.send_text"><code class="xref py py-meth docutils literal notranslate"><span class="pre">WebbSocket.send_text</span></code></a> as the callback
-to <a class="reference internal" href="../reference/channels/subscriber.html#litestar.channels.subscriber.Subscriber.run_in_background" title="litestar.channels.subscriber.Subscriber.run_in_background"><code class="xref py py-meth docutils literal notranslate"><span class="pre">run_in_background</span></code></a>. This will cause the
-WebSocket’s method to be invoked every time a new event becomes available in the stream,
-but gives control back to the application, providing an opportunity to perform other
-tasks, such as receiving incoming data from the socket.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">WebSocket</span><span class="p">,</span> <span class="n">websocket</span>
+<p>The same can be achieve by passing <a class="reference internal" href="../reference/connection.html#litestar.connection.WebSocket.send_text" title="litestar.connection.WebSocket.send_text"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Websocket.send_text()</span></code></a> as the
+callback to <a class="reference internal" href="../reference/channels/subscriber.html#litestar.channels.subscriber.Subscriber.run_in_background" title="litestar.channels.subscriber.Subscriber.run_in_background"><code class="xref py py-meth docutils literal notranslate"><span class="pre">run_in_background()</span></code></a>. This will cause the WebSocket’s method to be invoked every time
+a new <a class="reference internal" href="#term-event"><span class="xref std std-term">event</span></a> becomes available in the <a class="reference internal" href="#term-event-stream"><span class="xref std std-term">stream</span></a>, but gives control back to the application,
+providing an opportunity to perform other tasks, such as receiving incoming data from the socket.</p>
+<div class="literal-block-wrapper docutils container" id="id12">
+<div class="code-block-caption"><span class="caption-text">Using <a class="reference internal" href="../reference/channels/subscriber.html#litestar.channels.subscriber.Subscriber.run_in_background" title="litestar.channels.subscriber.Subscriber.run_in_background"><code class="xref py py-meth docutils literal notranslate"><span class="pre">run_in_background()</span></code></a> to process events concurrently</span><a class="headerlink" href="#id12" title="Permalink to this code">#</a></div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">WebSocket</span><span class="p">,</span> <span class="n">websocket</span>
 <span class="kn">from</span> <span class="nn">litestar.channels</span> <span class="kn">import</span> <span class="n">ChannelsPlugin</span>
 <span class="kn">from</span> <span class="nn">litestar.channels.backends.memory</span> <span class="kn">import</span> <span class="n">MemoryChannelsBackend</span>
 
@@ -1884,9 +1927,10 @@ tasks, such as receiving incoming data from the socket.</p>
 <span class="p">)</span>
 </pre></div>
 </div>
+</div>
 <div class="admonition important">
 <p class="admonition-title">Important</p>
-<p>Iterating over <a class="reference internal" href="../reference/channels/subscriber.html#litestar.channels.subscriber.Subscriber.iter_events" title="litestar.channels.subscriber.Subscriber.iter_events"><code class="xref py py-meth docutils literal notranslate"><span class="pre">iter_events</span></code></a> should be approached
+<p>Iterating over <a class="reference internal" href="../reference/channels/subscriber.html#litestar.channels.subscriber.Subscriber.iter_events" title="litestar.channels.subscriber.Subscriber.iter_events"><code class="xref py py-meth docutils literal notranslate"><span class="pre">iter_events()</span></code></a> should be approached
 with caution when being used together with WebSockets.</p>
 <p>Since <a class="reference internal" href="../reference/exceptions.html#litestar.exceptions.WebSocketDisconnect" title="litestar.exceptions.WebSocketDisconnect"><code class="xref py py-exc docutils literal notranslate"><span class="pre">WebSocketDisconnect</span></code></a> is only raised after the corresponding ASGI event
 has been <em>received</em>, it can result in an indefinitely suspended coroutine. This can
@@ -1898,19 +1942,19 @@ will be raised to break the loop.</p>
 </section>
 </section>
 <section id="managing-backpressure">
-<h2>Managing backpressure<a class="headerlink" href="#managing-backpressure" title="Permalink to this heading">#</a></h2>
+<h2>Managing <a class="reference internal" href="#term-backpressure"><span class="xref std std-term">backpressure</span></a><a class="headerlink" href="#managing-backpressure" title="Permalink to this heading">#</a></h2>
 <p>Each subscriber manages its own backlog: A queue of unprocessed <a class="reference internal" href="#term-event"><span class="xref std std-term">events</span></a>.
 By default, this backlog is unlimited in size, allowing it to grow indefinitely. For
-most applications, this should be no issue, but when the recipient consistently can’t
+most applications, this should be no issue, but when the recipient consistently can not
 process messages faster than they come in, an application might opt to handle this case.</p>
-<p>The channels plugin provides two different strategies for managing this backpressure:</p>
+<p>The channels plugin provides two different strategies for managing this <a class="reference internal" href="#term-backpressure"><span class="xref std std-term">backpressure</span></a>:</p>
 <ol class="arabic simple">
-<li><p>A backoff strategy, dropping newly incoming messages as long as the backlog is full</p></li>
-<li><p>An eviction strategy, dropping the oldest message in the backlog when a new one is
+<li><p>A <a class="reference internal" href="#term-backoff"><span class="xref std std-term">backoff</span></a> strategy, dropping newly incoming messages as long as the backlog is full</p></li>
+<li><p>An <a class="reference internal" href="#term-eviction"><span class="xref std std-term">eviction</span></a> strategy, dropping the oldest message in the backlog when a new one is
 added while the backlog is full</p></li>
 </ol>
-<div class="literal-block-wrapper docutils container" id="id7">
-<div class="code-block-caption"><span class="caption-text">Backoff strategy</span><a class="headerlink" href="#id7" title="Permalink to this code">#</a></div>
+<div class="literal-block-wrapper docutils container" id="id13">
+<div class="code-block-caption"><span class="caption-text">Backoff strategy</span><a class="headerlink" href="#id13" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar.channels</span> <span class="kn">import</span> <span class="n">ChannelsPlugin</span>
 <span class="kn">from</span> <span class="nn">litestar.channels.memory</span> <span class="kn">import</span> <span class="n">MemoryChannelsBackend</span>
 
@@ -1922,8 +1966,8 @@ added while the backlog is full</p></li>
 </pre></div>
 </div>
 </div>
-<div class="literal-block-wrapper docutils container" id="id8">
-<div class="code-block-caption"><span class="caption-text">Eviction strategy</span><a class="headerlink" href="#id8" title="Permalink to this code">#</a></div>
+<div class="literal-block-wrapper docutils container" id="id14">
+<div class="code-block-caption"><span class="caption-text"><a class="reference internal" href="#term-eviction"><span class="xref std std-term">Eviction</span></a> strategy</span><a class="headerlink" href="#id14" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar.channels</span> <span class="kn">import</span> <span class="n">ChannelsPlugin</span>
 <span class="kn">from</span> <span class="nn">litestar.channels.memory</span> <span class="kn">import</span> <span class="n">MemoryChannelsBackend</span>
 
@@ -1938,9 +1982,9 @@ added while the backlog is full</p></li>
 </section>
 <section id="backends">
 <h2>Backends<a class="headerlink" href="#backends" title="Permalink to this heading">#</a></h2>
-<p>The storing and fanout of messages is handled by a
-<a class="reference internal" href="../reference/channels/backends/base.html#litestar.channels.backends.base.ChannelsBackend" title="litestar.channels.backends.base.ChannelsBackend"><code class="xref py py-class docutils literal notranslate"><span class="pre">ChannelsBackend</span></code></a>. Currently
-implemented are:</p>
+<p>The storing and <a class="reference internal" href="#term-fanout"><span class="xref std std-term">fanout</span></a> of messages is handled by a
+<a class="reference internal" href="../reference/channels/backends/base.html#litestar.channels.backends.base.ChannelsBackend" title="litestar.channels.backends.base.ChannelsBackend"><code class="xref py py-class docutils literal notranslate"><span class="pre">ChannelsBackend</span></code></a>.</p>
+<p>The following backends are currently implemented:</p>
 <dl class="simple">
 <dt><a class="reference internal" href="../reference/channels/backends/memory.html#litestar.channels.backends.memory.MemoryChannelsBackend" title="litestar.channels.backends.memory.MemoryChannelsBackend"><code class="xref py py-class docutils literal notranslate"><span class="pre">MemoryChannelsBacked</span></code></a></dt><dd><p>A basic in-memory backend, mostly useful for testing and local development, but
 still fully capable. Since it stores all data in-process, it can achieve the highest
@@ -1949,18 +1993,16 @@ applications running on multiple processes.</p>
 </dd>
 <dt><a class="reference internal" href="../reference/channels/backends/redis.html#litestar.channels.backends.redis.RedisChannelsPubSubBackend" title="litestar.channels.backends.redis.RedisChannelsPubSubBackend"><code class="xref py py-class docutils literal notranslate"><span class="pre">RedisChannelsPubSubBackend</span></code></a></dt><dd><p>A Redis based backend, using <a class="reference external" href="https://redis.io/docs/manual/pubsub/">Pub/Sub</a> to
 delivery messages. This Redis backend has a low latency and overhead and is
-generally recommended if history is not needed</p>
+generally recommended if <a class="reference internal" href="#term-history"><span class="xref std std-term">history</span></a> is not needed</p>
 </dd>
 <dt><a class="reference internal" href="../reference/channels/backends/redis.html#litestar.channels.backends.redis.RedisChannelsStreamBackend" title="litestar.channels.backends.redis.RedisChannelsStreamBackend"><code class="xref py py-class docutils literal notranslate"><span class="pre">RedisChannelsStreamBackend</span></code></a></dt><dd><p>A redis based backend, using <a class="reference external" href="https://redis.io/docs/data-types/streams/">streams</a>
 to deliver messages. It has a slightly higher latency when publishing than the
-Pub/Sub backend, but achieves the same throughput in message fanout. Recommended
-when history is needed</p>
+Pub/Sub backend, but achieves the same throughput in message <a class="reference internal" href="#term-fanout"><span class="xref std std-term">fanout</span></a>. Recommended
+when <a class="reference internal" href="#term-history"><span class="xref std std-term">history</span></a> is needed</p>
 </dd>
-<dt><a class="reference internal" href="../reference/channels/backends/asyncpg.html#litestar.channels.backends.asyncpg.AsyncPgChannelsBackend" title="litestar.channels.backends.asyncpg.AsyncPgChannelsBackend"><code class="xref py py-class docutils literal notranslate"><span class="pre">AsyncPgChannelsBackend</span></code></a></dt><dd><p>A postgres backend using the
-<a class="reference external" href="https://magicstack.github.io/asyncpg/current/">asyncpg</a> driver</p>
+<dt><a class="reference internal" href="../reference/channels/backends/asyncpg.html#litestar.channels.backends.asyncpg.AsyncPgChannelsBackend" title="litestar.channels.backends.asyncpg.AsyncPgChannelsBackend"><code class="xref py py-class docutils literal notranslate"><span class="pre">AsyncPgChannelsBackend</span></code></a></dt><dd><p>A postgres backend using the <a class="reference external" href="https://magicstack.github.io/asyncpg/current/">asyncpg</a> driver</p>
 </dd>
-<dt><a class="reference internal" href="../reference/channels/backends/psycopg.html#litestar.channels.backends.psycopg.PsycoPgChannelsBackend" title="litestar.channels.backends.psycopg.PsycoPgChannelsBackend"><code class="xref py py-class docutils literal notranslate"><span class="pre">PsycoPgChannelsBackend</span></code></a></dt><dd><p>A postgres backend using the <a class="reference external" href="https://www.psycopg.org/psycopg3/docs/">psycopg3</a>
-async driver</p>
+<dt><a class="reference internal" href="../reference/channels/backends/psycopg.html#litestar.channels.backends.psycopg.PsycoPgChannelsBackend" title="litestar.channels.backends.psycopg.PsycoPgChannelsBackend"><code class="xref py py-class docutils literal notranslate"><span class="pre">PsycoPgChannelsBackend</span></code></a></dt><dd><p>A postgres backend using the <a class="reference external" href="https://www.psycopg.org/psycopg3/docs/">psycopg3</a> async driver</p>
 </dd>
 </dl>
 </section>
@@ -1968,11 +2010,10 @@ async driver</p>
 <h2>Integrating with websocket handlers<a class="headerlink" href="#integrating-with-websocket-handlers" title="Permalink to this heading">#</a></h2>
 <section id="generating-route-handlers">
 <h3>Generating route handlers<a class="headerlink" href="#generating-route-handlers" title="Permalink to this heading">#</a></h3>
-<p>A common pattern is to create a route handler per channel, sending data to the connected
-client from that channel. This can be fully automated, using the plugin to create these
-route handlers.</p>
-<div class="literal-block-wrapper docutils container" id="id9">
-<div class="code-block-caption"><span class="caption-text">Setting <code class="docutils literal notranslate"><span class="pre">create_ws_route_handlers=True</span></code> will create route handlers for all <code class="docutils literal notranslate"><span class="pre">channels</span></code></span><a class="headerlink" href="#id9" title="Permalink to this code">#</a></div>
+<p>A common pattern is to create a route handler per <a class="reference internal" href="#term-channel"><span class="xref std std-term">channel</span></a>, sending data to the connected
+client from that channel. This can be fully automated, using the plugin to create these route handlers.</p>
+<div class="literal-block-wrapper docutils container" id="id15">
+<div class="code-block-caption"><span class="caption-text">Setting <code class="docutils literal notranslate"><span class="pre">create_ws_route_handlers=True</span></code> will create route handlers for all <code class="docutils literal notranslate"><span class="pre">channels</span></code></span><a class="headerlink" href="#id15" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span>
 <span class="kn">from</span> <span class="nn">litestar.channels</span> <span class="kn">import</span> <span class="n">ChannelsPlugin</span>
 <span class="kn">from</span> <span class="nn">litestar.channels.backends.memory</span> <span class="kn">import</span> <span class="n">MemoryChannelsBackend</span>
@@ -1987,11 +2028,11 @@ route handlers.</p>
 </pre></div>
 </div>
 </div>
-<p>The generated route handlers can optionally be configured to send the channel’s history
+<p>The generated route handlers can optionally be configured to send the <a class="reference internal" href="#term-channel"><span class="xref std std-term">channel</span></a>’s <a class="reference internal" href="#term-history"><span class="xref std std-term">history</span></a>
 after a client has connected:</p>
-<div class="literal-block-wrapper docutils container" id="id10">
-<div class="code-block-caption"><span class="caption-text">Sending the first 10 history entries after a client connects</span><a class="headerlink" href="#id10" title="Permalink to this code">#</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span>
+<div class="literal-block-wrapper docutils container" id="id16">
+<div class="code-block-caption"><span class="caption-text">Sending the first 10 <a class="reference internal" href="#term-history"><span class="xref std std-term">history</span></a> entries after a client connects</span><a class="headerlink" href="#id16" title="Permalink to this code">#</a></div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span>
 <span class="kn">from</span> <span class="nn">litestar.channels</span> <span class="kn">import</span> <span class="n">ChannelsPlugin</span>
 <span class="kn">from</span> <span class="nn">litestar.channels.backends.memory</span> <span class="kn">import</span> <span class="n">MemoryChannelsBackend</span>
 
@@ -2009,8 +2050,8 @@ after a client has connected:</p>
 </div>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
-<p>When using the <code class="docutils literal notranslate"><span class="pre">arbitrary_channels_allowed</span></code> flag on the <a class="reference internal" href="../reference/channels/plugin.html#litestar.channels.plugin.ChannelsPlugin" title="litestar.channels.plugin.ChannelsPlugin"><code class="xref py py-class docutils literal notranslate"><span class="pre">ChannelsPlugin</span></code></a>, a
-single route handler will be generated instead, using a
+<p>When using the <a class="reference internal" href="../reference/channels/plugin.html#litestar.channels.plugin.ChannelsPlugin.params.arbitrary_channels_allowed" title="litestar.channels.plugin.ChannelsPlugin"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">arbitrary_channels_allowed</span></code></a> parameter
+on the <a class="reference internal" href="../reference/channels/plugin.html#litestar.channels.plugin.ChannelsPlugin" title="litestar.channels.plugin.ChannelsPlugin"><code class="xref py py-class docutils literal notranslate"><span class="pre">ChannelsPlugin</span></code></a>, a single route handler will be generated instead, using a
 <a class="reference internal" href="routing/parameters.html#path-parameters"><span class="std std-ref">path parameter</span></a> to specify the channel name</p>
 </div>
 </section>
@@ -2062,21 +2103,22 @@ single route handler will be generated instead, using a
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#basic-concepts">Basic concepts</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#glossary">Glossary</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#flowcharts">Flowcharts</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-channelsplugin">The <code class="docutils literal notranslate"><span class="pre">ChannelsPlugin</span></code></a><ul class="visible nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#configuring-the-channels">Configuring the channels</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-channelsplugin">The <code class="xref py py-class docutils literal notranslate"><span class="pre">ChannelsPlugin</span></code></a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#configuring-the-channels">Configuring the <span class="xref std std-term">channels</span></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#publishing-data">Publishing data</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#managing-subscriptions">Managing subscriptions</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#managing-history">Managing history</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#managing-subscriptions">Managing <span class="xref std std-term">subscriptions</span></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#managing-history">Managing <span class="xref std std-term">history</span></a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-subscriber">The <code class="docutils literal notranslate"><span class="pre">Subscriber</span></code></a><ul class="visible nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#consuming-the-event-stream">Consuming the event stream</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-subscriber">The <code class="xref py py-class docutils literal notranslate"><span class="pre">Subscriber</span></code></a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#consuming-the-event-stream">Consuming the <span class="xref std std-term">event stream</span></a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#managing-backpressure">Managing backpressure</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#managing-backpressure">Managing <span class="xref std std-term">backpressure</span></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#backends">Backends</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#integrating-with-websocket-handlers">Integrating with websocket handlers</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#generating-route-handlers">Generating route handlers</a></li>
@@ -2110,7 +2152,7 @@ single route handler will be generated instead, using a
 
   <p class="copyright">
     
-      © Copyright 2024, Litestar-Org.
+      © Copyright 2025, Litestar-Org.
       <br/>
     
   </p>

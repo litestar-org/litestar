@@ -32,7 +32,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
     <link rel="stylesheet" type="text/css" href="../../_static/sphinx_paramlinks.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/style.css?v=1d4867fe" />
+    <link rel="stylesheet" type="text/css" href="../../_static/style.css?v=b5051ef4" />
     <link rel="stylesheet" type="text/css" href="../../_static/litestar-sphinx-theme.css?v=9e3812bb" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
@@ -1811,7 +1811,7 @@ Click to see an example of mounting an ASGI app<div class="sd-summary-down docut
     <span class="kn">from</span> <span class="nn">litestar.types</span> <span class="kn">import</span> <span class="n">Receive</span><span class="p">,</span> <span class="n">Scope</span><span class="p">,</span> <span class="n">Send</span>
 
 
-<span class="nd">@asgi</span><span class="p">(</span><span class="s2">&quot;/some/sub-path&quot;</span><span class="p">,</span> <span class="n">is_mount</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="nd">@asgi</span><span class="p">(</span><span class="s2">&quot;/some/sub-path&quot;</span><span class="p">,</span> <span class="n">is_mount</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">copy_scope</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span> <span class="nf">my_asgi_app</span><span class="p">(</span><span class="n">scope</span><span class="p">:</span> <span class="s2">&quot;Scope&quot;</span><span class="p">,</span> <span class="n">receive</span><span class="p">:</span> <span class="s2">&quot;Receive&quot;</span><span class="p">,</span> <span class="n">send</span><span class="p">:</span> <span class="s2">&quot;Send&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Args:</span>
@@ -1869,7 +1869,7 @@ Click to see an example of mounting a Starlette app<div class="sd-summary-down d
     <span class="k">return</span> <span class="n">JSONResponse</span><span class="p">({</span><span class="s2">&quot;forwarded_path&quot;</span><span class="p">:</span> <span class="n">request</span><span class="o">.</span><span class="n">url</span><span class="o">.</span><span class="n">path</span><span class="p">})</span>
 
 
-<span class="n">starlette_app</span> <span class="o">=</span> <span class="n">asgi</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/some/sub-path&quot;</span><span class="p">,</span> <span class="n">is_mount</span><span class="o">=</span><span class="kc">True</span><span class="p">)(</span>
+<span class="n">starlette_app</span> <span class="o">=</span> <span class="n">asgi</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/some/sub-path&quot;</span><span class="p">,</span> <span class="n">is_mount</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">copy_scope</span><span class="o">=</span><span class="kc">True</span><span class="p">)(</span>
     <span class="n">Starlette</span><span class="p">(</span>
         <span class="n">routes</span><span class="o">=</span><span class="p">[</span>
             <span class="n">Route</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">index</span><span class="p">),</span>
@@ -1990,7 +1990,7 @@ an indepth discussion of the pertinent code.</p>
 
   <p class="copyright">
     
-      © Copyright 2024, Litestar-Org.
+      © Copyright 2025, Litestar-Org.
       <br/>
     
   </p>
