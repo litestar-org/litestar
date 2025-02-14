@@ -1,17 +1,12 @@
 from __future__ import annotations
 
 import math
-import sys
 from abc import ABC, abstractmethod
 from collections import defaultdict
+from contextlib import AbstractAsyncContextManager as AsyncContextManager
 from contextlib import AsyncExitStack
 from functools import partial
 from typing import TYPE_CHECKING, Any, Sequence
-
-if sys.version_info < (3, 9):
-    from typing import AsyncContextManager
-else:
-    from contextlib import AbstractAsyncContextManager as AsyncContextManager
 
 import anyio
 
