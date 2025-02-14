@@ -390,9 +390,10 @@ def test_image_upload() -> None:
     async def hello_world(data: UploadFile = Body(media_type=RequestEncodingType.MULTI_PART)) -> None:
         await data.read()
 
-    with open(join(dirname(realpath(__file__)), "flower.jpeg"), "rb") as f, create_test_client(
-        route_handlers=[hello_world]
-    ) as client:
+    with (
+        open(join(dirname(realpath(__file__)), "flower.jpeg"), "rb") as f,
+        create_test_client(route_handlers=[hello_world]) as client,
+    ):
         data = f.read()
         response = client.post("/", files={"data": data})
         assert response.status_code == HTTP_201_CREATED

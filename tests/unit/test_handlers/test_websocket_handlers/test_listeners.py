@@ -370,9 +370,10 @@ def test_hook_dependencies() -> None:
     def handler(data: bytes) -> None:
         pass
 
-    with create_test_client([handler], dependencies={"some": some_dependency}) as client, client.websocket_connect(
-        "/foo"
-    ) as ws:
+    with (
+        create_test_client([handler], dependencies={"some": some_dependency}) as client,
+        client.websocket_connect("/foo") as ws,
+    ):
         ws.send_text("")
 
     on_accept_kwargs = on_accept_mock.call_args_list[0].kwargs
@@ -407,9 +408,10 @@ def test_websocket_listener_class_hook_dependencies() -> None:
         def on_receive(self, data: bytes) -> None:  # pyright: ignore
             pass
 
-    with create_test_client([Listener], dependencies={"some": some_dependency}) as client, client.websocket_connect(
-        "/foo"
-    ) as ws:
+    with (
+        create_test_client([Listener], dependencies={"some": some_dependency}) as client,
+        client.websocket_connect("/foo") as ws,
+    ):
         ws.send_text("")
 
     on_accept_kwargs = on_accept_mock.call_args_list[0].kwargs

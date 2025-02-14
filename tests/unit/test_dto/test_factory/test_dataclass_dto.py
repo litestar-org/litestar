@@ -31,67 +31,6 @@ def fx_dto_type() -> type[DataclassDTO[Model]]:
     return DataclassDTO[Model]
 
 
-@pytest.mark.skipif(sys.version_info >= (3, 9), reason="generic builtin collection")
-def test_dataclass_field_definitions_38(dto_type: type[DataclassDTO[Model]]) -> None:
-    expected = [
-        replace(
-            DTOFieldDefinition.from_field_definition(
-                field_definition=FieldDefinition.from_kwarg(
-                    name="a",
-                    annotation=int,
-                ),
-                default_factory=None,
-                model_name=Model.__name__,
-                dto_field=DTOField(),
-            ),
-            metadata=ANY,
-            type_wrappers=ANY,
-            raw=ANY,
-        ),
-        replace(
-            DTOFieldDefinition.from_field_definition(
-                field_definition=FieldDefinition.from_kwarg(name="b", annotation=str, default="b"),
-                default_factory=None,
-                model_name=Model.__name__,
-                dto_field=DTOField(),
-            ),
-            metadata=ANY,
-            type_wrappers=ANY,
-            raw=ANY,
-        ),
-        replace(
-            DTOFieldDefinition.from_field_definition(
-                field_definition=FieldDefinition.from_kwarg(
-                    name="c",
-                    annotation=List[int],
-                ),
-                default_factory=list,
-                model_name=Model.__name__,
-                dto_field=DTOField(),
-            ),
-            metadata=ANY,
-            type_wrappers=ANY,
-            raw=ANY,
-        ),
-        replace(
-            DTOFieldDefinition.from_field_definition(
-                field_definition=FieldDefinition.from_kwarg(
-                    name="computed",
-                    annotation=str,
-                ),
-                default_factory=None,
-                model_name=Model.__name__,
-                dto_field=DTOField(mark="read-only"),
-            ),
-            metadata=ANY,
-            type_wrappers=ANY,
-            raw=ANY,
-        ),
-    ]
-    for field_def, exp in itertools.zip_longest(expected, dto_type.generate_field_definitions(Model), fillvalue=None):
-        assert field_def == exp
-
-
 def test_dataclass_field_definitions(dto_type: type[DataclassDTO[Model]]) -> None:
     expected = [
         replace(

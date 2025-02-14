@@ -21,18 +21,18 @@ from litestar.middleware.session.client_side import (
 from litestar.serialization import encode_json
 from litestar.testing import RequestFactory, create_test_client
 from litestar.types.asgi_types import HTTPResponseStartEvent
-from tests.helpers import randbytes
+from tests.helpers import RANDOM
 
 
 @pytest.mark.parametrize(
     "secret, should_raise",
     [
-        [randbytes(16), False],
-        [randbytes(24), False],
-        [randbytes(32), False],
-        [randbytes(17), True],
-        [randbytes(4), True],
-        [randbytes(100), True],
+        [RANDOM.randbytes(16), False],
+        [RANDOM.randbytes(24), False],
+        [RANDOM.randbytes(32), False],
+        [RANDOM.randbytes(17), True],
+        [RANDOM.randbytes(4), True],
+        [RANDOM.randbytes(100), True],
         [b"", True],
     ],
 )

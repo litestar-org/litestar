@@ -25,16 +25,6 @@ T = TypeVar("T")
 RANDOM = random.Random(b"bA\xcd\x00\xa9$\xa7\x17\x1c\x10")
 
 
-# TODO: Remove when dropping 3.9
-if sys.version_info < (3, 9):
-
-    def randbytes(n: int) -> bytes:
-        return RANDOM.getrandbits(8 * n).to_bytes(n, "little")
-
-else:
-    randbytes = RANDOM.randbytes
-
-
 if sys.version_info >= (3, 12):
     getHandlerByName = logging.getHandlerByName
 else:
