@@ -138,7 +138,7 @@ returning a normal response, it will send a response with the HTTP status code g
 
 .. figure:: images/done-john.png
 
-    Try to access http://127.0.0.1?done=john now and you will get this error message
+    Try to access http://127.0.0.1:8000?done=john now and you will get this error message
 
 
 Now we've got that out of the way, but your code has grown to be quite complex for such
