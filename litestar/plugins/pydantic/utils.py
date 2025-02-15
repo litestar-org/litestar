@@ -6,9 +6,7 @@ import datetime
 import re
 from dataclasses import dataclass
 from inspect import isclass
-from typing import TYPE_CHECKING, Any, Callable, Literal, Optional
-
-from typing_extensions import Annotated, get_type_hints
+from typing import TYPE_CHECKING, Annotated, Any, Callable, Literal, Optional, get_type_hints
 
 from litestar.openapi.spec import Example
 from litestar.params import KwargDefinition, ParameterKwarg
