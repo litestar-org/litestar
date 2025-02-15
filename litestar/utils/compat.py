@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import sys
 from typing import TYPE_CHECKING, TypeVar
 
 from litestar.types import Empty, EmptyType
@@ -13,10 +14,9 @@ if TYPE_CHECKING:
 T = TypeVar("T")
 D = TypeVar("D")
 
-try:
+if sys.version_info < (3, 10):
     async_next = anext  # type: ignore[name-defined]
-except NameError:
-
+else:
     async def async_next(gen: AsyncGenerator[T, Any], default: D | EmptyType = Empty) -> T | D:
         """Backwards compatibility shim for Python<3.10."""
         try:
