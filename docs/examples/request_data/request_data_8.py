@@ -1,6 +1,6 @@
 from typing import Any, Dict
 
-from pydantic import BaseConfig, BaseModel
+from pydantic import BaseModel, ConfigDict
 from typing_extensions import Annotated
 
 from litestar import Litestar, post
@@ -10,11 +10,9 @@ from litestar.params import Body
 
 
 class FormData(BaseModel):
+    model_config = ConfigDict(arbitrary_types_allowed=True)
     cv: UploadFile
     diploma: UploadFile
-
-    class Config(BaseConfig):
-        arbitrary_types_allowed = True
 
 
 @post(path="/")
