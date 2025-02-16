@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import re
 from collections import defaultdict
-from typing import TYPE_CHECKING, _GenericAlias
+from typing import TYPE_CHECKING, _GenericAlias  # type: ignore[attr-defined]
 
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.openapi.spec import Reference, Schema
