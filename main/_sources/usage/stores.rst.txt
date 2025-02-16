@@ -35,7 +35,7 @@ Built-in stores
     A store backend by `redis <https://redis.io/>`_. It offers all the guarantees and features of Redis, making it
     suitable for almost all applications. Offers `namespacing`_.
 
-:class:`ValKeyStore <litestar.stores.valkey.ValkeyStore>`
+:class:`ValkeyStore <litestar.stores.valkey.ValkeyStore>`
     A store backed by `valkey <https://valkey.io>`_, a fork of Redis created as the result of Redis' license changes.
     Similarly to the RedisStore, it is suitable for almost all applications and supports `namespacing`_.
     At the time of writing, :class:`Valkey <valkey.asyncio.Valkey>` is equivalent to :class:`redis.asyncio.Redis`,
