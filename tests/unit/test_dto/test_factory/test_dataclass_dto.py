@@ -1,13 +1,11 @@
 from __future__ import annotations
 
 import itertools
-import sys
 from dataclasses import dataclass, field, replace
-from typing import ClassVar, List
+from typing import Annotated, ClassVar
 from unittest.mock import ANY
 
 import pytest
-from typing_extensions import Annotated
 
 from litestar.dto import DataclassDTO, DTOField
 from litestar.dto.data_structures import DTOFieldDefinition
@@ -18,7 +16,7 @@ from litestar.typing import FieldDefinition
 class Model:
     a: int
     b: str = field(default="b")
-    c: List[int] = field(default_factory=list)  # noqa: UP006
+    c: list[int] = field(default_factory=list)
     d: ClassVar[float] = 1.0
 
     @property
@@ -62,7 +60,7 @@ def test_dataclass_field_definitions(dto_type: type[DataclassDTO[Model]]) -> Non
             DTOFieldDefinition.from_field_definition(
                 field_definition=FieldDefinition.from_kwarg(
                     name="c",
-                    annotation=List[int],
+                    annotation=list[int],
                 ),
                 default_factory=list,
                 model_name=Model.__name__,
@@ -87,8 +85,8 @@ def test_dataclass_field_definitions(dto_type: type[DataclassDTO[Model]]) -> Non
             raw=ANY,
         ),
     ]
-    for field_def, exp in itertools.zip_longest(expected, dto_type.generate_field_definitions(Model), fillvalue=None):
-        assert field_def == exp
+    for exp, field_def in itertools.zip_longest(expected, dto_type.generate_field_definitions(Model), fillvalue=None):
+        assert exp == field_def
 
 
 def test_dataclass_detect_nested(dto_type: type[DataclassDTO[Model]]) -> None:

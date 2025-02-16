@@ -2,7 +2,7 @@ import os
 import secrets
 import time
 from base64 import b64decode, b64encode
-from typing import Any, Dict
+from typing import Any
 from unittest import mock
 
 import pytest
@@ -78,7 +78,7 @@ def test_max_age_validation(max_age: int, should_raise: bool) -> None:
         CookieBackendConfig(secret=os.urandom(16), key="a", max_age=max_age)
 
 
-def create_session(size: int = 16) -> Dict[str, str]:
+def create_session(size: int = 16) -> dict[str, str]:
     return {"key": secrets.token_hex(size)}
 
 
@@ -143,7 +143,7 @@ def test_session_cookie_name_matching(cookie_session_backend_config: "CookieBack
     session_data = {"foo": "bar"}
 
     @get("/")
-    def handler(request: Request) -> Dict[str, Any]:
+    def handler(request: Request) -> dict[str, Any]:
         return request.session
 
     @post("/")

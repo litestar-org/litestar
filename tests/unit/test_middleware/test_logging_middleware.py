@@ -1,9 +1,9 @@
+from collections.abc import Generator
 from logging import INFO
-from typing import TYPE_CHECKING, Any, Dict, Generator
+from typing import TYPE_CHECKING, Annotated, Any
 
 import pytest
 from structlog.testing import capture_logs
-from typing_extensions import Annotated
 
 from litestar import Response, get, post
 from litestar.config.compression import CompressionConfig
@@ -201,7 +201,7 @@ def test_logging_middleware_compressed_response_body(
 
 def test_logging_middleware_post_body() -> None:
     @post("/")
-    def post_handler(data: Dict[str, str]) -> Dict[str, str]:
+    def post_handler(data: dict[str, str]) -> dict[str, str]:
         return data
 
     with create_test_client(
@@ -238,7 +238,7 @@ def test_logging_messages_are_not_doubled(
     # https://github.com/litestar-org/litestar/issues/896
 
     @get("/")
-    async def hello_world_handler() -> Dict[str, str]:
+    async def hello_world_handler() -> dict[str, str]:
         return {"hello": "world"}
 
     logging_middleware_config = LoggingMiddlewareConfig(logger_name=logger_name)
@@ -313,7 +313,7 @@ def test_logging_middleware_with_session_middleware(session_backend_config_memor
 def test_structlog_invalid_request_body_handled() -> None:
     # https://github.com/litestar-org/litestar/issues/3063
     @post("/")
-    async def hello_world(data: Dict[str, Any]) -> Dict[str, Any]:
+    async def hello_world(data: dict[str, Any]) -> dict[str, Any]:
         return data
 
     with create_test_client(

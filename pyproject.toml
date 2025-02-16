@@ -471,6 +471,7 @@ known-first-party = ["litestar", "tests", "examples"]
 "litestar/params.py" = ["N802"]
 "litestar/utils/typing.py" = ["UP006", "UP035"]
 "litestar/utils/predicates.py" = ["UP006", "UP035"]
+"tests/unit/test_typing.py" = ["UP006", "UP035"]
 "test_apps/**/*.*" = ["D", "TRY", "EM", "S", "PTH"]
 "tests/**/*.*" = [
   "A",
