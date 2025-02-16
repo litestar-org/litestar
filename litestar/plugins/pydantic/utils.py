@@ -335,7 +335,7 @@ def _create_field_definition_v1(  # noqa: C901
             )
             field_definition_kwargs["raw"] = field_annotation
             # on < 3.9, these builtins are not generic
-            origin = get_safe_generic_origin(None, field_annotation.__origin__)
+            origin = get_safe_generic_origin(field_annotation.__origin__, field_annotation.__origin__)
             field_annotation = origin[field_annotation.item_type]
 
     if kwarg_definition is None and kwargs:
