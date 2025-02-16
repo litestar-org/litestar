@@ -9,7 +9,7 @@ from litestar.dto import dto_field
 from litestar.plugins.sqlalchemy import SQLAlchemySerializationPlugin
 
 if TYPE_CHECKING:
-    from typing import List
+    pass
 
 
 class Base(DeclarativeBase): ...
@@ -23,7 +23,7 @@ class TodoItem(Base):
 
 
 @post("/")
-async def add_item(data: TodoItem) -> List[TodoItem]:
+async def add_item(data: TodoItem) -> list[TodoItem]:
     data.super_secret_value = "This is a secret"
     return [data]
 
