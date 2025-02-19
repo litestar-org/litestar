@@ -71,7 +71,7 @@ body:
       render: text
     validations:
       required: false
-  - type: input
+  - type: textarea
     id: version
     attributes:
       label: "Litestar Version"
