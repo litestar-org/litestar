@@ -785,9 +785,6 @@
         - ``--schema``, to include the routes serving OpenAPI schema and docs
         - ``--exclude`` to exclude routes matching a specified pattern
 
-        .. seealso::
-            :ref:`usage/cli:routes`
-
     .. change:: Improve performance of threaded synchronous execution
         :type: misc
         :pr: 2937
