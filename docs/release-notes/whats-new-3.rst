@@ -14,7 +14,7 @@ Imports
 -------
 
 +----------------------------------------------------+------------------------------------------------------------------------+
-| ``2.x``                                           | ``3.x``                                                                |
+| ``2.x``                                            | ``3.x``                                                                |
 +====================================================+========================================================================+
 | **SECTION**                                                                                                                 |
 +----------------------------------------------------+------------------------------------------------------------------------+
@@ -199,8 +199,7 @@ has been applied automatically behind the scenes if necessary, no action is requ
 Update MessagePack media type to ``application/vnd.msgpack``
 ------------------------------------------------------------
 
-Change the media type of :attr:`~enums.MediaType.MESSAGEPACK` and
-:attr:`~enums.RequestEncodingType.MESSAGEPACK` from ``application/x-msgpack`` to the
+Change the default media type of ``MessagePack`` from ``application/x-msgpack`` to the
 newly introduced official ``application/vnd.msgpack``.
 
 https://www.iana.org/assignments/media-types/application/vnd.msgpack
@@ -210,7 +209,7 @@ Deprecated ``resolve_`` methods on route handlers
 -------------------------------------------------
 
 All ``resolve_`` methods on the route handlers
-(e.g. :meth:`~litestar.handlers.HTTPRouteHandler.resolve_response_headers`) have been
+(e.g. ``HTTPRouteHandler.resolve_response_headers``) have been
 deprecated and will be removed in ``4.0``. The attributes can now safely be accessed
 directly (e.g. `HTTPRouteHandlers.response_headers`).
 
