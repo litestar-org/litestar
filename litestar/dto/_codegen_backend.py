@@ -8,14 +8,12 @@ import linecache
 import re
 import secrets
 import textwrap
-from contextlib import contextmanager, nullcontext
+from collections.abc import Generator, Mapping
+from contextlib import AbstractContextManager, contextmanager, nullcontext
 from typing import (
     TYPE_CHECKING,
     Any,
     Callable,
-    ContextManager,
-    Generator,
-    Mapping,
     Protocol,
     cast,
 )
@@ -177,7 +175,7 @@ class DTOCodegenBackend(DTOBackend):
 
 
 class FieldAccessManager(Protocol):
-    def __call__(self, source_name: str, field_name: str, expect_optional: bool) -> ContextManager[str]: ...
+    def __call__(self, source_name: str, field_name: str, expect_optional: bool) -> AbstractContextManager[str]: ...
 
 
 class TransferFunctionFactory:
