@@ -102,6 +102,19 @@ jobs:
       coverage: ${{ (matrix.python-version == '3.12' || matrix.python-version == '3.8') }}
       python-version: ${{ matrix.python-version }}
 
+  # add an aggregate step here to check if any of the steps of the matrix 'test' job
+  # failed. this allows us to have dynamic or diverging steps in the matrix, while still
+  # being able to mark the 'test' step as a required check for a PR to be considered
+  # mergeable, without having to specify each individual matrix item.
+  test_success:
+    needs: test
+    # ensure this step always runs
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Report success or fail
+        run: exit ${{ needs.test.result == 'success' && '0' || '1' }}
+
   test_integration:
     name: Test server integration
     runs-on: ubuntu-latest
