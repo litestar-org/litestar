@@ -68,7 +68,7 @@ def get_exception_handler(exception_handlers: ExceptionHandlersMap, exc: Excepti
         default_handler = exception_handlers.get(HTTP_500_INTERNAL_SERVER_ERROR)
 
     return next(
-        (exception_handlers[cast("Type[Exception]", cls)] for cls in getmro(type(exc)) if cls in exception_handlers),
+        (exception_handlers[cast("type[Exception]", cls)] for cls in getmro(type(exc)) if cls in exception_handlers),
         default_handler,
     )
 

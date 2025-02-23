@@ -1,8 +1,9 @@
 from __future__ import annotations
 
 import contextlib
+from collections.abc import Awaitable, Iterable, Mapping, Sequence
 from enum import Enum
-from typing import TYPE_CHECKING, AnyStr, Awaitable, Callable, Iterable, Mapping, Sequence, TypedDict, cast
+from typing import TYPE_CHECKING, AnyStr, Callable, TypedDict, cast
 
 from msgspec.msgpack import decode as _decode_msgpack_plain
 

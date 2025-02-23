@@ -10,6 +10,8 @@ __all__ = ("build_exclude_path_pattern", "should_bypass_middleware")
 from litestar.utils.warnings import warn_middleware_excluded_on_all_routes
 
 if TYPE_CHECKING:
+    from collections.abc import Sequence
+
     from litestar.types import Method, Scope, Scopes
 
 

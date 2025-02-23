@@ -4,7 +4,7 @@ from __future__ import annotations
 import inspect
 from dataclasses import dataclass, field
 from types import ModuleType
-from typing import TYPE_CHECKING, Callable, Dict, List, Optional
+from typing import TYPE_CHECKING, Callable, Optional
 from unittest.mock import MagicMock
 
 import pytest
@@ -41,11 +41,11 @@ class NestedDC:
 class DC:
     a: int
     nested: NestedDC
-    nested_list: List[NestedDC]
-    nested_mapping: Dict[str, NestedDC]
+    nested_list: list[NestedDC]
+    nested_mapping: dict[str, NestedDC]
     integer: int
     b: str = field(default="b")
-    c: List[int] = field(default_factory=list)
+    c: list[int] = field(default_factory=list)
     optional: Optional[str] = None
 
 
@@ -154,7 +154,7 @@ def test_backend_iterable_annotation(dto_factory: type[DataclassDTO], backend_cl
     backend = DTOBackend(
         handler_id="test",
         dto_factory=dto_factory,
-        field_definition=FieldDefinition.from_annotation(List[DC]),
+        field_definition=FieldDefinition.from_annotation(list[DC]),
         model_type=DC,
         wrapper_attribute_name=None,
         is_data_field=True,
@@ -283,7 +283,7 @@ def test_backend_populate_collection_data_from_raw(
     backend = backend_cls(
         handler_id="test",
         dto_factory=dto_factory,
-        field_definition=FieldDefinition.from_annotation(List[DC]),
+        field_definition=FieldDefinition.from_annotation(list[DC]),
         model_type=DC,
         wrapper_attribute_name=None,
         is_data_field=True,
@@ -313,7 +313,7 @@ def test_backend_encode_collection_data(
     backend = backend_cls(
         handler_id="test",
         dto_factory=dto_factory,
-        field_definition=FieldDefinition.from_annotation(List[DC]),
+        field_definition=FieldDefinition.from_annotation(list[DC]),
         model_type=DC,
         wrapper_attribute_name=None,
         is_data_field=True,
@@ -430,7 +430,7 @@ class NestedNestedModel:
 @dataclass
 class NestedModel:
     c: int
-    d: List[NestedNestedModel]
+    d: list[NestedNestedModel]
 
 @dataclass
 class Model:
@@ -486,7 +486,7 @@ class NestedNestedModel:
 @dataclass
 class NestedModel:
     c: int
-    d: List[NestedNestedModel]
+    d: list[NestedNestedModel]
 
 @dataclass
 class Model:
