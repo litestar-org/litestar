@@ -588,6 +588,7 @@ see [the contribution guide](CONTRIBUTING.rst).
     </tr>
     <tr>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/oek1ng"><img src="https://avatars.githubusercontent.com/u/193062679?v=4?s=100" width="100px;" alt="oek1ng"/><br /><sub><b>oek1ng</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=oek1ng" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/Ada-lave"><img src="https://avatars.githubusercontent.com/u/113159483?v=4?s=100" width="100px;" alt="Vladislav"/><br /><sub><b>Vladislav</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=Ada-lave" title="Documentation">📖</a></td>
     </tr>
   </tbody>
 </table>

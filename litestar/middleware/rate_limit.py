@@ -189,7 +189,7 @@ class RateLimitMiddleware(AbstractMiddleware):
         """Create ratelimit response headers.
 
         Notes:
-            * see the `IETF RateLimit draft <https://datatracker.ietf.org/doc/draft-ietf-httpapi-ratelimit-headers/>_`
+            * see the `IETF RateLimit draft <https://datatracker.ietf.org/doc/draft-ietf-httpapi-ratelimit-headers/>`_
 
         Args:
             cache_object:A :class:`CacheObject`.
