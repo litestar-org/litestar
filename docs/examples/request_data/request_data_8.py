@@ -1,7 +1,6 @@
-from typing import Any
+from typing import Annotated, Any
 
 from pydantic import BaseModel, ConfigDict
-from typing_extensions import Annotated
 
 from litestar import Litestar, post
 from litestar.datastructures import UploadFile

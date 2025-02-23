@@ -8,8 +8,6 @@ from litestar import Litestar, post
 from litestar.dto import dto_field
 from litestar.plugins.sqlalchemy import SQLAlchemySerializationPlugin
 
-if TYPE_CHECKING:
-    pass
 
 
 class Base(DeclarativeBase): ...

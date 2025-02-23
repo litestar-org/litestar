@@ -7,8 +7,6 @@ from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 from litestar import Litestar, post
 from litestar.plugins.sqlalchemy import SQLAlchemyDTO
 
-if TYPE_CHECKING:
-    pass
 
 
 class Base(DeclarativeBase): ...
