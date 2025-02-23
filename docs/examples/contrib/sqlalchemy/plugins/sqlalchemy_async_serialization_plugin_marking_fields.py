@@ -1,13 +1,10 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
-
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 from litestar import Litestar, post
 from litestar.dto import dto_field
 from litestar.plugins.sqlalchemy import SQLAlchemySerializationPlugin
-
 
 
 class Base(DeclarativeBase): ...
