@@ -1,12 +1,14 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Iterable
+from typing import TYPE_CHECKING
 
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.routes.base import BaseRoute
 from litestar.types import HTTPScope
 
 if TYPE_CHECKING:
+    from collections.abc import Iterable
+
     from litestar._kwargs import KwargsModel
     from litestar.connection import Request
     from litestar.types import ASGIApp, HTTPScope, Method, Receive, Scope, Send
