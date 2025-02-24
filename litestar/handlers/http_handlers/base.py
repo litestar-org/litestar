@@ -110,6 +110,7 @@ class HTTPRouteHandler(BaseRouteHandler):
         "response_headers",
         "responses",
         "security",
+        "security_override",
         "status_code",
         "summary",
         "sync_to_thread",
@@ -161,6 +162,7 @@ class HTTPRouteHandler(BaseRouteHandler):
         responses: Mapping[int, ResponseSpec] | None = None,
         signature_namespace: Mapping[str, Any] | None = None,
         security: Sequence[SecurityRequirement] | None = None,
+        security_override: Sequence[SecurityRequirement] | None = None,
         summary: str | None = None,
         tags: Sequence[str] | None = None,
         type_decoders: TypeDecodersSequence | None = None,
@@ -235,7 +237,15 @@ class HTTPRouteHandler(BaseRouteHandler):
                 This list should describe all exceptions raised within the route handler's function/method. The Litestar
                 ValidationException will be added automatically for the schema if any validation is involved.
             response_description: Text used for the route's response schema description section.
-            security: A sequence of dictionaries that contain information about which security scheme can be used on the endpoint.
+            security: A sequence of security requirement dictionaries that contain information about which security
+                schemes should be used on the endpoint. Will be appended to existing security requirements.
+                It can be overridden by routes that specify the `security_override` parameter.
+                Cannot be passed together with the `security_override` parameter.
+                See :data:`SecurityRequirement <.openapi.spec.SecurityRequirement>` for details.
+            security_override: A sequence of dicts that will override the previous security requirements of the
+                previous layers. It can be overridden by child routes using specifying the `security_override` parameter.
+                Cannot be passed together with the `security` parameter.
+                See :data:`SecurityRequirement <.openapi.spec.SecurityRequirement>` for details.
             summary: Text used for the route's schema summary section.
             tags: A sequence of string tags that will be appended to the OpenAPI schema.
             type_decoders: A sequence of tuples, each composed of a predicate testing for type identity and a msgspec hook for deserialization.
@@ -244,6 +254,11 @@ class HTTPRouteHandler(BaseRouteHandler):
         """
         if not http_method:
             raise ImproperlyConfiguredException("An http_method kwarg is required")
+
+        if security and security_override:
+            raise ImproperlyConfiguredException(
+                "Both 'security' and 'security_override' cannot be specified simultaneously."
+            )
 
         self.http_methods = normalize_http_method(http_methods=http_method)
         self.status_code = status_code or get_default_status_code(http_methods=self.http_methods)
@@ -293,6 +308,7 @@ class HTTPRouteHandler(BaseRouteHandler):
         self.summary = summary
         self.tags = tags
         self.security = security
+        self.security_override = security_override
         self.responses = responses
         # memoized attributes, defaulted to Empty
         self._resolved_after_response: AsyncAnyCallable | None | EmptyType = Empty
@@ -449,8 +465,9 @@ class HTTPRouteHandler(BaseRouteHandler):
     def resolve_security(self) -> list[SecurityRequirement] | None:
         """Resolve the security property by starting from the route handler and moving up.
 
-        Security requirements are additive, so the security requirements of the route handler are the sum of all
-        security requirements of the ownership layers.
+        Security requirements provided via the `security` parameter across the routing layers are
+        additive, but with `security_override` are overridden with the latest value in the most
+        specific layer.
 
         Returns:
             list[SecurityRequirement]: The resolved security property.
@@ -460,7 +477,10 @@ class HTTPRouteHandler(BaseRouteHandler):
 
         self._resolved_security = None
         for layer in self.ownership_layers:
-            if isinstance(layer.security, Sequence) and layer.security is not None:
+            if isinstance(layer.security_override, Sequence):
+                self._resolved_security = list(layer.security_override)
+
+            elif isinstance(layer.security, Sequence):
                 if self._resolved_security is None:
                     self._resolved_security = []
 
