@@ -1,5 +1,4 @@
 from typing import TYPE_CHECKING, Union
-from typing import Tuple
 from warnings import catch_warnings
 
 import pytest
@@ -287,7 +286,7 @@ def test_asgi_middleware_exclude_by_pattern_tuple() -> None:
 
 
 @pytest.mark.parametrize("excludes", ["/", ("/", "/foo"), "/*", "/.*"])
-def test_asgi_middleware_exclude_by_pattern_warns_if_exclude_all(excludes: Union[str, Tuple[str, ...]]) -> None:
+def test_asgi_middleware_exclude_by_pattern_warns_if_exclude_all(excludes: Union[str, tuple[str, ...]]) -> None:
     class SubclassMiddleware(ASGIMiddleware):
         exclude_path_pattern = excludes
 
