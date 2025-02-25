@@ -166,32 +166,33 @@ class ASGIMiddleware(abc.ABC):
     to use it to customize the middleware's configuration.
 
     .. important::
-        An instance of the individual middleware's will be created *once* and used to
+        An instance of the individual middlewares will be created *once* and used to
         build up the internal middleware stack. As such, middlewares should *not* be
         stateful, as this state will be shared across all requests.
-        Any connection-specific state should be scoped to the `handle` implementation. Not doing so would typically lead to conflicting variable reads/writes across requests, and most likely bugs.
-
-    .. example::
-
-        .. code-block:: python
-
-            class MyMiddleware(ASGIMiddleware):
-                scopes = (ScopeType.HTTP,)
-                exclude = ("/not/this/path",)
-                exclude_opt_key = "exclude_my_middleware"
-
-                def __init__(self, my_logger: Logger) -> None:
-                    self.logger = logger
-
-                async def handle(
-                    self, scope: Scope, receive: Receive, send: Send, next_app: ASGIApp
-                ) -> None:
-                    self.logger.debug("Received request for path %s", scope["path"])
-                    await next_app(scope, receive, send)
-                    self.logger.debug("Processed request for path %s", scope["path"])
+        Any connection-specific state should be scoped to the `handle` implementation.
+        Not doing so would typically lead to conflicting variable reads / writes across
+        requests, and - most likely - bugs.
 
 
-            app = Litestar(..., middleware=[MyMiddleware(logger=my_logger)])
+    .. code-block:: python
+
+        class MyMiddleware(ASGIMiddleware):
+            scopes = (ScopeType.HTTP,)
+            exclude = ("/not/this/path",)
+            exclude_opt_key = "exclude_my_middleware"
+
+            def __init__(self, my_logger: Logger) -> None:
+                self.logger = logger
+
+            async def handle(
+                self, scope: Scope, receive: Receive, send: Send, next_app: ASGIApp
+            ) -> None:
+                self.logger.debug("Received request for path %s", scope["path"])
+                await next_app(scope, receive, send)
+                self.logger.debug("Processed request for path %s", scope["path"])
+
+
+        app = Litestar(..., middleware=[MyMiddleware(logger=my_logger)])
 
     .. versionadded:: 2.15
     """
@@ -214,7 +215,7 @@ class ASGIMiddleware(abc.ABC):
         async def middleware(scope: Scope, receive: Receive, send: Send) -> None:
             if should_bypass_middleware(
                 scope=scope,
-                scopes=scopes,
+                scopes=scopes,  # type: ignore[arg-type]
                 exclude_opt_key=exclude_opt_key,
                 exclude_path_pattern=exclude_pattern,
             ):
