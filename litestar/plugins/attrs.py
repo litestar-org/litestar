@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, Any
 from typing_extensions import TypeGuard
 
 from litestar.exceptions import MissingDependencyException
-from litestar.plugins import OpenAPISchemaPluginProtocol
+from litestar.plugins import OpenAPISchemaPlugin
 from litestar.types import Empty
 from litestar.typing import FieldDefinition
 from litestar.utils import is_optional_union
@@ -23,7 +23,7 @@ if TYPE_CHECKING:
 __all__ = ("AttrsSchemaPlugin", "is_attrs_class")
 
 
-class AttrsSchemaPlugin(OpenAPISchemaPluginProtocol):
+class AttrsSchemaPlugin(OpenAPISchemaPlugin):
     @staticmethod
     def is_plugin_supported_type(value: Any) -> bool:
         return is_attrs_class(value) or is_attrs_class(type(value))
