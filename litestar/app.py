@@ -45,7 +45,7 @@ from litestar.openapi.config import OpenAPIConfig
 from litestar.plugins import (
     CLIPluginProtocol,
     InitPluginProtocol,
-    OpenAPISchemaPluginProtocol,
+    OpenAPISchemaPlugin,
     PluginProtocol,
     PluginRegistry,
     SerializationPluginProtocol,
@@ -537,7 +537,7 @@ class Litestar(Router):
 
     @property
     @deprecated(version="2.0", alternative="Litestar.plugins.openapi", kind="property")
-    def openapi_schema_plugins(self) -> list[OpenAPISchemaPluginProtocol]:
+    def openapi_schema_plugins(self) -> list[OpenAPISchemaPlugin]:
         return list(self.plugins.openapi)
 
     @property
