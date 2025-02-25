@@ -25,7 +25,6 @@ __all__ = (
     "InitPlugin",
     "InitPluginProtocol",
     "OpenAPISchemaPlugin",
-    "OpenAPISchemaPluginProtocol",
     "PluginProtocol",
     "PluginRegistry",
     "SerializationPlugin",
@@ -258,41 +257,8 @@ class DIPlugin(abc.ABC):
         ...
 
 
-@runtime_checkable
-class OpenAPISchemaPluginProtocol(Protocol):
-    """Plugin protocol to extend the support of OpenAPI schema generation for non-library types."""
-
-    __slots__ = ()
-
-    @staticmethod
-    def is_plugin_supported_type(value: Any) -> bool:
-        """Given a value of indeterminate type, determine if this value is supported by the plugin.
-
-        Args:
-            value: An arbitrary value.
-
-        Returns:
-            A typeguard dictating whether the value is supported by the plugin.
-        """
-        raise NotImplementedError()
-
-    def to_openapi_schema(self, field_definition: FieldDefinition, schema_creator: SchemaCreator) -> Schema:
-        """Given a type annotation, transform it into an OpenAPI schema class.
-
-        Args:
-            field_definition: An :class:`OpenAPI <litestar.openapi.spec.schema.Schema>` instance.
-            schema_creator: An instance of the openapi SchemaCreator.
-
-        Returns:
-            An :class:`OpenAPI <litestar.openapi.spec.schema.Schema>` instance.
-        """
-        raise NotImplementedError()
-
-
-class OpenAPISchemaPlugin(OpenAPISchemaPluginProtocol):
+class OpenAPISchemaPlugin(abc.ABC):
     """Plugin to extend the support of OpenAPI schema generation for non-library types."""
-
-    __slots__ = ()
 
     @staticmethod
     def is_plugin_supported_type(value: Any) -> bool:
@@ -313,6 +279,19 @@ class OpenAPISchemaPlugin(OpenAPISchemaPluginProtocol):
             "for backwards compatibility. Users should prefer to override is_plugin_supported_field "
             "as it receives a 'FieldDefinition' instance which is more useful than a raw type."
         )
+
+    @abc.abstractmethod
+    def to_openapi_schema(self, field_definition: FieldDefinition, schema_creator: SchemaCreator) -> Schema:
+        """Given a type annotation, transform it into an OpenAPI schema class.
+
+        Args:
+            field_definition: An :class:`OpenAPI <litestar.openapi.spec.schema.Schema>` instance.
+            schema_creator: An instance of the openapi SchemaCreator.
+
+        Returns:
+            An :class:`OpenAPI <litestar.openapi.spec.schema.Schema>` instance.
+        """
+        raise NotImplementedError()
 
     def is_plugin_supported_field(self, field_definition: FieldDefinition) -> bool:
         """Given a :class:`FieldDefinition <litestar.typing.FieldDefinition>` that represents an indeterminate type,
@@ -344,7 +323,6 @@ PluginProtocol = Union[
     CLIPluginProtocol,
     InitPluginProtocol,
     OpenAPISchemaPlugin,
-    OpenAPISchemaPluginProtocol,
     ReceiveRoutePlugin,
     SerializationPluginProtocol,
     DIPlugin,
@@ -370,7 +348,7 @@ class PluginRegistry:
         self._plugins_by_type = {type(p): p for p in plugins}
         self._plugins = frozenset(plugins)
         self.init = tuple(p for p in plugins if isinstance(p, InitPluginProtocol))
-        self.openapi = tuple(p for p in plugins if isinstance(p, OpenAPISchemaPluginProtocol))
+        self.openapi = tuple(p for p in plugins if isinstance(p, OpenAPISchemaPlugin))
         self.receive_route = tuple(p for p in plugins if isinstance(p, ReceiveRoutePlugin))
         self.serialization = tuple(p for p in plugins if isinstance(p, SerializationPluginProtocol))
         self.cli = tuple(p for p in plugins if isinstance(p, CLIPluginProtocol))
