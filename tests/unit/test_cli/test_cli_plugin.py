@@ -10,15 +10,15 @@ def test_basic_command(runner: CliRunner, create_app_file: CreateAppFileFixture,
     app_file_content = textwrap.dedent(
         """
     from litestar import Litestar
-    from litestar.plugins import CLIPluginProtocol
+    from litestar.plugins import CLIPlugin
 
-    class CLIPlugin(CLIPluginProtocol):
+    class MyCLIPlugin(CLIPlugin):
         def on_cli_init(self, cli):
             @cli.command()
             def foo(app: Litestar):
                 print(f"App is loaded: {app is not None}")
 
-    app = Litestar(plugins=[CLIPlugin()])
+    app = Litestar(plugins=[MyCLIPlugin()])
     """
     )
     app_file = create_app_file("command_test_app.py", content=app_file_content)
