@@ -1683,6 +1683,20 @@ running uvicorn process via <code class="docutils literal notranslate"><span cla
 </section>
 </section>
 </section>
+<section id="customizing-the-debugger">
+<h2>Customizing the debugger<a class="headerlink" href="#customizing-the-debugger" title="Permalink to this heading">#</a></h2>
+<p>You can configure Litestar with the debug_module option to enable interactive debugging. Currently, it supports the following debugging tools:
+<a class="reference external" href="https://github.com/gotcha/ipdb">ipdb</a>, <a class="reference external" href="https://documen.tician.de/pudb/">PuDB</a> and <a class="reference external" href="https://github.com/cansarigol/pdbr">pdbr</a>. Also supports <a class="reference external" href="https://github.com/pdbpp/pdbpp">pdb++</a>.
+The default value is <a class="reference external" href="https://docs.python.org/3/library/pdb.html">pdb</a>.</p>
+<blockquote>
+<div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">ipdb</span>
+
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">pdb_on_exception</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">debugger_module</span><span class="o">=</span><span class="n">ipdb</span><span class="p">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+</section>
 </section>
 
 
@@ -1743,6 +1757,7 @@ running uvicorn process via <code class="docutils literal notranslate"><span cla
 </li>
 </ul>
 </li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#customizing-the-debugger">Customizing the debugger</a></li>
 </ul>
   </nav></div>
 
