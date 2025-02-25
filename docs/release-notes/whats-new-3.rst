@@ -233,4 +233,4 @@ The :class:`~typing.Protocol` ``OpenAPISchemaPluginProtocol`` has been removed i
 of the abstract :class:`~litestar.plugins.OpenAPISchemaPlugin`. The functionality and
 interface remain the same, the only difference is that plugins that wish to provide this
 functionality are now required to inherit from
-:class:`~litestar.plugins.OpenAPISchemaPlugin`.
+:class:`~.plugins.OpenAPISchemaPlugin`.
