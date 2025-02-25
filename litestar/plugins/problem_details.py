@@ -8,7 +8,7 @@ from typing import TYPE_CHECKING, Any, Callable, Mapping, TypeVar
 from typing_extensions import TypeAlias
 
 from litestar.exceptions.http_exceptions import HTTPException
-from litestar.plugins.base import InitPluginProtocol
+from litestar.plugins.base import InitPlugin
 from litestar.response.base import Response
 
 if TYPE_CHECKING:
@@ -134,7 +134,7 @@ class ProblemDetailsConfig:
     """
 
 
-class ProblemDetailsPlugin(InitPluginProtocol):
+class ProblemDetailsPlugin(InitPlugin):
     """A plugin to convert exceptions into problem details as per RFC 9457."""
 
     def __init__(self, config: ProblemDetailsConfig | None = None):
