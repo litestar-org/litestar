@@ -316,7 +316,7 @@ There are two general methods of consuming the :term:`event stream`:
    which starts a background task, iterating over the stream, invoking a provided
    callback for every :term:`event` received
 
-Iterating over the :term:`steam <event stream>` directly is mostly useful if processing the events is the only
+Iterating over the :term:`stream <event stream>` directly is mostly useful if processing the events is the only
 concern, since :meth:`iter_events <Subscriber.iter_events>` is effectively an infinite
 loop. For all other applications, using the context manager is preferable, since it
 allows to easily run other code concurrently.
