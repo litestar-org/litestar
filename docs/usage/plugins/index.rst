@@ -13,23 +13,16 @@ Litestar supports a plugin system that allows you to extend the functionality of
 Plugins are defined by protocols, and any type that satisfies a protocol can be included in the ``plugins`` argument of
 the :class:`app <litestar.app.Litestar>`.
 
-The following plugin protocols are defined.
 
-1. :class:`InitPluginProtocol <litestar.plugins.InitPluginProtocol>`: This protocol defines a contract for plugins
-that can interact with the data that is used to instantiate the application instance.
+InitPlugin
+----------
 
-2. :class:`SerializationPluginProtocol <litestar.plugins.SerializationPluginProtocol>`: This protocol defines
-the contract for plugins that extend serialization functionality of the application.
-
-InitPluginProtocol
-------------------
-
-``InitPluginProtocol`` defines an interface that allows for customization of the application's initialization process.
+``InitPlugin`` defines an interface that allows for customization of the application's initialization process.
 Init plugins can define dependencies, add route handlers, configure middleware, and much more!
 
 Implementations of these plugins must define a single method:
 
-:meth:`on_app_init(self, app_config: AppConfig) -> AppConfig: <litestar.plugins.InitPluginProtocol.on_app_init>`
+:meth:`on_app_init(self, app_config: AppConfig) -> AppConfig: <litestar.plugins.InitPlugin.on_app_init>`
 ----------------------------------------------------------------------------------------------------------------
 
 The method accepts and must return an :class:`AppConfig <litestar.config.app.AppConfig>` instance, which can be modified
@@ -46,9 +39,9 @@ The following example shows a simple plugin that adds a route handler, and a dep
 
 .. literalinclude:: /examples/plugins/init_plugin_protocol.py
    :language: python
-   :caption: ``InitPluginProtocol`` implementation example
+   :caption: ``InitPlugin`` implementation example
 
-The ``MyPlugin`` class is an implementation of the :class:`InitPluginProtocol <litestar.plugins.InitPluginProtocol>`. It
+The ``MyPlugin`` class is an implementation of the :class:`InitPlugin <litestar.plugins.InitPlugin>`. It
 defines a single method, ``on_app_init()``, which takes an :class:`AppConfig <litestar.config.app.AppConfig>` instance
 as an argument and returns same.
 

@@ -690,7 +690,7 @@ In your iterator function you can yield integers, strings or bytes, the message 
 as the ``event_type`` if the ServerSentEvent has no ``event_type`` set, otherwise it will use the ``event_type``
 specified, and the data will be the yielded value.
 
-If you want to send a different event type, you can use a dictionary with the keys ``event_type`` and ``data`` or the :class:`ServerSentMessage <.response.ServerSentEventMessage>` class.
+If you want to send a different event type, you can use a dictionary with the keys ``event_type`` and ``data`` or the :class:`ServerSentEventMessage <.response.ServerSentEventMessage>` class.
 
 .. note::
 

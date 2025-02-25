@@ -5,14 +5,14 @@ from typing import TYPE_CHECKING
 from litestar.contrib.opentelemetry.config import OpenTelemetryConfig
 from litestar.contrib.opentelemetry.middleware import OpenTelemetryInstrumentationMiddleware
 from litestar.middleware.base import DefineMiddleware
-from litestar.plugins import InitPluginProtocol
+from litestar.plugins import InitPlugin
 
 if TYPE_CHECKING:
     from litestar.config.app import AppConfig
     from litestar.types.composite_types import Middleware
 
 
-class OpenTelemetryPlugin(InitPluginProtocol):
+class OpenTelemetryPlugin(InitPlugin):
     """OpenTelemetry Plugin."""
 
     __slots__ = ("_middleware", "config")

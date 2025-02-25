@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 from litestar.cli._utils import console
 from litestar.logging.config import StructLoggingConfig
 from litestar.middleware.logging import LoggingMiddlewareConfig
-from litestar.plugins import InitPluginProtocol
+from litestar.plugins import InitPlugin
 
 if TYPE_CHECKING:
     from litestar.config.app import AppConfig
@@ -22,7 +22,7 @@ class StructlogConfig:
     """Enable request logging."""
 
 
-class StructlogPlugin(InitPluginProtocol):
+class StructlogPlugin(InitPlugin):
     """Structlog Plugin."""
 
     __slots__ = ("_config",)

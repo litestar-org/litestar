@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import re
-from typing import TYPE_CHECKING, Pattern, Sequence
+from typing import TYPE_CHECKING, Iterable, Pattern, Sequence
 
 from litestar.exceptions import ImproperlyConfiguredException
 
@@ -15,7 +15,7 @@ if TYPE_CHECKING:
 
 def build_exclude_path_pattern(
     *,
-    exclude: str | list[str] | None = None,
+    exclude: str | Iterable[str] | None = None,
     middleware_cls: type | None = None,
 ) -> Pattern | None:
     """Build single path pattern from list of patterns to opt-out from middleware processing.
@@ -32,7 +32,7 @@ def build_exclude_path_pattern(
         return None
 
     try:
-        pattern = re.compile("|".join(exclude)) if isinstance(exclude, list) else re.compile(exclude)
+        pattern = re.compile("|".join(exclude)) if not isinstance(exclude, str) else re.compile(exclude)
         if pattern.match("/") and pattern.match("/982c7064-6ac7-44b7-9be5-07a2ff6d8a92"):
             # match a UUID to ensure that it matches paths greedily and not just a literal /
             warn_middleware_excluded_on_all_routes(pattern, middleware_cls=middleware_cls)

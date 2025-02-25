@@ -21,10 +21,74 @@ The example previously given was using a factory function, i.e.:
 
        return my_middleware
 
-While using functions is a perfectly viable approach, you can also use classes to do the same. See the next sections on
-two base classes you can use for this purpose - the :class:`~litestar.middleware.base.MiddlewareProtocol` ,
-which gives a bare-bones type, or the :class:`~litestar.middleware.base.AbstractMiddleware` that offers a
-base class with some built in functionality.
+
+Extending ``ASGIMiddleware``
+----------------------------
+
+While using functions is a perfectly viable approach, the recommended way to handle this
+is by using the :class:`~litestar.middleware.ASGIMiddleware` abstract base class, which
+also includes functionality to dynamically skip the middleware based on ASGI
+``scope["type"]``, handler ``opt`` keys or path patterns and a simple way to pass
+configuration to middlewares; It does not implement an ``__init__`` method, so
+subclasses are free to use it to customize the middleware's configuration.
+
+
+Modifying Requests and Responses
+++++++++++++++++++++++++++++++++
+
+Middlewares can not only be used to execute *around* other ASGI callable, they can also
+intercept and modify both incoming and outgoing data in a request / response cycle by
+"wrapping" the respective ``receive`` and ``send`` ASGI callables.
+
+The following demonstrates how to add a request timing header with a timestamp to all
+outgoing responses:
+
+.. literalinclude:: /examples/middleware/request_timing.py
+    :language: python
+
+
+
+Migrating to ``ASGIMiddleware`` from ``MiddlewareProtocol`` / ``AbstractMiddleware``
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+:class:`~litestar.middleware.ASGIMiddleware` was introduced in Litestar 2.15. If you've
+been using ``MiddlewareProtocol`` / ``AbstractMiddleware`` to implement your middlewares
+before, there's a simple migration path to using ``ASGIMiddleware``.
+
+**Migrating from ``MiddlewareProtocol``**
+
+.. tab-set::
+
+    .. tab-item:: ``MiddlewareProtocol``
+
+        .. literalinclude:: /examples/middleware/middleware_protocol_migration_old.py
+            :language: python
+
+    .. tab-item:: ``ASGIMiddleware``
+
+        .. literalinclude:: /examples/middleware/middleware_protocol_migration_new.py
+            :language: python
+
+
+
+**Migrating from ``AbstractMiddleware``**
+
+.. tab-set::
+
+    .. tab-item:: ``MiddlewareProtocol``
+
+        .. literalinclude:: /examples/middleware/abstract_middleware_migration_old.py
+            :language: python
+
+    .. tab-item:: ``ASGIMiddleware``
+
+        .. literalinclude:: /examples/middleware/abstract_middleware_migration_new.py
+            :language: python
+
+
+
+
+
 
 Using MiddlewareProtocol
 ------------------------
@@ -85,7 +149,7 @@ specifies:
 
 
 Responding using the MiddlewareProtocol
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
++++++++++++++++++++++++++++++++++++++++
 
 Once a middleware finishes doing whatever its doing, it should pass ``scope``, ``receive``, and ``send`` to an ASGI app
 and await it. This is what's happening in the above example with: ``await self.app(scope, receive, send)``. Let's
@@ -115,7 +179,7 @@ As you can see in the above, given some condition (``request.session`` being ``N
 :class:`~litestar.response.redirect.ASGIRedirectResponse` and then await it. Otherwise, we await ``self.app``
 
 Modifying ASGI Requests and Responses using the MiddlewareProtocol
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 .. important::
 

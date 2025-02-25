@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any
 
-from litestar.plugins import InitPluginProtocol
+from litestar.plugins import InitPlugin
 from litestar.plugins.pydantic.dto import PydanticDTO
 from litestar.plugins.pydantic.plugins.di import PydanticDIPlugin
 from litestar.plugins.pydantic.plugins.init import PydanticInitPlugin
@@ -40,7 +40,7 @@ def _model_dump_json(model: BaseModel | BaseModelV1, by_alias: bool = False) -> 
     )
 
 
-class PydanticPlugin(InitPluginProtocol):
+class PydanticPlugin(InitPlugin):
     """A plugin that provides Pydantic integration."""
 
     __slots__ = (

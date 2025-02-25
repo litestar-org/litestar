@@ -3,7 +3,7 @@ from typing import Dict
 from litestar import Litestar, get
 from litestar.config.app import AppConfig
 from litestar.di import Provide
-from litestar.plugins import InitPluginProtocol
+from litestar.plugins import InitPlugin
 
 
 @get("/", sync_to_thread=False)
@@ -15,7 +15,7 @@ def get_name() -> str:
     return "world"
 
 
-class MyPlugin(InitPluginProtocol):
+class MyPlugin(InitPlugin):
     def on_app_init(self, app_config: AppConfig) -> AppConfig:
         app_config.dependencies["name"] = Provide(get_name, sync_to_thread=False)
         app_config.route_handlers.append(route_handler)

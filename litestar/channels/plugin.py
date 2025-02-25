@@ -11,7 +11,7 @@ import msgspec.json
 from litestar.di import Provide
 from litestar.exceptions import ImproperlyConfiguredException, LitestarException
 from litestar.handlers import WebsocketRouteHandler
-from litestar.plugins import InitPluginProtocol
+from litestar.plugins import InitPlugin
 from litestar.serialization import default_serializer
 
 from .subscriber import BacklogStrategy, EventCallback, Subscriber
@@ -30,7 +30,7 @@ class ChannelsException(LitestarException):
     pass
 
 
-class ChannelsPlugin(InitPluginProtocol, AbstractAsyncContextManager):
+class ChannelsPlugin(InitPlugin, AbstractAsyncContextManager):
     def __init__(
         self,
         backend: ChannelsBackend,

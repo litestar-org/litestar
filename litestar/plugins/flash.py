@@ -10,7 +10,7 @@ import litestar.exceptions
 from litestar.exceptions import MissingDependencyException
 from litestar.middleware import DefineMiddleware
 from litestar.middleware.session import SessionMiddleware
-from litestar.plugins import InitPluginProtocol
+from litestar.plugins import InitPlugin
 from litestar.security.session_auth.middleware import MiddlewareWrapper
 from litestar.template.base import _get_request_from_context
 from litestar.utils.predicates import is_class_and_subclass
@@ -30,7 +30,7 @@ class FlashConfig:
     template_config: TemplateConfig
 
 
-class FlashPlugin(InitPluginProtocol):
+class FlashPlugin(InitPlugin):
     """Flash messages Plugin."""
 
     def __init__(self, config: FlashConfig):
