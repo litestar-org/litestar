@@ -53,7 +53,6 @@ from litestar.utils.typing import (
 if TYPE_CHECKING:
     from litestar._openapi.datastructures import OpenAPIContext
     from litestar.openapi.spec import Example, Reference
-    from litestar.plugins import OpenAPISchemaPluginProtocol
 
 KWARG_DEFINITION_ATTRIBUTE_TO_OPENAPI_PROPERTY_MAP: dict[str, str] = {
     "content_encoding": "content_encoding",
@@ -216,7 +215,7 @@ class SchemaCreator:
     def __init__(
         self,
         generate_examples: bool = False,
-        plugins: Iterable[OpenAPISchemaPluginProtocol] | None = None,
+        plugins: Iterable[OpenAPISchemaPlugin] | None = None,
         prefer_alias: bool = True,
         schema_registry: SchemaRegistry | None = None,
     ) -> None:
@@ -248,12 +247,12 @@ class SchemaCreator:
         return type(self)(generate_examples=False, plugins=self.plugins, prefer_alias=False)
 
     @staticmethod
-    def plugin_supports_field(plugin: OpenAPISchemaPluginProtocol, field: FieldDefinition) -> bool:
+    def plugin_supports_field(plugin: OpenAPISchemaPlugin, field: FieldDefinition) -> bool:
         if predicate := getattr(plugin, "is_plugin_supported_field", None):
             return predicate(field)  # type: ignore[no-any-return]
         return plugin.is_plugin_supported_type(field.annotation)
 
-    def get_plugin_for(self, field_definition: FieldDefinition) -> OpenAPISchemaPluginProtocol | None:
+    def get_plugin_for(self, field_definition: FieldDefinition) -> OpenAPISchemaPlugin | None:
         return next(
             (plugin for plugin in self.plugins if self.plugin_supports_field(plugin, field_definition)),
             None,
@@ -464,7 +463,7 @@ class SchemaCreator:
             f"`{field_definition.name}: ... = Dependency(...)`."
         )
 
-    def for_plugin(self, field_definition: FieldDefinition, plugin: OpenAPISchemaPluginProtocol) -> Schema | Reference:
+    def for_plugin(self, field_definition: FieldDefinition, plugin: OpenAPISchemaPlugin) -> Schema | Reference:
         """Create a schema using a plugin.
 
         Args:
