@@ -1869,7 +1869,7 @@ being sent to the backend.</p>
 which starts a background task, iterating over the stream, invoking a provided
 callback for every <a class="reference internal" href="#term-event"><span class="xref std std-term">event</span></a> received</p></li>
 </ol>
-<p>Iterating over the <a class="reference internal" href="#term-event-stream"><span class="xref std std-term">steam</span></a> directly is mostly useful if processing the events is the only
+<p>Iterating over the <a class="reference internal" href="#term-event-stream"><span class="xref std std-term">stream</span></a> directly is mostly useful if processing the events is the only
 concern, since <a class="reference internal" href="../reference/channels/subscriber.html#litestar.channels.subscriber.Subscriber.iter_events" title="litestar.channels.subscriber.Subscriber.iter_events"><code class="xref py py-meth docutils literal notranslate"><span class="pre">iter_events</span></code></a> is effectively an infinite
 loop. For all other applications, using the context manager is preferable, since it
 allows to easily run other code concurrently.</p>
