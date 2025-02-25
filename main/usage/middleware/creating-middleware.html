@@ -1562,10 +1562,151 @@ is <strong>any callable</strong> that takes a kwarg called <code class="docutils
     <span class="k">return</span> <span class="n">my_middleware</span>
 </pre></div>
 </div>
-<p>While using functions is a perfectly viable approach, you can also use classes to do the same. See the next sections on
-two base classes you can use for this purpose - the <a class="reference internal" href="../../reference/middleware/index.html#litestar.middleware.MiddlewareProtocol" title="litestar.middleware.base.MiddlewareProtocol"><code class="xref py py-class docutils literal notranslate"><span class="pre">MiddlewareProtocol</span></code></a> ,
-which gives a bare-bones type, or the <a class="reference internal" href="../../reference/middleware/index.html#litestar.middleware.AbstractMiddleware" title="litestar.middleware.base.AbstractMiddleware"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractMiddleware</span></code></a> that offers a
-base class with some built in functionality.</p>
+<section id="extending-asgimiddleware">
+<h2>Extending <code class="docutils literal notranslate"><span class="pre">ASGIMiddleware</span></code><a class="headerlink" href="#extending-asgimiddleware" title="Permalink to this heading">#</a></h2>
+<p>While using functions is a perfectly viable approach, the recommended way to handle this
+is by using the <a class="reference internal" href="../../reference/middleware/index.html#litestar.middleware.ASGIMiddleware" title="litestar.middleware.ASGIMiddleware"><code class="xref py py-class docutils literal notranslate"><span class="pre">ASGIMiddleware</span></code></a> abstract base class, which
+also includes functionality to dynamically skip the middleware based on ASGI
+<code class="docutils literal notranslate"><span class="pre">scope[&quot;type&quot;]</span></code>, handler <code class="docutils literal notranslate"><span class="pre">opt</span></code> keys or path patterns and a simple way to pass
+configuration to middlewares; It does not implement an <code class="docutils literal notranslate"><span class="pre">__init__</span></code> method, so
+subclasses are free to use it to customize the middleware’s configuration.</p>
+<section id="modifying-requests-and-responses">
+<h3>Modifying Requests and Responses<a class="headerlink" href="#modifying-requests-and-responses" title="Permalink to this heading">#</a></h3>
+<p>Middlewares can not only be used to execute <em>around</em> other ASGI callable, they can also
+intercept and modify both incoming and outgoing data in a request / response cycle by
+“wrapping” the respective <code class="docutils literal notranslate"><span class="pre">receive</span></code> and <code class="docutils literal notranslate"><span class="pre">send</span></code> ASGI callables.</p>
+<p>The following demonstrates how to add a request timing header with a timestamp to all
+outgoing responses:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">time</span>
+
+<span class="kn">from</span> <span class="nn">litestar.datastructures</span> <span class="kn">import</span> <span class="n">MutableScopeHeaders</span>
+<span class="kn">from</span> <span class="nn">litestar.enums</span> <span class="kn">import</span> <span class="n">ScopeType</span>
+<span class="kn">from</span> <span class="nn">litestar.middleware</span> <span class="kn">import</span> <span class="n">ASGIMiddleware</span>
+<span class="kn">from</span> <span class="nn">litestar.types</span> <span class="kn">import</span> <span class="n">ASGIApp</span><span class="p">,</span> <span class="n">Message</span><span class="p">,</span> <span class="n">Receive</span><span class="p">,</span> <span class="n">Scope</span><span class="p">,</span> <span class="n">Send</span>
+
+
+<span class="k">class</span> <span class="nc">ProcessTimeHeader</span><span class="p">(</span><span class="n">ASGIMiddleware</span><span class="p">):</span>
+    <span class="n">scopes</span> <span class="o">=</span> <span class="p">(</span><span class="n">ScopeType</span><span class="o">.</span><span class="n">HTTP</span><span class="p">,</span> <span class="n">ScopeType</span><span class="o">.</span><span class="n">ASGI</span><span class="p">)</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">handle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scope</span><span class="p">:</span> <span class="n">Scope</span><span class="p">,</span> <span class="n">receive</span><span class="p">:</span> <span class="n">Receive</span><span class="p">,</span> <span class="n">send</span><span class="p">:</span> <span class="n">Send</span><span class="p">,</span> <span class="n">next_app</span><span class="p">:</span> <span class="n">ASGIApp</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">monotonic</span><span class="p">()</span>
+
+        <span class="k">async</span> <span class="k">def</span> <span class="nf">send_wrapper</span><span class="p">(</span><span class="n">message</span><span class="p">:</span> <span class="n">Message</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">message</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;http.response.start&quot;</span><span class="p">:</span>
+                <span class="n">process_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">monotonic</span><span class="p">()</span> <span class="o">-</span> <span class="n">start_time</span>
+                <span class="n">headers</span> <span class="o">=</span> <span class="n">MutableScopeHeaders</span><span class="o">.</span><span class="n">from_message</span><span class="p">(</span><span class="n">message</span><span class="o">=</span><span class="n">message</span><span class="p">)</span>
+                <span class="n">headers</span><span class="p">[</span><span class="s2">&quot;X-Process-Time&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">process_time</span><span class="p">)</span>
+            <span class="k">await</span> <span class="n">send</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+
+        <span class="k">await</span> <span class="n">next_app</span><span class="p">(</span><span class="n">scope</span><span class="p">,</span> <span class="n">receive</span><span class="p">,</span> <span class="n">send_wrapper</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="migrating-to-asgimiddleware-from-middlewareprotocol-abstractmiddleware">
+<h3>Migrating to <code class="docutils literal notranslate"><span class="pre">ASGIMiddleware</span></code> from <code class="docutils literal notranslate"><span class="pre">MiddlewareProtocol</span></code> / <code class="docutils literal notranslate"><span class="pre">AbstractMiddleware</span></code><a class="headerlink" href="#migrating-to-asgimiddleware-from-middlewareprotocol-abstractmiddleware" title="Permalink to this heading">#</a></h3>
+<p><a class="reference internal" href="../../reference/middleware/index.html#litestar.middleware.ASGIMiddleware" title="litestar.middleware.ASGIMiddleware"><code class="xref py py-class docutils literal notranslate"><span class="pre">ASGIMiddleware</span></code></a> was introduced in Litestar 2.15. If you’ve
+been using <code class="docutils literal notranslate"><span class="pre">MiddlewareProtocol</span></code> / <code class="docutils literal notranslate"><span class="pre">AbstractMiddleware</span></code> to implement your middlewares
+before, there’s a simple migration path to using <code class="docutils literal notranslate"><span class="pre">ASGIMiddleware</span></code>.</p>
+<p><strong>Migrating from ``MiddlewareProtocol``</strong></p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-0" name="sd-tab-set-0" type="radio">
+</input><label class="sd-tab-label" for="sd-tab-item-0">
+&lt;literal&gt;MiddlewareProtocol&lt;/literal&gt;</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar.middleware</span> <span class="kn">import</span> <span class="n">MiddlewareProtocol</span>
+<span class="kn">from</span> <span class="nn">litestar.types</span> <span class="kn">import</span> <span class="n">ASGIApp</span><span class="p">,</span> <span class="n">Receive</span><span class="p">,</span> <span class="n">Scope</span><span class="p">,</span> <span class="n">Send</span>
+
+
+<span class="k">class</span> <span class="nc">MyMiddleware</span><span class="p">(</span><span class="n">MiddlewareProtocol</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">app</span><span class="p">:</span> <span class="n">ASGIApp</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">app</span> <span class="o">=</span> <span class="n">app</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scope</span><span class="p">:</span> <span class="n">Scope</span><span class="p">,</span> <span class="n">receive</span><span class="p">:</span> <span class="n">Receive</span><span class="p">,</span> <span class="n">send</span><span class="p">:</span> <span class="n">Send</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># do stuff</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="p">(</span><span class="n">scope</span><span class="p">,</span> <span class="n">receive</span><span class="p">,</span> <span class="n">send</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<input id="sd-tab-item-1" name="sd-tab-set-0" type="radio">
+</input><label class="sd-tab-label" for="sd-tab-item-1">
+&lt;literal&gt;ASGIMiddleware&lt;/literal&gt;</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar.middleware</span> <span class="kn">import</span> <span class="n">ASGIMiddleware</span>
+<span class="kn">from</span> <span class="nn">litestar.types</span> <span class="kn">import</span> <span class="n">ASGIApp</span><span class="p">,</span> <span class="n">Receive</span><span class="p">,</span> <span class="n">Scope</span><span class="p">,</span> <span class="n">Send</span>
+
+
+<span class="k">class</span> <span class="nc">MyMiddleware</span><span class="p">(</span><span class="n">ASGIMiddleware</span><span class="p">):</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">handle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scope</span><span class="p">:</span> <span class="n">Scope</span><span class="p">,</span> <span class="n">receive</span><span class="p">:</span> <span class="n">Receive</span><span class="p">,</span> <span class="n">send</span><span class="p">:</span> <span class="n">Send</span><span class="p">,</span> <span class="n">next_app</span><span class="p">:</span> <span class="n">ASGIApp</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># do stuff</span>
+        <span class="k">await</span> <span class="n">next_app</span><span class="p">(</span><span class="n">scope</span><span class="p">,</span> <span class="n">receive</span><span class="p">,</span> <span class="n">send</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p><strong>Migrating from ``AbstractMiddleware``</strong></p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-2" name="sd-tab-set-1" type="radio">
+</input><label class="sd-tab-label" for="sd-tab-item-2">
+&lt;literal&gt;MiddlewareProtocol&lt;/literal&gt;</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">anyio</span>
+
+<span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span>
+<span class="kn">from</span> <span class="nn">litestar.middleware</span> <span class="kn">import</span> <span class="n">AbstractMiddleware</span><span class="p">,</span> <span class="n">DefineMiddleware</span>
+<span class="kn">from</span> <span class="nn">litestar.types</span> <span class="kn">import</span> <span class="n">ASGIApp</span><span class="p">,</span> <span class="n">Receive</span><span class="p">,</span> <span class="n">Scope</span><span class="p">,</span> <span class="n">Scopes</span><span class="p">,</span> <span class="n">Send</span>
+
+
+<span class="k">class</span> <span class="nc">TimeoutMiddleware</span><span class="p">(</span><span class="n">AbstractMiddleware</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">app</span><span class="p">:</span> <span class="n">ASGIApp</span><span class="p">,</span>
+        <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">exclude</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">exclude_opt_key</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">scopes</span><span class="p">:</span> <span class="n">Scopes</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">timeout</span> <span class="o">=</span> <span class="n">timeout</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">app</span><span class="o">=</span><span class="n">app</span><span class="p">,</span> <span class="n">exclude</span><span class="o">=</span><span class="n">exclude</span><span class="p">,</span> <span class="n">exclude_opt_key</span><span class="o">=</span><span class="n">exclude_opt_key</span><span class="p">,</span> <span class="n">scopes</span><span class="o">=</span><span class="n">scopes</span><span class="p">)</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scope</span><span class="p">:</span> <span class="n">Scope</span><span class="p">,</span> <span class="n">receive</span><span class="p">:</span> <span class="n">Receive</span><span class="p">,</span> <span class="n">send</span><span class="p">:</span> <span class="n">Send</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">with</span> <span class="n">anyio</span><span class="o">.</span><span class="n">move_on_after</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">timeout</span><span class="p">):</span>
+            <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="p">(</span><span class="n">scope</span><span class="p">,</span> <span class="n">receive</span><span class="p">,</span> <span class="n">send</span><span class="p">)</span>
+
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
+    <span class="n">middleware</span><span class="o">=</span><span class="p">[</span>
+        <span class="n">DefineMiddleware</span><span class="p">(</span>
+            <span class="n">TimeoutMiddleware</span><span class="p">,</span>
+            <span class="n">timeout</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="p">]</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<input id="sd-tab-item-3" name="sd-tab-set-1" type="radio">
+</input><label class="sd-tab-label" for="sd-tab-item-3">
+&lt;literal&gt;ASGIMiddleware&lt;/literal&gt;</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">anyio</span>
+
+<span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span>
+<span class="kn">from</span> <span class="nn">litestar.middleware</span> <span class="kn">import</span> <span class="n">ASGIMiddleware</span>
+<span class="kn">from</span> <span class="nn">litestar.types</span> <span class="kn">import</span> <span class="n">ASGIApp</span><span class="p">,</span> <span class="n">Receive</span><span class="p">,</span> <span class="n">Scope</span><span class="p">,</span> <span class="n">Send</span>
+
+
+<span class="k">class</span> <span class="nc">TimeoutMiddleware</span><span class="p">(</span><span class="n">ASGIMiddleware</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">timeout</span> <span class="o">=</span> <span class="n">timeout</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">handle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scope</span><span class="p">:</span> <span class="n">Scope</span><span class="p">,</span> <span class="n">receive</span><span class="p">:</span> <span class="n">Receive</span><span class="p">,</span> <span class="n">send</span><span class="p">:</span> <span class="n">Send</span><span class="p">,</span> <span class="n">next_app</span><span class="p">:</span> <span class="n">ASGIApp</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">with</span> <span class="n">anyio</span><span class="o">.</span><span class="n">move_on_after</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">timeout</span><span class="p">):</span>
+            <span class="k">await</span> <span class="n">next_app</span><span class="p">(</span><span class="n">scope</span><span class="p">,</span> <span class="n">receive</span><span class="p">,</span> <span class="n">send</span><span class="p">)</span>
+
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">middleware</span><span class="o">=</span><span class="p">[</span><span class="n">TimeoutMiddleware</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="mi">5</span><span class="p">)])</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
 <section id="using-middlewareprotocol">
 <h2>Using MiddlewareProtocol<a class="headerlink" href="#using-middlewareprotocol" title="Permalink to this heading">#</a></h2>
 <p>The <a class="reference internal" href="../../reference/middleware/index.html#litestar.middleware.MiddlewareProtocol" title="litestar.middleware.base.MiddlewareProtocol"><code class="xref py py-class docutils literal notranslate"><span class="pre">MiddlewareProtocol</span></code></a> class is a
@@ -1727,8 +1868,8 @@ fine-tune for which routes and request types the middleware is called:</p>
 </ul>
 <p>Thus, in the following example, the middleware will only run against the handler called <code class="docutils literal notranslate"><span class="pre">not_excluded_handler</span></code> for <code class="docutils literal notranslate"><span class="pre">/greet</span></code> route:</p>
 <div class="sd-tab-set docutils">
-<input id="sd-tab-item-0" name="sd-tab-set-0" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-0">
+<input id="sd-tab-item-4" name="sd-tab-set-2" type="radio">
+</input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-4">
 Python 3.8+</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">time</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span>
@@ -1805,8 +1946,8 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 </pre></div>
 </div>
 </div>
-<input checked="checked" id="sd-tab-item-1" name="sd-tab-set-0" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.9" for="sd-tab-item-1">
+<input checked="checked" id="sd-tab-item-5" name="sd-tab-set-2" type="radio">
+</input><label class="sd-tab-label" data-sync-id="3.9" for="sd-tab-item-5">
 Python 3.9+</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">time</span>
 
@@ -1965,6 +2106,11 @@ as the kwarg <code class="docutils literal notranslate"><span class="pre">app</s
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#extending-asgimiddleware">Extending <code class="docutils literal notranslate"><span class="pre">ASGIMiddleware</span></code></a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#modifying-requests-and-responses">Modifying Requests and Responses</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#migrating-to-asgimiddleware-from-middlewareprotocol-abstractmiddleware">Migrating to <code class="docutils literal notranslate"><span class="pre">ASGIMiddleware</span></code> from <code class="docutils literal notranslate"><span class="pre">MiddlewareProtocol</span></code> / <code class="docutils literal notranslate"><span class="pre">AbstractMiddleware</span></code></a></li>
+</ul>
+</li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#using-middlewareprotocol">Using MiddlewareProtocol</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#responding-using-the-middlewareprotocol">Responding using the MiddlewareProtocol</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#modifying-asgi-requests-and-responses-using-the-middlewareprotocol">Modifying ASGI Requests and Responses using the MiddlewareProtocol</a></li>
