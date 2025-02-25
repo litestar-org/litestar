@@ -321,7 +321,7 @@ cases:
 :class:`litestar.plugins.SerializationPluginProtocol`
     Extend the serialization and deserialization capabilities of an application
 
-:class:`litestar.plugins.OpenAPISchemaPluginProtocol`
+``litestar.plugins.OpenAPISchemaPluginProtocol``
     Extend OpenAPI schema generation
 
 
