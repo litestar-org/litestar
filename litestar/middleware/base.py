@@ -9,6 +9,7 @@ from litestar.middleware._utils import (
     build_exclude_path_pattern,
     should_bypass_middleware,
 )
+from litestar.utils.deprecation import warn_deprecation
 
 __all__ = (
     "ASGIMiddleware",
@@ -119,6 +120,14 @@ class AbstractMiddleware:
 
     @classmethod
     def __init_subclass__(cls, **kwargs: Any) -> None:
+        if not cls.__module__.startswith("litestar"):
+            warn_deprecation(
+                version="2.15",
+                deprecated_name="AbstractMiddleware",
+                kind="class",
+                alternative="litestar.middleware.ASGIMiddleware",
+            )
+
         super().__init_subclass__(**kwargs)
 
         original__call__ = cls.__call__
