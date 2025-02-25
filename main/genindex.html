@@ -2866,10 +2866,10 @@ document.write(`
       </ul></li>
       <li><a href="reference/openapi/spec.html#litestar.openapi.spec.Schema.any_of">any_of (litestar.openapi.spec.Schema attribute)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/types.html#litestar.types.AnyCallable">AnyCallable (in module litestar.types)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/types.html#litestar.types.AnyIOBackend">AnyIOBackend (in module litestar.types)</a>
 </li>
       <li><a href="reference/connection.html#litestar.connection.ASGIConnection.app">app (litestar.connection.ASGIConnection property)</a>
@@ -2958,6 +2958,8 @@ document.write(`
         <li><a href="reference/plugins/flash_messages.html#litestar.plugins.flash.FlashPlugin.on_app_init.params.app_config">(litestar.plugins.flash.FlashPlugin.on_app_init parameter)</a>
 </li>
         <li><a href="reference/plugins/htmx.html#litestar.plugins.htmx.HTMXPlugin.on_app_init.params.app_config">(litestar.plugins.htmx.HTMXPlugin.on_app_init parameter)</a>
+</li>
+        <li><a href="reference/plugins/index.html#litestar.plugins.InitPlugin.on_app_init.params.app_config">(litestar.plugins.InitPlugin.on_app_init parameter)</a>
 </li>
         <li><a href="reference/plugins/index.html#litestar.plugins.InitPluginProtocol.on_app_init.params.app_config">(litestar.plugins.InitPluginProtocol.on_app_init parameter)</a>
 </li>
@@ -3750,8 +3752,6 @@ document.write(`
       </ul></li>
       <li><a href="reference/openapi/spec.html#litestar.openapi.spec.Schema.contains">contains (litestar.openapi.spec.Schema attribute)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/openapi/spec.html#litestar.openapi.spec.OpenAPIHeader.content">content (litestar.openapi.spec.OpenAPIHeader attribute)</a>
 
       <ul>
@@ -3776,6 +3776,8 @@ document.write(`
         <li><a href="reference/security/index.html#litestar.security.AbstractSecurityConfig.create_response.params.content">(litestar.security.AbstractSecurityConfig.create_response parameter)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/response/index.html#litestar.response.File.params.content_disposition_type">content_disposition_type (litestar.response.File parameter)</a>
 
       <ul>
@@ -4006,8 +4008,12 @@ document.write(`
         <li><a href="reference/stores/file.html#litestar.stores.file.FileStore.params.create_directories">(litestar.stores.file.FileStore parameter)</a>
 </li>
       </ul></li>
-      <li><a href="reference/plugins/index.html#litestar.plugins.SerializationPluginProtocol.create_dto_for_type">create_dto_for_type() (litestar.plugins.SerializationPluginProtocol method)</a>
+      <li><a href="reference/plugins/index.html#litestar.plugins.SerializationPlugin.create_dto_for_type">create_dto_for_type() (litestar.plugins.SerializationPlugin method)</a>
+
+      <ul>
+        <li><a href="reference/plugins/index.html#litestar.plugins.SerializationPluginProtocol.create_dto_for_type">(litestar.plugins.SerializationPluginProtocol method)</a>
 </li>
+      </ul></li>
       <li><a href="reference/response/file.html#litestar.response.file.create_etag_for_file">create_etag_for_file() (in module litestar.response.file)</a>
 </li>
       <li><a href="reference/openapi/openapi.html#litestar.openapi.OpenAPIConfig.create_examples">create_examples (litestar.openapi.OpenAPIConfig attribute)</a>
@@ -5445,6 +5451,10 @@ document.write(`
 </li>
         <li><a href="reference/plugins/pydantic.html#litestar.plugins.pydantic.PydanticSchemaPlugin.to_openapi_schema.params.field_definition">(litestar.plugins.pydantic.PydanticSchemaPlugin.to_openapi_schema parameter)</a>
 </li>
+        <li><a href="reference/plugins/index.html#litestar.plugins.SerializationPlugin.create_dto_for_type.params.field_definition">(litestar.plugins.SerializationPlugin.create_dto_for_type parameter)</a>
+</li>
+        <li><a href="reference/plugins/index.html#litestar.plugins.SerializationPlugin.supports_type.params.field_definition">(litestar.plugins.SerializationPlugin.supports_type parameter)</a>
+</li>
         <li><a href="reference/plugins/index.html#litestar.plugins.SerializationPluginProtocol.create_dto_for_type.params.field_definition">(litestar.plugins.SerializationPluginProtocol.create_dto_for_type parameter)</a>
 </li>
         <li><a href="reference/plugins/index.html#litestar.plugins.SerializationPluginProtocol.supports_type.params.field_definition">(litestar.plugins.SerializationPluginProtocol.supports_type parameter)</a>
@@ -6434,6 +6444,8 @@ document.write(`
       </ul></li>
       <li><a href="reference/openapi/plugins.html#litestar.openapi.plugins.SwaggerRenderPlugin.params.init_oauth">init_oauth (litestar.openapi.plugins.SwaggerRenderPlugin parameter)</a>
 </li>
+      <li><a href="reference/plugins/index.html#litestar.plugins.InitPlugin">InitPlugin (class in litestar.plugins)</a>
+</li>
       <li><a href="reference/plugins/index.html#litestar.plugins.InitPluginProtocol">InitPluginProtocol (class in litestar.plugins)</a>
 </li>
       <li><a href="reference/typing.html#litestar.typing.FieldDefinition.inner_types">inner_types (litestar.typing.FieldDefinition attribute)</a>
@@ -6484,10 +6496,10 @@ document.write(`
       </ul></li>
       <li><a href="reference/typing.html#litestar.typing.FieldDefinition.is_dataclass_type">is_dataclass_type (litestar.typing.FieldDefinition property)</a>
 </li>
-      <li><a href="reference/typing.html#litestar.typing.FieldDefinition.is_forward_ref">is_forward_ref (litestar.typing.FieldDefinition property)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="reference/typing.html#litestar.typing.FieldDefinition.is_forward_ref">is_forward_ref (litestar.typing.FieldDefinition property)</a>
+</li>
       <li><a href="reference/typing.html#litestar.typing.FieldDefinition.is_generic">is_generic (litestar.typing.FieldDefinition property)</a>
 </li>
       <li><a href="reference/response/base.html#litestar.response.base.ASGIResponse.params.is_head_response">is_head_response (litestar.response.base.ASGIResponse parameter)</a>
@@ -8598,6 +8610,8 @@ document.write(`
 </li>
         <li><a href="reference/plugins/htmx.html#litestar.plugins.htmx.HTMXPlugin.on_app_init">(litestar.plugins.htmx.HTMXPlugin method)</a>
 </li>
+        <li><a href="reference/plugins/index.html#litestar.plugins.InitPlugin.on_app_init">(litestar.plugins.InitPlugin method)</a>
+</li>
         <li><a href="reference/plugins/index.html#litestar.plugins.InitPluginProtocol.on_app_init">(litestar.plugins.InitPluginProtocol method)</a>
 </li>
         <li><a href="reference/plugins/problem_details.html#litestar.plugins.problem_details.ProblemDetailsPlugin.on_app_init">(litestar.plugins.problem_details.ProblemDetailsPlugin method)</a>
@@ -8719,10 +8733,10 @@ document.write(`
       </ul></li>
       <li><a href="reference/openapi/openapi.html#litestar.openapi.OpenAPIConfig.openapi_controller">openapi_controller (litestar.openapi.OpenAPIConfig attribute)</a>
 </li>
-      <li><a href="reference/openapi/openapi.html#litestar.openapi.OpenAPIConfig.openapi_router">openapi_router (litestar.openapi.OpenAPIConfig attribute)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="reference/openapi/openapi.html#litestar.openapi.OpenAPIConfig.openapi_router">openapi_router (litestar.openapi.OpenAPIConfig attribute)</a>
+</li>
       <li><a href="reference/app.html#litestar.app.Litestar.openapi_schema">openapi_schema (litestar.app.Litestar property)</a>
 
       <ul>
@@ -10750,6 +10764,8 @@ document.write(`
 </li>
       <li><a href="reference/exceptions.html#litestar.exceptions.SerializationException">SerializationException</a>
 </li>
+      <li><a href="reference/plugins/index.html#litestar.plugins.SerializationPlugin">SerializationPlugin (class in litestar.plugins)</a>
+</li>
       <li><a href="reference/plugins/index.html#litestar.plugins.SerializationPluginProtocol">SerializationPluginProtocol (class in litestar.plugins)</a>
 </li>
       <li><a href="reference/middleware/session/base.html#litestar.middleware.session.base.BaseSessionBackend.serialize_data">serialize_data() (litestar.middleware.session.base.BaseSessionBackend static method)</a>
@@ -11403,8 +11419,12 @@ document.write(`
         <li><a href="reference/openapi/spec.html#litestar.openapi.spec.Reference.summary">(litestar.openapi.spec.Reference attribute)</a>
 </li>
       </ul></li>
-      <li><a href="reference/plugins/index.html#litestar.plugins.SerializationPluginProtocol.supports_type">supports_type() (litestar.plugins.SerializationPluginProtocol method)</a>
+      <li><a href="reference/plugins/index.html#litestar.plugins.SerializationPlugin.supports_type">supports_type() (litestar.plugins.SerializationPlugin method)</a>
+
+      <ul>
+        <li><a href="reference/plugins/index.html#litestar.plugins.SerializationPluginProtocol.supports_type">(litestar.plugins.SerializationPluginProtocol method)</a>
 </li>
+      </ul></li>
       <li><a href="reference/openapi/openapi.html#litestar.openapi.OpenAPIController.swagger_css_url">swagger_css_url (litestar.openapi.OpenAPIController attribute)</a>
 </li>
       <li><a href="reference/openapi/openapi.html#litestar.openapi.OpenAPIController.swagger_ui_bundle_js_url">swagger_ui_bundle_js_url (litestar.openapi.OpenAPIController attribute)</a>
