@@ -214,8 +214,6 @@ if pydantic_v2 is not None:  # pragma: no cover
 
 
 class PydanticSchemaPlugin(OpenAPISchemaPlugin):
-    __slots__ = ("prefer_alias",)
-
     def __init__(self, prefer_alias: bool = False) -> None:
         self.prefer_alias = prefer_alias
 

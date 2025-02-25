@@ -12,7 +12,7 @@ if TYPE_CHECKING:
     from collections.abc import Iterator, Sequence
 
     from litestar.openapi import OpenAPIConfig
-    from litestar.plugins import OpenAPISchemaPluginProtocol
+    from litestar.plugins import OpenAPISchemaPlugin
     from litestar.typing import FieldDefinition
 
 
@@ -229,7 +229,7 @@ class OpenAPIContext:
     def __init__(
         self,
         openapi_config: OpenAPIConfig,
-        plugins: Sequence[OpenAPISchemaPluginProtocol],
+        plugins: Sequence[OpenAPISchemaPlugin],
     ) -> None:
         self.openapi_config = openapi_config
         self.plugins = plugins
