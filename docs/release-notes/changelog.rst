@@ -3,6 +3,110 @@
 2.x Changelog
 =============
 
+.. changelog:: 2.15.0
+    :date: 2025-02-26
+
+    .. change:: Prevent accidental ``scope`` key overrides by mounted ASGI apps
+        :type: bugfix
+        :pr: 3945
+        :issue: 3934
+
+        When mounting ASGI apps, there's no guarantee they won't overwrite some key in
+        the ``scope`` that we rely on, e.g. ``scope["app"]``, which is what caused
+        https://github.com/litestar-org/litestar/issues/3934.
+
+        To prevent this, two thing shave been changed:
+
+        1. We do not store the Litestar instance under the generic ``app`` key anymore,
+           but the more specific ``litestar_app`` key. In addition the
+           :meth:`~litestar.app.Litestar.from_scope` method has been added, which can be
+           used to safely access the current app from the scope
+        2. A new parameter ``copy_scope`` has been added to the ASGI route handler,
+           which, when set to ``True`` will copy the scope before calling into the
+           mounted ASGI app, aiming to make things behave more as expected, by
+           giving the called app its own environment without causing any side-effects.
+           Since this change might break some things, It's been left it
+           with a default of ``None``, which does not copy the scope, but will issue a
+           warning if the mounted app modified it, enabling users to decide how to deal
+           with that situation
+
+    .. change:: Fix deprecated ``attrs`` import
+        :type: bugfix
+        :pr: 3947
+        :issue: 3946
+
+        A deprecated import of the ``attrs`` plugins caused a warning. This has been
+        fixed.
+
+
+    .. change:: JWT: Revoked token handler
+        :type: feature
+        :pr: 3960
+
+        Add a new ``revoked_token_handler`` on same level as ``retrieve_user_handler``,
+        for :class:`~litestar.security.jwt.BaseJWTAuth`.
+
+    .. change:: Allow ``route_reverse`` params of type ``uuid`` to be passed as ``str``
+        :type: feature
+        :pr: 3972
+
+        Allows params of type ``uuid`` to be passed as strings
+        (e.g. their hex representation) into :meth:`~litestar.app.Litestar.route_reverse`
+
+    .. change:: CLI: Better error message for invalid ``--app`` string
+        :type: feature
+        :pr: 3977
+        :issue: 3893
+
+        Improve the error handling when an invalid ``--app`` string is passed
+
+    .. change:: DTO: Support ``@property`` fields for msgspec and dataclass
+        :type: feature
+        :pr: 3981
+
+        Support :class:`property` fields for msgspec and dataclasses during serialization
+        and for OpenAPI schema generation.
+
+    .. change:: Add new ``ASGIMiddleware``
+        :type: feature
+        :pr: 3996
+
+        Add a new base middleware class to facilitate easier configuration and
+        middleware dispatching.
+
+        The new :class:`~litestar.middleware.ASGIMiddleware` features the same
+        functionality as :class:`~litestar.middleware.AbstractMiddleware`, but makes it
+        easier to pass configuration directly to middleware classes without a separate
+        configuration object, allowing the need to use
+        :class:`~litestar.middleware.DefineMiddleware`.
+
+        .. seealso::
+            :doc:`/usage/middleware/creating-middleware`
+
+    .. change:: Add ``SerializationPlugin`` and ``InitPlugin`` to replace their respective protocols
+        :type: feature
+        :pr: 4025
+
+        - Add :class:`~litestar.plugins.SerializationPlugin` to replace :class:`~litestar.plugins.SerializationPluginProtocol`
+        - Add :class:`~litestar.plugins.InitPlugin` to replace :class:`~litestar.plugins.InitPluginProtocol`
+
+        Following the same approach as for other plugins, they inherit their respective
+        protocol for now, to keep type / `isinstance` checks compatible.
+
+        .. important::
+            The plugin protocols will be removed in version 3.0
+
+    .. change:: Allow passing a ``debugger_module`` to the application
+        :type: feature
+        :pr: 3967
+
+        A new ``debugger_module`` parameter has been added to
+        :class:`~litestar.app.Litestar`, which can receive any debugger module that
+        implements a :func:`pdb.post_mortem` function with the same signature as the
+        stdlib. This function will be called when an exception occurs and
+        ``pdb_on_exception`` is set to ``True``\ .
+
+
 .. changelog:: 2.14.0
     :date: 2025-02-12
 
