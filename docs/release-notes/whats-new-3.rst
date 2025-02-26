@@ -226,11 +226,21 @@ methods and properties have been moved from ``Router`` to ``Litestar``:
 - ``routes``
 
 
+Removal of  ``CLIPluginProtocol``
+---------------------------------
+
+
+The :class:`~typing.Protocol` ``CLIPluginProtocol`` has been removed in favour
+of the abstract ``CLIPluginProtocol``. The functionality and interface remain the same,
+the only difference being that plugins that wish to provide this functionality are now
+required to inherit from :class:`~.plugins.CLIPlugin`.
+
+
 Removal of ``OpenAPISchemaPluginProtocol``
 ------------------------------------------
 
 The :class:`~typing.Protocol` ``OpenAPISchemaPluginProtocol`` has been removed in favour
 of the abstract :class:`~litestar.plugins.OpenAPISchemaPlugin`. The functionality and
-interface remain the same, the only difference is that plugins that wish to provide this
-functionality are now required to inherit from
+interface remain the same, the only difference being that plugins that wish to provide
+this functionality are now required to inherit from
 :class:`~.plugins.OpenAPISchemaPlugin`.

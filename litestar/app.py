@@ -43,14 +43,13 @@ from litestar.logging.config import LoggingConfig, get_logger_placeholder
 from litestar.middleware._internal.cors import CORSMiddleware
 from litestar.openapi.config import OpenAPIConfig
 from litestar.plugins import (
-    CLIPluginProtocol,
+    CLIPlugin,
     InitPluginProtocol,
     OpenAPISchemaPlugin,
     PluginProtocol,
     PluginRegistry,
     SerializationPluginProtocol,
 )
-from litestar.plugins.base import CLIPlugin
 from litestar.router import Router
 from litestar.routes import ASGIRoute, HTTPRoute, WebSocketRoute
 from litestar.stores.registry import StoreRegistry
@@ -532,7 +531,7 @@ class Litestar(Router):
 
     @property
     @deprecated(version="2.0", alternative="Litestar.plugins.cli", kind="property")
-    def cli_plugins(self) -> list[CLIPluginProtocol]:
+    def cli_plugins(self) -> list[CLIPlugin]:
         return list(self.plugins.cli)
 
     @property

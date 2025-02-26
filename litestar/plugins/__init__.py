@@ -1,6 +1,5 @@
 from litestar.plugins.base import (
     CLIPlugin,
-    CLIPluginProtocol,
     DIPlugin,
     InitPlugin,
     InitPluginProtocol,
@@ -14,7 +13,6 @@ from litestar.plugins.base import (
 
 __all__ = (
     "CLIPlugin",
-    "CLIPluginProtocol",
     "DIPlugin",
     "InitPlugin",
     "InitPluginProtocol",
