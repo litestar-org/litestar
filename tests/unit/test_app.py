@@ -26,7 +26,7 @@ from litestar.exceptions import (
     NotFoundException,
 )
 from litestar.logging.config import LoggingConfig
-from litestar.plugins import CLIPluginProtocol
+from litestar.plugins import CLIPlugin
 from litestar.status_codes import HTTP_200_OK, HTTP_400_BAD_REQUEST, HTTP_500_INTERNAL_SERVER_ERROR
 from litestar.testing import TestClient, create_test_client
 
@@ -374,7 +374,7 @@ def test_registering_route_handler_generates_openapi_docs() -> None:
 
 
 def test_plugin_properties() -> None:
-    class FooPlugin(CLIPluginProtocol):
+    class FooPlugin(CLIPlugin):
         def on_cli_init(self, cli: Group) -> None:
             return
 
@@ -386,7 +386,7 @@ def test_plugin_properties() -> None:
 
 
 def test_plugin_registry() -> None:
-    class FooPlugin(CLIPluginProtocol):
+    class FooPlugin(CLIPlugin):
         def on_cli_init(self, cli: Group) -> None:
             return
 

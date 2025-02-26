@@ -105,7 +105,7 @@ pydantic = [
 ]
 redis = ["redis[hiredis]>=4.4.4"]
 valkey = ["valkey[libvalkey]>=6.0.2"]
-sqlalchemy = ["advanced-alchemy>=0.2.2"]
+sqlalchemy = ["advanced-alchemy>=0.32.1"]
 standard = ["jinja2", "jsbeautifier", "uvicorn[standard]", "uvloop>=0.18.0; sys_platform != 'win32'", "fast-query-parsers>=1.0.2"]
 structlog = ["structlog"]
 
