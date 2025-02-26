@@ -1,4 +1,4 @@
-from typing import List, Union
+from typing import Callable, List, Union
 
 import pytest
 
@@ -45,8 +45,8 @@ def openapi_config_with_global_requirement(
 @pytest.fixture(params=[get, post, put, patch, head, delete])
 def sample_handlers(
     request: pytest.FixtureRequest,
-) -> List[HTTPRouteHandler | Router]:
-    method_decorator = request.param
+) -> List[Union[HTTPRouteHandler, Router]]:
+    method_decorator: Callable[..., HTTPRouteHandler] = request.param
 
     @method_decorator("/route_security_not_specified")
     def route_security_not_specified() -> None: ...
