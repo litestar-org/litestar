@@ -11,14 +11,18 @@ resolution-markers = [
 
 [[package]]
 name = "advanced-alchemy"
-version = "0.32.1"
-source = { git = "https://github.com/litestar-org/advanced-alchemy.git?rev=serialization-plugin-protocol#d4162af98341e675f15ee50e79727766ae9e5717" }
+version = "0.32.2"
+source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "alembic" },
     { name = "eval-type-backport", marker = "python_full_version < '3.10'" },
     { name = "greenlet" },
     { name = "sqlalchemy" },
     { name = "typing-extensions" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/a7/47/825023668b4c5bb9692ce79803a800f0fa480859d4a35afe56e6ebf79191/advanced_alchemy-0.32.2.tar.gz", hash = "sha256:2b61b634efd51035e41f5cf61ce89079d3c09e7349ece182f827b8b145966199", size = 517520 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/0d/18/c7ef6a6821d8b02b20c693f110737ce46a53a8b608cf69b67f9296f98085/advanced_alchemy-0.32.2-py3-none-any.whl", hash = "sha256:a594e91506d05fff718103b09355cdd36085d1027dbfbf4ffb64761ca8f1a7e2", size = 172779 },
 ]
 
 [[package]]
@@ -1772,7 +1776,7 @@ test = [
 
 [package.metadata]
 requires-dist = [
-    { name = "advanced-alchemy", marker = "extra == 'sqlalchemy'", git = "https://github.com/litestar-org/advanced-alchemy.git?rev=serialization-plugin-protocol" },
+    { name = "advanced-alchemy", marker = "extra == 'sqlalchemy'", specifier = ">=0.32.2" },
     { name = "annotated-types", marker = "extra == 'annotated-types'" },
     { name = "anyio", specifier = ">=3" },
     { name = "attrs", marker = "extra == 'attrs'" },
