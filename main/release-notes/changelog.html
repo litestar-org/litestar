@@ -1538,6 +1538,108 @@ document.write(`
                   
   <section id="x-changelog">
 <h1>2.x Changelog<a class="headerlink" href="#x-changelog" title="Permalink to this heading">#</a></h1>
+<section id="2.15.0">
+<h2>2.15.0<a class="headerlink" href="#2.15.0" title="Permalink to this heading">#</a></h2>
+<strong>Released: </strong>2025-02-26<section id="2.15.0-feature">
+<h3>Features<a class="headerlink" href="#2.15.0-feature" title="Permalink to this heading">#</a></h3>
+<dl>
+<dt>JWT: Revoked token handler<a class="headerlink reference internal" href="#2.15.0-jwt: revoked token handler" id="2.15.0-jwt: revoked token handler">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Add a new <code class="docutils literal notranslate"><span class="pre">revoked_token_handler</span></code> on same level as <code class="docutils literal notranslate"><span class="pre">retrieve_user_handler</span></code>,
+for <a class="reference internal" href="../reference/security/jwt.html#litestar.security.jwt.BaseJWTAuth" title="litestar.security.jwt.BaseJWTAuth"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseJWTAuth</span></code></a>.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3960">litestar-org/litestar#3960</a></span></p>
+</div>
+</dd>
+<dt>Allow <code class="docutils literal notranslate"><span class="pre">route_reverse</span></code> params of type <code class="docutils literal notranslate"><span class="pre">uuid</span></code> to be passed as <code class="docutils literal notranslate"><span class="pre">str</span></code><a class="headerlink reference internal" href="#2.15.0-allow" id="2.15.0-allow">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Allows params of type <code class="docutils literal notranslate"><span class="pre">uuid</span></code> to be passed as strings
+(e.g. their hex representation) into <a class="reference internal" href="../reference/app.html#litestar.app.Litestar.route_reverse" title="litestar.app.Litestar.route_reverse"><code class="xref py py-meth docutils literal notranslate"><span class="pre">route_reverse()</span></code></a></p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3972">litestar-org/litestar#3972</a></span></p>
+</div>
+</dd>
+<dt>CLI: Better error message for invalid <code class="docutils literal notranslate"><span class="pre">--app</span></code> string<a class="headerlink reference internal" href="#2.15.0-cli: better error message for invalid" id="2.15.0-cli: better error message for invalid">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Improve the error handling when an invalid <code class="docutils literal notranslate"><span class="pre">--app</span></code> string is passed</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/3893">litestar-org/litestar#3893</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3977">litestar-org/litestar#3977</a></span></p>
+</div>
+</dd>
+<dt>DTO: Support <code class="docutils literal notranslate"><span class="pre">&#64;property</span></code> fields for msgspec and dataclass<a class="headerlink reference internal" href="#2.15.0-dto: support" id="2.15.0-dto: support">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Support <a class="reference external" href="https://docs.python.org/3/library/functions.html#property" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">property</span></code></a> fields for msgspec and dataclasses during serialization
+and for OpenAPI schema generation.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3981">litestar-org/litestar#3981</a></span></p>
+</div>
+</dd>
+<dt>Add new <code class="docutils literal notranslate"><span class="pre">ASGIMiddleware</span></code><a class="headerlink reference internal" href="#2.15.0-add new" id="2.15.0-add new">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Add a new base middleware class to facilitate easier configuration and
+middleware dispatching.</p>
+<p>The new <a class="reference internal" href="../reference/middleware/index.html#litestar.middleware.ASGIMiddleware" title="litestar.middleware.ASGIMiddleware"><code class="xref py py-class docutils literal notranslate"><span class="pre">ASGIMiddleware</span></code></a> features the same
+functionality as <a class="reference internal" href="../reference/middleware/index.html#litestar.middleware.AbstractMiddleware" title="litestar.middleware.AbstractMiddleware"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractMiddleware</span></code></a>, but makes it
+easier to pass configuration directly to middleware classes without a separate
+configuration object, allowing the need to use
+<a class="reference internal" href="../reference/middleware/index.html#litestar.middleware.DefineMiddleware" title="litestar.middleware.DefineMiddleware"><code class="xref py py-class docutils literal notranslate"><span class="pre">DefineMiddleware</span></code></a>.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="../usage/middleware/creating-middleware.html"><span class="doc">Creating Middleware</span></a></p>
+</div>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3996">litestar-org/litestar#3996</a></span></p>
+</div>
+</dd>
+<dt>Add <code class="docutils literal notranslate"><span class="pre">SerializationPlugin</span></code> and <code class="docutils literal notranslate"><span class="pre">InitPlugin</span></code> to replace their respective protocols<a class="headerlink reference internal" href="#2.15.0-add" id="2.15.0-add">#</a></dt><dd><div class="changelog-change docutils container">
+<ul class="simple">
+<li><p>Add <a class="reference internal" href="../reference/plugins/index.html#litestar.plugins.SerializationPlugin" title="litestar.plugins.SerializationPlugin"><code class="xref py py-class docutils literal notranslate"><span class="pre">SerializationPlugin</span></code></a> to replace <a class="reference internal" href="../reference/plugins/index.html#litestar.plugins.SerializationPluginProtocol" title="litestar.plugins.SerializationPluginProtocol"><code class="xref py py-class docutils literal notranslate"><span class="pre">SerializationPluginProtocol</span></code></a></p></li>
+<li><p>Add <a class="reference internal" href="../reference/plugins/index.html#litestar.plugins.InitPlugin" title="litestar.plugins.InitPlugin"><code class="xref py py-class docutils literal notranslate"><span class="pre">InitPlugin</span></code></a> to replace <a class="reference internal" href="../reference/plugins/index.html#litestar.plugins.InitPluginProtocol" title="litestar.plugins.InitPluginProtocol"><code class="xref py py-class docutils literal notranslate"><span class="pre">InitPluginProtocol</span></code></a></p></li>
+</ul>
+<p>Following the same approach as for other plugins, they inherit their respective
+protocol for now, to keep type / <cite>isinstance</cite> checks compatible.</p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>The plugin protocols will be removed in version 3.0</p>
+</div>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/4025">litestar-org/litestar#4025</a></span></p>
+</div>
+</dd>
+<dt>Allow passing a <code class="docutils literal notranslate"><span class="pre">debugger_module</span></code> to the application<a class="headerlink reference internal" href="#2.15.0-allow passing a" id="2.15.0-allow passing a">#</a></dt><dd><div class="changelog-change docutils container">
+<p>A new <code class="docutils literal notranslate"><span class="pre">debugger_module</span></code> parameter has been added to
+<a class="reference internal" href="../reference/app.html#litestar.app.Litestar" title="litestar.app.Litestar"><code class="xref py py-class docutils literal notranslate"><span class="pre">Litestar</span></code></a>, which can receive any debugger module that
+implements a <a class="reference external" href="https://docs.python.org/3/library/pdb.html#pdb.post_mortem" title="(in Python v3.13)"><code class="xref py py-func docutils literal notranslate"><span class="pre">pdb.post_mortem()</span></code></a> function with the same signature as the
+stdlib. This function will be called when an exception occurs and
+<code class="docutils literal notranslate"><span class="pre">pdb_on_exception</span></code> is set to <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3967">litestar-org/litestar#3967</a></span></p>
+</div>
+</dd>
+</dl>
+</section>
+<section id="2.15.0-bugfix">
+<h3>Bugfixes<a class="headerlink" href="#2.15.0-bugfix" title="Permalink to this heading">#</a></h3>
+<dl>
+<dt>Prevent accidental <code class="docutils literal notranslate"><span class="pre">scope</span></code> key overrides by mounted ASGI apps<a class="headerlink reference internal" href="#2.15.0-prevent accidental" id="2.15.0-prevent accidental">#</a></dt><dd><div class="changelog-change docutils container">
+<p>When mounting ASGI apps, there’s no guarantee they won’t overwrite some key in
+the <code class="docutils literal notranslate"><span class="pre">scope</span></code> that we rely on, e.g. <code class="docutils literal notranslate"><span class="pre">scope[&quot;app&quot;]</span></code>, which is what caused
+<a class="github reference external" href="https://github.com/litestar-org/litestar/issues/3934">litestar-org/litestar#3934</a>.</p>
+<p>To prevent this, two thing shave been changed:</p>
+<ol class="arabic simple">
+<li><p>We do not store the Litestar instance under the generic <code class="docutils literal notranslate"><span class="pre">app</span></code> key anymore,
+but the more specific <code class="docutils literal notranslate"><span class="pre">litestar_app</span></code> key. In addition the
+<a class="reference internal" href="../reference/app.html#litestar.app.Litestar.from_scope" title="litestar.app.Litestar.from_scope"><code class="xref py py-meth docutils literal notranslate"><span class="pre">from_scope()</span></code></a> method has been added, which can be
+used to safely access the current app from the scope</p></li>
+<li><p>A new parameter <code class="docutils literal notranslate"><span class="pre">copy_scope</span></code> has been added to the ASGI route handler,
+which, when set to <code class="docutils literal notranslate"><span class="pre">True</span></code> will copy the scope before calling into the
+mounted ASGI app, aiming to make things behave more as expected, by
+giving the called app its own environment without causing any side-effects.
+Since this change might break some things, It’s been left it
+with a default of <code class="docutils literal notranslate"><span class="pre">None</span></code>, which does not copy the scope, but will issue a
+warning if the mounted app modified it, enabling users to decide how to deal
+with that situation</p></li>
+</ol>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/3934">litestar-org/litestar#3934</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3945">litestar-org/litestar#3945</a></span></p>
+</div>
+</dd>
+<dt>Fix deprecated <code class="docutils literal notranslate"><span class="pre">attrs</span></code> import<a class="headerlink reference internal" href="#2.15.0-fix deprecated" id="2.15.0-fix deprecated">#</a></dt><dd><div class="changelog-change docutils container">
+<p>A deprecated import of the <code class="docutils literal notranslate"><span class="pre">attrs</span></code> plugins caused a warning. This has been
+fixed.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/3946">litestar-org/litestar#3946</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3947">litestar-org/litestar#3947</a></span></p>
+</div>
+</dd>
+</dl>
+</section>
+</section>
 <section id="2.14.0">
 <h2>2.14.0<a class="headerlink" href="#2.14.0" title="Permalink to this heading">#</a></h2>
 <strong>Released: </strong>2025-02-12<section id="2.14.0-feature">
@@ -6919,6 +7021,11 @@ the time it takes to <code class="docutils literal notranslate"><span class="pre
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#2.15.0">2.15.0</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#2.15.0-feature">Features</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#2.15.0-bugfix">Bugfixes</a></li>
+</ul>
+</li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#2.14.0">2.14.0</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#2.14.0-feature">Features</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#2.14.0-bugfix">Bugfixes</a></li>
