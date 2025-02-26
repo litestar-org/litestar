@@ -50,11 +50,7 @@ class CORSMiddleware(AbstractMiddleware):
             )
             await asgi_response(scope, receive, send)
         elif origin:
-            await self.app(
-                scope,
-                receive,
-                self.send_wrapper(send=send, origin=origin, has_cookie="cookie" in headers),
-            )
+            await self.app(scope, receive, self.send_wrapper(send=send, origin=origin, has_cookie="cookie" in headers))
         else:
             await self.app(scope, receive, send)
 
