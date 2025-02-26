@@ -231,9 +231,9 @@ Removal of  ``CLIPluginProtocol``
 
 
 The :class:`~typing.Protocol` ``CLIPluginProtocol`` has been removed in favour
-of the abstract :class:`~.plugins.CLIPluginProtocol`. The functionality and
-interface remain the same, the only difference is that plugins that wish to provide this
-functionality are now required to inherit from :class:`~.plugins.CLIPlugin`.
+of the abstract ``CLIPluginProtocol``. The functionality and interface remain the same,
+the only difference being that plugins that wish to provide this functionality are now
+required to inherit from :class:`~.plugins.CLIPlugin`.
 
 
 Removal of ``OpenAPISchemaPluginProtocol``
@@ -241,6 +241,6 @@ Removal of ``OpenAPISchemaPluginProtocol``
 
 The :class:`~typing.Protocol` ``OpenAPISchemaPluginProtocol`` has been removed in favour
 of the abstract :class:`~litestar.plugins.OpenAPISchemaPlugin`. The functionality and
-interface remain the same, the only difference is that plugins that wish to provide this
-functionality are now required to inherit from
+interface remain the same, the only difference being that plugins that wish to provide
+this functionality are now required to inherit from
 :class:`~.plugins.OpenAPISchemaPlugin`.
