@@ -22,7 +22,7 @@ __all__ = (
 
 
 if TYPE_CHECKING:
-    from collections.abc import Iterator, Mapping, MutableMapping, Sequence
+    from collections.abc import Mapping, MutableMapping, Sequence
     from os import PathLike
     from pathlib import Path
 
@@ -32,7 +32,6 @@ if TYPE_CHECKING:
     from litestar.datastructures.response_header import ResponseHeader
     from litestar.di import Provide
     from litestar.enums import ScopeType
-    from litestar.middleware.base import DefineMiddleware, MiddlewareProtocol
     from litestar.params import ParameterKwarg
 
     from .asgi_types import ASGIApp
@@ -40,7 +39,7 @@ if TYPE_CHECKING:
 
 Dependencies: TypeAlias = "Mapping[str, Union[Provide, AnyCallable]]"
 ExceptionHandlersMap: TypeAlias = "MutableMapping[Union[int, type[Exception]], ExceptionHandler]"
-Middleware: TypeAlias = "Union[Callable[..., ASGIApp], DefineMiddleware, Iterator[tuple[ASGIApp, dict[str, Any]]], type[MiddlewareProtocol]]"
+Middleware: TypeAlias = Callable[..., "ASGIApp"]
 ParametersMap: TypeAlias = "Mapping[str, ParameterKwarg]"
 PathType: TypeAlias = "Union[Path, PathLike, str]"
 ResponseCookies: TypeAlias = "Union[Sequence[Cookie], Mapping[str, str]]"
