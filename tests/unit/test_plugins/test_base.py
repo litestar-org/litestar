@@ -76,7 +76,7 @@ def test_plugin_registry_get() -> None:
 
     cli_plugin = MyCLIPlugin()
 
-    with pytest.raises(KeyError, match="No plugin of type 'CLIPlugin' registered"):
+    with pytest.raises(KeyError, match="No plugin of type 'MyCLIPlugin' registered"):
         PluginRegistry([]).get(MyCLIPlugin)
 
     assert PluginRegistry([cli_plugin]).get(MyCLIPlugin) is cli_plugin
