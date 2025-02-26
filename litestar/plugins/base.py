@@ -20,7 +20,6 @@ if TYPE_CHECKING:
 
 __all__ = (
     "CLIPlugin",
-    "CLIPluginProtocol",
     "DIPlugin",
     "InitPlugin",
     "InitPluginProtocol",
@@ -133,11 +132,8 @@ class ReceiveRoutePlugin:
         """Receive routes as they are registered on an application."""
 
 
-@runtime_checkable
-class CLIPluginProtocol(Protocol):
-    """Plugin protocol to extend the CLI."""
-
-    __slots__ = ()
+class CLIPlugin:
+    """Plugin protocol to extend the CLI Server Lifespan."""
 
     def on_cli_init(self, cli: Group) -> None:
         """Called when the CLI is initialized.
@@ -151,11 +147,11 @@ class CLIPluginProtocol(Protocol):
             .. code-block:: python
 
                 from litestar import Litestar
-                from litestar.plugins import CLIPluginProtocol
+                from litestar.plugins import CLIPlugin
                 from click import Group
 
 
-                class CLIPlugin(CLIPluginProtocol):
+                class CLIPlugin(CLIPlugin):
                     def on_cli_init(self, cli: Group) -> None:
                         @cli.command()
                         def is_debug_mode(app: Litestar):
@@ -164,12 +160,6 @@ class CLIPluginProtocol(Protocol):
 
                 app = Litestar(plugins=[CLIPlugin()])
         """
-
-
-class CLIPlugin(CLIPluginProtocol):
-    """Plugin protocol to extend the CLI Server Lifespan."""
-
-    __slots__ = ()
 
     @contextmanager
     def server_lifespan(self, app: Litestar) -> Iterator[None]:
@@ -321,7 +311,6 @@ class OpenAPISchemaPlugin(abc.ABC):
 
 PluginProtocol = Union[
     CLIPlugin,
-    CLIPluginProtocol,
     InitPluginProtocol,
     OpenAPISchemaPlugin,
     ReceiveRoutePlugin,
@@ -338,7 +327,7 @@ class PluginRegistry:
         "openapi": "Plugins that implement the OpenAPISchemaPluginProtocol",
         "receive_route": "ReceiveRoutePlugin instances",
         "serialization": "Plugins that implement the SerializationPluginProtocol",
-        "cli": "Plugins that implement the CLIPluginProtocol",
+        "cli": "Plugins that implement the CLIPlugin",
         "di": "DIPlugin instances",
         "_plugins_by_type": None,
         "_plugins": None,
@@ -352,7 +341,7 @@ class PluginRegistry:
         self.openapi = tuple(p for p in plugins if isinstance(p, OpenAPISchemaPlugin))
         self.receive_route = tuple(p for p in plugins if isinstance(p, ReceiveRoutePlugin))
         self.serialization = tuple(p for p in plugins if isinstance(p, SerializationPluginProtocol))
-        self.cli = tuple(p for p in plugins if isinstance(p, CLIPluginProtocol))
+        self.cli = tuple(p for p in plugins if isinstance(p, CLIPlugin))
         self.di = tuple(p for p in plugins if isinstance(p, DIPlugin))
 
     def get(self, type_: type[PluginT] | str) -> PluginT:

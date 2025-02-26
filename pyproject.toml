@@ -101,7 +101,7 @@ pydantic = [
   "pydantic-extra-types",
 ]
 redis = ["redis[hiredis]>=4.4.4,<5.3"]  # 5.3.0 introduced some issues with the channels plugin; need to investigate
-sqlalchemy = ["advanced-alchemy>=0.2.2"]
+sqlalchemy = ["advanced-alchemy>=0.32.1"]
 standard = [
   "jinja2",
   "jsbeautifier",

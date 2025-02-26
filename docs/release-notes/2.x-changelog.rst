@@ -2135,8 +2135,8 @@
         :type: feature
         :pr: 2066
 
-        A new plugin protocol :class:`~litestar.plugins.CLIPluginProtocol` has been
-        added that can be used to extend the Litestar CLI.
+        A new plugin protocol ``CLIPluginProtocol`` has been added that can be used to
+        extend the Litestar CLI.
 
         .. seealso::
             :ref:`usage/cli:Using a plugin`
