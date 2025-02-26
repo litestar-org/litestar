@@ -1544,6 +1544,70 @@ document.write(`
   <section id="module-litestar.middleware">
 <span id="middleware"></span><h1>middleware<a class="headerlink" href="#module-litestar.middleware" title="Permalink to this heading">#</a></h1>
 <dl class="py class">
+<dt class="sig sig-object py" id="litestar.middleware.ASGIMiddleware">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.middleware.</span></span><span class="sig-name descname"><span class="pre">ASGIMiddleware</span></span><a class="headerlink" href="#litestar.middleware.ASGIMiddleware" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/abc.html#abc.ABC" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></a></p>
+<p>An abstract base class to easily construct ASGI middlewares, providing functionality
+to dynamically skip the middleware based on ASGI <code class="docutils literal notranslate"><span class="pre">scope[&quot;type&quot;]</span></code>, handler <code class="docutils literal notranslate"><span class="pre">opt</span></code>
+keys or path patterns and a simple way to pass configuration to middlewares.</p>
+<p>This base class does not implement an <code class="docutils literal notranslate"><span class="pre">__init__</span></code> method, so subclasses are free
+to use it to customize the middleware’s configuration.</p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>An instance of the individual middlewares will be created <em>once</em> and used to
+build up the internal middleware stack. As such, middlewares should <em>not</em> be
+stateful, as this state will be shared across all requests.
+Any connection-specific state should be scoped to the <cite>handle</cite> implementation.
+Not doing so would typically lead to conflicting variable reads / writes across
+requests, and - most likely - bugs.</p>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">MyMiddleware</span><span class="p">(</span><span class="n">ASGIMiddleware</span><span class="p">):</span>
+    <span class="n">scopes</span> <span class="o">=</span> <span class="p">(</span><span class="n">ScopeType</span><span class="o">.</span><span class="n">HTTP</span><span class="p">,)</span>
+    <span class="n">exclude</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;/not/this/path&quot;</span><span class="p">,)</span>
+    <span class="n">exclude_opt_key</span> <span class="o">=</span> <span class="s2">&quot;exclude_my_middleware&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">my_logger</span><span class="p">:</span> <span class="n">Logger</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logger</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">handle</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">scope</span><span class="p">:</span> <span class="n">Scope</span><span class="p">,</span> <span class="n">receive</span><span class="p">:</span> <span class="n">Receive</span><span class="p">,</span> <span class="n">send</span><span class="p">:</span> <span class="n">Send</span><span class="p">,</span> <span class="n">next_app</span><span class="p">:</span> <span class="n">ASGIApp</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Received request for path </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">scope</span><span class="p">[</span><span class="s2">&quot;path&quot;</span><span class="p">])</span>
+        <span class="k">await</span> <span class="n">next_app</span><span class="p">(</span><span class="n">scope</span><span class="p">,</span> <span class="n">receive</span><span class="p">,</span> <span class="n">send</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Processed request for path </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">scope</span><span class="p">[</span><span class="s2">&quot;path&quot;</span><span class="p">])</span>
+
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">middleware</span><span class="o">=</span><span class="p">[</span><span class="n">MyMiddleware</span><span class="p">(</span><span class="n">logger</span><span class="o">=</span><span class="n">my_logger</span><span class="p">)])</span>
+</pre></div>
+</div>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 2.15.</span></p>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="litestar.middleware.ASGIMiddleware.__call__">
+<span class="sig-name descname"><span class="pre">__call__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">app</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../types.html#litestar.types.ASGIApp" title="litestar.types.ASGIApp"><span class="pre">ASGIApp</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../types.html#litestar.types.ASGIApp" title="litestar.types.ASGIApp"><span class="pre">ASGIApp</span></a></span></span><a class="headerlink" href="#litestar.middleware.ASGIMiddleware.__call__" title="Permalink to this definition">#</a></dt>
+<dd><p>Create the actual middleware callable</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="litestar.middleware.ASGIMiddleware.handle">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">handle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scope</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../types.html#litestar.types.Scope" title="litestar.types.Scope"><span class="pre">Scope</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">receive</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../types.html#litestar.types.Receive" title="litestar.types.Receive"><span class="pre">Receive</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">send</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../types.html#litestar.types.Send" title="litestar.types.Send"><span class="pre">Send</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">next_app</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../types.html#litestar.types.ASGIApp" title="litestar.types.ASGIApp"><span class="pre">ASGIApp</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#litestar.middleware.ASGIMiddleware.handle" title="Permalink to this definition">#</a></dt>
+<dd><p>Handle ASGI call.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><span class="target" id="litestar.middleware.ASGIMiddleware.handle.params.scope"></span><strong>scope</strong><a class="paramlink headerlink reference internal" href="#litestar.middleware.ASGIMiddleware.handle.params.scope">¶</a> – The ASGI connection scope.</p></li>
+<li><p><span class="target" id="litestar.middleware.ASGIMiddleware.handle.params.receive"></span><strong>receive</strong><a class="paramlink headerlink reference internal" href="#litestar.middleware.ASGIMiddleware.handle.params.receive">¶</a> – The ASGI receive function.</p></li>
+<li><p><span class="target" id="litestar.middleware.ASGIMiddleware.handle.params.send"></span><strong>send</strong><a class="paramlink headerlink reference internal" href="#litestar.middleware.ASGIMiddleware.handle.params.send">¶</a> – The ASGI send function</p></li>
+<li><p><span class="target" id="litestar.middleware.ASGIMiddleware.handle.params.next_app"></span><strong>next_app</strong><a class="paramlink headerlink reference internal" href="#litestar.middleware.ASGIMiddleware.handle.params.next_app">¶</a> – The next ASGI application in the middleware stack to call</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
 <dt class="sig sig-object py" id="litestar.middleware.AbstractAuthenticationMiddleware">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.middleware.</span></span><span class="sig-name descname"><span class="pre">AbstractAuthenticationMiddleware</span></span><a class="headerlink" href="#litestar.middleware.AbstractAuthenticationMiddleware" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/abc.html#abc.ABC" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></a></p>
@@ -1814,6 +1878,11 @@ closure.</p>
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.middleware.ASGIMiddleware"><code class="docutils literal notranslate"><span class="pre">ASGIMiddleware</span></code></a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.middleware.ASGIMiddleware.__call__"><code class="docutils literal notranslate"><span class="pre">ASGIMiddleware.__call__()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.middleware.ASGIMiddleware.handle"><code class="docutils literal notranslate"><span class="pre">ASGIMiddleware.handle()</span></code></a></li>
+</ul>
+</li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.middleware.AbstractAuthenticationMiddleware"><code class="docutils literal notranslate"><span class="pre">AbstractAuthenticationMiddleware</span></code></a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.middleware.AbstractAuthenticationMiddleware.__init__"><code class="docutils literal notranslate"><span class="pre">AbstractAuthenticationMiddleware.__init__()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.middleware.AbstractAuthenticationMiddleware.__call__"><code class="docutils literal notranslate"><span class="pre">AbstractAuthenticationMiddleware.__call__()</span></code></a></li>

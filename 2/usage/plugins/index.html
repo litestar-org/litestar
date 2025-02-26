@@ -1552,19 +1552,14 @@ document.write(`
 </div>
 <p>Plugins are defined by protocols, and any type that satisfies a protocol can be included in the <code class="docutils literal notranslate"><span class="pre">plugins</span></code> argument of
 the <a class="reference internal" href="../../reference/app.html#litestar.app.Litestar" title="litestar.app.Litestar"><code class="xref py py-class docutils literal notranslate"><span class="pre">app</span></code></a>.</p>
-<p>The following plugin protocols are defined.</p>
-<p>1. <a class="reference internal" href="../../reference/plugins/index.html#litestar.plugins.InitPluginProtocol" title="litestar.plugins.InitPluginProtocol"><code class="xref py py-class docutils literal notranslate"><span class="pre">InitPluginProtocol</span></code></a>: This protocol defines a contract for plugins
-that can interact with the data that is used to instantiate the application instance.</p>
-<p>2. <a class="reference internal" href="../../reference/plugins/index.html#litestar.plugins.SerializationPluginProtocol" title="litestar.plugins.SerializationPluginProtocol"><code class="xref py py-class docutils literal notranslate"><span class="pre">SerializationPluginProtocol</span></code></a>: This protocol defines
-the contract for plugins that extend serialization functionality of the application.</p>
-<section id="initpluginprotocol">
-<h2>InitPluginProtocol<a class="headerlink" href="#initpluginprotocol" title="Permalink to this heading">#</a></h2>
-<p><code class="docutils literal notranslate"><span class="pre">InitPluginProtocol</span></code> defines an interface that allows for customization of the application’s initialization process.
+<section id="initplugin">
+<h2>InitPlugin<a class="headerlink" href="#initplugin" title="Permalink to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">InitPlugin</span></code> defines an interface that allows for customization of the application’s initialization process.
 Init plugins can define dependencies, add route handlers, configure middleware, and much more!</p>
 <p>Implementations of these plugins must define a single method:</p>
 </section>
 <section id="on-app-init-self-app-config-appconfig-appconfig">
-<h2><a class="reference internal" href="../../reference/plugins/index.html#litestar.plugins.InitPluginProtocol.on_app_init" title="litestar.plugins.InitPluginProtocol.on_app_init"><code class="xref py py-meth docutils literal notranslate"><span class="pre">on_app_init(self,</span> <span class="pre">app_config:</span> <span class="pre">AppConfig)</span> <span class="pre">-&gt;</span> <span class="pre">AppConfig:</span></code></a><a class="headerlink" href="#on-app-init-self-app-config-appconfig-appconfig" title="Permalink to this heading">#</a></h2>
+<h2><a class="reference internal" href="../../reference/plugins/index.html#litestar.plugins.InitPlugin.on_app_init" title="litestar.plugins.InitPlugin.on_app_init"><code class="xref py py-meth docutils literal notranslate"><span class="pre">on_app_init(self,</span> <span class="pre">app_config:</span> <span class="pre">AppConfig)</span> <span class="pre">-&gt;</span> <span class="pre">AppConfig:</span></code></a><a class="headerlink" href="#on-app-init-self-app-config-appconfig-appconfig" title="Permalink to this heading">#</a></h2>
 <p>The method accepts and must return an <a class="reference internal" href="../../reference/config.html#litestar.config.app.AppConfig" title="litestar.config.app.AppConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">AppConfig</span></code></a> instance, which can be modified
 and is later used to instantiate the application.</p>
 <p>This method is invoked after any <code class="docutils literal notranslate"><span class="pre">on_app_init</span></code> hooks have been called, and each plugin is invoked in the order that
@@ -1578,13 +1573,13 @@ authors should make it clear in their documentation if their plugin should be in
 </input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-0">
 Python 3.8+</label><div class="sd-tab-content docutils">
 <div class="literal-block-wrapper docutils container" id="id3">
-<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">InitPluginProtocol</span></code> implementation example</span><a class="headerlink" href="#id3" title="Permalink to this code">#</a></div>
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">InitPlugin</span></code> implementation example</span><a class="headerlink" href="#id3" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span>
 
 <span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
 <span class="kn">from</span> <span class="nn">litestar.config.app</span> <span class="kn">import</span> <span class="n">AppConfig</span>
 <span class="kn">from</span> <span class="nn">litestar.di</span> <span class="kn">import</span> <span class="n">Provide</span>
-<span class="kn">from</span> <span class="nn">litestar.plugins</span> <span class="kn">import</span> <span class="n">InitPluginProtocol</span>
+<span class="kn">from</span> <span class="nn">litestar.plugins</span> <span class="kn">import</span> <span class="n">InitPlugin</span>
 
 
 <span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
@@ -1596,7 +1591,7 @@ Python 3.8+</label><div class="sd-tab-content docutils">
     <span class="k">return</span> <span class="s2">&quot;world&quot;</span>
 
 
-<span class="k">class</span> <span class="nc">MyPlugin</span><span class="p">(</span><span class="n">InitPluginProtocol</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">MyPlugin</span><span class="p">(</span><span class="n">InitPlugin</span><span class="p">):</span>
     <span class="k">def</span> <span class="nf">on_app_init</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">app_config</span><span class="p">:</span> <span class="n">AppConfig</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AppConfig</span><span class="p">:</span>
         <span class="n">app_config</span><span class="o">.</span><span class="n">dependencies</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Provide</span><span class="p">(</span><span class="n">get_name</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
         <span class="n">app_config</span><span class="o">.</span><span class="n">route_handlers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">route_handler</span><span class="p">)</span>
@@ -1612,11 +1607,11 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 </input><label class="sd-tab-label" data-sync-id="3.9" for="sd-tab-item-1">
 Python 3.9+</label><div class="sd-tab-content docutils">
 <div class="literal-block-wrapper docutils container" id="id4">
-<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">InitPluginProtocol</span></code> implementation example</span><a class="headerlink" href="#id4" title="Permalink to this code">#</a></div>
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">InitPlugin</span></code> implementation example</span><a class="headerlink" href="#id4" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
 <span class="kn">from</span> <span class="nn">litestar.config.app</span> <span class="kn">import</span> <span class="n">AppConfig</span>
 <span class="kn">from</span> <span class="nn">litestar.di</span> <span class="kn">import</span> <span class="n">Provide</span>
-<span class="kn">from</span> <span class="nn">litestar.plugins</span> <span class="kn">import</span> <span class="n">InitPluginProtocol</span>
+<span class="kn">from</span> <span class="nn">litestar.plugins</span> <span class="kn">import</span> <span class="n">InitPlugin</span>
 
 
 <span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
@@ -1628,7 +1623,7 @@ Python 3.9+</label><div class="sd-tab-content docutils">
     <span class="k">return</span> <span class="s2">&quot;world&quot;</span>
 
 
-<span class="k">class</span> <span class="nc">MyPlugin</span><span class="p">(</span><span class="n">InitPluginProtocol</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">MyPlugin</span><span class="p">(</span><span class="n">InitPlugin</span><span class="p">):</span>
     <span class="k">def</span> <span class="nf">on_app_init</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">app_config</span><span class="p">:</span> <span class="n">AppConfig</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AppConfig</span><span class="p">:</span>
         <span class="n">app_config</span><span class="o">.</span><span class="n">dependencies</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Provide</span><span class="p">(</span><span class="n">get_name</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
         <span class="n">app_config</span><span class="o">.</span><span class="n">route_handlers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">route_handler</span><span class="p">)</span>
@@ -1648,7 +1643,7 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 </pre></div>
 </div>
 </div>
-<p>The <code class="docutils literal notranslate"><span class="pre">MyPlugin</span></code> class is an implementation of the <a class="reference internal" href="../../reference/plugins/index.html#litestar.plugins.InitPluginProtocol" title="litestar.plugins.InitPluginProtocol"><code class="xref py py-class docutils literal notranslate"><span class="pre">InitPluginProtocol</span></code></a>. It
+<p>The <code class="docutils literal notranslate"><span class="pre">MyPlugin</span></code> class is an implementation of the <a class="reference internal" href="../../reference/plugins/index.html#litestar.plugins.InitPlugin" title="litestar.plugins.InitPlugin"><code class="xref py py-class docutils literal notranslate"><span class="pre">InitPlugin</span></code></a>. It
 defines a single method, <code class="docutils literal notranslate"><span class="pre">on_app_init()</span></code>, which takes an <a class="reference internal" href="../../reference/config.html#litestar.config.app.AppConfig" title="litestar.config.app.AppConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">AppConfig</span></code></a> instance
 as an argument and returns same.</p>
 <p>In the <code class="docutils literal notranslate"><span class="pre">on_app_init()</span></code> method, the dependency mapping is updated to include a new dependency named <code class="docutils literal notranslate"><span class="pre">&quot;name&quot;</span></code>, which
@@ -1737,7 +1732,7 @@ injection by providing information about injectable types.</p>
 <p>Its main purpose it to facilitate the injection of callables with unknown signatures,
 for example Pydantic’s <code class="docutils literal notranslate"><span class="pre">BaseModel</span></code> classes; These are not supported natively since,
 while they are callables, their type information is not contained within their callable
-signature (their <a class="reference internal" href="../../reference/controller.html#litestar.controller.Controller.__init__" title="litestar.controller.Controller.__init__"><code class="xref py py-func docutils literal notranslate"><span class="pre">__init__()</span></code></a> method).</p>
+signature (their <a class="reference internal" href="../../reference/contrib/jinja.html#litestar.contrib.jinja.JinjaTemplateEngine.__init__" title="litestar.contrib.jinja.JinjaTemplateEngine.__init__"><code class="xref py py-func docutils literal notranslate"><span class="pre">__init__()</span></code></a> method).</p>
 <div class="sd-tab-set docutils">
 <input id="sd-tab-item-2" name="sd-tab-set-1" type="radio">
 </input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-2">
@@ -1876,7 +1871,7 @@ hello
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#initpluginprotocol">InitPluginProtocol</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#initplugin">InitPlugin</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#on-app-init-self-app-config-appconfig-appconfig"><code class="xref py py-meth docutils literal notranslate"><span class="pre">on_app_init(self,</span> <span class="pre">app_config:</span> <span class="pre">AppConfig)</span> <span class="pre">-&gt;</span> <span class="pre">AppConfig:</span></code></a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#example">Example</a></li>
 </ul>
