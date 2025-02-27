@@ -8,7 +8,6 @@ from litestar.plugins.base import (
     PluginRegistry,
     ReceiveRoutePlugin,
     SerializationPlugin,
-    SerializationPluginProtocol,
 )
 
 __all__ = (
@@ -21,5 +20,4 @@ __all__ = (
     "PluginRegistry",
     "ReceiveRoutePlugin",
     "SerializationPlugin",
-    "SerializationPluginProtocol",
 )
