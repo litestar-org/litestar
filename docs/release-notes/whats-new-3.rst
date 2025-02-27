@@ -245,6 +245,25 @@ this functionality are now required to inherit from
 :class:`~.plugins.OpenAPISchemaPlugin`.
 
 
+Dropped support for starlette middleware protocol
+-------------------------------------------------
+
+The `starlette middleware protocol <https://www.starlette.io/middleware>`_ is no longer
+supported.
+
+Only the "factory" pattern will now be supported, i.e. a callable that receives an ASGI
+callable as its only argument and returns another ASGI callable:
+
+.. code-block:: python
+
+    def middleware(app: ASGIApp) -> ASGIApp:
+        ...
+
+
+.. seealso::
+    :doc:`/usage/middleware/index`
+
+
 Removal of ``SerializationPluginProtocol``
 ------------------------------------------
 
