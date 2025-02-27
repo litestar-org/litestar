@@ -1,4 +1,5 @@
 version = 1
+revision = 1
 requires-python = ">=3.9, <4.0"
 resolution-markers = [
     "python_full_version >= '3.13' and sys_platform == 'linux'",
@@ -10,7 +11,7 @@ resolution-markers = [
 
 [[package]]
 name = "advanced-alchemy"
-version = "0.32.1"
+version = "0.32.2"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "alembic" },
@@ -19,9 +20,9 @@ dependencies = [
     { name = "sqlalchemy" },
     { name = "typing-extensions" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/02/bd/4ef8aa2301ca76c022491adb8ba7c595077b612579d363460ba5a37a6695/advanced_alchemy-0.32.1.tar.gz", hash = "sha256:e10fddceb764b6be710dfd91c7440c774c4b23daa6f01116b4f25b8835605566", size = 517479 }
+sdist = { url = "https://files.pythonhosted.org/packages/a7/47/825023668b4c5bb9692ce79803a800f0fa480859d4a35afe56e6ebf79191/advanced_alchemy-0.32.2.tar.gz", hash = "sha256:2b61b634efd51035e41f5cf61ce89079d3c09e7349ece182f827b8b145966199", size = 517520 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/dc/11/7da5c6c23508e018156f5ddd96d033fe4454e71f4d22012fe977e1447dbf/advanced_alchemy-0.32.1-py3-none-any.whl", hash = "sha256:2a8f9d057a2d3c5c57d9fb7348ec5369ea949947d36c96be0aa527421d9f15c8", size = 172785 },
+    { url = "https://files.pythonhosted.org/packages/0d/18/c7ef6a6821d8b02b20c693f110737ce46a53a8b608cf69b67f9296f98085/advanced_alchemy-0.32.2-py3-none-any.whl", hash = "sha256:a594e91506d05fff718103b09355cdd36085d1027dbfbf4ffb64761ca8f1a7e2", size = 172779 },
 ]
 
 [[package]]
@@ -1775,7 +1776,7 @@ test = [
 
 [package.metadata]
 requires-dist = [
-    { name = "advanced-alchemy", marker = "extra == 'sqlalchemy'", specifier = ">=0.32.1" },
+    { name = "advanced-alchemy", marker = "extra == 'sqlalchemy'", specifier = ">=0.32.2" },
     { name = "annotated-types", marker = "extra == 'annotated-types'" },
     { name = "anyio", specifier = ">=3" },
     { name = "attrs", marker = "extra == 'attrs'" },
@@ -1820,6 +1821,7 @@ requires-dist = [
     { name = "uvloop", marker = "sys_platform != 'win32' and extra == 'standard'", specifier = ">=0.18.0" },
     { name = "valkey", extras = ["libvalkey"], marker = "extra == 'valkey'", specifier = ">=6.0.2" },
 ]
+provides-extras = ["annotated-types", "attrs", "brotli", "cli", "cryptography", "full", "jinja", "jwt", "mako", "minijinja", "opentelemetry", "piccolo", "picologging", "prometheus", "pydantic", "redis", "valkey", "sqlalchemy", "standard", "structlog"]
 
 [package.metadata.requires-dev]
 dev = [
