@@ -164,7 +164,7 @@ class AppConfig:
     """A `pdb`-like debugger module that supports the `post_mortem()` protocol.
     This module will be used when `pdb_on_exception` is set to True."""
     plugins: list[PluginProtocol] = field(default_factory=list)
-    """List of :class:`SerializationPluginProtocol <.plugins.SerializationPluginProtocol>`."""
+    """List of plugins"""
     request_class: type[Request] | None = field(default=None)
     """An optional subclass of :class:`Request <.connection.Request>` to use for http connections."""
     request_max_body_size: int | None | EmptyType = Empty
