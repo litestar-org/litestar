@@ -1955,6 +1955,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "Ada-lave",
+      "name": "Vladislav",
+      "avatar_url": "https://avatars.githubusercontent.com/u/113159483?v=4",
+      "profile": "https://github.com/Ada-lave",
+      "contributions": [
+        "doc"
+      ]
     }
   ],
   "contributorsPerLine": 7,

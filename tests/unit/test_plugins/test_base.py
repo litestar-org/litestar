@@ -7,7 +7,7 @@ from click import Group
 
 from litestar import Litestar, MediaType, get
 from litestar.constants import UNDEFINED_SENTINELS
-from litestar.plugins import CLIPluginProtocol, InitPluginProtocol, OpenAPISchemaPlugin, PluginRegistry
+from litestar.plugins import CLIPluginProtocol, InitPlugin, OpenAPISchemaPlugin, PluginRegistry
 from litestar.plugins.attrs import AttrsSchemaPlugin
 from litestar.plugins.core import MsgspecDIPlugin
 from litestar.plugins.pydantic import PydanticDIPlugin, PydanticInitPlugin, PydanticPlugin, PydanticSchemaPlugin
@@ -29,7 +29,7 @@ def test_plugin_on_app_init() -> None:
     def on_startup(app: Litestar) -> None:
         app.state.called = True
 
-    class PluginWithInitOnly(InitPluginProtocol):
+    class PluginWithInitOnly(InitPlugin):
         def on_app_init(self, app_config: AppConfig) -> AppConfig:
             app_config.tags.append(tag)
             app_config.on_startup.append(on_startup)
