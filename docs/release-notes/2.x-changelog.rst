@@ -2528,7 +2528,7 @@
 
         Expose the previously private :class:`litestar.typing.ParsedType`. This is
         mainly indented for usage with
-        :meth:`litestar.plugins.SerializationPluginProtocol.supports_type`
+        ``litestar.plugins.SerializationPluginProtocol.supports_type``
 
     .. change:: Improved debugging capabilities
         :type: feature
@@ -3424,8 +3424,8 @@
         :type: feature
         :pr: 1501
 
-        :class:`SerializationPluginProtocol <litestar.plugins.SerializationPluginProtocol>` has been re-implemented,
-        leveraging the new :class:`DTOInterface <litestar.dto.interface.DTOInterface>`.
+        ``SerializationPluginProtocol`` has been re-implemented, leveraging the new
+        :class:`DTOInterface <litestar.dto.interface.DTOInterface>`.
 
         If a handler defines a plugin supported type as either the ``data`` kwarg type annotation, or as the return
         annotation for a handler function, and no DTO has otherwise been resolved to handle the type, the protocol

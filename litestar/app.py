@@ -48,7 +48,7 @@ from litestar.plugins import (
     OpenAPISchemaPlugin,
     PluginProtocol,
     PluginRegistry,
-    SerializationPluginProtocol,
+    SerializationPlugin,
 )
 from litestar.router import Router
 from litestar.routes import ASGIRoute, HTTPRoute, WebSocketRoute
@@ -541,7 +541,7 @@ class Litestar(Router):
 
     @property
     @deprecated(version="2.0", alternative="Litestar.plugins.serialization", kind="property")
-    def serialization_plugins(self) -> list[SerializationPluginProtocol]:
+    def serialization_plugins(self) -> list[SerializationPlugin]:
         return list(self.plugins.serialization)
 
     @staticmethod
