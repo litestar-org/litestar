@@ -1538,27 +1538,6 @@ document.write(`
                   
   <section id="x-changelog">
 <h1>2.x Changelog<a class="headerlink" href="#x-changelog" title="Permalink to this heading">#</a></h1>
-<section id="2.15.1">
-<h2>2.15.1<a class="headerlink" href="#2.15.1" title="Permalink to this heading">#</a></h2>
-<strong>Released: </strong>2025-02-27<section id="2.15.1-bugfix">
-<h3>Bugfixes<a class="headerlink" href="#2.15.1-bugfix" title="Permalink to this heading">#</a></h3>
-<dl>
-<dt>Warn about using streaming responses with a <code class="docutils literal notranslate"><span class="pre">body</span></code><a class="headerlink reference internal" href="#2.15.1-warn about using streaming responses with a" id="2.15.1-warn about using streaming responses with a">#</a></dt><dd><div class="changelog-change docutils container">
-<p>Issue a warning if the <code class="docutils literal notranslate"><span class="pre">body</span></code> parameter of a streaming response is used, as
-setting this has no effect</p>
-<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/4033">litestar-org/litestar#4033</a></span></p>
-</div>
-</dd>
-<dt>Fix incorrect deprecation warning issued when subclassing middlewares<a class="headerlink reference internal" href="#2.15.1-fix incorrect deprecation warning issued when subclassing middlewares" id="2.15.1-fix incorrect deprecation warning issued when subclassing middlewares">#</a></dt><dd><div class="changelog-change docutils container">
-<p>Fix a bug introduced in #3996 that would incorrectly issue a deprecation
-warning if a user subclassed a Litestar built-in middleware which itself
-subclasses <code class="docutils literal notranslate"><span class="pre">AbstractMiddleware</span></code></p>
-<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/4035">litestar-org/litestar#4035</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/4036">litestar-org/litestar#4036</a></span></p>
-</div>
-</dd>
-</dl>
-</section>
-</section>
 <section id="2.15.0">
 <h2>2.15.0<a class="headerlink" href="#2.15.0" title="Permalink to this heading">#</a></h2>
 <strong>Released: </strong>2025-02-26<section id="2.15.0-feature">
@@ -7042,10 +7021,6 @@ the time it takes to <code class="docutils literal notranslate"><span class="pre
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#2.15.1">2.15.1</a><ul class="visible nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#2.15.1-bugfix">Bugfixes</a></li>
-</ul>
-</li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#2.15.0">2.15.0</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#2.15.0-feature">Features</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#2.15.0-bugfix">Bugfixes</a></li>

@@ -30,7 +30,7 @@ terminology, and the flow of data, the following glossary and flowcharts are pro
 Glossary
 ++++++++
 
-.. dropdown:: Click to expand glossary
+.. dropdown:: Click to toggle the glossary
 
     .. glossary::
 
@@ -94,7 +94,7 @@ Glossary
 Flowcharts
 ++++++++++
 
-.. dropdown:: Click to expand flowcharts
+.. dropdown:: Click to toggle flowcharts
 
     .. mermaid::
         :align: center

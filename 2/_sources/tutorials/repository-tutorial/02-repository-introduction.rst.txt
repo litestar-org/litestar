@@ -221,7 +221,7 @@ functionality to a :class:`~litestar.controller.Controller`!
 Full Code
 ---------
 
-.. dropdown:: Full Code (click to expand)
+.. dropdown:: Full Code (click to toggle)
 
     .. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_repository_crud.py
         :language: python

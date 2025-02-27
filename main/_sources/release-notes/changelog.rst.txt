@@ -3,26 +3,6 @@
 2.x Changelog
 =============
 
-.. changelog:: 2.15.1
-    :date: 2025-02-27
-
-    .. change:: Warn about using streaming responses with a ``body``
-        :type: bugfix
-        :pr: 4033
-
-        Issue a warning if the ``body`` parameter of a streaming response is used, as
-        setting this has no effect
-
-    .. change:: Fix incorrect deprecation warning issued when subclassing middlewares
-        :type: bugfix
-        :pr: 4036
-        :issue: 4035
-
-        Fix a bug introduced in #3996 that would incorrectly issue a deprecation
-        warning if a user subclassed a Litestar built-in middleware which itself
-        subclasses ``AbstractMiddleware``
-
-
 .. changelog:: 2.15.0
     :date: 2025-02-26
 
