@@ -100,7 +100,7 @@ pydantic = [
   "pydantic-extra-types",
 ]
 redis = ["redis[hiredis]>=4.4.4"]
-sqlalchemy = ["advanced-alchemy>=0.32.1"]
+sqlalchemy = ["advanced-alchemy>=0.32.2"]
 standard = [
   "jinja2",
   "jsbeautifier",
@@ -117,6 +117,9 @@ litestar = "litestar.__main__:run_cli"
 
 [tool.hatch.build.targets.sdist]
 include = ['docs/PYPI_README.md', '/litestar']
+
+[tool.hatch.metadata]
+allow-direct-references = true
 
 
 [tool.uv]
