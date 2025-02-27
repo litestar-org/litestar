@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, cast
+from typing import TYPE_CHECKING, cast
 
 from litestar._asgi.routing_trie.types import (
     ASGIHandlerTuple,
@@ -215,9 +215,5 @@ def build_route_middleware_stack(
             asgi_handler = AllowedHostsMiddleware(app=asgi_handler, config=app.allowed_hosts)
 
         for middleware in handler_middleware:
-            if hasattr(middleware, "__iter__"):
-                handler, kwargs = cast("tuple[Any, dict[str, Any]]", middleware)
-                asgi_handler = handler(app=asgi_handler, **kwargs)
-            else:
-                asgi_handler = middleware(app=asgi_handler)  # type: ignore[call-arg]
+            asgi_handler = middleware(asgi_handler)
     return asgi_handler
