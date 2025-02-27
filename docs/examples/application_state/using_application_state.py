@@ -16,7 +16,7 @@ def set_state_on_startup(app: Litestar) -> None:
     app.state.value = "abc123"
 
 
-def middleware_factory(*, app: "ASGIApp") -> "ASGIApp":
+def middleware_factory(app: "ASGIApp") -> "ASGIApp":
     """A middleware can access application state via `scope`."""
 
     async def my_middleware(scope: "Scope", receive: "Receive", send: "Send") -> None:
