@@ -318,7 +318,7 @@ cases:
 :class:`litestar.plugins.InitPluginProtocol`
     Hook into an application's initialization process
 
-:class:`litestar.plugins.SerializationPluginProtocol`
+``litestar.plugins.SerializationPluginProtocol``
     Extend the serialization and deserialization capabilities of an application
 
 ``litestar.plugins.OpenAPISchemaPluginProtocol``

@@ -27,7 +27,6 @@ __all__ = (
     "PluginProtocol",
     "PluginRegistry",
     "SerializationPlugin",
-    "SerializationPluginProtocol",
 )
 
 
@@ -165,41 +164,7 @@ class CLIPlugin:
         yield
 
 
-@runtime_checkable
-class SerializationPluginProtocol(Protocol):
-    """Protocol used to define a serialization plugin for DTOs.
-
-    .. deprecated:: 2.15
-        Use 'litestar.plugins.SerializationPluginProtocol' instead
-
-    """
-
-    __slots__ = ()
-
-    def supports_type(self, field_definition: FieldDefinition) -> bool:
-        """Given a value of indeterminate type, determine if this value is supported by the plugin.
-
-        Args:
-            field_definition: A parsed type.
-
-        Returns:
-            Whether the type is supported by the plugin.
-        """
-        raise NotImplementedError()
-
-    def create_dto_for_type(self, field_definition: FieldDefinition) -> type[AbstractDTO]:
-        """Given a parsed type, create a DTO class.
-
-        Args:
-            field_definition: A parsed type.
-
-        Returns:
-            A DTO class.
-        """
-        raise NotImplementedError()
-
-
-class SerializationPlugin(SerializationPluginProtocol, abc.ABC):
+class SerializationPlugin(abc.ABC):
     """Abstract base class for plugins that extend DTO functionality"""
 
     @abc.abstractmethod
@@ -313,7 +278,7 @@ PluginProtocol = Union[
     InitPluginProtocol,
     OpenAPISchemaPlugin,
     ReceiveRoutePlugin,
-    SerializationPluginProtocol,
+    SerializationPlugin,
     DIPlugin,
 ]
 
@@ -322,11 +287,11 @@ PluginT = TypeVar("PluginT", bound=PluginProtocol)
 
 class PluginRegistry:
     __slots__ = {  # noqa: RUF023
-        "init": "Plugins that implement the InitPluginProtocol",
-        "openapi": "Plugins that implement the OpenAPISchemaPluginProtocol",
+        "init": "Plugins that implement InitPlugin",
+        "openapi": "Plugins that implement OpenAPISchemaPlugin",
         "receive_route": "ReceiveRoutePlugin instances",
-        "serialization": "Plugins that implement the SerializationPluginProtocol",
-        "cli": "Plugins that implement the CLIPlugin",
+        "serialization": "Plugins that implement SerializationPlugin",
+        "cli": "Plugins that implement CLIPlugin",
         "di": "DIPlugin instances",
         "_plugins_by_type": None,
         "_plugins": None,
@@ -339,7 +304,7 @@ class PluginRegistry:
         self.init = tuple(p for p in plugins if isinstance(p, InitPluginProtocol))
         self.openapi = tuple(p for p in plugins if isinstance(p, OpenAPISchemaPlugin))
         self.receive_route = tuple(p for p in plugins if isinstance(p, ReceiveRoutePlugin))
-        self.serialization = tuple(p for p in plugins if isinstance(p, SerializationPluginProtocol))
+        self.serialization = tuple(p for p in plugins if isinstance(p, SerializationPlugin))
         self.cli = tuple(p for p in plugins if isinstance(p, CLIPlugin))
         self.di = tuple(p for p in plugins if isinstance(p, DIPlugin))
 
