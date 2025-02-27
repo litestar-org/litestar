@@ -1,5 +1,4 @@
 from typing import TYPE_CHECKING, Union
-from typing import Tuple
 from warnings import catch_warnings
 
 import pytest
