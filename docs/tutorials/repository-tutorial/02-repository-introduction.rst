@@ -1,6 +1,6 @@
 Interacting with repositories
 -----------------------------
-Now that we've covered the modeling basics, we are able to create our first repository
+Now that we've covered the modelling basics, we are able to create our first repository
 class.  The repository classes include all of the standard CRUD operations as well as a
 few advanced features such as pagination, filtering and bulk operations.
 
