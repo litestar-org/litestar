@@ -48,39 +48,39 @@ outgoing responses:
 
 
 
-Migrating to ``ASGIMiddleware`` from ``MiddlewareProtocol`` / ``AbstractMiddleware``
+Migrating from ``MiddlewareProtocol`` / ``AbstractMiddleware``
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 :class:`~litestar.middleware.ASGIMiddleware` was introduced in Litestar 2.15. If you've
 been using ``MiddlewareProtocol`` / ``AbstractMiddleware`` to implement your middlewares
 before, there's a simple migration path to using ``ASGIMiddleware``.
 
-**Migrating from ``MiddlewareProtocol``**
+**From MiddlewareProtocol**
 
 .. tab-set::
 
-    .. tab-item:: ``MiddlewareProtocol``
+    .. tab-item:: MiddlewareProtocol
 
         .. literalinclude:: /examples/middleware/middleware_protocol_migration_old.py
             :language: python
 
-    .. tab-item:: ``ASGIMiddleware``
+    .. tab-item:: ASGIMiddleware
 
         .. literalinclude:: /examples/middleware/middleware_protocol_migration_new.py
             :language: python
 
 
 
-**Migrating from ``AbstractMiddleware``**
+**From AbstractMiddleware**
 
 .. tab-set::
 
-    .. tab-item:: ``MiddlewareProtocol``
+    .. tab-item:: MiddlewareProtocol
 
         .. literalinclude:: /examples/middleware/abstract_middleware_migration_old.py
             :language: python
 
-    .. tab-item:: ``ASGIMiddleware``
+    .. tab-item:: ASGIMiddleware
 
         .. literalinclude:: /examples/middleware/abstract_middleware_migration_new.py
             :language: python
