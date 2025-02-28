@@ -1,14 +1,14 @@
-Introduction to Database Modeling and Repository Features
----------------------------------------------------------
+Introduction to Database Modelling and Repository Features
+----------------------------------------------------------
 In this tutorial, we will cover the integrated repository features in Litestar, starting
-with database modeling using the included SQLAlchemy declarative model helpers. These
+with database modelling using the included SQLAlchemy declarative model helpers. These
 are a series of classes and mixins that incorporate commonly used functions/column types
 to make working with models easier.
 
 .. tip:: The full code for this tutorial can be found below in the :ref:`Full Code <01-repo-full-code>` section.
 
-Modeling
---------
+Modelling
+---------
 
 We'll begin by modelling the entities and relationships between authors and books.
 We'll start by creating the ``Author`` table, utilizing the

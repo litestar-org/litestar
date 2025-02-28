@@ -159,9 +159,9 @@ class Controller:
     security: Sequence[SecurityRequirement] | None
     """A sequence of dictionaries that to the schema of all route handlers under the controller."""
     signature_namespace: dict[str, Any]
-    """A mapping of names to types for use in forward reference resolution during signature modeling."""
+    """A mapping of names to types for use in forward reference resolution during signature modelling."""
     signature_types: Sequence[Any]
-    """A sequence of types for use in forward reference resolution during signature modeling.
+    """A sequence of types for use in forward reference resolution during signature modelling.
 
     These types will be added to the signature namespace using their ``__name__`` attribute.
     """
