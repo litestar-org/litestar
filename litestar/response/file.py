@@ -124,7 +124,6 @@ class ASGIFileResponse(ASGIStreamingResponse):
         self,
         *,
         background: BackgroundTask | BackgroundTasks | None = None,
-        body: bytes | str = b"",
         chunk_size: int = ONE_MEGABYTE,
         content_disposition_type: Literal["attachment", "inline"] = "attachment",
         content_length: int | None = None,
@@ -146,7 +145,6 @@ class ASGIFileResponse(ASGIStreamingResponse):
 
         Args:
             background: A background task or a list of background tasks to be executed after the response is sent.
-            body: encoded content to send in the response body.
             chunk_size: The chunk size to use.
             content_disposition_type: The type of the ``Content-Disposition``. Either ``inline`` or ``attachment``.
             content_length: The response content length.
@@ -181,7 +179,6 @@ class ASGIFileResponse(ASGIStreamingResponse):
             cookies=cookies,
             background=background,
             status_code=status_code,
-            body=body,
             content_length=content_length,
             encoding=encoding,
             is_head_response=is_head_response,
@@ -370,7 +367,6 @@ class File(Response):
         """Create an :class:`ASGIFileResponse <litestar.response.file.ASGIFileResponse>` instance.
 
         Args:
-            app: The :class:`Litestar <.app.Litestar>` application instance.
             background: Background task(s) to be executed after the response is sent.
             cookies: A list of cookies to be set on the response.
             encoded_headers: A list of already encoded headers.
@@ -394,7 +390,6 @@ class File(Response):
 
         return ASGIFileResponse(
             background=self.background or background,
-            body=b"",
             chunk_size=self.chunk_size,
             content_disposition_type=self.content_disposition_type,  # pyright: ignore
             content_length=0,

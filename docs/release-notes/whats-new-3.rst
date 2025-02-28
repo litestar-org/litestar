@@ -272,3 +272,12 @@ of the abstract :class:`~litestar.plugins.SerializationPlugin`. The functionalit
 interface remain the same, the only difference being that plugins that wish to provide
 this functionality are now required to inherit from
 :class:`~.plugins.SerializationPlugin`.
+
+
+Removal of ``body`` in streaming responses
+-------------------------------------------
+
+The unsupported ``body`` parameter of :class:`~.ASGIStreamingResponse`
+and :class:`.ASGIFileResponse` has been removed.
+
+This does not change any behaviour, as this parameter was previously ignored.
