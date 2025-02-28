@@ -38,7 +38,6 @@ class ASGIStreamingResponse(ASGIResponse):
         *,
         iterator: StreamType,
         background: BackgroundTask | BackgroundTasks | None = None,
-        body: bytes | str = b"",
         content_length: int | None = None,
         cookies: Iterable[Cookie] | None = None,
         encoded_headers: Iterable[tuple[bytes, bytes]] | None = None,
@@ -52,8 +51,6 @@ class ASGIStreamingResponse(ASGIResponse):
 
         Args:
             background: A background task or a list of background tasks to be executed after the response is sent.
-            body: encoded content to send in the response body.
-                .. deprecated:: 2.16
             content_length: The response content length.
             cookies: The response cookies.
             encoded_headers: The response headers.
@@ -65,18 +62,8 @@ class ASGIStreamingResponse(ASGIResponse):
             status_code: The response status code.
         """
 
-        if body:
-            warn_deprecation(
-                version="2.16",
-                kind="parameter",
-                deprecated_name="body",
-                removal_in="3.0",
-                info="'body' passed to a streaming response will be ignored. Streams should always be iterables",
-            )
-
         super().__init__(
             background=background,
-            body=body,
             content_length=content_length,
             cookies=cookies,
             encoding=encoding,
