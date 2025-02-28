@@ -1,5 +1,4 @@
 version = 1
-revision = 1
 requires-python = ">=3.9, <4.0"
 resolution-markers = [
     "python_full_version >= '3.13' and sys_platform == 'linux'",
@@ -645,7 +644,7 @@ name = "click"
 version = "8.1.7"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "colorama", marker = "sys_platform == 'win32'" },
+    { name = "colorama", marker = "platform_system == 'Windows'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/96/d3/f04c7bfcf5c1862a2a5b845c6b2b360488cf47af55dfa79c98f6a6bf98b5/click-8.1.7.tar.gz", hash = "sha256:ca9853ad459e787e2192211578cc907e7594e294c7ccc834310722b41b9ca6de", size = 336121 }
 wheels = [
@@ -1008,11 +1007,11 @@ wheels = [
 
 [[package]]
 name = "fsspec"
-version = "2024.10.0"
+version = "2025.2.0"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/a0/52/f16a068ebadae42526484c31f4398e62962504e5724a8ba5dc3409483df2/fsspec-2024.10.0.tar.gz", hash = "sha256:eda2d8a4116d4f2429db8550f2457da57279247dd930bb12f821b58391359493", size = 286853 }
+sdist = { url = "https://files.pythonhosted.org/packages/b5/79/68612ed99700e6413de42895aa725463e821a6b3be75c87fcce1b4af4c70/fsspec-2025.2.0.tar.gz", hash = "sha256:1c24b16eaa0a1798afa0337aa0db9b256718ab2a89c425371f5628d22c3b6afd", size = 292283 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/c6/b2/454d6e7f0158951d8a78c2e1eb4f69ae81beb8dca5fee9809c6c99e9d0d0/fsspec-2024.10.0-py3-none-any.whl", hash = "sha256:03b9a6785766a4de40368b88906366755e2819e758b83705c88cd7cb5fe81871", size = 179641 },
+    { url = "https://files.pythonhosted.org/packages/e2/94/758680531a00d06e471ef649e4ec2ed6bf185356a7f9fbfbb7368a40bd49/fsspec-2025.2.0-py3-none-any.whl", hash = "sha256:9de2ad9ce1f85e1931858535bc882543171d197001a0a5eb2ddc04f1781ab95b", size = 184484 },
 ]
 
 [[package]]
@@ -1713,26 +1712,48 @@ valkey = [
 
 [package.dev-dependencies]
 dev = [
+    { name = "advanced-alchemy" },
     { name = "aiosqlite" },
+    { name = "annotated-types" },
     { name = "asyncpg" },
+    { name = "attrs" },
     { name = "beanie" },
     { name = "beautifulsoup4" },
+    { name = "brotli" },
+    { name = "cryptography" },
     { name = "daphne" },
+    { name = "email-validator" },
+    { name = "fast-query-parsers" },
     { name = "fsspec" },
     { name = "greenlet" },
     { name = "httpx-sse" },
     { name = "hypercorn" },
     { name = "hypothesis" },
-    { name = "litestar", extra = ["full"] },
+    { name = "jinja2" },
+    { name = "jsbeautifier" },
+    { name = "mako" },
+    { name = "minijinja" },
+    { name = "opentelemetry-instrumentation-asgi" },
     { name = "opentelemetry-sdk" },
+    { name = "piccolo" },
+    { name = "picologging", marker = "python_full_version < '3.13'" },
+    { name = "prometheus-client" },
     { name = "psutil" },
     { name = "psycopg", extra = ["binary"], marker = "python_full_version < '3.13'" },
     { name = "psycopg", extra = ["c"], marker = "python_full_version >= '3.13' and sys_platform == 'linux'" },
     { name = "psycopg", extra = ["pool"] },
     { name = "psycopg2-binary" },
+    { name = "pydantic" },
+    { name = "pydantic-extra-types" },
+    { name = "pyjwt" },
     { name = "python-dotenv" },
+    { name = "redis", extra = ["hiredis"] },
     { name = "starlette" },
+    { name = "structlog" },
     { name = "trio" },
+    { name = "uvicorn", extra = ["standard"] },
+    { name = "uvloop", marker = "sys_platform != 'win32'" },
+    { name = "valkey", extra = ["libvalkey"] },
 ]
 docs = [
     { name = "asyncpg" },
@@ -1821,7 +1842,6 @@ requires-dist = [
     { name = "uvloop", marker = "sys_platform != 'win32' and extra == 'standard'", specifier = ">=0.18.0" },
     { name = "valkey", extras = ["libvalkey"], marker = "extra == 'valkey'", specifier = ">=6.0.2" },
 ]
-provides-extras = ["annotated-types", "attrs", "brotli", "cli", "cryptography", "full", "jinja", "jwt", "mako", "minijinja", "opentelemetry", "piccolo", "picologging", "prometheus", "pydantic", "redis", "valkey", "sqlalchemy", "standard", "structlog"]
 
 [package.metadata.requires-dev]
 dev = [
@@ -1830,7 +1850,7 @@ dev = [
     { name = "beanie", specifier = ">=1.21.0" },
     { name = "beautifulsoup4" },
     { name = "daphne", specifier = ">=4.0.0" },
-    { name = "fsspec" },
+    { name = "fsspec", specifier = ">=2025" },
     { name = "greenlet" },
     { name = "httpx-sse" },
     { name = "hypercorn", specifier = ">=0.16.0" },
@@ -3937,7 +3957,7 @@ version = "0.27.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "attrs" },
-    { name = "cffi", marker = "(python_full_version < '3.13' and implementation_name != 'pypy' and os_name == 'nt') or (implementation_name != 'pypy' and os_name == 'nt' and sys_platform != 'linux')" },
+    { name = "cffi", marker = "implementation_name != 'pypy' and os_name == 'nt'" },
     { name = "exceptiongroup", marker = "python_full_version < '3.11'" },
     { name = "idna" },
     { name = "outcome" },

@@ -6,12 +6,12 @@ from pathlib import Path, PurePath
 from typing import TYPE_CHECKING, Any, Literal
 
 from litestar.exceptions import ImproperlyConfiguredException, NotFoundException
-from litestar.file_system import BaseLocalFileSystem, FileSystemAdapter
+from litestar.file_system import BaseLocalFileSystem, ensure_async_file_system
 from litestar.handlers import get, head
 from litestar.response.file import ASGIFileResponse
 from litestar.router import Router
 from litestar.status_codes import HTTP_404_NOT_FOUND
-from litestar.types import Empty, FileInfo
+from litestar.types import Empty, FileInfo, FileSystemProtocol
 from litestar.utils import normalize_path
 
 __all__ = ("create_static_files_router",)
@@ -83,12 +83,11 @@ def create_static_files_router(
         resolve_symlinks: Resolve symlinks of ``directories``
     """
 
-    if file_system is None:
-        file_system = BaseLocalFileSystem()
+    file_system = BaseLocalFileSystem() if file_system is None else ensure_async_file_system(file_system)
 
     directories = tuple(os.path.normpath(Path(p).resolve() if resolve_symlinks else Path(p)) for p in directories)
 
-    _validate_config(path=path, directories=directories, file_system=file_system)
+    _validate_config(path=path, directories=directories)
     path = normalize_path(path)
 
     headers = None
@@ -96,7 +95,6 @@ def create_static_files_router(
         headers = {cache_control.HEADER_NAME: cache_control.to_header()}
 
     resolved_directories = tuple(Path(p).resolve() if resolve_symlinks else Path(p) for p in directories)
-    adapter = FileSystemAdapter(file_system)
 
     @get("{file_path:path}", name=name)
     async def get_handler(file_path: PurePath) -> ASGIFileResponse:
@@ -104,7 +102,7 @@ def create_static_files_router(
             path=file_path.as_posix(),
             is_head_response=False,
             directories=resolved_directories,
-            adapter=adapter,
+            fs=file_system,
             is_html_mode=html_mode,
             send_as_attachment=send_as_attachment,
             headers=headers,
@@ -116,7 +114,7 @@ def create_static_files_router(
             path=file_path.as_posix(),
             is_head_response=True,
             directories=resolved_directories,
-            adapter=adapter,
+            fs=file_system,
             is_html_mode=html_mode,
             send_as_attachment=send_as_attachment,
             headers=headers,
@@ -132,7 +130,7 @@ def create_static_files_router(
                 path="/",
                 is_head_response=False,
                 directories=resolved_directories,
-                adapter=adapter,
+                fs=file_system,
                 is_html_mode=True,
                 send_as_attachment=send_as_attachment,
                 headers=headers,
@@ -163,14 +161,14 @@ async def _handler(
     is_head_response: bool,
     directories: tuple[Path, ...],
     send_as_attachment: bool,
-    adapter: FileSystemAdapter,
+    fs: FileSystemProtocol,
     is_html_mode: bool,
     headers: dict[str, str] | None,
 ) -> ASGIFileResponse:
     split_path = path.split("/")
     filename = split_path[-1]
     joined_path = Path(*split_path)
-    resolved_path, fs_info = await _get_fs_info(directories=directories, file_path=joined_path, adapter=adapter)
+    resolved_path, fs_info = await _get_fs_info(directories=directories, file_path=joined_path, fs=fs)
     content_disposition_type: Literal["inline", "attachment"] = "attachment" if send_as_attachment else "inline"
 
     if is_html_mode and fs_info and fs_info["type"] == "directory":
@@ -178,14 +176,14 @@ async def _handler(
         resolved_path, fs_info = await _get_fs_info(
             directories=directories,
             file_path=Path(resolved_path or joined_path) / filename,
-            adapter=adapter,
+            fs=fs,
         )
 
     if fs_info and fs_info["type"] == "file":
         return ASGIFileResponse(
             file_path=resolved_path or joined_path,
             file_info=fs_info,
-            file_system=adapter.file_system,
+            file_system=fs,
             filename=filename,
             content_disposition_type=content_disposition_type,
             is_head_response=is_head_response,
@@ -198,14 +196,14 @@ async def _handler(
         resolved_path, fs_info = await _get_fs_info(  # pragma: no cover
             directories=directories,
             file_path=filename,
-            adapter=adapter,
+            fs=fs,
         )
 
         if fs_info and fs_info["type"] == "file":
             return ASGIFileResponse(
                 file_path=resolved_path or joined_path,
                 file_info=fs_info,
-                file_system=adapter.file_system,
+                file_system=fs,
                 filename=filename,
                 status_code=HTTP_404_NOT_FOUND,
                 content_disposition_type=content_disposition_type,
@@ -221,20 +219,20 @@ async def _handler(
 async def _get_fs_info(
     directories: Sequence[PathType],
     file_path: PathType,
-    adapter: FileSystemAdapter,
+    fs: FileSystemProtocol,
 ) -> tuple[Path, FileInfo] | tuple[None, None]:
     """Return the resolved path and a :class:`stat_result <os.stat_result>`"""
     for directory in directories:
         try:
             joined_path = Path(directory, file_path)
-            file_info = await adapter.info(joined_path)
+            file_info = await fs.info(joined_path)
             normalized_file_path = os.path.normpath(joined_path)
             directory_path = str(directory)
             if (
                 file_info
                 and commonpath([directory_path, file_info["name"], joined_path]) == directory_path
                 and os.path.commonpath([directory, normalized_file_path]) == directory_path
-                and (file_info := await adapter.info(joined_path))
+                and (file_info := await fs.info(joined_path))
             ):
                 return joined_path, file_info
         except FileNotFoundError:
@@ -242,7 +240,7 @@ async def _get_fs_info(
     return None, None
 
 
-def _validate_config(path: str, directories: tuple[PathType, ...], file_system: Any) -> None:
+def _validate_config(path: str, directories: tuple[PathType, ...]) -> None:
     if not path:
         raise ImproperlyConfiguredException("path must be a non-zero length string")
 
@@ -251,6 +249,3 @@ def _validate_config(path: str, directories: tuple[PathType, ...], file_system: 
 
     if "{" in path:
         raise ImproperlyConfiguredException("path parameters are not supported for static files")
-
-    if not (callable(getattr(file_system, "info", None)) and callable(getattr(file_system, "open", None))):
-        raise ImproperlyConfiguredException("file_system must adhere to the FileSystemProtocol type")
