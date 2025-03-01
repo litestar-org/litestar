@@ -1,4 +1,4 @@
-from typing import Callable, List, Union
+from typing import Callable, Union
 
 import pytest
 
@@ -45,7 +45,7 @@ def openapi_config_with_global_requirement(
 @pytest.fixture(params=[get, post, put, patch, head, delete])
 def sample_handlers(
     request: pytest.FixtureRequest,
-) -> List[Union[HTTPRouteHandler, Router]]:
+) -> list[Union[HTTPRouteHandler, Router]]:
     method_decorator: Callable[..., HTTPRouteHandler] = request.param
 
     @method_decorator("/route_security_not_specified")
@@ -103,7 +103,7 @@ def sample_handlers(
 def test_app_schema_without_global_security_property(
     request: pytest.FixtureRequest,
     openapi_config_with_optional_security_scheme: OpenAPIConfig,
-    sample_handlers: List[Union[HTTPRouteHandler, Router]],
+    sample_handlers: list[Union[HTTPRouteHandler, Router]],
 ) -> None:
     app = Litestar(
         openapi_config=openapi_config_with_optional_security_scheme,
@@ -136,79 +136,69 @@ def test_app_schema_without_global_security_property(
 
     # No router
     assert "security" not in paths["/route_security_not_specified"][method]
-    assert paths["/route_with_security"][method]["security"] == [{"MyRouteToken": []}]
-    assert paths["/route_with_security_override"][method]["security"] == [{"MyRouteToken": []}]
-    assert paths["/route_with_empty_security"][method]["security"] == []
-    assert paths["/route_with_empty_security_override"][method]["security"] == []
+    assert paths["/route_with_security"][method]["security"] == ({"MyRouteToken": []},)
+    assert paths["/route_with_security_override"][method]["security"] == ({"MyRouteToken": []},)
+    assert paths["/route_with_empty_security"][method]["security"] == ()
+    assert paths["/route_with_empty_security_override"][method]["security"] == ()
 
     # router_security_not_specified
     assert "security" not in paths["/router_security_not_specified/route_security_not_specified"][method]
-    assert paths["/router_security_not_specified/route_with_security"][method]["security"] == [{"MyRouteToken": []}]
-    assert paths["/router_security_not_specified/route_with_security_override"][method]["security"] == [
+    assert paths["/router_security_not_specified/route_with_security"][method]["security"] == ({"MyRouteToken": []},)
+    assert paths["/router_security_not_specified/route_with_security_override"][method]["security"] == (
         {"MyRouteToken": []}
-    ]
-    assert paths["/router_security_not_specified/route_with_empty_security"][method]["security"] == []
-    assert paths["/router_security_not_specified/route_with_empty_security_override"][method]["security"] == []
+    )
+    assert paths["/router_security_not_specified/route_with_empty_security"][method]["security"] == ()
+    assert paths["/router_security_not_specified/route_with_empty_security_override"][method]["security"] == ()
 
     # router_with_security
-    assert paths["/router_with_security/route_security_not_specified"][method]["security"] == [
-        {"MyRouterToken": []},
-    ]
-    assert paths["/router_with_security/route_with_security"][method]["security"] == [
+    assert paths["/router_with_security/route_security_not_specified"][method]["security"] == ({"MyRouterToken": []},)
+    assert paths["/router_with_security/route_with_security"][method]["security"] == (
         {"MyRouterToken": []},
         {"MyRouteToken": []},
-    ]
-    assert paths["/router_with_security/route_with_security_override"][method]["security"] == [
-        {"MyRouteToken": []},
-    ]
-    assert paths["/router_with_security/route_with_empty_security"][method]["security"] == [
-        {"MyRouterToken": []},
-    ]
-    assert paths["/router_with_security/route_with_empty_security_override"][method]["security"] == []
+    )
+    assert paths["/router_with_security/route_with_security_override"][method]["security"] == ({"MyRouteToken": []},)
+    assert paths["/router_with_security/route_with_empty_security"][method]["security"] == ({"MyRouterToken": []},)
+    assert paths["/router_with_security/route_with_empty_security_override"][method]["security"] == ()
 
     # router_with_security_override
-    assert paths["/router_with_security_override/route_security_not_specified"][method]["security"] == [
+    assert paths["/router_with_security_override/route_security_not_specified"][method]["security"] == (
         {"MyRouterToken": []},
-    ]
-    assert paths["/router_with_security_override/route_with_security"][method]["security"] == [
+    )
+    assert paths["/router_with_security_override/route_with_security"][method]["security"] == (
         {"MyRouterToken": []},
         {"MyRouteToken": []},
-    ]
-    assert paths["/router_with_security_override/route_with_security_override"][method]["security"] == [
+    )
+    assert paths["/router_with_security_override/route_with_security_override"][method]["security"] == (
         {"MyRouteToken": []},
-    ]
-    assert paths["/router_with_security_override/route_with_empty_security"][method]["security"] == [
+    )
+    assert paths["/router_with_security_override/route_with_empty_security"][method]["security"] == (
         {"MyRouterToken": []},
-    ]
-    assert paths["/router_with_security_override/route_with_empty_security_override"][method]["security"] == []
+    )
+    assert paths["/router_with_security_override/route_with_empty_security_override"][method]["security"] == ()
 
     # router_with_empty_security
-    assert paths["/router_with_empty_security/route_security_not_specified"][method]["security"] == []
-    assert paths["/router_with_empty_security/route_with_security"][method]["security"] == [
+    assert paths["/router_with_empty_security/route_security_not_specified"][method]["security"] == ()
+    assert paths["/router_with_empty_security/route_with_security"][method]["security"] == ({"MyRouteToken": []},)
+    assert paths["/router_with_empty_security/route_with_security_override"][method]["security"] == (
         {"MyRouteToken": []},
-    ]
-    assert paths["/router_with_empty_security/route_with_security_override"][method]["security"] == [
-        {"MyRouteToken": []},
-    ]
-    assert paths["/router_with_empty_security/route_with_empty_security"][method]["security"] == []
-    assert paths["/router_with_empty_security/route_with_empty_security_override"][method]["security"] == []
+    )
+    assert paths["/router_with_empty_security/route_with_empty_security"][method]["security"] == ()
+    assert paths["/router_with_empty_security/route_with_empty_security_override"][method]["security"] == ()
 
     # router_with_empty_security_override
-    assert paths["/router_with_empty_security/route_security_not_specified"][method]["security"] == []
-    assert paths["/router_with_empty_security/route_with_security"][method]["security"] == [
+    assert paths["/router_with_empty_security/route_security_not_specified"][method]["security"] == ()
+    assert paths["/router_with_empty_security/route_with_security"][method]["security"] == ({"MyRouteToken": []},)
+    assert paths["/router_with_empty_security/route_with_security_override"][method]["security"] == (
         {"MyRouteToken": []},
-    ]
-    assert paths["/router_with_empty_security/route_with_security_override"][method]["security"] == [
-        {"MyRouteToken": []},
-    ]
-    assert paths["/router_with_empty_security/route_with_empty_security"][method]["security"] == []
-    assert paths["/router_with_empty_security/route_with_empty_security_override"][method]["security"] == []
+    )
+    assert paths["/router_with_empty_security/route_with_empty_security"][method]["security"] == ()
+    assert paths["/router_with_empty_security/route_with_empty_security_override"][method]["security"] == ()
 
 
 def test_app_schema_with_global_security_property(
     request: pytest.FixtureRequest,
     openapi_config_with_global_requirement: OpenAPIConfig,
-    sample_handlers: List[Union[HTTPRouteHandler, Router]],
+    sample_handlers: list[Union[HTTPRouteHandler, Router]],
 ) -> None:
     app = Litestar(
         openapi_config=openapi_config_with_global_requirement,
@@ -241,73 +231,63 @@ def test_app_schema_with_global_security_property(
 
     # No router
     assert "security" not in paths["/route_security_not_specified"][method]
-    assert paths["/route_with_security"][method]["security"] == [{"MyRouteToken": []}]
-    assert paths["/route_with_security_override"][method]["security"] == [{"MyRouteToken": []}]
-    assert paths["/route_with_empty_security"][method]["security"] == []
-    assert paths["/route_with_empty_security_override"][method]["security"] == []
+    assert paths["/route_with_security"][method]["security"] == ({"MyRouteToken": []},)
+    assert paths["/route_with_security_override"][method]["security"] == ({"MyRouteToken": []},)
+    assert paths["/route_with_empty_security"][method]["security"] == ()
+    assert paths["/route_with_empty_security_override"][method]["security"] == ()
 
     # router_security_not_specified
     assert "security" not in paths["/router_security_not_specified/route_security_not_specified"][method]
-    assert paths["/router_security_not_specified/route_with_security"][method]["security"] == [{"MyRouteToken": []}]
-    assert paths["/router_security_not_specified/route_with_security_override"][method]["security"] == [
+    assert paths["/router_security_not_specified/route_with_security"][method]["security"] == ({"MyRouteToken": []},)
+    assert paths["/router_security_not_specified/route_with_security_override"][method]["security"] == (
         {"MyRouteToken": []}
-    ]
-    assert paths["/router_security_not_specified/route_with_empty_security"][method]["security"] == []
-    assert paths["/router_security_not_specified/route_with_empty_security_override"][method]["security"] == []
+    )
+    assert paths["/router_security_not_specified/route_with_empty_security"][method]["security"] == ()
+    assert paths["/router_security_not_specified/route_with_empty_security_override"][method]["security"] == ()
 
     # router_with_security
-    assert paths["/router_with_security/route_security_not_specified"][method]["security"] == [
-        {"MyRouterToken": []},
-    ]
-    assert paths["/router_with_security/route_with_security"][method]["security"] == [
+    assert paths["/router_with_security/route_security_not_specified"][method]["security"] == ({"MyRouterToken": []},)
+    assert paths["/router_with_security/route_with_security"][method]["security"] == (
         {"MyRouterToken": []},
         {"MyRouteToken": []},
-    ]
-    assert paths["/router_with_security/route_with_security_override"][method]["security"] == [
-        {"MyRouteToken": []},
-    ]
-    assert paths["/router_with_security/route_with_empty_security"][method]["security"] == [
-        {"MyRouterToken": []},
-    ]
-    assert paths["/router_with_security/route_with_empty_security_override"][method]["security"] == []
+    )
+    assert paths["/router_with_security/route_with_security_override"][method]["security"] == ({"MyRouteToken": []},)
+    assert paths["/router_with_security/route_with_empty_security"][method]["security"] == ({"MyRouterToken": []},)
+    assert paths["/router_with_security/route_with_empty_security_override"][method]["security"] == ()
 
     # router_with_security_override
-    assert paths["/router_with_security_override/route_security_not_specified"][method]["security"] == [
+    assert paths["/router_with_security_override/route_security_not_specified"][method]["security"] == (
         {"MyRouterToken": []},
-    ]
-    assert paths["/router_with_security_override/route_with_security"][method]["security"] == [
+    )
+    assert paths["/router_with_security_override/route_with_security"][method]["security"] == (
         {"MyRouterToken": []},
         {"MyRouteToken": []},
-    ]
-    assert paths["/router_with_security_override/route_with_security_override"][method]["security"] == [
+    )
+    assert paths["/router_with_security_override/route_with_security_override"][method]["security"] == (
         {"MyRouteToken": []},
-    ]
-    assert paths["/router_with_security_override/route_with_empty_security"][method]["security"] == [
+    )
+    assert paths["/router_with_security_override/route_with_empty_security"][method]["security"] == (
         {"MyRouterToken": []},
-    ]
-    assert paths["/router_with_security_override/route_with_empty_security_override"][method]["security"] == []
+    )
+    assert paths["/router_with_security_override/route_with_empty_security_override"][method]["security"] == ()
 
     # router_with_empty_security
-    assert paths["/router_with_empty_security/route_security_not_specified"][method]["security"] == []
-    assert paths["/router_with_empty_security/route_with_security"][method]["security"] == [
+    assert paths["/router_with_empty_security/route_security_not_specified"][method]["security"] == ()
+    assert paths["/router_with_empty_security/route_with_security"][method]["security"] == ({"MyRouteToken": []},)
+    assert paths["/router_with_empty_security/route_with_security_override"][method]["security"] == (
         {"MyRouteToken": []},
-    ]
-    assert paths["/router_with_empty_security/route_with_security_override"][method]["security"] == [
-        {"MyRouteToken": []},
-    ]
-    assert paths["/router_with_empty_security/route_with_empty_security"][method]["security"] == []
-    assert paths["/router_with_empty_security/route_with_empty_security_override"][method]["security"] == []
+    )
+    assert paths["/router_with_empty_security/route_with_empty_security"][method]["security"] == ()
+    assert paths["/router_with_empty_security/route_with_empty_security_override"][method]["security"] == ()
 
     # router_with_empty_security_override
-    assert paths["/router_with_empty_security/route_security_not_specified"][method]["security"] == []
-    assert paths["/router_with_empty_security/route_with_security"][method]["security"] == [
+    assert paths["/router_with_empty_security/route_security_not_specified"][method]["security"] == ()
+    assert paths["/router_with_empty_security/route_with_security"][method]["security"] == ({"MyRouteToken": []},)
+    assert paths["/router_with_empty_security/route_with_security_override"][method]["security"] == (
         {"MyRouteToken": []},
-    ]
-    assert paths["/router_with_empty_security/route_with_security_override"][method]["security"] == [
-        {"MyRouteToken": []},
-    ]
-    assert paths["/router_with_empty_security/route_with_empty_security"][method]["security"] == []
-    assert paths["/router_with_empty_security/route_with_empty_security_override"][method]["security"] == []
+    )
+    assert paths["/router_with_empty_security/route_with_empty_security"][method]["security"] == ()
+    assert paths["/router_with_empty_security/route_with_empty_security_override"][method]["security"] == ()
 
 
 def test_improperly_configured_security_override() -> None:
@@ -325,5 +305,5 @@ def test_improperly_configured_security_override() -> None:
             "/",
             security=[{"MyGlobalToken": []}],
             security_override=[{"MyRouteToken": []}],
-            route_handlers=[],
+            route_handlers=[_handler],
         )

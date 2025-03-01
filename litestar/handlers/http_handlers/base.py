@@ -99,6 +99,7 @@ class HTTPRouteHandler(BaseRouteHandler):
         "_request_max_body_size",
         "_response_class",
         "_response_type_handler",
+        "_security",
         "_sync_to_thread",
         "after_request",
         "after_response",
@@ -122,7 +123,6 @@ class HTTPRouteHandler(BaseRouteHandler):
         "response_description",
         "response_headers",
         "responses",
-        "security",
         "security_override",
         "status_code",
         "summary",
@@ -345,24 +345,8 @@ class HTTPRouteHandler(BaseRouteHandler):
         self.raises = raises
         self.response_description = response_description
         self.summary = summary
-
-        # self.tags = tags
-        # self.security = security
-        # self.security_override = security_override
-        # self.responses = responses
-        # # memoized attributes, defaulted to Empty
-        # self._resolved_after_response: AsyncAnyCallable | None | EmptyType = Empty
-        # self._resolved_before_request: AsyncAnyCallable | None | EmptyType = Empty
-        # self._response_handler_mapping: ResponseHandlerMap = {"default_handler": Empty, "response_type_handler": Empty}
-        # self._resolved_include_in_schema: bool | EmptyType = Empty
-        # self._resolved_response_class: type[Response] | EmptyType = Empty
-        # self._resolved_request_class: type[Request] | EmptyType = Empty
-        # self._resolved_security: list[SecurityRequirement] | None | EmptyType = Empty
-        # self._resolved_tags: list[str] | EmptyType = Empty
-        # self._resolved_request_max_body_size: int | EmptyType | None = Empty
-
         self.tags = frozenset(tags) if tags else frozenset()
-        self.security = tuple(security) if security else ()
+        self._security = tuple(security) if security else None
         self.responses = responses
         # memoized attributes, defaulted to Empty
         self._kwargs_models: dict[tuple[str, ...], KwargsModel] = {}
@@ -403,8 +387,21 @@ class HTTPRouteHandler(BaseRouteHandler):
             merge_opts["etag"] = merge_opts.get("etag") or other.etag
             merge_opts["response_cookies"] = (*merge_opts.get("response_cookies", ()), *other.response_cookies)
             merge_opts["response_headers"] = (*other.response_headers, *merge_opts.get("response_headers", ()))
-            merge_opts["security"] = (*other.security, *merge_opts.get("security", ()))
             merge_opts["tags"] = (*other.tags, *merge_opts.get("tags", ()))
+
+            current_security = merge_opts.get("security", None)
+
+            # TODO(tofran): properly implement layered security
+            if other.security is not None:
+                if current_security is None:
+                    merge_opts["security"] = other.security
+                else:
+                    merge_opts["security"] = (*current_security, *other.security)
+
+            # if other.security_override
+            # current_security_override = merge_opts.get("security_override", None)
+            # if other.security_override is not None:
+            #     merge_opts["security_override"] = (*other.security_override, *merge_opts.get("security_override", ()))
 
             # these are all properties which return a safe default if the corresponding
             # config value is not set, so we only merge the router configs and determine
@@ -537,21 +534,23 @@ class HTTPRouteHandler(BaseRouteHandler):
 
     @property
     def security(self) -> tuple[SecurityRequirement, ...] | None:
-        if self._resolved_security is not Empty:
-            return self._resolved_security
+        return self._security
+        # self._security = None
+        # for layer in self.ownership_layers:
+        #     if isinstance(layer.security_override, Sequence):
+        #         self._security = list(layer.security_override)
 
-        self._resolved_security = None
-        for layer in self.ownership_layers:
-            if isinstance(layer.security_override, Sequence):
-                self._resolved_security = list(layer.security_override)
+        #     elif isinstance(layer.security, Sequence):
+        #         if self._security is None:
+        #             self._security = []
 
-            elif isinstance(layer.security, Sequence):
-                if self._resolved_security is None:
-                    self._resolved_security = []
+        #         self._security.extend(layer.security)
 
-                self._resolved_security.extend(layer.security)
+        # return self._security
 
-        return self.security
+    @security.setter
+    def security(self, value: tuple[SecurityRequirement, ...] | None) -> None:
+        self._security = value
 
     @litestar_deprecated("3.0", removal_in="4.0", alternative=".security attribute")
     def resolve_security(self) -> tuple[SecurityRequirement, ...] | None:

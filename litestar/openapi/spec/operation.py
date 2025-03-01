@@ -90,6 +90,7 @@ class Operation(BaseSchemaObject):
     security: list[SecurityRequirement] | None = None
     """A declaration of which security mechanisms can be used for this operation.
 
+    TODO(tofran): fix doc
     The list of values includes alternative security requirement objects that can be used. Only one of the security
     requirement objects need to be satisfied to authorize a request. To make security optional, an empty security
     requirement (``{}``) can be included in the array. This definition overrides any declared top-level
