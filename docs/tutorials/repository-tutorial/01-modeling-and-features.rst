@@ -83,7 +83,7 @@ Let's build on this as we look at the repository classes.
 Full Code
 ---------
 
-.. dropdown:: Full Code (click to expand)
+.. dropdown:: Full Code (click to toggle)
 
     .. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_declarative_models.py
         :language: python

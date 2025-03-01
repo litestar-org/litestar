@@ -1,7 +1,6 @@
 import asyncio
 import pdb  # noqa: T100
 from concurrent.futures import ThreadPoolExecutor
-from typing import Dict
 
 # Install this packages if you want to run this test-app
 import ipdb  # pyright: ignore  # noqa: T100
@@ -13,7 +12,7 @@ from litestar import Litestar, get
 
 
 @get("/")
-async def zero_division_error() -> Dict[str, str]:
+async def zero_division_error() -> dict[str, str]:
     """Handler function that returns a greeting dictionary."""
     1 / 0  # pyright: ignore # noqa: B018
     return {"message": "ZeroDevisionError didn't occur."}

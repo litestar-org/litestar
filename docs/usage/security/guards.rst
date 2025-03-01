@@ -25,7 +25,7 @@ We begin by creating an :class:`~enum.Enum` with two roles - ``consumer`` and ``
 
 Our ``User`` model will now look like this:
 
-.. dropdown:: Click to expand the User model
+.. dropdown:: Click to toggle the model ``User``
 
     .. code-block:: python
         :caption: User model for role based authorization
@@ -52,7 +52,7 @@ Given that the ``User`` model has a ``role`` property we can use it to authorize
 Let us create a guard that only allows admin users to access certain route handlers and then add it to a route
 handler function:
 
-.. dropdown:: Click to expand the ``admin_user_guard`` guard
+.. dropdown:: Click to toggle the guard ``admin_user_guard``
 
     .. code-block:: python
         :caption: Defining the ``admin_user_guard`` guard used to authorize certain route handlers

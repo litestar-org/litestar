@@ -120,7 +120,10 @@ class AbstractMiddleware:
 
     @classmethod
     def __init_subclass__(cls, **kwargs: Any) -> None:
-        if not cls.__module__.startswith("litestar"):
+        if not any(c.__module__.startswith("litestar") and c is not AbstractMiddleware for c in cls.mro()):
+            # we don't want to warn about usage of 'AbstractMiddleware' if users aren't
+            # directly subclassing it, i.e. they're subclassing another Litestar
+            # middleware which itself subclasses 'AbstractMiddleware'
             warn_deprecation(
                 version="2.15",
                 deprecated_name="AbstractMiddleware",

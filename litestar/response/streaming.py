@@ -1,20 +1,19 @@
 from __future__ import annotations
 
 import itertools
+from collections.abc import AsyncGenerator, AsyncIterable, AsyncIterator, Iterable, Iterator
 from functools import partial
-from typing import TYPE_CHECKING, Any, AsyncGenerator, AsyncIterable, AsyncIterator, Callable, Iterable, Iterator, Union
+from typing import TYPE_CHECKING, Any, Callable, Union
 
 from anyio import CancelScope, create_task_group
 
 from litestar.enums import MediaType
 from litestar.response.base import ASGIResponse, Response
 from litestar.types.helper_types import StreamType
-from litestar.utils.deprecation import warn_deprecation
 from litestar.utils.helpers import get_enum_string_value
 from litestar.utils.sync import AsyncIteratorWrapper
 
 if TYPE_CHECKING:
-    from litestar.app import Litestar
     from litestar.background_tasks import BackgroundTask, BackgroundTasks
     from litestar.connection import Request
     from litestar.datastructures.cookie import Cookie
@@ -39,7 +38,6 @@ class ASGIStreamingResponse(ASGIResponse):
         *,
         iterator: StreamType,
         background: BackgroundTask | BackgroundTasks | None = None,
-        body: bytes | str = b"",
         content_length: int | None = None,
         cookies: Iterable[Cookie] | None = None,
         encoded_headers: Iterable[tuple[bytes, bytes]] | None = None,
@@ -53,7 +51,6 @@ class ASGIStreamingResponse(ASGIResponse):
 
         Args:
             background: A background task or a list of background tasks to be executed after the response is sent.
-            body: encoded content to send in the response body.
             content_length: The response content length.
             cookies: The response cookies.
             encoded_headers: The response headers.
@@ -64,9 +61,9 @@ class ASGIStreamingResponse(ASGIResponse):
             media_type: The response media type.
             status_code: The response status code.
         """
+
         super().__init__(
             background=background,
-            body=body,
             content_length=content_length,
             cookies=cookies,
             encoding=encoding,
@@ -177,7 +174,6 @@ class Stream(Response[StreamType[Union[str, bytes]]]):
 
     def to_asgi_response(
         self,
-        app: Litestar | None,
         request: Request,
         *,
         background: BackgroundTask | BackgroundTasks | None = None,
@@ -192,7 +188,6 @@ class Stream(Response[StreamType[Union[str, bytes]]]):
         """Create an ASGIStreamingResponse from a StremaingResponse instance.
 
         Args:
-            app: The :class:`Litestar <.app.Litestar>` application instance.
             background: Background task(s) to be executed after the response is sent.
             cookies: A list of cookies to be set on the response.
             encoded_headers: A list of already encoded headers.
@@ -206,14 +201,6 @@ class Stream(Response[StreamType[Union[str, bytes]]]):
         Returns:
             An ASGIStreamingResponse instance.
         """
-        if app is not None:
-            warn_deprecation(
-                version="2.1",
-                deprecated_name="app",
-                kind="parameter",
-                removal_in="3.0.0",
-                alternative="request.app",
-            )
 
         headers = {**headers, **self.headers} if headers is not None else self.headers
         cookies = self.cookies if cookies is None else itertools.chain(self.cookies, cookies)
@@ -226,7 +213,6 @@ class Stream(Response[StreamType[Union[str, bytes]]]):
 
         return ASGIStreamingResponse(
             background=self.background or background,
-            body=b"",
             content_length=0,
             cookies=cookies,
             encoded_headers=encoded_headers,

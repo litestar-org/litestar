@@ -7,7 +7,7 @@ from click import Group
 
 from litestar import Litestar, MediaType, get
 from litestar.constants import UNDEFINED_SENTINELS
-from litestar.plugins import CLIPluginProtocol, InitPlugin, OpenAPISchemaPlugin, PluginRegistry
+from litestar.plugins import CLIPlugin, InitPlugin, OpenAPISchemaPlugin, PluginRegistry
 from litestar.plugins.attrs import AttrsSchemaPlugin
 from litestar.plugins.core import MsgspecDIPlugin
 from litestar.plugins.pydantic import PydanticDIPlugin, PydanticInitPlugin, PydanticPlugin, PydanticSchemaPlugin
@@ -45,11 +45,11 @@ def test_plugin_on_app_init() -> None:
 
 
 def test_plugin_registry() -> None:
-    class CLIPlugin(CLIPluginProtocol):
+    class MyCLIPlugin(CLIPlugin):
         def on_cli_init(self, cli: Group) -> None:
             pass
 
-    cli_plugin = CLIPlugin()
+    cli_plugin = MyCLIPlugin()
     serialization_plugin = SQLAlchemySerializationPlugin()
     openapi_plugin = PydanticSchemaPlugin()
     init_plugin = PydanticInitPlugin()
@@ -70,32 +70,32 @@ def test_plugin_registry() -> None:
 
 
 def test_plugin_registry_get() -> None:
-    class CLIPlugin(CLIPluginProtocol):
+    class MyCLIPlugin(CLIPlugin):
         def on_cli_init(self, cli: Group) -> None:
             pass
 
-    cli_plugin = CLIPlugin()
+    cli_plugin = MyCLIPlugin()
 
-    with pytest.raises(KeyError, match="No plugin of type 'CLIPlugin' registered"):
-        PluginRegistry([]).get(CLIPlugin)
+    with pytest.raises(KeyError, match="No plugin of type 'MyCLIPlugin' registered"):
+        PluginRegistry([]).get(MyCLIPlugin)
 
-    assert PluginRegistry([cli_plugin]).get(CLIPlugin) is cli_plugin
+    assert PluginRegistry([cli_plugin]).get(MyCLIPlugin) is cli_plugin
 
 
 def test_plugin_registry_stringified_get() -> None:
-    class CLIPlugin(CLIPluginProtocol):
+    class MyCLIPlugin(CLIPlugin):
         def on_cli_init(self, cli: Group) -> None:
             pass
 
-    cli_plugin = CLIPlugin()
+    cli_plugin = MyCLIPlugin()
     pydantic_plugin = PydanticPlugin()
     with pytest.raises(KeyError):
-        PluginRegistry([CLIPlugin()]).get(
+        PluginRegistry([MyCLIPlugin()]).get(
             "litestar2.plugins.pydantic.PydanticPlugin"
         )  # not a fqdn.  should fail # type: ignore[list-item]
         PluginRegistry([]).get("CLIPlugin")  # not a fqdn.  should fail # type: ignore[list-item]
 
-    assert PluginRegistry([cli_plugin, pydantic_plugin]).get(CLIPlugin) is cli_plugin
+    assert PluginRegistry([cli_plugin, pydantic_plugin]).get(MyCLIPlugin) is cli_plugin
     assert PluginRegistry([cli_plugin, pydantic_plugin]).get(PydanticPlugin) is pydantic_plugin
     assert PluginRegistry([cli_plugin, pydantic_plugin]).get("PydanticPlugin") is pydantic_plugin
     assert (

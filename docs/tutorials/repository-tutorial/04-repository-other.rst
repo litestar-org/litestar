@@ -59,7 +59,7 @@ Finally, we insert the model with the added slug.
 Full Code
 ---------
 
-.. dropdown:: Full Code (click to expand)
+.. dropdown:: Full Code (click to toggle)
 
     .. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_repository_extension.py
         :language: python

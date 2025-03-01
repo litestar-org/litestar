@@ -37,7 +37,7 @@ option. This option configures the specified relationship to load via
 Next, we define the ``AuthorController``. This controller exposes five routes for
 interacting with the ``Author`` model:
 
-.. dropdown:: AuthorController (click to expand)
+.. dropdown:: ``AuthorController`` (click to toggle)
 
     .. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_async_repository.py
         :language: python
@@ -52,7 +52,7 @@ In the above examples, we've used the asynchronous repository implementation. Ho
 Litestar also supports synchronous database drivers with an identical implementation.
 Here's a corresponding synchronous version of the previous example:
 
-.. dropdown:: Synchronous Repository (click to expand)
+.. dropdown:: Synchronous Repository (click to toggle)
 
     .. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_sync_repository.py
         :language: python
@@ -68,7 +68,7 @@ functionality to our application.
 Full Code
 ---------
 
-.. dropdown:: Full Code (click to expand)
+.. dropdown:: Full Code (click to toggle)
 
     .. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_async_repository.py
         :language: python

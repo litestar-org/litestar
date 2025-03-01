@@ -5,7 +5,7 @@ from datetime import datetime
 from email.utils import formatdate
 from inspect import iscoroutine
 from mimetypes import encodings_map, guess_type
-from typing import TYPE_CHECKING, Any, AsyncGenerator, Coroutine, Final, Iterable, Literal, cast
+from typing import TYPE_CHECKING, Any, Final, Literal, cast
 from urllib.parse import quote
 from zlib import adler32
 
@@ -14,16 +14,15 @@ from litestar.exceptions import ImproperlyConfiguredException
 from litestar.file_system import BaseLocalFileSystem, FileSystemAdapter
 from litestar.response.base import Response
 from litestar.response.streaming import ASGIStreamingResponse
-from litestar.utils.deprecation import warn_deprecation
 from litestar.utils.helpers import get_enum_string_value
 
 if TYPE_CHECKING:
+    from collections.abc import AsyncGenerator, Coroutine, Iterable
     from os import PathLike
     from os import stat_result as stat_result_type
 
     from anyio import Path
 
-    from litestar.app import Litestar
     from litestar.background_tasks import BackgroundTask, BackgroundTasks
     from litestar.connection import Request
     from litestar.datastructures.cookie import Cookie
@@ -125,7 +124,6 @@ class ASGIFileResponse(ASGIStreamingResponse):
         self,
         *,
         background: BackgroundTask | BackgroundTasks | None = None,
-        body: bytes | str = b"",
         chunk_size: int = ONE_MEGABYTE,
         content_disposition_type: Literal["attachment", "inline"] = "attachment",
         content_length: int | None = None,
@@ -147,7 +145,6 @@ class ASGIFileResponse(ASGIStreamingResponse):
 
         Args:
             background: A background task or a list of background tasks to be executed after the response is sent.
-            body: encoded content to send in the response body.
             chunk_size: The chunk size to use.
             content_disposition_type: The type of the ``Content-Disposition``. Either ``inline`` or ``attachment``.
             content_length: The response content length.
@@ -182,7 +179,6 @@ class ASGIFileResponse(ASGIStreamingResponse):
             cookies=cookies,
             background=background,
             status_code=status_code,
-            body=body,
             content_length=content_length,
             encoding=encoding,
             is_head_response=is_head_response,
@@ -357,7 +353,6 @@ class File(Response):
 
     def to_asgi_response(
         self,
-        app: Litestar | None,
         request: Request,
         *,
         background: BackgroundTask | BackgroundTasks | None = None,
@@ -372,7 +367,6 @@ class File(Response):
         """Create an :class:`ASGIFileResponse <litestar.response.file.ASGIFileResponse>` instance.
 
         Args:
-            app: The :class:`Litestar <.app.Litestar>` application instance.
             background: Background task(s) to be executed after the response is sent.
             cookies: A list of cookies to be set on the response.
             encoded_headers: A list of already encoded headers.
@@ -386,14 +380,6 @@ class File(Response):
         Returns:
             A low-level ASGI file response.
         """
-        if app is not None:
-            warn_deprecation(
-                version="2.1",
-                deprecated_name="app",
-                kind="parameter",
-                removal_in="3.0.0",
-                alternative="request.app",
-            )
 
         headers = {**headers, **self.headers} if headers is not None else self.headers
         cookies = self.cookies if cookies is None else itertools.chain(self.cookies, cookies)
@@ -404,7 +390,6 @@ class File(Response):
 
         return ASGIFileResponse(
             background=self.background or background,
-            body=b"",
             chunk_size=self.chunk_size,
             content_disposition_type=self.content_disposition_type,  # pyright: ignore
             content_length=0,
