@@ -199,8 +199,8 @@ class Router:
         self.response_cookies = narrow_response_cookies(response_cookies) if response_cookies else ()
         self.response_headers = narrow_response_headers(response_headers) if response_headers else ()
         self.return_dto = return_dto
-        self.security = None if security is None else list(security)
-        self.security_override = None if security_override is None else list(security_override)
+        self.security = None if security is None else tuple(security)
+        self.security_override = None if security_override is None else tuple(security_override)
         self.signature_namespace = add_types_to_signature_namespace(
             signature_types or [], dict(signature_namespace or {})
         )

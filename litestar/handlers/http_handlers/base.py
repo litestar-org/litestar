@@ -99,7 +99,6 @@ class HTTPRouteHandler(BaseRouteHandler):
         "_request_max_body_size",
         "_response_class",
         "_response_type_handler",
-        "_security",
         "_sync_to_thread",
         "after_request",
         "after_response",
@@ -123,6 +122,7 @@ class HTTPRouteHandler(BaseRouteHandler):
         "response_description",
         "response_headers",
         "responses",
+        "security",
         "security_override",
         "status_code",
         "summary",
@@ -346,7 +346,8 @@ class HTTPRouteHandler(BaseRouteHandler):
         self.response_description = response_description
         self.summary = summary
         self.tags = frozenset(tags) if tags else frozenset()
-        self._security = tuple(security) if security else None
+        self.security = None if security is None else tuple(security)
+        self.security_override = None if security_override is None else tuple(security_override)
         self.responses = responses
         # memoized attributes, defaulted to Empty
         self._kwargs_models: dict[tuple[str, ...], KwargsModel] = {}
@@ -388,20 +389,6 @@ class HTTPRouteHandler(BaseRouteHandler):
             merge_opts["response_cookies"] = (*merge_opts.get("response_cookies", ()), *other.response_cookies)
             merge_opts["response_headers"] = (*other.response_headers, *merge_opts.get("response_headers", ()))
             merge_opts["tags"] = (*other.tags, *merge_opts.get("tags", ()))
-
-            current_security = merge_opts.get("security", None)
-
-            # TODO(tofran): properly implement layered security
-            if other.security is not None:
-                if current_security is None:
-                    merge_opts["security"] = other.security
-                else:
-                    merge_opts["security"] = (*current_security, *other.security)
-
-            # if other.security_override
-            # current_security_override = merge_opts.get("security_override", None)
-            # if other.security_override is not None:
-            #     merge_opts["security_override"] = (*other.security_override, *merge_opts.get("security_override", ()))
 
             # these are all properties which return a safe default if the corresponding
             # config value is not set, so we only merge the router configs and determine
@@ -531,26 +518,6 @@ class HTTPRouteHandler(BaseRouteHandler):
     @property
     def include_in_schema(self) -> bool:
         return self._include_in_schema if self._include_in_schema is not Empty else True
-
-    @property
-    def security(self) -> tuple[SecurityRequirement, ...] | None:
-        return self._security
-        # self._security = None
-        # for layer in self.ownership_layers:
-        #     if isinstance(layer.security_override, Sequence):
-        #         self._security = list(layer.security_override)
-
-        #     elif isinstance(layer.security, Sequence):
-        #         if self._security is None:
-        #             self._security = []
-
-        #         self._security.extend(layer.security)
-
-        # return self._security
-
-    @security.setter
-    def security(self, value: tuple[SecurityRequirement, ...] | None) -> None:
-        self._security = value
 
     @litestar_deprecated("3.0", removal_in="4.0", alternative=".security attribute")
     def resolve_security(self) -> tuple[SecurityRequirement, ...] | None:
