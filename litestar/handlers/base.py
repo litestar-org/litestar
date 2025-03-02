@@ -114,7 +114,7 @@ class BaseRouteHandler:
                 outbound response data.
             signature_namespace: A mapping of names to types for use in forward reference resolution during signature
                 modelling.
-            signature_types: A sequence of types for use in forward reference resolution during signature modeling.
+            signature_types: A sequence of types for use in forward reference resolution during signature modelling.
                 These types will be added to the signature namespace using their ``__name__`` attribute.
             type_decoders: A sequence of tuples, each composed of a predicate testing for type identity and a msgspec hook for deserialization.
             type_encoders: A mapping of types to callables that transform them into types supported for serialization.
@@ -203,6 +203,16 @@ class BaseRouteHandler:
                 merge_opts.get("signature_namespace", {}), other.signature_namespace
             )
 
+            if "security_override" not in merge_opts and other.security_override is not None:
+                merge_opts["security_override"] = other.security_override
+
+            elif other.security is not None:
+                current_security = merge_opts.get("security")
+                if current_security is None:
+                    merge_opts["security"] = other.security
+                else:
+                    merge_opts["security"] = (*current_security, *other.security)
+
             # '.dto' on the router is the dto config value supplied by the users,
             # whereas '.dto' on the handler is the fully resolved dto. The dto config on
             # the handler is stored under '._dto', so we have to do this little workaround
@@ -210,6 +220,12 @@ class BaseRouteHandler:
                 other = cast(Router, other)  # mypy cannot narrow with the 'is not self' check
                 merge_opts["dto"] = value_or_default(merge_opts.get("dto", Empty), other.dto)
                 merge_opts["return_dto"] = value_or_default(merge_opts.get("return_dto", Empty), other.return_dto)
+
+        if "security_override" in merge_opts:
+            merge_opts["security"] = (
+                *merge_opts.pop("security_override"),
+                *(merge_opts.get("security", ())),
+            )
 
         merge_opts["dto"] = value_or_default(self._dto, merge_opts.get("dto", Empty))
         merge_opts["return_dto"] = value_or_default(self._return_dto, merge_opts.get("return_dto", Empty))
