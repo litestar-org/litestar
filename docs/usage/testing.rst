@@ -151,7 +151,7 @@ We would then be able to rewrite our test like so:
 Testing websockets
 ++++++++++++++++++
 
-The test client enhances httpx's client to support websockets. To test a websocket endpoint, you can use the :meth:`websocket_connect <litestar.testing.TestClient.websocket_connect>`
+Litestar's test client enhances the httpx client to support websockets. To test a websocket endpoint, you can use the :meth:`websocket_connect <litestar.testing.TestClient.websocket_connect>`
 method on the test client. The method returns a websocket connection object that you can use to send and receive messages, see an example below for json:
 
 For more information, see also the :class:`WebSocket <litestar.connection.WebSocket>` class in the API documentation and the :ref:`websocket <usage/websockets:websockets>` documentation.
