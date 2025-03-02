@@ -1,6 +1,6 @@
 from typing import Any
 
-from litestar import websocket, WebSocket
+from litestar import WebSocket, websocket
 from litestar.datastructures import State
 from litestar.testing import create_test_client
 
