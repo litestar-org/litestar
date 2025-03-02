@@ -204,12 +204,7 @@ class BaseRouteHandler:
             )
 
             # TODO(tofran): properly implement layered security
-            current_security = merge_opts.get("security")
-            if other.security is not None:
-                if current_security is None:
-                    merge_opts["security"] = other.security
-                else:
-                    merge_opts["security"] = (*current_security, *other.security)
+            merge_opts["security"] = (*other.security, *merge_opts.get("security", ()))
 
             # '.dto' on the router is the dto config value supplied by the users,
             # whereas '.dto' on the handler is the fully resolved dto. The dto config on
