@@ -122,8 +122,6 @@ class HTTPRouteHandler(BaseRouteHandler):
         "response_description",
         "response_headers",
         "responses",
-        "security",
-        "security_override",
         "status_code",
         "summary",
         "tags",

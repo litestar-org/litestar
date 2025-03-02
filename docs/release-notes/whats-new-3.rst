@@ -206,9 +206,10 @@ https://www.iana.org/assignments/media-types/application/vnd.msgpack
 
 
 Add ``security_override`` openapi security requirement to route handlers
------------------------------------------------------------------------
+------------------------------------------------------------------------
 
-This allows for to override the security requirements for a specific route.
+The `security_override` parameter allows for granular control over security settings by replacing security
+requirements defined in previous layers for individual routes.
 
 
 Deprecated ``resolve_`` methods on route handlers
