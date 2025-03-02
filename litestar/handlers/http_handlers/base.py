@@ -520,7 +520,7 @@ class HTTPRouteHandler(BaseRouteHandler):
         return self._include_in_schema if self._include_in_schema is not Empty else True
 
     @litestar_deprecated("3.0", removal_in="4.0", alternative=".security attribute")
-    def resolve_security(self) -> tuple[SecurityRequirement, ...] | None:
+    def resolve_security(self) -> Sequence[SecurityRequirement] | None:
         """Resolve the security property by starting from the route handler and moving up.
 
         Security requirements provided via the `security` parameter across the routing layers are

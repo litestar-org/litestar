@@ -46,7 +46,7 @@ def openapi_config_with_global_requirement(
 def sample_handlers(
     request: pytest.FixtureRequest,
 ) -> list[Union[HTTPRouteHandler, Router]]:
-    method_decorator: Callable[..., HTTPRouteHandler] = request.param
+    method_decorator: Callable[..., Callable[..., HTTPRouteHandler]] = request.param
 
     @method_decorator("/route_security_not_specified")
     def route_security_not_specified() -> None: ...
