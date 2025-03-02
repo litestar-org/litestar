@@ -1295,6 +1295,7 @@ def delete(
             responses=responses,
             return_dto=return_dto,
             security=security,
+            security_override=security_override,
             signature_namespace=signature_namespace,
             status_code=status_code,
             summary=summary,

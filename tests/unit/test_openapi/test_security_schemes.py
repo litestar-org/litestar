@@ -240,7 +240,7 @@ def test_app_schema_with_global_security_property(
     assert "security" not in paths["/router_security_not_specified/route_security_not_specified"][method]
     assert paths["/router_security_not_specified/route_with_security"][method]["security"] == ({"MyRouteToken": []},)
     assert paths["/router_security_not_specified/route_with_security_override"][method]["security"] == (
-        {"MyRouteToken": []}
+        {"MyRouteToken": []},
     )
     assert paths["/router_security_not_specified/route_with_empty_security"][method]["security"] == ()
     assert paths["/router_security_not_specified/route_with_empty_security_override"][method]["security"] == ()
@@ -248,8 +248,8 @@ def test_app_schema_with_global_security_property(
     # router_with_security
     assert paths["/router_with_security/route_security_not_specified"][method]["security"] == ({"MyRouterToken": []},)
     assert paths["/router_with_security/route_with_security"][method]["security"] == (
-        {"MyRouterToken": []},
         {"MyRouteToken": []},
+        {"MyRouterToken": []},
     )
     assert paths["/router_with_security/route_with_security_override"][method]["security"] == ({"MyRouteToken": []},)
     assert paths["/router_with_security/route_with_empty_security"][method]["security"] == ({"MyRouterToken": []},)
@@ -260,8 +260,8 @@ def test_app_schema_with_global_security_property(
         {"MyRouterToken": []},
     )
     assert paths["/router_with_security_override/route_with_security"][method]["security"] == (
-        {"MyRouterToken": []},
         {"MyRouteToken": []},
+        {"MyRouterToken": []},
     )
     assert paths["/router_with_security_override/route_with_security_override"][method]["security"] == (
         {"MyRouteToken": []},
@@ -298,12 +298,16 @@ def test_improperly_configured_security_override() -> None:
             security=[{"MyGlobalToken": []}],
             security_override=[{"MyRouteToken": []}],
         )
-        def _handler() -> None: ...
+        def _invalid_route_handler() -> None: ...
 
     with pytest.raises(ImproperlyConfiguredException):
+
+        @get("/sample")
+        def sample_handler() -> None: ...
+
         Router(
             "/",
             security=[{"MyGlobalToken": []}],
             security_override=[{"MyRouteToken": []}],
-            route_handlers=[_handler],
+            route_handlers=[sample_handler],
         )
