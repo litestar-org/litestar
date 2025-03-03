@@ -3638,7 +3638,7 @@
         Fix the behaviour of DTOs such that they will no longer access fields that have
         been included. This behaviour would previously cause issues when these
         attributes were either costly or impossible to access (e.g. lazy loaded
-        relationships of a SQLAlchemy model).
+        relationships of an SQLAlchemy model).
 
     .. change:: DTO | Regression: ``DTOData.create_instance`` ignores renaming
         :type: bugfix
@@ -4176,7 +4176,7 @@
         :type: feature
         :pr: 1852
 
-        Replace the nondescript :exc:`KeyError` raised when a SQLAlchemy DTO is
+        Replace the nondescript :exc:`KeyError` raised when an SQLAlchemy DTO is
         constructed from a model that is missing a type annotation for an included
         column with an :exc:`ImproperlyConfiguredException`, including an explicit error
         message, pointing at the potential cause.
@@ -5126,7 +5126,7 @@
         SQLAlchemy 1 support has been dropped.
 
         .. note::
-            If you rely on SQLAlchemy 1, you can stick to Starlite *1.51* for now. In the future, a SQLAlchemy 1 plugin
+            If you rely on SQLAlchemy 1, you can stick to Starlite *1.51* for now. In the future, an SQLAlchemy 1 plugin
             may be released as a standalone package.
 
     .. change:: Fix inconsistent parsing of unix timestamp between Pydantic and cattrs
@@ -5442,7 +5442,7 @@
 
         Add a a ``repository`` module to ``contrib``, providing abstract base classes
         to implement the repository pattern. Also added was the ``contrib.repository.sqlalchemy``
-        module, implementing a SQLAlchemy repository, offering hand-tuned abstractions
+        module, implementing an SQLAlchemy repository, offering hand-tuned abstractions
         over commonly used tasks, such as handling of object sessions, inserting,
         updating and upserting individual models or collections.
 
