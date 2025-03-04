@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 
 from litestar.cli._utils import console
 from litestar.logging.config import StructLoggingConfig
-from litestar.middleware.logging import LoggingMiddlewareConfig
+from litestar.middleware.logging import LoggingMiddleware, LoggingMiddlewareConfig
 from litestar.plugins import InitPlugin
 
 if TYPE_CHECKING:
@@ -52,5 +52,5 @@ class StructlogPlugin(InitPlugin):
         if self._config.structlog_logging_config.standard_lib_logging_config is not None:  # pragma: no cover
             self._config.structlog_logging_config.standard_lib_logging_config.configure()  # pragma: no cover
         if self._config.enable_middleware_logging:
-            app_config.middleware.append(self._config.middleware_logging_config.middleware)
+            app_config.middleware.append(LoggingMiddleware(self._config.middleware_logging_config))
         return app_config  # pragma: no cover

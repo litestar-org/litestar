@@ -16,7 +16,7 @@ from litestar.data_extractors import (
 )
 from litestar.enums import ScopeType
 from litestar.exceptions import ImproperlyConfiguredException
-from litestar.middleware.base import AbstractMiddleware, DefineMiddleware
+from litestar.middleware import ASGIMiddleware
 from litestar.serialization import encode_json
 from litestar.utils.empty import value_or_default
 from litestar.utils.scope import get_serializer_from_scope
@@ -33,6 +33,7 @@ if TYPE_CHECKING:
         Message,
         Receive,
         Scope,
+        Scopes,
         Send,
         Serializer,
     )
@@ -46,21 +47,18 @@ except ImportError:
     structlog_installed = False
 
 
-class LoggingMiddleware(AbstractMiddleware):
+class LoggingMiddleware(ASGIMiddleware):
     """Logging middleware."""
 
     logger: Logger
+    scopes: Scopes = ScopeType.HTTP
 
-    def __init__(self, app: ASGIApp, config: LoggingMiddlewareConfig) -> None:
+    def __init__(self, config: LoggingMiddlewareConfig) -> None:
         """Initialize ``LoggingMiddleware``.
 
         Args:
-            app: The ``next`` ASGI app to call.
             config: An instance of LoggingMiddlewareConfig.
         """
-        super().__init__(
-            app=app, scopes={ScopeType.HTTP}, exclude=config.exclude, exclude_opt_key=config.exclude_opt_key
-        )
         self.is_struct_logger = structlog_installed
         self.config = config
 
@@ -89,17 +87,7 @@ class LoggingMiddleware(AbstractMiddleware):
             obfuscate_headers=self.config.response_headers_to_obfuscate,
         )
 
-    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
-        """ASGI callable.
-
-        Args:
-            scope: The ASGI connection scope.
-            receive: The ASGI receive function.
-            send: The ASGI send function.
-
-        Returns:
-            None
-        """
+    async def handle(self, scope: Scope, receive: Receive, send: Send, next_app: ASGIApp) -> None:
         if not hasattr(self, "logger"):
             self.logger = scope["litestar_app"].get_logger(self.config.logger_name)
             self.is_struct_logger = structlog_installed and repr(self.logger).startswith("<BoundLoggerLazyProxy")
@@ -110,7 +98,7 @@ class LoggingMiddleware(AbstractMiddleware):
         if self.config.request_log_fields:
             await self.log_request(scope=scope, receive=receive)
 
-        await self.app(scope, receive, send)
+        await next_app(scope, receive, send)
 
     async def log_request(self, scope: Scope, receive: Receive) -> None:
         """Extract request data and log the message.
@@ -309,11 +297,6 @@ class LoggingMiddlewareConfig:
             Thus, re-arranging the log-message is as simple as changing the iterable.
         -  To turn off logging of responses, use and empty iterable.
     """
-    middleware_class: type[LoggingMiddleware] = field(default=LoggingMiddleware)
-    """Middleware class to use.
-
-    Should be a subclass of [litestar.middleware.LoggingMiddleware].
-    """
 
     def __post_init__(self) -> None:
         """Override default Pydantic type conversion for iterables.
@@ -332,34 +315,3 @@ class LoggingMiddlewareConfig:
 
         self.response_log_fields = tuple(self.response_log_fields)
         self.request_log_fields = tuple(self.request_log_fields)
-
-    @property
-    def middleware(self) -> DefineMiddleware:
-        """Use this property to insert the config into a middleware list on one of the application layers.
-
-        Examples:
-            .. code-block::  python
-
-                from litestar import Litestar, Request, get
-                from litestar.logging import LoggingConfig
-                from litestar.middleware.logging import LoggingMiddlewareConfig
-
-                logging_config = LoggingConfig()
-
-                logging_middleware_config = LoggingMiddlewareConfig()
-
-
-                @get("/")
-                def my_handler(request: Request) -> None: ...
-
-
-                app = Litestar(
-                    route_handlers=[my_handler],
-                    logging_config=logging_config,
-                    middleware=[logging_middleware_config.middleware],
-                )
-
-        Returns:
-            An instance of DefineMiddleware including ``self`` as the config kwarg value.
-        """
-        return DefineMiddleware(self.middleware_class, config=self)
