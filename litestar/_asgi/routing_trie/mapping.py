@@ -191,23 +191,43 @@ def build_route_middleware_stack(
     has_middleware = (
         app.csrf_config or app.compression_config or has_cached_route or app.allowed_hosts or handler_middleware
     )
-
     # If there is an exception raised from the handler, the first ExceptionHandlerMiddleware that catches the
     # exception will create the response and call send(). As middleware may wrap the send() callable, we need there
     # to be an instance of ExceptionHandlerMiddleware in between the handler and the middleware so that any send
     # wrappers instated by middleware are called. If there is no middleware, we can skip this step.
     asgi_handler = wrap_in_exception_handler(app=asgi_handler)
 
+    # original order is csrf > compression > cache > allowed_hosts
     for middleware in handler_middleware:
         if not has_middleware:
             print("TTTTTTTTTTT")
         else:
-            if has_cached_route:
-                from litestar.middleware.response_cache import ResponseCacheMiddleware
+            from litestar.middleware.allowed_hosts import AllowedHostsMiddleware
+            from litestar.middleware.compression import CompressionMiddleware
+            from litestar.middleware.csrf import CSRFMiddleware
+            from litestar.middleware.response_cache import ResponseCacheMiddleware
 
+            if type(middleware) is CSRFMiddleware:
+                print("CSRFMiddleware")
+                asgi_handler = partial(
+                    CSRFMiddleware(config=middleware.config).handle, next_app=middleware(asgi_handler)
+                )
+            elif type(middleware) is CompressionMiddleware:
+                print("CompressionMiddleware")
+                asgi_handler = partial(
+                    CompressionMiddleware(config=middleware.config).handle, next_app=middleware(asgi_handler)
+                )
+            elif type(middleware) is ResponseCacheMiddleware:
+                print("ResponseCacheMiddleware")
                 asgi_handler = partial(
                     ResponseCacheMiddleware(config=app.response_cache_config).handle, next_app=middleware(asgi_handler)
                 )
+            elif type(middleware) is AllowedHostsMiddleware:
+                print("AllowedHostsMiddleware")
+                asgi_handler = partial(
+                    AllowedHostsMiddleware(config=middleware.config).handle, next_app=middleware(asgi_handler)
+                )
+
             else:
                 asgi_handler = middleware(asgi_handler)
     if has_cached_route:
