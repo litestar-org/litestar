@@ -12,6 +12,7 @@ from litestar.contrib.jinja import JinjaTemplateEngine
 from litestar.contrib.mako import MakoTemplateEngine
 from litestar.enums import RequestEncodingType
 from litestar.handlers import HTTPRouteHandler
+from litestar.middleware.csrf import CSRFMiddleware
 from litestar.params import Body
 from litestar.response.template import Template
 from litestar.status_codes import HTTP_200_OK, HTTP_201_CREATED, HTTP_403_FORBIDDEN
@@ -50,7 +51,7 @@ def patch_handler() -> HTTPRouteHandler:
 
 def test_csrf_successful_flow(get_handler: HTTPRouteHandler, post_handler: HTTPRouteHandler) -> None:
     with create_test_client(
-        route_handlers=[get_handler, post_handler], csrf_config=CSRFConfig(secret="secret")
+        route_handlers=[get_handler, post_handler], middleware=[CSRFMiddleware(CSRFConfig(secret="secret"))]
     ) as client:
         response = client.get("/")
         assert response.status_code == HTTP_200_OK
@@ -84,7 +85,7 @@ def test_unsafe_method_fails_without_csrf_header(
 ) -> None:
     with create_test_client(
         route_handlers=[get_handler, post_handler, put_handler, delete_handler, patch_handler],
-        csrf_config=CSRFConfig(secret="secret"),
+        middleware=[CSRFMiddleware(CSRFConfig(secret="secret"))],
     ) as client:
         response = client.get("/")
         assert response.status_code == HTTP_200_OK
@@ -99,7 +100,7 @@ def test_unsafe_method_fails_without_csrf_header(
 
 def test_invalid_csrf_token(get_handler: HTTPRouteHandler, post_handler: HTTPRouteHandler) -> None:
     with create_test_client(
-        route_handlers=[get_handler, post_handler], csrf_config=CSRFConfig(secret="secret")
+        route_handlers=[get_handler, post_handler], middleware=[CSRFMiddleware(CSRFConfig(secret="secret"))]
     ) as client:
         response = client.get("/")
         assert response.status_code == HTTP_200_OK
@@ -114,7 +115,7 @@ def test_invalid_csrf_token(get_handler: HTTPRouteHandler, post_handler: HTTPRou
 
 def test_csrf_token_too_short(get_handler: HTTPRouteHandler, post_handler: HTTPRouteHandler) -> None:
     with create_test_client(
-        route_handlers=[get_handler, post_handler], csrf_config=CSRFConfig(secret="secret")
+        route_handlers=[get_handler, post_handler], middleware=[CSRFMiddleware(CSRFConfig(secret="secret"))]
     ) as client:
         response = client.get("/")
         assert response.status_code == HTTP_200_OK
@@ -134,7 +135,9 @@ def test_websocket_ignored() -> None:
         await socket.close()
 
     with (
-        create_test_client(route_handlers=[websocket_handler], csrf_config=CSRFConfig(secret="secret")) as client,
+        create_test_client(
+            route_handlers=[websocket_handler], middleware=[CSRFMiddleware(CSRFConfig(secret="secret"))]
+        ) as client,
         client.websocket_connect("/") as ws,
     ):
         response = ws.receive_json()
@@ -145,11 +148,11 @@ def test_custom_csrf_config(get_handler: HTTPRouteHandler, post_handler: HTTPRou
     with create_test_client(
         base_url="http://test.com",
         route_handlers=[get_handler, post_handler],
-        csrf_config=CSRFConfig(
-            secret="secret",
-            cookie_name="custom-csrftoken",
-            header_name="x-custom-csrftoken",
-        ),
+        middleware=[
+            CSRFMiddleware(
+                CSRFConfig(secret="secret", cookie_name="custom-csrftoken", header_name="x-custom-csrftoken")
+            )
+        ],
     ) as client:
         response = client.get("/")
         assert response.status_code == HTTP_200_OK
@@ -191,7 +194,7 @@ def test_csrf_form_parsing(engine: Any, template: str, tmp_path: Path) -> None:
             directory=tmp_path,
             engine=engine,
         ),
-        csrf_config=CSRFConfig(secret=str(urandom(10))),
+        middleware=[CSRFMiddleware(CSRFConfig(secret=str(urandom(10))))],
     ) as client:
         url = f"{client.base_url!s}/"
         Path(tmp_path / "abc.html").write_text(
@@ -213,7 +216,7 @@ def test_csrf_middleware_exclude_from_check_via_opts() -> None:
 
     with create_test_client(
         route_handlers=[post_handler],
-        csrf_config=CSRFConfig(secret=str(urandom(10))),
+        middleware=[CSRFMiddleware(CSRFConfig(secret=str(urandom(10))))],
     ) as client:
         data = {"field": "value"}
         response = client.post("/", data=data)
@@ -232,7 +235,7 @@ def test_csrf_middleware_exclude_from_check() -> None:
 
     with create_test_client(
         route_handlers=[post_handler, post_handler2],
-        csrf_config=CSRFConfig(secret=str(urandom(10)), exclude=["unprotected-handler"]),
+        middleware=[CSRFMiddleware(CSRFConfig(secret=str(urandom(10)), exclude=["unprotected-handler"]))],
     ) as client:
         data = {"field": "value"}
         response = client.post("/protected-handler", data=data)
@@ -257,7 +260,7 @@ def test_csrf_middleware_exclude_from_set_cookies() -> None:
 
     with create_test_client(
         route_handlers=[get_handler, get_handler2],
-        csrf_config=CSRFConfig(secret=str(urandom(10)), exclude=["unprotected-handler"]),
+        middleware=[CSRFMiddleware(CSRFConfig(secret=str(urandom(10)), exclude=["unprotected-handler"]))],
     ) as client:
         response = client.get("/unprotected-handler")
         assert response.status_code == HTTP_200_OK
@@ -279,7 +282,9 @@ def test_csrf_middleware_configure_name_for_exclude_from_check_via_opts() -> Non
 
     with create_test_client(
         route_handlers=[post_handler, post_handler2],
-        csrf_config=CSRFConfig(secret=str(urandom(10)), exclude_from_csrf_key="custom_exclude_from_csrf"),
+        middleware=[
+            CSRFMiddleware(CSRFConfig(secret=str(urandom(10)), exclude_from_csrf_key="custom_exclude_from_csrf"))
+        ],
     ) as client:
         data = {"field": "value"}
         response = client.post("/handler", data=data)

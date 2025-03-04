@@ -10,11 +10,11 @@ from litestar.datastructures import MutableScopeHeaders
 from litestar.datastructures.cookie import Cookie
 from litestar.enums import RequestEncodingType, ScopeType
 from litestar.exceptions import PermissionDeniedException
+from litestar.middleware import ASGIMiddleware
 from litestar.middleware._utils import (
     build_exclude_path_pattern,
     should_bypass_middleware,
 )
-from litestar.middleware.base import MiddlewareProtocol
 from litestar.utils.scope.state import ScopeState
 
 if TYPE_CHECKING:
@@ -63,7 +63,7 @@ def generate_csrf_token(secret: str) -> str:
     return token + token_hash
 
 
-class CSRFMiddleware(MiddlewareProtocol):
+class CSRFMiddleware(ASGIMiddleware):
     """CSRF Middleware class.
 
     This Middleware protects against attacks by setting a CSRF cookie with a token and verifying it in request headers.
@@ -71,30 +71,18 @@ class CSRFMiddleware(MiddlewareProtocol):
 
     scopes: Scopes = {ScopeType.HTTP}
 
-    def __init__(self, app: ASGIApp, config: CSRFConfig) -> None:
+    def __init__(self, config: CSRFConfig) -> None:
         """Initialize ``CSRFMiddleware``.
 
         Args:
-            app: The ``next`` ASGI app to call.
             config: The CSRFConfig instance.
         """
-        self.app = app
         self.config = config
         self.exclude = build_exclude_path_pattern(exclude=config.exclude, middleware_cls=type(self))
 
-    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
-        """ASGI callable.
-
-        Args:
-            scope: The ASGI connection scope.
-            receive: The ASGI receive function.
-            send: The ASGI send function.
-
-        Returns:
-            None
-        """
+    async def handle(self, scope: Scope, receive: Receive, send: Send, next_app: ASGIApp) -> None:
         if scope["type"] != ScopeType.HTTP:
-            await self.app(scope, receive, send)
+            await next_app(scope, receive, send)
             return
 
         if should_bypass_middleware(
@@ -103,7 +91,7 @@ class CSRFMiddleware(MiddlewareProtocol):
             exclude_opt_key=self.config.exclude_from_csrf_key,
             exclude_path_pattern=self.exclude,
         ):
-            await self.app(scope, receive, send)
+            await next_app(scope, receive, send)
             return
 
         request: Request[Any, Any, Any] = scope["litestar_app"].request_class(scope=scope, receive=receive)
@@ -121,14 +109,14 @@ class CSRFMiddleware(MiddlewareProtocol):
         connection_state = ScopeState.from_scope(scope)
         if request.method in self.config.safe_methods:
             token = connection_state.csrf_token = csrf_cookie or generate_csrf_token(secret=self.config.secret)
-            await self.app(scope, receive, self.create_send_wrapper(send=send, csrf_cookie=csrf_cookie, token=token))
+            await next_app(scope, receive, self.create_send_wrapper(send=send, csrf_cookie=csrf_cookie, token=token))
         elif (
             existing_csrf_token is not None
             and csrf_cookie is not None
             and self._csrf_tokens_match(existing_csrf_token, csrf_cookie)
         ):
             connection_state.csrf_token = existing_csrf_token
-            await self.app(scope, receive, send)
+            await next_app(scope, receive, send)
         else:
             raise PermissionDeniedException("CSRF token verification failed")
 

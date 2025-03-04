@@ -13,6 +13,7 @@ from litestar.config.compression import CompressionConfig
 from litestar.config.response_cache import CACHE_FOREVER, ResponseCacheConfig
 from litestar.datastructures import State
 from litestar.enums import CompressionEncoding
+from litestar.middleware.compression import CompressionMiddleware
 from litestar.middleware.response_cache import ResponseCacheMiddleware
 from litestar.status_codes import HTTP_200_OK, HTTP_201_CREATED, HTTP_400_BAD_REQUEST, HTTP_500_INTERNAL_SERVER_ERROR
 from litestar.stores.base import Store
@@ -240,7 +241,7 @@ async def test_compression_applies_before_cache() -> None:
 
     app = Litestar(
         route_handlers=[handler_fn],
-        compression_config=CompressionConfig(backend="gzip"),
+        middleware=[CompressionMiddleware(CompressionConfig(backend="gzip"))],
     )
 
     with TestClient(app) as client:

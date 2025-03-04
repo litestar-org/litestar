@@ -7,10 +7,9 @@ from msgspec.msgpack import encode as encode_msgpack
 from litestar import Request
 from litestar.constants import HTTP_RESPONSE_BODY, HTTP_RESPONSE_START
 from litestar.enums import ScopeType
+from litestar.middleware import ASGIMiddleware
 from litestar.utils.empty import value_or_default
 from litestar.utils.scope.state import ScopeState
-
-from .base import AbstractMiddleware
 
 if TYPE_CHECKING:
     from litestar.config.response_cache import ResponseCacheConfig
@@ -20,12 +19,13 @@ if TYPE_CHECKING:
 __all__ = ["ResponseCacheMiddleware"]
 
 
-class ResponseCacheMiddleware(AbstractMiddleware):
-    def __init__(self, app: ASGIApp, config: ResponseCacheConfig) -> None:
-        self.config = config
-        super().__init__(app=app, scopes={ScopeType.HTTP})
+class ResponseCacheMiddleware(ASGIMiddleware):
+    scopes = ScopeType.HTTP
 
-    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
+    def __init__(self, config: ResponseCacheConfig) -> None:
+        self.config = config
+
+    async def handle(self, scope: Scope, receive: Receive, send: Send, next_app: ASGIApp) -> None:
         route_handler = cast("HTTPRouteHandler", scope["route_handler"])
 
         expires_in: int | None = None
@@ -55,4 +55,4 @@ class ResponseCacheMiddleware(AbstractMiddleware):
                     await store.set(key, encode_msgpack(messages), expires_in=expires_in)
             await send(message)
 
-        await self.app(scope, receive, wrapped_send)
+        await next_app(scope, receive, wrapped_send)
