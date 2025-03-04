@@ -51,7 +51,7 @@ class LoggingMiddleware(ASGIMiddleware):
     """Logging middleware."""
 
     logger: Logger
-    scopes: Scopes = ScopeType.HTTP
+    scopes: Scopes = (ScopeType.HTTP,)
 
     def __init__(self, config: LoggingMiddlewareConfig) -> None:
         """Initialize ``LoggingMiddleware``.
@@ -61,6 +61,8 @@ class LoggingMiddleware(ASGIMiddleware):
         """
         self.is_struct_logger = structlog_installed
         self.config = config
+        self.exclude_opt_key = config.exclude_opt_key
+        self.exclude_path_pattern = config.exclude
 
         self.request_extractor = ConnectionDataExtractor(
             extract_body="body" in self.config.request_log_fields,

@@ -134,10 +134,15 @@ def test_logging_middleware_exclude_pattern(
     def handler2() -> None:
         return None
 
-    config = LoggingMiddlewareConfig()
+    config = LoggingMiddlewareConfig(exclude=["^/exclude"])
     with (
         create_test_client(
-            route_handlers=[handler, handler2], middleware=[LoggingMiddleware(config, exclude=["^/exclude"])]
+            route_handlers=[handler, handler2],
+            middleware=[
+                LoggingMiddleware(
+                    config,
+                )
+            ],
         ) as client,
         caplog.at_level(INFO),
     ):

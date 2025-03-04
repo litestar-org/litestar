@@ -203,17 +203,15 @@ def build_route_middleware_stack(
             pass
         else:
             from litestar.middleware.allowed_hosts import AllowedHostsMiddleware
-            from litestar.middleware.compression import CompressionMiddleware
-            from litestar.middleware.logging import LoggingMiddleware
             from litestar.middleware.response_cache import ResponseCacheMiddleware
 
             # maybe test on ASGIMiddleware subclass here ?
             if type(middleware) in [
                 # CSRFMiddleware,
-                CompressionMiddleware,
+                # CompressionMiddleware,
                 ResponseCacheMiddleware,
                 AllowedHostsMiddleware,
-                LoggingMiddleware,
+                # LoggingMiddleware,
             ]:
                 asgi_handler = partial(type(middleware)(config=middleware.config).handle, next_app=asgi_handler)
             else:
