@@ -67,7 +67,7 @@ class RateLimitMiddleware(AbstractMiddleware):
         Returns:
             None
         """
-        app = scope["app"]
+        app = scope["litestar_app"]
         request: Request[Any, Any, Any] = app.request_class(scope)
         store = self.config.get_store_from_app(app)
         if await self.should_check_request(request=request):
@@ -109,7 +109,7 @@ class RateLimitMiddleware(AbstractMiddleware):
                 message.setdefault("headers", [])
                 headers = MutableScopeHeaders(message)
                 for key, value in self.create_response_headers(cache_object=cache_object).items():
-                    headers.add(key, value)
+                    headers[key] = value
             await send(message)
 
         return send_wrapper
@@ -189,7 +189,7 @@ class RateLimitMiddleware(AbstractMiddleware):
         """Create ratelimit response headers.
 
         Notes:
-            * see the `IETF RateLimit draft <https://datatracker.ietf.org/doc/draft-ietf-httpapi-ratelimit-headers/>_`
+            * see the `IETF RateLimit draft <https://datatracker.ietf.org/doc/draft-ietf-httpapi-ratelimit-headers/>`_
 
         Args:
             cache_object:A :class:`CacheObject`.
@@ -198,14 +198,14 @@ class RateLimitMiddleware(AbstractMiddleware):
             A dict of http headers.
         """
         remaining_requests = str(
-            len(cache_object.history) - self.max_requests if len(cache_object.history) <= self.max_requests else 0
+            self.max_requests - len(cache_object.history) if len(cache_object.history) <= self.max_requests else 0
         )
 
         return {
             self.config.rate_limit_policy_header_key: f"{self.max_requests}; w={DURATION_VALUES[self.unit]}",
             self.config.rate_limit_limit_header_key: str(self.max_requests),
             self.config.rate_limit_remaining_header_key: remaining_requests,
-            self.config.rate_limit_reset_header_key: str(int(time()) - cache_object.reset),
+            self.config.rate_limit_reset_header_key: str(cache_object.reset - int(time())),
         }
 
 

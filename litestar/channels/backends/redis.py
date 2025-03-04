@@ -143,8 +143,8 @@ class RedisChannelsPubSubBackend(RedisChannelsBackend):
 
             channel: str = message["channel"].decode()
             data: bytes = message["data"]
-            # redis handles the unsubscibes with a queue; Unsubscribing doesn't mean the
-            # unsubscribe will happen immediately after requesting it, so we could
+            # redis handles the unsubscribing with a queue; Unsubscribing doesn't mean
+            # the unsubscribe will happen immediately after requesting it, so we could
             # receive a message on a channel that, from a client's perspective, it's not
             # subscribed to anymore
             if channel.encode() in self._pub_sub.channels.keys() - self._pub_sub.pending_unsubscribe_channels:

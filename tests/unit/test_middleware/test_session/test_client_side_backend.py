@@ -9,6 +9,7 @@ import pytest
 from cryptography.exceptions import InvalidTag
 
 from litestar import Request, get, post
+from litestar.datastructures.headers import MutableScopeHeaders
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.middleware.session import SessionMiddleware
 from litestar.middleware.session.client_side import (
@@ -18,7 +19,8 @@ from litestar.middleware.session.client_side import (
     CookieBackendConfig,
 )
 from litestar.serialization import encode_json
-from litestar.testing import create_test_client
+from litestar.testing import RequestFactory, create_test_client
+from litestar.types.asgi_types import HTTPResponseStartEvent
 from tests.helpers import randbytes
 
 
@@ -220,3 +222,25 @@ def test_load_data_should_raise_invalid_tag_if_tampered_aad(cookie_session_backe
 
     with pytest.raises(InvalidTag):
         cookie_session_backend.load_data(encoded)
+
+
+async def test_store_in_message_clears_cookies_when_session_grows_gt_chunk_size(
+    cookie_session_backend: ClientSideSessionBackend,
+) -> None:
+    """Should clear the cookies when the session grows larger than the chunk size."""
+    # we have a connection that already contains a cookie header with the "session" key in it
+    connection = RequestFactory().get("/", headers={"Cookie": "session=foo"})
+    # we want to persist a new session that is larger than the chunk size
+    # by the time the encrypted data, nonce and associated data are b64 encoded, the size of
+    # this session will be > 2x larger than the chunk size
+    session = create_session(size=CHUNK_SIZE)
+    message: HTTPResponseStartEvent = {"type": "http.response.start", "status": 200, "headers": []}
+    await cookie_session_backend.store_in_message(session, message, connection)
+    # due to the large session stored in multiple chunks, we now enumerate the name of the cookies
+    # e.g., session-0, session-1, session-2, etc. This means we need to have a cookie with the name
+    # "session" in the response headers that is set to null to clear the original cookie.
+    headers = MutableScopeHeaders.from_message(message)
+    assert len(headers.headers) > 1
+    header_name, header_content = headers.headers[-1]
+    assert header_name == b"set-cookie"
+    assert header_content.startswith(b"session=null;")

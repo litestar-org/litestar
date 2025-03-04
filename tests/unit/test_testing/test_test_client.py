@@ -5,7 +5,7 @@ from _pytest.fixtures import FixtureRequest
 
 from litestar import Controller, WebSocket, delete, head, patch, put, websocket
 from litestar.status_codes import HTTP_200_OK, HTTP_201_CREATED, HTTP_204_NO_CONTENT
-from litestar.testing import AsyncTestClient, WebSocketTestSession, create_test_client
+from litestar.testing import AsyncTestClient, WebSocketTestSession, create_async_test_client, create_test_client
 
 if TYPE_CHECKING:
     from litestar.middleware.session.base import BaseBackendConfig
@@ -42,9 +42,17 @@ def test_client_cls(request: FixtureRequest) -> Type[AnyTestClient]:
     return cast(Type[AnyTestClient], request.param)
 
 
+@pytest.mark.parametrize(
+    "anyio_backend",
+    [
+        pytest.param("asyncio"),
+        pytest.param("trio", marks=pytest.mark.xfail(reason="Known issue with trio backend", strict=False)),
+    ],
+)
 @pytest.mark.parametrize("with_domain", [False, True])
 async def test_test_client_set_session_data(
     with_domain: bool,
+    anyio_backend: str,
     session_backend_config: "BaseBackendConfig",
     test_client_backend: "AnyIOBackend",
     test_client_cls: Type[AnyTestClient],
@@ -55,7 +63,7 @@ async def test_test_client_set_session_data(
         session_backend_config.domain = "testserver.local"
 
     @get(path="/test")
-    def get_session_data(request: Request) -> Dict[str, Any]:
+    async def get_session_data(request: Request) -> Dict[str, Any]:
         return request.session
 
     app = Litestar(route_handlers=[get_session_data], middleware=[session_backend_config.middleware])
@@ -67,9 +75,17 @@ async def test_test_client_set_session_data(
         assert session_data == (await maybe_async(client.get("/test"))).json()  # type: ignore[attr-defined]
 
 
-@pytest.mark.parametrize("with_domain", [False, True])
+@pytest.mark.parametrize(
+    "anyio_backend",
+    [
+        pytest.param("asyncio"),
+        pytest.param("trio", marks=pytest.mark.xfail(reason="Known issue with trio backend", strict=False)),
+    ],
+)
+@pytest.mark.parametrize("with_domain", [True, False])
 async def test_test_client_get_session_data(
     with_domain: bool,
+    anyio_backend: str,
     session_backend_config: "BaseBackendConfig",
     test_client_backend: "AnyIOBackend",
     store: Store,
@@ -81,7 +97,7 @@ async def test_test_client_get_session_data(
         session_backend_config.domain = "testserver.local"
 
     @post(path="/test")
-    def set_session_data(request: Request) -> None:
+    async def set_session_data(request: Request) -> None:
         request.session.update(session_data)
 
     app = Litestar(
@@ -261,3 +277,52 @@ def test_websocket_accept_timeout(anyio_backend: "AnyIOBackend") -> None:
         Empty
     ), client.websocket_connect("/"):
         pass
+
+
+@pytest.mark.parametrize("block,timeout", [(False, None), (False, 0.001), (True, 0.001)])
+@pytest.mark.parametrize(
+    "receive_method",
+    [
+        WebSocketTestSession.receive,
+        WebSocketTestSession.receive_json,
+        WebSocketTestSession.receive_text,
+        WebSocketTestSession.receive_bytes,
+    ],
+)
+async def test_websocket_test_session_block_timeout_async(
+    receive_method: Callable[..., Any], block: bool, timeout: Optional[float], anyio_backend: "AnyIOBackend"
+) -> None:
+    @websocket()
+    async def handler(socket: WebSocket) -> None:
+        await socket.accept()
+
+    with pytest.raises(Empty):
+        async with create_async_test_client(handler, backend=anyio_backend) as client:
+            with await client.websocket_connect("/") as ws:
+                receive_method(ws, timeout=timeout, block=block)
+
+
+async def test_websocket_accept_timeout_async(anyio_backend: "AnyIOBackend") -> None:
+    @websocket()
+    async def handler(socket: WebSocket) -> None:
+        pass
+
+    async with create_async_test_client(handler, backend=anyio_backend, timeout=0.1) as client:
+        with pytest.raises(Empty):
+            with await client.websocket_connect("/"):
+                pass
+
+
+async def test_websocket_connect_async(anyio_backend: "AnyIOBackend") -> None:
+    @websocket()
+    async def handler(socket: WebSocket) -> None:
+        await socket.accept()
+        data = await socket.receive_json()
+        await socket.send_json(data)
+        await socket.close()
+
+    async with create_async_test_client(handler, backend=anyio_backend, timeout=0.1) as client:
+        with await client.websocket_connect("/", subprotocols="wamp") as ws:
+            ws.send_json({"data": "123"})
+            data = ws.receive_json()
+            assert data == {"data": "123"}

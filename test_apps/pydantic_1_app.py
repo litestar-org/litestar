@@ -19,6 +19,8 @@ async def handler(data: Foo) -> Foo:
 
 class TestApp(unittest.TestCase):
     def test_app(self) -> None:
+        assert pydantic.__version__.startswith("1."), pydantic.__version__
+
         with create_test_client([handler]) as client:
             data = {"bar": "baz", "baz": ["a", "b", "c"]}
             res = client.post("/", json=data)

@@ -18,20 +18,69 @@ if TYPE_CHECKING:
     from litestar.typing import FieldDefinition
 
 __all__ = (
-    "SerializationPluginProtocol",
-    "InitPluginProtocol",
-    "OpenAPISchemaPluginProtocol",
-    "OpenAPISchemaPlugin",
-    "PluginProtocol",
     "CLIPlugin",
     "CLIPluginProtocol",
-    "PluginRegistry",
     "DIPlugin",
+    "InitPlugin",
+    "InitPluginProtocol",
+    "OpenAPISchemaPlugin",
+    "OpenAPISchemaPluginProtocol",
+    "PluginProtocol",
+    "PluginRegistry",
+    "SerializationPlugin",
+    "SerializationPluginProtocol",
 )
 
 
 @runtime_checkable
 class InitPluginProtocol(Protocol):
+    """Protocol used to define plugins that affect the application's init process.
+
+    .. deprecated:: 2.15
+        Use 'InitPlugin' instead
+    """
+
+    __slots__ = ()
+
+    def on_app_init(self, app_config: AppConfig) -> AppConfig:
+        """Receive the :class:`AppConfig<.config.app.AppConfig>` instance after `on_app_init` hooks have been called.
+
+        Examples:
+            .. code-block:: python
+
+                from litestar import Litestar, get
+                from litestar.di import Provide
+                from litestar.plugins import InitPluginProtocol
+
+
+                def get_name() -> str:
+                    return "world"
+
+
+                @get("/my-path")
+                def my_route_handler(name: str) -> dict[str, str]:
+                    return {"hello": name}
+
+
+                class MyPlugin(InitPluginProtocol):
+                    def on_app_init(self, app_config: AppConfig) -> AppConfig:
+                        app_config.dependencies["name"] = Provide(get_name)
+                        app_config.route_handlers.append(my_route_handler)
+                        return app_config
+
+
+                app = Litestar(plugins=[MyPlugin()])
+
+        Args:
+            app_config: The :class:`AppConfig <litestar.config.app.AppConfig>` instance.
+
+        Returns:
+            The app config object.
+        """
+        return app_config  # pragma: no cover
+
+
+class InitPlugin(InitPluginProtocol):
     """Protocol used to define plugins that affect the application's init process."""
 
     __slots__ = ()
@@ -121,9 +170,6 @@ class CLIPlugin(CLIPluginProtocol):
 
     __slots__ = ()
 
-    def on_cli_init(self, cli: Group) -> None:
-        return super().on_cli_init(cli)
-
     @contextmanager
     def server_lifespan(self, app: Litestar) -> Iterator[None]:
         yield
@@ -131,7 +177,12 @@ class CLIPlugin(CLIPluginProtocol):
 
 @runtime_checkable
 class SerializationPluginProtocol(Protocol):
-    """Protocol used to define a serialization plugin for DTOs."""
+    """Protocol used to define a serialization plugin for DTOs.
+
+    .. deprecated:: 2.15
+        Use 'litestar.plugins.SerializationPluginProtocol' instead
+
+    """
 
     __slots__ = ()
 
@@ -146,6 +197,34 @@ class SerializationPluginProtocol(Protocol):
         """
         raise NotImplementedError()
 
+    def create_dto_for_type(self, field_definition: FieldDefinition) -> type[AbstractDTO]:
+        """Given a parsed type, create a DTO class.
+
+        Args:
+            field_definition: A parsed type.
+
+        Returns:
+            A DTO class.
+        """
+        raise NotImplementedError()
+
+
+class SerializationPlugin(SerializationPluginProtocol, abc.ABC):
+    """Abstract base class for plugins that extend DTO functionality"""
+
+    @abc.abstractmethod
+    def supports_type(self, field_definition: FieldDefinition) -> bool:
+        """Given a value of indeterminate type, determine if this value is supported by the plugin.
+
+        Args:
+            field_definition: A parsed type.
+
+        Returns:
+            Whether the type is supported by the plugin.
+        """
+        raise NotImplementedError()
+
+    @abc.abstractmethod
     def create_dto_for_type(self, field_definition: FieldDefinition) -> type[AbstractDTO]:
         """Given a parsed type, create a DTO class.
 
@@ -274,7 +353,7 @@ PluginT = TypeVar("PluginT", bound=PluginProtocol)
 
 
 class PluginRegistry:
-    __slots__ = {
+    __slots__ = {  # noqa: RUF023
         "init": "Plugins that implement the InitPluginProtocol",
         "openapi": "Plugins that implement the OpenAPISchemaPluginProtocol",
         "receive_route": "ReceiveRoutePlugin instances",

@@ -1,3 +1,4 @@
+# ruff: noqa: SIM115
 from __future__ import annotations
 
 from tempfile import SpooledTemporaryFile
@@ -11,7 +12,7 @@ __all__ = ("UploadFile",)
 class UploadFile:
     """Representation of a file upload"""
 
-    __slots__ = ("filename", "file", "content_type", "headers")
+    __slots__ = ("content_type", "file", "filename", "headers")
 
     def __init__(
         self,
@@ -48,7 +49,7 @@ class UploadFile:
         """
         return getattr(self.file, "_rolled", False)
 
-    async def write(self, data: bytes) -> int:
+    async def write(self, data: bytes | bytearray) -> int:
         """Proxy for data writing.
 
         Args:
@@ -93,6 +94,8 @@ class UploadFile:
         Returns:
             None.
         """
+        if self.file.closed:
+            return None
         if self.rolled_to_disk:
             return await sync_to_thread(self.file.close)
         return self.file.close()

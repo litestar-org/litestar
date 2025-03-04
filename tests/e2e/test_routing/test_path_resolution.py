@@ -360,3 +360,51 @@ app = Litestar(route_handlers=[pathfinder], debug=True)
 
     assert httpx.get("http://127.0.0.1:9999/").text == "None"
     assert httpx.get("http://127.0.0.1:9999/something").text == "/something"
+
+
+@pytest.mark.parametrize(
+    "server_command",
+    [
+        pytest.param(["uvicorn", "app:app", "--port", "9999", "--root-path", "/test"], id="uvicorn"),
+        pytest.param(["hypercorn", "app:app", "--bind", "127.0.0.1:9999", "--root-path", "/test"], id="hypercorn"),
+        pytest.param(["daphne", "app:app", "--port", "9999", "--root-path", "/test"], id="daphne"),
+    ],
+)
+@pytest.mark.xdist_group("live_server_test")
+@pytest.mark.server_integration
+def test_no_path_traversal_from_static_directory(
+    tmp_path: Path, monkeypatch: MonkeyPatch, server_command: List[str], run_server: Callable[[str, List[str]], None]
+) -> None:
+    import http.client
+
+    static = tmp_path / "static"
+    static.mkdir()
+    (static / "index.html").write_text("Hello, World!")
+
+    app = """
+from pathlib import Path
+from litestar import Litestar
+from litestar.static_files import create_static_files_router
+import uvicorn
+
+app = Litestar(
+    route_handlers=[
+        create_static_files_router(path="/static", directories=["static"]),
+    ],
+)
+    """
+
+    def send_request(host: str, port: int, path: str) -> http.client.HTTPResponse:
+        connection = http.client.HTTPConnection(host, port)
+        connection.request("GET", path)
+        resp = connection.getresponse()
+        connection.close()
+        return resp
+
+    run_server(app, server_command)
+
+    response = send_request("127.0.0.1", 9999, "/static/index.html")
+    assert response.status == 200
+
+    response = send_request("127.0.0.1", 9999, "/static/../app.py")
+    assert response.status == 404

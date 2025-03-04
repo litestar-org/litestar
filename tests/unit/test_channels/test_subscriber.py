@@ -8,11 +8,10 @@ import pytest
 from litestar.channels import Subscriber
 from litestar.channels.subscriber import BacklogStrategy
 from litestar.utils.compat import async_next
+from tests.unit.test_channels.util import get_from_stream
 
-from .util import get_from_stream
 
-
-def test_subscriber_backlog_backoff() -> None:
+async def test_subscriber_backlog_backoff() -> None:
     subscriber = Subscriber(plugin=MagicMock(), max_backlog=2, backlog_strategy="backoff")
 
     assert subscriber.put_nowait(b"foo")
@@ -23,7 +22,7 @@ def test_subscriber_backlog_backoff() -> None:
     assert [subscriber._queue.get_nowait(), subscriber._queue.get_nowait()] == [b"foo", b"bar"]
 
 
-def test_subscriber_backlog_dropleft() -> None:
+async def test_subscriber_backlog_dropleft() -> None:
     subscriber = Subscriber(plugin=MagicMock(), max_backlog=2, backlog_strategy="dropleft")
 
     assert subscriber.put_nowait(b"foo")

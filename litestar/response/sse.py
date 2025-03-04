@@ -19,7 +19,7 @@ DEFAULT_SEPARATOR = "\r\n"
 
 
 class _ServerSentEventIterator(AsyncIteratorWrapper[bytes]):
-    __slots__ = ("content_async_iterator", "event_id", "event_type", "retry_duration", "comment_message")
+    __slots__ = ("comment_message", "content_async_iterator", "event_id", "event_type", "retry_duration")
 
     content_async_iterator: AsyncIterable[SSEData]
 

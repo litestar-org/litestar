@@ -7,11 +7,11 @@ from click import Group
 
 from litestar import Litestar, MediaType, get
 from litestar.constants import UNDEFINED_SENTINELS
-from litestar.contrib.attrs import AttrsSchemaPlugin
-from litestar.contrib.pydantic import PydanticDIPlugin, PydanticInitPlugin, PydanticPlugin, PydanticSchemaPlugin
-from litestar.contrib.sqlalchemy.plugins import SQLAlchemySerializationPlugin
-from litestar.plugins import CLIPluginProtocol, InitPluginProtocol, OpenAPISchemaPlugin, PluginRegistry
+from litestar.plugins import CLIPluginProtocol, InitPlugin, OpenAPISchemaPlugin, PluginRegistry
+from litestar.plugins.attrs import AttrsSchemaPlugin
 from litestar.plugins.core import MsgspecDIPlugin
+from litestar.plugins.pydantic import PydanticDIPlugin, PydanticInitPlugin, PydanticPlugin, PydanticSchemaPlugin
+from litestar.plugins.sqlalchemy import SQLAlchemySerializationPlugin
 from litestar.testing import create_test_client
 from litestar.typing import FieldDefinition
 
@@ -29,7 +29,7 @@ def test_plugin_on_app_init() -> None:
     def on_startup(app: Litestar) -> None:
         app.state.called = True
 
-    class PluginWithInitOnly(InitPluginProtocol):
+    class PluginWithInitOnly(InitPlugin):
         def on_app_init(self, app_config: AppConfig) -> AppConfig:
             app_config.tags.append(tag)
             app_config.on_startup.append(on_startup)
@@ -91,7 +91,7 @@ def test_plugin_registry_stringified_get() -> None:
     pydantic_plugin = PydanticPlugin()
     with pytest.raises(KeyError):
         PluginRegistry([CLIPlugin()]).get(
-            "litestar2.contrib.pydantic.PydanticPlugin"
+            "litestar2.plugins.pydantic.PydanticPlugin"
         )  # not a fqdn.  should fail # type: ignore[list-item]
         PluginRegistry([]).get("CLIPlugin")  # not a fqdn.  should fail # type: ignore[list-item]
 
@@ -99,7 +99,7 @@ def test_plugin_registry_stringified_get() -> None:
     assert PluginRegistry([cli_plugin, pydantic_plugin]).get(PydanticPlugin) is pydantic_plugin
     assert PluginRegistry([cli_plugin, pydantic_plugin]).get("PydanticPlugin") is pydantic_plugin
     assert (
-        PluginRegistry([cli_plugin, pydantic_plugin]).get("litestar.contrib.pydantic.PydanticPlugin") is pydantic_plugin
+        PluginRegistry([cli_plugin, pydantic_plugin]).get("litestar.plugins.pydantic.PydanticPlugin") is pydantic_plugin
     )
 
 

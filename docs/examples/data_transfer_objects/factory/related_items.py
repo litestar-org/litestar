@@ -7,8 +7,8 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from typing_extensions import Annotated
 
 from litestar import Litestar, put
-from litestar.contrib.sqlalchemy.dto import SQLAlchemyDTO
 from litestar.dto import DTOConfig
+from litestar.plugins.sqlalchemy import SQLAlchemyDTO
 
 from .my_lib import Base
 

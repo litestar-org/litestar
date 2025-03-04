@@ -9,7 +9,7 @@ from litestar.enums import MediaType
 from litestar.exceptions import ImproperlyConfiguredException, NotFoundException
 from litestar.handlers import get
 from litestar.openapi.plugins import JsonRenderPlugin
-from litestar.plugins import InitPluginProtocol
+from litestar.plugins import InitPlugin
 from litestar.plugins.base import ReceiveRoutePlugin
 from litestar.response import Response
 from litestar.router import Router
@@ -51,13 +51,13 @@ def handle_schema_path_not_found(path: str = "/") -> Response:
     return Response(content, media_type=MediaType.HTML, status_code=HTTP_404_NOT_FOUND)
 
 
-class OpenAPIPlugin(InitPluginProtocol, ReceiveRoutePlugin):
+class OpenAPIPlugin(InitPlugin, ReceiveRoutePlugin):
     __slots__ = (
+        "_openapi",
+        "_openapi_config",
+        "_openapi_schema",
         "app",
         "included_routes",
-        "_openapi_config",
-        "_openapi",
-        "_openapi_schema",
     )
 
     def __init__(self, app: Litestar) -> None:

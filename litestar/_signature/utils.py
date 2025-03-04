@@ -12,7 +12,7 @@ if TYPE_CHECKING:
     from litestar.utils.signature import ParsedSignature
 
 
-__all__ = ("_validate_signature_dependencies", "_normalize_annotation", "_get_decoder_for_type")
+__all__ = ("_get_decoder_for_type", "_normalize_annotation", "_validate_signature_dependencies")
 
 
 def _validate_signature_dependencies(

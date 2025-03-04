@@ -1,4 +1,3 @@
-import subprocess
 import time
 from pathlib import Path
 from typing import Callable, List
@@ -16,16 +15,13 @@ def run_server(tmp_path: Path, request: FixtureRequest, monkeypatch: MonkeyPatch
         tmp_path.joinpath("app.py").write_text(app)
         monkeypatch.chdir(tmp_path)
 
-        proc = psutil.Popen(
-            server_command,
-            stderr=subprocess.PIPE,
-            stdout=subprocess.PIPE,
-        )
+        proc = psutil.Popen(server_command)
 
         def kill() -> None:
             for child in proc.children(recursive=True):
                 child.kill()
             proc.kill()
+            proc.wait()
 
         request.addfinalizer(kill)
 

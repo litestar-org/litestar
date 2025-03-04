@@ -43,14 +43,14 @@ class ASGIResponse:
     """A low-level ASGI response class."""
 
     __slots__ = (
+        "_encoded_cookies",
         "background",
         "body",
         "content_length",
         "encoding",
+        "headers",
         "is_head_response",
         "status_code",
-        "_encoded_cookies",
-        "headers",
     )
 
     _should_set_content_length: ClassVar[bool] = True
@@ -212,8 +212,8 @@ class Response(Generic[T]):
         "encoding",
         "headers",
         "media_type",
-        "status_code",
         "response_type_encoders",
+        "status_code",
     )
 
     content: T

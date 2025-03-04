@@ -1,11 +1,10 @@
 from sqlalchemy.orm import Mapped
 
 from litestar import Litestar, websocket_listener
-from litestar.contrib.sqlalchemy.base import UUIDBase
-from litestar.contrib.sqlalchemy.dto import SQLAlchemyDTO
+from litestar.plugins.sqlalchemy import SQLAlchemyDTO, base
 
 
-class User(UUIDBase):
+class User(base.UUIDBase):
     name: Mapped[str]
 
 

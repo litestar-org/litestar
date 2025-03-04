@@ -48,6 +48,7 @@ def test_abstract_security_config_sets_dependencies(session_backend_config_memor
         assert client.app.dependencies.get("value")
 
 
+@pytest.mark.filterwarnings("ignore:Middleware 'SessionAuthMiddleware' exclude pattern")
 def test_abstract_security_config_registers_route_handlers(
     session_backend_config_memory: ServerSideSessionConfig,
 ) -> None:

@@ -15,7 +15,7 @@ from typing_extensions import ParamSpec
 from litestar.concurrency import sync_to_thread
 from litestar.utils.predicates import is_async_callable
 
-__all__ = ("ensure_async_callable", "AsyncIteratorWrapper", "AsyncCallable", "is_async_callable")
+__all__ = ("AsyncCallable", "AsyncIteratorWrapper", "ensure_async_callable", "is_async_callable")
 
 
 P = ParamSpec("P")
@@ -42,13 +42,13 @@ class AsyncCallable:
         self.func = fn
 
     def __call__(self, *args: P.args, **kwargs: P.kwargs) -> Awaitable[T]:  # pyright: ignore
-        return sync_to_thread(self.func, *args, **kwargs)  # pyright: ignore
+        return sync_to_thread(self.func, *args, **kwargs)  # type: ignore[arg-type]
 
 
 class AsyncIteratorWrapper(Generic[T]):
     """Asynchronous generator, wrapping an iterable or iterator."""
 
-    __slots__ = ("iterator", "generator")
+    __slots__ = ("generator", "iterator")
 
     def __init__(self, iterator: Iterator[T] | Iterable[T]) -> None:
         """Take a sync iterator or iterable and yields values from it asynchronously.

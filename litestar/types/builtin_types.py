@@ -9,9 +9,9 @@ if TYPE_CHECKING:
 
 __all__ = (
     "NoneType",
+    "TypedDictClass",
     "UnionType",
     "UnionTypes",
-    "TypedDictClass",
 )
 
 NoneType: type[None] = type(None)

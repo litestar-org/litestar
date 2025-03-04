@@ -17,10 +17,14 @@ def test_import_string() -> None:
         _ = import_string("imaginary_module_that_doesnt_exist.Config")  # a random nonexistent class
 
 
-def test_module_path() -> None:
+def test_module_path(tmp_path: Path, monkeypatch: MonkeyPatch) -> None:
     the_path = module_to_os_path("litestar.config.compression")
     assert the_path.exists()
 
+    tmp_path.joinpath("simple_module.py").write_text("x = 'foo'")
+    monkeypatch.syspath_prepend(tmp_path)
+    os_path = module_to_os_path("simple_module")
+    assert os_path == Path(tmp_path)
     with pytest.raises(TypeError):
         _ = module_to_os_path("litestar.config.compression.Config")
         _ = module_to_os_path("litestar.config.compression.extra.module")
@@ -35,5 +39,4 @@ def test_import_string_cached(tmp_path: Path, monkeypatch: MonkeyPatch) -> None:
     tmp_path.joinpath("testmodule.py").write_text("x = 'foo'")
     monkeypatch.chdir(tmp_path)
     monkeypatch.syspath_prepend(tmp_path)
-
     assert import_string("testmodule.x") == "foo"

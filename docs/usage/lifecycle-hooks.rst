@@ -20,7 +20,7 @@ Before Request
 --------------
 
 The ``before_request`` hook runs immediately before calling the route handler function. It
-can be any callable accepting a :class:`Request <.connection.Request>` as its first parameter
+can be any callable accepting a :class:`~litestar.connection.Request` as its first parameter
 and returns either ``None`` or a value that can be used in a response.
 If a value is returned, the router handler for this request will be bypassed.
 
@@ -34,7 +34,7 @@ After Request
 -------------
 
 The ``after_request`` hook runs after the route handler returned and the response object
-has been resolved. It can be any callable which takes a :class:`Response <.response.Response>`
+has been resolved. It can be any callable which takes a :class:`~litestar.response.Response`
 instance as its first parameter, and returns a ``Response`` instance. The ``Response``
 instance returned does not necessarily have to be the one that was received.
 
@@ -48,7 +48,7 @@ After Response
 --------------
 
 The ``after_response`` hook runs after the response has been returned by the server.
-It can be any callable accepting a :class:`Request <.connection.Request>` as its first parameter
+It can be any callable accepting a :class:`~litestar.connection.Request` as its first parameter
 and does not return any value.
 
 This hook is meant for data post-processing, transmission of data to third party
@@ -60,8 +60,8 @@ services, gathering of metrics, etc.
 
 .. note::
 
-    Since the request has already been returned by the time the `after_response` is called,
-    the updated state of `COUNTER` is not reflected in the response.
+    Since the request has already been returned by the time the ``after_response`` is called,
+    the updated state of ``COUNTER`` is not reflected in the response.
 
 
 Layered hooks

@@ -45,7 +45,6 @@ class JinjaTemplateEngine(TemplateEngineProtocol["JinjaTemplate", Mapping[str, A
             engine_instance: A jinja Environment instance.
         """
 
-        super().__init__(directory, engine_instance)
         if directory and engine_instance:
             raise ImproperlyConfiguredException("You must provide either a directory or a jinja2 Environment instance.")
         if directory:

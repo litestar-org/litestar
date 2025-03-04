@@ -1,46 +1,38 @@
-from time import time
-from typing import TYPE_CHECKING, Dict
+import time
+from typing import Dict
 
-from litestar import Litestar, get, websocket
+from litestar import Litestar, WebSocket, get, websocket
 from litestar.datastructures import MutableScopeHeaders
 from litestar.enums import ScopeType
-from litestar.middleware import AbstractMiddleware
-
-if TYPE_CHECKING:
-    from litestar import WebSocket
-    from litestar.types import Message, Receive, Scope, Send
+from litestar.middleware import ASGIMiddleware
+from litestar.types import ASGIApp, Message, Receive, Scope, Send
 
 
-class MyMiddleware(AbstractMiddleware):
-    scopes = {ScopeType.HTTP}
-    exclude = ["first_path", "second_path"]
-    exclude_opt_key = "exclude_from_middleware"
+class MyMiddleware(ASGIMiddleware):
+    scopes = (ScopeType.HTTP,)
+    exclude_path_pattern = ("first_path", "second_path")
+    exclude_opt_key = "exclude_from_my_middleware"
 
-    async def __call__(
-        self,
-        scope: "Scope",
-        receive: "Receive",
-        send: "Send",
-    ) -> None:
-        start_time = time()
+    async def handle(self, scope: Scope, receive: Receive, send: Send, next_app: ASGIApp) -> None:
+        start_time = time.monotonic()
 
         async def send_wrapper(message: "Message") -> None:
             if message["type"] == "http.response.start":
-                process_time = time() - start_time
+                process_time = time.monotonic() - start_time
                 headers = MutableScopeHeaders.from_message(message=message)
                 headers["X-Process-Time"] = str(process_time)
-                await send(message)
+            await send(message)
 
-        await self.app(scope, receive, send_wrapper)
+        await next_app(scope, receive, send_wrapper)
 
 
 @websocket("/my-websocket")
-async def websocket_handler(socket: "WebSocket") -> None:
+async def websocket_handler(socket: WebSocket) -> None:
     """
     Websocket handler - is excluded because the middleware scopes includes 'ScopeType.HTTP'
     """
     await socket.accept()
-    await socket.send_json({"hello websocket"})
+    await socket.send_json({"hello": "websocket"})
     await socket.close()
 
 
@@ -56,10 +48,10 @@ def second_handler() -> Dict[str, str]:
     return {"hello": "second"}
 
 
-@get("/third_path", exclude_from_middleware=True, sync_to_thread=False)
+@get("/third_path", exclude_from_my_middleware=True, sync_to_thread=False)
 def third_handler() -> Dict[str, str]:
-    """Handler is excluded due to the opt key 'exclude_from_middleware' matching the middleware 'exclude_opt_key'."""
-    return {"hello": "second"}
+    """Handler is excluded due to the opt key 'exclude_from_my_middleware' matching the middleware 'exclude_opt_key'."""
+    return {"hello": "third"}
 
 
 @get("/greet", sync_to_thread=False)
@@ -76,5 +68,5 @@ app = Litestar(
         third_handler,
         not_excluded_handler,
     ],
-    middleware=[MyMiddleware],
+    middleware=[MyMiddleware()],
 )

@@ -10,8 +10,9 @@ from typing import (
 from urllib.parse import urlencode
 
 import pytest
+from typing_extensions import Annotated
 
-from litestar import MediaType, Request, get
+from litestar import MediaType, Request, get, post
 from litestar.datastructures import MultiDict
 from litestar.di import Provide
 from litestar.params import Parameter
@@ -221,3 +222,13 @@ def test_query_param_dependency_with_alias() -> None:
         response = client.get("/?pageSize=1")
         assert response.status_code == HTTP_200_OK, response.text
         assert response.text == "1"
+
+
+def test_query_params_with_post() -> None:
+    # https://github.com/litestar-org/litestar/issues/3734
+    @post()
+    async def handler(data: str, secret: Annotated[str, Parameter(query="x-secret")]) -> None:
+        return None
+
+    with create_test_client([handler], raise_server_exceptions=True) as client:
+        assert client.post("/", json={}).status_code == 400

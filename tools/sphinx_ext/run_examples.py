@@ -128,8 +128,8 @@ def exec_examples(app_file: Path, run_configs: list[list[str]]) -> str:
             args = ["curl", "-s", f"http://127.0.0.1:{port}{url_path}", *options]
             clean_args = ["curl", f"http://127.0.0.1:8000{url_path}", *options]
 
-            proc = subprocess.run(  # noqa: PLW1510
-                args,  # noqa: S603
+            proc = subprocess.run(  # noqa: PLW1510, S603
+                args,
                 capture_output=True,
                 text=True,
             )

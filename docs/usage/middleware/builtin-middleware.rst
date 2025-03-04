@@ -6,7 +6,7 @@ CORS
 
 `CORS (Cross-Origin Resource Sharing) <https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS>`_ is a common security
 mechanism that is often implemented using middleware. To enable CORS in a litestar application simply pass an instance
-of :class:`CORSConfig <.config.cors.CORSConfig>` to :class:`Litestar <.app.Litestar>`:
+of :class:`~litestar.config.cors.CORSConfig` to :class:`~litestar.app.Litestar`:
 
 .. code-block:: python
 
@@ -21,7 +21,7 @@ of :class:`CORSConfig <.config.cors.CORSConfig>` to :class:`Litestar <.app.Lites
 CSRF
 ----
 
-CSRF (Cross-site request forgery) is a type of attack where unauthorized commands are submitted from a user that the web
+`CSRF (Cross-site request forgery) <https://owasp.org/www-community/attacks/csrf>`_ is a type of attack where unauthorized commands are submitted from a user that the web
 application trusts. This attack often uses social engineering that tricks the victim into clicking a URL that contains a
 maliciously crafted, unauthorized request for a particular Web application. The user’s browser then sends this
 maliciously crafted request to the targeted Web application. If the user is in an active session with the Web application,
@@ -45,7 +45,7 @@ This middleware prevents CSRF attacks by doing the following:
     form field or an additional header that has this token (more on this below)
 
 To enable CSRF protection in a Litestar application simply pass an instance of
-:class:`CSRFConfig <.config.csrf.CSRFConfig>` to the Litestar constructor:
+:class:`~litestar.config.csrf.CSRFConfig` to the Litestar constructor:
 
 .. code-block:: python
 
@@ -68,7 +68,7 @@ To enable CSRF protection in a Litestar application simply pass an instance of
     app = Litestar([get_resource, create_resource], csrf_config=csrf_config)
 
 
-The following snippet demonstrates how to change the cookie name to "some-cookie-name" and header name to "some-header-name".
+The following snippet demonstrates how to change the cookie name to ``"some-cookie-name"`` and header name to ``"some-header-name"``.
 
 .. code-block:: python
 
@@ -80,11 +80,11 @@ A CSRF protected route can be accessed by any client that can make a request wit
 
 .. note::
 
-    The form-data key can not be currently configured. It should only be passed via the key "_csrf_token"
+    The form-data key can not be currently configured. It should only be passed via the key ``"_csrf_token"``
 
 In Python, any client such as `requests <https://github.com/psf/requests>`_ or `httpx <https://github.com/encode/httpx>`_ can be used.
 The usage of clients or sessions is recommended due to the cookie persistence it offers across requests.
-The following is an example using ``httpx.Client``.
+The following is an example using `httpx.Client <https://www.python-httpx.org/api/#client>`_.
 
 .. code-block:: python
 
@@ -98,7 +98,7 @@ The following is an example using ``httpx.Client``.
         csrf = get_response.cookies["csrftoken"]
 
         # "x-csrftoken" is the default header name
-        post_response_using_header = client.post("http://localhost:8000/", headers={"x-csrftoken": csrf})
+        post_response_using_header = client.post("http://localhost:8000/1", headers={"x-csrftoken": csrf})
         assert post_response_using_header.status_code == 201
 
         # "_csrf_token" is the default *non* configurable form-data key
@@ -121,7 +121,7 @@ Routes can be marked as being exempt from the protection offered by this middlew
 
 
 If you need to exempt many routes at once you might want to consider using the
-:attr:`exclude <.config.csrf.CSRFConfig.exclude>` kwarg which accepts list of path
+:attr:`~litestar.config.csrf.CSRFConfig.exclude` kwarg which accepts list of path
 patterns to skip in the middleware.
 
 .. seealso::
@@ -134,12 +134,12 @@ patterns to skip in the middleware.
 Allowed Hosts
 -------------
 
-Another common security mechanism is to require that each incoming request has a "Host" or "X-Forwarded-Host" header,
+Another common security mechanism is to require that each incoming request has a ``"Host"`` or ``"X-Forwarded-Host"`` header,
 and then to restrict hosts to a specific set of domains - what's called "allowed hosts".
 
-Litestar includes an :class:`AllowedHostsMiddleware <.middleware.allowed_hosts.AllowedHostsMiddleware>` class that can be
-easily enabled by either passing an instance of :class:`AllowedHostsConfig <.config.allowed_hosts.AllowedHostsConfig>` or a
-list of domains to :class:`Litestar <litestar.app.Litestar>`:
+Litestar includes an :class:`~litestar.middleware.allowed_hosts.AllowedHostsMiddleware` class that can be
+easily enabled by either passing an instance of :class:`~litestar.config.allowed_hosts.AllowedHostsConfig` or a
+list of domains to :class:`~litestar.app.Litestar`:
 
 .. code-block:: python
 
@@ -169,13 +169,13 @@ HTML responses can optionally be compressed. Litestar has built in support for g
 through the built-in Starlette classes, and brotli support can be added by installing the ``brotli`` extras.
 
 You can enable either backend by passing an instance of
-:class:`CompressionConfig <.config.compression.CompressionConfig>` to ``compression_config`` of
-:class:`Litestar <litestar.app.Litestar>`.
+:class:`~litestar.config.compression.CompressionConfig` to ``compression_config`` of
+:class:`~litestar.app.Litestar`.
 
 GZIP
 ^^^^
 
-You can enable gzip compression of responses by passing an instance of :class:`CompressionConfig <.config.compression.CompressionConfig>` with
+You can enable gzip compression of responses by passing an instance of :class:`~litestar.config.compression.CompressionConfig` with
 the ``backend`` parameter set to ``"gzip"``.
 
 You can configure the following additional gzip-specific values:
@@ -199,25 +199,25 @@ You can configure the following additional gzip-specific values:
 Brotli
 ^^^^^^
 
-The Brotli package is required to run this middleware. It is available as an extras to litestar with the ``brotli``
+The `Brotli <https://pypi.org/project/Brotli>`_ package is required to run this middleware. It is available as an extras to litestar with the ``brotli``
 extra (``pip install litestar[brotli]``).
 
 You can enable brotli compression of responses by passing an instance of
-:class:`CompressionConfig <.config.compression.CompressionConfig>` with the ``backend`` parameter set to ``"brotli"``.
+:class:`~litestar.config.compression.CompressionConfig` with the ``backend`` parameter set to ``"brotli"``.
 
 You can configure the following additional brotli-specific values:
 
 
 * ``minimum_size``: the minimum threshold for response size to enable compression. Smaller responses will not be
-    compressed. Defaults is ``500``, i.e. half a kilobyte.
+    compressed. Default is 500, i.e. half a kilobyte
 * ``brotli_quality``: Range [0-11], Controls the compression-speed vs compression-density tradeoff. The higher the
-    quality, the slower the compression.
-* ``brotli_mode``: The compression mode can be MODE_GENERIC (default), MODE_TEXT (for UTF-8 format text input), or
-    MODE_FONT (for WOFF 2.0).
-* ``brotli_lgwin``: Base 2 logarithm of size. Range is 10 to 24. Defaults to 22.
-* ``brotli_lgblock``: Base 2 logarithm of the maximum input block size. Range is 16 to 24. If set to 0, the value will
-    be set based on the quality. Defaults to 0.
-* ``brotli_gzip_fallback``: a boolean to indicate if gzip should be used if brotli is not supported.
+    quality, the slower the compression. Defaults to 5
+* ``brotli_mode``: The compression mode can be ``"generic"`` (for mixed content), ``"text"`` (for UTF-8 format text input), or
+    ``"font"`` (for WOFF 2.0). Defaults to ``"text"``
+* ``brotli_lgwin``: Base 2 logarithm of size. Range [10-24]. Defaults to 22.
+* ``brotli_lgblock``: Base 2 logarithm of the maximum input block size. Range [16-24]. If set to 0, the value will
+    be set based on the quality. Defaults to 0
+* ``brotli_gzip_fallback``: a boolean to indicate if gzip should be used if brotli is not supported
 
 .. code-block:: python
 
@@ -232,31 +232,30 @@ You can configure the following additional brotli-specific values:
 Rate-Limit Middleware
 ---------------------
 
-Litestar includes an optional :class:`RateLimitMiddleware <litestar.middleware.rate_limit.RateLimitMiddleware>` that follows
+Litestar includes an optional :class:`~litestar.middleware.rate_limit.RateLimitMiddleware` that follows
 the `IETF RateLimit draft specification <https://datatracker.ietf.org/doc/draft-ietf-httpapi-ratelimit-headers/>`_.
 
-To use the rate limit middleware, use the :class:`RateLimitConfig <litestar.middleware.rate_limit.RateLimitConfig>`:
+To use the rate limit middleware, use the :class:`~litestar.middleware.rate_limit.RateLimitConfig`:
 
 .. literalinclude:: /examples/middleware/rate_limit.py
     :language: python
 
-The only required configuration kwarg is ``rate_limit``, which expects a tuple containing a time-unit (``second``,
-``minute``, ``hour``, ``day``\ ) and a value for the request quota (integer).
+The only required configuration kwarg is ``rate_limit``, which expects a tuple containing a time-unit (``"second"``,
+``"minute"``, ``"hour"``, ``"day"``\ ) and a value for the request quota (integer).
 
 
 Logging Middleware
 ------------------
 
 Litestar ships with a robust logging middleware that allows logging HTTP request and responses while building on
-the :doc:`logging configuration </usage/logging>`:
+the Litestar's :ref:`logging configuration <logging-usage>`:
 
 .. literalinclude:: /examples/middleware/logging_middleware.py
     :language: python
 
 
-The logging middleware uses the logger configuration defined on the application level, which allows for using both stdlib
-logging or `structlog <https://www.structlog.org/en/stable/index.html>`_ , depending on the configuration used
-(see :doc:`logging configuration </usage/logging>` for more details).
+The logging middleware uses the logger configuration defined on the application level, which allows for using any supported logging tool, depending on the configuration used
+(see :ref:`logging configuration <logging-usage>` for more details).
 
 Obfuscating Logging Output
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -281,18 +280,18 @@ The middleware will obfuscate the headers ``Authorization`` and ``X-API-KEY`` , 
 Compression and Logging of Response Body
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-If both :class:`CompressionConfig <litestar.config.compression.CompressionConfig>` and
-:class:`LoggingMiddleware <litestar.middleware.logging.LoggingMiddleware>` have been defined for the application, the response
+If both :class:`~litestar.config.compression.CompressionConfig` and
+:class:`~litestar.middleware.logging.LoggingMiddleware` have been defined for the application, the response
 body will be omitted from response logging if it has been compressed, even if ``"body"`` has been included in
-:class:`response_log_fields <litestar.middleware.logging.LoggingMiddlewareConfig.response_log_fields>`. To force the body of
+:class:`~litestar.middleware.logging.LoggingMiddlewareConfig.response_log_fields`. To force the body of
 compressed responses to be logged, set
-:attr:`include_compressed_body <litestar.middleware.logging.LoggingMiddlewareConfig.include_compressed_body>` to ``True`` , in
+:attr:`~litestar.middleware.logging.LoggingMiddlewareConfig.include_compressed_body` to ``True`` , in
 addition to including ``"body"`` in ``response_log_fields``.
 
 Session Middleware
 ------------------
 
-Litestar includes a :class:`SessionMiddleware <.middleware.session.base.SessionMiddleware>`,
+Litestar includes a :class:`~litestar.middleware.session.base.SessionMiddleware`,
 offering client- and server-side sessions. Server-side sessions are backed by Litestar's
 :doc:`stores </usage/stores>`, which offer support for:
 
@@ -316,12 +315,12 @@ add its middleware to your application's middleware stack:
 
     Since both client- and server-side sessions rely on cookies (one for storing the actual session
     data, the other for storing the session ID), they share most of the cookie configuration.
-    A complete reference of the cookie configuration can be found at :class:`BaseBackendConfig <litestar.middleware.session.base.BaseBackendConfig>`.
+    A complete reference of the cookie configuration can be found at :class:`~litestar.middleware.session.base.BaseBackendConfig`.
 
 Client-side sessions
 ^^^^^^^^^^^^^^^^^^^^
 
-Client side sessions are available through the :class:`ClientSideSessionBackend <litestar.middleware.session.client_side.ClientSideSessionBackend>`,
+Client side sessions are available through the :class:`~litestar.middleware.session.client_side.ClientSideSessionBackend`,
 which offers strong AES-CGM encryption security best practices while support cookie splitting.
 
 .. important::
@@ -336,7 +335,7 @@ which offers strong AES-CGM encryption security best practices while support coo
 
 .. seealso::
 
-    * :class:`CookieBackendConfig <litestar.middleware.session.client_side.CookieBackendConfig>`
+    * :class:`~litestar.middleware.session.client_side.CookieBackendConfig`
 
 
 Server-side sessions
@@ -352,4 +351,4 @@ and load the appropriate data from the store
 .. seealso::
 
     * :doc:`/usage/stores`
-    * :class:`ServerSideSessionConfig <litestar.middleware.session.server_side.ServerSideSessionConfig>`
+    * :class:`~litestar.middleware.session.server_side.ServerSideSessionConfig`

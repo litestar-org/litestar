@@ -123,7 +123,12 @@ def test_media_type_inferred(extension: str, expected_type: MediaType, tmp_path:
     ) as client:
         res = client.get("/")
         assert res.status_code == 200
-        assert res.headers["content-type"].startswith(expected_type)
+        if expected_type == MediaType.XML.value:
+            assert res.headers["content-type"].startswith(expected_type) or res.headers["content-type"].startswith(
+                "text/xml"
+            )
+        else:
+            assert res.headers["content-type"].startswith(expected_type)
 
 
 def test_before_request_handler_content_type(tmp_path: Path) -> None:

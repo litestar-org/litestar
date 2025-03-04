@@ -71,6 +71,7 @@ from .composite_types import (
     TypeDecodersSequence,
     TypeEncodersMap,
 )
+from .debugger_types import Debugger
 from .empty import Empty, EmptyType
 from .file_types import FileInfo, FileSystemProtocol
 from .helper_types import AnyIOBackend, MaybePartial, OptionalSequence, SSEData, StreamType, SyncOrAsyncUnion
@@ -95,6 +96,7 @@ __all__ = (
     "ControllerRouterHandler",
     "DataContainerType",
     "DataclassProtocol",
+    "Debugger",
     "Dependencies",
     "Empty",
     "EmptyType",
@@ -142,13 +144,13 @@ __all__ = (
     "ResponseHeaders",
     "RouteHandlerMapItem",
     "RouteHandlerType",
+    "SSEData",
     "Scope",
     "ScopeSession",
     "Scopes",
     "Send",
     "Serializer",
     "StreamType",
-    "SSEData",
     "SyncOrAsyncUnion",
     "TypeDecodersSequence",
     "TypeEncodersMap",

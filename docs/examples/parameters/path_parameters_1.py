@@ -12,7 +12,7 @@ class User(BaseModel):
 
 @get("/user/{user_id:int}", sync_to_thread=False)
 def get_user(user_id: int) -> User:
-    return User.parse_obj(USER_DB[user_id])
+    return User.model_validate(USER_DB[user_id])
 
 
 app = Litestar(route_handlers=[get_user])

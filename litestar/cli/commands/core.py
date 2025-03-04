@@ -8,8 +8,10 @@ import sys
 from contextlib import AbstractContextManager, ExitStack, contextmanager
 from typing import TYPE_CHECKING, Any, Iterator
 
-import click
-from click import Context, command, option
+try:
+    import rich_click as click
+except ImportError:
+    import click  # type: ignore[no-redef]
 from rich.tree import Tree
 
 from litestar.app import DEFAULT_OPENAPI_CONFIG
@@ -98,8 +100,8 @@ def _run_uvicorn_in_subprocess(
         process_args["ssl-certfile"] = certfile_path
     if keyfile_path is not None:
         process_args["ssl-keyfile"] = keyfile_path
-    subprocess.run(
-        [sys.executable, "-m", "uvicorn", env.app_path, *_convert_uvicorn_args(process_args)],  # noqa: S603
+    subprocess.run(  # noqa: S603
+        [sys.executable, "-m", "uvicorn", env.app_path, *_convert_uvicorn_args(process_args)],
         check=True,
     )
 
@@ -113,8 +115,8 @@ class CommaSplittedPath(click.Path):
     envvar_list_splitter = ","
 
 
-@command(name="version")
-@option("-s", "--short", help="Exclude release level and serial information", is_flag=True, default=False)
+@click.command(name="version")
+@click.option("-s", "--short", help="Exclude release level and serial information", is_flag=True, default=False)
 def version_command(short: bool) -> None:
     """Show the currently installed Litestar version."""
     from litestar import __version__
@@ -122,16 +124,16 @@ def version_command(short: bool) -> None:
     click.echo(__version__.formatted(short=short))
 
 
-@command(name="info")
+@click.command(name="info")
 def info_command(app: Litestar) -> None:
     """Show information about the detected Litestar app."""
 
     show_app_info(app)
 
 
-@command(name="run")
-@option("-r", "--reload", help="Reload server on changes", default=False, is_flag=True, envvar="LITESTAR_RELOAD")
-@option(
+@click.command(name="run")
+@click.option("-r", "--reload", help="Reload server on changes", default=False, is_flag=True, envvar="LITESTAR_RELOAD")
+@click.option(
     "-R",
     "--reload-dir",
     help="Directories to watch for file changes",
@@ -139,7 +141,7 @@ def info_command(app: Litestar) -> None:
     multiple=True,
     envvar="LITESTAR_RELOAD_DIRS",
 )
-@option(
+@click.option(
     "-I",
     "--reload-include",
     help="Glob patterns for files to include when watching for file changes",
@@ -147,7 +149,7 @@ def info_command(app: Litestar) -> None:
     multiple=True,
     envvar="LITESTAR_RELOAD_INCLUDES",
 )
-@option(
+@click.option(
     "-E",
     "--reload-exclude",
     help="Glob patterns for files to exclude when watching for file changes",
@@ -155,8 +157,10 @@ def info_command(app: Litestar) -> None:
     multiple=True,
     envvar="LITESTAR_RELOAD_EXCLUDES",
 )
-@option("-p", "--port", help="Serve under this port", type=int, default=8000, show_default=True, envvar="LITESTAR_PORT")
-@option(
+@click.option(
+    "-p", "--port", help="Serve under this port", type=int, default=8000, show_default=True, envvar="LITESTAR_PORT"
+)
+@click.option(
     "-W",
     "--wc",
     "--web-concurrency",
@@ -166,8 +170,10 @@ def info_command(app: Litestar) -> None:
     default=1,
     envvar=["LITESTAR_WEB_CONCURRENCY", "WEB_CONCURRENCY"],
 )
-@option("-H", "--host", help="Server under this host", default="127.0.0.1", show_default=True, envvar="LITESTAR_HOST")
-@option(
+@click.option(
+    "-H", "--host", help="Server under this host", default="127.0.0.1", show_default=True, envvar="LITESTAR_HOST"
+)
+@click.option(
     "-F",
     "--fd",
     "--file-descriptor",
@@ -177,7 +183,7 @@ def info_command(app: Litestar) -> None:
     show_default=True,
     envvar="LITESTAR_FILE_DESCRIPTOR",
 )
-@option(
+@click.option(
     "-U",
     "--uds",
     "--unix-domain-socket",
@@ -186,11 +192,11 @@ def info_command(app: Litestar) -> None:
     show_default=True,
     envvar="LITESTAR_UNIX_DOMAIN_SOCKET",
 )
-@option("-d", "--debug", help="Run app in debug mode", is_flag=True, envvar="LITESTAR_DEBUG")
-@option("-P", "--pdb", "--use-pdb", help="Drop into PDB on an exception", is_flag=True, envvar="LITESTAR_PDB")
-@option("--ssl-certfile", help="Location of the SSL cert file", default=None, envvar="LITESTAR_SSL_CERT_PATH")
-@option("--ssl-keyfile", help="Location of the SSL key file", default=None, envvar="LITESTAR_SSL_KEY_PATH")
-@option(
+@click.option("-d", "--debug", help="Run app in debug mode", is_flag=True, envvar="LITESTAR_DEBUG")
+@click.option("-P", "--pdb", "--use-pdb", help="Drop into PDB on an exception", is_flag=True, envvar="LITESTAR_PDB")
+@click.option("--ssl-certfile", help="Location of the SSL cert file", default=None, envvar="LITESTAR_SSL_CERT_PATH")
+@click.option("--ssl-keyfile", help="Location of the SSL key file", default=None, envvar="LITESTAR_SSL_KEY_PATH")
+@click.option(
     "--create-self-signed-cert",
     help="If certificate and key are not found at specified locations, create a self-signed certificate and a key",
     is_flag=True,
@@ -211,15 +217,15 @@ def run_command(
     ssl_certfile: str | None,
     ssl_keyfile: str | None,
     create_self_signed_cert: bool,
-    ctx: Context,
+    ctx: click.Context,
 ) -> None:
     """Run a Litestar app; requires ``uvicorn``.
 
-    The app can be either passed as a module path in the form of <module name>.<submodule>:<app instance or factory>,
-    set as an environment variable LITESTAR_APP with the same format or automatically discovered from one of these
-    canonical paths: app.py, asgi.py, application.py or app/__init__.py. When auto-discovering application factories,
-    functions with the name ``create_app`` are considered, or functions that are annotated as returning a ``Litestar``
-    instance.
+    The app can be either passed as a module path in the form of ``<module name>.<submodule>:<app instance or factory>``
+    set as an environment variable ``LITESTAR_APP`` with the same format or automatically discovered from one of these
+    canonical paths: ``app.py``, ``asgi.py``, ``application.py`` or ``app/__init__.py``.
+    When auto-discovering application factories, functions with the name ``create_app`` are considered,
+    or functions that are annotated as returning a ``Litestar`` instance.
     """
 
     if debug:
@@ -299,9 +305,9 @@ def run_command(
             )
 
 
-@command(name="routes")
-@option("--schema", help="Include schema routes", is_flag=True, default=False)
-@option("--exclude", help="routes to exclude via regex", type=str, is_flag=False, multiple=True)
+@click.command(name="routes")
+@click.option("--schema", help="Include schema routes", is_flag=True, default=False)
+@click.option("--exclude", help="routes to exclude via regex", type=str, is_flag=False, multiple=True)
 def routes_command(app: Litestar, exclude: tuple[str, ...], schema: bool) -> None:  # pragma: no cover
     """Display information about the application's routes."""
 

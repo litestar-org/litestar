@@ -16,7 +16,7 @@ API reference
     controller
     concurrency
     data_extractors
-    datastructures
+    datastructures/index
     di
     dto/index
     enums

@@ -1,3 +1,5 @@
+.. _plugins:
+
 =======
 Plugins
 =======
@@ -11,24 +13,15 @@ Litestar supports a plugin system that allows you to extend the functionality of
 Plugins are defined by protocols, and any type that satisfies a protocol can be included in the ``plugins`` argument of
 the :class:`app <litestar.app.Litestar>`.
 
-The following plugin protocols are defined.
 
-1. :class:`InitPluginProtocol <litestar.plugins.InitPluginProtocol>`: This protocol defines a contract for plugins
-that can interact with the data that is used to instantiate the application instance.
+InitPlugin
+----------
 
-2. :class:`SerializationPluginProtocol <litestar.plugins.SerializationPluginProtocol>`: This protocol defines
-the contract for plugins that extend serialization functionality of the application.
-
-InitPluginProtocol
-------------------
-
-``InitPluginProtocol`` defines an interface that allows for customization of the application's initialization process.
+``InitPlugin`` defines an interface that allows for customization of the application's initialization process.
 Init plugins can define dependencies, add route handlers, configure middleware, and much more!
 
 Implementations of these plugins must define a single method:
-
-:meth:`on_app_init(self, app_config: AppConfig) -> AppConfig: <litestar.plugins.InitPluginProtocol.on_app_init>`
-----------------------------------------------------------------------------------------------------------------
+:meth:`on_app_init(self, app_config: AppConfig) -> AppConfig: <litestar.plugins.InitPlugin.on_app_init>`
 
 The method accepts and must return an :class:`AppConfig <litestar.config.app.AppConfig>` instance, which can be modified
 and is later used to instantiate the application.
@@ -44,9 +37,9 @@ The following example shows a simple plugin that adds a route handler, and a dep
 
 .. literalinclude:: /examples/plugins/init_plugin_protocol.py
    :language: python
-   :caption: ``InitPluginProtocol`` implementation example
+   :caption: ``InitPlugin`` implementation example
 
-The ``MyPlugin`` class is an implementation of the :class:`InitPluginProtocol <litestar.plugins.InitPluginProtocol>`. It
+The ``MyPlugin`` class is an implementation of the :class:`InitPlugin <litestar.plugins.InitPlugin>`. It
 defines a single method, ``on_app_init()``, which takes an :class:`AppConfig <litestar.config.app.AppConfig>` instance
 as an argument and returns same.
 
@@ -62,14 +55,12 @@ that are otherwise unsupported by the framework.
 
 Implementations of these plugins must define the following methods.
 
-:meth:`supports_type(self, field_definition: FieldDefinition) -> bool: <litestar.plugins.SerializationPluginProtocol>`
-----------------------------------------------------------------------------------------------------------------------
+1. :meth:`supports_type(self, field_definition: FieldDefinition) -> bool: <litestar.plugins.SerializationPluginProtocol>`
 
 The method takes a :class:`FieldDefinition <litestar.typing.FieldDefinition>` instance as an argument and returns a :class:`bool`
 indicating whether the plugin supports serialization for that type.
 
-:meth:`create_dto_for_type(self, field_definition: FieldDefinition) -> type[AbstractDTO]: <litestar.plugins.SerializationPluginProtocol.create_dto_for_type>`
---------------------------------------------------------------------------------------------------------------------------------------------------------------
+2. :meth:`create_dto_for_type(self, field_definition: FieldDefinition) -> type[AbstractDTO]: <litestar.plugins.SerializationPluginProtocol.create_dto_for_type>`
 
 This method accepts a :class:`FieldDefinition <litestar.typing.FieldDefinition>` instance as an argument and must return a
 :class:`AbstractDTO <litestar.dto.base_dto.AbstractDTO>` implementation that can be used to serialize and deserialize
@@ -89,11 +80,11 @@ The following example shows the actual implementation of the ``SerializationPlug
    :language: python
    :caption: ``SerializationPluginProtocol`` implementation example
 
-:meth:`supports_type(self, field_definition: FieldDefinition) -> bool: <advanced_alchemy.extensions.litestar.plugins.serialization.SQLAlchemySerializationPlugin.supports_type>`
+:meth:`supports_type(self, field_definition: FieldDefinition) -> bool: <advanced_alchemy.extensions.litestar.SQLAlchemySerializationPlugin.supports_type>`
 returns a :class:`bool` indicating whether the plugin supports serialization for the given type. Specifically, we return
 ``True`` if the parsed type is either a collection of SQLAlchemy models or a single SQLAlchemy model.
 
-:meth:`create_dto_for_type(self, field_definition: FieldDefinition) -> type[AbstractDTO]: <advanced_alchemy.extensions.litestar.plugins.SQLAlchemySerializationPlugin.create_dto_for_type>`
+:meth:`create_dto_for_type(self, field_definition: FieldDefinition) -> type[AbstractDTO]: <advanced_alchemy.extensions.litestar.SQLAlchemySerializationPlugin.create_dto_for_type>`
 takes a :class:`FieldDefinition <litestar.typing.FieldDefinition>` instance as an argument and returns a
 :class:`SQLAlchemyDTO <advanced_alchemy.extensions.litestar.dto.SQLAlchemyDTO>` subclass and includes some logic that may be
 interesting to potential serialization plugin authors.
@@ -129,3 +120,4 @@ signature (their :func:`__init__` method).
     :titlesonly:
 
     flash_messages
+    problem_details

@@ -10,7 +10,7 @@ if TYPE_CHECKING:
     from litestar.types import Method
 
 
-__all__ = ("default_operation_id_creator", "SEPARATORS_CLEANUP_PATTERN")
+__all__ = ("SEPARATORS_CLEANUP_PATTERN", "default_operation_id_creator")
 
 SEPARATORS_CLEANUP_PATTERN = re.compile(r"[!#$%&'*+\-.^_`|~:]+")
 

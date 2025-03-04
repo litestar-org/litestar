@@ -12,8 +12,8 @@ __all__ = (
     "ConnectionDataExtractor",
     "ExtractedRequestData",
     "ExtractedResponseData",
-    "ResponseDataExtractor",
     "RequestExtractorField",
+    "ResponseDataExtractor",
     "ResponseExtractorField",
 )
 
@@ -66,11 +66,11 @@ class ConnectionDataExtractor:
 
     __slots__ = (
         "connection_extractors",
-        "request_extractors",
+        "obfuscate_cookies",
+        "obfuscate_headers",
         "parse_body",
         "parse_query",
-        "obfuscate_headers",
-        "obfuscate_cookies",
+        "request_extractors",
         "skip_parse_malformed_body",
     )
 
@@ -324,7 +324,7 @@ class ExtractedResponseData(TypedDict, total=False):
 class ResponseDataExtractor:
     """Utility class to extract data from a ``Message``"""
 
-    __slots__ = ("extractors", "parse_headers", "obfuscate_headers", "obfuscate_cookies")
+    __slots__ = ("extractors", "obfuscate_cookies", "obfuscate_headers", "parse_headers")
 
     def __init__(
         self,

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Callable
+from typing import TYPE_CHECKING, Any
 
 from anyio import create_task_group
 
@@ -40,6 +40,7 @@ __all__ = ("KwargsModel",)
 
 
 if TYPE_CHECKING:
+    from litestar._kwargs.types import Extractor
     from litestar._signature import SignatureModel
     from litestar.connection import ASGIConnection
     from litestar.di import Provide
@@ -124,11 +125,11 @@ class KwargsModel:
         )
 
         self.is_data_optional = is_data_optional
-        self.extractors = self._create_extractors()
+        self.extractors: list[Extractor] = self._create_extractors()
         self.dependency_batches = create_dependency_batches(expected_dependencies)
 
-    def _create_extractors(self) -> list[Callable[[dict[str, Any], ASGIConnection], None]]:
-        reserved_kwargs_extractors: dict[str, Callable[[dict[str, Any], ASGIConnection], None]] = {
+    def _create_extractors(self) -> list[Extractor]:
+        reserved_kwargs_extractors: dict[str, Extractor] = {
             "data": create_data_extractor(self),
             "state": state_extractor,
             "scope": scope_extractor,
@@ -140,7 +141,7 @@ class KwargsModel:
             "body": body_extractor,  # type: ignore[dict-item]
         }
 
-        extractors: list[Callable[[dict[str, Any], ASGIConnection], None]] = [
+        extractors: list[Extractor] = [
             reserved_kwargs_extractors[reserved_kwarg] for reserved_kwarg in self.expected_reserved_kwargs
         ]
 
@@ -362,7 +363,7 @@ class KwargsModel:
             sequence_query_parameter_names=sequence_query_parameter_names,
         )
 
-    def to_kwargs(self, connection: ASGIConnection) -> dict[str, Any]:
+    async def to_kwargs(self, connection: ASGIConnection) -> dict[str, Any]:
         """Return a dictionary of kwargs. Async values, i.e. CoRoutines, are not resolved to ensure this function is
         sync.
 
@@ -376,7 +377,7 @@ class KwargsModel:
         output: dict[str, Any] = {}
 
         for extractor in self.extractors:
-            extractor(output, connection)
+            await extractor(output, connection)
 
         return output
 

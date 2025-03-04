@@ -264,7 +264,7 @@ def convert_openapi_to_typescript(openapi_schema: OpenAPI, namespace: str = "API
     """
     if not openapi_schema.paths:  # pragma: no cover
         raise ValueError("OpenAPI schema has no paths")
-    if not openapi_schema.components:  # pragma: no cover
+    if not openapi_schema.components:  # type: ignore[truthy-bool]  # pragma: no cover
         raise ValueError("OpenAPI schema has no components")
 
     operations: list[TypeScriptNamespace] = []

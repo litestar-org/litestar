@@ -17,7 +17,7 @@ if TYPE_CHECKING:
 class MemoryStore(Store):
     """In memory, atomic, asynchronous key/value store."""
 
-    __slots__ = ("_store", "_lock")
+    __slots__ = ("_lock", "_store")
 
     def __init__(self) -> None:
         """Initialize :class:`MemoryStore`"""

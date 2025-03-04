@@ -4,8 +4,8 @@ from sqlalchemy.orm import Mapped, mapped_column
 from typing_extensions import Annotated
 
 from litestar import Litestar, post
-from litestar.contrib.sqlalchemy.dto import SQLAlchemyDTO
 from litestar.dto import DTOConfig, dto_field
+from litestar.plugins.sqlalchemy import SQLAlchemyDTO
 
 from .my_lib import Base
 

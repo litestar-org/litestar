@@ -1,7 +1,8 @@
 from __future__ import annotations
 
+import math
 import warnings
-from typing import TYPE_CHECKING, Any, AsyncGenerator, Generic
+from typing import TYPE_CHECKING, Any, AsyncGenerator, Generic, cast
 
 from litestar._multipart import parse_content_header, parse_multipart_form
 from litestar._parsers import parse_url_encoded_form_data
@@ -17,12 +18,14 @@ from litestar.datastructures.headers import Accept
 from litestar.datastructures.multi_dicts import FormMultiDict
 from litestar.enums import ASGIExtension, RequestEncodingType
 from litestar.exceptions import (
+    ClientException,
     InternalServerException,
     LitestarException,
     LitestarWarning,
 )
+from litestar.exceptions.http_exceptions import RequestEntityTooLarge
 from litestar.serialization import decode_json, decode_msgpack
-from litestar.types import Empty
+from litestar.types import Empty, HTTPReceiveMessage
 
 __all__ = ("Request",)
 
@@ -46,12 +49,13 @@ class Request(Generic[UserT, AuthT, StateT], ASGIConnection["HTTPRouteHandler", 
     """The Litestar Request class."""
 
     __slots__ = (
-        "_json",
-        "_form",
-        "_body",
-        "_msgpack",
-        "_content_type",
         "_accept",
+        "_body",
+        "_content_length",
+        "_content_type",
+        "_form",
+        "_json",
+        "_msgpack",
         "is_connected",
         "supports_push_promise",
     )
@@ -73,12 +77,13 @@ class Request(Generic[UserT, AuthT, StateT], ASGIConnection["HTTPRouteHandler", 
         """
         super().__init__(scope, receive, send)
         self.is_connected: bool = True
-        self._body: bytes | EmptyType = Empty
-        self._form: dict[str, str | list[str]] | EmptyType = Empty
+        self._body: bytes | EmptyType = self._connection_state.body
+        self._form: FormMultiDict | EmptyType = Empty
         self._json: Any = Empty
         self._msgpack: Any = Empty
         self._content_type: tuple[str, dict[str, str]] | EmptyType = Empty
         self._accept: Accept | EmptyType = Empty
+        self._content_length: int | None | EmptyType = Empty
         self.supports_push_promise = ASGIExtension.SERVER_PUSH in self._server_extensions
 
     @property
@@ -152,6 +157,21 @@ class Request(Generic[UserT, AuthT, StateT], ASGIConnection["HTTPRouteHandler", 
                 )
         return self._msgpack
 
+    @property
+    def content_length(self) -> int | None:
+        cached_content_length = self._content_length
+        if cached_content_length is not Empty:
+            return cached_content_length
+
+        content_length_header = self.headers.get("content-length")
+        try:
+            content_length = self._content_length = (
+                int(content_length_header) if content_length_header is not None else None
+            )
+        except ValueError:
+            raise ClientException(f"Invalid content-length: {content_length_header!r}") from None
+        return content_length
+
     async def stream(self) -> AsyncGenerator[bytes, None]:
         """Return an async generator that streams chunks of bytes.
 
@@ -164,10 +184,46 @@ class Request(Generic[UserT, AuthT, StateT], ASGIConnection["HTTPRouteHandler", 
         if self._body is Empty:
             if not self.is_connected:
                 raise InternalServerException("stream consumed")
-            while event := await self.receive():
+
+            announced_content_length = self.content_length
+            # setting this to 'math.inf' as a micro-optimisation; Comparing against a
+            # float is slightly faster than checking if a value is 'None' and then
+            # comparing it to an int. since we expect a limit to be set most of the
+            # time, this is a bit more efficient
+            max_content_length = self.route_handler.resolve_request_max_body_size() or math.inf
+
+            # if the 'content-length' header is set, and exceeds the limit, we can bail
+            # out early before reading anything
+            if announced_content_length is not None and announced_content_length > max_content_length:
+                raise RequestEntityTooLarge
+
+            total_bytes_streamed: int = 0
+            while event := cast("HTTPReceiveMessage", await self.receive()):
                 if event["type"] == "http.request":
-                    if event["body"]:
-                        yield event["body"]
+                    body = event["body"]
+                    if body:
+                        total_bytes_streamed += len(body)
+
+                        # if a 'content-length' header was set, check if we have
+                        # received more bytes than specified. in most cases this should
+                        # be caught before it hits the application layer and an ASGI
+                        # server (e.g. uvicorn) will not allow this, but since it's not
+                        # forbidden according to the HTTP or ASGI spec, we err on the
+                        # side of caution and still perform this check.
+                        #
+                        # uvicorn documented behaviour for this case:
+                        # https://github.com/encode/uvicorn/blob/fe3910083e3990695bc19c2ef671dd447262ae18/docs/server-behavior.md?plain=1#L11
+                        if announced_content_length:
+                            if total_bytes_streamed > announced_content_length:
+                                raise ClientException("Malformed request")
+
+                        # we don't have a 'content-length' header, likely a chunked
+                        # transfer. we don't really care and simply check if we have
+                        # received more bytes than allowed
+                        elif total_bytes_streamed > max_content_length:
+                            raise RequestEntityTooLarge
+
+                        yield body
 
                     if not event.get("more_body", False):
                         break
@@ -205,26 +261,26 @@ class Request(Generic[UserT, AuthT, StateT], ASGIConnection["HTTPRouteHandler", 
             A FormMultiDict instance
         """
         if self._form is Empty:
-            if (form := self._connection_state.form) is not Empty:
-                self._form = form
-            else:
+            if (form_data := self._connection_state.form) is Empty:
                 content_type, options = self.content_type
                 if content_type == RequestEncodingType.MULTI_PART:
-                    self._form = parse_multipart_form(
-                        body=await self.body(),
+                    form_data = await parse_multipart_form(
+                        stream=self.stream(),
                         boundary=options.get("boundary", "").encode(),
                         multipart_form_part_limit=self.app.multipart_form_part_limit,
                     )
                 elif content_type == RequestEncodingType.URL_ENCODED:
-                    self._form = parse_url_encoded_form_data(
+                    form_data = parse_url_encoded_form_data(  # type: ignore[assignment]
                         await self.body(),
                     )
                 else:
-                    self._form = {}
+                    form_data = {}
 
-                self._connection_state.form = self._form
+                self._connection_state.form = form_data  # pyright: ignore
 
-        return FormMultiDict(self._form)
+            self._form = FormMultiDict.from_form_data(cast("dict[str, Any]", form_data))
+
+        return self._form
 
     async def send_push_promise(self, path: str, raise_if_unavailable: bool = False) -> None:
         """Send a push promise.

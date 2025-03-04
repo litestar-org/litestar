@@ -168,7 +168,7 @@ class TestClientTransport(Generic[T]):
                     self.create_receive(request=request, context=context),
                     self.create_send(request=request, context=context),
                 )
-        except BaseException as exc:  # noqa: BLE001
+        except BaseException as exc:
             if self.raise_server_exceptions:
                 raise exc
             return Response(

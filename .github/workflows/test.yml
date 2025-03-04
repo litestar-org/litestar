@@ -19,6 +19,9 @@ on:
         type: number
         default: 10
 
+env:
+  UV_LOCKED: 1
+
 jobs:
   test:
     runs-on: ${{ inputs.os }}
@@ -35,35 +38,48 @@ jobs:
         with:
           python-version: ${{ inputs.python-version }}
 
-      - uses: pdm-project/setup-pdm@v4
-        name: Set up PDM
+      # Linux Source
+      - name: Install Build Dependencies
+        run: sudo apt-get install build-essential libpq-dev python3-dev -y
+        if: startsWith(inputs.os, 'ubuntu')
+
+      # MacOS Source
+      - name: Install Build Dependencies
+        run: brew install libpq && brew link --force libpq
+        if: startsWith(inputs.os, 'macos')
+
+      # Windows Source
+      - name: Install Build Dependencies
+        uses: ikalnytskyi/action-setup-postgres@v7
+        if: startsWith(inputs.os, 'windows')
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
         with:
-          python-version: ${{ inputs.python-version }}
-          allow-python-prereleases: false
-          cache: true
-          cache-dependency-path: |
-            ./pdm.lock
+          version: "0.5.4"
+          enable-cache: true
 
       - name: Install dependencies
-        run: pdm install -G:all
+        run: uv sync
 
       - name: Set PYTHONPATH
         run: echo "PYTHONPATH=$PWD" >> $GITHUB_ENV
 
       - name: Test
         if: ${{ !inputs.coverage }}
-        run: pdm run pytest docs/examples tests -n auto
+        run: uv run pytest docs/examples tests -n auto
 
       - name: Test with coverage
         if: inputs.coverage
-        run: pdm run pytest docs/examples tests -n auto --cov
+        run: uv run pytest docs/examples tests -n auto --cov
 
       - name: Rename coverage file
         if: inputs.coverage
         run: mv .coverage .coverage.${{ inputs.python-version }}
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         if: inputs.coverage
         with:
-          name: coverage-data
+          name: coverage-data-${{ inputs.python-version }}
           path: .coverage.${{ inputs.python-version }}
+          include-hidden-files: true

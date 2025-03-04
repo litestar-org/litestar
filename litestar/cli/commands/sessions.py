@@ -1,4 +1,7 @@
-from click import argument, group
+try:
+    import rich_click as click
+except ImportError:
+    import click  # type: ignore[no-redef]
 from rich.prompt import Confirm
 
 from litestar import Litestar
@@ -24,13 +27,13 @@ def get_session_backend(app: Litestar) -> ServerSideSessionBackend:
     raise LitestarCLIException("Session middleware not installed")
 
 
-@group(cls=LitestarGroup, name="sessions")
+@click.group(cls=LitestarGroup, name="sessions")
 def sessions_group() -> None:
     """Manage server-side sessions."""
 
 
 @sessions_group.command("delete")  # type: ignore[misc]
-@argument("session-id")
+@click.argument("session-id")
 def delete_session_command(session_id: str, app: Litestar) -> None:
     """Delete a specific session."""
     import anyio

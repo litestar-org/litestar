@@ -1,4 +1,5 @@
 import os
+from datetime import datetime, timezone
 from email.utils import formatdate
 from os import stat, urandom
 from pathlib import Path
@@ -13,7 +14,7 @@ from litestar.datastructures import ETag
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.file_system import BaseLocalFileSystem, FileSystemAdapter
 from litestar.response.file import ASGIFileResponse, File, async_file_iterator
-from litestar.status_codes import HTTP_200_OK
+from litestar.status_codes import HTTP_200_OK, HTTP_500_INTERNAL_SERVER_ERROR
 from litestar.testing import create_test_client
 from litestar.types import FileSystemProtocol
 
@@ -93,6 +94,118 @@ def test_file_response_last_modified(tmpdir: Path) -> None:
         response = client.get("/")
         assert response.status_code == HTTP_200_OK
         assert response.headers["last-modified"].lower() == formatdate(path.stat().st_mtime, usegmt=True).lower()
+
+
+@pytest.mark.parametrize(
+    "mtime,expected_last_modified",
+    [
+        pytest.param(
+            datetime(2000, 1, 2, 3, 4, 5, tzinfo=timezone.utc).timestamp(),
+            "Sun, 02 Jan 2000 03:04:05 GMT",
+            id="timestamp",
+        ),
+        pytest.param(
+            datetime(2000, 1, 2, 3, 4, 5, tzinfo=timezone.utc), "Sun, 02 Jan 2000 03:04:05 GMT", id="datetime"
+        ),
+        pytest.param(
+            datetime(2000, 1, 2, 3, 4, 5, tzinfo=timezone.utc).isoformat(),
+            "Sun, 02 Jan 2000 03:04:05 GMT",
+            id="isoformat",
+        ),
+    ],
+)
+@pytest.mark.parametrize(
+    "mtime_key",
+    [
+        "mtime",
+        "ctime",
+        "Last-Modified",
+        "updated_at",
+        "modification_time",
+        "last_changed",
+        "change_time",
+        "last_modified",
+        "last_updated",
+        "timestamp",
+    ],
+)
+def test_file_response_last_modified_file_info_formats(
+    tmpdir: Path, mtime: Any, mtime_key: str, expected_last_modified: str
+) -> None:
+    path = Path(tmpdir / "file.txt")
+    path.write_bytes(b"")
+    file_info = {"name": "file.txt", "size": 0, "type": "file", mtime_key: mtime}
+
+    @get("/")
+    def handler() -> File:
+        return File(
+            path=path,
+            filename="image.png",
+            file_info=file_info,  # type: ignore[arg-type]
+        )
+
+    with create_test_client(handler) as client:
+        response = client.get("/")
+        assert response.status_code == HTTP_200_OK
+        assert response.headers["last-modified"].lower() == expected_last_modified.lower()
+
+
+def test_file_response_last_modified_unsupported_mtime_type(tmpdir: Path) -> None:
+    path = Path(tmpdir / "file.txt")
+    path.write_bytes(b"")
+    file_info = {"name": "file.txt", "size": 0, "type": "file", "last_updated": object()}
+
+    @get("/")
+    def handler() -> File:
+        return File(
+            path=path,
+            filename="image.png",
+            file_info=file_info,  # type: ignore[arg-type]
+        )
+
+    with create_test_client(handler) as client:
+        response = client.get("/")
+        assert response.status_code == HTTP_500_INTERNAL_SERVER_ERROR
+        assert "last-modified" not in response.headers
+
+
+def test_file_response_last_modified_mtime_not_given(tmpdir: Path) -> None:
+    path = Path(tmpdir / "file.txt")
+    path.write_bytes(b"")
+    file_info = {"name": "file.txt", "size": 0, "type": "file"}
+
+    @get("/")
+    def handler() -> File:
+        return File(
+            path=path,
+            filename="image.png",
+            file_info=file_info,  # type: ignore[arg-type]
+        )
+
+    with create_test_client(handler) as client:
+        response = client.get("/")
+        assert response.status_code == HTTP_200_OK
+        assert "last-modified" not in response.headers
+
+
+def test_file_response_etag_without_mtime(tmpdir: Path) -> None:
+    path = Path(tmpdir / "file.txt")
+    path.write_bytes(b"")
+    file_info = {"name": "file.txt", "size": 0, "type": "file"}
+
+    @get("/")
+    def handler() -> File:
+        return File(
+            path=path,
+            filename="image.png",
+            file_info=file_info,  # type: ignore[arg-type]
+        )
+
+    with create_test_client(handler) as client:
+        response = client.get("/")
+        assert response.status_code == HTTP_200_OK
+        # we expect etag to only have 2 parts here because no mtime was given
+        assert len(response.headers.get("etag", "").split("-")) == 2
 
 
 async def test_file_response_with_directory_raises_error(tmpdir: Path) -> None:

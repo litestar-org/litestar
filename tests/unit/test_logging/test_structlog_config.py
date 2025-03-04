@@ -1,6 +1,7 @@
 import datetime
 import sys
 from typing import Callable
+from unittest.mock import patch
 
 import pytest
 import structlog
@@ -155,3 +156,19 @@ def test_structlog_config_specify_processors(capsys: CaptureFixture) -> None:
             {"key": "value1", "event": "message1"},
             {"key": "value2", "event": "message2"},
         ]
+
+
+@pytest.mark.parametrize(
+    "isatty, pretty_print_tty, expected_as_json",
+    [
+        (True, True, False),
+        (True, False, True),
+        (False, True, True),
+        (False, False, True),
+    ],
+)
+def test_structlog_config_as_json(isatty: bool, pretty_print_tty: bool, expected_as_json: bool) -> None:
+    with patch("litestar.logging.config.sys.stderr.isatty") as isatty_mock:
+        isatty_mock.return_value = isatty
+        logging_config = StructLoggingConfig(pretty_print_tty=pretty_print_tty)
+        assert logging_config.as_json() is expected_as_json

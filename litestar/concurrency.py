@@ -19,11 +19,11 @@ P = ParamSpec("P")
 
 
 __all__ = (
-    "sync_to_thread",
-    "set_asyncio_executor",
     "get_asyncio_executor",
-    "set_trio_capacity_limiter",
     "get_trio_capacity_limiter",
+    "set_asyncio_executor",
+    "set_trio_capacity_limiter",
+    "sync_to_thread",
 )
 
 

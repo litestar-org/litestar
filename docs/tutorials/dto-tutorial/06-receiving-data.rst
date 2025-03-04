@@ -22,7 +22,7 @@ Litestar can natively decode request payloads into Python :func:`dataclasses <da
 *need* a DTO defined for the inbound data for this script to work.
 
 Now that we need to send data to the server to test our program, you can use a tool like
-`Postman <https://www.postman.com/>`_. Here's an example of a request/response payload:
+`Postman <https://www.postman.com/>`_ or `Posting <https://github.com/darrenburns/posting?tab=readme-ov-file#posting>`_. Here's an example of a request/response payload:
 
 .. image:: images/simple_receive_data.png
     :align: center

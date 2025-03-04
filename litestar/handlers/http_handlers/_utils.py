@@ -211,10 +211,8 @@ def is_empty_response_annotation(return_annotation: FieldDefinition) -> bool:
     Returns:
         Whether the return annotation is an empty response.
     """
-    return (
-        return_annotation.is_subclass_of(NoneType)
-        or return_annotation.is_subclass_of(Response)
-        and return_annotation.has_inner_subclass_of(NoneType)
+    return return_annotation.is_subclass_of(NoneType) or (
+        return_annotation.is_subclass_of(Response) and return_annotation.has_inner_subclass_of(NoneType)
     )
 
 

@@ -68,6 +68,7 @@ class DTOFieldDefinition(FieldDefinition):
         "default_factory",
         "dto_field",
         "model_name",
+        "passthrough_constraints",
     )
 
     model_name: str
@@ -76,6 +77,8 @@ class DTOFieldDefinition(FieldDefinition):
     """Default factory of the field."""
     dto_field: DTOField
     """DTO field configuration."""
+    passthrough_constraints: bool
+    """Pass constraints of the source annotation to be validated by the DTO backend"""
 
     @classmethod
     def from_field_definition(
@@ -84,6 +87,7 @@ class DTOFieldDefinition(FieldDefinition):
         model_name: str,
         default_factory: Callable[[], Any] | None,
         dto_field: DTOField,
+        passthrough_constraints: bool = True,
     ) -> DTOFieldDefinition:
         """Create a :class:`FieldDefinition` from a :class:`FieldDefinition`.
 
@@ -92,6 +96,7 @@ class DTOFieldDefinition(FieldDefinition):
             model_name: The name of the model.
             default_factory: Default factory function, if any.
             dto_field: DTOField instance.
+            passthrough_constraints: Pass constraints of the source annotation to be validated by the DTO backend
 
         Returns:
             A :class:`FieldDefinition` instance.
@@ -113,4 +118,5 @@ class DTOFieldDefinition(FieldDefinition):
             raw=field_definition.raw,
             safe_generic_origin=field_definition.safe_generic_origin,
             type_wrappers=field_definition.type_wrappers,
+            passthrough_constraints=passthrough_constraints,
         )

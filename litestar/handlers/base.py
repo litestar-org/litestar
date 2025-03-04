@@ -22,11 +22,12 @@ from litestar.types import (
 from litestar.typing import FieldDefinition
 from litestar.utils import ensure_async_callable, get_name, normalize_path
 from litestar.utils.helpers import unwrap_partial
-from litestar.utils.signature import ParsedSignature, add_types_to_signature_namespace
+from litestar.utils.signature import ParsedSignature, add_types_to_signature_namespace, merge_signature_namespaces
 
 if TYPE_CHECKING:
     from typing_extensions import Self
 
+    from litestar._kwargs import KwargsModel
     from litestar.app import Litestar
     from litestar.connection import ASGIConnection
     from litestar.controller import Controller
@@ -35,6 +36,7 @@ if TYPE_CHECKING:
     from litestar.router import Router
     from litestar.types import AnyCallable, AsyncAnyCallable, ExceptionHandler
     from litestar.types.empty import EmptyType
+    from litestar.types.internal_types import PathParameterDefinition
 
 __all__ = ("BaseRouteHandler",)
 
@@ -111,7 +113,7 @@ class BaseRouteHandler:
                 outbound response data.
             signature_namespace: A mapping of names to types for use in forward reference resolution during signature
                 modelling.
-            signature_types: A sequence of types for use in forward reference resolution during signature modeling.
+            signature_types: A sequence of types for use in forward reference resolution during signature modelling.
                 These types will be added to the signature namespace using their ``__name__`` attribute.
             type_decoders: A sequence of tuples, each composed of a predicate testing for type identity and a msgspec hook for deserialization.
             type_encoders: A mapping of types to callables that transform them into types supported for serialization.
@@ -145,7 +147,6 @@ class BaseRouteHandler:
         )
         self.type_decoders = type_decoders
         self.type_encoders = type_encoders
-
         self.paths = (
             {normalize_path(p) for p in path} if path and isinstance(path, list) else {normalize_path(path or "/")}  # type: ignore[arg-type]
         )
@@ -435,8 +436,9 @@ class BaseRouteHandler:
         if self._resolved_layered_parameters is Empty:
             ns: dict[str, Any] = {}
             for layer in self.ownership_layers:
-                ns.update(layer.signature_namespace)
-
+                merge_signature_namespaces(
+                    signature_namespace=ns, additional_signature_namespace=layer.signature_namespace
+                )
             self._resolved_signature_namespace = ns
         return cast("dict[str, Any]", self._resolved_signature_namespace)
 
@@ -564,3 +566,18 @@ class BaseRouteHandler:
         if not hasattr(target, "__qualname__"):
             target = type(target)
         return f"{target.__module__}.{target.__qualname__}"
+
+    def create_kwargs_model(
+        self,
+        path_parameters: dict[str, PathParameterDefinition],
+    ) -> KwargsModel:
+        """Create a `KwargsModel` for a given route handler."""
+        from litestar._kwargs import KwargsModel
+
+        return KwargsModel.create_for_signature_model(
+            signature_model=self.signature_model,
+            parsed_signature=self.parsed_fn_signature,
+            dependencies=self.resolve_dependencies(),
+            path_parameters=set(path_parameters.keys()),
+            layered_parameters=self.resolve_layered_parameters(),
+        )

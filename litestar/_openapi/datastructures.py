@@ -1,14 +1,71 @@
 from __future__ import annotations
 
+import re
 from collections import defaultdict
-from typing import TYPE_CHECKING, Iterator, Sequence
+from typing import TYPE_CHECKING, Iterator, Sequence, _GenericAlias  # type: ignore[attr-defined]
 
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.openapi.spec import Reference, Schema
+from litestar.params import KwargDefinition
 
 if TYPE_CHECKING:
     from litestar.openapi import OpenAPIConfig
     from litestar.plugins import OpenAPISchemaPluginProtocol
+    from litestar.typing import FieldDefinition
+
+
+INVALID_KEY_CHARACTER_PATTERN = re.compile(r"[^a-zA-Z0-9._-]+")
+
+
+def _longest_common_prefix(tuples_: list[tuple[str, ...]]) -> tuple[str, ...]:
+    """Find the longest common prefix of a list of tuples.
+
+    Args:
+        tuples_: A list of tuples to find the longest common prefix of.
+
+    Returns:
+        The longest common prefix of the tuples.
+    """
+    prefix_ = tuples_[0]
+    for t in tuples_:
+        # Compare the current prefix with each tuple and shorten it
+        prefix_ = prefix_[: min(len(prefix_), len(t))]
+        for i in range(len(prefix_)):
+            if prefix_[i] != t[i]:
+                prefix_ = prefix_[:i]
+                break
+    return prefix_
+
+
+def _get_component_key_override(field: FieldDefinition) -> str | None:
+    if (
+        (kwarg_definition := field.kwarg_definition)
+        and isinstance(kwarg_definition, KwargDefinition)
+        and (schema_key := kwarg_definition.schema_component_key)
+    ):
+        return schema_key
+    return None
+
+
+def _get_normalized_schema_key(field_definition: FieldDefinition) -> tuple[str, ...]:
+    """Create a key for a type annotation.
+
+    The key should be a tuple such as ``("path", "to", "type", "TypeName")``.
+
+    Args:
+        field_definition: Field definition
+
+    Returns:
+        A tuple of strings.
+    """
+    if override := _get_component_key_override(field_definition):
+        return (override,)
+
+    annotation = field_definition.annotation
+    module = getattr(annotation, "__module__", "")
+    name = str(annotation)[len(module) + 1 :] if isinstance(annotation, _GenericAlias) else annotation.__qualname__
+    name = name.replace(".<locals>.", ".")
+    return *module.split("."), re.sub(INVALID_KEY_CHARACTER_PATTERN, "_", name)
 
 
 class RegisteredSchema:
@@ -43,32 +100,63 @@ class SchemaRegistry:
         self._schema_key_map: dict[tuple[str, ...], RegisteredSchema] = {}
         self._schema_reference_map: dict[int, RegisteredSchema] = {}
         self._model_name_groups: defaultdict[str, list[RegisteredSchema]] = defaultdict(list)
+        self._component_type_map: dict[tuple[str, ...], FieldDefinition] = {}
 
-    def get_schema_for_key(self, key: tuple[str, ...]) -> Schema:
+    def get_schema_for_field_definition(self, field: FieldDefinition) -> Schema:
         """Get a registered schema by its key.
 
         Args:
-            key: The key to the schema to get.
+            field: The field definition to get the schema for
 
         Returns:
             A RegisteredSchema object.
         """
+        key = _get_normalized_schema_key(field)
         if key not in self._schema_key_map:
             self._schema_key_map[key] = registered_schema = RegisteredSchema(key, Schema(), [])
             self._model_name_groups[key[-1]].append(registered_schema)
+            self._component_type_map[key] = field
+        else:
+            if (existing_type := self._component_type_map[key]) != field:
+                raise ImproperlyConfiguredException(
+                    f"Schema component keys must be unique. Cannot override existing key {'_'.join(key)!r} for type "
+                    f"{existing_type.raw!r} with new type {field.raw!r}"
+                )
         return self._schema_key_map[key].schema
 
-    def get_reference_for_key(self, key: tuple[str, ...]) -> Reference | None:
+    def get_reference_for_field_definition(self, field: FieldDefinition) -> Reference | None:
         """Get a reference to a registered schema by its key.
 
         Args:
-            key: The key to the schema to get.
+            field: The field definition to get the reference for
 
         Returns:
             A Reference object.
         """
+        key = _get_normalized_schema_key(field)
         if key not in self._schema_key_map:
             return None
+
+        if (existing_type := self._component_type_map[key]) != field:
+            # TODO: This should check for strict equality, e.g. changes in type metadata
+            # However, this is currently not possible to do without breaking things, as
+            # we allow to define metadata on a type annotation in one place to be used
+            # for the same type in a different place, where that same type is *not*
+            # annotated with this metadata. The proper fix for this would be to e.g.
+            # inline DTO definitions when they are created at the handler level, as
+            # they won't be reused (they already generate a unique key), and create a
+            # more strict lookup policy for component schemas
+            msg = (
+                f"Schema component keys must be unique. While obtaining a reference for the type '{field.raw!r}', the "
+                f"generated key {'_'.join(key)!r} was already associated with a different type '{existing_type.raw!r}'. "
+            )
+            if key_override := _get_component_key_override(field):  # pragma: no branch
+                # Currently, this can never not be true, however, in the future we might
+                # decide to do a stricter equality check as lined out above, in which
+                # case there can be other cases than overrides that cause this error
+                msg += f"Hint: Both types are defining a 'schema_component_key' with the value of {key_override!r}"
+            raise ImproperlyConfiguredException(msg)
+
         registered_schema = self._schema_key_map[key]
         reference = Reference(f"#/components/schemas/{'_'.join(key)}")
         registered_schema.references.append(reference)
@@ -107,26 +195,7 @@ class SchemaRegistry:
             A list of tuples with the common prefix removed.
         """
 
-        def longest_common_prefix(tuples_: list[tuple[str, ...]]) -> tuple[str, ...]:
-            """Find the longest common prefix of a list of tuples.
-
-            Args:
-                tuples_: A list of tuples to find the longest common prefix of.
-
-            Returns:
-                The longest common prefix of the tuples.
-            """
-            prefix_ = tuples_[0]
-            for t in tuples_:
-                # Compare the current prefix with each tuple and shorten it
-                prefix_ = prefix_[: min(len(prefix_), len(t))]
-                for i in range(len(prefix_)):
-                    if prefix_[i] != t[i]:
-                        prefix_ = prefix_[:i]
-                        break
-            return prefix_
-
-        prefix = longest_common_prefix(tuples)
+        prefix = _longest_common_prefix(tuples)
         prefix_length = len(prefix)
         return [t[prefix_length:] for t in tuples]
 

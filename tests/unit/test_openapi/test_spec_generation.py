@@ -27,7 +27,7 @@ def test_spec_generation(cls: Any) -> None:
                 "first_name": {"type": "string"},
                 "last_name": {"type": "string"},
                 "id": {"type": "string"},
-                "optional": {"oneOf": [{"type": "null"}, {"type": "string"}]},
+                "optional": {"oneOf": [{"type": "string"}, {"type": "null"}]},
                 "complex": {
                     "type": "object",
                     "additionalProperties": {
@@ -37,11 +37,11 @@ def test_spec_generation(cls: Any) -> None:
                 },
                 "pets": {
                     "oneOf": [
-                        {"type": "null"},
                         {
                             "items": {"$ref": "#/components/schemas/DataclassPet"},
                             "type": "array",
                         },
+                        {"type": "null"},
                     ]
                 },
             },
@@ -189,8 +189,8 @@ def test_recursive_schema_generation(
             "properties": {
                 "a": {"$ref": "#/components/schemas/A"},
                 "b": {"$ref": "#/components/schemas/B"},
-                "opt_a": {"oneOf": [{"type": "null"}, {"$ref": "#/components/schemas/A"}]},
-                "opt_b": {"oneOf": [{"type": "null"}, {"$ref": "#/components/schemas/B"}]},
+                "opt_a": {"oneOf": [{"$ref": "#/components/schemas/A"}, {"type": "null"}]},
+                "opt_b": {"oneOf": [{"$ref": "#/components/schemas/B"}, {"type": "null"}]},
                 "list_a": {"items": {"$ref": "#/components/schemas/A"}, "type": "array"},
                 "list_b": {"items": {"$ref": "#/components/schemas/B"}, "type": "array"},
             },
@@ -202,8 +202,8 @@ def test_recursive_schema_generation(
             "properties": {
                 "a": {"$ref": "#/components/schemas/A"},
                 "b": {"$ref": "#/components/schemas/B"},
-                "opt_a": {"oneOf": [{"type": "null"}, {"$ref": "#/components/schemas/A"}]},
-                "opt_b": {"oneOf": [{"type": "null"}, {"$ref": "#/components/schemas/B"}]},
+                "opt_a": {"oneOf": [{"$ref": "#/components/schemas/A"}, {"type": "null"}]},
+                "opt_b": {"oneOf": [{"$ref": "#/components/schemas/B"}, {"type": "null"}]},
                 "list_a": {"items": {"$ref": "#/components/schemas/A"}, "type": "array"},
                 "list_b": {"items": {"$ref": "#/components/schemas/B"}, "type": "array"},
             },

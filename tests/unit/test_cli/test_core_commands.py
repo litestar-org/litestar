@@ -375,7 +375,7 @@ def test_run_command_arguments_precedence(
         if isinstance(env_value, list):
             monkeypatch.setenv(env_name, "".join(env_value))
         else:
-            monkeypatch.setenv(env_name, env_value)  # type: ignore[arg-type] # pyright: ignore (reportGeneralTypeIssues)
+            monkeypatch.setenv(env_name, str(env_value))
 
     if cli_name:
         if cli_value is True:

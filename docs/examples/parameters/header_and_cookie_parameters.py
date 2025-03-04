@@ -29,7 +29,7 @@ async def get_user(
 ) -> User:
     if token != VALID_TOKEN or cookie != VALID_COOKIE_VALUE:
         raise NotAuthorizedException
-    return User.parse_obj(USER_DB[user_id])
+    return User.model_validate(USER_DB[user_id])
 
 
 app = Litestar(route_handlers=[get_user])

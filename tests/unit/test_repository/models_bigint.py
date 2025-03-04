@@ -5,8 +5,8 @@ from __future__ import annotations
 from datetime import date, datetime
 from typing import List
 
-from advanced_alchemy import SQLAlchemyAsyncRepository, SQLAlchemySyncRepository
 from advanced_alchemy.base import BigIntAuditBase, BigIntBase
+from advanced_alchemy.repository import SQLAlchemyAsyncRepository, SQLAlchemySyncRepository
 from sqlalchemy import Column, FetchedValue, ForeignKey, String, Table, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 

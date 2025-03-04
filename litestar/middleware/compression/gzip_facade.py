@@ -13,7 +13,7 @@ if TYPE_CHECKING:
 
 
 class GzipCompression(CompressionFacade):
-    __slots__ = ("compressor", "buffer", "compression_encoding")
+    __slots__ = ("buffer", "compression_encoding", "compressor")
 
     encoding = CompressionEncoding.GZIP
 

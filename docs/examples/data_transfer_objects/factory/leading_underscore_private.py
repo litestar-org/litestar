@@ -6,8 +6,8 @@ from litestar.dto import DataclassDTO
 
 @dataclass
 class Foo:
-    bar: str
-    _baz: str = "Mars"
+    this_will: str
+    _this_will: str = "Mars"
 
 
 @post("/", dto=DataclassDTO[Foo], sync_to_thread=False)
@@ -17,4 +17,4 @@ def handler(data: Foo) -> Foo:
 
 app = Litestar(route_handlers=[handler])
 
-# run: / -H "Content-Type: application/json" -d '{"bar":"Hello","_baz":"World!"}'
+# run: / -H "Content-Type: application/json" -d '{"bar":"stay","_baz":"go_away!"}'

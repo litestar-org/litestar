@@ -14,8 +14,8 @@ from polyfactory.utils.helpers import unwrap_annotation
 from polyfactory.utils.predicates import is_union
 from typing_extensions import get_args
 
-from litestar.contrib.pydantic.utils import is_pydantic_model_instance
 from litestar.openapi.spec import Example
+from litestar.plugins.pydantic.utils import is_pydantic_model_instance
 from litestar.types import Empty
 
 if TYPE_CHECKING:
@@ -47,7 +47,7 @@ def _normalize_example_value(value: Any) -> Any:
     if isinstance(value, Enum):
         value = value.value
     if is_pydantic_model_instance(value):
-        from litestar.contrib.pydantic import _model_dump
+        from litestar.plugins.pydantic import _model_dump
 
         value = _model_dump(value)
     if isinstance(value, (list, set)):

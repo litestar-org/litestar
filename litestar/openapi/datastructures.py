@@ -23,7 +23,7 @@ class ResponseSpec:
     """Generate examples for the response content."""
     description: str = field(default="Additional response")
     """A description of the response."""
-    media_type: MediaType = field(default=MediaType.JSON)
+    media_type: MediaType | str = field(default=MediaType.JSON)
     """Response media type."""
     examples: list[Example] | None = field(default=None)
     """A list of Example models."""

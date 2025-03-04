@@ -5,7 +5,7 @@ from dataclasses import dataclass
 from http import HTTPStatus
 from pathlib import Path
 from types import ModuleType
-from typing import Any, Callable, Dict, TypedDict
+from typing import Any, Callable, Dict, TypedDict, TypeVar
 from unittest.mock import MagicMock
 
 import pytest
@@ -31,7 +31,6 @@ from litestar.openapi.datastructures import ResponseSpec
 from litestar.openapi.spec import Example, OpenAPIHeader, OpenAPIMediaType, Reference, Schema
 from litestar.openapi.spec.enums import OpenAPIType
 from litestar.response import File, Redirect, Stream, Template
-from litestar.response.base import T
 from litestar.routes import HTTPRoute
 from litestar.status_codes import (
     HTTP_200_OK,
@@ -43,6 +42,9 @@ from litestar.status_codes import (
 from litestar.typing import FieldDefinition
 from tests.models import DataclassPerson, DataclassPersonFactory
 from tests.unit.test_openapi.utils import PetException
+
+T = TypeVar("T")
+
 
 CreateFactoryFixture: TypeAlias = "Callable[..., ResponseFactory]"
 
@@ -186,10 +188,12 @@ def test_create_success_response_with_headers(create_factory: CreateFactoryFixtu
 
     assert isinstance(response.headers, dict)
     assert isinstance(response.headers["special-header"], OpenAPIHeader)
-    assert response.headers["special-header"].description == "super-duper special"
-    headers_schema = response.headers["special-header"].schema
-    assert isinstance(headers_schema, Schema)
-    assert headers_schema.type == OpenAPIType.STRING
+    assert response.headers["special-header"].to_schema() == {
+        "schema": {"type": "string"},
+        "description": "super-duper special",
+        "required": False,
+        "deprecated": False,
+    }
 
 
 def test_create_success_response_with_cookies(create_factory: CreateFactoryFixture) -> None:
@@ -361,6 +365,7 @@ def test_create_additional_responses(create_factory: CreateFactoryFixture) -> No
             401: ResponseSpec(data_container=AuthenticationError, description="Authentication error"),
             500: ResponseSpec(data_container=ServerError, generate_examples=False, media_type=MediaType.TEXT),
             505: ResponseSpec(data_container=UnknownError),
+            900: ResponseSpec(data_container=UnknownError, media_type="application/vnd.custom"),
         }
     )
     def handler() -> DataclassPerson:
@@ -397,6 +402,13 @@ def test_create_additional_responses(create_factory: CreateFactoryFixture) -> No
     third_response = next(responses)
     assert third_response[0] == "505"
     assert third_response[1].description == "Additional response"
+
+    fourth_response = next(responses)
+    assert fourth_response[0] == "900"
+    assert fourth_response[1].description == "Additional response"
+    custom_media_type_content = fourth_response[1].content.get("application/vnd.custom")  # type: ignore[union-attr]
+    assert custom_media_type_content
+    assert isinstance(custom_media_type_content, OpenAPIMediaType)
 
     with pytest.raises(StopIteration):
         next(responses)
@@ -528,3 +540,25 @@ def test_file_response_media_type(content_media_type: Any, expected: Any, create
 
     response = create_factory(handler).create_success_response()
     assert next(iter(response.content.values())).schema.content_media_type == expected  # type: ignore[union-attr]
+
+
+def test_response_header_deprecated_properties() -> None:
+    assert ResponseHeader(name="foo", value="bar").allow_empty_value is False
+    assert ResponseHeader(name="foo", value="bar").allow_reserved is False
+
+    with pytest.warns(DeprecationWarning, match="property is invalid for headers"):
+        ResponseHeader(name="foo", value="bar", allow_empty_value=True)
+
+    with pytest.warns(DeprecationWarning, match="property is invalid for headers"):
+        ResponseHeader(name="foo", value="bar", allow_reserved=True)
+
+
+def test_header_deprecated_properties() -> None:
+    assert OpenAPIHeader().allow_empty_value is False
+    assert OpenAPIHeader().allow_reserved is False
+
+    with pytest.warns(DeprecationWarning, match="property is invalid for headers"):
+        OpenAPIHeader(allow_empty_value=True)
+
+    with pytest.warns(DeprecationWarning, match="property is invalid for headers"):
+        OpenAPIHeader(allow_reserved=True)

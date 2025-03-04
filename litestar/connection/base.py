@@ -57,15 +57,15 @@ class ASGIConnection(Generic[HandlerT, UserT, AuthT, StateT]):
     """The base ASGI connection container."""
 
     __slots__ = (
-        "scope",
-        "receive",
-        "send",
         "_base_url",
-        "_url",
-        "_parsed_query",
-        "_cookies",
-        "_server_extensions",
         "_connection_state",
+        "_cookies",
+        "_parsed_query",
+        "_server_extensions",
+        "_url",
+        "receive",
+        "scope",
+        "send",
     )
 
     scope: Scope
@@ -100,7 +100,7 @@ class ASGIConnection(Generic[HandlerT, UserT, AuthT, StateT]):
         Returns:
             The :class:`Litestar <litestar.app.Litestar>` application instance
         """
-        return self.scope["app"]
+        return self.scope["litestar_app"]
 
     @property
     def route_handler(self) -> HandlerT:
@@ -321,7 +321,7 @@ class ASGIConnection(Generic[HandlerT, UserT, AuthT, StateT]):
         Returns:
             A string representing the absolute url of the route handler.
         """
-        litestar_instance = self.scope["app"]
+        litestar_instance = self.scope["litestar_app"]
         url_path = litestar_instance.route_reverse(name, **path_parameters)
 
         return make_absolute_url(url_path, self.base_url)
@@ -339,7 +339,7 @@ class ASGIConnection(Generic[HandlerT, UserT, AuthT, StateT]):
         Returns:
             A string representing absolute url to the asset.
         """
-        litestar_instance = self.scope["app"]
+        litestar_instance = self.scope["litestar_app"]
         url_path = litestar_instance.url_for_static_asset(name, file_path)
 
         return make_absolute_url(url_path, self.base_url)

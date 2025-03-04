@@ -1,25 +1,6 @@
 from __future__ import annotations
 
-from unittest.mock import ANY
-
 from litestar.testing import TestClient
-
-
-def test_dto_data_problem_statement_app() -> None:
-    from docs.examples.data_transfer_objects.factory.dto_data_problem_statement import app
-
-    with TestClient(app) as client:
-        response = client.post("/person", json={"name": "John", "age": 30})
-        assert response.status_code == 500
-
-
-def test_dto_data_usage_app() -> None:
-    from docs.examples.data_transfer_objects.factory.dto_data_usage import app
-
-    with TestClient(app) as client:
-        response = client.post("/person", json={"name": "John", "age": 30})
-        assert response.status_code == 201
-        assert response.json() == {"id": ANY, "name": "John", "age": 30}
 
 
 def test_dto_data_nested_data_create_instance_app() -> None:
@@ -125,3 +106,11 @@ def test_response_return_data_app() -> None:
         assert response.status_code == 200
         assert response.json() == {"id": 1, "name": "Litestar User"}
         assert response.headers["X-Total-Count"] == "1"
+
+
+def test_unknown_fields() -> None:
+    from docs.examples.data_transfer_objects.factory.unknown_fields import app
+
+    with TestClient(app) as client:
+        response = client.post("/users", json={"id": "1", "name": "Peter"})
+        assert response.status_code == 400

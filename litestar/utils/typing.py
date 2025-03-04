@@ -37,7 +37,7 @@ from typing import (
     cast,
 )
 
-from typing_extensions import Annotated, NotRequired, Required, get_args, get_origin, get_type_hints
+from typing_extensions import Annotated, NewType, NotRequired, Required, get_args, get_origin, get_type_hints
 
 from litestar.types.builtin_types import NoneType, UnionTypes
 
@@ -172,6 +172,14 @@ def unwrap_annotation(annotation: Any) -> tuple[Any, tuple[Any, ...], set[Any]]:
         metadata.extend(meta)
         origin = get_origin(annotation)
     return annotation, tuple(metadata), wrappers
+
+
+def unwrap_new_type(new_type: Any) -> Any:
+    """Unwrap a (nested) ``typing.NewType``"""
+    inner = new_type
+    while isinstance(inner, NewType):
+        inner = inner.__supertype__
+    return inner
 
 
 def get_origin_or_inner_type(annotation: Any) -> Any:

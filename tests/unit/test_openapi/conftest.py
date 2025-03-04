@@ -10,7 +10,7 @@ from litestar.openapi.controller import OpenAPIController
 from litestar.openapi.spec.example import Example
 from litestar.params import Parameter
 from tests.models import DataclassPerson, DataclassPersonFactory, DataclassPet
-from tests.unit.test_openapi.utils import Gender, PetException
+from tests.unit.test_openapi.utils import Gender, LuckyNumber, PetException
 
 
 class PartialDataclassPersonDTO(DataclassDTO[DataclassPerson]):
@@ -45,8 +45,9 @@ def create_person_controller() -> Type[Controller]:
             from_date: Optional[Union[int, datetime, date]] = None,
             to_date: Optional[Union[int, datetime, date]] = None,
             gender: Optional[Union[Gender, List[Gender]]] = Parameter(
-                examples=[Example(value="M"), Example(value=["M", "O"])]
+                examples=[Example(value=Gender.MALE), Example(value=[Gender.MALE, Gender.OTHER])]
             ),
+            lucky_number: Optional[LuckyNumber] = Parameter(examples=[Example(value=LuckyNumber.SEVEN)]),
             # header parameter
             secret_header: str = Parameter(header="secret"),
             # cookie parameter
@@ -135,14 +136,14 @@ def create_pet_controller() -> Type[Controller]:
 
 
 @pytest.fixture
-@pytest.mark.usefixtures("disable_warn_implicit_sync_to_thread")
-def person_controller() -> Type[Controller]:
+def person_controller(disable_warn_implicit_sync_to_thread: None) -> Type[Controller]:
+    """Fixture without a top-level mark."""
     return create_person_controller()
 
 
 @pytest.fixture
-@pytest.mark.usefixtures("disable_warn_implicit_sync_to_thread")
-def pet_controller() -> Type[Controller]:
+def pet_controller(disable_warn_implicit_sync_to_thread: None) -> Type[Controller]:
+    """Fixture without a top-level mark."""
     return create_pet_controller()
 
 

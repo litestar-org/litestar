@@ -78,7 +78,7 @@ class WebSocketTestSession:
         async def send(message: WebSocketSendMessage) -> None:
             if message["type"] == "websocket.accept":
                 headers = message.get("headers", [])
-                if headers:
+                if headers:  # type: ignore[truthy-iterable]
                     headers_list = list(self.scope["headers"])
                     headers_list.extend(headers)
                     self.scope["headers"] = headers_list

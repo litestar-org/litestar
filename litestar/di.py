@@ -26,9 +26,9 @@ class Provide:
 
     __slots__ = (
         "dependency",
+        "has_async_generator_dependency",
         "has_sync_callable",
         "has_sync_generator_dependency",
-        "has_async_generator_dependency",
         "parsed_fn_signature",
         "signature_model",
         "sync_to_thread",
@@ -54,7 +54,7 @@ class Provide:
             sync_to_thread: Run sync code in an async thread. Defaults to False.
         """
         if not callable(dependency):
-            raise ImproperlyConfiguredException("Provider dependency must a callable value")
+            raise ImproperlyConfiguredException("Provider dependency must be a callable value")
 
         is_class_dependency = isclass(dependency)
         self.has_sync_generator_dependency = isgeneratorfunction(

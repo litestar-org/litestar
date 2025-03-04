@@ -59,7 +59,7 @@ engine and session lifecycle, and register our ``transaction`` dependency.
 .. literalinclude:: /examples/contrib/sqlalchemy/plugins/tutorial/full_app_with_plugin.py
     :language: python
     :linenos:
-    :lines: 80-84
+    :lines: 80-83
 
 .. seealso::
 

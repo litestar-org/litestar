@@ -15,7 +15,13 @@ from os import getenv
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Callable, Generator, Iterable, Sequence, TypeVar, cast
 
-from click import ClickException, Command, Context, Group, pass_context
+try:
+    from rich_click import RichCommand as Command
+    from rich_click import RichGroup as Group
+except ImportError:
+    from click import Command, Group  # type: ignore[assignment]
+
+from click import ClickException, Context, pass_context
 from rich import get_console
 from rich.table import Table
 from typing_extensions import ParamSpec, get_type_hints
@@ -31,6 +37,8 @@ else:
 
 
 if TYPE_CHECKING:
+    from types import ModuleType
+
     from litestar.openapi import OpenAPIConfig
     from litestar.routes import ASGIRoute, HTTPRoute, WebSocketRoute
     from litestar.types import AnyCallable
@@ -41,13 +49,13 @@ JSBEAUTIFIER_INSTALLED = find_spec("jsbeautifier") is not None
 
 
 __all__ = (
-    "UVICORN_INSTALLED",
     "JSBEAUTIFIER_INSTALLED",
-    "LoadedApp",
+    "UVICORN_INSTALLED",
     "LitestarCLIException",
     "LitestarEnv",
     "LitestarExtensionGroup",
     "LitestarGroup",
+    "LoadedApp",
     "show_app_info",
 )
 
@@ -128,7 +136,7 @@ class LoadedApp:
     is_factory: bool
 
 
-class LitestarGroup(Group):
+class LitestarGroup(Group):  # pyright: ignore
     """:class:`click.Group` subclass that automatically injects ``app`` and ``env` kwargs into commands that request it.
 
     Use this as the ``cls`` for :class:`click.Group` if you're extending the internal CLI with a group. For ``command``s
@@ -145,7 +153,7 @@ class LitestarGroup(Group):
         self.group_class = LitestarGroup
         super().__init__(name=name, commands=commands, **attrs)
 
-    def add_command(self, cmd: Command, name: str | None = None) -> None:
+    def add_command(self, cmd: Command, name: str | None = None) -> None:  # type: ignore[override]
         """Add command.
 
         If necessary, inject ``app`` and ``env`` kwargs
@@ -207,7 +215,7 @@ class LitestarExtensionGroup(LitestarGroup):
 
         self._prepare_done = True
 
-    def make_context(
+    def make_context(  # type: ignore[override]
         self,
         info_name: str | None,
         args: list[str],
@@ -252,8 +260,8 @@ def _inject_args(func: Callable[P, T]) -> Callable[P, T]:
 
 def _wrap_commands(commands: Iterable[Command]) -> None:
     for command in commands:
-        if isinstance(command, Group):
-            _wrap_commands(command.commands.values())
+        if hasattr(command, "commands"):
+            _wrap_commands(command.commands.values())  # pyright: ignore[reportGeneralTypeIssues]
         elif command.callback:
             command.callback = _inject_args(command.callback)
 
@@ -266,9 +274,24 @@ def _bool_from_env(key: str, default: bool = False) -> bool:
     return value in ("true", "1")
 
 
+def _validate_app_path(app_path: str) -> tuple[ModuleType, str]:
+    try:
+        module_path, app_name = app_path.split(":")
+    except ValueError:
+        console.print(f"[bold red] Invalid argument passed --app {app_path!r}: Expected 'module_path:app'")
+        sys.exit(1)
+
+    try:
+        module = importlib.import_module(module_path)
+    except ImportError:
+        console.print(f"[bold red] Invalid argument passed --app {app_path!r}: Module not found")
+        sys.exit(1)
+
+    return module, app_name
+
+
 def _load_app_from_path(app_path: str) -> LoadedApp:
-    module_path, app_name = app_path.split(":")
-    module = importlib.import_module(module_path)
+    module, app_name = _validate_app_path(app_path)
     app = getattr(module, app_name)
     is_factory = False
     if not isinstance(app, Litestar) and callable(app):

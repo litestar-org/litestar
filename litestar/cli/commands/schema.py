@@ -2,7 +2,12 @@ from pathlib import Path
 
 import msgspec
 from click import Path as ClickPath
-from click import group, option
+
+try:
+    import rich_click as click
+except ImportError:
+    import click  # type: ignore[no-redef]
+
 from yaml import dump as dump_yaml
 
 from litestar import Litestar
@@ -15,7 +20,7 @@ from litestar.serialization import encode_json, get_serializer
 __all__ = ("generate_openapi_schema", "generate_typescript_specs", "schema_group")
 
 
-@group(cls=LitestarGroup, name="schema")
+@click.group(cls=LitestarGroup, name="schema")
 def schema_group() -> None:
     """Manage server-side OpenAPI schemas."""
 
@@ -42,7 +47,7 @@ def _generate_openapi_schema(app: Litestar, output: Path) -> None:
 
 
 @schema_group.command("openapi")  # type: ignore[misc]
-@option(
+@click.option(
     "--output",
     help="output file path",
     type=ClickPath(dir_okay=False, path_type=Path),
@@ -55,14 +60,14 @@ def generate_openapi_schema(app: Litestar, output: Path) -> None:
 
 
 @schema_group.command("typescript")  # type: ignore[misc]
-@option(
+@click.option(
     "--output",
     help="output file path",
     type=ClickPath(dir_okay=False, path_type=Path),
     default=Path("api-specs.ts"),
     show_default=True,
 )
-@option("--namespace", help="namespace to use for the typescript specs", type=str, default="API")
+@click.option("--namespace", help="namespace to use for the typescript specs", type=str, default="API")
 def generate_typescript_specs(app: Litestar, output: Path, namespace: str) -> None:
     """Generate TypeScript specs from the OpenAPI schema."""
     if JSBEAUTIFIER_INSTALLED:  # pragma: no cover

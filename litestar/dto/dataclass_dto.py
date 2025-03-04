@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, Generic, TypeVar
 
 from litestar.dto.base_dto import AbstractDTO
 from litestar.dto.data_structures import DTOFieldDefinition
-from litestar.dto.field import extract_dto_field
+from litestar.dto.field import DTOField, extract_dto_field
 from litestar.params import DependencyKwarg, KwargDefinition
 from litestar.types.empty import Empty
 
@@ -30,6 +30,8 @@ class DataclassDTO(AbstractDTO[T], Generic[T]):
         cls, model_type: type[DataclassProtocol]
     ) -> Generator[DTOFieldDefinition, None, None]:
         dc_fields = {f.name: f for f in fields(model_type)}
+        properties = cls.get_property_fields(model_type)
+
         for key, field_definition in cls.get_model_type_hints(model_type).items():
             if not (dc_field := dc_fields.get(key)):
                 continue
@@ -51,6 +53,17 @@ class DataclassDTO(AbstractDTO[T], Generic[T]):
                 replace(field_defintion, default=Empty, kwarg_definition=default)
                 if isinstance(default, (KwargDefinition, DependencyKwarg))
                 else field_defintion
+            )
+
+        for key, property_field in properties.items():
+            if key.startswith("_"):
+                continue
+
+            yield DTOFieldDefinition.from_field_definition(
+                property_field,
+                model_name=model_type.__name__,
+                default_factory=None,
+                dto_field=DTOField(mark="read-only"),
             )
 
     @classmethod

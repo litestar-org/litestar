@@ -37,9 +37,8 @@ the application:
            local_dependency: int,
        ) -> None: ...
 
-       # on the router
 
-
+   # on the router
    my_router = Router(
        path="/router",
        dependencies={"router_dependency": Provide(dict_fn)},
@@ -52,6 +51,14 @@ the application:
    )
 
 The above example illustrates how dependencies are declared on the different layers of the application.
+
+.. note::
+
+    Litestar needs the injected types at runtime which might clash with linter rules' recommendation to use ``TYPE_CHECKING``.
+
+    .. seealso::
+
+        :ref:`Signature namespace <signature_namespace>`
 
 Dependencies can be either callables - sync or async functions, methods, or class instances that implement the
 :meth:`object.__call__` method, or classes. These are in turn wrapped inside an instance of the

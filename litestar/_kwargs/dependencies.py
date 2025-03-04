@@ -16,7 +16,7 @@ if TYPE_CHECKING:
 class Dependency:
     """Dependency graph of a given combination of ``Route`` + ``RouteHandler``"""
 
-    __slots__ = ("key", "provide", "dependencies")
+    __slots__ = ("dependencies", "key", "provide")
 
     def __init__(self, key: str, provide: Provide, dependencies: list[Dependency]) -> None:
         """Initialize a dependency.
@@ -58,7 +58,7 @@ async def resolve_dependency(
     """
     signature_model = dependency.provide.signature_model
     dependency_kwargs = (
-        signature_model.parse_values_from_connection_kwargs(connection=connection, **kwargs)
+        signature_model.parse_values_from_connection_kwargs(connection=connection, kwargs=kwargs)
         if signature_model._fields
         else {}
     )

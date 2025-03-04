@@ -1,8 +1,9 @@
 from typing import Dict, Optional, Union
 
 import pytest
+from typing_extensions import Annotated
 
-from litestar import get
+from litestar import get, post
 from litestar.params import Parameter, ParameterKwarg
 from litestar.status_codes import HTTP_200_OK, HTTP_400_BAD_REQUEST
 from litestar.testing import create_test_client
@@ -37,3 +38,13 @@ def test_header_params(
             assert response.status_code == HTTP_400_BAD_REQUEST, response.json()
         else:
             assert response.status_code == HTTP_200_OK, response.json()
+
+
+def test_header_param_with_post() -> None:
+    # https://github.com/litestar-org/litestar/issues/3734
+    @post()
+    async def handler(data: str, secret: Annotated[str, Parameter(header="x-secret")]) -> None:
+        return None
+
+    with create_test_client([handler], raise_server_exceptions=True) as client:
+        assert client.post("/", json={}).status_code == 400

@@ -3,11 +3,11 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any, Awaitable, Callable, Sequence
 
 from litestar.exceptions import NotAuthorizedException
+from litestar.middleware._internal.exceptions import ExceptionHandlerMiddleware
 from litestar.middleware.authentication import (
     AbstractAuthenticationMiddleware,
     AuthenticationResult,
 )
-from litestar.middleware.exceptions import ExceptionHandlerMiddleware
 from litestar.types import Empty, Method, Scopes
 
 __all__ = ("MiddlewareWrapper", "SessionAuthMiddleware")
@@ -46,7 +46,6 @@ class MiddlewareWrapper:
             None
         """
         if not self.has_wrapped_middleware:
-            litestar_app = scope["app"]
             auth_middleware = self.config.authentication_middleware_class(
                 app=self.app,
                 exclude=self.config.exclude,
@@ -55,11 +54,7 @@ class MiddlewareWrapper:
                 scopes=self.config.scopes,
                 retrieve_user_handler=self.config.retrieve_user_handler,  # type: ignore[arg-type]
             )
-            exception_middleware = ExceptionHandlerMiddleware(
-                app=auth_middleware,
-                exception_handlers=litestar_app.exception_handlers or {},  # pyright: ignore
-                debug=None,
-            )
+            exception_middleware = ExceptionHandlerMiddleware(app=auth_middleware, debug=None)
             self.app = self.config.session_backend_config.middleware.middleware(
                 app=exception_middleware,
                 backend=self.config.session_backend,

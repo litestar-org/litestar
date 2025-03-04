@@ -1,8 +1,9 @@
 # ruff: noqa: UP006
 from __future__ import annotations
 
+import dataclasses
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Tuple, TypeVar, Union
+from typing import TYPE_CHECKING, Generic, Tuple, TypeVar, Union
 
 import pytest
 from typing_extensions import Annotated
@@ -160,3 +161,31 @@ def test_sub_types_supported() -> None:
     assert (
         dto_type._dto_backends["handler_id"]["data_backend"].parsed_field_definitions[-1].name == "c"  # pyright: ignore
     )
+
+
+def test_get_config_for_model_type() -> None:
+    base_config = DTOConfig(rename_strategy="camel")
+
+    class CustomDTO(DataclassDTO[T], Generic[T]):
+        @classmethod
+        def get_config_for_model_type(cls, config: DTOConfig, model_type: type[Any]) -> DTOConfig:
+            return dataclasses.replace(config, exclude={"foo"})
+
+    annotated_dto = CustomDTO[Model]
+    annotated_dto_with_config = CustomDTO[Annotated[Model, base_config]]
+
+    class SubclassDTO(CustomDTO[Model]):
+        pass
+
+    class SubclassDTOWithConfig(CustomDTO[Model]):
+        config = base_config
+
+    assert annotated_dto.config.exclude == {"foo"}
+    assert SubclassDTO.config.exclude == {"foo"}
+
+    # we expect existing configs to have been merged
+    assert annotated_dto_with_config.config.exclude == {"foo"}
+    assert annotated_dto_with_config.config.rename_strategy == "camel"
+
+    assert SubclassDTOWithConfig.config.exclude == {"foo"}
+    assert SubclassDTOWithConfig.config.rename_strategy == "camel"

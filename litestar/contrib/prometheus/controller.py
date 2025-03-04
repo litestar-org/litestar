@@ -1,53 +1,30 @@
+# ruff: noqa: TC004, F401
 from __future__ import annotations
 
-import os
+from typing import TYPE_CHECKING
 
-from litestar import Controller, get
-from litestar.exceptions import MissingDependencyException
-from litestar.response import Response
+from litestar.utils import warn_deprecation
 
-try:
-    import prometheus_client  # noqa: F401
-except ImportError as e:
-    raise MissingDependencyException("prometheus_client", "prometheus-client", "prometheus") from e
-
-from prometheus_client import (
-    CONTENT_TYPE_LATEST,
-    REGISTRY,
-    CollectorRegistry,
-    generate_latest,
-    multiprocess,
-)
-from prometheus_client.openmetrics.exposition import (
-    CONTENT_TYPE_LATEST as OPENMETRICS_CONTENT_TYPE_LATEST,
-)
-from prometheus_client.openmetrics.exposition import (
-    generate_latest as openmetrics_generate_latest,
-)
-
-__all__ = [
-    "PrometheusController",
-]
+__all__ = ("PrometheusController",)
 
 
-class PrometheusController(Controller):
-    """Controller for Prometheus endpoints."""
+def __getattr__(attr_name: str) -> object:
+    if attr_name in __all__:
+        from litestar.plugins.prometheus import PrometheusController
 
-    path: str = "/metrics"
-    """The path to expose the metrics on."""
-    openmetrics_format: bool = False
-    """Whether to expose the metrics in OpenMetrics format."""
+        warn_deprecation(
+            deprecated_name=f"litestar.contrib.prometheus.controller.{attr_name}",
+            version="2.13.0",
+            kind="import",
+            removal_in="3.0",
+            info=f"importing {attr_name} from 'litestar.contrib.prometheus.controller' is deprecated, please "
+            f"import it from 'litestar.plugins.prometheus' instead",
+        )
+        value = globals()[attr_name] = locals()[attr_name]
+        return value
 
-    @get()
-    async def get(self) -> Response:
-        registry = REGISTRY
-        if "prometheus_multiproc_dir" in os.environ or "PROMETHEUS_MULTIPROC_DIR" in os.environ:
-            registry = CollectorRegistry()
-            multiprocess.MultiProcessCollector(registry)  # type: ignore[no-untyped-call]
+    raise AttributeError(f"module {__name__!r} has no attribute {attr_name!r}")  # pragma: no cover
 
-        if self.openmetrics_format:
-            headers = {"Content-Type": OPENMETRICS_CONTENT_TYPE_LATEST}
-            return Response(openmetrics_generate_latest(registry), status_code=200, headers=headers)  # type: ignore[no-untyped-call]
 
-        headers = {"Content-Type": CONTENT_TYPE_LATEST}
-        return Response(generate_latest(registry), status_code=200, headers=headers)
+if TYPE_CHECKING:
+    from litestar.plugins.prometheus import PrometheusController

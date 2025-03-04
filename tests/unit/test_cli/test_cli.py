@@ -89,4 +89,28 @@ def test_register_commands_from_entrypoint(mocker: "MockerFixture", runner: "Cli
     result = runner.invoke(cli_command, f"--app={app_file.stem}:app custom-group custom-command")
 
     assert result.exit_code == 0
-    mock_command_callback.assert_called_once_with()
+    mock_command_callback.assert_called_once()
+
+
+@pytest.mark.xdist_group("cli_autodiscovery")
+@pytest.mark.parametrize("invalid_app", ["invalid", "info_with_app_dir"])
+def test_incorrect_app_argument(
+    invalid_app: str, mocker: "MockerFixture", runner: "CliRunner", create_app_file: CreateAppFileFixture
+) -> None:
+    app_file = "main.py"
+    app_file_without_extension = app_file.split(".")[0]
+
+    create_app_file(
+        file=app_file,
+        directory="src",
+        content=CREATE_APP_FILE_CONTENT,
+        subdir="info_with_app_dir",
+        init_content=f"from .{app_file_without_extension} import create_app",
+    )
+
+    mock = mocker.patch("litestar.cli.commands.core.show_app_info")
+    result = runner.invoke(cli_command, ["--app", invalid_app, "--app-dir", "src", "info"])
+
+    assert result.exit_code == 1
+
+    mock.assert_not_called()

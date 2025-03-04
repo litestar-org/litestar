@@ -95,6 +95,27 @@ class ImmutableMultiDict(MultiDictProxy[T], MultiMixin[T], Generic[T]):
 class FormMultiDict(ImmutableMultiDict[Any]):
     """MultiDict for form data."""
 
+    @classmethod
+    def from_form_data(cls, form_data: dict[str, list[str] | str | UploadFile]) -> FormMultiDict:
+        """Create a FormMultiDict from form data.
+
+        Args:
+            form_data: Form data to create the FormMultiDict from.
+
+        Returns:
+            A FormMultiDict instance
+        """
+        # Convert form_data to a list[tuple[str, str | UploadFile]] before passing it
+        # to FormMultiDict so multi-keys can be accessed properly
+        items = []
+        for k, v in form_data.items():
+            if not isinstance(v, list):
+                items.append((k, v))
+            else:
+                for sv in v:
+                    items.append((k, sv))
+        return cls(items)
+
     async def close(self) -> None:
         """Close all files in the multi-dict.
 

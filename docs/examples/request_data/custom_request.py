@@ -19,7 +19,7 @@ class CustomRequest(Request):
         self.kitten_name = KITTEN_NAMES_MAP.get(scope["method"], "Mittens")
 
 
-@get(path="/kitten-name")
+@get(path="/kitten-name", sync_to_thread=False)
 def get_kitten_name(request: CustomRequest) -> str:
     """Get kitten name based on the HTTP method."""
     return request.kitten_name

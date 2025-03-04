@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import dataclasses
 import typing
 from abc import abstractmethod
 from inspect import getmodule
@@ -17,6 +18,7 @@ from litestar.exceptions.dto_exceptions import InvalidAnnotationException
 from litestar.types.builtin_types import NoneType
 from litestar.types.composite_types import TypeEncodersMap
 from litestar.typing import FieldDefinition
+from litestar.utils.signature import ParsedSignature
 
 if TYPE_CHECKING:
     from typing import Any, ClassVar, Generator
@@ -83,6 +85,24 @@ class AbstractDTO(Generic[T]):
             cls_dict.update(model_type=field_definition.annotation)
 
         return type(f"{cls.__name__}[{annotation}]", (cls,), cls_dict)  # pyright: ignore
+
+    def __init_subclass__(cls, **kwargs: Any) -> None:
+        if (config := getattr(cls, "config", None)) and (model_type := getattr(cls, "model_type", None)):
+            # it's a concrete class
+            cls.config = cls.get_config_for_model_type(config, model_type)
+
+    @classmethod
+    def get_config_for_model_type(cls, config: DTOConfig, model_type: type[Any]) -> DTOConfig:
+        """Create a new configuration for this specific ``model_type``, during the
+        creation of the factory.
+
+        The returned config object will be set as the ``config`` attribute on the newly
+        defined factory class.
+
+        .. versionadded: 2.11
+
+        """
+        return config
 
     def decode_builtins(self, value: dict[str, Any]) -> Any:
         """Decode a dictionary of Python values into an the DTO's datatype."""
@@ -195,12 +215,35 @@ class AbstractDTO(Generic[T]):
     ) -> Reference | Schema:
         """Create an OpenAPI request body.
 
+        Args:
+            field_definition: A parsed type annotation that represents the annotation used on the handler.
+            handler_id: ID of the route handler for which to create a DTO instance.
+            schema_creator: A factory for creating schemas. Has a ``for_field_definition()`` method that accepts a
+                :class:`~litestar.typing.FieldDefinition` instance.
+
         Returns:
             OpenAPI request body.
         """
         key = "data_backend" if field_definition.name == "data" else "return_backend"
         backend = cls._dto_backends[handler_id][key]  # type: ignore[literal-required]
-        return schema_creator.for_field_definition(FieldDefinition.from_annotation(backend.annotation))
+
+        if backend.wrapper_attribute_name:
+            # The DTO has been built for a handler that has a DTO supported type wrapped in a generic type.
+            #
+            # The backend doesn't receive the full annotation, only the type of the attribute on the outer type that
+            # holds the DTO supported type.
+            #
+            # This special casing rebuilds the outer generic type annotation with the original model replaced by the DTO
+            # generated transfer model type in the type arguments.
+            transfer_model = backend.transfer_model_type
+            generic_args = tuple(transfer_model if a is cls.model_type else a for a in field_definition.args)
+            annotation = field_definition.safe_generic_origin[generic_args]
+        else:
+            annotation = backend.annotation
+
+        return schema_creator.for_field_definition(
+            FieldDefinition.from_annotation(annotation, kwarg_definition=field_definition.kwarg_definition)
+        )
 
     @classmethod
     def resolve_generic_wrapper_type(
@@ -237,18 +280,7 @@ class AbstractDTO(Generic[T]):
         return None
 
     @staticmethod
-    def get_model_type_hints(
-        model_type: type[Any], namespace: dict[str, Any] | None = None
-    ) -> dict[str, FieldDefinition]:
-        """Retrieve type annotations for ``model_type``.
-
-        Args:
-            model_type: Any type-annotated class.
-            namespace: Optional namespace to use for resolving type hints.
-
-        Returns:
-            Parsed type hints for ``model_type`` resolved within the scope of its module.
-        """
+    def get_model_namespace(model_type: type[Any], namespace: dict[str, Any] | None = None) -> dict[str, Any]:
         namespace = namespace or {}
         namespace.update(vars(typing))
         namespace.update(
@@ -262,6 +294,33 @@ class AbstractDTO(Generic[T]):
 
         if model_module := getmodule(model_type):
             namespace.update(vars(model_module))
+        return namespace
+
+    @classmethod
+    def get_property_fields(cls, model_type: type[Any]) -> dict[str, FieldDefinition]:
+        return {
+            name: dataclasses.replace(
+                ParsedSignature.from_fn(attr.fget, cls.get_model_namespace(model_type)).return_type,
+                name=name,
+            )
+            for name, attr in vars(model_type).items()
+            if isinstance(attr, property) and attr.fget is not None
+        }
+
+    @staticmethod
+    def get_model_type_hints(
+        model_type: type[Any], namespace: dict[str, Any] | None = None
+    ) -> dict[str, FieldDefinition]:
+        """Retrieve type annotations for ``model_type``.
+
+        Args:
+            model_type: Any type-annotated class.
+            namespace: Optional namespace to use for resolving type hints.
+
+        Returns:
+            Parsed type hints for ``model_type`` resolved within the scope of its module.
+        """
+        namespace = AbstractDTO.get_model_namespace(model_type, namespace)
 
         return {
             k: FieldDefinition.from_kwarg(annotation=v, name=k)

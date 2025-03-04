@@ -169,7 +169,7 @@ def create_test_client(
             this app. Can be overridden by route handlers.
         compression_config: Configures compression behaviour of the application, this enabled a builtin or user
             defined Compression middleware.
-        cors_config: If set, configures :class:`CORSMiddleware <.middleware.cors.CORSMiddleware>`.
+        cors_config: If set, configures CORS handling for the application.
         csrf_config: If set, configures :class:`CSRFMiddleware <.middleware.csrf.CSRFMiddleware>`.
         debug: If ``True``, app errors rendered as HTML with a stack trace.
         dependencies: A string keyed mapping of dependency :class:`Providers <.di.Provide>`.
@@ -222,8 +222,8 @@ def create_test_client(
         security: A sequence of dicts that will be added to the schema of all route handlers in the application.
             See
             :data:`SecurityRequirement <.openapi.spec.SecurityRequirement>` for details.
-        signature_namespace: A mapping of names to types for use in forward reference resolution during signature modeling.
-        signature_types: A sequence of types for use in forward reference resolution during signature modeling.
+        signature_namespace: A mapping of names to types for use in forward reference resolution during signature modelling.
+        signature_types: A sequence of types for use in forward reference resolution during signature modelling.
             These types will be added to the signature namespace using their ``__name__`` attribute.
         state: An optional :class:`State <.datastructures.State>` for application state.
         static_files_config: A sequence of :class:`StaticFilesConfig <.static_files.StaticFilesConfig>`
@@ -430,7 +430,7 @@ def create_async_test_client(
             this app. Can be overridden by route handlers.
         compression_config: Configures compression behaviour of the application, this enabled a builtin or user
             defined Compression middleware.
-        cors_config: If set, configures :class:`CORSMiddleware <.middleware.cors.CORSMiddleware>`.
+        cors_config: If set, configures CORS handling for the application.
         csrf_config: If set, configures :class:`CSRFMiddleware <.middleware.csrf.CSRFMiddleware>`.
         debug: If ``True``, app errors rendered as HTML with a stack trace.
         dependencies: A string keyed mapping of dependency :class:`Providers <.di.Provide>`.
@@ -483,8 +483,8 @@ def create_async_test_client(
         security: A sequence of dicts that will be added to the schema of all route handlers in the application.
             See
             :data:`SecurityRequirement <.openapi.spec.SecurityRequirement>` for details.
-        signature_namespace: A mapping of names to types for use in forward reference resolution during signature modeling.
-        signature_types: A sequence of types for use in forward reference resolution during signature modeling.
+        signature_namespace: A mapping of names to types for use in forward reference resolution during signature modelling.
+        signature_types: A sequence of types for use in forward reference resolution during signature modelling.
             These types will be added to the signature namespace using their ``__name__`` attribute.
         state: An optional :class:`State <.datastructures.State>` for application state.
         static_files_config: A sequence of :class:`StaticFilesConfig <.static_files.StaticFilesConfig>`

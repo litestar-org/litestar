@@ -2,7 +2,9 @@ from __future__ import annotations
 
 from dataclasses import asdict, dataclass, field
 from datetime import datetime, timedelta, timezone
-from typing import TYPE_CHECKING, Any, Callable, Generic, Iterable, Literal, Sequence, TypeVar, cast
+from typing import TYPE_CHECKING, Any, Callable, Generic, Iterable, Literal, Sequence, cast
+
+from typing_extensions import TypeVar
 
 from litestar.datastructures import Cookie
 from litestar.enums import MediaType
@@ -24,9 +26,10 @@ if TYPE_CHECKING:
 
 
 UserType = TypeVar("UserType")
+TokenT = TypeVar("TokenT", bound=Token, default=Token)
 
 
-class BaseJWTAuth(Generic[UserType], AbstractSecurityConfig[UserType, Token]):
+class BaseJWTAuth(Generic[UserType, TokenT], AbstractSecurityConfig[UserType, TokenT]):
     """Base class for JWT Auth backends"""
 
     token_secret: str
@@ -45,6 +48,9 @@ class BaseJWTAuth(Generic[UserType], AbstractSecurityConfig[UserType, Token]):
         - The callable can be sync or async. If it is sync, it will be wrapped to support async.
 
     """
+    revoked_token_handler: Callable[[Any, ASGIConnection], SyncOrAsyncUnion[bool]] | None = field(default=None)
+    """Callable that receives the auth value from the authentication middleware and checks whether the token has been revoked,
+    returning True if revoked, False otherwise."""
     algorithm: str
     """Algorithm to use for JWT hashing."""
     auth_header: str
@@ -62,6 +68,29 @@ class BaseJWTAuth(Generic[UserType], AbstractSecurityConfig[UserType, Token]):
     """The authentication middleware class to use.
 
     Must inherit from :class:`JWTAuthenticationMiddleware`
+    """
+    token_cls: type[Token] = Token
+    """Target type the JWT payload will be converted into"""
+    accepted_audiences: Sequence[str] | None = None
+    """Audiences to accept when verifying the token. If given, and the audience in the
+    token does not match, a 401 response is returned
+    """
+    accepted_issuers: Sequence[str] | None = None
+    """Issuers to accept when verifying the token. If given, and the issuer in the
+    token does not match, a 401 response is returned
+    """
+    require_claims: Sequence[str] | None = None
+    """Require these claims to be present in the JWT payload. If any of those claims
+    is missing, a 401 response is returned
+    """
+    verify_expiry: bool = True
+    """Verify that the value of the ``exp`` (*expiration*) claim is in the future"""
+    verify_not_before: bool = True
+    """Verify that the value of the ``nbf`` (*not before*) claim is in the past"""
+    strict_audience: bool = False
+    """Verify that the value of the ``aud`` (*audience*) claim is a single value, and
+    not a list of values, and matches ``audience`` exactly. Requires that
+    ``accepted_audiences`` is a sequence of length 1
     """
 
     @property
@@ -112,8 +141,16 @@ class BaseJWTAuth(Generic[UserType], AbstractSecurityConfig[UserType, Token]):
             exclude_opt_key=self.exclude_opt_key,
             exclude_http_methods=self.exclude_http_methods,
             retrieve_user_handler=self.retrieve_user_handler,
+            revoked_token_handler=self.revoked_token_handler,
             scopes=self.scopes,
             token_secret=self.token_secret,
+            token_cls=self.token_cls,
+            token_issuer=self.accepted_issuers,
+            token_audience=self.accepted_audiences,
+            require_claims=self.require_claims,
+            verify_expiry=self.verify_expiry,
+            verify_not_before=self.verify_not_before,
+            strict_audience=self.strict_audience,
         )
 
     def login(
@@ -179,6 +216,7 @@ class BaseJWTAuth(Generic[UserType], AbstractSecurityConfig[UserType, Token]):
         token_audience: str | None = None,
         token_unique_jwt_id: str | None = None,
         token_extras: dict | None = None,
+        **kwargs: Any,
     ) -> str:
         """Create a Token instance from the passed in parameters, persists and returns it.
 
@@ -189,17 +227,19 @@ class BaseJWTAuth(Generic[UserType], AbstractSecurityConfig[UserType, Token]):
             token_audience: An optional value for the token ``aud`` field.
             token_unique_jwt_id: An optional value for the token ``jti`` field.
             token_extras: An optional dictionary to include in the token ``extras`` field.
+            **kwargs: Additional attributes to set on the token
 
         Returns:
             The created token.
         """
-        token = Token(
+        token = self.token_cls(
             sub=identifier,
             exp=(datetime.now(timezone.utc) + (token_expiration or self.default_token_expiration)),
             iss=token_issuer,
             aud=token_audience,
             jti=token_unique_jwt_id,
             extras=token_extras or {},
+            **kwargs,
         )
         return token.encode(secret=self.token_secret, algorithm=self.algorithm)
 
@@ -217,7 +257,7 @@ class BaseJWTAuth(Generic[UserType], AbstractSecurityConfig[UserType, Token]):
 
 
 @dataclass
-class JWTAuth(Generic[UserType], BaseJWTAuth[UserType]):
+class JWTAuth(Generic[UserType, TokenT], BaseJWTAuth[UserType, TokenT]):
     """JWT Authentication Configuration.
 
     This class is the main entry point to the library, and it includes methods to create the middleware, provide login
@@ -240,6 +280,9 @@ class JWTAuth(Generic[UserType], BaseJWTAuth[UserType]):
         - The callable can be sync or async. If it is sync, it will be wrapped to support async.
 
     """
+    revoked_token_handler: Callable[[Any, ASGIConnection], SyncOrAsyncUnion[bool]] | None = field(default=None)
+    """Callable that receives the auth value from the authentication middleware and checks whether the token has been revoked,
+    returning True if revoked, False otherwise."""
     guards: Iterable[Guard] | None = field(default=None)
     """An iterable of guards to call for requests, providing authorization functionalities."""
     exclude: str | list[str] | None = field(default=None)
@@ -279,10 +322,33 @@ class JWTAuth(Generic[UserType], BaseJWTAuth[UserType]):
 
     Must inherit from :class:`JWTAuthenticationMiddleware`
     """
+    token_cls: type[Token] = Token
+    """Target type the JWT payload will be converted into"""
+    accepted_audiences: Sequence[str] | None = None
+    """Audiences to accept when verifying the token. If given, and the audience in the
+    token does not match, a 401 response is returned
+    """
+    accepted_issuers: Sequence[str] | None = None
+    """Issuers to accept when verifying the token. If given, and the issuer in the
+    token does not match, a 401 response is returned
+    """
+    require_claims: Sequence[str] | None = None
+    """Require these claims to be present in the JWT payload. If any of those claims
+    is missing, a 401 response is returned
+    """
+    verify_expiry: bool = True
+    """Verify that the value of the ``exp`` (*expiration*) claim is in the future"""
+    verify_not_before: bool = True
+    """Verify that the value of the ``nbf`` (*not before*) claim is in the past"""
+    strict_audience: bool = False
+    """Verify that the value of the ``aud`` (*audience*) claim is a single value, and
+    not a list of values, and matches ``audience`` exactly. Requires that
+    ``accepted_audiences`` is a sequence of length 1
+    """
 
 
 @dataclass
-class JWTCookieAuth(Generic[UserType], BaseJWTAuth[UserType]):
+class JWTCookieAuth(Generic[UserType, TokenT], BaseJWTAuth[UserType, TokenT]):
     """JWT Cookie Authentication Configuration.
 
     This class is an alternate entry point to the library, and it includes all the functionality of the :class:`JWTAuth`
@@ -305,6 +371,9 @@ class JWTCookieAuth(Generic[UserType], BaseJWTAuth[UserType]):
         - The callable can be sync or async. If it is sync, it will be wrapped to support async.
 
     """
+    revoked_token_handler: Callable[[Any, ASGIConnection], SyncOrAsyncUnion[bool]] | None = field(default=None)
+    """Callable that receives the auth value from the authentication middleware and checks whether the token has been revoked,
+    returning True if revoked, False otherwise."""
     guards: Iterable[Guard] | None = field(default=None)
     """An iterable of guards to call for requests, providing authorization functionalities."""
     exclude: str | list[str] | None = field(default=None)
@@ -357,6 +426,29 @@ class JWTCookieAuth(Generic[UserType], BaseJWTAuth[UserType]):
     )
     """The authentication middleware class to use. Must inherit from :class:`JWTCookieAuthenticationMiddleware`
     """
+    token_cls: type[Token] = Token
+    """Target type the JWT payload will be converted into"""
+    accepted_audiences: Sequence[str] | None = None
+    """Audiences to accept when verifying the token. If given, and the audience in the
+    token does not match, a 401 response is returned
+    """
+    accepted_issuers: Sequence[str] | None = None
+    """Issuers to accept when verifying the token. If given, and the issuer in the
+    token does not match, a 401 response is returned
+    """
+    require_claims: Sequence[str] | None = None
+    """Require these claims to be present in the JWT payload. If any of those claims
+    is missing, a 401 response is returned
+    """
+    verify_expiry: bool = True
+    """Verify that the value of the ``exp`` (*expiration*) claim is in the future"""
+    verify_not_before: bool = True
+    """Verify that the value of the ``nbf`` (*not before*) claim is in the past"""
+    strict_audience: bool = False
+    """Verify that the value of the ``aud`` (*audience*) claim is a single value, and
+    not a list of values, and matches ``audience`` exactly. Requires that
+    ``accepted_audiences`` is a sequence of length 1
+    """
 
     @property
     def openapi_components(self) -> Components:
@@ -395,8 +487,16 @@ class JWTCookieAuth(Generic[UserType], BaseJWTAuth[UserType]):
             exclude_opt_key=self.exclude_opt_key,
             exclude_http_methods=self.exclude_http_methods,
             retrieve_user_handler=self.retrieve_user_handler,
+            revoked_token_handler=self.revoked_token_handler,
             scopes=self.scopes,
             token_secret=self.token_secret,
+            token_cls=self.token_cls,
+            token_issuer=self.accepted_issuers,
+            token_audience=self.accepted_audiences,
+            require_claims=self.require_claims,
+            verify_expiry=self.verify_expiry,
+            verify_not_before=self.verify_not_before,
+            strict_audience=self.strict_audience,
         )
 
     def login(
@@ -482,7 +582,7 @@ class OAuth2Login:
 
 
 @dataclass
-class OAuth2PasswordBearerAuth(Generic[UserType], BaseJWTAuth[UserType]):
+class OAuth2PasswordBearerAuth(Generic[UserType, TokenT], BaseJWTAuth[UserType, TokenT]):
     """OAUTH2 Schema for Password Bearer Authentication.
 
     This class implements an OAUTH2 authentication flow entry point to the library, and it includes all the
@@ -509,6 +609,9 @@ class OAuth2PasswordBearerAuth(Generic[UserType], BaseJWTAuth[UserType]):
         - The callable can be sync or async. If it is sync, it will be wrapped to support async.
 
     """
+    revoked_token_handler: Callable[[Any, ASGIConnection], SyncOrAsyncUnion[bool]] | None = field(default=None)
+    """Callable that receives the auth value from the authentication middleware and checks whether the token has been revoked,
+    returning True if revoked, False otherwise."""
     guards: Iterable[Guard] | None = field(default=None)
     """An iterable of guards to call for requests, providing authorization functionalities."""
     exclude: str | list[str] | None = field(default=None)
@@ -563,6 +666,29 @@ class OAuth2PasswordBearerAuth(Generic[UserType], BaseJWTAuth[UserType]):
 
     Must inherit from :class:`JWTCookieAuthenticationMiddleware`
     """
+    token_cls: type[Token] = Token
+    """Target type the JWT payload will be converted into"""
+    accepted_audiences: Sequence[str] | None = None
+    """Audiences to accept when verifying the token. If given, and the audience in the
+    token does not match, a 401 response is returned
+    """
+    accepted_issuers: Sequence[str] | None = None
+    """Issuers to accept when verifying the token. If given, and the issuer in the
+    token does not match, a 401 response is returned
+    """
+    require_claims: Sequence[str] | None = None
+    """Require these claims to be present in the JWT payload. If any of those claims
+    is missing, a 401 response is returned
+    """
+    verify_expiry: bool = True
+    """Verify that the value of the ``exp`` (*expiration*) claim is in the future"""
+    verify_not_before: bool = True
+    """Verify that the value of the ``nbf`` (*not before*) claim is in the past"""
+    strict_audience: bool = False
+    """Verify that the value of the ``aud`` (*audience*) claim is a single value, and
+    not a list of values, and matches ``audience`` exactly. Requires that
+    ``accepted_audiences`` is a sequence of length 1
+    """
 
     @property
     def middleware(self) -> DefineMiddleware:
@@ -581,8 +707,16 @@ class OAuth2PasswordBearerAuth(Generic[UserType], BaseJWTAuth[UserType]):
             exclude_opt_key=self.exclude_opt_key,
             exclude_http_methods=self.exclude_http_methods,
             retrieve_user_handler=self.retrieve_user_handler,
+            revoked_token_handler=self.revoked_token_handler,
             scopes=self.scopes,
             token_secret=self.token_secret,
+            token_cls=self.token_cls,
+            token_issuer=self.accepted_issuers,
+            token_audience=self.accepted_audiences,
+            require_claims=self.require_claims,
+            verify_expiry=self.verify_expiry,
+            verify_not_before=self.verify_not_before,
+            strict_audience=self.strict_audience,
         )
 
     @property

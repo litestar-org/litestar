@@ -27,5 +27,11 @@ def get_route_details_from_scope(scope: Scope) -> tuple[str, dict[Any, str]]:
     Returns:
         A tuple of the span name and a dict of attrs.
     """
-    route_handler_fn_name = scope["route_handler"].handler_name
-    return route_handler_fn_name, {SpanAttributes.HTTP_ROUTE: route_handler_fn_name}
+
+    path = scope.get("path", "").strip()
+    method = str(scope.get("method", "")).strip()
+
+    if method and path:  # http
+        return f"{method} {path}", {SpanAttributes.HTTP_ROUTE: f"{method} {path}"}
+
+    return path, {SpanAttributes.HTTP_ROUTE: path}  # websocket
