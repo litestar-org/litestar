@@ -20,7 +20,7 @@ __all__ = ["ResponseCacheMiddleware"]
 
 
 class ResponseCacheMiddleware(ASGIMiddleware):
-    scopes = ScopeType.HTTP
+    scopes = (ScopeType.HTTP,)
 
     def __init__(self, config: ResponseCacheConfig) -> None:
         self.config = config

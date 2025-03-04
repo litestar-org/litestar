@@ -209,7 +209,7 @@ def build_route_middleware_stack(
             if type(middleware) in [
                 # CSRFMiddleware,
                 # CompressionMiddleware,
-                ResponseCacheMiddleware,
+                # ResponseCacheMiddleware,
                 AllowedHostsMiddleware,
                 # LoggingMiddleware,
             ]:
