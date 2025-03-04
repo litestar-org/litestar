@@ -235,7 +235,7 @@ def test_csrf_middleware_exclude_from_check() -> None:
 
     with create_test_client(
         route_handlers=[post_handler, post_handler2],
-        middleware=[CSRFMiddleware(CSRFConfig(secret=str(urandom(10)), exclude=["unprotected-handler"]))],
+        middleware=[CSRFMiddleware(CSRFConfig(secret=str(urandom(10)), exclude="unprotected-handler"))],
     ) as client:
         data = {"field": "value"}
         response = client.post("/protected-handler", data=data)
@@ -260,7 +260,7 @@ def test_csrf_middleware_exclude_from_set_cookies() -> None:
 
     with create_test_client(
         route_handlers=[get_handler, get_handler2],
-        middleware=[CSRFMiddleware(CSRFConfig(secret=str(urandom(10)), exclude=["unprotected-handler"]))],
+        middleware=[CSRFMiddleware(CSRFConfig(secret=str(urandom(10)), exclude="unprotected-handler"))],
     ) as client:
         response = client.get("/unprotected-handler")
         assert response.status_code == HTTP_200_OK
