@@ -1,6 +1,7 @@
 import gzip
 import random
 from datetime import timedelta
+from functools import partial
 from typing import TYPE_CHECKING, Any, Optional, TypeVar, Union
 from unittest.mock import MagicMock
 from uuid import uuid4
@@ -224,9 +225,9 @@ def test_middleware_not_applied_to_non_cached_routes(
     unpacked_middleware = []
     cur = client.app.asgi_router.root_route_map_node.children["/"].asgi_handlers["GET"][0]
     while hasattr(cur, "app"):
-        unpacked_middleware.append(cur)
+        unpacked_middleware.append(cur.func.__self__ if isinstance(cur, partial) else cur)
         cur = cur.app
-    unpacked_middleware.append(cur)
+    unpacked_middleware.append(cur.func.__self__ if isinstance(cur, partial) else cur)
 
     assert len([m for m in unpacked_middleware if isinstance(m, ResponseCacheMiddleware)]) == int(expect_applied)
 
