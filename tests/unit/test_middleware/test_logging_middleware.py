@@ -14,6 +14,7 @@ from litestar.exceptions import ImproperlyConfiguredException
 from litestar.handlers import HTTPRouteHandler
 from litestar.logging.config import LoggingConfig, StructLoggingConfig
 from litestar.middleware import logging as middleware_logging
+from litestar.middleware.compression import CompressionMiddleware
 from litestar.middleware.logging import LoggingMiddleware, LoggingMiddlewareConfig
 from litestar.params import Body
 from litestar.status_codes import HTTP_200_OK, HTTP_201_CREATED
@@ -191,8 +192,10 @@ def test_logging_middleware_compressed_response_body(
     with (
         create_test_client(
             route_handlers=[handler],
-            compression_config=CompressionConfig(backend="gzip", minimum_size=1),
-            middleware=[LoggingMiddleware(LoggingMiddlewareConfig(include_compressed_body=include))],
+            middleware=[
+                LoggingMiddleware(LoggingMiddlewareConfig(include_compressed_body=include)),
+                CompressionMiddleware(CompressionConfig(backend="gzip", minimum_size=1)),
+            ],
         ) as client,
         caplog.at_level(INFO),
     ):
