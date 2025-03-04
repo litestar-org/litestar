@@ -5,7 +5,7 @@ from re import Pattern
 from typing import TYPE_CHECKING
 
 from litestar.datastructures import URL, MutableScopeHeaders
-from litestar.middleware.base import AbstractMiddleware
+from litestar.middleware import ASGIMiddleware
 from litestar.response.base import ASGIResponse
 from litestar.response.redirect import ASGIRedirectResponse
 from litestar.status_codes import HTTP_400_BAD_REQUEST
@@ -18,18 +18,15 @@ if TYPE_CHECKING:
     from litestar.types import ASGIApp, Receive, Scope, Send
 
 
-class AllowedHostsMiddleware(AbstractMiddleware):
+class AllowedHostsMiddleware(ASGIMiddleware):
     """Middleware ensuring the host of a request originated in a trusted host."""
 
-    def __init__(self, app: ASGIApp, config: AllowedHostsConfig) -> None:
+    def __init__(self, config: AllowedHostsConfig) -> None:
         """Initialize ``AllowedHostsMiddleware``.
 
         Args:
-            app: The ``next`` ASGI app to call.
             config: An instance of AllowedHostsConfig.
         """
-
-        super().__init__(app=app, exclude=config.exclude, exclude_opt_key=config.exclude_opt_key, scopes=config.scopes)
 
         self.allowed_hosts_regex: Pattern | None = None
         self.redirect_domains: Pattern | None = None
@@ -48,25 +45,15 @@ class AllowedHostsMiddleware(AbstractMiddleware):
         ):
             self.redirect_domains = re.compile("|".join(sorted(redirect_domains)))  # pyright: ignore
 
-    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
-        """ASGI callable.
-
-        Args:
-            scope: The ASGI connection scope.
-            receive: The ASGI receive function.
-            send: The ASGI send function.
-
-        Returns:
-            None
-        """
+    async def handle(self, scope: Scope, receive: Receive, send: Send, next_app: ASGIApp) -> None:
         if self.allowed_hosts_regex is None:
-            await self.app(scope, receive, send)
+            await next_app(scope, receive, send)
             return
 
         headers = MutableScopeHeaders(scope=scope)
         if host := headers.get("host", headers.get("x-forwarded-host", "")).split(":")[0]:
             if self.allowed_hosts_regex.fullmatch(host):
-                await self.app(scope, receive, send)
+                await next_app(scope, receive, send)
                 return
 
             if self.redirect_domains is not None and self.redirect_domains.fullmatch(host):
