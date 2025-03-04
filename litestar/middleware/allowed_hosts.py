@@ -27,7 +27,7 @@ class AllowedHostsMiddleware(ASGIMiddleware):
         Args:
             config: An instance of AllowedHostsConfig.
         """
-
+        self.config = config
         self.allowed_hosts_regex: Pattern | None = None
         self.redirect_domains: Pattern | None = None
 
