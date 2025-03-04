@@ -208,7 +208,7 @@ def build_route_middleware_stack(
             from litestar.middleware.logging import LoggingMiddleware
             from litestar.middleware.response_cache import ResponseCacheMiddleware
 
-            # maybe test on ASGIMiddleware subcalsse here ?
+            # maybe test on ASGIMiddleware subclass here ?
             if type(middleware) in [
                 CSRFMiddleware,
                 CompressionMiddleware,

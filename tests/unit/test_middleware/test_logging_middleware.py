@@ -134,9 +134,11 @@ def test_logging_middleware_exclude_pattern(
     def handler2() -> None:
         return None
 
-    config = LoggingMiddlewareConfig(exclude=["^/exclude"])
+    config = LoggingMiddlewareConfig()
     with (
-        create_test_client(route_handlers=[handler, handler2], middleware=[LoggingMiddleware(config)]) as client,
+        create_test_client(
+            route_handlers=[handler, handler2], middleware=[LoggingMiddleware(config, exclude=["^/exclude"])]
+        ) as client,
         caplog.at_level(INFO),
     ):
         # Set cookies on the client to avoid warnings about per-request cookies.
