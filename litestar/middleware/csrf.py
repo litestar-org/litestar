@@ -11,10 +11,6 @@ from litestar.datastructures.cookie import Cookie
 from litestar.enums import RequestEncodingType, ScopeType
 from litestar.exceptions import PermissionDeniedException
 from litestar.middleware import ASGIMiddleware
-from litestar.middleware._utils import (
-    build_exclude_path_pattern,
-    should_bypass_middleware,
-)
 from litestar.utils.scope.state import ScopeState
 
 if TYPE_CHECKING:
@@ -69,7 +65,7 @@ class CSRFMiddleware(ASGIMiddleware):
     This Middleware protects against attacks by setting a CSRF cookie with a token and verifying it in request headers.
     """
 
-    scopes: Scopes = ScopeType.HTTP
+    scopes: Scopes = (ScopeType.HTTP,)
 
     def __init__(self, config: CSRFConfig) -> None:
         """Initialize ``CSRFMiddleware``.
@@ -78,19 +74,11 @@ class CSRFMiddleware(ASGIMiddleware):
             config: The CSRFConfig instance.
         """
         self.config = config
-        self.exclude = build_exclude_path_pattern(exclude=config.exclude, middleware_cls=type(self))
+        self.exclude_opt_key = config.exclude_from_csrf_key
+        self.exclude_path_pattern = config.exclude
 
     async def handle(self, scope: Scope, receive: Receive, send: Send, next_app: ASGIApp) -> None:
         if scope["type"] != ScopeType.HTTP:
-            await next_app(scope, receive, send)
-            return
-
-        if should_bypass_middleware(
-            scope=scope,
-            scopes=self.scopes,
-            exclude_opt_key=self.config.exclude_from_csrf_key,
-            exclude_path_pattern=self.exclude,
-        ):
             await next_app(scope, receive, send)
             return
 
