@@ -9,7 +9,7 @@ from litestar.config.csrf import CSRFConfig
 from litestar.contrib.jinja import JinjaTemplateEngine
 from litestar.contrib.mako import MakoTemplateEngine
 from litestar.contrib.minijinja import MiniJinjaTemplateEngine
-from litestar.middleware.csrf import generate_csrf_token
+from litestar.middleware.csrf import CSRFMiddleware, generate_csrf_token
 from litestar.response.template import Template
 from litestar.template.config import TemplateConfig
 from litestar.testing import create_test_client
@@ -41,7 +41,7 @@ def test_csrf_token(engine: Any, template: str, tmp_path: Path) -> None:
             directory=tmp_path,
             engine=engine,
         ),
-        csrf_config=csrf_config,
+        middleware=[CSRFMiddleware(config=csrf_config)],
     ) as client:
         response = client.get("/")
         assert len(response.text) == len(generate_csrf_token(csrf_config.secret))
@@ -73,7 +73,7 @@ def test_csrf_input(engine: Any, template: str, tmp_path: Path) -> None:
             directory=tmp_path,
             engine=engine,
         ),
-        csrf_config=csrf_config,
+        middleware=[CSRFMiddleware(config=csrf_config)],
     ) as client:
         response = client.get("/")
         assert token["value"]
