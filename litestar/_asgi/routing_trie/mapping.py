@@ -207,23 +207,13 @@ def build_route_middleware_stack(
             from litestar.middleware.csrf import CSRFMiddleware
             from litestar.middleware.response_cache import ResponseCacheMiddleware
 
-            if type(middleware) is CSRFMiddleware:
-                asgi_handler = partial(
-                    CSRFMiddleware(config=middleware.config).handle, next_app=middleware(asgi_handler)
-                )
-            elif type(middleware) is CompressionMiddleware:
-                asgi_handler = partial(
-                    CompressionMiddleware(config=middleware.config).handle, next_app=middleware(asgi_handler)
-                )
-            elif type(middleware) is ResponseCacheMiddleware:
-                asgi_handler = partial(
-                    ResponseCacheMiddleware(config=app.response_cache_config).handle, next_app=middleware(asgi_handler)
-                )
-            elif type(middleware) is AllowedHostsMiddleware:
-                asgi_handler = partial(
-                    AllowedHostsMiddleware(config=middleware.config).handle, next_app=middleware(asgi_handler)
-                )
-
+            if type(middleware) in [
+                CSRFMiddleware,
+                CompressionMiddleware,
+                ResponseCacheMiddleware,
+                AllowedHostsMiddleware,
+            ]:
+                asgi_handler = partial(type(middleware)(config=middleware.config).handle, next_app=asgi_handler)
             else:
                 asgi_handler = middleware(asgi_handler)
     if has_cached_route:
