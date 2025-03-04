@@ -22,7 +22,6 @@ if TYPE_CHECKING:
         Message,
         Receive,
         Scope,
-        Scopes,
         Send,
     )
 
@@ -65,7 +64,7 @@ class CSRFMiddleware(ASGIMiddleware):
     This Middleware protects against attacks by setting a CSRF cookie with a token and verifying it in request headers.
     """
 
-    scopes: Scopes = (ScopeType.HTTP,)
+    scopes = (ScopeType.HTTP,)
 
     def __init__(self, config: CSRFConfig) -> None:
         """Initialize ``CSRFMiddleware``.

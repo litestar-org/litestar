@@ -135,7 +135,7 @@ def test_logging_middleware_exclude_pattern(
     def handler2() -> None:
         return None
 
-    config = LoggingMiddlewareConfig(exclude=["^/exclude"])
+    config = LoggingMiddlewareConfig(exclude="^/exclude")
     with (
         create_test_client(
             route_handlers=[handler, handler2],

@@ -33,7 +33,6 @@ if TYPE_CHECKING:
         Message,
         Receive,
         Scope,
-        Scopes,
         Send,
         Serializer,
     )
@@ -51,7 +50,7 @@ class LoggingMiddleware(ASGIMiddleware):
     """Logging middleware."""
 
     logger: Logger
-    scopes: Scopes = (ScopeType.HTTP,)
+    scopes = (ScopeType.HTTP,)
 
     def __init__(self, config: LoggingMiddlewareConfig) -> None:
         """Initialize ``LoggingMiddleware``.
@@ -230,7 +229,7 @@ class LoggingMiddleware(ASGIMiddleware):
 class LoggingMiddlewareConfig:
     """Configuration for ``LoggingMiddleware``"""
 
-    exclude: str | list[str] | None = field(default=None)
+    exclude: str | tuple[str] | None = field(default=None)
     """List of paths to exclude from logging."""
     exclude_opt_key: str | None = field(default=None)
     """An identifier to use on routes to disable logging for a particular route."""

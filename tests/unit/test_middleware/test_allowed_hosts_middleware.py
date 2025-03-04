@@ -33,7 +33,7 @@ def test_allowed_hosts_middleware() -> None:
 
 def test_allowed_hosts_middleware_hosts_regex() -> None:
     config = AllowedHostsConfig(allowed_hosts=["*.example.com", "moishe.zuchmir.com"])
-    middleware = AllowedHostsMiddleware(config=config)  # type: ignore[abstract]
+    middleware = AllowedHostsMiddleware(config=config)
     assert middleware.allowed_hosts_regex is not None
     assert middleware.allowed_hosts_regex.pattern == ".*\\.example.com$|moishe.zuchmir.com"
 
@@ -52,7 +52,7 @@ def test_allowed_hosts_middleware_redirect_regex() -> None:
     config = AllowedHostsConfig(
         allowed_hosts=["*.example.com", "www.moishe.zuchmir.com", "www.yada.bada.bing.io", "example.com"]
     )
-    middleware = AllowedHostsMiddleware(config=config)  # type: ignore[abstract]
+    middleware = AllowedHostsMiddleware(config=config)
     assert middleware.redirect_domains is not None
     assert middleware.redirect_domains.pattern == "moishe.zuchmir.com|yada.bada.bing.io"
 
