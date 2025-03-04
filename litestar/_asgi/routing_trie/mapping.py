@@ -188,9 +188,6 @@ def build_route_middleware_stack(
     asgi_handler: ASGIApp = route.handle  # type: ignore[assignment]
     handler_middleware = route_handler.middleware
     has_cached_route = isinstance(route, HTTPRoute) and any(r.cache for r in route.route_handlers)
-    has_middleware = (
-        app.csrf_config or app.compression_config or has_cached_route or app.allowed_hosts or handler_middleware
-    )
     # If there is an exception raised from the handler, the first ExceptionHandlerMiddleware that catches the
     # exception will create the response and call send(). As middleware may wrap the send() callable, we need there
     # to be an instance of ExceptionHandlerMiddleware in between the handler and the middleware so that any send
@@ -199,10 +196,7 @@ def build_route_middleware_stack(
 
     # original order is csrf > compression > cache > allowed_hosts
     for middleware in handler_middleware:
-        if not has_middleware:
-            pass
-        else:
-            asgi_handler = middleware(asgi_handler)
+        asgi_handler = middleware(asgi_handler)
     if has_cached_route:
         from litestar.middleware.response_cache import ResponseCacheMiddleware
 
