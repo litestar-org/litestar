@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from functools import partial
 from pathlib import Path
 from typing import TYPE_CHECKING, cast
 
@@ -182,19 +183,31 @@ def build_route_middleware_stack(
     Returns:
         An ASGIApp that is composed of a "stack" of middlewares.
     """
+    from litestar.routes import HTTPRoute
 
     asgi_handler: ASGIApp = route.handle  # type: ignore[assignment]
     handler_middleware = route_handler.middleware
-    has_middleware = app.csrf_config or handler_middleware
+    has_cached_route = isinstance(route, HTTPRoute) and any(r.cache for r in route.route_handlers)
+    has_middleware = (
+        app.csrf_config or app.compression_config or has_cached_route or app.allowed_hosts or handler_middleware
+    )
 
-    if has_middleware:
-        # If there is an exception raised from the handler, the first ExceptionHandlerMiddleware that catches the
-        # exception will create the response and call send(). As middleware may wrap the send() callable, we need there
-        # to be an instance of ExceptionHandlerMiddleware in between the handler and the middleware so that any send
-        # wrappers instated by middleware are called. If there is no middleware, we can skip this step.
-        asgi_handler = wrap_in_exception_handler(app=asgi_handler)
+    # If there is an exception raised from the handler, the first ExceptionHandlerMiddleware that catches the
+    # exception will create the response and call send(). As middleware may wrap the send() callable, we need there
+    # to be an instance of ExceptionHandlerMiddleware in between the handler and the middleware so that any send
+    # wrappers instated by middleware are called. If there is no middleware, we can skip this step.
+    asgi_handler = wrap_in_exception_handler(app=asgi_handler)
 
-        for middleware in handler_middleware:
-            print(f"apply middleware {middleware} to {asgi_handler} in route {route}")
-            asgi_handler = middleware(asgi_handler)
+    for middleware in handler_middleware:
+        if not has_middleware:
+            print("TTTTTTTTTTT")
+        else:
+            if has_cached_route:
+                from litestar.middleware.response_cache import ResponseCacheMiddleware
+
+                asgi_handler = partial(
+                    ResponseCacheMiddleware(config=app.response_cache_config).handle, next_app=middleware(asgi_handler)
+                )
+            else:
+                asgi_handler = middleware(asgi_handler)
     return asgi_handler
