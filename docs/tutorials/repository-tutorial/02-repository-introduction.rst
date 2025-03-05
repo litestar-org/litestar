@@ -69,8 +69,8 @@ to include all of the integrated repository features.
 
 .. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_repository_crud.py
     :language: python
-    :caption: app.py
-    :lines: 14,27-30
+    :caption: ``app.py``
+    :lines: 14, 7-30
     :linenos:
 
 Repository Context Manager
@@ -88,7 +88,7 @@ The ``repository_factory`` method will do the following for us:
 
 .. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_repository_crud.py
     :language: python
-    :caption: app.py
+    :caption: ``app.py``
     :lines: 39-47
     :linenos:
 
@@ -103,7 +103,7 @@ Creating Data: Here's a simple insert operation to populate our new Author table
 
     .. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_repository_crud.py
         :language: python
-        :caption: app.py
+        :caption: ``app.py``
         :lines: 52-61
         :linenos:
 
@@ -111,7 +111,7 @@ Updating Data: The ``update`` method will ensure any updates made to the model o
 
     .. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_repository_crud.py
         :language: python
-        :caption: app.py
+        :caption: ``app.py``
         :lines: 64-68
         :linenos:
 
@@ -119,7 +119,7 @@ Removing Data: The ``remove`` method accepts the primary key of the row you want
 
     .. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_repository_crud.py
         :language: python
-        :caption: app.py
+        :caption: ``app.py``
         :lines: 71-75
         :linenos:
 
@@ -145,7 +145,7 @@ conditions. This pattern can be extended and adjusted to meet your needs.
 
 .. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_repository_bulk_operations.py
     :language: python
-    :caption: app.py
+    :caption: ``app.py``
     :lines: 37-55
     :linenos:
 
@@ -158,7 +158,7 @@ You can review the JSON source file here:
 
     .. literalinclude:: /examples/contrib/sqlalchemy/us_state_lookup.json
         :language: json
-        :caption: us_state_lookup.json
+        :caption: ``us_state_lookup.json``
 
 
 Bulk Insert
@@ -170,7 +170,7 @@ performance when working with larger data sets.
 
 .. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_repository_bulk_operations.py
     :language: python
-    :caption: app.py
+    :caption: ``app.py``
     :lines: 66-71
     :linenos:
 
@@ -184,7 +184,7 @@ repository.
 
 .. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_repository_bulk_operations.py
     :language: python
-    :caption: app.py
+    :caption: ``app.py``
     :lines: 73-75
     :linenos:
 
@@ -197,7 +197,7 @@ executing row-by-row.
 
 .. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_repository_bulk_operations.py
     :language: python
-    :caption: app.py
+    :caption: ``app.py``
     :lines: 77-79
     :linenos:
 
@@ -208,7 +208,7 @@ Finally, we'll demonstrate how to count the number of records remaining in the d
 
 .. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_repository_bulk_operations.py
     :language: python
-    :caption: app.py
+    :caption: ``app.py``
     :lines: 81-83
     :linenos:
 
@@ -225,6 +225,6 @@ Full Code
 
     .. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_repository_crud.py
         :language: python
-        :caption: app.py
+        :caption: ``app.py``
         :emphasize-lines: 14, 27-30, 37-55, 61, 64-71, 71-75, 77-79, 81-83
         :linenos:

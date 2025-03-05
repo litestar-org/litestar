@@ -37,12 +37,12 @@ This guide assumes that you have Docker installed and running on your system, an
 files in your project directory:
 
 .. code-block:: shell
-    :caption: requirements.txt
+    :caption: ``requirements.txt``
 
     litestar[standard]>=2.4.0,<3.0.0
 
 .. code-block:: python
-    :caption: app.py
+    :caption: ``app.py``
 
     """Minimal Litestar application."""
 
@@ -128,7 +128,7 @@ Read more about Compose in the `official Docker documentation <https://docs.dock
 If you want to run the container as part of a Docker Compose setup then you can simply use this compose file:
 
 .. code-block:: yaml
-    :caption: docker-compose.yml
+    :caption: ``docker-compose.yml``
 
     version: "3.9"
 

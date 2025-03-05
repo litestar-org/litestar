@@ -15,7 +15,7 @@ DTO factories can be used to help us build flexible applications. Lets get start
 
 .. literalinclude:: /examples/data_transfer_objects/factory/tutorial/initial_pattern.py
     :language: python
-    :caption: app.py
+    :caption: ``app.py``
 
 In this script, we define a data model, a route handler and an application instance.
 
