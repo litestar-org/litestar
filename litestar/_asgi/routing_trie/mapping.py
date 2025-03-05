@@ -200,5 +200,5 @@ def build_route_middleware_stack(
     if has_cached_route:
         from litestar.middleware.response_cache import ResponseCacheMiddleware
 
-        asgi_handler = partial(ResponseCacheMiddleware(config=app.response_cache_config).handle, next_app=asgi_handler)
+        asgi_handler = ResponseCacheMiddleware(config=app.response_cache_config)(asgi_handler)
     return asgi_handler
