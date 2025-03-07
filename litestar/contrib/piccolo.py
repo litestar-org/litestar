@@ -49,7 +49,7 @@ def _parse_piccolo_type(column: Column, extra: dict[str, Any]) -> FieldDefinitio
         if is_optional:
             meta = Meta(extra=extra)
             warnings.warn(
-                f"Dropping max_length constraint for column {column!r} because the " "column is optional",
+                f"Dropping max_length constraint for column {column!r} because the column is optional",
                 category=LitestarWarning,
                 stacklevel=2,
             )
