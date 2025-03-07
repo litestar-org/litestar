@@ -80,7 +80,7 @@ def create_string_constrained_field_schema(
         schema.max_length = kwarg_definition.max_length
     if kwarg_definition.pattern:
         schema.pattern = (
-            kwarg_definition.pattern.pattern  # type: ignore[attr-defined]
+            kwarg_definition.pattern.pattern  # type: ignore[attr-defined,unused-ignore]
             if isinstance(kwarg_definition.pattern, Pattern)  # type: ignore[unreachable]
             else kwarg_definition.pattern
         )

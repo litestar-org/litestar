@@ -91,7 +91,7 @@ def test_media_type(media_type: MediaType | str, tmp_path: Path) -> None:
         res = client.get("/")
         assert res.status_code == 200
         assert res.headers["content-type"].startswith(
-            media_type if isinstance(media_type, str) else media_type.value,  # type: ignore[union-attr]
+            media_type if isinstance(media_type, str) else media_type.value,  # type: ignore[union-attr,unused-ignore]
         )
 
 

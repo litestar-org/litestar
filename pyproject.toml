@@ -89,6 +89,7 @@ full = [
   "litestar[annotated-types,attrs,brotli,cli,cryptography,jinja,jwt,mako,minijinja,opentelemetry,piccolo,picologging,prometheus,pydantic,redis,sqlalchemy,standard,structlog,valkey]; python_version < \"3.13\"",
   "litestar[annotated-types,attrs,brotli,cli,cryptography,jinja,jwt,mako,minijinja,opentelemetry,piccolo,prometheus,pydantic,redis,sqlalchemy,standard,structlog,valkey]; python_version >= \"3.13\"",
 ]
+granian = ["litestar-granian[uvloop]", "python-dotenv", "httptools", "websockets"]
 jinja = ["jinja2>=3.1.2"]
 jwt = ["cryptography", "pyjwt>=2.9.0"]
 mako = ["mako>=1.2.4"]
@@ -139,9 +140,7 @@ dev = [
   "trio",
   "aiosqlite",
   "asyncpg>=0.29.0",
-  "psycopg[pool,binary]>=3.1.10,<3.2; python_version < \"3.13\"",
-  "psycopg[pool,c]; python_version >= \"3.13\" and sys_platform == 'linux'",
-  "psycopg[pool]; python_version >= \"3.13\" and sys_platform != 'linux'",
+  "psycopg[pool,binary]",
   "psycopg2-binary",
   "psutil>=5.9.8",
   "hypercorn>=0.16.0",
@@ -423,6 +422,7 @@ lint.ignore = [
   "RUF012",  # Ruff-specific rule - annotated with classvar
   "ISC001",  # Ruff formatter incompatible
   "CPY001",  # ruff - copyright notice at the top of the file
+  "A005",    # Module shadows a Python standard-library module
 ]
 src = ["litestar", "tests", "docs/examples"]
 target-version = "py38"
