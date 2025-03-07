@@ -1904,7 +1904,8 @@
       "avatar_url": "https://avatars.githubusercontent.com/u/165988121?v=4",
       "profile": "https://github.com/RenameMe1",
       "contributions": [
-        "doc"
+        "doc",
+        "test"
       ]
     },
     {
@@ -1935,6 +1936,42 @@
         "doc",
         "test",
         "code"
+      ]
+    },
+    {
+      "login": "sloria",
+      "name": "Steven Loria",
+      "avatar_url": "https://avatars.githubusercontent.com/u/2379650?v=4",
+      "profile": "https://stevenloria.com",
+      "contributions": [
+        "doc"
+      ]
+    },
+    {
+      "login": "oek1ng",
+      "name": "oek1ng",
+      "avatar_url": "https://avatars.githubusercontent.com/u/193062679?v=4",
+      "profile": "https://github.com/oek1ng",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "Ada-lave",
+      "name": "Vladislav",
+      "avatar_url": "https://avatars.githubusercontent.com/u/113159483?v=4",
+      "profile": "https://github.com/Ada-lave",
+      "contributions": [
+        "doc"
+      ]
+    },
+    {
+      "login": "eandersons",
+      "name": "Edgars",
+      "avatar_url": "https://avatars.githubusercontent.com/u/9976861?v=4",
+      "profile": "https://gaitenis.id.lv",
+      "contributions": [
+        "doc"
       ]
     }
   ],

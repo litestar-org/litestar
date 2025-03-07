@@ -8,7 +8,7 @@
   "applications": {
     "litestar": {
       "type": "python 3.11",
-      "home": "/Users/user/project/listestar/.venv/",
+      "home": "/Users/user/project/litestar/.venv/",
       "path": "/Users/user/project/litestar/src/app",
       "module": "run",
       "callable": "app",

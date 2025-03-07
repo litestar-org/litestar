@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import pdb  # noqa: T100
 from inspect import getmro
 from sys import exc_info
 from traceback import format_exception
@@ -135,7 +134,7 @@ class ExceptionHandlerMiddleware:
 
     @staticmethod
     def _get_debug_scope(scope: Scope) -> bool:
-        return scope["app"].debug
+        return scope["litestar_app"].debug
 
     async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
         """ASGI-callable.
@@ -161,7 +160,7 @@ class ExceptionHandlerMiddleware:
             if scope_state.response_started:
                 raise LitestarException("Exception caught after response started") from e
 
-            litestar_app = scope["app"]
+            litestar_app = scope["litestar_app"]
 
             if litestar_app.logging_config and (logger := litestar_app.logger):
                 self.handle_exception_logging(logger=logger, logging_config=litestar_app.logging_config, scope=scope)
@@ -170,7 +169,7 @@ class ExceptionHandlerMiddleware:
                 await hook(e, scope)
 
             if litestar_app.pdb_on_exception:
-                pdb.post_mortem()
+                litestar_app.debugger_module.post_mortem()
 
             if scope["type"] == ScopeType.HTTP:
                 await self.handle_request_exception(

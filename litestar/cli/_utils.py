@@ -37,6 +37,8 @@ else:
 
 
 if TYPE_CHECKING:
+    from types import ModuleType
+
     from litestar.openapi import OpenAPIConfig
     from litestar.routes import ASGIRoute, HTTPRoute, WebSocketRoute
     from litestar.types import AnyCallable
@@ -272,9 +274,24 @@ def _bool_from_env(key: str, default: bool = False) -> bool:
     return value in ("true", "1")
 
 
+def _validate_app_path(app_path: str) -> tuple[ModuleType, str]:
+    try:
+        module_path, app_name = app_path.split(":")
+    except ValueError:
+        console.print(f"[bold red] Invalid argument passed --app {app_path!r}: Expected 'module_path:app'")
+        sys.exit(1)
+
+    try:
+        module = importlib.import_module(module_path)
+    except ImportError:
+        console.print(f"[bold red] Invalid argument passed --app {app_path!r}: Module not found")
+        sys.exit(1)
+
+    return module, app_name
+
+
 def _load_app_from_path(app_path: str) -> LoadedApp:
-    module_path, app_name = app_path.split(":")
-    module = importlib.import_module(module_path)
+    module, app_name = _validate_app_path(app_path)
     app = getattr(module, app_name)
     is_factory = False
     if not isinstance(app, Litestar) and callable(app):

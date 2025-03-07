@@ -329,7 +329,7 @@ which offers strong AES-CGM encryption security best practices while support coo
     which can be installed together with litestar as an extra using ``pip install litestar[cryptography]``
 
 .. literalinclude:: /examples/middleware/session/cookie_backend.py
-    :caption: cookie_backend.py
+    :caption: ``cookie_backend.py``
     :language: python
 
 

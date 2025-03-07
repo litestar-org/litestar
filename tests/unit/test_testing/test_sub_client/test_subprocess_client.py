@@ -16,17 +16,16 @@ from litestar.testing import subprocess_async_client, subprocess_sync_client
 if sys.platform == "win32":
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
-
 ROOT = pathlib.Path(__file__).parent
 
 
-@pytest.fixture(name="async_client", scope="session")
+@pytest.fixture(name="async_client")
 async def fx_async_client() -> AsyncIterator[httpx.AsyncClient]:
     async with subprocess_async_client(workdir=ROOT, app="demo:app") as client:
         yield client
 
 
-@pytest.fixture(name="sync_client", scope="session")
+@pytest.fixture(name="sync_client")
 def fx_sync_client() -> Iterator[httpx.Client]:
     with subprocess_sync_client(workdir=ROOT, app="demo:app") as client:
         yield client

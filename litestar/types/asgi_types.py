@@ -124,7 +124,8 @@ class HeaderScope(TypedDict):
 class BaseScope(HeaderScope):
     """Base ASGI-scope."""
 
-    app: Litestar
+    app: Litestar  # deprecated
+    litestar_app: Litestar
     asgi: ASGIVersion
     auth: Any
     client: tuple[str, int] | None

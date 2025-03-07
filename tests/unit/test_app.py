@@ -243,7 +243,7 @@ def test_before_send() -> None:
     async def before_send_hook_handler(message: Message, scope: Scope) -> None:
         if message["type"] == "http.response.start":
             headers = MutableScopeHeaders(message)
-            headers.add("My Header", scope["app"].state.message)
+            headers.add("My Header", Litestar.from_scope(scope).state.message)
 
     def on_startup(app: Litestar) -> None:
         app.state.message = "value injected during send"
@@ -466,3 +466,19 @@ def test_using_custom_path_parameter() -> None:
     with create_test_client(my_route_handler, path="/abc") as client:
         response = client.get("/abc")
         assert response.status_code == HTTP_200_OK
+
+
+def test_from_scope() -> None:
+    mock = MagicMock()
+
+    @get()
+    def handler(scope: Scope) -> None:
+        mock(Litestar.from_scope(scope))
+        return
+
+    app = Litestar(route_handlers=[handler])
+
+    with TestClient(app) as client:
+        client.get("/")
+
+    mock.assert_called_once_with(app)

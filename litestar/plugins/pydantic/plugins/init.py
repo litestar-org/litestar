@@ -10,7 +10,7 @@ from typing_extensions import Buffer, TypeGuard
 
 from litestar._signature.types import ExtendedMsgSpecValidationError
 from litestar.exceptions import MissingDependencyException
-from litestar.plugins import InitPluginProtocol
+from litestar.plugins import InitPlugin
 from litestar.plugins.pydantic.utils import is_pydantic_v2
 from litestar.utils import is_class_and_subclass
 
@@ -122,7 +122,7 @@ def is_pydantic_v2_model_class(annotation: Any) -> TypeGuard[type[pydantic_v2.Ba
     return is_class_and_subclass(annotation, pydantic_v2.BaseModel)  # pyright: ignore[reportOptionalMemberAccess]
 
 
-class PydanticInitPlugin(InitPluginProtocol):
+class PydanticInitPlugin(InitPlugin):
     __slots__ = (
         "exclude",
         "exclude_defaults",

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import itertools
 from dataclasses import replace
 from typing import TYPE_CHECKING
 from unittest.mock import ANY
@@ -90,6 +91,21 @@ def expected_field_defs(int_factory: Callable[[], int]) -> list[DTOFieldDefiniti
             raw=ANY,
             kwarg_definition=ANY,
         ),
+        replace(
+            DTOFieldDefinition.from_field_definition(
+                field_definition=FieldDefinition.from_kwarg(
+                    annotation=str,
+                    name="computed",
+                ),
+                model_name=ANY,
+                default_factory=None,
+                dto_field=DTOField(mark="read-only"),
+            ),
+            metadata=ANY,
+            type_wrappers=ANY,
+            raw=ANY,
+            kwarg_definition=ANY,
+        ),
     ]
 
 
@@ -103,9 +119,17 @@ def test_field_definition_generation(
         d: int = field(default=1)
         e: int = field(default_factory=int_factory)
 
+        @property
+        def computed(self) -> str:
+            return "i am computed"
+
+        @property
+        def _private_computed(self) -> str:
+            return ""
+
     field_defs = list(MsgspecDTO.generate_field_definitions(TestStruct))
     assert field_defs[0].model_name == "TestStruct"
-    for field_def, exp in zip(field_defs, expected_field_defs):
+    for field_def, exp in itertools.zip_longest(expected_field_defs, field_defs, fillvalue=None):
         assert field_def == exp
 
 

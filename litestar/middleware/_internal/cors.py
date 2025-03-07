@@ -44,7 +44,7 @@ class CORSMiddleware(AbstractMiddleware):
         origin = headers.get("origin")
 
         if scope["type"] == ScopeType.HTTP and scope["method"] == HttpMethod.OPTIONS and origin:
-            request = scope["app"].request_class(scope=scope, receive=receive, send=send)
+            request = scope["litestar_app"].request_class(scope=scope, receive=receive, send=send)
             asgi_response = self._create_preflight_response(origin=origin, request_headers=headers).to_asgi_response(
                 app=None, request=request
             )
@@ -113,8 +113,12 @@ class CORSMiddleware(AbstractMiddleware):
                 response_headers["Access-Control-Allow-Headers"] = ", ".join(
                     sorted(set(pre_flight_requested_headers) | DEFAULT_ALLOWED_CORS_HEADERS)  # pyright: ignore
                 )
-            elif any(header.lower() not in self.config.allow_headers for header in pre_flight_requested_headers):
-                failures.append("headers")
+            else:
+                all_allowed_headers = set(self.config.allow_headers).union(
+                    default_header.lower() for default_header in DEFAULT_ALLOWED_CORS_HEADERS
+                )
+                if any(header.lower() not in all_allowed_headers for header in pre_flight_requested_headers):
+                    failures.append("headers")
 
         return (
             Response(
