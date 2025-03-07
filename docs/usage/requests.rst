@@ -133,10 +133,10 @@ MessagePack data
 ----------------
 
 To receive `MessagePack <https://msgpack.org/>`_ data, specify the appropriate ``Content-Type``
-for ``Body`` , by using :class:`RequestEncodingType.MESSAGEPACK <.enums.RequestEncodingType>`:
+for ``Body``\ , by using :class:`RequestEncodingType.MESSAGEPACK <.enums.RequestEncodingType>`:
 
 .. literalinclude:: /examples/request_data/msgpack_request.py
-   :caption: msgpack_request.py
+   :caption: ``msgpack_request.py``
    :language: python
 
 
