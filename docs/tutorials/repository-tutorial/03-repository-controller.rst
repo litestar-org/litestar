@@ -13,7 +13,7 @@ parameters.
 
 .. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_async_repository.py
     :language: python
-    :caption: app.py
+    :caption: ``app.py``
     :lines: 78-80
     :linenos:
 
@@ -26,7 +26,7 @@ statement:
 
 .. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_async_repository.py
     :language: python
-    :caption: app.py
+    :caption: ``app.py``
     :lines: 83-90
     :linenos:
 
@@ -41,7 +41,7 @@ interacting with the ``Author`` model:
 
     .. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_async_repository.py
         :language: python
-        :caption: app.py
+        :caption: ``app.py``
         :lines: 116-194
         :linenos:
 
@@ -56,7 +56,7 @@ Here's a corresponding synchronous version of the previous example:
 
     .. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_sync_repository.py
         :language: python
-        :caption: app.py
+        :caption: ``app.py``
         :linenos:
 
 The examples above enable a feature-complete CRUD service that includes pagination! In
@@ -72,6 +72,6 @@ Full Code
 
     .. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_async_repository.py
         :language: python
-        :caption: app.py
+        :caption: ``app.py``
         :emphasize-lines: 78-80, 83-90, 116-194
         :linenos:

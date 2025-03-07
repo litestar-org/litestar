@@ -5,7 +5,7 @@ the user's email in the response.
 
 .. literalinclude:: /examples/data_transfer_objects/factory/tutorial/simple_dto_exclude.py
     :language: python
-    :caption: app.py
+    :caption: ``app.py``
     :emphasize-lines: 6,16,17,20
     :linenos:
 

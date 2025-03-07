@@ -50,7 +50,7 @@ To install ``nginx-unit``, refer to the `official documentation <https://unit.ng
 Start the process, replace ``user`` by your system user.
 
 .. code-block:: sh
-    :caption: Start nginx-unit
+    :caption: Start ``nginx-unit``
 
     unitd --user <user>
 
@@ -59,7 +59,7 @@ Start the process, replace ``user`` by your system user.
 
 .. literalinclude:: /examples/todo_app/hello_world.py
     :language: python
-    :caption: run.py
+    :caption: ``run.py``
 
 Configuration
 -------------
@@ -68,7 +68,7 @@ Create a file called ``unit.json``, put it at the root of the your project
 
 .. literalinclude:: /examples/deployment/nginx-unit/unit.json
     :language: json
-    :caption: unit.json
+    :caption: ``unit.json``
 
 Listeners
 +++++++++
@@ -123,6 +123,6 @@ To update the ``nginx-unit`` service already running, use ``PUT`` method to send
 ``/config`` endpoint
 
 .. code-block:: sh
-    :caption: Update nginx-unit configuration
+    :caption: Update ``nginx-unit`` configuration
 
     curl -X PUT --data-binary @unit.json --unix-socket /opt/homebrew/var/run/unit/control.sock http://localhost/config
