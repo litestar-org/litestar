@@ -17,13 +17,13 @@ Using DTO Factories
 -------------------
 
 DTO factories are used to create DTOs for use with a particular data modelling library. The following example creates
-a DTO for use with a SQLAlchemy model:
+a DTO for use with an SQLAlchemy model:
 
 .. literalinclude:: /examples/data_transfer_objects/factory/simple_dto_factory_example.py
-    :caption: A SQLAlchemy model DTO
+    :caption: An SQLAlchemy model DTO
     :language: python
 
-Here we see that a SQLAlchemy model is used as both the ``data`` and return annotation for the handler, and while
+Here we see that an SQLAlchemy model is used as both the ``data`` and return annotation for the handler, and while
 Litestar does not natively support encoding/decoding to/from SQLAlchemy models, through
 :class:`SQLAlchemyDTO <advanced_alchemy.extensions.litestar.dto.SQLAlchemyDTO>` we can do this.
 
