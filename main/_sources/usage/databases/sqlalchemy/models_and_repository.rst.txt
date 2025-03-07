@@ -56,7 +56,7 @@ Models using these bases also include the following enhancements:
   :class:`JSON <sqlalchemy.types.JSON>` for other dialects.
 
 .. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_declarative_models.py
-    :caption: sqlalchemy_declarative_models.py
+    :caption: ``sqlalchemy_declarative_models.py``
     :language: python
 
 Basic Controller Integration
@@ -66,13 +66,13 @@ Once you have declared your models, you are ready to use the ``SQLAlchemyAsyncRe
 your controllers and function based routes.
 
 .. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_async_repository.py
-    :caption: sqlalchemy_async_repository.py
+    :caption: ``sqlalchemy_async_repository.py``
     :language: python
 
 Alternately, you may use the ``SQLAlchemySyncRepository`` class for your synchronous database connection.
 
 .. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_sync_repository.py
-    :caption: sqlalchemy_sync_repository.py
+    :caption: ``sqlalchemy_sync_repository.py``
     :language: python
 
 .. seealso::

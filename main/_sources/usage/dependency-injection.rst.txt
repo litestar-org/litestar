@@ -106,7 +106,7 @@ A basic example
 ~~~~~~~~~~~~~~~
 
 .. literalinclude:: /examples/dependency_injection/dependency_yield_simple.py
-    :caption: dependencies.py
+    :caption: ``dependencies.py``
     :language: python
 
 
@@ -131,7 +131,7 @@ of the dependency based on exceptions, for example rolling back a database sessi
 and committing otherwise.
 
 .. literalinclude:: /examples/dependency_injection/dependency_yield_exceptions.py
-    :caption: dependencies.py
+    :caption: ``dependencies.py``
     :language: python
 
 
