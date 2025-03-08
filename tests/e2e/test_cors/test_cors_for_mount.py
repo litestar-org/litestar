@@ -8,6 +8,7 @@ import pytest
 from litestar import Litestar, asgi
 from litestar.config.cors import CORSConfig
 from litestar.enums import ScopeType
+from litestar.middleware._internal.cors import CORSMiddleware
 from litestar.testing import TestClient
 from litestar.types.asgi_types import ASGIApp, Receive, Scope, Send
 
@@ -53,7 +54,7 @@ def asgi_app_fixture(asgi_mock: MagicMock) -> ASGIApp:
 def test_cors_middleware_for_mount(asgi_app: ASGIApp, asgi_mock: MagicMock) -> None:
     cors_config = CORSConfig(allow_methods=["*"], allow_origins=["https://some-domain.com"])
     app = Litestar(
-        cors_config=cors_config,
+        middleware=[CORSMiddleware(cors_config)],
         route_handlers=[
             asgi("/app", is_mount=True)(asgi_app),
         ],

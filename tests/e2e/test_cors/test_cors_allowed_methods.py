@@ -2,6 +2,7 @@ from http import HTTPStatus
 
 from litestar import Litestar, get
 from litestar.config.cors import CORSConfig
+from litestar.middleware._internal.cors import CORSMiddleware
 from litestar.testing import TestClient
 
 
@@ -11,7 +12,7 @@ async def method_handler() -> str:
 
 
 cors_config = CORSConfig(allow_methods=["GET", "POST"], allow_origins=["https://allowed-origin.com"])
-app = Litestar(route_handlers=[method_handler], cors_config=cors_config)
+app = Litestar(route_handlers=[method_handler], middleware=[CORSMiddleware(cors_config)])
 
 
 def test_cors_allowed_methods() -> None:
