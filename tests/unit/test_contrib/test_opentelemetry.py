@@ -16,7 +16,11 @@ from opentelemetry.sdk.trace.export.in_memory_span_exporter import InMemorySpanE
 
 from litestar import WebSocket, get, websocket
 from litestar.config.app import AppConfig
-from litestar.contrib.opentelemetry import OpenTelemetryConfig, OpenTelemetryPlugin
+from litestar.contrib.opentelemetry import (
+    OpenTelemetryConfig,
+    OpenTelemetryInstrumentationMiddleware,
+    OpenTelemetryPlugin,
+)
 from litestar.exceptions import http_exceptions
 from litestar.status_codes import HTTP_200_OK
 from litestar.testing import create_test_client
@@ -59,7 +63,7 @@ def config(
 @pytest.fixture(params=["middleware", "plugin"])
 def app_config(request: FixtureRequest, config: OpenTelemetryConfig) -> AppConfig:
     if request.param == "middleware":
-        return AppConfig(middleware=[config.middleware])
+        return AppConfig(middleware=[OpenTelemetryInstrumentationMiddleware(config)])
     return AppConfig(plugins=[OpenTelemetryPlugin(config)])
 
 
