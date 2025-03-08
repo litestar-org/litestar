@@ -182,6 +182,8 @@ def build_route_middleware_stack(
     Returns:
         An ASGIApp that is composed of a "stack" of middlewares.
     """
+    from opentelemetry.instrumentation.asgi import OpenTelemetryMiddleware
+
     from litestar.middleware._internal.cors import CORSMiddleware
     from litestar.routes import HTTPRoute
 
@@ -196,7 +198,7 @@ def build_route_middleware_stack(
 
     # original order is csrf > compression > cache > allowed_hosts
     for middleware in handler_middleware:
-        if not isinstance(middleware, CORSMiddleware):
+        if not isinstance(middleware, CORSMiddleware) and not isinstance(middleware, OpenTelemetryMiddleware):
             asgi_handler = middleware(asgi_handler)
     if has_cached_route:
         from litestar.middleware.response_cache import ResponseCacheMiddleware
