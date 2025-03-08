@@ -51,6 +51,9 @@ class RateLimitMiddleware(ASGIMiddleware):
         self.max_requests: int = config.rate_limit[1]
         self.unit: DurationUnit = config.rate_limit[0]
 
+        self.exclude_opt_key = config.exclude_opt_key
+        self.exclude_path_pattern = config.exclude
+
     async def handle(self, scope: Scope, receive: Receive, send: Send, next_app: ASGIApp) -> None:
         app = scope["litestar_app"]
         request: Request[Any, Any, Any] = app.request_class(scope)
@@ -197,7 +200,7 @@ class RateLimitConfig:
 
     rate_limit: tuple[DurationUnit, int]
     """A tuple containing a time unit (second, minute, hour, day) and quantity, e.g. ("day", 1) or ("minute", 5)."""
-    exclude: str | list[str] | None = field(default=None)
+    exclude: str | tuple[str] | None = field(default=None)
     """A pattern or list of patterns to skip in the rate limiting middleware."""
     exclude_opt_key: str | None = field(default=None)
     """An identifier to use on routes to disable rate limiting for a particular route."""
