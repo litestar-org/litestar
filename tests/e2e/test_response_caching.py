@@ -1,6 +1,7 @@
 import gzip
 import random
 from datetime import timedelta
+from types import FunctionType
 from typing import TYPE_CHECKING, Any, Optional, TypeVar, Union
 from unittest.mock import MagicMock
 from uuid import uuid4
@@ -13,7 +14,7 @@ from litestar.config.compression import CompressionConfig
 from litestar.config.response_cache import CACHE_FOREVER, ResponseCacheConfig
 from litestar.datastructures import State
 from litestar.enums import CompressionEncoding
-from litestar.middleware.response_cache import ResponseCacheMiddleware
+from litestar.middleware.compression import CompressionMiddleware
 from litestar.status_codes import HTTP_200_OK, HTTP_201_CREATED, HTTP_400_BAD_REQUEST, HTTP_500_INTERNAL_SERVER_ERROR
 from litestar.stores.base import Store
 from litestar.stores.memory import MemoryStore
@@ -227,7 +228,8 @@ def test_middleware_not_applied_to_non_cached_routes(
         cur = cur.app
     unpacked_middleware.append(cur)
 
-    assert len([m for m in unpacked_middleware if isinstance(m, ResponseCacheMiddleware)]) == int(expect_applied)
+    # if no cache the outermost middleware is ExceptionMiddleware and we'll get MethodType instead
+    assert len([m for m in unpacked_middleware if isinstance(m, FunctionType)]) == int(expect_applied)
 
 
 async def test_compression_applies_before_cache() -> None:
@@ -240,7 +242,7 @@ async def test_compression_applies_before_cache() -> None:
 
     app = Litestar(
         route_handlers=[handler_fn],
-        compression_config=CompressionConfig(backend="gzip"),
+        middleware=[CompressionMiddleware(CompressionConfig(backend="gzip"))],
     )
 
     with TestClient(app) as client:

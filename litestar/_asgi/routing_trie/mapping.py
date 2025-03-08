@@ -182,38 +182,26 @@ def build_route_middleware_stack(
     Returns:
         An ASGIApp that is composed of a "stack" of middlewares.
     """
-    from litestar.middleware.allowed_hosts import AllowedHostsMiddleware
-    from litestar.middleware.compression import CompressionMiddleware
-    from litestar.middleware.csrf import CSRFMiddleware
-    from litestar.middleware.response_cache import ResponseCacheMiddleware
+    from opentelemetry.instrumentation.asgi import OpenTelemetryMiddleware
+
+    from litestar.middleware._internal.cors import CORSMiddleware
     from litestar.routes import HTTPRoute
 
     asgi_handler: ASGIApp = route.handle  # type: ignore[assignment]
     handler_middleware = route_handler.middleware
     has_cached_route = isinstance(route, HTTPRoute) and any(r.cache for r in route.route_handlers)
-    has_middleware = (
-        app.csrf_config or app.compression_config or has_cached_route or app.allowed_hosts or handler_middleware
-    )
+    # If there is an exception raised from the handler, the first ExceptionHandlerMiddleware that catches the
+    # exception will create the response and call send(). As middleware may wrap the send() callable, we need there
+    # to be an instance of ExceptionHandlerMiddleware in between the handler and the middleware so that any send
+    # wrappers instated by middleware are called. If there is no middleware, we can skip this step.
+    asgi_handler = wrap_in_exception_handler(app=asgi_handler)
 
-    if has_middleware:
-        # If there is an exception raised from the handler, the first ExceptionHandlerMiddleware that catches the
-        # exception will create the response and call send(). As middleware may wrap the send() callable, we need there
-        # to be an instance of ExceptionHandlerMiddleware in between the handler and the middleware so that any send
-        # wrappers instated by middleware are called. If there is no middleware, we can skip this step.
-        asgi_handler = wrap_in_exception_handler(app=asgi_handler)
-
-        if app.csrf_config:
-            asgi_handler = CSRFMiddleware(app=asgi_handler, config=app.csrf_config)
-
-        if app.compression_config:
-            asgi_handler = CompressionMiddleware(app=asgi_handler, config=app.compression_config)
-
-        if has_cached_route:
-            asgi_handler = ResponseCacheMiddleware(app=asgi_handler, config=app.response_cache_config)
-
-        if app.allowed_hosts:
-            asgi_handler = AllowedHostsMiddleware(app=asgi_handler, config=app.allowed_hosts)
-
-        for middleware in handler_middleware:
+    # original order is csrf > compression > cache > allowed_hosts
+    for middleware in handler_middleware:
+        if not isinstance(middleware, CORSMiddleware) and not isinstance(middleware, OpenTelemetryMiddleware):
             asgi_handler = middleware(asgi_handler)
+    if has_cached_route:
+        from litestar.middleware.response_cache import ResponseCacheMiddleware
+
+        asgi_handler = ResponseCacheMiddleware(config=app.response_cache_config)(asgi_handler)
     return asgi_handler

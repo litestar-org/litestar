@@ -70,7 +70,7 @@ async def test_registry_access_integration() -> None:
 
     assert app.stores.get("rate_limit") is rate_limit_store
     # this is a weird assertion but the easiest way to check if our example is correct
-    assert app.middleware[0].kwargs["config"].get_store_from_app(app) is rate_limit_store
+    assert app.middleware[0].config.get_store_from_app(app) is rate_limit_store
 
 
 @patch("litestar.stores.redis.Redis")

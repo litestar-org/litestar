@@ -6,6 +6,7 @@ import pytest
 
 from litestar import get, route
 from litestar.config.cors import CORSConfig
+from litestar.middleware._internal.cors import CORSMiddleware
 from litestar.status_codes import HTTP_204_NO_CONTENT, HTTP_400_BAD_REQUEST
 from litestar.testing import create_test_client
 from tests.helpers import RANDOM
@@ -45,7 +46,9 @@ def test_cors_options_request_with_correct_origin_passes() -> None:
     def handler() -> None:
         return None
 
-    with create_test_client(handler, cors_config=CORSConfig(allow_origins=["http://testserver.local"])) as client:
+    with create_test_client(
+        handler, middleware=[CORSMiddleware(CORSConfig(allow_origins=["http://testserver.local"]))]
+    ) as client:
         response = client.options("/", headers={"Origin": "http://testserver.local"})
         assert response.status_code == HTTP_204_NO_CONTENT
         assert response.headers.get("Access-Control-Allow-Methods") == "DELETE, GET, HEAD, OPTIONS, PATCH, POST, PUT"
@@ -58,7 +61,7 @@ def test_cors_options_request_with_correct_origin_passes_with_allow_all_origins(
     def handler() -> None:
         return None
 
-    with create_test_client(handler, cors_config=CORSConfig(allow_origins=["*"])) as client:
+    with create_test_client(handler, middleware=[CORSMiddleware(CORSConfig(allow_origins=["*"]))]) as client:
         response = client.options("/", headers={"Origin": "http://testserver.local"})
         assert response.status_code == HTTP_204_NO_CONTENT
         assert response.headers.get("Access-Control-Allow-Methods") == "DELETE, GET, HEAD, OPTIONS, PATCH, POST, PUT"
@@ -71,7 +74,9 @@ def test_cors_options_request_with_wrong_origin_fails() -> None:
     def handler() -> None:
         return None
 
-    with create_test_client(handler, cors_config=CORSConfig(allow_origins=["http://testserver.local"])) as client:
+    with create_test_client(
+        handler, middleware=[CORSMiddleware(CORSConfig(allow_origins=["http://testserver.local"]))]
+    ) as client:
         response = client.options("/", headers={"Origin": "https://moishe.zuchmir"})
         assert response.status_code == HTTP_400_BAD_REQUEST
 
@@ -96,7 +101,8 @@ def test_cors_options_request_with_different_domains_matches_regex(
         return None
 
     with create_test_client(
-        handler, cors_config=CORSConfig(allow_origins=allowed_origins, allow_origin_regex=allowed_origin_regex)
+        handler,
+        middleware=[CORSMiddleware(CORSConfig(allow_origins=allowed_origins, allow_origin_regex=allowed_origin_regex))],
     ) as client:
         response = client.options("/", headers={"Origin": origin})
         assert response.status_code == HTTP_204_NO_CONTENT
@@ -112,7 +118,10 @@ def test_cors_options_request_allow_credentials_header(origin: str, allow_creden
         return None
 
     with create_test_client(
-        handler, cors_config=CORSConfig(allow_origins=["http://testserver.local"], allow_credentials=allow_credentials)
+        handler,
+        middleware=[
+            CORSMiddleware(CORSConfig(allow_origins=["http://testserver.local"], allow_credentials=allow_credentials))
+        ],
     ) as client:
         headers: Mapping[str, str] = {"Origin": origin} if origin else {}
         response = client.options("/", headers=headers)
@@ -129,7 +138,7 @@ def test_cors_options_request_with_wrong_headers_fails() -> None:
     def handler() -> None:
         return None
 
-    with create_test_client(handler, cors_config=CORSConfig(allow_headers=["X-My-Header"])) as client:
+    with create_test_client(handler, middleware=[CORSMiddleware(CORSConfig(allow_headers=["X-My-Header"]))]) as client:
         response = client.options(
             "/",
             headers={
@@ -163,7 +172,7 @@ def test_requested_headers_are_reflected_back_when_allow_all_headers() -> None:
     def handler() -> None:
         return None
 
-    with create_test_client(handler, cors_config=CORSConfig(allow_headers=["*"])) as client:
+    with create_test_client(handler, middleware=[CORSMiddleware(CORSConfig(allow_headers=["*"]))]) as client:
         response = client.options(
             "/",
             headers={
@@ -183,7 +192,7 @@ def test_cors_options_request_fails_if_request_method_not_allowed() -> None:
     def handler() -> None:
         return None
 
-    with create_test_client(handler, cors_config=CORSConfig(allow_methods=["GET"])) as client:
+    with create_test_client(handler, middleware=[CORSMiddleware(CORSConfig(allow_methods=["GET"]))]) as client:
         response = client.options(
             "/",
             headers={"Origin": "http://testserver.local", "Access-Control-Request-Method": "POST"},
@@ -196,7 +205,7 @@ def test_cors_options_request_succeeds_if_request_method_not_specified() -> None
     def handler() -> None:
         return None
 
-    with create_test_client(handler, cors_config=CORSConfig(allow_methods=["GET"])) as client:
+    with create_test_client(handler, middleware=[CORSMiddleware(CORSConfig(allow_methods=["GET"]))]) as client:
         response = client.options(
             "/",
             headers={
