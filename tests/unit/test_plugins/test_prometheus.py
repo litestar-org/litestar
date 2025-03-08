@@ -38,7 +38,7 @@ def test_prometheus_exporter_metrics_with_http() -> None:
         raise HTTPException("Error Occurred")
 
     with create_test_client(
-        [duration_handler, handler_error, PrometheusController], middleware=[config.middleware]
+        [duration_handler, handler_error, PrometheusController], middleware=[PrometheusMiddleware(config)]
     ) as client:
         client.get("/error")
         client.get("/duration")
@@ -118,7 +118,7 @@ def test_prometheus_middleware_configurations() -> None:
     def ignore() -> dict:
         return {"hello": "world"}
 
-    with create_test_client([test, ignore, PrometheusController], middleware=[config.middleware]) as client:
+    with create_test_client([test, ignore, PrometheusController], middleware=[PrometheusMiddleware(config)]) as client:
         client.get("/test")
         client.post("/ignore")
         metrics_exporter_response = client.get("/metrics")
@@ -165,7 +165,7 @@ def test_prometheus_controller_configurations() -> None:
     def test() -> dict:
         return {"hello": "world"}
 
-    with create_test_client([test, CustomPrometheusController], middleware=[config.middleware]) as client:
+    with create_test_client([test, CustomPrometheusController], middleware=[PrometheusMiddleware(config)]) as client:
         client.get("/test")
 
         metrics_exporter_response = client.get("/metrics/custom")
@@ -186,7 +186,7 @@ def test_prometheus_with_websocket() -> None:
     def test(data: str) -> dict:
         return {"hello": data}
 
-    with create_test_client([test, PrometheusController], middleware=[config.middleware]) as client:
+    with create_test_client([test, PrometheusController], middleware=[PrometheusMiddleware(config)]) as client:
         with client.websocket_connect("/test") as websocket:
             websocket.send_text("litestar")
             websocket.receive_json()
@@ -211,7 +211,7 @@ def test_procdir(monkeypatch: MonkeyPatch, tmp_path: Path, mocker: MockerFixture
     mock_registry = mocker.patch("litestar.plugins.prometheus.controller.CollectorRegistry")
     mock_collector = mocker.patch("litestar.plugins.prometheus.controller.multiprocess.MultiProcessCollector")
 
-    with create_test_client([PrometheusController], middleware=[config.middleware]) as client:
+    with create_test_client([PrometheusController], middleware=[PrometheusMiddleware(config)]) as client:
         client.get("/metrics")
 
     mock_collector.assert_called_once_with(mock_registry.return_value)

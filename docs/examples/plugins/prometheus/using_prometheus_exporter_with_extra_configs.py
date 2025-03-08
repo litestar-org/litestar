@@ -1,7 +1,7 @@
 from typing import Any
 
 from litestar import Litestar, Request
-from litestar.plugins.prometheus import PrometheusConfig, PrometheusController
+from litestar.plugins.prometheus import PrometheusConfig, PrometheusController, PrometheusMiddleware
 
 
 # We can modify the path of our custom handler and override the metrics format by subclassing the PrometheusController.
@@ -45,4 +45,4 @@ prometheus_config = PrometheusConfig(
 
 
 # Creating the litestar app instance with our custom PrometheusConfig and PrometheusController.
-app = Litestar(route_handlers=[CustomPrometheusController], middleware=[prometheus_config.middleware])
+app = Litestar(route_handlers=[CustomPrometheusController], middleware=[PrometheusMiddleware(prometheus_config)])
