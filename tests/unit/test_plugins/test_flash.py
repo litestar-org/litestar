@@ -10,7 +10,7 @@ from litestar.contrib.jinja import JinjaTemplateEngine
 from litestar.contrib.mako import MakoTemplateEngine
 from litestar.contrib.minijinja import MiniJinjaTemplateEngine
 from litestar.exceptions import ImproperlyConfiguredException
-from litestar.middleware.rate_limit import RateLimitConfig
+from litestar.middleware.rate_limit import RateLimitConfig, RateLimitMiddleware
 from litestar.middleware.session.server_side import ServerSideSessionConfig
 from litestar.plugins.flash import FlashConfig, FlashPlugin, flash
 from litestar.response import Redirect, Template
@@ -110,4 +110,4 @@ def test_flash_config_has_wrong_middleware_type() -> None:
     flash_config = FlashConfig(template_config=template_config)
     rate_limit_config = RateLimitConfig(rate_limit=("minute", 1), exclude=["/schema"])
     with pytest.raises(ImproperlyConfiguredException):
-        Litestar(plugins=[FlashPlugin(config=flash_config)], middleware=[rate_limit_config.middleware])
+        Litestar(plugins=[FlashPlugin(config=flash_config)], middleware=[RateLimitMiddleware(rate_limit_config)])
