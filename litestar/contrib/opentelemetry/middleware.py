@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from litestar.exceptions import MissingDependencyException
-from litestar.middleware.base import AbstractMiddleware
+from litestar.middleware import ASGIMiddleware
 
 __all__ = ("OpenTelemetryInstrumentationMiddleware",)
 
@@ -21,38 +21,29 @@ if TYPE_CHECKING:
     from litestar.types import ASGIApp, Receive, Scope, Send
 
 
-class OpenTelemetryInstrumentationMiddleware(AbstractMiddleware):
+class OpenTelemetryInstrumentationMiddleware(ASGIMiddleware):
     """OpenTelemetry Middleware."""
 
-    def __init__(self, app: ASGIApp, config: OpenTelemetryConfig) -> None:
+    def __init__(self, config: OpenTelemetryConfig) -> None:
         """Middleware that adds OpenTelemetry instrumentation to the application.
 
         Args:
-            app: The ``next`` ASGI app to call.
             config: An instance of :class:`OpenTelemetryConfig <.contrib.opentelemetry.OpenTelemetryConfig>`
         """
-        super().__init__(app=app, scopes=config.scopes, exclude=config.exclude, exclude_opt_key=config.exclude_opt_key)
+        self.exclude_opt_key = config.exclude_opt_key
+        self.exclude_path_pattern = config.exclude
+        self.config = config
+
+    async def handle(self, scope: Scope, receive: Receive, send: Send, next_app: ASGIApp) -> None:
         self.open_telemetry_middleware = OpenTelemetryMiddleware(
-            app=app,
-            client_request_hook=config.client_request_hook_handler,  # type: ignore[arg-type]
-            client_response_hook=config.client_response_hook_handler,  # type: ignore[arg-type]
-            default_span_details=config.scope_span_details_extractor,
-            excluded_urls=get_excluded_urls(config.exclude_urls_env_key),
-            meter=config.meter,
-            meter_provider=config.meter_provider,
-            server_request_hook=config.server_request_hook_handler,
-            tracer_provider=config.tracer_provider,
+            app=next_app,
+            client_request_hook=self.config.client_request_hook_handler,  # type: ignore[arg-type]
+            client_response_hook=self.config.client_response_hook_handler,  # type: ignore[arg-type]
+            default_span_details=self.config.scope_span_details_extractor,
+            excluded_urls=get_excluded_urls(self.config.exclude_urls_env_key),
+            meter=self.config.meter,
+            meter_provider=self.config.meter_provider,
+            server_request_hook=self.config.server_request_hook_handler,
+            tracer_provider=self.config.tracer_provider,
         )
-
-    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
-        """ASGI callable.
-
-        Args:
-            scope: The ASGI connection scope.
-            receive: The ASGI receive function.
-            send: The ASGI send function.
-
-        Returns:
-            None
-        """
         await self.open_telemetry_middleware(scope, receive, send)  # type: ignore[arg-type] # pyright: ignore[reportGeneralTypeIssues]
