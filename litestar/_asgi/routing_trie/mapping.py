@@ -182,6 +182,7 @@ def build_route_middleware_stack(
     Returns:
         An ASGIApp that is composed of a "stack" of middlewares.
     """
+    from litestar.middleware._internal.cors import CORSMiddleware
     from litestar.routes import HTTPRoute
 
     asgi_handler: ASGIApp = route.handle  # type: ignore[assignment]
@@ -195,7 +196,8 @@ def build_route_middleware_stack(
 
     # original order is csrf > compression > cache > allowed_hosts
     for middleware in handler_middleware:
-        asgi_handler = middleware(asgi_handler)
+        if not isinstance(middleware, CORSMiddleware):
+            asgi_handler = middleware(asgi_handler)
     if has_cached_route:
         from litestar.middleware.response_cache import ResponseCacheMiddleware
 
