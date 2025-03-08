@@ -174,7 +174,7 @@ dev = [
   "litestar[full]",
   "beanie>=1.21.0",
   "beautifulsoup4",
-  "fsspec",
+  "fsspec>=2025",
   "greenlet",
   "hypothesis",
   "python-dotenv",

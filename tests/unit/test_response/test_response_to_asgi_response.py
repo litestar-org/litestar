@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from collections.abc import Generator, Iterator
-from inspect import iscoroutine
 from pathlib import Path
 from time import sleep
 from typing import TYPE_CHECKING, Any, cast
@@ -178,9 +177,7 @@ async def test_to_response_returning_file_response(anyio_backend: str) -> None:
         route_handler = route.route_handlers[0]
         response = await route_handler.to_response(data=route_handler.fn(), request=RequestFactory().get())
         assert isinstance(response, ASGIFileResponse)
-        assert response.file_info
-        if iscoroutine(response.file_info):
-            await response.file_info
+        assert response.file_info is None
 
         encoded_headers = response.encode_headers()
         assert (b"local-header", b"123") in encoded_headers

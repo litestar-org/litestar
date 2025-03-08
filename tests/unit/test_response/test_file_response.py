@@ -1,5 +1,4 @@
 import os
-from collections.abc import Coroutine
 from datetime import datetime, timezone
 from email.utils import formatdate
 from os import stat, urandom
@@ -13,8 +12,8 @@ from litestar import get
 from litestar.connection.base import empty_send
 from litestar.datastructures import ETag
 from litestar.exceptions import ImproperlyConfiguredException
-from litestar.file_system import BaseLocalFileSystem, FileSystemAdapter
-from litestar.response.file import ASGIFileResponse, File, async_file_iterator
+from litestar.file_system import BaseLocalFileSystem
+from litestar.response.file import ASGIFileResponse, File
 from litestar.status_codes import HTTP_200_OK, HTTP_500_INTERNAL_SERVER_ERROR
 from litestar.testing import create_test_client
 from litestar.types import FileSystemProtocol
@@ -220,14 +219,7 @@ async def test_file_iterator(tmpdir: Path, chunk_size: int) -> None:
     content = urandom(1024)
     path = Path(tmpdir / "file.txt")
     path.write_bytes(content)
-    result = b"".join(
-        [
-            chunk
-            async for chunk in async_file_iterator(
-                file_path=path, chunk_size=chunk_size, adapter=FileSystemAdapter(BaseLocalFileSystem())
-            )
-        ]
-    )
+    result = b"".join([chunk async for chunk in BaseLocalFileSystem().iter(path, chunk_size)])
     assert result == content
 
 
@@ -297,7 +289,7 @@ def test_file_with_passed_in_stat_result(tmpdir: "Path") -> None:
 
     @get("/", media_type="application/octet-stream")
     def handler() -> File:
-        return File(filename="text.txt", path=path, file_system=fs, stat_result=stat_result)  # pyright: ignore
+        return File(filename="text.txt", path=path, file_system=fs, file_info=stat_result)  # pyright: ignore
 
     with create_test_client(handler) as client:
         response = client.get("/")
@@ -345,46 +337,6 @@ async def test_file_sets_etag_correctly(tmpdir: "Path") -> None:
         assert response.headers["etag"] == '"special"'
 
 
-def test_file_system_validation(tmpdir: "Path") -> None:
-    path = tmpdir / "text.txt"
-    path.write_text("content", "utf-8")
-
-    class FSWithoutOpen:
-        def info(self) -> None:
-            return
-
-    with pytest.raises(ImproperlyConfiguredException):
-        File(
-            filename="text.txt",
-            path=path,
-            file_system=FSWithoutOpen(),  # type:ignore[arg-type]
-        )
-
-    class FSWithoutInfo:
-        def open(self) -> None:
-            return
-
-    with pytest.raises(ImproperlyConfiguredException):
-        File(
-            filename="text.txt",
-            path=path,
-            file_system=FSWithoutInfo(),  # type:ignore[arg-type]
-        )
-
-    class ImplementedFS:
-        def info(self) -> None:
-            return
-
-        def open(self) -> None:
-            return
-
-    assert File(
-        filename="text.txt",
-        path=path,
-        file_system=ImplementedFS(),  # type:ignore[arg-type]
-    )
-
-
 async def test_file_response_with_missing_file_raises_error(tmpdir: Path) -> None:
     path = tmpdir / "404.txt"
     with pytest.raises(ImproperlyConfiguredException):
@@ -429,8 +381,6 @@ def test_does_not_override_existing_last_modified_header(header_name: str, tmpdi
 
 def test_asgi_response_encoded_headers(file: Path) -> None:
     response = ASGIFileResponse(encoded_headers=[(b"foo", b"bar")], file_path=file)
-    if isinstance(response.file_info, Coroutine):
-        response.file_info.close()  # silence the ResourceWarning
     assert response.encode_headers() == [
         (b"foo", b"bar"),
         (b"content-type", b"application/octet-stream"),

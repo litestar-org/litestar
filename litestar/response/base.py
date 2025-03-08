@@ -129,7 +129,7 @@ class ASGIResponse:
         )
         self.encoding = encoding
         self.is_head_response = is_head_response
-        self.status_code = status_code
+        self.status_code: int = status_code
 
     @property
     @deprecated("3.0", kind="property", alternative="encode_headers()")

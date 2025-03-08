@@ -1,22 +1,28 @@
 from __future__ import annotations
 
+import pathlib
 from stat import S_ISDIR
-from typing import TYPE_CHECKING, Any, AnyStr, cast
+from typing import TYPE_CHECKING, Any, cast
 
-from anyio import AsyncFile, Path, open_file
+import anyio
+from fsspec.asyn import AsyncFileSystem as FsspecAsyncFileSystem
 
 from litestar.concurrency import sync_to_thread
-from litestar.exceptions import InternalServerException, NotAuthorizedException
 from litestar.types.file_types import FileSystemProtocol
-from litestar.utils.predicates import is_async_callable
 
-__all__ = ("BaseLocalFileSystem", "FileSystemAdapter")
+__all__ = (
+    "BaseLocalFileSystem",
+    "ensure_async_file_system",
+    "parse_stat_result",
+)
 
 
 if TYPE_CHECKING:
+    import io
+    from collections.abc import AsyncGenerator
     from os import stat_result
 
-    from _typeshed import OpenBinaryMode
+    from fsspec import AbstractFileSystem as FsspecFileSystem
 
     from litestar.types import PathType
     from litestar.types.file_types import FileInfo
@@ -35,120 +41,150 @@ class BaseLocalFileSystem(FileSystemProtocol):
         Returns:
             A dictionary of file info.
         """
-        result = await Path(path).stat()
-        return await FileSystemAdapter.parse_stat_result(path=path, result=result)
+        result = await sync_to_thread(pathlib.Path(path).stat)
+        return await parse_stat_result(path=path, result=result)
 
-    async def open(self, file: PathType, mode: str, buffering: int = -1) -> AsyncFile[AnyStr]:  # pyright: ignore
-        """Return a file-like object from the filesystem.
-
-        Notes:
-            - The return value must be a context-manager
-
-        Args:
-            file: Path to the target file.
-            mode: Mode, similar to the built ``open``.
-            buffering: Buffer size.
-        """
-        return await open_file(file=file, mode=mode, buffering=buffering)  # type: ignore[call-overload, no-any-return]
-
-
-class FileSystemAdapter:
-    """Wrapper around a ``FileSystemProtocol``, normalising its interface."""
-
-    def __init__(self, file_system: FileSystemProtocol) -> None:
-        """Initialize an adapter from a given ``file_system``
-
-        Args:
-            file_system: A filesystem class adhering to the :class:`FileSystemProtocol <litestar.types.FileSystemProtocol>`
-        """
-        self.file_system = file_system
-
-    async def info(self, path: PathType) -> FileInfo:
-        """Proxies the call to the underlying FS Spec's ``info`` method, ensuring it's done in an async fashion and with
-        strong typing.
-
-        Args:
-            path: A file path to load the info for.
-
-        Returns:
-            A dictionary of file info.
-        """
-        try:
-            awaitable = (
-                self.file_system.info(str(path))
-                if is_async_callable(self.file_system.info)
-                else sync_to_thread(self.file_system.info, str(path))
-            )
-            return cast("FileInfo", await awaitable)
-        except FileNotFoundError as e:
-            raise e
-        except PermissionError as e:
-            raise NotAuthorizedException(f"failed to read {path} due to missing permissions") from e
-        except OSError as e:  # pragma: no cover
-            raise InternalServerException from e
-
-    async def open(
+    async def read_bytes(
         self,
-        file: PathType,
-        mode: OpenBinaryMode = "rb",
-        buffering: int = -1,
-    ) -> AsyncFile[bytes]:
-        """Return a file-like object from the filesystem.
+        path: PathType,
+        start: int | None = None,
+        end: int | None = None,
+    ) -> bytes:
+        # simple case; read the whole thing in one go
+        if start is None and end is None:
+            return await sync_to_thread(pathlib.Path(path).read_bytes)
 
-        Notes:
-            - The return value must function correctly in a context ``with`` block.
+        # we have either a start or end set, so open explicitly and then seek / read
+        fh: anyio.AsyncFile
+        async with await anyio.open_file(path, mode="rb") as fh:
+            if start is not None:
+                await fh.seek(start)
+            return await fh.read(end or -1)
 
-        Args:
-            file: Path to the target file.
-            mode: Mode, similar to the built ``open``.
-            buffering: Buffer size.
-        """
+    async def iter(self, path: PathType, chunksize: int) -> AsyncGenerator[bytes, None]:
+        fh: anyio.AsyncFile
+        async with await anyio.open_file(path, mode="rb") as fh:
+            while chunk := await fh.read(chunksize):
+                yield chunk
+
+
+class FsspecSyncAdapter(FileSystemProtocol):
+    def __init__(self, fs: FsspecFileSystem) -> None:
+        self._fs = fs
+
+    async def info(self, path: PathType, **kwargs: Any) -> FileInfo:
+        return cast("FileInfo", await sync_to_thread(self._fs.info, path, **kwargs))
+
+    async def read_bytes(
+        self,
+        path: PathType,
+        start: int | None = None,
+        end: int | None = None,
+    ) -> bytes:
+        return await sync_to_thread(
+            self._fs.read_bytes,
+            path,
+            start=start,
+            end=end,
+        )
+
+    async def iter(self, path: PathType, chunksize: int) -> AsyncGenerator[bytes, None]:
+        fh: io.BytesIO = await sync_to_thread(self._fs.open, path, mode="rb")
         try:
-            if is_async_callable(self.file_system.open):  # pyright: ignore
-                return cast(
-                    "AsyncFile[bytes]",
-                    await self.file_system.open(
-                        file=file,
-                        mode=mode,
-                        buffering=buffering,
-                    ),
-                )
-            return AsyncFile(await sync_to_thread(self.file_system.open, file, mode=mode, buffering=buffering))  # type: ignore[arg-type]
-        except PermissionError as e:
-            raise NotAuthorizedException(f"failed to open {file} due to missing permissions") from e
-        except OSError as e:
-            raise InternalServerException from e
+            while True:
+                chunk = await sync_to_thread(fh.read, chunksize)
+                yield chunk
+                if not chunk:
+                    break
+        finally:
+            fh.close()
 
-    @staticmethod
-    async def parse_stat_result(path: PathType, result: stat_result) -> FileInfo:
-        """Convert a ``stat_result`` instance into a ``FileInfo``.
 
-        Args:
-            path: The file path for which the :func:`stat_result <os.stat_result>` is provided.
-            result: The :func:`stat_result <os.stat_result>` instance.
+class FsspecAsyncAdapter(FileSystemProtocol):
+    def __init__(self, fs: FsspecAsyncFileSystem) -> None:
+        self._fs = fs
+        if fs._cat_file is FsspecAsyncFileSystem._cat_file:
+            raise TypeError(
+                f"Async file system of type {type(fs).__name__!r} does not support "
+                "asynchronous reads, as it does not implement an asynchronous _cat "
+                "method. To still use this file system asynchronously, explicitly wrap "
+                "it in 'FsspecSyncAdapter'"
+            )
 
-        Returns:
-            A dictionary of file info.
-        """
-        file_info: FileInfo = {
-            "created": result.st_ctime,
-            "gid": result.st_gid,
-            "ino": result.st_ino,
-            "islink": await Path(path).is_symlink(),
-            "mode": result.st_mode,
-            "mtime": result.st_mtime,
-            "name": str(path),
-            "nlink": result.st_nlink,
-            "size": result.st_size,
-            "type": "directory" if S_ISDIR(result.st_mode) else "file",
-            "uid": result.st_uid,
-        }
+    async def info(self, path: PathType, **kwargs: Any) -> FileInfo:
+        return cast("FileInfo", await self._fs._info(path, **kwargs))
 
-        if file_info["islink"]:
-            file_info["destination"] = str(await Path(path).readlink()).encode("utf-8")
-            try:
-                file_info["size"] = (await Path(path).stat()).st_size
-            except OSError:  # pragma: no cover
-                file_info["size"] = result.st_size
+    async def read_bytes(
+        self,
+        path: PathType,
+        start: int | None = None,
+        end: int | None = None,
+    ) -> bytes:
+        return cast(
+            bytes,
+            await self._fs._cat_file(path, start=start, end=end),
+        )
 
-        return file_info
+    async def iter(self, path: PathType, chunksize: int) -> AsyncGenerator[bytes, None]:
+        if self._fs.open_async is FsspecAsyncFileSystem.open_async:
+            async for chunk in FsspecSyncAdapter(self._fs).iter(path, chunksize):
+                yield chunk
+            return
+
+        async with self._fs.open_async(path, mode="rb") as fh:
+            while chunk := await fh.read(chunksize):
+                yield chunk
+
+
+async def parse_stat_result(path: PathType, result: stat_result) -> FileInfo:
+    """Convert a ``stat_result`` instance into a ``FileInfo``.
+
+    Args:
+        path: The file path for which the :func:`stat_result <os.stat_result>` is provided.
+        result: The :func:`stat_result <os.stat_result>` instance.
+
+    Returns:
+        A dictionary of file info.
+    """
+    file_info: FileInfo = {
+        "created": result.st_ctime,
+        "gid": result.st_gid,
+        "ino": result.st_ino,
+        "islink": await anyio.Path(path).is_symlink(),
+        "mode": result.st_mode,
+        "mtime": result.st_mtime,
+        "name": str(path),
+        "nlink": result.st_nlink,
+        "size": result.st_size,
+        "type": "directory" if S_ISDIR(result.st_mode) else "file",
+        "uid": result.st_uid,
+    }
+
+    if file_info["islink"]:
+        file_info["destination"] = str(await anyio.Path(path).readlink()).encode("utf-8")
+        try:
+            file_info["size"] = (await anyio.Path(path).stat()).st_size
+        except OSError:  # pragma: no cover
+            file_info["size"] = result.st_size
+
+    return file_info
+
+
+def ensure_async_file_system(
+    file_system: FileSystemProtocol | FsspecFileSystem | FsspecAsyncFileSystem,
+) -> FileSystemProtocol:
+    try:
+        from fsspec import AbstractFileSystem
+        from fsspec.asyn import AsyncFileSystem
+    except ImportError:
+        return file_system
+
+    if isinstance(file_system, AsyncFileSystem):
+        return FsspecAsyncAdapter(file_system)
+
+    if isinstance(file_system, AbstractFileSystem):
+        if file_system.async_impl:
+            return FsspecAsyncAdapter(file_system)
+        return FsspecSyncAdapter(file_system)
+
+    return file_system
