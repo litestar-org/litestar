@@ -1,5 +1,5 @@
 from litestar import Litestar
-from litestar.plugins.prometheus import PrometheusConfig, PrometheusController
+from litestar.plugins.prometheus import PrometheusConfig, PrometheusController, PrometheusMiddleware
 
 
 def create_app(group_path: bool = False):
@@ -10,4 +10,4 @@ def create_app(group_path: bool = False):
     # If you want to change the path and format you can do it by subclassing the PrometheusController class.
 
     # Creating the litestar app instance with our custom PrometheusConfig and PrometheusController.
-    return Litestar(route_handlers=[PrometheusController], middleware=[prometheus_config.middleware])
+    return Litestar(route_handlers=[PrometheusController], middleware=[PrometheusMiddleware(prometheus_config)])
