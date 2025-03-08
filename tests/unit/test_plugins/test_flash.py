@@ -108,6 +108,6 @@ def test_flash_config_doesnt_have_session() -> None:
 def test_flash_config_has_wrong_middleware_type() -> None:
     template_config = TemplateConfig(directory=Path("tests/templates"), engine=JinjaTemplateEngine)
     flash_config = FlashConfig(template_config=template_config)
-    rate_limit_config = RateLimitConfig(rate_limit=("minute", 1), exclude=["/schema"])
+    rate_limit_config = RateLimitConfig(rate_limit=("minute", 1), exclude=("/schema"))
     with pytest.raises(ImproperlyConfiguredException):
         Litestar(plugins=[FlashPlugin(config=flash_config)], middleware=[RateLimitMiddleware(rate_limit_config)])
