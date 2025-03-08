@@ -969,11 +969,13 @@ class Litestar(Router):
         """Create an ASGIApp that wraps the ASGI router inside an exception handler.
 
         If CORS or TrustedHost configs are provided to the constructor, they will wrap the router as well.
+        ## TODO: modify the above as I dont see any TrustedHost on this, handled below in build_middleware_stack ?
         """
         asgi_handler = wrap_in_exception_handler(app=self.asgi_router)
 
-        if self.cors_config:
-            asgi_handler = CORSMiddleware(app=asgi_handler, config=self.cors_config)
+        if any(isinstance(m, CORSMiddleware) for m in self.middleware):
+            cors_middleware = next(m for m in self.middleware if isinstance(m, CORSMiddleware))
+            asgi_handler = cors_middleware(asgi_handler)
 
         try:
             otel_plugin: OpenTelemetryPlugin = self.plugins.get("OpenTelemetryPlugin")
