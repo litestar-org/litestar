@@ -4,7 +4,6 @@ from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Callable
 
 from litestar.exceptions import MissingDependencyException
-from litestar.middleware.base import DefineMiddleware
 from litestar.plugins.prometheus.middleware import (
     PrometheusMiddleware,
 )
@@ -43,7 +42,7 @@ class PrometheusConfig:
     """A list of http methods to exclude from the metrics."""
     exclude_unhandled_paths: bool = field(default=False)
     """Whether to ignore requests for unhandled paths from the metrics."""
-    exclude: str | list[str] | None = field(default=None)
+    exclude: str | tuple[str] | None = field(default=None)
     """A pattern or list of patterns for routes to exclude from the metrics."""
     exclude_opt_key: str | None = field(default=None)
     """A key or list of keys in ``opt`` with which a route handler can "opt-out" of the middleware."""
@@ -55,15 +54,3 @@ class PrometheusConfig:
     group_path: bool = field(default=False)
     """Whether to group paths in the metrics to avoid cardinality explosion.
     """
-
-    @property
-    def middleware(self) -> DefineMiddleware:
-        """Create an instance of :class:`DefineMiddleware <litestar.middleware.base.DefineMiddleware>` that wraps with.
-
-        [PrometheusMiddleware][litestar.plugins.prometheus.PrometheusMiddleware]. or a subclass
-        of this middleware.
-
-        Returns:
-            An instance of ``DefineMiddleware``.
-        """
-        return DefineMiddleware(self.middleware_class, config=self)
