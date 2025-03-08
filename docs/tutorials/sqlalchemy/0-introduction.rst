@@ -103,8 +103,8 @@ serializable by Litestar.
     /examples/contrib/sqlalchemy/plugins/tutorial/full_app_no_plugins.py
     :language: python
     :linenos:
-    :lines: 2-3,14-15,47-50,91-97
-    :emphasize-lines: 3,4,6,7,10,15
+    :lines: 2-3,14-15,47-50,91-98
+    :emphasize-lines: 3,6,10,15
 
 Behavior
 ++++++++
