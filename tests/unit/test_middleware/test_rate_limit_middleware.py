@@ -147,7 +147,7 @@ def test_exclude_patterns() -> None:
     def handler2() -> None:
         return None
 
-    config = RateLimitConfig(rate_limit=("second", 1), exclude=["/excluded"])
+    config = RateLimitConfig(rate_limit=("second", 1), exclude=("/excluded"))
 
     with create_test_client(route_handlers=[handler, handler2], middleware=[RateLimitMiddleware(config)]) as client:
         response = client.get("/excluded")
@@ -230,7 +230,7 @@ async def test_rate_limiting_works_with_mounted_apps(tmpdir: "Path") -> None:
 
     asgi_handler = ASGIRouteHandler("/asgi", is_mount=True, fn=ASGIResponse(body="something"))
 
-    rate_limit_config = RateLimitConfig(rate_limit=("minute", 1), exclude=[r"^/src.*$"])
+    rate_limit_config = RateLimitConfig(rate_limit=("minute", 1), exclude=(r"^/src.*$"))
     with create_test_client([handler, asgi_handler], middleware=[RateLimitMiddleware(rate_limit_config)]) as client:
         response = client.get("/not-excluded")
         assert response.status_code == HTTP_200_OK
