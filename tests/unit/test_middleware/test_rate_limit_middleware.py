@@ -12,6 +12,7 @@ from litestar.middleware.rate_limit import (
     CacheObject,
     DurationUnit,
     RateLimitConfig,
+    RateLimitMiddleware,
 )
 from litestar.response.base import ASGIResponse
 from litestar.serialization import decode_json, encode_json
@@ -31,7 +32,7 @@ async def test_rate_limiting(unit: DurationUnit) -> None:
 
     config = RateLimitConfig(rate_limit=(unit, 2))
     cache_key = "RateLimitMiddleware::testclient"
-    app = Litestar(route_handlers=[handler], middleware=[config.middleware])
+    app = Litestar(route_handlers=[handler], middleware=[RateLimitMiddleware(config)])
     store = app.stores.get("rate_limit")
 
     with travel(datetime.utcnow, tick=False) as frozen_time, TestClient(app=app) as client:
@@ -81,7 +82,9 @@ async def test_non_default_store(memory_store: Store) -> None:
         return None
 
     app = Litestar(
-        [handler], middleware=[RateLimitConfig(("second", 10)).middleware], stores={"rate_limit": memory_store}
+        [handler],
+        middleware=[RateLimitMiddleware(RateLimitConfig(("second", 10)))],
+        stores={"rate_limit": memory_store},
     )
 
     with TestClient(app) as client:
@@ -98,7 +101,7 @@ async def test_set_store_name(memory_store: Store) -> None:
 
     app = Litestar(
         [handler],
-        middleware=[RateLimitConfig(("second", 10), store="some_store").middleware],
+        middleware=[RateLimitMiddleware(RateLimitConfig(("second", 10), store="some_store"))],
         stores={"some_store": memory_store},
     )
 
@@ -116,7 +119,7 @@ async def test_reset() -> None:
 
     config = RateLimitConfig(rate_limit=("second", 1))
     cache_key = "RateLimitMiddleware::testclient"
-    app = Litestar(route_handlers=[handler], middleware=[config.middleware])
+    app = Litestar(route_handlers=[handler], middleware=[RateLimitMiddleware(config)])
     store = app.stores.get("rate_limit")
 
     with TestClient(app=app) as client:
@@ -146,7 +149,7 @@ def test_exclude_patterns() -> None:
 
     config = RateLimitConfig(rate_limit=("second", 1), exclude=["/excluded"])
 
-    with create_test_client(route_handlers=[handler, handler2], middleware=[config.middleware]) as client:
+    with create_test_client(route_handlers=[handler, handler2], middleware=[RateLimitMiddleware(config)]) as client:
         response = client.get("/excluded")
         assert response.status_code == HTTP_200_OK
 
@@ -172,7 +175,7 @@ def test_exclude_opt_key() -> None:
 
     config = RateLimitConfig(rate_limit=("second", 1), exclude_opt_key="skip_rate_limiting")
 
-    with create_test_client(route_handlers=[handler, handler2], middleware=[config.middleware]) as client:
+    with create_test_client(route_handlers=[handler, handler2], middleware=[RateLimitMiddleware(config)]) as client:
         response = client.get("/excluded")
         assert response.status_code == HTTP_200_OK
 
@@ -201,7 +204,7 @@ def test_check_throttle_handler() -> None:
 
     config = RateLimitConfig(rate_limit=("minute", 1), check_throttle_handler=check_throttle_handler)
 
-    with create_test_client(route_handlers=[handler1, handler2], middleware=[config.middleware]) as client:
+    with create_test_client(route_handlers=[handler1, handler2], middleware=[RateLimitMiddleware(config)]) as client:
         response = client.get("/path1")
         assert response.status_code == HTTP_200_OK
 
@@ -228,7 +231,7 @@ async def test_rate_limiting_works_with_mounted_apps(tmpdir: "Path") -> None:
     asgi_handler = ASGIRouteHandler("/asgi", is_mount=True, fn=ASGIResponse(body="something"))
 
     rate_limit_config = RateLimitConfig(rate_limit=("minute", 1), exclude=[r"^/src.*$"])
-    with create_test_client([handler, asgi_handler], middleware=[rate_limit_config.middleware]) as client:
+    with create_test_client([handler, asgi_handler], middleware=[RateLimitMiddleware(rate_limit_config)]) as client:
         response = client.get("/not-excluded")
         assert response.status_code == HTTP_200_OK
 
@@ -246,7 +249,7 @@ async def test_rate_limiting_works_with_cache() -> None:
         return None
 
     config = RateLimitConfig(rate_limit=("minute", 2))
-    app = Litestar(route_handlers=[handler], middleware=[config.middleware])
+    app = Litestar(route_handlers=[handler], middleware=[RateLimitMiddleware(config)])
 
     with TestClient(app=app) as client:
         response = client.get("/")

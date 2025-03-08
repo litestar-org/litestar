@@ -1,5 +1,5 @@
 from litestar import Litestar
-from litestar.middleware.rate_limit import RateLimitConfig
+from litestar.middleware.rate_limit import RateLimitConfig, RateLimitMiddleware
 
-app = Litestar(middleware=[RateLimitConfig(("second", 1)).middleware])
+app = Litestar(middleware=[RateLimitMiddleware(RateLimitConfig(("second", 1)))])
 rate_limit_store = app.stores.get("rate_limit")

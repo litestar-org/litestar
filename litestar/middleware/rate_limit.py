@@ -5,9 +5,8 @@ from time import time
 from typing import TYPE_CHECKING, Any, Callable, Literal, cast
 
 from litestar.datastructures import MutableScopeHeaders
-from litestar.enums import ScopeType
 from litestar.exceptions import TooManyRequestsException
-from litestar.middleware.base import AbstractMiddleware, DefineMiddleware
+from litestar.middleware import ASGIMiddleware
 from litestar.serialization import decode_json, encode_json
 from litestar.utils import ensure_async_callable
 
@@ -38,35 +37,21 @@ class CacheObject:
     reset: int
 
 
-class RateLimitMiddleware(AbstractMiddleware):
+class RateLimitMiddleware(ASGIMiddleware):
     """Rate-limiting middleware."""
 
-    def __init__(self, app: ASGIApp, config: RateLimitConfig) -> None:
+    def __init__(self, config: RateLimitConfig) -> None:
         """Initialize ``RateLimitMiddleware``.
 
         Args:
-            app: The ``next`` ASGI app to call.
             config: An instance of RateLimitConfig.
         """
-        super().__init__(
-            app=app, exclude=config.exclude, exclude_opt_key=config.exclude_opt_key, scopes={ScopeType.HTTP}
-        )
         self.check_throttle_handler = cast("Callable[[Request], Awaitable[bool]] | None", config.check_throttle_handler)
         self.config = config
         self.max_requests: int = config.rate_limit[1]
         self.unit: DurationUnit = config.rate_limit[0]
 
-    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
-        """ASGI callable.
-
-        Args:
-            scope: The ASGI connection scope.
-            receive: The ASGI receive function.
-            send: The ASGI send function.
-
-        Returns:
-            None
-        """
+    async def handle(self, scope: Scope, receive: Receive, send: Send, next_app: ASGIApp) -> None:
         app = scope["litestar_app"]
         request: Request[Any, Any, Any] = app.request_class(scope)
         store = self.config.get_store_from_app(app)
@@ -83,7 +68,7 @@ class RateLimitMiddleware(AbstractMiddleware):
             if self.config.set_rate_limit_headers:
                 send = self.create_send_wrapper(send=send, cache_object=cache_object)
 
-        await self.app(scope, receive, send)  # pyright: ignore
+        await next_app(scope, receive, send)  # pyright: ignore
 
     def create_send_wrapper(self, send: Send, cache_object: CacheObject) -> Send:
         """Create a ``send`` function that wraps the original send to inject response headers.
@@ -238,32 +223,6 @@ class RateLimitConfig:
     def __post_init__(self) -> None:
         if self.check_throttle_handler:
             self.check_throttle_handler = ensure_async_callable(self.check_throttle_handler)  # type: ignore[arg-type]
-
-    @property
-    def middleware(self) -> DefineMiddleware:
-        """Use this property to insert the config into a middleware list on one of the application layers.
-
-        Examples:
-            .. code-block::  python
-
-                from litestar import Litestar, Request, get
-                from litestar.middleware.rate_limit import RateLimitConfig
-
-                # limit to 10 requests per minute, excluding the schema path
-                throttle_config = RateLimitConfig(rate_limit=("minute", 10), exclude=["/schema"])
-
-
-                @get("/")
-                def my_handler(request: Request) -> None: ...
-
-
-                app = Litestar(route_handlers=[my_handler], middleware=[throttle_config.middleware])
-
-        Returns:
-            An instance of :class:`DefineMiddleware <.middleware.base.DefineMiddleware>` including ``self`` as the
-            config kwarg value.
-        """
-        return DefineMiddleware(self.middleware_class, config=self)
 
     def get_store_from_app(self, app: Litestar) -> Store:
         """Get the store defined in :attr:`store` from an :class:`Litestar <.app.Litestar>` instance."""
