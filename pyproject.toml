@@ -247,7 +247,7 @@ enable_error_code = [
 ]
 packages = ["litestar", "tests"]
 plugins = ["pydantic.mypy"]
-python_version = "3.9"
+python_version = "3.8"
 
 disallow_any_generics = false
 local_partial_types = true
@@ -336,7 +336,7 @@ exclude = [
   "tests/unit/test_contrib/test_sqlalchemy.py",
 ]
 include = ["litestar", "tests"]
-pythonVersion = "3.9"
+pythonVersion = "3.8"
 reportUnnecessaryTypeIgnoreComments = true
 
 [tool.slotscheck]
@@ -424,7 +424,7 @@ lint.ignore = [
   "A005",    # Module shadows a Python standard-library module
 ]
 src = ["litestar", "tests", "docs/examples"]
-target-version = "py39"
+target-version = "py38"
 
 [tool.ruff.lint.pydocstyle]
 convention = "google"
