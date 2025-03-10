@@ -88,7 +88,7 @@ full = [
   "litestar[annotated-types,attrs,brotli,cli,cryptography,jinja,jwt,mako,minijinja,opentelemetry,piccolo,picologging,prometheus,pydantic,redis,sqlalchemy,standard,structlog,valkey]; python_version < \"3.13\"",
   "litestar[annotated-types,attrs,brotli,cli,cryptography,jinja,jwt,mako,minijinja,opentelemetry,piccolo,prometheus,pydantic,redis,sqlalchemy,standard,structlog,valkey]; python_version >= \"3.13\"",
 ]
-granian = ["litestar-granian[uvloop]", "python-dotenv", "httptools", "websockets"]
+granian = ["litestar-granian[uvloop]", "python-dotenv", "websockets"]
 jinja = ["jinja2>=3.1.2"]
 jwt = ["cryptography", "pyjwt>=2.9.0"]
 mako = ["mako>=1.2.4"]
