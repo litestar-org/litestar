@@ -3,11 +3,9 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Any, Callable, Generic, cast
 
-from litestar.middleware.base import DefineMiddleware
 from litestar.middleware.session.base import BaseBackendConfig, BaseSessionBackendT
 from litestar.openapi.spec import Components, SecurityRequirement, SecurityScheme
 from litestar.security.base import AbstractSecurityConfig, UserType
-from litestar.security.session_auth.middleware import MiddlewareWrapper, SessionAuthMiddleware
 
 __all__ = ("SessionAuth",)
 
@@ -36,15 +34,9 @@ class SessionAuth(Generic[UserType, BaseSessionBackendT], AbstractSecurityConfig
 
     """
 
-    authentication_middleware_class: type[SessionAuthMiddleware] = field(default=SessionAuthMiddleware)  # pyright: ignore
-    """The authentication middleware class to use.
-
-    Must inherit from :class:`SessionAuthMiddleware <litestar.security.session_auth.middleware.SessionAuthMiddleware>`
-    """
-
     guards: Iterable[Guard] | None = field(default=None)
     """An iterable of guards to call for requests, providing authorization functionalities."""
-    exclude: str | list[str] | None = field(default=None)
+    exclude: str | tuple[str, ...] | None = field(default=None)
     """A pattern or list of patterns to skip in the authentication middleware."""
     exclude_opt_key: str = field(default="exclude_from_auth")
     """An identifier to use on routes to disable authentication and authorization checks for a particular route."""
@@ -62,42 +54,6 @@ class SessionAuth(Generic[UserType, BaseSessionBackendT], AbstractSecurityConfig
 
     type_encoders: TypeEncodersMap | None = field(default=None)
     """A mapping of types to callables that transform them into types supported for serialization."""
-
-    @property
-    def middleware(self) -> DefineMiddleware:
-        """Use this property to insert the config into a middleware list on one of the application layers.
-
-        Examples:
-            .. code-block:: python
-
-                from typing import Any
-                from os import urandom
-
-                from litestar import Litestar, Request, get
-                from litestar_session import SessionAuth
-
-
-                async def retrieve_user_from_session(session: dict[str, Any]) -> Any:
-                    # implement logic here to retrieve a ``user`` datum given the session dictionary
-                    ...
-
-
-                session_auth_config = SessionAuth(
-                    secret=urandom(16), retrieve_user_handler=retrieve_user_from_session
-                )
-
-
-                @get("/")
-                def my_handler(request: Request) -> None: ...
-
-
-                app = Litestar(route_handlers=[my_handler], middleware=[session_auth_config.middleware])
-
-
-        Returns:
-            An instance of DefineMiddleware including ``self`` as the config kwarg value.
-        """
-        return DefineMiddleware(MiddlewareWrapper, config=self)
 
     @property
     def session_backend(self) -> BaseSessionBackendT:

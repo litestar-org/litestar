@@ -6,7 +6,8 @@ from litestar import Litestar
 from litestar.cli.commands.sessions import get_session_backend
 from litestar.cli.main import litestar_group as cli_command
 from litestar.middleware.rate_limit import RateLimitConfig, RateLimitMiddleware
-from litestar.middleware.session.server_side import ServerSideSessionConfig
+from litestar.middleware.session import SessionMiddleware
+from litestar.middleware.session.server_side import ServerSideSessionBackend, ServerSideSessionConfig
 
 if TYPE_CHECKING:
     from unittest.mock import MagicMock
@@ -17,10 +18,10 @@ if TYPE_CHECKING:
 
 
 def test_get_session_backend() -> None:
-    session_middleware = ServerSideSessionConfig().middleware
+    session_middleware = SessionMiddleware(backend=ServerSideSessionBackend(ServerSideSessionConfig()))
     app = Litestar([], middleware=[RateLimitMiddleware(RateLimitConfig(rate_limit=("second", 1))), session_middleware])
 
-    assert get_session_backend(app) is session_middleware.kwargs["backend"]
+    assert get_session_backend(app) is session_middleware.backend
 
 
 def test_delete_session_no_backend(runner: CliRunner, monkeypatch: MonkeyPatch) -> None:

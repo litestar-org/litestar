@@ -200,7 +200,7 @@ class RateLimitConfig:
 
     rate_limit: tuple[DurationUnit, int]
     """A tuple containing a time unit (second, minute, hour, day) and quantity, e.g. ("day", 1) or ("minute", 5)."""
-    exclude: str | tuple[str] | None = field(default=None)
+    exclude: str | tuple[str, ...] | None = field(default=None)
     """A pattern or list of patterns to skip in the rate limiting middleware."""
     exclude_opt_key: str | None = field(default=None)
     """An identifier to use on routes to disable rate limiting for a particular route."""

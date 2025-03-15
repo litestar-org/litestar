@@ -4,11 +4,12 @@ from typing import TYPE_CHECKING, Callable, NoReturn, Optional, Union, cast
 from _pytest.fixtures import FixtureRequest
 
 from litestar import Controller, WebSocket, delete, head, patch, put, websocket
+from litestar.middleware.session import SessionMiddleware
 from litestar.status_codes import HTTP_200_OK, HTTP_201_CREATED, HTTP_204_NO_CONTENT
 from litestar.testing import AsyncTestClient, WebSocketTestSession, create_async_test_client, create_test_client
 
 if TYPE_CHECKING:
-    from litestar.middleware.session.base import BaseBackendConfig
+    from litestar.middleware.session.base import BaseSessionBackend
     from litestar.types import (
         AnyIOBackend,
         HTTPResponseBodyEvent,
@@ -53,23 +54,27 @@ def test_client_cls(request: FixtureRequest) -> type[AnyTestClient]:
 async def test_test_client_set_session_data(
     with_domain: bool,
     anyio_backend: str,
-    session_backend_config: "BaseBackendConfig",
+    session_backend: "BaseSessionBackend",
+    # session_backend_config: "BaseBackendConfig",
     test_client_backend: "AnyIOBackend",
     test_client_cls: type[AnyTestClient],
 ) -> None:
     session_data = {"foo": "bar"}
 
     if with_domain:
-        session_backend_config.domain = "testserver.local"
+        session_backend.config.domain = "testserver.local"
 
     @get(path="/test")
     async def get_session_data(request: Request) -> dict[str, Any]:
         return request.session
 
-    app = Litestar(route_handlers=[get_session_data], middleware=[session_backend_config.middleware])
+    app = Litestar(
+        route_handlers=[get_session_data],
+        middleware=[SessionMiddleware(session_backend)],
+    )
 
     async with maybe_async_cm(
-        test_client_cls(app=app, session_config=session_backend_config, backend=test_client_backend)  # pyright: ignore
+        test_client_cls(app=app, session_config=session_backend.config, backend=test_client_backend)  # pyright: ignore
     ) as client:
         await maybe_async(client.set_session_data(session_data))  # type: ignore[attr-defined]
         assert session_data == (await maybe_async(client.get("/test"))).json()  # type: ignore[attr-defined]
@@ -86,7 +91,7 @@ async def test_test_client_set_session_data(
 async def test_test_client_get_session_data(
     with_domain: bool,
     anyio_backend: str,
-    session_backend_config: "BaseBackendConfig",
+    session_backend: "BaseSessionBackend",
     test_client_backend: "AnyIOBackend",
     store: Store,
     test_client_cls: type[AnyTestClient],
@@ -94,18 +99,18 @@ async def test_test_client_get_session_data(
     session_data = {"foo": "bar"}
 
     if with_domain:
-        session_backend_config.domain = "testserver.local"
+        session_backend.config.domain = "testserver.local"
 
     @post(path="/test")
     async def set_session_data(request: Request) -> None:
         request.session.update(session_data)
 
     app = Litestar(
-        route_handlers=[set_session_data], middleware=[session_backend_config.middleware], stores={"session": store}
+        route_handlers=[set_session_data], middleware=[SessionMiddleware(session_backend)], stores={"session": store}
     )
 
     async with maybe_async_cm(
-        test_client_cls(app=app, session_config=session_backend_config, backend=test_client_backend)  # pyright: ignore
+        test_client_cls(app=app, session_config=session_backend.config, backend=test_client_backend)  # pyright: ignore
     ) as client:
         await maybe_async(client.post("/test"))  # type: ignore[attr-defined]
         assert await maybe_async(client.get_session_data()) == session_data  # type: ignore[attr-defined]

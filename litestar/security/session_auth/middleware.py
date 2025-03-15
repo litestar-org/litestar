@@ -1,100 +1,39 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Callable
+from typing import TYPE_CHECKING, Any
 
 from litestar.exceptions import NotAuthorizedException
-from litestar.middleware._internal.exceptions import ExceptionHandlerMiddleware
 from litestar.middleware.authentication import (
-    AbstractAuthenticationMiddleware,
+    ASGIAuthenticationMiddleware,
     AuthenticationResult,
 )
-from litestar.types import Empty, Method, Scopes
+from litestar.types import Empty
 
-__all__ = ("MiddlewareWrapper", "SessionAuthMiddleware")
+__all__ = ("SessionAuthMiddleware",)
 
 if TYPE_CHECKING:
-    from collections.abc import Awaitable, Sequence
-
     from litestar.connection import ASGIConnection
-    from litestar.security.session_auth.auth import SessionAuth
-    from litestar.types import ASGIApp, Receive, Scope, Send
+    from litestar.security.session_auth import SessionAuth
 
 
-class MiddlewareWrapper:
-    """Wrapper class that serves as the middleware entry point."""
-
-    def __init__(self, app: ASGIApp, config: SessionAuth[Any, Any]) -> None:
-        """Wrap the SessionAuthMiddleware inside ExceptionHandlerMiddleware, and it wraps this inside SessionMiddleware.
-        This allows the auth middleware to raise exceptions and still have the response handled, while having the
-        session cleared.
-
-        Args:
-            app: An ASGIApp, this value is the next ASGI handler to call in the middleware stack.
-            config: An instance of SessionAuth.
-        """
-        self.app = app
-        self.config = config
-        self.has_wrapped_middleware = False
-
-    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
-        """Handle creating a middleware stack and calling it.
-
-        Args:
-            scope: The ASGI connection scope.
-            receive: The ASGI receive function.
-            send: The ASGI send function.
-
-        Returns:
-            None
-        """
-        if not self.has_wrapped_middleware:
-            auth_middleware = self.config.authentication_middleware_class(
-                app=self.app,
-                exclude=self.config.exclude,
-                exclude_http_methods=self.config.exclude_http_methods,
-                exclude_opt_key=self.config.exclude_opt_key,
-                scopes=self.config.scopes,
-                retrieve_user_handler=self.config.retrieve_user_handler,  # type: ignore[arg-type]
-            )
-            exception_middleware = ExceptionHandlerMiddleware(app=auth_middleware)
-            self.app = self.config.session_backend_config.middleware.middleware(
-                app=exception_middleware,
-                backend=self.config.session_backend,
-            )
-            self.has_wrapped_middleware = True
-        await self.app(scope, receive, send)
-
-
-class SessionAuthMiddleware(AbstractAuthenticationMiddleware):
+class SessionAuthMiddleware(ASGIAuthenticationMiddleware):
     """Session Authentication Middleware."""
 
     def __init__(
         self,
-        app: ASGIApp,
-        exclude: str | list[str] | None,
-        exclude_http_methods: Sequence[Method] | None,
-        exclude_opt_key: str,
-        retrieve_user_handler: Callable[[dict[str, Any], ASGIConnection[Any, Any, Any, Any]], Awaitable[Any]],
-        scopes: Scopes | None,
+        session_auth: SessionAuth,
     ) -> None:
         """Session based authentication middleware.
 
         Args:
-            app: An ASGIApp, this value is the next ASGI handler to call in the middleware stack.
-            exclude: A pattern or list of patterns to skip in the authentication middleware.
-            exclude_http_methods: A sequence of http methods that do not require authentication.
-            exclude_opt_key: An identifier to use on routes to disable authentication and authorization checks for a particular route.
-            scopes: ASGI scopes processed by the authentication middleware.
-            retrieve_user_handler: Callable that receives the ``session`` value from the authentication middleware and returns a ``user`` value.
+            session_auth: SessionAuth instance.
         """
-        super().__init__(
-            app=app,
-            exclude=exclude,
-            exclude_from_auth_key=exclude_opt_key,
-            exclude_http_methods=exclude_http_methods,
-            scopes=scopes,
-        )
-        self.retrieve_user_handler = retrieve_user_handler
+
+        self.session_auth = session_auth
+        self.retrieve_user_handler = self.session_auth.retrieve_user_handler
+        self.exclude_path_pattern = self.session_auth.exclude
+        self.exclude_opt_key = self.session_auth.exclude_opt_key
+        self.exclude_http_methods = self.session_auth.exclude_http_methods or []
 
     async def authenticate_request(self, connection: ASGIConnection[Any, Any, Any, Any]) -> AuthenticationResult:
         """Authenticate an incoming connection.

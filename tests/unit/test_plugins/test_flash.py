@@ -11,7 +11,8 @@ from litestar.contrib.mako import MakoTemplateEngine
 from litestar.contrib.minijinja import MiniJinjaTemplateEngine
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.middleware.rate_limit import RateLimitConfig, RateLimitMiddleware
-from litestar.middleware.session.server_side import ServerSideSessionConfig
+from litestar.middleware.session import SessionMiddleware
+from litestar.middleware.session.server_side import ServerSideSessionBackend, ServerSideSessionConfig
 from litestar.plugins.flash import FlashConfig, FlashPlugin, flash
 from litestar.response import Redirect, Template
 from litestar.template import TemplateConfig, TemplateEngineProtocol
@@ -84,7 +85,7 @@ def test_flash_plugin(
         plugins=[FlashPlugin(config=flash_config)],
         route_handlers=[index, login, check],
         template_config=template_config,
-        middleware=[session_config.middleware],
+        middleware=[SessionMiddleware(ServerSideSessionBackend(session_config))],
     ) as client:
         r = client.get("/")
         assert r.status_code == 200

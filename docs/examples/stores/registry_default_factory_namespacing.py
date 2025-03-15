@@ -1,6 +1,7 @@
 from litestar import Litestar, get
 from litestar.middleware.rate_limit import RateLimitConfig, RateLimitMiddleware
-from litestar.middleware.session.server_side import ServerSideSessionConfig
+from litestar.middleware.session import SessionMiddleware
+from litestar.middleware.session.server_side import ServerSideSessionBackend, ServerSideSessionConfig
 from litestar.stores.redis import RedisStore
 from litestar.stores.registry import StoreRegistry
 
@@ -18,6 +19,6 @@ app = Litestar(
     stores=StoreRegistry(default_factory=root_store.with_namespace),
     middleware=[
         RateLimitMiddleware(RateLimitConfig(("second", 1))),
-        ServerSideSessionConfig().middleware,
+        SessionMiddleware(ServerSideSessionBackend(ServerSideSessionConfig())),
     ],
 )

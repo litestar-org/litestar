@@ -63,7 +63,7 @@ class OpenTelemetryConfig:
 
     If omitted the provided meter provider or the global one will be used.
     """
-    exclude: str | tuple[str] | None = field(default=None)
+    exclude: str | tuple[str, ...] | None = field(default=None)
     """A pattern or list of patterns to skip in the Allowed Hosts middleware."""
     exclude_opt_key: str | None = field(default=None)
     """An identifier to use on routes to disable hosts check for a particular route."""

@@ -5,15 +5,14 @@ import pytest
 
 from litestar import Litestar, Request, get
 from litestar.exceptions import ImproperlyConfiguredException
-from litestar.middleware.session.server_side import ServerSideSessionConfig
+from litestar.middleware.session import SessionMiddleware
+from litestar.middleware.session.server_side import ServerSideSessionBackend, ServerSideSessionConfig
 from litestar.serialization import encode_json
 from litestar.stores.memory import MemoryStore
 from litestar.testing import TestClient
 
 if TYPE_CHECKING:
     from time_machine import Coordinates
-
-    from litestar.middleware.session.server_side import ServerSideSessionBackend
 
 
 def generate_session_data() -> bytes:
@@ -31,7 +30,11 @@ async def test_non_default_store(memory_store: MemoryStore) -> None:
         request.set_session({"foo": "bar"})
         return
 
-    app = Litestar([handler], middleware=[ServerSideSessionConfig().middleware], stores={"sessions": memory_store})
+    app = Litestar(
+        [handler],
+        middleware=[SessionMiddleware(ServerSideSessionBackend(ServerSideSessionConfig()))],
+        stores={"sessions": memory_store},
+    )
 
     with TestClient(app) as client:
         res = client.get("/")
@@ -47,7 +50,7 @@ async def test_set_store_name(memory_store: MemoryStore) -> None:
 
     app = Litestar(
         [handler],
-        middleware=[ServerSideSessionConfig(store="some_store").middleware],
+        middleware=[SessionMiddleware(ServerSideSessionBackend(ServerSideSessionConfig(store="some_store")))],
         stores={"some_store": memory_store},
     )
 

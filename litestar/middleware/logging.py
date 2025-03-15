@@ -229,7 +229,7 @@ class LoggingMiddleware(ASGIMiddleware):
 class LoggingMiddlewareConfig:
     """Configuration for ``LoggingMiddleware``"""
 
-    exclude: str | tuple[str] | None = field(default=None)
+    exclude: str | tuple[str, ...] | None = field(default=None)
     """List of paths to exclude from logging."""
     exclude_opt_key: str | None = field(default=None)
     """An identifier to use on routes to disable logging for a particular route."""

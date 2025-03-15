@@ -108,3 +108,55 @@ class AbstractAuthenticationMiddleware(ABC):
             An instance of :class:`AuthenticationResult <litestar.middleware.authentication.AuthenticationResult>`.
         """
         raise NotImplementedError("authenticate_request must be overridden by subclasses")
+
+
+class ASGIAuthenticationMiddleware(ABC):
+    """ASGI Authentication Middleware that allows users to create their own authentication middleware by extending it
+    and overriding :meth:`ASGIAuthenticationMiddleware.authenticate_request`.
+    """
+
+    scopes: tuple[ScopeType, ...] = (ScopeType.HTTP, ScopeType.WEBSOCKET, ScopeType.ASGI)
+    exclude_path_pattern: str | tuple[str, ...] | None = None
+    exclude_opt_key: str = "exclude_from_auth"
+    exclude_http_methods: Sequence[Method] = (HttpMethod.OPTIONS,)
+
+    def __call__(self, app: ASGIApp) -> ASGIApp:
+        """Create the actual middleware callable"""
+        authenticate_request = self.authenticate_request
+        exclude_pattern = build_exclude_path_pattern(exclude=self.exclude_path_pattern, middleware_cls=type(self))
+        scopes = set(self.scopes)
+        exclude_opt_key = self.exclude_opt_key
+        exclude_http_methods = self.exclude_http_methods
+
+        async def middleware(scope: Scope, receive: Receive, send: Send) -> None:
+            if not should_bypass_middleware(
+                exclude_http_methods=exclude_http_methods,
+                exclude_opt_key=exclude_opt_key,
+                exclude_path_pattern=exclude_pattern,
+                scope=scope,
+                scopes=scopes,  # type: ignore[arg-type]
+            ):
+                auth_result = await authenticate_request(ASGIConnection(scope))
+                scope["user"] = auth_result.user
+                scope["auth"] = auth_result.auth
+            await app(scope, receive, send)
+
+        return middleware
+
+    @abstractmethod
+    async def authenticate_request(self, connection: ASGIConnection) -> AuthenticationResult:
+        """Receive the ASGI connection and return an :class:`AuthenticationResult`.
+
+        Notes:
+            - This method must be overridden by subclasses.
+
+        Args:
+            connection: An :class:`ASGIConnection <litestar.connection.ASGIConnection>` instance.
+
+        Raises:
+            NotAuthorizedException | PermissionDeniedException: if authentication fails.
+
+        Returns:
+            An instance of :class:`AuthenticationResult <litestar.middleware.authentication.AuthenticationResult>`.
+        """
+        raise NotImplementedError("handle must be overridden by subclasses")

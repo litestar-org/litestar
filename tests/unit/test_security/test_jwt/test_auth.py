@@ -13,7 +13,15 @@ from hypothesis.strategies import dictionaries, integers, none, one_of, sampled_
 from typing_extensions import TypeAlias
 
 from litestar import Litestar, Request, Response, get
-from litestar.security.jwt import JWTAuth, JWTCookieAuth, OAuth2PasswordBearerAuth, Token
+from litestar.security.jwt import (
+    JWTAuth,
+    JWTAuthenticationMiddleware,
+    JWTCookieAuth,
+    JWTCookieAuthenticationMiddleware,
+    OAuth2PasswordBearerAuth,
+    Token,
+)
+from litestar.security.jwt.plugin import JWTPlugin
 from litestar.status_codes import HTTP_200_OK, HTTP_201_CREATED, HTTP_401_UNAUTHORIZED
 from litestar.stores.memory import MemoryStore
 from litestar.testing import TestClient, create_test_client
@@ -82,7 +90,7 @@ async def test_jwt_auth(
         revoked_token_handler=revoked_token_handler,
     )
 
-    @get("/my-endpoint", middleware=[jwt_auth.middleware])
+    @get("/my-endpoint", middleware=[JWTAuthenticationMiddleware(jwt_auth)])
     def my_handler(request: Request["User", Token, Any]) -> None:
         assert request.user
         assert msgspec.to_builtins(request.user) == msgspec.to_builtins(user)
@@ -101,7 +109,7 @@ async def test_jwt_auth(
             token_extras=token_extras,
         )
 
-    @get("/logout", middleware=[jwt_auth.middleware])
+    @get("/logout", middleware=[JWTAuthenticationMiddleware(jwt_auth)])
     def logout_handler(request: Request["User", Token, Any]) -> dict[str, str]:
         jti = request.auth.jti
         if jti:
@@ -180,7 +188,7 @@ async def test_jwt_auth_custom_token_cls(auth_cls: Any) -> None:
             token_cls=CustomToken,
         )
 
-    @get("/", middleware=[jwt_auth.middleware])
+    @get("/", middleware=[JWTAuthenticationMiddleware(jwt_auth)])
     def handler(request: Request[Any, CustomToken, Any]) -> dict[str, Any]:
         return {
             "is_token_cls": isinstance(request.auth, CustomToken),
@@ -263,7 +271,14 @@ async def test_jwt_cookie_auth(
         token_secret=token_secret,
     )
 
-    @get("/my-endpoint", middleware=[jwt_auth.middleware])
+    @get(
+        "/my-endpoint",
+        middleware=[
+            JWTCookieAuthenticationMiddleware(
+                jwt_auth,
+            )
+        ],
+    )
     def my_handler(request: Request["User", Token, Any]) -> None:
         assert request.user
         assert msgspec.to_builtins(request.user) == msgspec.to_builtins(user)
@@ -282,7 +297,7 @@ async def test_jwt_cookie_auth(
             token_extras=token_extras,
         )
 
-    @get("/logout", middleware=[jwt_auth.middleware])
+    @get("/logout", middleware=[JWTCookieAuthenticationMiddleware(jwt_auth)])
     def logout_handler(request: Request["User", Token, Any]) -> dict[str, str]:
         jti = request.auth.jti
         if jti:
@@ -373,7 +388,7 @@ async def test_path_exclusion() -> None:
     jwt_auth = JWTAuth[Any](
         token_secret="abc123",
         retrieve_user_handler=retrieve_user_handler,
-        exclude=["north", "south"],
+        exclude=("north", "south"),
     )
 
     @get("/north/{value:int}")
@@ -389,7 +404,7 @@ async def test_path_exclusion() -> None:
         return None
 
     with create_test_client(
-        route_handlers=[north_handler, south_handler, west_handler], on_app_init=[jwt_auth.on_app_init]
+        route_handlers=[north_handler, south_handler, west_handler], middleware=[JWTAuthenticationMiddleware(jwt_auth)]
     ) as client:
         response = client.get("/north/1")
         assert response.status_code == HTTP_200_OK
@@ -416,7 +431,9 @@ def test_jwt_auth_openapi() -> None:
         },
     }
     assert jwt_auth.security_requirement == {"BearerToken": []}
-    app = Litestar(on_app_init=[jwt_auth.on_app_init])
+    app = Litestar(
+        plugins=[JWTPlugin(jwt_auth)],
+    )
 
     assert app.openapi_schema
     assert app.openapi_schema.to_schema() == {
@@ -523,7 +540,7 @@ def test_type_encoders() -> None:
     jwt_cookie_auth = JWTCookieAuth[User](
         retrieve_user_handler=retrieve_user_handler,
         token_secret="abc1234",
-        exclude=["/"],
+        exclude=("/"),
         type_encoders={CustomUser: lambda u: {"id": u.id}},
     )
 
@@ -547,15 +564,15 @@ async def retrieve_user_handler(token: Token, connection: "ASGIConnection[Any, A
         JWTAuth[User](
             retrieve_user_handler=retrieve_user_handler,
             token_secret="abc1234",
-            exclude=["/"],
+            exclude=("/"),
         ),
         JWTCookieAuth[User](
             retrieve_user_handler=retrieve_user_handler,
             token_secret="abc1234",
-            exclude=["/"],
+            exclude=("/"),
         ),
         OAuth2PasswordBearerAuth(
-            token_url="/", exclude=["/"], token_secret="abc123", retrieve_user_handler=retrieve_user_handler
+            token_url="/", exclude=("/"), token_secret="abc123", retrieve_user_handler=retrieve_user_handler
         ),
     ),
 )
@@ -576,15 +593,15 @@ def test_returns_token_in_response_when_configured(config: JWTAuth) -> None:
         JWTAuth[User](
             retrieve_user_handler=retrieve_user_handler,
             token_secret="abc1234",
-            exclude=["/"],
+            exclude=("/"),
         ),
         JWTCookieAuth[User](
             retrieve_user_handler=retrieve_user_handler,
             token_secret="abc1234",
-            exclude=["/"],
+            exclude=("/"),
         ),
         OAuth2PasswordBearerAuth(
-            token_url="/", exclude=["/"], token_secret="abc123", retrieve_user_handler=retrieve_user_handler
+            token_url="/", exclude=("/"), token_secret="abc123", retrieve_user_handler=retrieve_user_handler
         ),
     ),
 )
@@ -612,7 +629,7 @@ async def test_jwt_auth_validation_error_returns_not_authorized() -> None:
         retrieve_user_handler=retrieve_user_handler,
     )
 
-    @get("/", middleware=[jwt_auth.middleware])
+    @get("/", middleware=[JWTAuthenticationMiddleware(jwt_auth)])
     def handler() -> None:
         return None
 
@@ -668,7 +685,7 @@ async def test_jwt_auth_verify_issuer(
             accepted_issuers=accepted_issuers,
         )
 
-    @get("/", middleware=[jwt_auth.middleware])
+    @get("/", middleware=[JWTAuthenticationMiddleware(jwt_auth)])
     def handler() -> None:
         return None
 
@@ -719,7 +736,7 @@ async def test_jwt_auth_verify_audience(
             accepted_audiences=accepted_audiences,
         )
 
-    @get("/", middleware=[jwt_auth.middleware])
+    @get("/", middleware=[JWTAuthenticationMiddleware(jwt_auth)])
     def handler() -> None:
         return None
 
@@ -756,7 +773,7 @@ def create_jwt_app(auth_cls: Any, request: pytest.FixtureRequest) -> CreateJWTAp
                 token_secret=secrets.token_hex(), retrieve_user_handler=retrieve_user_handler, **kwargs
             )
 
-        @get("/", middleware=[jwt_auth.middleware])
+        @get("/", middleware=[JWTAuthenticationMiddleware(jwt_auth)])
         def handler() -> None:
             return None
 
