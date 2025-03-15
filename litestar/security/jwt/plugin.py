@@ -2,7 +2,7 @@ from copy import copy
 
 from litestar.config.app import AppConfig
 from litestar.plugins import InitPlugin
-from litestar.security.jwt import JWTAuthenticationMiddleware, JWTAuth
+from litestar.security.jwt import JWTAuth, JWTAuthenticationMiddleware
 
 
 class JWTPlugin(InitPlugin):
