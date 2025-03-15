@@ -26,21 +26,6 @@ class JWTAuthenticationMiddleware(ASGIAuthenticationMiddleware):
     This class provides JWT authentication functionalities.
     """
 
-    __slots__ = (
-        "algorithm",
-        "auth_header",
-        "require_claims",
-        "retrieve_user_handler",
-        "revoked_token_handler",
-        "strict_audience",
-        "token_audience",
-        "token_cls",
-        "token_issuer",
-        "token_secret",
-        "verify_expiry",
-        "verify_not_before",
-    )
-
     def __init__(
         self,
         jwt_auth: JWTAuth,
