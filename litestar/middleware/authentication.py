@@ -114,6 +114,7 @@ class ASGIAuthenticationMiddleware(ABC):
     """ASGI Authentication Middleware that allows users to create their own authentication middleware by extending it
     and overriding :meth:`ASGIAuthenticationMiddleware.authenticate_request`.
     """
+    __slots__ = ("jwt_auth", "auth_cookie_key",)
 
     scopes: tuple[ScopeType, ...] = (ScopeType.HTTP, ScopeType.WEBSOCKET, ScopeType.ASGI)
     exclude_path_pattern: str | tuple[str, ...] | None = None
