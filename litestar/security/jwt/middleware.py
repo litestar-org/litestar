@@ -111,8 +111,6 @@ class JWTAuthenticationMiddleware(ASGIAuthenticationMiddleware):
 class JWTCookieAuthenticationMiddleware(JWTAuthenticationMiddleware):
     """Cookie based JWT authentication middleware."""
 
-    __slots__ = ("auth_cookie_key",)
-
     def __init__(
         self,
         jwt_cookie_auth: JWTCookieAuth,
