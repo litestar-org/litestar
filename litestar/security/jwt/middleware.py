@@ -23,7 +23,7 @@ if TYPE_CHECKING:
 class JWTAuthenticationMiddleware(ASGIAuthenticationMiddleware):
     """JWT Authentication middleware.
 
-    This middleware checks incoming requests for an encoded token in the auth header specified, and if present retrieves
+    This class provides JWT authentication functionalities.
     """
 
     def __init__(
@@ -109,11 +109,7 @@ class JWTAuthenticationMiddleware(ASGIAuthenticationMiddleware):
 
 
 class JWTCookieAuthenticationMiddleware(JWTAuthenticationMiddleware):
-    """Cookie based JWT authentication middleware.
-
-    This middleware checks incoming requests for an encoded token in the auth header or cookie name specified, and if
-    present retrieves the user from persistence using the provided function.
-    """
+    """Cookie based JWT authentication middleware."""
 
     def __init__(
         self,
