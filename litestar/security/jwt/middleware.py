@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import asyncio
+from asyncio import iscoroutinefunction
 from typing import TYPE_CHECKING
 
 from litestar.exceptions import NotAuthorizedException
@@ -100,11 +102,20 @@ class JWTAuthenticationMiddleware(ASGIAuthenticationMiddleware):
             strict_audience=self.jwt_auth.strict_audience,
         )
 
-        user = await self.jwt_auth.retrieve_user_handler(token, connection)
-        token_revoked = False
+        user = (
+            await self.jwt_auth.retrieve_user_handler(token, connection)
+            if asyncio.iscoroutinefunction(self.jwt_auth.retrieve_user_handler)
+            else self.jwt_auth.retrieve_user_handler(token, connection)
+        )
 
         if self.jwt_auth.revoked_token_handler:
-            token_revoked = await self.jwt_auth.revoked_token_handler(token, connection)
+            token_revoked = (
+                await self.jwt_auth.revoked_token_handler(token, connection)
+                if iscoroutinefunction(self.jwt_auth.revoked_token_handler)
+                else self.jwt_auth.revoked_token_handler(token, connection)
+            )
+        else:
+            token_revoked = False
 
         if not user or token_revoked:
             raise NotAuthorizedException()
@@ -127,7 +138,7 @@ class JWTCookieAuthenticationMiddleware(JWTAuthenticationMiddleware):
         Args:
             jwt_cookie_auth: JWTAuth instance.
         """
-        self.jwt_auth = jwt_cookie_auth
+        self.jwt_auth = jwt_cookie_auth  # type: ignore[assignment]
         self.auth_cookie_key = jwt_cookie_auth.key
         self.exclude_path_pattern = self.jwt_auth.exclude
         self.exclude_opt_key = self.jwt_auth.exclude_opt_key

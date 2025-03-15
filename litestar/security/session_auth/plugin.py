@@ -1,6 +1,7 @@
 from copy import copy
 
 from litestar.config.app import AppConfig
+from litestar.middleware.session import SessionMiddleware
 from litestar.plugins import InitPlugin
 from litestar.security.session_auth import SessionAuth, SessionAuthMiddleware
 
@@ -36,5 +37,6 @@ class SessionPlugin(InitPlugin):
             else:
                 app_config.openapi_config.security = [self.session_auth.security_requirement]
 
+        app_config.middleware.append(SessionMiddleware(self.session_auth.session_backend))
         app_config.middleware.append(SessionAuthMiddleware(self.session_auth))
         return app_config

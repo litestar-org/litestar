@@ -52,7 +52,7 @@ class SessionAuthMiddleware(ASGIAuthenticationMiddleware):
             connection.scope["session"] = Empty
             raise NotAuthorizedException("no session data found")
 
-        user = await self.retrieve_user_handler(connection.session, connection)
+        user = await self.retrieve_user_handler(connection.session, connection)  # type: ignore[misc]
 
         if not user:
             connection.scope["session"] = Empty
