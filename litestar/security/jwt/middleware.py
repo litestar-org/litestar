@@ -108,7 +108,11 @@ class JWTAuthenticationMiddleware(ASGIAuthenticationMiddleware):
 
 
 class JWTCookieAuthenticationMiddleware(JWTAuthenticationMiddleware):
-    """Cookie based JWT authentication middleware."""
+    """Cookie based JWT authentication middleware.
+
+    This middleware checks incoming requests for an encoded token in the auth header or cookie name specified, and if
+    present retrieves the user from persistence using the provided function.
+    """
 
     def __init__(
         self,
