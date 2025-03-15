@@ -122,7 +122,7 @@ def test_set_session_cookies(cookie_session_backend_config: "CookieBackendConfig
 
     with create_test_client(
         route_handlers=[handler],
-        middleware=[cookie_session_backend_config.middleware],
+        middleware=[SessionMiddleware(ClientSideSessionBackend(cookie_session_backend_config))],
     ) as client:
         response = client.get("/test")
 
@@ -131,7 +131,7 @@ def test_set_session_cookies(cookie_session_backend_config: "CookieBackendConfig
 
     with create_test_client(
         route_handlers=[handler_short_cookie],
-        middleware=[cookie_session_backend_config.middleware],
+        middleware=[SessionMiddleware(ClientSideSessionBackend(cookie_session_backend_config))],
     ) as client:
         response = client.get("/test_short_cookie")
 
@@ -152,7 +152,7 @@ def test_session_cookie_name_matching(cookie_session_backend_config: "CookieBack
 
     with create_test_client(
         route_handlers=[handler, set_session_data],
-        middleware=[cookie_session_backend_config.middleware],
+        middleware=[SessionMiddleware(ClientSideSessionBackend(cookie_session_backend_config))],
     ) as client:
         client.post("/")
         client.cookies[f"thisisnnota{cookie_session_backend_config.key}cookie"] = "foo"
@@ -187,7 +187,7 @@ def test_load_session_cookies_and_expire_previous(
 
     with create_test_client(
         route_handlers=[handler],
-        middleware=[cookie_session_middleware.backend.config.middleware],
+        middleware=[SessionMiddleware(ClientSideSessionBackend(cookie_session_middleware.backend.config))],
     ) as client:
         # Set cookies on the client to avoid warnings about per-request cookies.
         client.cookies = {  # type: ignore[assignment]

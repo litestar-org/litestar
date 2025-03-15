@@ -15,8 +15,6 @@ if TYPE_CHECKING:
     from litestar.connection import ASGIConnection
     from litestar.di import Provide
     from litestar.enums import MediaType, OpenAPIMediaType
-    from litestar.middleware.authentication import AbstractAuthenticationMiddleware
-    from litestar.middleware.base import DefineMiddleware
     from litestar.openapi.spec import Components, SecurityRequirement
     from litestar.types import (
         ControllerRouterHandler,
@@ -39,15 +37,9 @@ class AbstractSecurityConfig(ABC, Generic[UserType, AuthType]):
     or be manually configured on the router / controller level to provide auth.
     """
 
-    authentication_middleware_class: type[AbstractAuthenticationMiddleware]
-    """The authentication middleware class to use.
-
-    Must inherit from
-    :class:`AbstractAuthenticationMiddleware <litestar.middleware.authentication.AbstractAuthenticationMiddleware>`
-    """
     guards: Iterable[Guard] | None = None
     """An iterable of guards to call for requests, providing authorization functionalities."""
-    exclude: str | list[str] | None = None
+    exclude: str | tuple[str, ...] | None = None
     """A pattern or list of patterns to skip in the authentication middleware."""
     exclude_opt_key: str = "exclude_from_auth"
     """An identifier to use on routes to disable authentication and authorization checks for a particular route."""
@@ -85,8 +77,6 @@ class AbstractSecurityConfig(ABC, Generic[UserType, AuthType]):
         Returns:
             The :class:`AppConfig <.config.app.AppConfig>`.
         """
-        app_config.middleware.insert(0, self.middleware)
-
         if app_config.openapi_config:
             app_config.openapi_config = copy(app_config.openapi_config)
             if isinstance(app_config.openapi_config.components, list):
@@ -168,16 +158,5 @@ class AbstractSecurityConfig(ABC, Generic[UserType, AuthType]):
 
         Returns:
             An OpenAPI 3.1 :data:`SecurityRequirement <.openapi.spec.SecurityRequirement>` dictionary.
-        """
-        raise NotImplementedError
-
-    @property
-    @abstractmethod
-    def middleware(self) -> DefineMiddleware:
-        """Create an instance of the config's ``authentication_middleware_class`` attribute and any required kwargs,
-        wrapping it in Litestar's ``DefineMiddleware``.
-
-        Returns:
-            An instance of :class:`DefineMiddleware <litestar.middleware.base.DefineMiddleware>`.
         """
         raise NotImplementedError

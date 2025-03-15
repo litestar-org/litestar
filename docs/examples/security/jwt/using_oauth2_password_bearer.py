@@ -7,7 +7,7 @@ from pydantic import BaseModel, EmailStr
 from litestar import Litestar, Request, Response, get, post
 from litestar.connection import ASGIConnection
 from litestar.openapi.config import OpenAPIConfig
-from litestar.security.jwt import OAuth2Login, OAuth2PasswordBearerAuth, Token
+from litestar.security.jwt import JWTAuthenticationMiddleware, OAuth2Login, OAuth2PasswordBearerAuth, Token
 
 
 # Let's assume we have a User model that is a pydantic model.
@@ -84,6 +84,6 @@ openapi_config = OpenAPIConfig(
 # The hook handler will inject the JWT middleware and openapi configuration into the app.
 app = Litestar(
     route_handlers=[login_handler, some_route_handler],
-    on_app_init=[oauth2_auth.on_app_init],
     openapi_config=openapi_config,
+    middleware=[JWTAuthenticationMiddleware(oauth2_auth)],
 )

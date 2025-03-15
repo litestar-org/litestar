@@ -1,7 +1,8 @@
 from os import urandom
 
 from litestar import Litestar, Request, delete, get, post
-from litestar.middleware.session.client_side import CookieBackendConfig
+from litestar.middleware.session import SessionMiddleware
+from litestar.middleware.session.client_side import ClientSideSessionBackend, CookieBackendConfig
 
 # we initialize to config with a 16 byte key, i.e. 128 a bit key.
 # in real world usage we should inject the secret from the environment
@@ -31,5 +32,5 @@ def delete_session_handler(request: Request) -> None:
 
 app = Litestar(
     route_handlers=[check_session_handler, create_session_handler, delete_session_handler],
-    middleware=[session_config.middleware],
+    middleware=[SessionMiddleware(ClientSideSessionBackend(session_config))],
 )

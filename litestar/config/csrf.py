@@ -36,7 +36,7 @@ class CSRFConfig:
     """Specifies which hosts can receive the cookie."""
     safe_methods: set[Method] = field(default_factory=lambda: {"GET", "HEAD", "OPTIONS"})
     """A set of "safe methods" that can set the cookie."""
-    exclude: str | tuple[str] | None = field(default=None)
+    exclude: str | tuple[str, ...] | None = field(default=None)
     """A pattern or list of patterns to skip in the CSRF middleware."""
     exclude_from_csrf_key: str = "exclude_from_csrf"
     """An identifier to use on routes to disable CSRF for a particular route."""

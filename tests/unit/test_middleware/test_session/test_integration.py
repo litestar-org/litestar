@@ -10,7 +10,7 @@ from litestar.middleware.session.server_side import (
     ServerSideSessionConfig,
 )
 from litestar.security.session_auth import SessionAuth
-from litestar.status_codes import HTTP_204_NO_CONTENT
+from litestar.status_codes import HTTP_204_NO_CONTENT, HTTP_401_UNAUTHORIZED
 from litestar.stores.memory import MemoryStore
 from litestar.testing import create_test_client
 
@@ -58,14 +58,18 @@ def get_user(request: Request[User, dict[Literal["user_id"], str], Any]) -> Any:
 session_auth = SessionAuth[User, ServerSideSessionBackend](
     retrieve_user_handler=retrieve_user_handler,
     session_backend_config=ServerSideSessionConfig(),
-    exclude=["/login", "/schema"],
+    exclude=("/login", "/schema"),
 )
 
 
 def test_options_request_with_session_auth() -> None:
+    from litestar.security.session_auth.plugin import SessionPlugin
+
     with create_test_client(
         route_handlers=[login, get_user],
-        on_app_init=[session_auth.on_app_init],
+        plugins=[SessionPlugin(session_auth)],
     ) as client:
         response = client.options(get_user.paths.pop())
         assert response.status_code == HTTP_204_NO_CONTENT
+        response = client.post("/login", json={"email": "test@tes.com", "password": "invalid"})
+        assert response.status_code == HTTP_401_UNAUTHORIZED

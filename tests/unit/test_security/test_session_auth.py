@@ -10,11 +10,12 @@ from starlette.status import (
 )
 
 from litestar import Litestar, Request, delete, get, post
+from litestar.middleware.session.base import BaseSessionBackend, SessionMiddleware
 from litestar.middleware.session.server_side import (
     ServerSideSessionBackend,
     ServerSideSessionConfig,
 )
-from litestar.security.session_auth import SessionAuth
+from litestar.security.session_auth import SessionAuth, SessionAuthMiddleware
 from litestar.testing import create_test_client
 from tests.models import User, UserFactory
 
@@ -30,10 +31,12 @@ def retrieve_user_handler(session_data: dict[str, Any], _: "ASGIConnection") -> 
     return None
 
 
-def test_authentication(session_backend_config_memory: ServerSideSessionConfig) -> None:
+def test_authentication(
+    session_backend_config_memory: ServerSideSessionConfig, session_backend: BaseSessionBackend
+) -> None:
     session_auth = SessionAuth[Any, ServerSideSessionBackend](
         retrieve_user_handler=retrieve_user_handler,
-        exclude=["login"],
+        exclude=("login"),
         session_backend_config=session_backend_config_memory,
     )
 
@@ -51,7 +54,10 @@ def test_authentication(session_backend_config_memory: ServerSideSessionConfig) 
 
     with create_test_client(
         route_handlers=[login_handler, delete_user_handler, get_user_handler],
-        on_app_init=[session_auth.on_app_init],
+        middleware=[
+            SessionMiddleware(session_backend),
+            SessionAuthMiddleware(session_auth),
+        ],
     ) as client:
         response = client.get(f"user/{user_instance.id}")
         assert response.status_code == HTTP_401_UNAUTHORIZED, response.json()
@@ -80,7 +86,13 @@ def test_session_auth_openapi(session_backend_config_memory: "ServerSideSessionC
         retrieve_user_handler=retrieve_user_handler,
         session_backend_config=session_backend_config_memory,
     )
-    app = Litestar(on_app_init=[session_auth.on_app_init])
+    from litestar.security.session_auth.plugin import SessionPlugin
+
+    app = Litestar(
+        # middleware=[SessionMiddleware(ServerSideSessionBackend(session_backend_config_memory)),
+        #             SessionAuthMiddleware(session_auth)],
+        plugins=[SessionPlugin(session_auth)],
+    )
     assert app.openapi_schema.to_schema() == {
         "openapi": "3.1.0",
         "info": {"title": "Litestar API", "version": "1.0.0"},
