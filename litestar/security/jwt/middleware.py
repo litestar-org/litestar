@@ -21,7 +21,9 @@ if TYPE_CHECKING:
 
 
 class JWTAuthenticationMiddleware(ASGIAuthenticationMiddleware):
-    """JWT Authentication middleware."""
+    """JWT Authentication middleware.
+
+    This middleware checks incoming requests for an encoded token in the auth header specified, and if present retrieves"""
 
     def __init__(
         self,
