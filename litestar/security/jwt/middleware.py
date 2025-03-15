@@ -21,12 +21,7 @@ if TYPE_CHECKING:
 
 
 class JWTAuthenticationMiddleware(ASGIAuthenticationMiddleware):
-    """JWT Authentication middleware.
-
-    This class provides JWT authentication functionalities.
-    """
-
-    # class implementation
+    """JWT Authentication middleware."""
 
     def __init__(
         self,
