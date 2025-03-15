@@ -24,7 +24,7 @@ def test_build_route_middleware_stack_no_middleware(monkeypatch: pytest.MonkeyPa
     handle_mock = MagicMock()
     monkeypatch.setattr(type(route), "handle", handle_mock)
     asgi_app = build_route_middleware_stack(app=app, route=route, route_handler=handler)
-    assert asgi_app.app is handle_mock
+    assert asgi_app.app is handle_mock  # type: ignore[attr-defined]
 
 
 def test_build_route_middleware_stack_with_middleware(monkeypatch: pytest.MonkeyPatch) -> None:

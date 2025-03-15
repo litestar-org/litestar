@@ -22,13 +22,8 @@ def test_setting_cors_middleware() -> None:
     assert cors_config.expose_headers == []
 
     with create_test_client(middleware=[CORSMiddleware(cors_config)]) as client:
-        unpacked_middleware = []
-        cur = client.app.asgi_handler
-        while hasattr(cur, "app"):
-            unpacked_middleware.append(cur)
-            cur = cast("Any", cur.app)
-        unpacked_middleware.append(cur)
-        assert len(unpacked_middleware) == 4
+        unpacked_middleware = client.app.middleware
+        assert len(unpacked_middleware) == 1
         cors_middleware = cast("Any", unpacked_middleware[0])
         assert isinstance(cors_middleware, CORSMiddleware)
         assert cors_middleware.config.allow_headers == ["*"]

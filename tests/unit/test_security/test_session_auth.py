@@ -10,12 +10,12 @@ from starlette.status import (
 )
 
 from litestar import Litestar, Request, delete, get, post
-from litestar.middleware.session.base import BaseSessionBackend, SessionMiddleware
+from litestar.middleware.session.base import BaseSessionBackend
 from litestar.middleware.session.server_side import (
     ServerSideSessionBackend,
     ServerSideSessionConfig,
 )
-from litestar.security.session_auth import SessionAuth, SessionAuthMiddleware
+from litestar.security.session_auth import SessionAuth
 from litestar.testing import create_test_client
 from tests.models import User, UserFactory
 
@@ -52,12 +52,11 @@ def test_authentication(
     def get_user_handler(request: "Request[User, Any, Any]") -> User:
         return request.user
 
+    from litestar.security.session_auth.plugin import SessionPlugin
+
     with create_test_client(
         route_handlers=[login_handler, delete_user_handler, get_user_handler],
-        middleware=[
-            SessionMiddleware(session_backend),
-            SessionAuthMiddleware(session_auth),
-        ],
+        plugins=[SessionPlugin(session_auth)],
     ) as client:
         response = client.get(f"user/{user_instance.id}")
         assert response.status_code == HTTP_401_UNAUTHORIZED, response.json()
