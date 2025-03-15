@@ -25,6 +25,7 @@ class JWTAuthenticationMiddleware(ASGIAuthenticationMiddleware):
 
     This middleware checks incoming requests for an encoded token in the auth header specified, and if present retrieves
     """
+
     __slots__ = ("jwt_auth",)
 
     def __init__(
@@ -115,6 +116,7 @@ class JWTCookieAuthenticationMiddleware(JWTAuthenticationMiddleware):
     This middleware checks incoming requests for an encoded token in the auth header or cookie name specified, and if
     present retrieves the user from persistence using the provided function.
     """
+
     __slots__ = ("auth_cookie_key",)
 
     def __init__(
