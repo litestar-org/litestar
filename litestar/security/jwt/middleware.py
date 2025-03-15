@@ -26,6 +26,8 @@ class JWTAuthenticationMiddleware(ASGIAuthenticationMiddleware):
     This class provides JWT authentication functionalities.
     """
 
+    # class implementation
+
     def __init__(
         self,
         jwt_auth: JWTAuth,
