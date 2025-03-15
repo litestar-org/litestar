@@ -125,14 +125,15 @@ def store(request: FixtureRequest) -> Store:
     return cast("Store", request.getfixturevalue(request.param))
 
 
+# config fixtures
 @pytest.fixture
 def cookie_session_backend_config() -> CookieBackendConfig:
     return CookieBackendConfig(secret=urandom(16))
 
 
 @pytest.fixture()
-def cookie_session_backend(cookie_session_backend_config: CookieBackendConfig) -> ClientSideSessionBackend:
-    return ClientSideSessionBackend(config=cookie_session_backend_config)
+def server_side_session_config() -> ServerSideSessionConfig:
+    return ServerSideSessionConfig()
 
 
 @pytest.fixture(
@@ -146,8 +147,14 @@ def session_backend_config(request: pytest.FixtureRequest) -> ServerSideSessionC
 
 
 @pytest.fixture()
-def server_side_session_config() -> ServerSideSessionConfig:
+def session_backend_config_memory(memory_store: MemoryStore) -> ServerSideSessionConfig:
     return ServerSideSessionConfig()
+
+
+# backend fixtures
+@pytest.fixture()
+def cookie_session_backend(cookie_session_backend_config: CookieBackendConfig) -> ClientSideSessionBackend:
+    return ClientSideSessionBackend(config=cookie_session_backend_config)
 
 
 @pytest.fixture()
@@ -157,29 +164,19 @@ def server_side_session_backend(server_side_session_config: ServerSideSessionCon
 
 @pytest.fixture(
     params=[
-        pytest.param("cookie_session_backend", id="cookie"),
-        pytest.param("server_side_session_backend", id="server-side"),
+        pytest.param("cookie_session_backend", id="cookie_backend"),
+        pytest.param("server_side_session_backend", id="server_side_backend"),
     ]
 )
 def session_backend(request: pytest.FixtureRequest) -> BaseSessionBackend:
     return cast("BaseSessionBackend", request.getfixturevalue(request.param))
 
 
-@pytest.fixture()
-def session_backend_config_memory(memory_store: MemoryStore) -> ServerSideSessionConfig:
-    return ServerSideSessionConfig()
-
-
-@pytest.fixture
-def session_middleware(session_backend: BaseSessionBackend, mock_asgi_app: ASGIApp) -> SessionMiddleware[Any]:
-    return SessionMiddleware(app=mock_asgi_app, backend=session_backend)
-
-
 @pytest.fixture
 def cookie_session_middleware(
-    cookie_session_backend: ClientSideSessionBackend, mock_asgi_app: ASGIApp
+    cookie_session_backend: ClientSideSessionBackend,
 ) -> SessionMiddleware[ClientSideSessionBackend]:
-    return SessionMiddleware(app=mock_asgi_app, backend=cookie_session_backend)
+    return SessionMiddleware(backend=cookie_session_backend)
 
 
 @pytest.fixture

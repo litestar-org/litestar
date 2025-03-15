@@ -1,13 +1,14 @@
 from typing import TYPE_CHECKING, Optional, Union
 
 from litestar import HttpMethod, Request, Response, get, post, route
-from litestar.middleware.session.server_side import ServerSideSessionConfig
+from litestar.middleware.session import SessionMiddleware
+from litestar.middleware.session.server_side import ServerSideSessionBackend, ServerSideSessionConfig
 from litestar.status_codes import HTTP_500_INTERNAL_SERVER_ERROR
 from litestar.testing import create_test_client
 from litestar.types import Empty
 
 if TYPE_CHECKING:
-    from litestar.middleware.session.base import BaseBackendConfig
+    from litestar.middleware.session.base import BaseBackendConfig, BaseSessionBackend
 
 
 def test_session_middleware_not_installed_raises() -> None:
@@ -22,7 +23,7 @@ def test_session_middleware_not_installed_raises() -> None:
         assert response.json()["detail"] == "Internal Server Error"
 
 
-def test_integration(session_backend_config: "BaseBackendConfig") -> None:
+def test_integration(session_backend: "BaseSessionBackend") -> None:
     @route("/session", http_method=[HttpMethod.GET, HttpMethod.POST, HttpMethod.DELETE])
     def session_handler(request: Request) -> Optional[dict[str, bool]]:
         if request.method == HttpMethod.GET:
@@ -34,7 +35,10 @@ def test_integration(session_backend_config: "BaseBackendConfig") -> None:
             request.session["username"] = "moishezuchmir"
         return None
 
-    with create_test_client(route_handlers=[session_handler], middleware=[session_backend_config.middleware]) as client:
+    with create_test_client(
+        route_handlers=[session_handler],
+        middleware=[SessionMiddleware(session_backend)],
+    ) as client:
         response = client.get("/session")
         assert response.json() == {"has_session": False}
         first_session_id = client.cookies.get("session")
@@ -57,15 +61,18 @@ def test_integration(session_backend_config: "BaseBackendConfig") -> None:
         assert first_session_id != second_session_id
 
 
-def test_session_id_correctness(session_backend_config: "BaseBackendConfig") -> None:
+def test_session_id_correctness(session_backend: "BaseSessionBackend") -> None:
     # Test that `request.get_session_id()` is the same as in the cookies
     @route("/session", http_method=[HttpMethod.POST])
     def session_handler(request: Request) -> Optional[dict[str, Union[str, None]]]:
         request.set_session({"foo": "bar"})
         return {"session_id": request.get_session_id()}
 
-    with create_test_client(route_handlers=[session_handler], middleware=[session_backend_config.middleware]) as client:
-        if isinstance(session_backend_config, ServerSideSessionConfig):
+    with create_test_client(
+        route_handlers=[session_handler],
+        middleware=[SessionMiddleware(session_backend)],
+    ) as client:
+        if isinstance(session_backend, ServerSideSessionBackend):
             # Generic verification that a session id is set before entering the route handler scope
             response = client.post("/session")
             request_session_id = response.json()["session_id"]
@@ -81,15 +88,18 @@ def test_session_id_correctness(session_backend_config: "BaseBackendConfig") -> 
             assert client.cookies.get("session") is not None
 
 
-def test_keep_session_id(session_backend_config: "BaseBackendConfig") -> None:
+def test_keep_session_id(session_backend: "BaseSessionBackend") -> None:
     # Test that session is only created if not already exists
     @route("/session", http_method=[HttpMethod.POST])
     def session_handler(request: Request) -> Optional[dict[str, Union[str, None]]]:
         request.set_session({"foo": "bar"})
         return {"session_id": request.get_session_id()}
 
-    with create_test_client(route_handlers=[session_handler], middleware=[session_backend_config.middleware]) as client:
-        if isinstance(session_backend_config, ServerSideSessionConfig):
+    with create_test_client(
+        route_handlers=[session_handler],
+        middleware=[SessionMiddleware(session_backend)],
+    ) as client:
+        if isinstance(session_backend, ServerSideSessionBackend):
             # Generic verification that a session id is set before entering the route handler scope
             response = client.post("/session")
             first_call_id = response.json()["session_id"]
@@ -106,7 +116,7 @@ def test_keep_session_id(session_backend_config: "BaseBackendConfig") -> None:
             assert client.cookies.get("session") is not None
 
 
-def test_set_empty(session_backend_config: "BaseBackendConfig") -> None:
+def test_set_empty(session_backend: "BaseSessionBackend", session_backend_config: "BaseBackendConfig") -> None:
     @post("/create-session")
     def create_session_handler(request: Request) -> None:
         request.set_session({"foo": "bar"})
@@ -117,7 +127,7 @@ def test_set_empty(session_backend_config: "BaseBackendConfig") -> None:
 
     with create_test_client(
         route_handlers=[create_session_handler, empty_session_handler],
-        middleware=[session_backend_config.middleware],
+        middleware=[SessionMiddleware(session_backend)],
         session_config=session_backend_config,
     ) as client:
         client.post("/create-session")
@@ -146,7 +156,7 @@ def test_middleware_exclude_pattern(session_backend_config_memory: "ServerSideSe
 
     with create_test_client(
         route_handlers=[north_handler, south_handler, west_handler],
-        middleware=[session_backend_config_memory.middleware],
+        middleware=[SessionMiddleware(ServerSideSessionBackend(session_backend_config_memory))],
     ) as client:
         response = client.get("/north")
         assert response.json() == {"has_session": False}
@@ -169,7 +179,7 @@ def test_middleware_exclude_flag(session_backend_config_memory: "ServerSideSessi
 
     with create_test_client(
         route_handlers=[north_handler, south_handler],
-        middleware=[session_backend_config_memory.middleware],
+        middleware=[SessionMiddleware(ServerSideSessionBackend(session_backend_config_memory))],
     ) as client:
         response = client.get("/north")
         assert response.json() == {"has_session": True}
@@ -191,7 +201,7 @@ def test_middleware_exclude_custom_key(session_backend_config_memory: "ServerSid
 
     with create_test_client(
         route_handlers=[north_handler, south_handler],
-        middleware=[session_backend_config_memory.middleware],
+        middleware=[SessionMiddleware(ServerSideSessionBackend(session_backend_config_memory))],
     ) as client:
         response = client.get("/north")
         assert response.json() == {"has_session": True}
@@ -207,6 +217,8 @@ def test_does_not_override_cookies(session_backend_config_memory: "ServerSideSes
     async def index() -> Response[str]:
         return Response(cookies={"foo": "bar"}, content="hello")
 
-    with create_test_client(index, middleware=[session_backend_config_memory.middleware]) as client:
+    with create_test_client(
+        index, middleware=[SessionMiddleware(ServerSideSessionBackend(session_backend_config_memory))]
+    ) as client:
         res = client.get("/")
         assert res.cookies.get("foo") == "bar"

@@ -4,7 +4,7 @@ from typing import Any
 
 from litestar import Litestar, Request, get
 from litestar.connection import ASGIConnection
-from litestar.security.jwt import JWTAuth, Token
+from litestar.security.jwt import JWTAuth, JWTAuthenticationMiddleware, Token
 
 
 @dataclasses.dataclass
@@ -29,4 +29,4 @@ def handler(request: Request[User, Token, Any]) -> dict[str, Any]:
     return {"id": request.user.id}
 
 
-app = Litestar([handler], middleware=[jwt_auth.middleware])
+app = Litestar([handler], middleware=[JWTAuthenticationMiddleware(jwt_auth)])

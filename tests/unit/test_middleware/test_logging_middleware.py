@@ -16,6 +16,8 @@ from litestar.logging.config import LoggingConfig, StructLoggingConfig
 from litestar.middleware import logging as middleware_logging
 from litestar.middleware.compression import CompressionMiddleware
 from litestar.middleware.logging import LoggingMiddleware, LoggingMiddlewareConfig
+from litestar.middleware.session import SessionMiddleware
+from litestar.middleware.session.server_side import ServerSideSessionBackend
 from litestar.params import Body
 from litestar.status_codes import HTTP_200_OK, HTTP_201_CREATED
 from litestar.testing import create_test_client
@@ -25,7 +27,7 @@ if TYPE_CHECKING:
     from _pytest.logging import LogCaptureFixture
     from pytest import MonkeyPatch
 
-    from litestar.middleware.session.server_side import ServerSideSessionConfig
+    from litestar.middleware.session.server_side import ServerSideSessionBackend, ServerSideSessionConfig
     from litestar.types.callable_types import GetLogger
 
 
@@ -314,7 +316,10 @@ def test_logging_middleware_with_session_middleware(session_backend_config_memor
     with create_test_client(
         [set_session, get_session],
         logging_config=LoggingConfig(),
-        middleware=[LoggingMiddleware(logging_middleware_config), session_backend_config_memory.middleware],
+        middleware=[
+            LoggingMiddleware(logging_middleware_config),
+            SessionMiddleware(ServerSideSessionBackend(session_backend_config_memory)),
+        ],
     ) as client:
         response = client.post("/")
         assert response.status_code == HTTP_201_CREATED

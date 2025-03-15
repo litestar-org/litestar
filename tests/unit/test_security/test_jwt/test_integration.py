@@ -29,7 +29,7 @@ async def retrieve_user_handler(token: Token, connection: ASGIConnection[Any, An
 jwt_auth = JWTAuth[User](
     retrieve_user_handler=retrieve_user_handler,
     token_secret=environ.get("JWT_SECRET", "abcd123"),
-    exclude=["/login", "/schema"],
+    exclude=("/login", "/schema"),
 )
 
 

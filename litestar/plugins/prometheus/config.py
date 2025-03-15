@@ -42,7 +42,7 @@ class PrometheusConfig:
     """A list of http methods to exclude from the metrics."""
     exclude_unhandled_paths: bool = field(default=False)
     """Whether to ignore requests for unhandled paths from the metrics."""
-    exclude: str | tuple[str] | None = field(default=None)
+    exclude: str | tuple[str, ...] | None = field(default=None)
     """A pattern or list of patterns for routes to exclude from the metrics."""
     exclude_opt_key: str | None = field(default=None)
     """A key or list of keys in ``opt`` with which a route handler can "opt-out" of the middleware."""
