@@ -115,15 +115,6 @@ class ASGIAuthenticationMiddleware(ABC):
     and overriding :meth:`ASGIAuthenticationMiddleware.authenticate_request`.
     """
 
-    __slots__ = (
-        "auth_cookie_key",
-        "exclude_http_methods",
-        "exclude_opt_key",
-        "exclude_path_pattern",
-        "jwt_auth",
-        "scopes",
-    )
-
     scopes: tuple[ScopeType, ...] = (ScopeType.HTTP, ScopeType.WEBSOCKET, ScopeType.ASGI)
     exclude_path_pattern: str | tuple[str, ...] | None = None
     exclude_opt_key: str = "exclude_from_auth"
