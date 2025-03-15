@@ -1,7 +1,8 @@
 from typing import Any
 
 from litestar import Litestar, Request, get
-from litestar.middleware.session.server_side import ServerSideSessionConfig
+from litestar.middleware.session import SessionMiddleware
+from litestar.middleware.session.server_side import ServerSideSessionBackend, ServerSideSessionConfig
 from litestar.testing import AsyncTestClient
 
 session_config = ServerSideSessionConfig()
@@ -12,7 +13,11 @@ def get_session_data(request: Request) -> dict[str, Any]:
     return request.session
 
 
-app = Litestar(route_handlers=[get_session_data], middleware=[session_config.middleware], debug=True)
+app = Litestar(
+    route_handlers=[get_session_data],
+    middleware=[SessionMiddleware(ServerSideSessionBackend(session_config))],
+    debug=True,
+)
 
 
 async def test_get_session_data() -> None:
