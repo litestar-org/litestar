@@ -2,8 +2,9 @@ from __future__ import annotations
 
 import io
 import pathlib
-from stat import S_ISDIR
-from typing import TYPE_CHECKING, Any, cast
+from datetime import datetime
+from stat import S_ISDIR, S_ISLNK
+from typing import TYPE_CHECKING, Any, Final, cast
 
 import anyio
 
@@ -16,6 +17,7 @@ __all__ = (
     "FileSystemRegistry",
     "FsspecAsyncWrapper",
     "FsspecSyncWrapper",
+    "get_fsspec_mtime_equivalent",
     "maybe_wrap_fsspec_file_system",
     "parse_stat_result",
 )
@@ -46,7 +48,7 @@ class BaseLocalFileSystem(BaseFileSystem):
             A dictionary of file info.
         """
         result = await sync_to_thread(pathlib.Path(path).stat)
-        return await parse_stat_result(path=path, result=result)
+        return parse_stat_result(path=path, result=result)
 
     async def read_bytes(
         self,
@@ -103,7 +105,9 @@ class FsspecSyncWrapper(BaseFileSystem):
         self._fs = fs
 
     async def info(self, path: PathType, **kwargs: Any) -> FileInfo:
-        return cast("FileInfo", await sync_to_thread(self._fs.info, str(path), **kwargs))
+        result = await sync_to_thread(self._fs.info, str(path), **kwargs)
+        result["mtime"] = get_fsspec_mtime_equivalent(result)
+        return cast("FileInfo", result)
 
     async def read_bytes(
         self,
@@ -158,7 +162,9 @@ class FsspecAsyncWrapper(BaseFileSystem):
         self._supports_open_async = type(fs).open_async is not FsspecAsyncFileSystem.open_async
 
     async def info(self, path: PathType, **kwargs: Any) -> FileInfo:
-        return cast("FileInfo", await self._fs._info(str(path), **kwargs))
+        result = await self._fs._info(str(path), **kwargs)
+        result["mtime"] = get_fsspec_mtime_equivalent(result)
+        return cast("FileInfo", result)
 
     async def read_bytes(
         self,
@@ -210,7 +216,7 @@ class FsspecAsyncWrapper(BaseFileSystem):
             yield chunk
 
 
-async def parse_stat_result(path: PathType, result: stat_result) -> FileInfo:
+def parse_stat_result(path: PathType, result: stat_result) -> FileInfo:
     """Convert a ``stat_result`` instance into a ``FileInfo``.
 
     Args:
@@ -220,28 +226,13 @@ async def parse_stat_result(path: PathType, result: stat_result) -> FileInfo:
     Returns:
         A dictionary of file info.
     """
-    file_info: FileInfo = {
-        "created": result.st_ctime,
-        "gid": result.st_gid,
-        "ino": result.st_ino,
-        "islink": await anyio.Path(path).is_symlink(),
-        "mode": result.st_mode,
+    return {
+        "islink": S_ISLNK(result.st_mode),
         "mtime": result.st_mtime,
         "name": str(path),
-        "nlink": result.st_nlink,
         "size": result.st_size,
         "type": "directory" if S_ISDIR(result.st_mode) else "file",
-        "uid": result.st_uid,
     }
-
-    if file_info["islink"]:
-        file_info["destination"] = str(await anyio.Path(path).readlink()).encode("utf-8")
-        try:
-            file_info["size"] = (await anyio.Path(path).stat()).st_size
-        except OSError:  # pragma: no cover
-            file_info["size"] = result.st_size
-
-    return file_info
 
 
 def maybe_wrap_fsspec_file_system(file_system: FileSystem) -> BaseFileSystem:
@@ -285,3 +276,35 @@ class FileSystemRegistry(InitPlugin):
 
     def register(self, scheme: str, fs: FileSystem) -> None:
         self._adapters[scheme] = maybe_wrap_fsspec_file_system(fs)
+
+
+_MTIME_KEYS: Final = (
+    "mtime",
+    "ctime",
+    "Last-Modified",
+    "updated_at",
+    "modification_time",
+    "last_changed",
+    "change_time",
+    "last_modified",
+    "last_updated",
+    "timestamp",
+)
+
+
+def get_fsspec_mtime_equivalent(info: dict[str, Any]) -> float | None:
+    """Return the 'mtime' or equivalent for different fsspec implementations, since they
+    are not standardized.
+
+    See https://github.com/fsspec/filesystem_spec/issues/526.
+    """
+    # inspired by https://github.com/mdshw5/pyfaidx/blob/cac82f24e9c4e334cf87a92e477b92d4615d260f/pyfaidx/__init__.py#L1318-L1345
+    mtime: Any | None = next((info[key] for key in _MTIME_KEYS if key in info), None)
+    if mtime is None or isinstance(mtime, float):
+        return mtime
+    if isinstance(mtime, datetime):
+        return mtime.timestamp()
+    if isinstance(mtime, str):
+        return datetime.fromisoformat(mtime.replace("Z", "+00:00")).timestamp()
+
+    raise ValueError(f"Unsupported mtime-type value type {type(mtime)!r}")

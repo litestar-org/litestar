@@ -1,11 +1,10 @@
 from __future__ import annotations
 
 import itertools
-from datetime import datetime
 from email.utils import formatdate
 from mimetypes import encodings_map, guess_type
 from os import stat_result as stat_result_type
-from typing import TYPE_CHECKING, Any, Final, Literal, cast
+from typing import TYPE_CHECKING, Literal
 from urllib.parse import quote
 from zlib import adler32
 
@@ -68,38 +67,6 @@ def create_etag_for_file(path: PathType, modified_time: float | None, file_size:
     if modified_time:
         parts.insert(0, str(modified_time))
     return f'"{"-".join(parts)}"'
-
-
-_MTIME_KEYS: Final = (
-    "mtime",
-    "ctime",
-    "Last-Modified",
-    "updated_at",
-    "modification_time",
-    "last_changed",
-    "change_time",
-    "last_modified",
-    "last_updated",
-    "timestamp",
-)
-
-
-def get_fsspec_mtime_equivalent(info: dict[str, Any]) -> float | None:
-    """Return the 'mtime' or equivalent for different fsspec implementations, since they
-    are not standardized.
-
-    See https://github.com/fsspec/filesystem_spec/issues/526.
-    """
-    # inspired by https://github.com/mdshw5/pyfaidx/blob/cac82f24e9c4e334cf87a92e477b92d4615d260f/pyfaidx/__init__.py#L1318-L1345
-    mtime: Any | None = next((info[key] for key in _MTIME_KEYS if key in info), None)
-    if mtime is None or isinstance(mtime, float):
-        return mtime
-    if isinstance(mtime, datetime):
-        return mtime.timestamp()
-    if isinstance(mtime, str):
-        return datetime.fromisoformat(mtime.replace("Z", "+00:00")).timestamp()
-
-    raise ValueError(f"Unsupported mtime-type value type {type(mtime)!r}")
 
 
 class ASGIFileResponse(ASGIStreamingResponse):
@@ -217,9 +184,9 @@ class ASGIFileResponse(ASGIStreamingResponse):
 
         try:
             if self.file_info is None:
-                file_info = cast("FileInfo", await self._file_system.info(self.file_path))
+                file_info = await self._file_system.info(self.file_path)
             elif isinstance(self.file_info, stat_result_type):
-                file_info = await parse_stat_result(self.file_path, self.file_info)
+                file_info = parse_stat_result(self.file_path, self.file_info)
             else:
                 file_info = self.file_info
         except FileNotFoundError as e:
@@ -231,7 +198,7 @@ class ASGIFileResponse(ASGIStreamingResponse):
         self.content_length = file_info["size"]
 
         self.headers.setdefault("content-length", str(self.content_length))
-        mtime = get_fsspec_mtime_equivalent(file_info)  # type: ignore[arg-type]
+        mtime = file_info.get("mtime")
 
         if mtime is not None:
             self.headers.setdefault("last-modified", formatdate(mtime, usegmt=True))

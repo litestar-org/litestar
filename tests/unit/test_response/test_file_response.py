@@ -12,6 +12,7 @@ from typing import Any
 
 import pytest
 from fsspec.implementations.local import LocalFileSystem
+from pytest_mock import MockerFixture
 
 from litestar import get
 from litestar.connection.base import empty_send
@@ -135,19 +136,21 @@ def test_file_response_last_modified(tmpdir: Path) -> None:
     ],
 )
 def test_file_response_last_modified_file_info_formats(
-    tmpdir: Path, mtime: Any, mtime_key: str, expected_last_modified: str
+    tmpdir: Path,
+    mtime: Any,
+    mtime_key: str,
+    expected_last_modified: str,
+    mocker: MockerFixture,
 ) -> None:
     path = Path(tmpdir / "file.txt")
     path.write_bytes(b"")
     file_info = {"name": "file.txt", "size": 0, "type": "file", mtime_key: mtime}
+    fs = LocalFileSystem()
+    mocker.patch.object(fs, "info", return_value=file_info)
 
     @get("/")
     def handler() -> File:
-        return File(
-            path=path,
-            filename="image.png",
-            file_info=file_info,  # type: ignore[arg-type]
-        )
+        return File(path=path, filename="image.png", file_system=fs)
 
     with create_test_client(handler) as client:
         response = client.get("/")
@@ -155,17 +158,23 @@ def test_file_response_last_modified_file_info_formats(
         assert response.headers["last-modified"].lower() == expected_last_modified.lower()
 
 
-def test_file_response_last_modified_unsupported_mtime_type(tmpdir: Path) -> None:
+def test_file_response_last_modified_unsupported_mtime_type(
+    tmpdir: Path,
+    mocker: MockerFixture,
+) -> None:
     path = Path(tmpdir / "file.txt")
     path.write_bytes(b"")
     file_info = {"name": "file.txt", "size": 0, "type": "file", "last_updated": object()}
+
+    fs = LocalFileSystem()
+    mocker.patch.object(fs, "info", return_value=file_info)
 
     @get("/")
     def handler() -> File:
         return File(
             path=path,
             filename="image.png",
-            file_info=file_info,  # type: ignore[arg-type]
+            file_system=fs,
         )
 
     with create_test_client(handler) as client:
@@ -174,17 +183,23 @@ def test_file_response_last_modified_unsupported_mtime_type(tmpdir: Path) -> Non
         assert "last-modified" not in response.headers
 
 
-def test_file_response_last_modified_mtime_not_given(tmpdir: Path) -> None:
+def test_file_response_last_modified_mtime_not_given(
+    tmpdir: Path,
+    mocker: MockerFixture,
+) -> None:
     path = Path(tmpdir / "file.txt")
     path.write_bytes(b"")
     file_info = {"name": "file.txt", "size": 0, "type": "file"}
+
+    fs = LocalFileSystem()
+    mocker.patch.object(fs, "info", return_value=file_info)
 
     @get("/")
     def handler() -> File:
         return File(
             path=path,
             filename="image.png",
-            file_info=file_info,  # type: ignore[arg-type]
+            file_system=fs,
         )
 
     with create_test_client(handler) as client:
@@ -193,17 +208,23 @@ def test_file_response_last_modified_mtime_not_given(tmpdir: Path) -> None:
         assert "last-modified" not in response.headers
 
 
-def test_file_response_etag_without_mtime(tmpdir: Path) -> None:
+def test_file_response_etag_without_mtime(
+    tmpdir: Path,
+    mocker: MockerFixture,
+) -> None:
     path = Path(tmpdir / "file.txt")
     path.write_bytes(b"")
     file_info = {"name": "file.txt", "size": 0, "type": "file"}
+
+    fs = LocalFileSystem()
+    mocker.patch.object(fs, "info", return_value=file_info)
 
     @get("/")
     def handler() -> File:
         return File(
             path=path,
             filename="image.png",
-            file_info=file_info,  # type: ignore[arg-type]
+            file_system=fs,
         )
 
     with create_test_client(handler) as client:
@@ -313,8 +334,6 @@ async def test_file_with_symbolic_link(tmpdir: Path) -> None:
     fs = BaseLocalFileSystem()
     file_info = await fs.info(linked)
 
-    assert file_info["islink"]
-
     @get("/", media_type="application/octet-stream")
     def handler() -> File:
         return File(filename="alt.txt", path=linked, file_system=fs, file_info=file_info)
@@ -323,6 +342,7 @@ async def test_file_with_symbolic_link(tmpdir: Path) -> None:
         response = client.get("/")
         assert response.status_code == HTTP_200_OK
         assert response.text == "content"
+        assert response.headers.get("content-length", "7")
         assert response.headers.get("content-disposition") == 'attachment; filename="alt.txt"'
 
 
@@ -352,17 +372,11 @@ async def test_file_response_with_missing_file_raises_error(tmpdir: Path) -> Non
 class MockFileSystem(BaseFileSystem):
     async def info(self, path: PathType, **kwargs: Any) -> FileInfo:
         return FileInfo(
-            created=0,
-            gid=0,
-            ino=0,
             islink=False,
-            mode=0,
             mtime=0.0,
             name=str(path),
-            nlink=0,
             size=len(str(path).encode()),
             type="file",
-            uid=1,
         )
 
     async def read_bytes(
