@@ -231,7 +231,7 @@ class ASGIFileResponse(ASGIStreamingResponse):
         self.content_length = file_info["size"]
 
         self.headers.setdefault("content-length", str(self.content_length))
-        mtime = get_fsspec_mtime_equivalent(file_info)
+        mtime = get_fsspec_mtime_equivalent(file_info)  # type: ignore[arg-type]
 
         if mtime is not None:
             self.headers.setdefault("last-modified", formatdate(mtime, usegmt=True))
