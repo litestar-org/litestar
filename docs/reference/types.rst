@@ -187,5 +187,5 @@ File types
     :members:
 
 
-.. autoclass:: litestar.types.FileSystemProtocol
+.. autoclass:: litestar.types.BaseFileSystem
     :members:

@@ -42,7 +42,7 @@ if TYPE_CHECKING:
         Send,
         TypeEncodersMap,
     )
-    from litestar.types.file_types import FileInfo, FileSystemProtocol
+    from litestar.types.file_types import FileInfo, BaseFileSystem
 
 __all__ = (
     "ASGIFileResponse",
@@ -118,7 +118,7 @@ class ASGIFileResponse(ASGIStreamingResponse):
         etag: ETag | None = None,
         file_info: FileInfo | stat_result_type | None = None,
         file_path: str | PathLike | Path,
-        file_system: FileSystemProtocol,
+        file_system: BaseFileSystem,
         filename: str = "",
         headers: dict[str, str] | None = None,
         is_head_response: bool = False,
@@ -276,7 +276,7 @@ class File(Response):
         encoding: str = "utf-8",
         etag: ETag | None = None,
         file_info: FileInfo | stat_result_type | None = None,
-        file_system: str | FileSystemProtocol | AbstractFileSystem | AbstractAsyncFileSystem | None = None,
+        file_system: str | BaseFileSystem | AbstractFileSystem | AbstractAsyncFileSystem | None = None,
         filename: str | None = None,
         headers: ResponseHeaders | None = None,
         media_type: Literal[MediaType.TEXT] | str | None = None,
@@ -366,7 +366,7 @@ class File(Response):
         if media_type is not None:
             media_type = get_enum_string_value(media_type)
 
-        file_system: FileSystemProtocol
+        file_system: BaseFileSystem
         if self.file_system is None:
             file_system = request.app.plugins.get(FileSystemPlugin).default
         elif isinstance(self.file_system, str):

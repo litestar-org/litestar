@@ -8,7 +8,7 @@ import anyio
 
 from litestar.concurrency import sync_to_thread
 from litestar.plugins import InitPlugin
-from litestar.types.file_types import FileSystem, FileSystemProtocol
+from litestar.types.file_types import FileSystem, BaseFileSystem
 
 __all__ = (
     "BaseLocalFileSystem",
@@ -32,7 +32,7 @@ if TYPE_CHECKING:
     from litestar.types.file_types import FileInfo
 
 
-class BaseLocalFileSystem(FileSystemProtocol):
+class BaseLocalFileSystem(BaseFileSystem):
     """Base class for a local file system."""
 
     async def info(self, path: PathType, **kwargs: Any) -> FileInfo:
@@ -98,7 +98,7 @@ class BaseLocalFileSystem(FileSystemProtocol):
                 current_pos = await fh.tell()
 
 
-class FsspecSyncWrapper(FileSystemProtocol):
+class FsspecSyncWrapper(BaseFileSystem):
     def __init__(self, fs: FsspecFileSystem) -> None:
         self._fs = fs
 
@@ -149,7 +149,7 @@ class FsspecSyncWrapper(FileSystemProtocol):
             await sync_to_thread(fh.close)
 
 
-class FsspecAsyncWrapper(FileSystemProtocol):
+class FsspecAsyncWrapper(BaseFileSystem):
     def __init__(self, fs: FsspecAsyncFileSystem) -> None:
         from fsspec.asyn import AsyncFileSystem as FsspecAsyncFileSystem
 
@@ -251,7 +251,7 @@ async def parse_stat_result(path: PathType, result: stat_result) -> FileInfo:
     return file_info
 
 
-def maybe_wrap_fsspec_file_system(file_system: FileSystem) -> FileSystemProtocol:
+def maybe_wrap_fsspec_file_system(file_system: FileSystem) -> BaseFileSystem:
     try:
         from fsspec import AbstractFileSystem
         from fsspec.asyn import AsyncFileSystem
@@ -275,7 +275,7 @@ class FileSystemPlugin(InitPlugin):
         file_systems: Mapping[str, FileSystem] | None = None,
         default: FileSystem | None = None,
     ) -> None:
-        self._adapters: dict[str, FileSystemProtocol] = {}
+        self._adapters: dict[str, BaseFileSystem] = {}
         self.register("file", BaseLocalFileSystem())
         if file_systems:
             for scheme, fs in file_systems.items():
@@ -286,10 +286,10 @@ class FileSystemPlugin(InitPlugin):
         else:
             self.default = BaseLocalFileSystem()
 
-    def __getitem__(self, name: str) -> FileSystemProtocol:
+    def __getitem__(self, name: str) -> BaseFileSystem:
         return self._adapters[name]
 
-    def get(self, name: str) -> FileSystemProtocol | None:
+    def get(self, name: str) -> BaseFileSystem | None:
         return self._adapters.get(name)
 
     def register(self, scheme: str, fs: FileSystem) -> None:

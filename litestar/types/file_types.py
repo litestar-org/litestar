@@ -1,13 +1,14 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Literal, Protocol, TypedDict, Union
+import abc
+from typing import TYPE_CHECKING, Any, Literal, TypedDict, Union
 
 from typing_extensions import TypeAlias
 
 __all__ = (
     "FileInfo",
     "FileSystem",
-    "FileSystemProtocol",
+    "BaseFileSystem",
 )
 
 
@@ -50,9 +51,11 @@ class FileInfo(TypedDict):
     """User ID of owner."""
 
 
-class FileSystemProtocol(Protocol):
+class BaseFileSystem(abc.ABC):
+    @abc.abstractmethod
     async def info(self, path: PathType, **kwargs: Any) -> FileInfo: ...
 
+    @abc.abstractmethod
     async def read_bytes(
         self,
         path: PathType,
@@ -60,6 +63,7 @@ class FileSystemProtocol(Protocol):
         end: int = -1,
     ) -> bytes: ...
 
+    @abc.abstractmethod
     def iter(
         self,
         path: PathType,
@@ -69,4 +73,4 @@ class FileSystemProtocol(Protocol):
     ) -> AsyncGenerator[bytes, None]: ...
 
 
-FileSystem: TypeAlias = "Union[FileSystemProtocol, FsspecFileSystem, FsspecAsyncFileSystem]"
+FileSystem: TypeAlias = "Union[BaseFileSystem, FsspecFileSystem, FsspecAsyncFileSystem]"

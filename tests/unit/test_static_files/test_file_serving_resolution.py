@@ -16,7 +16,7 @@ from litestar.testing import create_test_client
 from tests.unit.test_response.test_file_response import MockFileSystem
 
 if TYPE_CHECKING:
-    from litestar.types import FileSystemProtocol
+    from litestar.types import BaseFileSystem
 
 
 def test_default_static_files_router(tmpdir: Path) -> None:
@@ -71,7 +71,7 @@ def test_multiple_static_files_routers(setup_dirs: tuple[Path, Path]) -> None:
 
 
 def test_static_files_routers_with_mixed_file_systems(
-    file_system: FileSystemProtocol, setup_dirs: tuple[Path, Path]
+    file_system: BaseFileSystem, setup_dirs: tuple[Path, Path]
 ) -> None:
     root1, root2 = setup_dirs
 
@@ -91,7 +91,7 @@ def test_static_files_routers_with_mixed_file_systems(
 
 
 def test_static_files_routers_with_multiple_directories(
-    file_system: FileSystemProtocol, setup_dirs: tuple[Path, Path]
+    file_system: BaseFileSystem, setup_dirs: tuple[Path, Path]
 ) -> None:
     root1, root2 = setup_dirs
 
@@ -265,7 +265,7 @@ def test_resolve_symlinks(tmp_path: Path, resolve: bool) -> None:
 
 async def test_staticfiles_get_fs_info_no_access_to_non_static_directory(
     tmp_path: Path,
-    file_system: FileSystemProtocol,
+    file_system: BaseFileSystem,
 ) -> None:
     assets = tmp_path / "assets"
     assets.mkdir()
@@ -278,7 +278,7 @@ async def test_staticfiles_get_fs_info_no_access_to_non_static_directory(
 
 async def test_staticfiles_get_fs_info_no_access_to_non_static_file_with_prefix(
     tmp_path: Path,
-    file_system: FileSystemProtocol,
+    file_system: BaseFileSystem,
 ) -> None:
     static = tmp_path / "static"
     static.mkdir()

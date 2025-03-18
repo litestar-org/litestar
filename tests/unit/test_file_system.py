@@ -13,7 +13,7 @@ from RangeHTTPServer import RangeRequestHandler  # type: ignore[import-untyped]
 
 from litestar.file_system import BaseLocalFileSystem, FsspecAsyncWrapper, FsspecSyncWrapper
 from litestar.testing.client.subprocess_client import _get_available_port
-from litestar.types import FileSystemProtocol
+from litestar.types import BaseFileSystem
 
 
 class PatchedHTTPFileSystem(HTTPFileSystem):  # type: ignore[misc]
@@ -53,7 +53,7 @@ def local_fs(tmp_path: pathlib.Path, monkeypatch: pytest.MonkeyPatch) -> BaseLoc
 
 
 @pytest.fixture()
-def fsspec_local_fs(tmp_path: pathlib.Path, monkeypatch: pytest.MonkeyPatch) -> FileSystemProtocol:
+def fsspec_local_fs(tmp_path: pathlib.Path, monkeypatch: pytest.MonkeyPatch) -> BaseFileSystem:
     monkeypatch.chdir(tmp_path)
     file = tmp_path / "test.txt"
     file.write_bytes(b"0123456789")
@@ -83,7 +83,7 @@ def http_server(tmp_dir: pathlib.Path, http_server_port: int) -> Generator[None,
 @pytest.fixture()
 async def http_fs(
     tmp_path: pathlib.Path, http_server: None, http_server_port: int
-) -> AsyncGenerator[FileSystemProtocol, None]:
+) -> AsyncGenerator[BaseFileSystem, None]:
     client = aiohttp.ClientSession(f"http://127.0.0.1:{http_server_port}")
 
     async def get_client(**kwargs: Any) -> aiohttp.ClientSession:
@@ -95,49 +95,49 @@ async def http_fs(
 
 
 @pytest.fixture(params=["local_fs", "fsspec_local_fs", "http_fs"])
-def fs(request: pytest.FixtureRequest) -> FileSystemProtocol:
+def fs(request: pytest.FixtureRequest) -> BaseFileSystem:
     return request.getfixturevalue(request.param)  # type: ignore[no-any-return]
 
 
-async def test_read_bytes(fs: FileSystemProtocol, file: pathlib.Path) -> None:
+async def test_read_bytes(fs: BaseFileSystem, file: pathlib.Path) -> None:
     content = await fs.read_bytes(file)
     assert content == file.read_bytes()
 
 
-async def test_read_bytes_offset(fs: FileSystemProtocol, file: pathlib.Path) -> None:
+async def test_read_bytes_offset(fs: BaseFileSystem, file: pathlib.Path) -> None:
     content = await fs.read_bytes(file, start=1)
     assert content == file.read_bytes()[1:]
 
 
-async def test_read_bytes_end(fs: FileSystemProtocol, file: pathlib.Path) -> None:
+async def test_read_bytes_end(fs: BaseFileSystem, file: pathlib.Path) -> None:
     content = await fs.read_bytes(file, end=4)
     assert content == file.read_bytes()[:4]
 
 
-async def test_read_bytes_start_end(fs: FileSystemProtocol, file: pathlib.Path) -> None:
+async def test_read_bytes_start_end(fs: BaseFileSystem, file: pathlib.Path) -> None:
     content = await fs.read_bytes(file, start=1, end=5)
     assert content == file.read_bytes()[1:5]
 
 
 @pytest.mark.parametrize("chunksize", [1, 5, 100])
-async def test_read_iter(fs: FileSystemProtocol, file: pathlib.Path, chunksize: int) -> None:
+async def test_read_iter(fs: BaseFileSystem, file: pathlib.Path, chunksize: int) -> None:
     content = b"".join([c async for c in fs.iter(file, chunksize=chunksize)])
     assert content == file.read_bytes()
 
 
 @pytest.mark.parametrize("chunksize", [1, 5, 100])
-async def test_iter_offset(fs: FileSystemProtocol, file: pathlib.Path, chunksize: int) -> None:
+async def test_iter_offset(fs: BaseFileSystem, file: pathlib.Path, chunksize: int) -> None:
     content = b"".join([c async for c in fs.iter(file, chunksize=chunksize, start=1)])
     assert content == file.read_bytes()[1:]
 
 
 @pytest.mark.parametrize("chunksize", [1, 5, 100])
-async def test_iter_end(fs: FileSystemProtocol, file: pathlib.Path, chunksize: int) -> None:
+async def test_iter_end(fs: BaseFileSystem, file: pathlib.Path, chunksize: int) -> None:
     content = b"".join([c async for c in fs.iter(file, chunksize=chunksize, end=4)])
     assert content == file.read_bytes()[:4]
 
 
 @pytest.mark.parametrize("chunksize", [1, 5, 100])
-async def test_iter_start_end(fs: FileSystemProtocol, file: pathlib.Path, chunksize: int) -> None:
+async def test_iter_start_end(fs: BaseFileSystem, file: pathlib.Path, chunksize: int) -> None:
     content = b"".join([c async for c in fs.iter(file, chunksize=chunksize, start=1, end=5)])
     assert content == file.read_bytes()[1:5]

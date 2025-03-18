@@ -86,7 +86,7 @@ under which a specific file will be available:
 ---------------------
 
 To customize how Litestar interacts with the file system, a class implementing the
-:class:`~litestar.types.FileSystemProtocol` can be passed to ``file_system``. An example
+:class:`~litestar.types.BaseFileSystem` can be passed to ``file_system``. An example
 of this are the file systems provided by
 `fsspec <https://filesystem-spec.readthedocs.io/en/latest/>`_, which includes support
 for FTP, SFTP, Hadoop, SMB, GitHub and

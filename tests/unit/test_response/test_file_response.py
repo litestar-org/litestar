@@ -21,7 +21,7 @@ from litestar.file_system import BaseLocalFileSystem, FileSystemPlugin
 from litestar.response.file import ASGIFileResponse, File
 from litestar.status_codes import HTTP_200_OK, HTTP_500_INTERNAL_SERVER_ERROR
 from litestar.testing import create_test_client
-from litestar.types import FileInfo, FileSystemProtocol, PathType
+from litestar.types import FileInfo, BaseFileSystem, PathType
 
 
 @pytest.mark.parametrize("content_disposition_type", ("inline", "attachment"))
@@ -246,7 +246,7 @@ def test_large_files(tmpdir: Path, size: int) -> None:
 
 
 @pytest.mark.parametrize("file_system", (BaseLocalFileSystem(), LocalFileSystem()))
-def test_file_with_different_file_systems(tmpdir: Path, file_system: FileSystemProtocol) -> None:
+def test_file_with_different_file_systems(tmpdir: Path, file_system: BaseFileSystem) -> None:
     path = tmpdir / "text.txt"
     path.write_text("content", "utf-8")
 
@@ -349,7 +349,7 @@ async def test_file_response_with_missing_file_raises_error(tmpdir: Path) -> Non
         await asgi_response.start_response(empty_send)
 
 
-class MockFileSystem(FileSystemProtocol):
+class MockFileSystem(BaseFileSystem):
     async def info(self, path: PathType, **kwargs: Any) -> FileInfo:
         return FileInfo(
             created=0,

@@ -11,7 +11,7 @@ from litestar.handlers import get, head
 from litestar.response.file import ASGIFileResponse
 from litestar.router import Router
 from litestar.status_codes import HTTP_404_NOT_FOUND
-from litestar.types import Empty, FileInfo, FileSystemProtocol
+from litestar.types import Empty, FileInfo, BaseFileSystem
 from litestar.utils import normalize_path
 
 __all__ = ("create_static_files_router",)
@@ -163,7 +163,7 @@ async def _handler(
     is_head_response: bool,
     directories: tuple[Path, ...],
     send_as_attachment: bool,
-    fs: FileSystemProtocol,
+    fs: BaseFileSystem,
     is_html_mode: bool,
     headers: dict[str, str] | None,
 ) -> ASGIFileResponse:
@@ -221,7 +221,7 @@ async def _handler(
 async def _get_fs_info(
     directories: Sequence[PathType],
     file_path: PathType,
-    fs: FileSystemProtocol,
+    fs: BaseFileSystem,
 ) -> tuple[Path, FileInfo] | tuple[None, None]:
     """Return the resolved path and a :class:`stat_result <os.stat_result>`"""
     for directory in directories:
