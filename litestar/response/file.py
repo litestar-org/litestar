@@ -42,7 +42,7 @@ if TYPE_CHECKING:
         Send,
         TypeEncodersMap,
     )
-    from litestar.types.file_types import FileInfo, BaseFileSystem
+    from litestar.types.file_types import BaseFileSystem, FileInfo
 
 __all__ = (
     "ASGIFileResponse",

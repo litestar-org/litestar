@@ -6,9 +6,9 @@ from typing import TYPE_CHECKING, Any, Literal, TypedDict, Union
 from typing_extensions import TypeAlias
 
 __all__ = (
+    "BaseFileSystem",
     "FileInfo",
     "FileSystem",
-    "BaseFileSystem",
 )
 
 

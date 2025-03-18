@@ -11,7 +11,7 @@ from litestar.handlers import get, head
 from litestar.response.file import ASGIFileResponse
 from litestar.router import Router
 from litestar.status_codes import HTTP_404_NOT_FOUND
-from litestar.types import Empty, FileInfo, BaseFileSystem
+from litestar.types import BaseFileSystem, Empty, FileInfo
 from litestar.utils import normalize_path
 
 __all__ = ("create_static_files_router",)

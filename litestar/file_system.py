@@ -8,7 +8,7 @@ import anyio
 
 from litestar.concurrency import sync_to_thread
 from litestar.plugins import InitPlugin
-from litestar.types.file_types import FileSystem, BaseFileSystem
+from litestar.types.file_types import BaseFileSystem, FileSystem
 
 __all__ = (
     "BaseLocalFileSystem",

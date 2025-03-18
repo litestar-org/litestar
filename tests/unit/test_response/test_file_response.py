@@ -21,7 +21,7 @@ from litestar.file_system import BaseLocalFileSystem, FileSystemPlugin
 from litestar.response.file import ASGIFileResponse, File
 from litestar.status_codes import HTTP_200_OK, HTTP_500_INTERNAL_SERVER_ERROR
 from litestar.testing import create_test_client
-from litestar.types import FileInfo, BaseFileSystem, PathType
+from litestar.types import BaseFileSystem, FileInfo, PathType
 
 
 @pytest.mark.parametrize("content_disposition_type", ("inline", "attachment"))
