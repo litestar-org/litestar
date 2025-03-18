@@ -1,10 +1,12 @@
 from __future__ import annotations
 
+import io
 import pathlib
 from stat import S_ISDIR
 from typing import TYPE_CHECKING, Any, cast
 
 import anyio
+from typing_extensions import TypeGuard
 
 from litestar.concurrency import sync_to_thread
 from litestar.plugins import InitPlugin
@@ -21,7 +23,6 @@ __all__ = (
 
 
 if TYPE_CHECKING:
-    import io
     from collections.abc import AsyncGenerator, Mapping
     from os import stat_result
 
@@ -112,7 +113,7 @@ class FsspecSyncWrapper(BaseFileSystem):
         end: int = -1,
     ) -> bytes:
         return await sync_to_thread(
-            self._fs.read_bytes,
+            self._fs.read_bytes,  # pyright: ignore
             str(path),
             start=start or None,
             end=end if end != -1 else None,
@@ -125,7 +126,7 @@ class FsspecSyncWrapper(BaseFileSystem):
         start: int = 0,
         end: int = -1,
     ) -> AsyncGenerator[bytes, None]:
-        fh: io.BytesIO = await sync_to_thread(self._fs.open, str(path), mode="rb")
+        fh = cast(io.BytesIO, await sync_to_thread(self._fs.open, str(path), mode="rb"))
         try:
             if start != 0:
                 await sync_to_thread(fh.seek, start)
@@ -188,7 +189,7 @@ class FsspecAsyncWrapper(BaseFileSystem):
         # if we want to stream the whole thing we can use '.open_async' if it's
         # implemented
         if start == 0 and end == -1 and self._supports_open_async:
-            async with await self._fs.open_async(path, mode="rb") as fh:
+            async with await self._fs.open_async(path, mode="rb") as fh:  # pyright: ignore
                 while chunk := await fh.read(chunksize):
                     yield chunk
             return
@@ -251,18 +252,27 @@ async def parse_stat_result(path: PathType, result: stat_result) -> FileInfo:
     return file_info
 
 
+def _is_fsspec_async_fs(fs: Any) -> TypeGuard[FsspecAsyncFileSystem]:
+    try:
+        from fsspec.asyn import AsyncFileSystem as FsspecAsyncFileSystem
+    except ImportError:
+        return False
+
+    return isinstance(fs, FsspecAsyncFileSystem) and fs.async_impl
+
+
 def maybe_wrap_fsspec_file_system(file_system: FileSystem) -> BaseFileSystem:
     try:
         from fsspec import AbstractFileSystem
         from fsspec.asyn import AsyncFileSystem
     except ImportError:
-        return file_system
+        return cast(BaseFileSystem, file_system)
 
     if isinstance(file_system, AsyncFileSystem):
         return FsspecAsyncWrapper(file_system)
 
     if isinstance(file_system, AbstractFileSystem):
-        if file_system.async_impl:
+        if _is_fsspec_async_fs(file_system):
             return FsspecAsyncWrapper(file_system)
         return FsspecSyncWrapper(file_system)
 

@@ -68,7 +68,7 @@ def http_server(tmp_dir: pathlib.Path, http_server_port: int) -> Generator[None,
     file = tmp_dir / "test.txt"
     file.write_bytes(b"0123456789")
 
-    server = HTTPServer(("127.0.0.1", http_server_port), RangeRequestHandler)
+    server = HTTPServer(("127.0.0.1", http_server_port), RangeRequestHandler)  # pyright: ignore
     thread = threading.Thread(daemon=True, target=server.serve_forever)
     thread.start()
     try:
