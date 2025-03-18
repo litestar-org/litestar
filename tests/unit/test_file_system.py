@@ -11,7 +11,13 @@ from fsspec.implementations.http import HTTPFileSystem
 from fsspec.implementations.local import LocalFileSystem
 from RangeHTTPServer import RangeRequestHandler  # type: ignore[import-untyped]
 
-from litestar.file_system import BaseLocalFileSystem, FsspecAsyncWrapper, FsspecSyncWrapper
+from litestar.file_system import (
+    BaseLocalFileSystem,
+    FileSystemRegistry,
+    FsspecAsyncWrapper,
+    FsspecSyncWrapper,
+    maybe_wrap_fsspec_file_system,
+)
 from litestar.testing.client.subprocess_client import _get_available_port
 from litestar.types import BaseFileSystem
 
@@ -149,3 +155,33 @@ async def test_iter_end(fs: BaseFileSystem, file: pathlib.Path, chunksize: int) 
 async def test_iter_start_end(fs: BaseFileSystem, file: pathlib.Path, chunksize: int) -> None:
     content = b"".join([c async for c in fs.iter(file, chunksize=chunksize, start=1, end=5)])
     assert content == file.read_bytes()[1:5]
+
+
+def test_registry_get() -> None:
+    fs = BaseLocalFileSystem()
+    registry = FileSystemRegistry({"my_fs": fs})
+    assert registry.get("my_fs") is fs
+    assert registry.get("something") is None
+    assert registry["my_fs"] is fs
+    with pytest.raises(KeyError):
+        registry["something"]
+
+
+def test_registry_default() -> None:
+    fs = BaseLocalFileSystem()
+    registry = FileSystemRegistry(default=fs)
+    assert registry.default is fs
+
+    assert isinstance(FileSystemRegistry().default, BaseLocalFileSystem)
+
+
+@pytest.mark.parametrize(
+    "fs, expected_fs",
+    [
+        (BaseLocalFileSystem(), BaseLocalFileSystem),
+        (LocalFileSystem(), FsspecSyncWrapper),
+        (HTTPFileSystem(), FsspecAsyncWrapper),
+    ],
+)
+def test_maybe_wrap_fsspec_file_system(fs: Any, expected_fs: type[BaseFileSystem]) -> None:
+    assert isinstance(maybe_wrap_fsspec_file_system(fs), expected_fs)

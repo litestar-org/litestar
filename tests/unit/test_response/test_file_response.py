@@ -17,7 +17,7 @@ from litestar import get
 from litestar.connection.base import empty_send
 from litestar.datastructures import ETag
 from litestar.exceptions import ImproperlyConfiguredException
-from litestar.file_system import BaseLocalFileSystem, FileSystemPlugin
+from litestar.file_system import BaseLocalFileSystem, FileSystemRegistry
 from litestar.response.file import ASGIFileResponse, File
 from litestar.status_codes import HTTP_200_OK, HTTP_500_INTERNAL_SERVER_ERROR
 from litestar.testing import create_test_client
@@ -382,7 +382,7 @@ def file_response_file_system_lookup() -> None:
     def handler() -> File:
         return File(path="Hello, world!", file_system="custom")
 
-    with create_test_client(handler, plugins=[FileSystemPlugin({"custom": MockFileSystem()})]) as client:
+    with create_test_client(handler, plugins=[FileSystemRegistry({"custom": MockFileSystem()})]) as client:
         response = client.get("/")
         assert response.status_code == HTTP_200_OK
         assert response.content == b"Hello, world!"
@@ -394,7 +394,18 @@ def file_response_default_file_system() -> None:
     def handler() -> File:
         return File(path="Hello, world!")
 
-    with create_test_client(handler, plugins=[FileSystemPlugin(default=MockFileSystem())]) as client:
+    with create_test_client(handler, plugins=[FileSystemRegistry(default=MockFileSystem())]) as client:
+        response = client.get("/")
+        assert response.status_code == HTTP_200_OK
+        assert response.content == b"Hello, world!"
+
+
+def file_response_explicit_file_system() -> None:
+    @get("/")
+    def handler() -> File:
+        return File(path="Hello, world!", file_system=MockFileSystem())
+
+    with create_test_client(handler) as client:
         response = client.get("/")
         assert response.status_code == HTTP_200_OK
         assert response.content == b"Hello, world!"

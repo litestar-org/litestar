@@ -9,7 +9,7 @@ import brotli
 import pytest
 
 from litestar import MediaType, get
-from litestar.file_system import FileSystemPlugin
+from litestar.file_system import FileSystemRegistry
 from litestar.static_files import _get_fs_info, create_static_files_router
 from litestar.status_codes import HTTP_200_OK
 from litestar.testing import create_test_client
@@ -32,7 +32,7 @@ def test_default_static_files_router(tmpdir: Path) -> None:
 def test_default_file_system(tmpdir: Path) -> None:
     with create_test_client(
         [create_static_files_router(path="/static", directories=[tmpdir])],
-        plugins=[FileSystemPlugin(default=MockFileSystem())],
+        plugins=[FileSystemRegistry(default=MockFileSystem())],
     ) as client:
         response = client.get("/static/test.txt")
         assert response.status_code == HTTP_200_OK, response.text

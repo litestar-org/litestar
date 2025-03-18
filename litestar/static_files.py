@@ -6,7 +6,7 @@ from pathlib import Path, PurePath
 from typing import TYPE_CHECKING, Any, Literal
 
 from litestar.exceptions import ImproperlyConfiguredException, NotFoundException
-from litestar.file_system import FileSystemPlugin, maybe_wrap_fsspec_file_system
+from litestar.file_system import FileSystemRegistry, maybe_wrap_fsspec_file_system
 from litestar.handlers import get, head
 from litestar.response.file import ASGIFileResponse
 from litestar.router import Router
@@ -104,7 +104,7 @@ def create_static_files_router(
             path=file_path.as_posix(),
             is_head_response=False,
             directories=resolved_directories,
-            fs=file_system or request.app.plugins.get(FileSystemPlugin).default,
+            fs=file_system or request.app.plugins.get(FileSystemRegistry).default,
             is_html_mode=html_mode,
             send_as_attachment=send_as_attachment,
             headers=headers,
@@ -116,7 +116,7 @@ def create_static_files_router(
             path=file_path.as_posix(),
             is_head_response=True,
             directories=resolved_directories,
-            fs=file_system or request.app.plugins.get(FileSystemPlugin).default,
+            fs=file_system or request.app.plugins.get(FileSystemRegistry).default,
             is_html_mode=html_mode,
             send_as_attachment=send_as_attachment,
             headers=headers,
@@ -132,7 +132,7 @@ def create_static_files_router(
                 path="/",
                 is_head_response=False,
                 directories=resolved_directories,
-                fs=file_system or request.app.plugins.get(FileSystemPlugin).default,
+                fs=file_system or request.app.plugins.get(FileSystemRegistry).default,
                 is_html_mode=True,
                 send_as_attachment=send_as_attachment,
                 headers=headers,

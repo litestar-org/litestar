@@ -6,7 +6,6 @@ from stat import S_ISDIR
 from typing import TYPE_CHECKING, Any, cast
 
 import anyio
-from typing_extensions import TypeGuard
 
 from litestar.concurrency import sync_to_thread
 from litestar.plugins import InitPlugin
@@ -14,7 +13,7 @@ from litestar.types.file_types import BaseFileSystem, FileSystem
 
 __all__ = (
     "BaseLocalFileSystem",
-    "FileSystemPlugin",
+    "FileSystemRegistry",
     "FsspecAsyncWrapper",
     "FsspecSyncWrapper",
     "maybe_wrap_fsspec_file_system",
@@ -155,15 +154,8 @@ class FsspecAsyncWrapper(BaseFileSystem):
         from fsspec.asyn import AsyncFileSystem as FsspecAsyncFileSystem
 
         self._fs = fs
+        # 'open_async' may not be implemented
         self._supports_open_async = type(fs).open_async is not FsspecAsyncFileSystem.open_async
-
-        if fs._cat_file is FsspecAsyncFileSystem._cat_file:
-            raise TypeError(
-                f"Async file system of type {type(fs).__name__!r} does not support "
-                "asynchronous reads, as it does not implement an asynchronous _cat "
-                "method. To still use this file system asynchronously, explicitly wrap "
-                "it in 'FsspecSyncWrapper'"
-            )
 
     async def info(self, path: PathType, **kwargs: Any) -> FileInfo:
         return cast("FileInfo", await self._fs._info(str(path), **kwargs))
@@ -252,15 +244,6 @@ async def parse_stat_result(path: PathType, result: stat_result) -> FileInfo:
     return file_info
 
 
-def _is_fsspec_async_fs(fs: Any) -> TypeGuard[FsspecAsyncFileSystem]:
-    try:
-        from fsspec.asyn import AsyncFileSystem as FsspecAsyncFileSystem
-    except ImportError:
-        return False
-
-    return isinstance(fs, FsspecAsyncFileSystem) and fs.async_impl
-
-
 def maybe_wrap_fsspec_file_system(file_system: FileSystem) -> BaseFileSystem:
     try:
         from fsspec import AbstractFileSystem
@@ -272,14 +255,12 @@ def maybe_wrap_fsspec_file_system(file_system: FileSystem) -> BaseFileSystem:
         return FsspecAsyncWrapper(file_system)
 
     if isinstance(file_system, AbstractFileSystem):
-        if _is_fsspec_async_fs(file_system):
-            return FsspecAsyncWrapper(file_system)
         return FsspecSyncWrapper(file_system)
 
     return file_system
 
 
-class FileSystemPlugin(InitPlugin):
+class FileSystemRegistry(InitPlugin):
     def __init__(
         self,
         file_systems: Mapping[str, FileSystem] | None = None,

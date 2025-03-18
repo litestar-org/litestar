@@ -12,7 +12,7 @@ from zlib import adler32
 from litestar.constants import ONE_MEGABYTE
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.file_system import (
-    FileSystemPlugin,
+    FileSystemRegistry,
     maybe_wrap_fsspec_file_system,
     parse_stat_result,
 )
@@ -368,9 +368,9 @@ class File(Response):
 
         file_system: BaseFileSystem
         if self.file_system is None:
-            file_system = request.app.plugins.get(FileSystemPlugin).default
+            file_system = request.app.plugins.get(FileSystemRegistry).default
         elif isinstance(self.file_system, str):
-            file_system_plugin = request.app.plugins.get(FileSystemPlugin)
+            file_system_plugin = request.app.plugins.get(FileSystemRegistry)
             file_system = file_system_plugin[self.file_system]
         else:
             file_system = maybe_wrap_fsspec_file_system(self.file_system)

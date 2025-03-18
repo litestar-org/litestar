@@ -7,7 +7,7 @@ from click import Group
 
 from litestar import Litestar, MediaType, get
 from litestar.constants import UNDEFINED_SENTINELS
-from litestar.file_system import FileSystemPlugin
+from litestar.file_system import FileSystemRegistry
 from litestar.plugins import CLIPlugin, InitPlugin, OpenAPISchemaPlugin, PluginRegistry
 from litestar.plugins.attrs import AttrsSchemaPlugin
 from litestar.plugins.core import MsgspecDIPlugin
@@ -128,7 +128,7 @@ def test_app_get_default_plugins(
             AttrsSchemaPlugin,
             PydanticDIPlugin,
             MsgspecDIPlugin,
-            FileSystemPlugin,
+            FileSystemRegistry,
         }
     else:
         assert {type(p) for p in default_plugins} == {
@@ -137,5 +137,5 @@ def test_app_get_default_plugins(
             AttrsSchemaPlugin,
             PydanticDIPlugin,
             MsgspecDIPlugin,
-            FileSystemPlugin,
+            FileSystemRegistry,
         }
