@@ -157,7 +157,7 @@ def test_path_param_type_resolution(
     mock = MagicMock()
 
     @get("/some/test/path/{test:" + param_type_name + "}")
-    def handler(test: param_type_class) -> None:
+    def handler(test: param_type_class) -> None:  # pyright: ignore[reportInvalidTypeForm]
         mock(test)
 
     with create_test_client(handler) as client:

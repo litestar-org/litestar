@@ -150,12 +150,12 @@ def get_fn_type_hints(fn: Any, namespace: dict[str, Any] | None = None) -> dict[
         fn_to_inspect = fn_to_inspect.__init__
 
     # detect objects that are not functions and that have a `__call__` method
-    if callable(fn_to_inspect) and ismethod(fn_to_inspect.__call__):
-        fn_to_inspect = fn_to_inspect.__call__
+    if callable(fn_to_inspect) and ismethod(fn_to_inspect.__call__):  # pyright: ignore[reportFunctionMemberAccess]
+        fn_to_inspect = fn_to_inspect.__call__  # pyright: ignore[reportFunctionMemberAccess]
 
     # inspect the underlying function for methods
     if hasattr(fn_to_inspect, "__func__"):
-        fn_to_inspect = fn_to_inspect.__func__
+        fn_to_inspect = fn_to_inspect.__func__  # pyright: ignore[reportFunctionMemberAccess]
 
     # Order important. If a litestar name has been overridden in the function module, we want
     # to use that instead of the litestar one.

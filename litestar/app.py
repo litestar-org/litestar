@@ -631,7 +631,7 @@ class Litestar(Router):
     async def _call_lifespan_hook(self, hook: LifespanHook) -> None:
         ret = hook(self) if inspect.signature(hook).parameters else hook()  # type: ignore[call-arg]
 
-        if is_async_callable(hook):  # pyright: ignore[reportGeneralTypeIssues]
+        if is_async_callable(hook):  # pyright: ignore[reportArgumentType,reportGeneralTypeIssues]
             await ret
 
     @asynccontextmanager

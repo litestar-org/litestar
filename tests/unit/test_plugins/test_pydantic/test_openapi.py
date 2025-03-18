@@ -139,7 +139,7 @@ def test_create_collection_constrained_field_schema_pydantic_v1(
     plugin: PydanticSchemaPlugin,
 ) -> None:
     class Model(pydantic_v1.BaseModel):
-        field: annotation
+        field: annotation  # pyright: ignore[reportInvalidTypeForm]
 
     schema = schema_creator.for_plugin(FieldDefinition.from_annotation(Model), plugin).properties["field"]  # pyright: ignore[reportAttributeAccessIssue]
 
@@ -237,7 +237,7 @@ def test_create_string_constrained_field_schema_pydantic_v1(
     plugin: PydanticSchemaPlugin,
 ) -> None:
     class Model(pydantic_v1.BaseModel):
-        field: annotation
+        field: annotation  # pyright: ignore[reportInvalidTypeForm]
 
     schema = schema_creator.for_plugin(FieldDefinition.from_annotation(Model), plugin).properties["field"]  # pyright: ignore[reportAttributeAccessIssue]
 
@@ -262,7 +262,7 @@ def test_create_string_constrained_field_schema_pydantic_v2(
     constraint: pydantic_v2.types.StringConstraints = annotation.__metadata__[0]
 
     class Model(pydantic_v2.BaseModel):
-        field: annotation
+        field: annotation  # pyright: ignore[reportInvalidTypeForm]
 
     schema = schema_creator.for_plugin(FieldDefinition.from_annotation(Model), plugin).properties["field"]  # pyright: ignore[reportAttributeAccessIssue]
 
@@ -285,7 +285,7 @@ def test_create_byte_constrained_field_schema_pydantic_v2(
     constraint: annotated_types.Len = annotation.__metadata__[1]
 
     class Model(pydantic_v2.BaseModel):
-        field: annotation
+        field: annotation  # pyright: ignore[reportInvalidTypeForm]
 
     schema = schema_creator.for_plugin(FieldDefinition.from_annotation(Model), plugin).properties["field"]  # pyright: ignore[reportAttributeAccessIssue]
 
@@ -305,7 +305,7 @@ def test_create_numerical_constrained_field_schema_pydantic_v1(
     annotation = cast(Union[ConstrainedInt, ConstrainedFloat, ConstrainedDecimal], annotation)
 
     class Model(pydantic_v1.BaseModel):
-        field: annotation
+        field: annotation  # pyright: ignore[reportInvalidTypeForm]
 
     schema = schema_creator.for_plugin(FieldDefinition.from_annotation(Model), plugin).properties["field"]  # pyright: ignore[reportAttributeAccessIssue]
 
@@ -363,7 +363,7 @@ def test_create_date_constrained_field_schema_pydantic_v1(
     plugin: PydanticSchemaPlugin,
 ) -> None:
     class Model(pydantic_v1.BaseModel):
-        field: annotation
+        field: annotation  # pyright: ignore[reportInvalidTypeForm]
 
     schema = schema_creator.for_plugin(FieldDefinition.from_annotation(Model), plugin).properties["field"]  # pyright: ignore[reportAttributeAccessIssue]
 
@@ -425,7 +425,7 @@ def test_create_constrained_field_schema_v1(
     plugin: PydanticSchemaPlugin,
 ) -> None:
     class Model(pydantic_v1.BaseModel):
-        field: annotation
+        field: annotation  # pyright: ignore[reportInvalidTypeForm]
 
     assert schema_creator.for_plugin(FieldDefinition.from_annotation(Model), plugin).properties["field"]  # pyright: ignore[reportAttributeAccessIssue]
 
@@ -445,7 +445,7 @@ def test_create_constrained_field_schema_v2(
     plugin: PydanticSchemaPlugin,
 ) -> None:
     class Model(pydantic_v2.BaseModel):
-        field: annotation
+        field: annotation  # pyright: ignore[reportInvalidTypeForm]
 
     assert schema_creator.for_plugin(FieldDefinition.from_annotation(Model), plugin).properties["field"]  # type: ignore[index, union-attr]
 
@@ -453,7 +453,7 @@ def test_create_constrained_field_schema_v2(
 @pytest.mark.parametrize("cls", (PydanticPerson, PydanticDataclassPerson, PydanticV1Person, PydanticV1DataclassPerson))
 def test_spec_generation(cls: Any) -> None:
     @post("/")
-    def handler(data: cls) -> cls:
+    def handler(data: cls) -> cls:  # pyright: ignore[reportInvalidTypeForm]
         return data
 
     with create_test_client(handler) as client:
@@ -744,9 +744,9 @@ def test_create_schema_for_pydantic_model_with_annotated_model_attribute(
     """Test that a model with an annotated attribute is correctly handled."""
     module = create_module(
         f"""
-{'from __future__ import annotations' if with_future_annotations else ''}
+{"from __future__ import annotations" if with_future_annotations else ""}
 from typing_extensions import Annotated
-{'from pydantic import BaseModel' if pydantic_version == 'v2' else 'from pydantic.v1 import BaseModel'}
+{"from pydantic import BaseModel" if pydantic_version == "v2" else "from pydantic.v1 import BaseModel"}
 
 class Foo(BaseModel):
     foo: Annotated[int, "Foo description"]

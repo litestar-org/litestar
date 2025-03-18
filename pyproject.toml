@@ -103,7 +103,7 @@ pydantic = [
   "pydantic-extra-types; python_version >= \"3.9\"",
 ]
 redis = ["redis[hiredis]>=4.4.4"]
-sqlalchemy = ["advanced-alchemy>=0.2.2"]
+sqlalchemy = ["advanced-alchemy"]
 standard = [
   "jinja2",
   "jsbeautifier",
@@ -138,9 +138,7 @@ dev = [
   "trio",
   "aiosqlite",
   "asyncpg>=0.29.0",
-  "psycopg[pool,binary]>=3.1.10,<3.2; python_version < \"3.13\"",
-  "psycopg[pool,c]; python_version >= \"3.13\" and sys_platform == 'linux'",
-  "psycopg[pool]; python_version >= \"3.13\" and sys_platform != 'linux'",
+  "psycopg[pool,binary]",
   "psycopg2-binary",
   "psutil>=5.9.8",
   "hypercorn>=0.16.0",
@@ -167,7 +165,7 @@ linting = [
   "pre-commit",
   "slotscheck",
   "codecov-cli",
-  "pyright==1.1.344",
+  "pyright==1.1.396",
   "asyncpg-stubs",
   "types-beautifulsoup4",
   "types-pyyaml",
@@ -193,7 +191,7 @@ build-backend = "hatchling.build"
 requires = ["hatchling"]
 
 [tool.codespell]
-ignore-words-list = "selectin, documen"
+ignore-words-list = "selectin, documen, re-using, re-used"
 skip = 'uv.lock,docs/examples/contrib/sqlalchemy/us_state_lookup.json'
 
 [tool.coverage.run]
@@ -405,6 +403,7 @@ lint.select = [
 line-length = 120
 lint.ignore = [
   "A003",    # flake8-builtins - class attribute {name} is shadowing a python builtin
+  "A005",    # flake8-builtins - Module shadows a Python standard-library module
   "B010",    # flake8-bugbear - do not call setattr with a constant attribute value
   "D100",    # pydocstyle - missing docstring in public module
   "D101",    # pydocstyle - missing docstring in public class

@@ -1,10 +1,12 @@
+from typing import Dict
+
 from litestar import Litestar, get
 from litestar.logging.config import LoggingConfig
 from litestar.middleware.logging import LoggingMiddlewareConfig
 
 
 @get("/")
-async def handler() -> dict[str, str]:
+async def handler() -> Dict[str, str]:
     return {"hello": "world"}
 
 
