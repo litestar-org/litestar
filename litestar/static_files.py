@@ -87,7 +87,7 @@ def create_static_files_router(
     if file_system is not None:
         file_system = maybe_wrap_fsspec_file_system(file_system)
 
-    directories = tuple(os.path.normpath(Path(p).resolve() if resolve_symlinks else Path(p)) for p in directories)
+    resolved_directories = tuple(os.path.normpath(Path(p).absolute()) for p in directories)
 
     _validate_config(path=path, directories=directories)
     path = normalize_path(path)
@@ -95,8 +95,6 @@ def create_static_files_router(
     headers = None
     if cache_control:
         headers = {cache_control.HEADER_NAME: cache_control.to_header()}
-
-    resolved_directories = tuple(Path(p).resolve() if resolve_symlinks else Path(p) for p in directories)
 
     @get("{file_path:path}", name=name)
     async def get_handler(file_path: PurePath, request: Request) -> ASGIFileResponse:
@@ -108,6 +106,7 @@ def create_static_files_router(
             is_html_mode=html_mode,
             send_as_attachment=send_as_attachment,
             headers=headers,
+            resolve_symlinks=resolve_symlinks,
         )
 
     @head("/{file_path:path}", name=f"{name}/head")
@@ -120,6 +119,7 @@ def create_static_files_router(
             is_html_mode=html_mode,
             send_as_attachment=send_as_attachment,
             headers=headers,
+            resolve_symlinks=resolve_symlinks,
         )
 
     handlers = [get_handler, head_handler]
@@ -136,6 +136,7 @@ def create_static_files_router(
                 is_html_mode=True,
                 send_as_attachment=send_as_attachment,
                 headers=headers,
+                resolve_symlinks=resolve_symlinks,
             )
 
         handlers.append(index_handler)
@@ -161,16 +162,22 @@ async def _handler(
     *,
     path: str,
     is_head_response: bool,
-    directories: tuple[Path, ...],
+    directories: tuple[str, ...],
     send_as_attachment: bool,
     fs: BaseFileSystem,
     is_html_mode: bool,
     headers: dict[str, str] | None,
+    resolve_symlinks: bool,
 ) -> ASGIFileResponse:
     split_path = path.split("/")
     filename = split_path[-1]
     joined_path = Path(*split_path)
-    resolved_path, fs_info = await _get_fs_info(directories=directories, file_path=joined_path, fs=fs)
+    resolved_path, fs_info = await _get_fs_info(
+        directories=directories,
+        file_path=joined_path,
+        fs=fs,
+        resolve_symlinks=resolve_symlinks,
+    )
     content_disposition_type: Literal["inline", "attachment"] = "attachment" if send_as_attachment else "inline"
 
     if is_html_mode and fs_info and fs_info["type"] == "directory":
@@ -179,6 +186,7 @@ async def _handler(
             directories=directories,
             file_path=Path(resolved_path or joined_path) / filename,
             fs=fs,
+            resolve_symlinks=resolve_symlinks,
         )
 
     if fs_info and fs_info["type"] == "file":
@@ -199,6 +207,7 @@ async def _handler(
             directories=directories,
             file_path=filename,
             fs=fs,
+            resolve_symlinks=resolve_symlinks,
         )
 
         if fs_info and fs_info["type"] == "file":
@@ -219,22 +228,19 @@ async def _handler(
 
 
 async def _get_fs_info(
-    directories: Sequence[PathType],
-    file_path: PathType,
-    fs: BaseFileSystem,
+    directories: Sequence[PathType], file_path: PathType, fs: BaseFileSystem, resolve_symlinks: bool
 ) -> tuple[Path, FileInfo] | tuple[None, None]:
     """Return the resolved path and a :class:`stat_result <os.stat_result>`"""
     for directory in directories:
         try:
             joined_path = Path(directory, file_path)
             file_info = await fs.info(joined_path)
-            normalized_file_path = os.path.normpath(joined_path)
+            normalized_file_path = os.path.normpath(joined_path) if resolve_symlinks else os.path.realpath(joined_path)
             directory_path = str(directory)
             if (
                 file_info
                 and commonpath([directory_path, file_info["name"], joined_path]) == directory_path
                 and os.path.commonpath([directory, normalized_file_path]) == directory_path
-                and (file_info := await fs.info(joined_path))
             ):
                 return joined_path, file_info
         except FileNotFoundError:

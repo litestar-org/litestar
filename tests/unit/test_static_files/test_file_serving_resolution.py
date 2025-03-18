@@ -215,9 +215,7 @@ def test_static_files_content_disposition(
         assert response.headers["content-disposition"].startswith(disposition)
 
 
-def test_service_from_relative_path_using_string(
-    tmpdir: Path,
-) -> None:
+def test_serve_from_relative_path_using_string(tmpdir: Path) -> None:
     sub_dir = Path(tmpdir.mkdir("low")).resolve()  # type: ignore[arg-type, func-returns-value]
 
     path = tmpdir / "test.txt"
@@ -229,7 +227,7 @@ def test_service_from_relative_path_using_string(
         assert response.text == "content"
 
 
-def test_service_from_relative_path_using_path(
+def test_serve_from_relative_path_using_path(
     tmpdir: Path,
 ) -> None:
     sub_dir = Path(tmpdir.mkdir("low")).resolve()  # type: ignore[arg-type, func-returns-value]
@@ -246,44 +244,50 @@ def test_service_from_relative_path_using_path(
 
 
 @pytest.mark.parametrize("resolve", [True, False])
-def test_resolve_symlinks(tmp_path: Path, resolve: bool) -> None:
-    source_dir = tmp_path / "foo"
-    source_dir.mkdir()
-    linked_dir = tmp_path / "bar"
-    linked_dir.symlink_to(source_dir, target_is_directory=True)
-    source_dir.joinpath("test.txt").write_text("hello")
+def test_resolve_symlinks(tmp_path: Path, resolve: bool, tmp_path_factory) -> None:
+    static_file_dir = Path(tmp_path) / "static"
+    static_file_dir.mkdir()
 
-    router = create_static_files_router(path="/", directories=[linked_dir], resolve_symlinks=resolve)
+    source_file_path = tmp_path_factory.mktemp("test") / "test.txt"
+    source_file_path.write_text("hello")
+
+    linked_file_path = static_file_dir / "linked.txt"
+    linked_file_path.symlink_to(source_file_path)
+
+    router = create_static_files_router(path="/", directories=[static_file_dir], resolve_symlinks=resolve)
 
     with create_test_client(router) as client:
         if not resolve:
-            linked_dir.unlink()
-            assert client.get("/test.txt").status_code == 404
+            assert client.get("/linked.txt").status_code == 404
         else:
-            assert client.get("/test.txt").status_code == 200
+            assert client.get("/linked.txt").status_code == 200
 
 
+@pytest.mark.parametrize("resolve_symlinks", [True, False])
 async def test_staticfiles_get_fs_info_no_access_to_non_static_directory(
     tmp_path: Path,
     file_system: BaseFileSystem,
+    resolve_symlinks: bool,
 ) -> None:
     assets = tmp_path / "assets"
     assets.mkdir()
     index = tmp_path / "index.html"
     index.write_text("content", "utf-8")
-    path, info = await _get_fs_info([assets], "../index.html", fs=file_system)
+    path, info = await _get_fs_info([assets], "../index.html", fs=file_system, resolve_symlinks=resolve_symlinks)
     assert path is None
     assert info is None
 
 
+@pytest.mark.parametrize("resolve_symlinks", [True, False])
 async def test_staticfiles_get_fs_info_no_access_to_non_static_file_with_prefix(
     tmp_path: Path,
     file_system: BaseFileSystem,
+    resolve_symlinks: bool,
 ) -> None:
     static = tmp_path / "static"
     static.mkdir()
     private_file = tmp_path / "staticsecrets.env"
     private_file.write_text("content", "utf-8")
-    path, info = await _get_fs_info([static], "../staticsecrets.env", fs=file_system)
+    path, info = await _get_fs_info([static], "../staticsecrets.env", fs=file_system, resolve_symlinks=resolve_symlinks)
     assert path is None
     assert info is None
