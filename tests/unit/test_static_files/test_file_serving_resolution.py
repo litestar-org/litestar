@@ -9,17 +9,17 @@ import brotli
 import pytest
 
 from litestar import MediaType, get
+from litestar.file_system import FileSystemPlugin
 from litestar.static_files import _get_fs_info, create_static_files_router
 from litestar.status_codes import HTTP_200_OK
 from litestar.testing import create_test_client
+from tests.unit.test_response.test_file_response import MockFileSystem
 
 if TYPE_CHECKING:
     from litestar.types import FileSystemProtocol
 
 
-def test_default_static_files_router(
-    tmpdir: Path,
-) -> None:
+def test_default_static_files_router(tmpdir: Path) -> None:
     path = tmpdir / "test.txt"
     path.write_text("content", "utf-8")
 
@@ -27,6 +27,16 @@ def test_default_static_files_router(
         response = client.get("/static/test.txt")
         assert response.status_code == HTTP_200_OK, response.text
         assert response.text == "content"
+
+
+def test_default_file_system(tmpdir: Path) -> None:
+    with create_test_client(
+        [create_static_files_router(path="/static", directories=[tmpdir])],
+        plugins=[FileSystemPlugin(default=MockFileSystem())],
+    ) as client:
+        response = client.get("/static/test.txt")
+        assert response.status_code == HTTP_200_OK, response.text
+        assert response.text == str(tmpdir / "test.txt")
 
 
 @pytest.fixture()

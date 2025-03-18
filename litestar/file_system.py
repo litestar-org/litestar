@@ -5,24 +5,28 @@ from stat import S_ISDIR
 from typing import TYPE_CHECKING, Any, cast
 
 import anyio
-from fsspec.asyn import AsyncFileSystem as FsspecAsyncFileSystem
 
 from litestar.concurrency import sync_to_thread
-from litestar.types.file_types import FileSystemProtocol
+from litestar.plugins import InitPlugin
+from litestar.types.file_types import FileSystem, FileSystemProtocol
 
 __all__ = (
     "BaseLocalFileSystem",
-    "ensure_async_file_system",
+    "FileSystemPlugin",
+    "FsspecAsyncWrapper",
+    "FsspecSyncWrapper",
+    "maybe_wrap_fsspec_file_system",
     "parse_stat_result",
 )
 
 
 if TYPE_CHECKING:
     import io
-    from collections.abc import AsyncGenerator
+    from collections.abc import AsyncGenerator, Mapping
     from os import stat_result
 
     from fsspec import AbstractFileSystem as FsspecFileSystem
+    from fsspec.asyn import AsyncFileSystem as FsspecAsyncFileSystem
 
     from litestar.types import PathType
     from litestar.types.file_types import FileInfo
@@ -47,93 +51,170 @@ class BaseLocalFileSystem(FileSystemProtocol):
     async def read_bytes(
         self,
         path: PathType,
-        start: int | None = None,
-        end: int | None = None,
+        start: int = 0,
+        end: int = -1,
     ) -> bytes:
         # simple case; read the whole thing in one go
-        if start is None and end is None:
+        if start == 0 and end == -1:
             return await sync_to_thread(pathlib.Path(path).read_bytes)
 
         # we have either a start or end set, so open explicitly and then seek / read
         fh: anyio.AsyncFile
+        if end != -1:
+            end = end - start
         async with await anyio.open_file(path, mode="rb") as fh:
-            if start is not None:
+            if start:
                 await fh.seek(start)
-            return await fh.read(end or -1)
+            return await fh.read(end)
 
-    async def iter(self, path: PathType, chunksize: int) -> AsyncGenerator[bytes, None]:
+    async def iter(
+        self,
+        path: PathType,
+        chunksize: int,
+        start: int = 0,
+        end: int = -1,
+    ) -> AsyncGenerator[bytes, None]:
         fh: anyio.AsyncFile
         async with await anyio.open_file(path, mode="rb") as fh:
-            while chunk := await fh.read(chunksize):
+            if start != 0:
+                await fh.seek(start)
+
+            current_pos = start
+            while True:
+                to_read = chunksize
+                if end != -1:
+                    if current_pos >= end:
+                        break
+
+                    to_read = min(chunksize, end - current_pos)
+
+                chunk = await fh.read(to_read)
+
+                if not chunk:
+                    break
+
                 yield chunk
 
+                current_pos = await fh.tell()
 
-class FsspecSyncAdapter(FileSystemProtocol):
+
+class FsspecSyncWrapper(FileSystemProtocol):
     def __init__(self, fs: FsspecFileSystem) -> None:
         self._fs = fs
 
     async def info(self, path: PathType, **kwargs: Any) -> FileInfo:
-        return cast("FileInfo", await sync_to_thread(self._fs.info, path, **kwargs))
+        return cast("FileInfo", await sync_to_thread(self._fs.info, str(path), **kwargs))
 
     async def read_bytes(
         self,
         path: PathType,
-        start: int | None = None,
-        end: int | None = None,
+        start: int = 0,
+        end: int = -1,
     ) -> bytes:
         return await sync_to_thread(
             self._fs.read_bytes,
-            path,
-            start=start,
-            end=end,
+            str(path),
+            start=start or None,
+            end=end if end != -1 else None,
         )
 
-    async def iter(self, path: PathType, chunksize: int) -> AsyncGenerator[bytes, None]:
-        fh: io.BytesIO = await sync_to_thread(self._fs.open, path, mode="rb")
+    async def iter(
+        self,
+        path: PathType,
+        chunksize: int,
+        start: int = 0,
+        end: int = -1,
+    ) -> AsyncGenerator[bytes, None]:
+        fh: io.BytesIO = await sync_to_thread(self._fs.open, str(path), mode="rb")
         try:
+            if start != 0:
+                await sync_to_thread(fh.seek, start)
+
+            to_read = chunksize
             while True:
-                chunk = await sync_to_thread(fh.read, chunksize)
-                yield chunk
+                if end != -1:
+                    current_pos = await sync_to_thread(fh.tell)
+                    if current_pos >= end:
+                        break
+
+                    to_read = min(chunksize, end - current_pos)
+
+                chunk = await sync_to_thread(fh.read, to_read)
+
                 if not chunk:
                     break
+
+                yield chunk
         finally:
-            fh.close()
+            await sync_to_thread(fh.close)
 
 
-class FsspecAsyncAdapter(FileSystemProtocol):
+class FsspecAsyncWrapper(FileSystemProtocol):
     def __init__(self, fs: FsspecAsyncFileSystem) -> None:
+        from fsspec.asyn import AsyncFileSystem as FsspecAsyncFileSystem
+
         self._fs = fs
+        self._supports_open_async = type(fs).open_async is not FsspecAsyncFileSystem.open_async
+
         if fs._cat_file is FsspecAsyncFileSystem._cat_file:
             raise TypeError(
                 f"Async file system of type {type(fs).__name__!r} does not support "
                 "asynchronous reads, as it does not implement an asynchronous _cat "
                 "method. To still use this file system asynchronously, explicitly wrap "
-                "it in 'FsspecSyncAdapter'"
+                "it in 'FsspecSyncWrapper'"
             )
 
     async def info(self, path: PathType, **kwargs: Any) -> FileInfo:
-        return cast("FileInfo", await self._fs._info(path, **kwargs))
+        return cast("FileInfo", await self._fs._info(str(path), **kwargs))
 
     async def read_bytes(
         self,
         path: PathType,
-        start: int | None = None,
-        end: int | None = None,
+        start: int = 0,
+        end: int = -1,
     ) -> bytes:
         return cast(
             bytes,
-            await self._fs._cat_file(path, start=start, end=end),
+            await self._fs._cat_file(
+                str(path),
+                start=start or None,
+                end=end if end != -1 else None,
+            ),
         )
 
-    async def iter(self, path: PathType, chunksize: int) -> AsyncGenerator[bytes, None]:
-        if self._fs.open_async is FsspecAsyncFileSystem.open_async:
-            async for chunk in FsspecSyncAdapter(self._fs).iter(path, chunksize):
-                yield chunk
+    async def iter(self, path: PathType, chunksize: int, start: int = 0, end: int = -1) -> AsyncGenerator[bytes, None]:
+        path = str(path)
+
+        # if we want to stream the whole thing we can use '.open_async' if it's
+        # implemented
+        if start == 0 and end == -1 and self._supports_open_async:
+            async with await self._fs.open_async(path, mode="rb") as fh:
+                while chunk := await fh.read(chunksize):
+                    yield chunk
             return
 
-        async with self._fs.open_async(path, mode="rb") as fh:
-            while chunk := await fh.read(chunksize):
-                yield chunk
+        # if 'open_async' is not implemented, or 'start' or 'end' are set, we have to do
+        # a bit more work.
+        # the object returned by open_async()' does not support seek + tell or other
+        # mechanisms for reading specific ranges
+        # https://github.com/fsspec/filesystem_spec/issues/1772
+        to_read = chunksize
+        current_pos = start
+        while True:
+            if end != -1:
+                if current_pos >= end:
+                    break
+
+                to_read = min(chunksize, end - current_pos)
+
+            chunk = await self.read_bytes(path, start=current_pos, end=current_pos + to_read)
+
+            if not chunk:
+                break
+
+            current_pos += len(chunk)
+
+            yield chunk
 
 
 async def parse_stat_result(path: PathType, result: stat_result) -> FileInfo:
@@ -170,9 +251,7 @@ async def parse_stat_result(path: PathType, result: stat_result) -> FileInfo:
     return file_info
 
 
-def ensure_async_file_system(
-    file_system: FileSystemProtocol | FsspecFileSystem | FsspecAsyncFileSystem,
-) -> FileSystemProtocol:
+def maybe_wrap_fsspec_file_system(file_system: FileSystem) -> FileSystemProtocol:
     try:
         from fsspec import AbstractFileSystem
         from fsspec.asyn import AsyncFileSystem
@@ -180,11 +259,38 @@ def ensure_async_file_system(
         return file_system
 
     if isinstance(file_system, AsyncFileSystem):
-        return FsspecAsyncAdapter(file_system)
+        return FsspecAsyncWrapper(file_system)
 
     if isinstance(file_system, AbstractFileSystem):
         if file_system.async_impl:
-            return FsspecAsyncAdapter(file_system)
-        return FsspecSyncAdapter(file_system)
+            return FsspecAsyncWrapper(file_system)
+        return FsspecSyncWrapper(file_system)
 
     return file_system
+
+
+class FileSystemPlugin(InitPlugin):
+    def __init__(
+        self,
+        file_systems: Mapping[str, FileSystem] | None = None,
+        default: FileSystem | None = None,
+    ) -> None:
+        self._adapters: dict[str, FileSystemProtocol] = {}
+        self.register("file", BaseLocalFileSystem())
+        if file_systems:
+            for scheme, fs in file_systems.items():
+                self.register(scheme, fs)
+
+        if default is not None:
+            self.default = maybe_wrap_fsspec_file_system(default)
+        else:
+            self.default = BaseLocalFileSystem()
+
+    def __getitem__(self, name: str) -> FileSystemProtocol:
+        return self._adapters[name]
+
+    def get(self, name: str) -> FileSystemProtocol | None:
+        return self._adapters.get(name)
+
+    def register(self, scheme: str, fs: FileSystem) -> None:
+        self._adapters[scheme] = maybe_wrap_fsspec_file_system(fs)

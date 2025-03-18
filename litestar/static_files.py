@@ -6,7 +6,7 @@ from pathlib import Path, PurePath
 from typing import TYPE_CHECKING, Any, Literal
 
 from litestar.exceptions import ImproperlyConfiguredException, NotFoundException
-from litestar.file_system import BaseLocalFileSystem, ensure_async_file_system
+from litestar.file_system import FileSystemPlugin, maybe_wrap_fsspec_file_system
 from litestar.handlers import get, head
 from litestar.response.file import ASGIFileResponse
 from litestar.router import Router
@@ -19,6 +19,7 @@ __all__ = ("create_static_files_router",)
 if TYPE_CHECKING:
     from collections.abc import Mapping, Sequence
 
+    from litestar import Request
     from litestar.datastructures import CacheControlHeader
     from litestar.openapi.spec import SecurityRequirement
     from litestar.types import (
@@ -83,7 +84,8 @@ def create_static_files_router(
         resolve_symlinks: Resolve symlinks of ``directories``
     """
 
-    file_system = BaseLocalFileSystem() if file_system is None else ensure_async_file_system(file_system)
+    if file_system is not None:
+        file_system = maybe_wrap_fsspec_file_system(file_system)
 
     directories = tuple(os.path.normpath(Path(p).resolve() if resolve_symlinks else Path(p)) for p in directories)
 
@@ -97,24 +99,24 @@ def create_static_files_router(
     resolved_directories = tuple(Path(p).resolve() if resolve_symlinks else Path(p) for p in directories)
 
     @get("{file_path:path}", name=name)
-    async def get_handler(file_path: PurePath) -> ASGIFileResponse:
+    async def get_handler(file_path: PurePath, request: Request) -> ASGIFileResponse:
         return await _handler(
             path=file_path.as_posix(),
             is_head_response=False,
             directories=resolved_directories,
-            fs=file_system,
+            fs=file_system or request.app.plugins.get(FileSystemPlugin).default,
             is_html_mode=html_mode,
             send_as_attachment=send_as_attachment,
             headers=headers,
         )
 
     @head("/{file_path:path}", name=f"{name}/head")
-    async def head_handler(file_path: PurePath) -> ASGIFileResponse:
+    async def head_handler(file_path: PurePath, request: Request) -> ASGIFileResponse:
         return await _handler(
             path=file_path.as_posix(),
             is_head_response=True,
             directories=resolved_directories,
-            fs=file_system,
+            fs=file_system or request.app.plugins.get(FileSystemPlugin).default,
             is_html_mode=html_mode,
             send_as_attachment=send_as_attachment,
             headers=headers,
@@ -125,12 +127,12 @@ def create_static_files_router(
     if html_mode:
 
         @get("/", name=f"{name}/index")
-        async def index_handler() -> ASGIFileResponse:
+        async def index_handler(request: Request) -> ASGIFileResponse:
             return await _handler(
                 path="/",
                 is_head_response=False,
                 directories=resolved_directories,
-                fs=file_system,
+                fs=file_system or request.app.plugins.get(FileSystemPlugin).default,
                 is_html_mode=True,
                 send_as_attachment=send_as_attachment,
                 headers=headers,

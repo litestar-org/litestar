@@ -576,6 +576,12 @@ class Litestar(Router):
             pre_configured = any(isinstance(plugin, AttrsSchemaPlugin) for plugin in plugins)
             if not pre_configured:
                 plugins.append(AttrsSchemaPlugin())
+
+        from litestar.file_system import FileSystemPlugin
+
+        if not any(isinstance(plugin, FileSystemPlugin) for plugin in plugins):
+            plugins.append(FileSystemPlugin())
+
         return plugins
 
     @property

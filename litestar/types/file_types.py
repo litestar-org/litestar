@@ -1,13 +1,21 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Literal, Protocol, TypedDict
+from typing import TYPE_CHECKING, Any, Literal, Protocol, TypedDict, Union
 
-__all__ = ("FileInfo", "FileSystemProtocol")
+from typing_extensions import TypeAlias
+
+__all__ = (
+    "FileInfo",
+    "FileSystem",
+    "FileSystemProtocol",
+)
 
 
 if TYPE_CHECKING:
     from collections.abc import AsyncGenerator
 
+    from fsspec import AbstractFileSystem as FsspecFileSystem
+    from fsspec.asyn import AsyncFileSystem as FsspecAsyncFileSystem
     from typing_extensions import NotRequired
 
     from litestar.types.composite_types import PathType
@@ -48,8 +56,17 @@ class FileSystemProtocol(Protocol):
     async def read_bytes(
         self,
         path: PathType,
-        start: int | None = None,
-        end: int | None = None,
+        start: int = 0,
+        end: int = -1,
     ) -> bytes: ...
 
-    def iter(self, path: PathType, chunksize: int) -> AsyncGenerator[bytes, None]: ...
+    def iter(
+        self,
+        path: PathType,
+        chunksize: int,
+        start: int = 0,
+        end: int = -1,
+    ) -> AsyncGenerator[bytes, None]: ...
+
+
+FileSystem: TypeAlias = "Union[FileSystemProtocol, FsspecFileSystem, FsspecAsyncFileSystem]"

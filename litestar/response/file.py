@@ -12,8 +12,8 @@ from zlib import adler32
 from litestar.constants import ONE_MEGABYTE
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.file_system import (
-    BaseLocalFileSystem,
-    ensure_async_file_system,
+    FileSystemPlugin,
+    maybe_wrap_fsspec_file_system,
     parse_stat_result,
 )
 from litestar.response.base import Response
@@ -118,7 +118,7 @@ class ASGIFileResponse(ASGIStreamingResponse):
         etag: ETag | None = None,
         file_info: FileInfo | stat_result_type | None = None,
         file_path: str | PathLike | Path,
-        file_system: FileSystemProtocol | AbstractFileSystem | AbstractAsyncFileSystem | None = None,
+        file_system: FileSystemProtocol,
         filename: str = "",
         headers: dict[str, str] | None = None,
         is_head_response: bool = False,
@@ -153,10 +153,7 @@ class ASGIFileResponse(ASGIStreamingResponse):
             if content_encoding is not None:
                 headers.update({"content-encoding": content_encoding})
 
-        if file_system is None:
-            self._file_system: FileSystemProtocol = BaseLocalFileSystem()
-        else:
-            self._file_system = ensure_async_file_system(file_system)
+        self._file_system = file_system
 
         super().__init__(
             iterator=iter(b""),
@@ -195,20 +192,18 @@ class ASGIFileResponse(ASGIStreamingResponse):
         Returns:
             None
         """
-        if self.chunk_size < self.content_length:
-            self.iterator = self._file_system.iter(
-                self.file_path,
-                chunksize=self.chunk_size,
-            )
-            await super().send_body(send=send, receive=receive)
-            return
+        if self.content_length < self.chunk_size:
+            # no need to chunk and stream; read and send the whole thing in one go
+            body_event: HTTPResponseBodyEvent = {
+                "type": "http.response.body",
+                "body": await self._file_system.read_bytes(self.file_path),
+                "more_body": False,
+            }
+            await send(body_event)
 
-        body_event: HTTPResponseBodyEvent = {
-            "type": "http.response.body",
-            "body": await self._file_system.read_bytes(self.file_path),
-            "more_body": False,
-        }
-        await send(body_event)
+        else:
+            self.iterator = self._file_system.iter(self.file_path, chunksize=self.chunk_size)
+            await super().send_body(send=send, receive=receive)
 
     async def start_response(self, send: Send) -> None:
         """Emit the start event of the response. This event includes the headers and status codes.
@@ -281,7 +276,7 @@ class File(Response):
         encoding: str = "utf-8",
         etag: ETag | None = None,
         file_info: FileInfo | stat_result_type | None = None,
-        file_system: FileSystemProtocol | AbstractFileSystem | AbstractAsyncFileSystem | None = None,
+        file_system: str | FileSystemProtocol | AbstractFileSystem | AbstractAsyncFileSystem | None = None,
         filename: str | None = None,
         headers: ResponseHeaders | None = None,
         media_type: Literal[MediaType.TEXT] | str | None = None,
@@ -371,7 +366,19 @@ class File(Response):
         if media_type is not None:
             media_type = get_enum_string_value(media_type)
 
+        file_system: FileSystemProtocol
+        if self.file_system is None:
+            file_system = request.app.plugins.get(FileSystemPlugin).default
+        elif isinstance(self.file_system, str):
+            file_system_plugin = request.app.plugins.get(FileSystemPlugin)
+            file_system = file_system_plugin[self.file_system]
+        else:
+            file_system = maybe_wrap_fsspec_file_system(self.file_system)
+
         return ASGIFileResponse(
+            file_path=self.file_path,
+            file_system=file_system,
+            filename=self.filename,
             background=self.background or background,
             chunk_size=self.chunk_size,
             content_disposition_type=self.content_disposition_type,  # pyright: ignore
@@ -381,9 +388,6 @@ class File(Response):
             encoding=self.encoding,
             etag=self.etag,
             file_info=self.file_info,
-            file_path=self.file_path,
-            file_system=self.file_system,
-            filename=self.filename,
             headers=headers,
             is_head_response=is_head_response,
             media_type=media_type,
