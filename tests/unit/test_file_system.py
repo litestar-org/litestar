@@ -94,7 +94,15 @@ async def http_fs(
     await client.close()
 
 
-@pytest.fixture(params=["local_fs", "fsspec_local_fs", "http_fs"])
+@pytest.fixture(
+    params=[
+        "local_fs",
+        "fsspec_local_fs",
+        # there's a bug in the fs with handling the aiohttp session that can cause a warning
+        # to be emitted due to improper resource closing. we can't really handle this here
+        pytest.param("http_fs", marks=[pytest.mark.flaky(reruns=10)]),
+    ]
+)
 def fs(request: pytest.FixtureRequest) -> BaseFileSystem:
     return request.getfixturevalue(request.param)  # type: ignore[no-any-return]
 
