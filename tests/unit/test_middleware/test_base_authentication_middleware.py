@@ -8,9 +8,9 @@ from litestar.connection import Request, WebSocket
 from litestar.enums import HttpMethod, ScopeType
 from litestar.exceptions import PermissionDeniedException, WebSocketDisconnect
 from litestar.middleware.authentication import (
-    ASGIAuthenticationMiddleware,
     AuthenticationResult,
 )
+from litestar.middleware.base import ASGIAuthenticationMiddleware
 from litestar.status_codes import (
     HTTP_200_OK,
     HTTP_403_FORBIDDEN,

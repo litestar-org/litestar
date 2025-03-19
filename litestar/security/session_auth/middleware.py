@@ -4,9 +4,9 @@ from typing import TYPE_CHECKING, Any
 
 from litestar.exceptions import NotAuthorizedException
 from litestar.middleware.authentication import (
-    ASGIAuthenticationMiddleware,
     AuthenticationResult,
 )
+from litestar.middleware.base import ASGIAuthenticationMiddleware
 from litestar.types import Empty
 
 __all__ = ("SessionAuthMiddleware",)
