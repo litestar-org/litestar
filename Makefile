@@ -136,16 +136,16 @@ docs-clean: 										## Dump the existing built docs
 
 docs-serve: docs-clean 								## Serve the docs locally
 	@echo "=> Serving documentation"
-	uv run --python 3.12 sphinx-autobuild docs docs/_build/ -j auto --watch litestar --watch docs --watch tests --watch CONTRIBUTING.rst --open-browser --port=0
+	uv run --isolated --python 3.12 sphinx-autobuild docs docs/_build/ -j auto --watch litestar --watch docs --watch tests --watch CONTRIBUTING.rst --open-browser --port=0
 
 docs: docs-clean 									## Dump the existing built docs and rebuild them
 	@echo "=> Building documentation"
-	@uv run --python 3.12 sphinx-build -M html docs docs/_build/ -E -a -j auto -W --keep-going
+	@uv run --isolated --python 3.12 sphinx-build -M html docs docs/_build/ -E -a -j auto -W --keep-going
 
 .PHONY: docs-linkcheck
 docs-linkcheck: 									## Run the link check on the docs
-	@uv run --python 3.12 sphinx-build -b linkcheck ./docs ./docs/_build -D linkcheck_ignore='http://.*','https://.*'
+	@uv run --isolated --python 3.12 sphinx-build -b linkcheck ./docs ./docs/_build -D linkcheck_ignore='http://.*','https://.*'
 
 .PHONY: docs-linkcheck-full
 docs-linkcheck-full: 									## Run the full link check on the docs
-	@uv run --python 3.12 sphinx-build -b linkcheck ./docs ./docs/_build -D linkcheck_anchors=0
+	@uv run --isolated --python 3.12 sphinx-build -b linkcheck ./docs ./docs/_build -D linkcheck_anchors=0
