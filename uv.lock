@@ -2754,8 +2754,9 @@ full = [
 ]
 granian = [
     { name = "litestar-granian", version = "0.10.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.9'" },
-    { name = "litestar-granian", version = "0.12.0", source = { registry = "https://pypi.org/simple" }, extra = ["uvloop"], marker = "python_full_version >= '3.9'" },
+    { name = "litestar-granian", version = "0.12.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.9'" },
     { name = "python-dotenv" },
+    { name = "uvloop", marker = "sys_platform != 'win32'" },
     { name = "websockets", version = "13.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.9'" },
     { name = "websockets", version = "15.0.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.9'" },
 ]
@@ -2913,7 +2914,7 @@ requires-dist = [
     { name = "jsbeautifier", marker = "extra == 'standard'" },
     { name = "litestar", extras = ["annotated-types", "attrs", "brotli", "cli", "cryptography", "jinja", "jwt", "mako", "minijinja", "opentelemetry", "piccolo", "picologging", "prometheus", "pydantic", "redis", "sqlalchemy", "standard", "structlog", "valkey"], marker = "python_full_version < '3.13' and extra == 'full'" },
     { name = "litestar", extras = ["annotated-types", "attrs", "brotli", "cli", "cryptography", "jinja", "jwt", "mako", "minijinja", "opentelemetry", "piccolo", "prometheus", "pydantic", "redis", "sqlalchemy", "standard", "structlog", "valkey"], marker = "python_full_version >= '3.13' and extra == 'full'" },
-    { name = "litestar-granian", extras = ["uvloop"], marker = "extra == 'granian'" },
+    { name = "litestar-granian", marker = "extra == 'granian'" },
     { name = "litestar-htmx", specifier = ">=0.4.0" },
     { name = "mako", marker = "extra == 'mako'", specifier = ">=1.2.4" },
     { name = "minijinja", marker = "extra == 'minijinja'", specifier = ">=1.0.0" },
@@ -2939,6 +2940,7 @@ requires-dist = [
     { name = "uvicorn", extras = ["standard"], marker = "extra == 'cli'" },
     { name = "uvicorn", extras = ["standard"], marker = "extra == 'standard'" },
     { name = "uvloop", marker = "sys_platform != 'win32' and extra == 'cli'", specifier = ">=0.18.0" },
+    { name = "uvloop", marker = "sys_platform != 'win32' and extra == 'granian'", specifier = ">=0.18.0" },
     { name = "uvloop", marker = "sys_platform != 'win32' and extra == 'standard'", specifier = ">=0.18.0" },
     { name = "valkey", extras = ["libvalkey"], marker = "extra == 'valkey'", specifier = ">=6.0.2" },
     { name = "websockets", marker = "extra == 'granian'" },
@@ -3049,11 +3051,6 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/1c/53/c89d2c643ee1433e9accf0b34dd606cd29f83d74d854fc5487ca23f54cd1/litestar_granian-0.12.0.tar.gz", hash = "sha256:6df5a920a9223ac9fd24d8c3059547102b6e0a0261888d58c04bb3b78413b002", size = 139563 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/e2/0a/8e1f953dbcf088dde8d8f247dc77f7f8bcb2c91fdb152cd2d02ce9df8f3d/litestar_granian-0.12.0-py3-none-any.whl", hash = "sha256:331e57ef2d0e5ca78f14bf9e76c9c572ea7ec15df07253a7713a0a18f627a6ab", size = 12623 },
-]
-
-[package.optional-dependencies]
-uvloop = [
-    { name = "uvloop", marker = "python_full_version >= '3.9' and platform_python_implementation == 'CPython' and sys_platform != 'win32'" },
 ]
 
 [[package]]
@@ -6454,8 +6451,8 @@ name = "taskgroup"
 version = "0.2.2"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "exceptiongroup", marker = "python_full_version < '3.13'" },
-    { name = "typing-extensions", marker = "python_full_version < '3.13'" },
+    { name = "exceptiongroup", marker = "python_full_version < '3.11'" },
+    { name = "typing-extensions", marker = "python_full_version < '3.11'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/f0/8d/e218e0160cc1b692e6e0e5ba34e8865dbb171efeb5fc9a704544b3020605/taskgroup-0.2.2.tar.gz", hash = "sha256:078483ac3e78f2e3f973e2edbf6941374fbea81b9c5d0a96f51d297717f4752d", size = 11504 }
 wheels = [
