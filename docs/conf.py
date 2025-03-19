@@ -72,6 +72,7 @@ intersphinx_mapping = {
     "pydantic": ("https://docs.pydantic.dev/latest/", None),
     "typing_extensions": ("https://typing-extensions.readthedocs.io/en/stable/", None),
     "valkey": ("https://valkey-py.readthedocs.io/en/latest/", None),
+    "fsspec": ("https://filesystem-spec.readthedocs.io/en/latest/", None),
 }
 
 napoleon_google_docstring = True

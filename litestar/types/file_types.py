@@ -39,7 +39,8 @@ class FileInfo(TypedDict):
 
 class BaseFileSystem(abc.ABC):
     @abc.abstractmethod
-    async def info(self, path: PathType, **kwargs: Any) -> FileInfo: ...
+    async def info(self, path: PathType, **kwargs: Any) -> FileInfo:
+        """Return a :class:`~litestar.types.file_types.FileInfo` for the given ``path``"""
 
     @abc.abstractmethod
     async def read_bytes(
@@ -47,7 +48,14 @@ class BaseFileSystem(abc.ABC):
         path: PathType,
         start: int = 0,
         end: int = -1,
-    ) -> bytes: ...
+    ) -> bytes:
+        """Read bytes from ``path``
+
+        Args:
+            path: File to read from
+            start: Offset to start reading from
+            end: Offset to stop reading at (inclusive)
+        """
 
     @abc.abstractmethod
     def iter(
@@ -56,12 +64,21 @@ class BaseFileSystem(abc.ABC):
         chunksize: int,
         start: int = 0,
         end: int = -1,
-    ) -> AsyncGenerator[bytes, None]: ...
+    ) -> AsyncGenerator[bytes, None]:
+        """Stream bytes from ``path``
+
+        Args:
+            path: Path to read from
+            chunksize: Number of bytes to read per chunk
+            start: Offset to start reading from
+            end: Offset to stop reading at (inclusive)
+        """
 
 
 class LinkableFileSystem(BaseFileSystem, abc.ABC):
     @abc.abstractmethod
-    async def resolve_symlinks(self, path: PathType) -> str: ...
+    async def resolve_symlinks(self, path: PathType) -> str:
+        """Return ``path`` with all symlinks resolved"""
 
 
 AnyFileSystem: TypeAlias = "Union[BaseFileSystem, FsspecFileSystem, FsspecAsyncFileSystem]"

@@ -653,6 +653,32 @@ For example:
        )
 
 
+File systems
+++++++++++++
+
+:class:`~litestar.response.File` supports Litestar's *file system protocol and registry*.
+If no file system is passed explicitly, files will be sent using the registry's default
+file system, which itself defaults to
+:class:`~litestar.file_system.BaseLocalFileSystem`\ , sending files from disk.
+In addition to Litestar's own file system protocol, all
+`fsspec <https://filesystem-spec.readthedocs.io/en/latest/>`_ file systems are
+supported.
+
+.. literalinclude:: /examples/responses/file_response_fs.py
+    :language: python
+    :caption: Sending files from S3
+
+
+.. literalinclude:: /examples/responses/file_response_fs_registry.py
+    :language: python
+    :caption: Sending files from S3 by using the registry
+
+
+.. literalinclude:: /examples/responses/file_response_fs_registry.py
+    :language: python
+    :caption: Changing the default file system
+
+
 Streaming Responses
 -------------------
 

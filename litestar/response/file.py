@@ -249,10 +249,7 @@ class File(Response):
         media_type: Literal[MediaType.TEXT] | str | None = None,
         status_code: int | None = None,
     ) -> None:
-        """Initialize ``File``
-
-        Notes:
-            - This class extends the :class:`Stream <.response.Stream>` class.
+        """Send a file from a file system.
 
         Args:
             path: A file path in one of the supported formats.
@@ -266,10 +263,13 @@ class File(Response):
             encoding: The encoding to be used for the response headers.
             etag: An optional :class:`ETag <.datastructures.ETag>` instance. If not provided, an etag will be
                 generated.
-            file_info: The output of calling :meth:`file_system.info <types.FileSystemProtocol.info>`, equivalent to
-                providing an :class:`os.stat_result`.
-            file_system: An implementation of the :class:`FileSystemProtocol <.types.FileSystemProtocol>`. If provided
-                it will be used to load the file.
+            file_info: The output of calling :meth:`file_system.info <litestar.types.file_types.BaseFileSystem.info>`,
+                equivalent to providing an :class:`os.stat_result`.
+            file_system: The file system to load the file from. Instances of
+                :class:`~litestar.types.file_types.BaseFileSystem`, :class:`fsspec.spec.AbstractFileSystem`,
+                :class:`fsspec.asyn.AsyncFileSystem` will be used directly. If passed string, use it to look up the
+                corresponding file system from the :class:`~litestar.file_system.FileSystemRegistry`. If not given,
+                the file will be loaded from :attr:`~litestar.file_system.FileSystemRegistry.default`
             filename: An optional filename to set in the header.
             headers: A string keyed dictionary of response headers. Header keys are insensitive.
             media_type: A value for the response ``Content-Type`` header. If not provided, the value will be either

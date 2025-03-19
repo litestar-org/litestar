@@ -62,10 +62,11 @@ def create_static_files_router(
     Args:
         path: Path to serve static files under
         directories: Directories to serve static files from
-        file_system: A *file system* implementing
-            :class:`~litestar.types.FileSystemProtocol`.
-            `fsspec <https://filesystem-spec.readthedocs.io/en/latest/>`_ can be passed
-            here as well
+        file_system: The file system to load the file from. Instances of
+            :class:`~litestar.types.file_types.BaseFileSystem`, :class:`fsspec.spec.AbstractFileSystem`,
+            :class:`fsspec.asyn.AsyncFileSystem` will be used directly. If passed string, use it to look up the
+            corresponding file system from the :class:`~litestar.file_system.FileSystemRegistry`. If not given, the
+            file will be loaded from :attr:`~litestar.file_system.FileSystemRegistry.default`
         send_as_attachment: Whether to send the file as an attachment
         html_mode: When in HTML:
             - Serve an ``index.html`` file from ``/``
