@@ -40,7 +40,7 @@ def test_pass_options() -> None:
     exception_handlers = {ValidationException: handle}
     opts = {"foo": "bar"}
     cache_control = CacheControlHeader()
-    security = [{"foo": ["bar"]}]
+    security = ({"foo": ["bar"]},)
     tags = ["static", "random"]
 
     router = create_static_files_router(

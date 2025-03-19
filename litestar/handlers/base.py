@@ -36,10 +36,12 @@ if TYPE_CHECKING:
     from litestar.app import Litestar
     from litestar.connection import ASGIConnection
     from litestar.dto import AbstractDTO
+    from litestar.openapi.spec.security_requirement import SecurityRequirement
     from litestar.routes import BaseRoute
     from litestar.types import AsyncAnyCallable
     from litestar.types.callable_types import AnyCallable, AsyncGuard
     from litestar.types.empty import EmptyType
+
 
 __all__ = ("BaseRouteHandler",)
 
@@ -67,6 +69,8 @@ class BaseRouteHandler:
         "opt",
         "parameters",
         "paths",
+        "security",
+        "security_override",
         "signature_namespace",
         "type_decoders",
         "type_encoders",
@@ -90,6 +94,8 @@ class BaseRouteHandler:
         parameters: ParametersMap | None = None,
         type_decoders: TypeDecodersSequence | None = None,
         type_encoders: TypeEncodersMap | None = None,
+        security: Sequence[SecurityRequirement] | None = None,
+        security_override: Sequence[SecurityRequirement] | None = None,
         **kwargs: Any,
     ) -> None:
         """Initialize ``HTTPRouteHandler``.
@@ -119,6 +125,13 @@ class BaseRouteHandler:
             type_decoders: A sequence of tuples, each composed of a predicate testing for type identity and a msgspec hook for deserialization.
             type_encoders: A mapping of types to callables that transform them into types supported for serialization.
             parameters: A mapping of :func:`Parameter <.params.Parameter>` definitions
+            security: A sequence of security requirement dictionaries that contain information about which security
+                schemes should be used on this endpoint. Will be appended to existing security requirements.
+                Cannot be passed together with the `security_override` parameter.
+                See :data:`SecurityRequirement <.openapi.spec.SecurityRequirement>` for details.
+            security_override: A sequence of dicts that will override the previous security requirements of the
+                previous layers. Cannot be passed together with the `security` parameter.
+                See :data:`SecurityRequirement <.openapi.spec.SecurityRequirement>` for details.
             **kwargs: Any additional kwarg - will be set in the opt dictionary.
         """
         self._parsed_fn_signature: ParsedSignature | EmptyType = Empty
@@ -153,6 +166,8 @@ class BaseRouteHandler:
         )
         self.fn = fn
         self.parameters = parameters or {}
+        self.security = security
+        self.security_override = security_override
 
     def _get_merge_opts(self, others: tuple[Router, ...]) -> dict[str, Any]:
         """Get kwargs for .merge.
@@ -203,6 +218,19 @@ class BaseRouteHandler:
                 merge_opts.get("signature_namespace", {}), other.signature_namespace
             )
 
+            if "security_override" not in merge_opts and other.security_override is not None:
+                merge_opts["security_override"] = (
+                    *merge_opts.get("security", ()),
+                    *other.security_override,
+                )
+
+            elif other.security is not None:
+                current_security = merge_opts.get("security")
+                if current_security is None:
+                    merge_opts["security"] = other.security
+                else:
+                    merge_opts["security"] = (*current_security, *other.security)
+
             # '.dto' on the router is the dto config value supplied by the users,
             # whereas '.dto' on the handler is the fully resolved dto. The dto config on
             # the handler is stored under '._dto', so we have to do this little workaround
@@ -210,6 +238,9 @@ class BaseRouteHandler:
                 other = cast(Router, other)  # mypy cannot narrow with the 'is not self' check
                 merge_opts["dto"] = value_or_default(merge_opts.get("dto", Empty), other.dto)
                 merge_opts["return_dto"] = value_or_default(merge_opts.get("return_dto", Empty), other.return_dto)
+
+        if "security_override" in merge_opts:
+            merge_opts["security"] = merge_opts.pop("security_override")
 
         merge_opts["dto"] = value_or_default(self._dto, merge_opts.get("dto", Empty))
         merge_opts["return_dto"] = value_or_default(self._return_dto, merge_opts.get("return_dto", Empty))

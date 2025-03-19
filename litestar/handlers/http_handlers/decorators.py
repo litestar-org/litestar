@@ -99,6 +99,7 @@ def route(
     response_description: str | None = None,
     responses: Mapping[int, ResponseSpec] | None = None,
     security: Sequence[SecurityRequirement] | None = None,
+    security_override: Sequence[SecurityRequirement] | None = None,
     summary: str | None = None,
     tags: Sequence[str] | None = None,
     type_decoders: TypeDecodersSequence | None = None,
@@ -170,7 +171,13 @@ def route(
             This list should describe all exceptions raised within the route handler's function/method. The Litestar
             ValidationException will be added automatically for the schema if any validation is involved.
         response_description: Text used for the route's response schema description section.
-        security: A sequence of dictionaries that contain information about which security scheme can be used on the endpoint.
+        security: A sequence of security requirement dictionaries that contain information about which security
+            schemes should be used on this endpoint. Will be appended to existing security requirements.
+            Cannot be passed together with the `security_override` parameter.
+            See :data:`SecurityRequirement <.openapi.spec.SecurityRequirement>` for details.
+        security_override: A sequence of dicts that will override the previous security requirements of the
+            previous layers. Cannot be passed together with the `security` parameter.
+            See :data:`SecurityRequirement <.openapi.spec.SecurityRequirement>` for details.
         summary: Text used for the route's schema summary section.
         tags: A sequence of string tags that will be appended to the OpenAPI schema.
         type_decoders: A sequence of tuples, each composed of a predicate testing for type identity and a msgspec
@@ -218,6 +225,7 @@ def route(
             responses=responses,
             return_dto=return_dto,
             security=security,
+            security_override=security_override,
             signature_namespace=signature_namespace,
             status_code=status_code,
             summary=summary,
@@ -270,6 +278,7 @@ def get(
     response_description: str | None = None,
     responses: Mapping[int, ResponseSpec] | None = None,
     security: Sequence[SecurityRequirement] | None = None,
+    security_override: Sequence[SecurityRequirement] | None = None,
     summary: str | None = None,
     tags: Sequence[str] | None = None,
     type_decoders: TypeDecodersSequence | None = None,
@@ -338,7 +347,13 @@ def get(
             This list should describe all exceptions raised within the route handler's function/method. The Litestar
             ValidationException will be added automatically for the schema if any validation is involved.
         response_description: Text used for the route's response schema description section.
-        security: A sequence of dictionaries that contain information about which security scheme can be used on the endpoint.
+        security: A sequence of security requirement dictionaries that contain information about which security
+            schemes should be used on this endpoint. Will be appended to existing security requirements.
+            Cannot be passed together with the `security_override` parameter.
+            See :data:`SecurityRequirement <.openapi.spec.SecurityRequirement>` for details.
+        security_override: A sequence of dicts that will override the previous security requirements of the
+            previous layers. Cannot be passed together with the `security` parameter.
+            See :data:`SecurityRequirement <.openapi.spec.SecurityRequirement>` for details.
         summary: Text used for the route's schema summary section.
         tags: A sequence of string tags that will be appended to the OpenAPI schema.
         type_decoders: A sequence of tuples, each composed of a predicate testing for type identity and a msgspec
@@ -386,6 +401,7 @@ def get(
             responses=responses,
             return_dto=return_dto,
             security=security,
+            security_override=security_override,
             signature_namespace=signature_namespace,
             status_code=status_code,
             summary=summary,
@@ -438,6 +454,7 @@ def head(
     responses: Mapping[int, ResponseSpec] | None = None,
     return_dto: type[AbstractDTO] | None | EmptyType = Empty,
     security: Sequence[SecurityRequirement] | None = None,
+    security_override: Sequence[SecurityRequirement] | None = None,
     summary: str | None = None,
     tags: Sequence[str] | None = None,
     type_decoders: TypeDecodersSequence | None = None,
@@ -510,7 +527,13 @@ def head(
             This list should describe all exceptions raised within the route handler's function/method. The Litestar
             ValidationException will be added automatically for the schema if any validation is involved.
         response_description: Text used for the route's response schema description section.
-        security: A sequence of dictionaries that contain information about which security scheme can be used on the endpoint.
+        security: A sequence of security requirement dictionaries that contain information about which security
+            schemes should be used on this endpoint. Will be appended to existing security requirements.
+            Cannot be passed together with the `security_override` parameter.
+            See :data:`SecurityRequirement <.openapi.spec.SecurityRequirement>` for details.
+        security_override: A sequence of dicts that will override the previous security requirements of the
+            previous layers. Cannot be passed together with the `security` parameter.
+            See :data:`SecurityRequirement <.openapi.spec.SecurityRequirement>` for details.
         summary: Text used for the route's schema summary section.
         tags: A sequence of string tags that will be appended to the OpenAPI schema.
         type_decoders: A sequence of tuples, each composed of a predicate testing for type identity and a msgspec
@@ -558,6 +581,7 @@ def head(
             responses=responses,
             return_dto=return_dto,
             security=security,
+            security_override=security_override,
             signature_namespace=signature_namespace,
             status_code=status_code,
             summary=summary,
@@ -611,6 +635,7 @@ def patch(
     response_description: str | None = None,
     responses: Mapping[int, ResponseSpec] | None = None,
     security: Sequence[SecurityRequirement] | None = None,
+    security_override: Sequence[SecurityRequirement] | None = None,
     summary: str | None = None,
     tags: Sequence[str] | None = None,
     type_decoders: TypeDecodersSequence | None = None,
@@ -681,7 +706,13 @@ def patch(
             This list should describe all exceptions raised within the route handler's function/method. The Litestar
             ValidationException will be added automatically for the schema if any validation is involved.
         response_description: Text used for the route's response schema description section.
-        security: A sequence of dictionaries that contain information about which security scheme can be used on the endpoint.
+        security: A sequence of security requirement dictionaries that contain information about which security
+            schemes should be used on this endpoint. Will be appended to existing security requirements.
+            Cannot be passed together with the `security_override` parameter.
+            See :data:`SecurityRequirement <.openapi.spec.SecurityRequirement>` for details.
+        security_override: A sequence of dicts that will override the previous security requirements of the
+            previous layers. Cannot be passed together with the `security` parameter.
+            See :data:`SecurityRequirement <.openapi.spec.SecurityRequirement>` for details.
         summary: Text used for the route's schema summary section.
         tags: A sequence of string tags that will be appended to the OpenAPI schema.
         type_decoders: A sequence of tuples, each composed of a predicate testing for type identity and a msgspec
@@ -730,6 +761,7 @@ def patch(
             responses=responses,
             return_dto=return_dto,
             security=security,
+            security_override=security_override,
             signature_namespace=signature_namespace,
             status_code=status_code,
             summary=summary,
@@ -783,6 +815,7 @@ def post(
     response_description: str | None = None,
     responses: Mapping[int, ResponseSpec] | None = None,
     security: Sequence[SecurityRequirement] | None = None,
+    security_override: Sequence[SecurityRequirement] | None = None,
     summary: str | None = None,
     tags: Sequence[str] | None = None,
     type_decoders: TypeDecodersSequence | None = None,
@@ -853,7 +886,13 @@ def post(
             This list should describe all exceptions raised within the route handler's function/method. The Litestar
             ValidationException will be added automatically for the schema if any validation is involved.
         response_description: Text used for the route's response schema description section.
-        security: A sequence of dictionaries that contain information about which security scheme can be used on the endpoint.
+        security: A sequence of security requirement dictionaries that contain information about which security
+            schemes should be used on this endpoint. Will be appended to existing security requirements.
+            Cannot be passed together with the `security_override` parameter.
+            See :data:`SecurityRequirement <.openapi.spec.SecurityRequirement>` for details.
+        security_override: A sequence of dicts that will override the previous security requirements of the
+            previous layers. Cannot be passed together with the `security` parameter.
+            See :data:`SecurityRequirement <.openapi.spec.SecurityRequirement>` for details.
         summary: Text used for the route's schema summary section.
         tags: A sequence of string tags that will be appended to the OpenAPI schema.
         type_decoders: A sequence of tuples, each composed of a predicate testing for type identity and a msgspec
@@ -903,6 +942,7 @@ def post(
             return_dto=return_dto,
             signature_namespace=signature_namespace,
             security=security,
+            security_override=security_override,
             status_code=status_code,
             summary=summary,
             sync_to_thread=sync_to_thread,
@@ -955,6 +995,7 @@ def put(
     response_description: str | None = None,
     responses: Mapping[int, ResponseSpec] | None = None,
     security: Sequence[SecurityRequirement] | None = None,
+    security_override: Sequence[SecurityRequirement] | None = None,
     summary: str | None = None,
     tags: Sequence[str] | None = None,
     type_decoders: TypeDecodersSequence | None = None,
@@ -1025,7 +1066,13 @@ def put(
             This list should describe all exceptions raised within the route handler's function/method. The Litestar
             ValidationException will be added automatically for the schema if any validation is involved.
         response_description: Text used for the route's response schema description section.
-        security: A sequence of dictionaries that contain information about which security scheme can be used on the endpoint.
+        security: A sequence of security requirement dictionaries that contain information about which security
+            schemes should be used on this endpoint. Will be appended to existing security requirements.
+            Cannot be passed together with the `security_override` parameter.
+            See :data:`SecurityRequirement <.openapi.spec.SecurityRequirement>` for details.
+        security_override: A sequence of dicts that will override the previous security requirements of the
+            previous layers. Cannot be passed together with the `security` parameter.
+            See :data:`SecurityRequirement <.openapi.spec.SecurityRequirement>` for details.
         summary: Text used for the route's schema summary section.
         tags: A sequence of string tags that will be appended to the OpenAPI schema.
         type_decoders: A sequence of tuples, each composed of a predicate testing for type identity and a msgspec
@@ -1073,6 +1120,7 @@ def put(
             responses=responses,
             return_dto=return_dto,
             security=security,
+            security_override=security_override,
             signature_namespace=signature_namespace,
             status_code=status_code,
             summary=summary,
@@ -1125,6 +1173,7 @@ def delete(
     response_description: str | None = None,
     responses: Mapping[int, ResponseSpec] | None = None,
     security: Sequence[SecurityRequirement] | None = None,
+    security_override: Sequence[SecurityRequirement] | None = None,
     summary: str | None = None,
     tags: Sequence[str] | None = None,
     type_decoders: TypeDecodersSequence | None = None,
@@ -1193,7 +1242,13 @@ def delete(
             This list should describe all exceptions raised within the route handler's function/method. The Litestar
             ValidationException will be added automatically for the schema if any validation is involved.
         response_description: Text used for the route's response schema description section.
-        security: A sequence of dictionaries that contain information about which security scheme can be used on the endpoint.
+        security: A sequence of security requirement dictionaries that contain information about which security
+            schemes should be used on this endpoint. Will be appended to existing security requirements.
+            Cannot be passed together with the `security_override` parameter.
+            See :data:`SecurityRequirement <.openapi.spec.SecurityRequirement>` for details.
+        security_override: A sequence of dicts that will override the previous security requirements of the
+            previous layers. Cannot be passed together with the `security` parameter.
+            See :data:`SecurityRequirement <.openapi.spec.SecurityRequirement>` for details.
         summary: Text used for the route's schema summary section.
         tags: A sequence of string tags that will be appended to the OpenAPI schema.
         type_decoders: A sequence of tuples, each composed of a predicate testing for type identity and a msgspec
@@ -1240,6 +1295,7 @@ def delete(
             responses=responses,
             return_dto=return_dto,
             security=security,
+            security_override=security_override,
             signature_namespace=signature_namespace,
             status_code=status_code,
             summary=summary,

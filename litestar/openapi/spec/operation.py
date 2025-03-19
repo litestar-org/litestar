@@ -6,6 +6,8 @@ from typing import TYPE_CHECKING
 from litestar.openapi.spec.base import BaseSchemaObject
 
 if TYPE_CHECKING:
+    from collections.abc import Sequence
+
     from litestar.openapi.spec.callback import Callback
     from litestar.openapi.spec.external_documentation import ExternalDocumentation
     from litestar.openapi.spec.parameter import Parameter
@@ -87,7 +89,7 @@ class Operation(BaseSchemaObject):
     Consumers SHOULD refrain from usage of the declared operation. Default value is ``False``.
     """
 
-    security: list[SecurityRequirement] | None = None
+    security: Sequence[SecurityRequirement] | None = None
     """A declaration of which security mechanisms can be used for this operation.
 
     The list of values includes alternative security requirement objects that can be used. Only one of the security
