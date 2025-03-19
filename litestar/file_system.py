@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import io
+import os.path
 import pathlib
 from datetime import datetime
 from stat import S_ISDIR, S_ISLNK
@@ -10,7 +11,7 @@ import anyio
 
 from litestar.concurrency import sync_to_thread
 from litestar.plugins import InitPlugin
-from litestar.types.file_types import BaseFileSystem, FileSystem
+from litestar.types.file_types import AnyFileSystem, BaseFileSystem, LinkableFileSystem
 
 __all__ = (
     "BaseLocalFileSystem",
@@ -34,7 +35,7 @@ if TYPE_CHECKING:
     from litestar.types.file_types import FileInfo
 
 
-class BaseLocalFileSystem(BaseFileSystem):
+class BaseLocalFileSystem(LinkableFileSystem):
     """Base class for a local file system."""
 
     async def info(self, path: PathType, **kwargs: Any) -> FileInfo:
@@ -49,6 +50,9 @@ class BaseLocalFileSystem(BaseFileSystem):
         """
         result = await sync_to_thread(pathlib.Path(path).stat)
         return parse_stat_result(path=path, result=result)
+
+    async def resolve_symlinks(self, path: PathType) -> str:
+        return os.path.realpath(path)
 
     async def read_bytes(
         self,
@@ -235,7 +239,7 @@ def parse_stat_result(path: PathType, result: stat_result) -> FileInfo:
     }
 
 
-def maybe_wrap_fsspec_file_system(file_system: FileSystem) -> BaseFileSystem:
+def maybe_wrap_fsspec_file_system(file_system: AnyFileSystem) -> BaseFileSystem:
     try:
         from fsspec import AbstractFileSystem
         from fsspec.asyn import AsyncFileSystem
@@ -254,8 +258,8 @@ def maybe_wrap_fsspec_file_system(file_system: FileSystem) -> BaseFileSystem:
 class FileSystemRegistry(InitPlugin):
     def __init__(
         self,
-        file_systems: Mapping[str, FileSystem] | None = None,
-        default: FileSystem | None = None,
+        file_systems: Mapping[str, AnyFileSystem] | None = None,
+        default: AnyFileSystem | None = None,
     ) -> None:
         self._adapters: dict[str, BaseFileSystem] = {}
         self.register("file", BaseLocalFileSystem())
@@ -274,7 +278,7 @@ class FileSystemRegistry(InitPlugin):
     def get(self, name: str) -> BaseFileSystem | None:
         return self._adapters.get(name)
 
-    def register(self, scheme: str, fs: FileSystem) -> None:
+    def register(self, scheme: str, fs: AnyFileSystem) -> None:
         self._adapters[scheme] = maybe_wrap_fsspec_file_system(fs)
 
 

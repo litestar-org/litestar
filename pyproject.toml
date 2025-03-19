@@ -470,6 +470,7 @@ lint.ignore = [
   "RUF012",  # Ruff-specific rule - annotated with classvar
   "ISC001",  # Ruff formatter incompatible
   "CPY001",  # ruff - copyright notice at the top of the file
+  "SIM108",  # Use ternary operator
 ]
 
 line-length = 120

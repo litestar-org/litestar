@@ -6,9 +6,10 @@ from typing import TYPE_CHECKING, Any, TypedDict, Union
 from typing_extensions import NotRequired, TypeAlias
 
 __all__ = (
+    "AnyFileSystem",
     "BaseFileSystem",
     "FileInfo",
-    "FileSystem",
+    "LinkableFileSystem",
 )
 
 
@@ -58,4 +59,9 @@ class BaseFileSystem(abc.ABC):
     ) -> AsyncGenerator[bytes, None]: ...
 
 
-FileSystem: TypeAlias = "Union[BaseFileSystem, FsspecFileSystem, FsspecAsyncFileSystem]"
+class LinkableFileSystem(BaseFileSystem, abc.ABC):
+    @abc.abstractmethod
+    async def resolve_symlinks(self, path: PathType) -> str: ...
+
+
+AnyFileSystem: TypeAlias = "Union[BaseFileSystem, FsspecFileSystem, FsspecAsyncFileSystem]"
