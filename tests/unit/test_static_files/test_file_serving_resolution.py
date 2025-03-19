@@ -10,14 +10,14 @@ import pytest
 from fsspec.implementations.local import LocalFileSystem
 
 from litestar import MediaType, get
-from litestar.file_system import BaseLocalFileSystem, FileSystemRegistry, maybe_wrap_fsspec_file_system
+from litestar.file_system import BaseFileSystem, BaseLocalFileSystem, FileSystemRegistry, maybe_wrap_fsspec_file_system
 from litestar.static_files import _get_fs_info, create_static_files_router
 from litestar.status_codes import HTTP_200_OK
 from litestar.testing import create_test_client
 from tests.unit.test_response.test_file_response import MockFileSystem
 
 if TYPE_CHECKING:
-    from litestar.types import BaseFileSystem
+    pass
 
 
 def test_default_static_files_router(tmpdir: Path) -> None:

@@ -9,7 +9,7 @@ from litestar.testing import create_test_client
 if TYPE_CHECKING:
     from pathlib import Path
 
-    from litestar.types import BaseFileSystem
+    from litestar.file_system import BaseFileSystem
 
 
 def test_staticfiles_is_html_mode(tmpdir: Path, file_system: BaseFileSystem) -> None:

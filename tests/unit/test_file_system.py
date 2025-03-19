@@ -12,6 +12,7 @@ from fsspec.implementations.local import LocalFileSystem
 from RangeHTTPServer import RangeRequestHandler  # type: ignore[import-untyped]
 
 from litestar.file_system import (
+    BaseFileSystem,
     BaseLocalFileSystem,
     FileSystemRegistry,
     FsspecAsyncWrapper,
@@ -19,7 +20,6 @@ from litestar.file_system import (
     maybe_wrap_fsspec_file_system,
 )
 from litestar.testing.client.subprocess_client import _get_available_port
-from litestar.types import BaseFileSystem
 
 
 class PatchedHTTPFileSystem(HTTPFileSystem):  # type: ignore[misc]

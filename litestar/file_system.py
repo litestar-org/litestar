@@ -1,24 +1,29 @@
 from __future__ import annotations
 
+import abc
 import io
 import os
 import os.path
 import pathlib
 from datetime import datetime
 from stat import S_ISDIR, S_ISLNK
-from typing import TYPE_CHECKING, Any, Final, cast
+from typing import TYPE_CHECKING, Any, Final, Union, cast
 
 import anyio
+from typing_extensions import NotRequired, TypeAlias, TypedDict
 
 from litestar.concurrency import sync_to_thread
 from litestar.plugins import InitPlugin
-from litestar.types.file_types import AnyFileSystem, BaseFileSystem, LinkableFileSystem
 
 __all__ = (
+    "AnyFileSystem",
+    "BaseFileSystem",
     "BaseLocalFileSystem",
+    "FileInfo",
     "FileSystemRegistry",
     "FsspecAsyncWrapper",
     "FsspecSyncWrapper",
+    "LinkableFileSystem",
     "get_fsspec_mtime_equivalent",
     "maybe_wrap_fsspec_file_system",
     "parse_stat_result",
@@ -32,14 +37,77 @@ if TYPE_CHECKING:
     from fsspec.asyn import AsyncFileSystem as FsspecAsyncFileSystem
 
     from litestar.types import PathType
-    from litestar.types.file_types import FileInfo
+
+
+AnyFileSystem: TypeAlias = "Union[BaseFileSystem, FsspecFileSystem, FsspecAsyncFileSystem]"
+
+
+class FileInfo(TypedDict):
+    """File information gathered from a file system."""
+
+    islink: bool
+    """True if the file is a symbolic link."""
+    mtime: NotRequired[float]
+    """Modified time stamp."""
+    name: str
+    """The path of the file."""
+    size: int
+    """Total size, in bytes."""
+    type: str
+    """The type of the file system object."""
+
+
+class BaseFileSystem(abc.ABC):
+    @abc.abstractmethod
+    async def info(self, path: PathType, **kwargs: Any) -> FileInfo:
+        """Return a :class:`~litestar.file_system.FileInfo` for the given ``path``"""
+
+    @abc.abstractmethod
+    async def read_bytes(
+        self,
+        path: PathType,
+        start: int = 0,
+        end: int = -1,
+    ) -> bytes:
+        """Read bytes from ``path``
+
+        Args:
+            path: File to read from
+            start: Offset to start reading from
+            end: Offset to stop reading at (inclusive)
+        """
+
+    @abc.abstractmethod
+    def iter(
+        self,
+        path: PathType,
+        chunksize: int,
+        start: int = 0,
+        end: int = -1,
+    ) -> AsyncGenerator[bytes, None]:
+        """Stream bytes from ``path``
+
+        Args:
+            path: Path to read from
+            chunksize: Number of bytes to read per chunk
+            start: Offset to start reading from
+            end: Offset to stop reading at (inclusive)
+        """
+
+
+class LinkableFileSystem(BaseFileSystem, abc.ABC):
+    """A file system that supports symlinks"""
+
+    @abc.abstractmethod
+    async def resolve_symlinks(self, path: PathType) -> str:
+        """Return ``path`` with all symlinks resolved"""
 
 
 class BaseLocalFileSystem(LinkableFileSystem):
     """Base class for a local file system."""
 
     async def info(self, path: PathType, **kwargs: Any) -> FileInfo:
-        """Return a :class:`~litestar.types.file_types.FileInfo` for the given ``path``"""
+        """Return a :class:`~litestar.file_system.FileInfo` for the given ``path``"""
         result = await sync_to_thread(pathlib.Path(path).stat)
         return parse_stat_result(path=path, result=result)
 
@@ -115,12 +183,12 @@ class BaseLocalFileSystem(LinkableFileSystem):
 class FsspecSyncWrapper(BaseFileSystem):
     def __init__(self, fs: FsspecFileSystem) -> None:
         """Wrap a :class:`fsspec.spec.AbstractFileSystem` to provide a
-        :class:`litestar.types.file_types.BaseFileSystem` compatible interface
+        :class:`litestar.file_system.BaseFileSystem` compatible interface
         """
         self._fs = fs
 
     async def info(self, path: PathType, **kwargs: Any) -> FileInfo:
-        """Return a :class:`~litestar.types.file_types.FileInfo` for the given ``path``.
+        """Return a :class:`~litestar.file_system.FileInfo` for the given ``path``.
 
         Return info verbatim from :meth:`fsspec.spec.AbstractFileSystem.info`, but try to
         patch 'mtime' using :func:`litestar.file_system.get_fsspec_mtime_equivalent`.
@@ -192,7 +260,7 @@ class FsspecSyncWrapper(BaseFileSystem):
 class FsspecAsyncWrapper(BaseFileSystem):
     def __init__(self, fs: FsspecAsyncFileSystem) -> None:
         """Wrap a :class:`fsspec.asyn.AsyncFileSystem` to provide a
-        class:`litestar.types.file_types.BaseFileSystem` compatible interface
+        class:`litestar.file_system.BaseFileSystem` compatible interface
 
         Args:
             fs: An :class:`fsspec.asyn.AsyncFileSystem` instantiated with `
@@ -205,7 +273,7 @@ class FsspecAsyncWrapper(BaseFileSystem):
         self._supports_open_async = type(fs).open_async is not fsspec.asyn.AsyncFileSystem.open_async
 
     async def info(self, path: PathType, **kwargs: Any) -> FileInfo:
-        """Return a :class:`~litestar.types.file_types.FileInfo` for the given ``path``.
+        """Return a :class:`~litestar.file_system.FileInfo` for the given ``path``.
 
         Return info verbatim from ``fsspec.async.AsyncFileSystem._info``, but try
         to patch 'mtime' using :func:`litestar.file_system.get_fsspec_mtime_equivalent`.

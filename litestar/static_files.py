@@ -7,13 +7,18 @@ from pathlib import Path, PurePath
 from typing import TYPE_CHECKING, Any, Literal, cast
 
 from litestar.exceptions import ImproperlyConfiguredException, NotFoundException
-from litestar.file_system import FileSystemRegistry, maybe_wrap_fsspec_file_system
+from litestar.file_system import (
+    BaseFileSystem,
+    FileInfo,
+    FileSystemRegistry,
+    LinkableFileSystem,
+    maybe_wrap_fsspec_file_system,
+)
 from litestar.handlers import get, head
 from litestar.response.file import ASGIFileResponse
 from litestar.router import Router
 from litestar.status_codes import HTTP_404_NOT_FOUND
-from litestar.types import BaseFileSystem, Empty, FileInfo
-from litestar.types.file_types import LinkableFileSystem
+from litestar.types import Empty
 from litestar.utils import normalize_path
 
 __all__ = ("create_static_files_router",)
@@ -63,7 +68,7 @@ def create_static_files_router(
         path: Path to serve static files under
         directories: Directories to serve static files from
         file_system: The file system to load the file from. Instances of
-            :class:`~litestar.types.file_types.BaseFileSystem`, :class:`fsspec.spec.AbstractFileSystem`,
+            :class:`~litestar.file_system.BaseFileSystem`, :class:`fsspec.spec.AbstractFileSystem`,
             :class:`fsspec.asyn.AsyncFileSystem` will be used directly. If passed string, use it to look up the
             corresponding file system from the :class:`~litestar.file_system.FileSystemRegistry`. If not given, the
             file will be loaded from :attr:`~litestar.file_system.FileSystemRegistry.default`

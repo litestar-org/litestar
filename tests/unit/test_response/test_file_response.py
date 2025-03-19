@@ -18,11 +18,11 @@ from litestar import get
 from litestar.connection.base import empty_send
 from litestar.datastructures import ETag
 from litestar.exceptions import ImproperlyConfiguredException
-from litestar.file_system import BaseLocalFileSystem, FileSystemRegistry
+from litestar.file_system import BaseFileSystem, BaseLocalFileSystem, FileInfo, FileSystemRegistry
 from litestar.response.file import ASGIFileResponse, File
 from litestar.status_codes import HTTP_200_OK, HTTP_500_INTERNAL_SERVER_ERROR
 from litestar.testing import create_test_client
-from litestar.types import BaseFileSystem, FileInfo, PathType
+from litestar.types import PathType
 
 
 @pytest.mark.parametrize("content_disposition_type", ("inline", "attachment"))

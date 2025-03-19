@@ -11,6 +11,7 @@ from zlib import adler32
 from litestar.constants import ONE_MEGABYTE
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.file_system import (
+    BaseFileSystem,
     FileSystemRegistry,
     maybe_wrap_fsspec_file_system,
     parse_stat_result,
@@ -32,6 +33,7 @@ if TYPE_CHECKING:
     from litestar.datastructures.cookie import Cookie
     from litestar.datastructures.headers import ETag
     from litestar.enums import MediaType
+    from litestar.file_system import FileInfo
     from litestar.types import (
         HTTPResponseBodyEvent,
         PathType,
@@ -41,7 +43,6 @@ if TYPE_CHECKING:
         Send,
         TypeEncodersMap,
     )
-    from litestar.types.file_types import BaseFileSystem, FileInfo
 
 __all__ = (
     "ASGIFileResponse",
@@ -263,10 +264,10 @@ class File(Response):
             encoding: The encoding to be used for the response headers.
             etag: An optional :class:`ETag <.datastructures.ETag>` instance. If not provided, an etag will be
                 generated.
-            file_info: The output of calling :meth:`file_system.info <litestar.types.file_types.BaseFileSystem.info>`,
+            file_info: The output of calling :meth:`file_system.info <litestar.file_system.BaseFileSystem.info>`,
                 equivalent to providing an :class:`os.stat_result`.
             file_system: The file system to load the file from. Instances of
-                :class:`~litestar.types.file_types.BaseFileSystem`, :class:`fsspec.spec.AbstractFileSystem`,
+                :class:`~litestar.file_system.BaseFileSystem`, :class:`fsspec.spec.AbstractFileSystem`,
                 :class:`fsspec.asyn.AsyncFileSystem` will be used directly. If passed string, use it to look up the
                 corresponding file system from the :class:`~litestar.file_system.FileSystemRegistry`. If not given,
                 the file will be loaded from :attr:`~litestar.file_system.FileSystemRegistry.default`

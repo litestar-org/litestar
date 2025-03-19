@@ -179,13 +179,3 @@ Composite Types
 
 .. autoclass:: litestar.types.ParametersMap
 
-
-File types
-----------
-
-.. autoclass:: litestar.types.FileInfo
-    :members:
-
-
-.. autoclass:: litestar.types.BaseFileSystem
-    :members:
