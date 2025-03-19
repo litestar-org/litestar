@@ -6,9 +6,9 @@ from typing import TYPE_CHECKING
 
 from litestar.exceptions import NotAuthorizedException
 from litestar.middleware.authentication import (
-    ASGIAuthenticationMiddleware,
     AuthenticationResult,
 )
+from litestar.middleware.base import ASGIAuthenticationMiddleware
 
 __all__ = ("JWTAuthenticationMiddleware", "JWTCookieAuthenticationMiddleware")
 
