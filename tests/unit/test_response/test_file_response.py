@@ -391,7 +391,7 @@ class MockFileSystem(BaseFileSystem):
         yield await self.read_bytes(path, start=start, end=end)
 
 
-def file_response_file_system_lookup() -> None:
+def test_file_response_file_system_lookup() -> None:
     @get("/")
     def handler() -> File:
         return File(path="Hello, world!", file_system="custom")
@@ -403,7 +403,7 @@ def file_response_file_system_lookup() -> None:
         assert response.headers.get_list("content-length") == ["13"]
 
 
-def file_response_default_file_system() -> None:
+def test_file_response_default_file_system() -> None:
     @get("/")
     def handler() -> File:
         return File(path="Hello, world!")
@@ -414,7 +414,7 @@ def file_response_default_file_system() -> None:
         assert response.content == b"Hello, world!"
 
 
-def file_response_explicit_file_system() -> None:
+def test_file_response_explicit_file_system() -> None:
     @get("/")
     def handler() -> File:
         return File(path="Hello, world!", file_system=MockFileSystem())
@@ -425,9 +425,9 @@ def file_response_explicit_file_system() -> None:
         assert response.content == b"Hello, world!"
 
 
-def file_response_sync_file_system(tmp_dir: pathlib.Path) -> None:
+def test_file_response_sync_file_system(tmp_path: pathlib.Path) -> None:
     fs = LocalFileSystem()
-    path = tmp_dir / "test.txt"
+    path = tmp_path / "test.txt"
     content = secrets.token_hex()
     path.write_text(content)
 
