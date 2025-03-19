@@ -77,10 +77,6 @@ class CSRFMiddleware(ASGIMiddleware):
         self.exclude_path_pattern = config.exclude
 
     async def handle(self, scope: Scope, receive: Receive, send: Send, next_app: ASGIApp) -> None:
-        if scope["type"] != ScopeType.HTTP:
-            await next_app(scope, receive, send)
-            return
-
         request: Request[Any, Any, Any] = scope["litestar_app"].request_class(scope=scope, receive=receive)
         content_type, _ = request.content_type
         csrf_cookie = request.cookies.get(self.config.cookie_name)
