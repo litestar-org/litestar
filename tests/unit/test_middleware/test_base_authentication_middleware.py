@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Union
 
 import pytest
 
@@ -7,6 +7,7 @@ from litestar import Litestar, get, websocket
 from litestar.connection import Request, WebSocket
 from litestar.enums import HttpMethod, ScopeType
 from litestar.exceptions import PermissionDeniedException, WebSocketDisconnect
+from litestar.middleware import AbstractAuthenticationMiddleware
 from litestar.middleware.authentication import (
     AuthenticationResult,
 )
@@ -43,6 +44,14 @@ auth = Auth(props="abc")
 state: dict[str, AuthenticationResult] = {}
 
 
+class OldAuthMiddleware(AbstractAuthenticationMiddleware):
+    async def authenticate_request(self, connection: "ASGIConnection") -> AuthenticationResult:
+        param = connection.headers.get("Authorization")
+        if param in state:
+            return state.pop(param)
+        raise PermissionDeniedException("unauthenticated")
+
+
 class AuthMiddleware(ASGIAuthenticationMiddleware):
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         self.scopes = kwargs.pop("scopes", (ScopeType.HTTP, ScopeType.WEBSOCKET))
@@ -57,13 +66,14 @@ class AuthMiddleware(ASGIAuthenticationMiddleware):
         raise PermissionDeniedException("unauthenticated")
 
 
-def test_authentication_middleware_http_routes() -> None:
+@pytest.mark.parametrize("middleware", [OldAuthMiddleware, AuthMiddleware()])
+def test_authentication_middleware_http_routes(middleware: Union[type[OldAuthMiddleware], AuthMiddleware]) -> None:
     @get(path="/")
     def http_route_handler(request: Request[User, Auth, Any]) -> None:
         assert isinstance(request.user, User)
         assert isinstance(request.auth, Auth)
 
-    client = create_test_client(route_handlers=[http_route_handler], middleware=[AuthMiddleware()])
+    client = create_test_client(route_handlers=[http_route_handler], middleware=[middleware])
     token = "abc"
     error_response = client.get("/", headers={"Authorization": token})
     assert error_response.status_code == HTTP_403_FORBIDDEN
@@ -72,7 +82,10 @@ def test_authentication_middleware_http_routes() -> None:
     assert success_response.status_code == HTTP_200_OK
 
 
-def test_authentication_middleware_not_installed_raises_for_user_scope_http() -> None:
+@pytest.mark.parametrize("middleware", [OldAuthMiddleware, AuthMiddleware()])
+def test_authentication_middleware_not_installed_raises_for_user_scope_http(
+    middleware: Union[type[OldAuthMiddleware], AuthMiddleware],
+) -> None:
     @get(path="/")
     def http_route_handler_user_scope(request: Request[User, None, Any]) -> None:
         assert request.user
@@ -82,7 +95,10 @@ def test_authentication_middleware_not_installed_raises_for_user_scope_http() ->
     assert error_response.status_code == HTTP_500_INTERNAL_SERVER_ERROR
 
 
-def test_authentication_middleware_not_installed_raises_for_auth_scope_http() -> None:
+@pytest.mark.parametrize("middleware", [OldAuthMiddleware, AuthMiddleware()])
+def test_authentication_middleware_not_installed_raises_for_auth_scope_http(
+    middleware: Union[type[OldAuthMiddleware], AuthMiddleware],
+) -> None:
     @get(path="/")
     def http_route_handler_auth_scope(request: Request[None, Auth, Any]) -> None:
         assert request.auth
@@ -102,9 +118,10 @@ async def websocket_route_handler(socket: WebSocket[User, Auth, Any]) -> None:
     await socket.close()
 
 
-def test_authentication_middleware_websocket_routes() -> None:
+@pytest.mark.parametrize("middleware", [OldAuthMiddleware, AuthMiddleware()])
+def test_authentication_middleware_websocket_routes(middleware: Union[type[OldAuthMiddleware], AuthMiddleware]) -> None:
     token = "abc"
-    client = create_test_client(route_handlers=websocket_route_handler, middleware=[AuthMiddleware()])
+    client = create_test_client(route_handlers=websocket_route_handler, middleware=[middleware])
     with pytest.raises(WebSocketDisconnect), client.websocket_connect("/", headers={"Authorization": token}) as ws:
         assert ws.receive_json()
     state[token] = AuthenticationResult(user=user, auth=auth)
@@ -112,7 +129,10 @@ def test_authentication_middleware_websocket_routes() -> None:
         assert ws.receive_json()
 
 
-def test_authentication_middleware_not_installed_raises_for_user_scope_websocket() -> None:
+@pytest.mark.parametrize("middleware", [OldAuthMiddleware, AuthMiddleware()])
+def test_authentication_middleware_not_installed_raises_for_user_scope_websocket(
+    middleware: Union[type[OldAuthMiddleware], AuthMiddleware],
+) -> None:
     @websocket(path="/")
     async def route_handler(socket: WebSocket[User, Auth, Any]) -> None:
         await socket.accept()
@@ -123,7 +143,10 @@ def test_authentication_middleware_not_installed_raises_for_user_scope_websocket
         ws.receive_json()
 
 
-def test_authentication_middleware_not_installed_raises_for_auth_scope_websocket() -> None:
+@pytest.mark.parametrize("middleware", [OldAuthMiddleware, AuthMiddleware()])
+def test_authentication_middleware_not_installed_raises_for_auth_scope_websocket(
+    middleware: Union[type[OldAuthMiddleware], AuthMiddleware],
+) -> None:
     @websocket(path="/")
     async def route_handler(socket: WebSocket[User, Auth, Any]) -> None:
         await socket.accept()
@@ -134,7 +157,8 @@ def test_authentication_middleware_not_installed_raises_for_auth_scope_websocket
         ws.receive_json()
 
 
-def test_authentication_middleware_exclude() -> None:
+@pytest.mark.parametrize("middleware", [OldAuthMiddleware, AuthMiddleware()])
+def test_authentication_middleware_exclude(middleware: Union[type[OldAuthMiddleware], AuthMiddleware]) -> None:
     auth_mw = AuthMiddleware(exclude=["north", "south"])
 
     @get("/north/{value:int}")
@@ -163,7 +187,10 @@ def test_authentication_middleware_exclude() -> None:
         assert response.status_code == HTTP_403_FORBIDDEN
 
 
-def test_authentication_middleware_exclude_from_auth() -> None:
+@pytest.mark.parametrize("middleware", [OldAuthMiddleware, AuthMiddleware()])
+def test_authentication_middleware_exclude_from_auth(
+    middleware: Union[type[OldAuthMiddleware], AuthMiddleware],
+) -> None:
     auth_mw = AuthMiddleware(exclude=["south", "east"])
 
     @get("/north/{value:int}", exclude_from_auth=True)
@@ -199,7 +226,10 @@ def test_authentication_middleware_exclude_from_auth() -> None:
         assert response.status_code == HTTP_403_FORBIDDEN
 
 
-def test_authentication_middleware_exclude_from_auth_custom_key() -> None:
+@pytest.mark.parametrize("middleware", [OldAuthMiddleware, AuthMiddleware()])
+def test_authentication_middleware_exclude_from_auth_custom_key(
+    middleware: Union[type[OldAuthMiddleware], AuthMiddleware],
+) -> None:
     auth_mw = AuthMiddleware(exclude=["south", "east"], exclude_opt_key="my_exclude_key")
 
     @get("/north/{value:int}", my_exclude_key=True)
@@ -235,7 +265,8 @@ def test_authentication_middleware_exclude_from_auth_custom_key() -> None:
         assert response.status_code == HTTP_403_FORBIDDEN
 
 
-def test_authentication_exclude_http_methods() -> None:
+@pytest.mark.parametrize("middleware", [OldAuthMiddleware, AuthMiddleware()])
+def test_authentication_exclude_http_methods(middleware: Union[type[OldAuthMiddleware], AuthMiddleware]) -> None:
     auth_mw = AuthMiddleware(exclude_http_methods=[HttpMethod.GET])
 
     @get("/")
@@ -250,7 +281,10 @@ def test_authentication_exclude_http_methods() -> None:
         assert response.status_code == HTTP_403_FORBIDDEN
 
 
-def test_authentication_exclude_http_methods_default() -> None:
+@pytest.mark.parametrize("middleware", [OldAuthMiddleware, AuthMiddleware()])
+def test_authentication_exclude_http_methods_default(
+    middleware: Union[type[OldAuthMiddleware], AuthMiddleware],
+) -> None:
     auth_mw = AuthMiddleware()
 
     @get("/")
