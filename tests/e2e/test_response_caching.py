@@ -1,7 +1,6 @@
 import gzip
 import random
 from datetime import timedelta
-from types import FunctionType
 from typing import TYPE_CHECKING, Any, Optional, TypeVar, Union
 from unittest.mock import MagicMock
 from uuid import uuid4
@@ -14,7 +13,9 @@ from litestar.config.compression import CompressionConfig
 from litestar.config.response_cache import CACHE_FOREVER, ResponseCacheConfig
 from litestar.datastructures import State
 from litestar.enums import CompressionEncoding
+from litestar.middleware._internal.exceptions import ExceptionHandlerMiddleware
 from litestar.middleware.compression import CompressionMiddleware
+from litestar.middleware.response_cache import ResponseCacheMiddleware
 from litestar.status_codes import HTTP_200_OK, HTTP_201_CREATED, HTTP_400_BAD_REQUEST, HTTP_500_INTERNAL_SERVER_ERROR
 from litestar.stores.base import Store
 from litestar.stores.memory import MemoryStore
@@ -221,15 +222,12 @@ def test_middleware_not_applied_to_non_cached_routes(
     def handler() -> None: ...
 
     client = create_test_client(route_handlers=[handler])
-    unpacked_middleware = []
     cur = client.app.asgi_router.root_route_map_node.children["/"].asgi_handlers["GET"][0]
-    while hasattr(cur, "app"):
-        unpacked_middleware.append(cur)
-        cur = cur.app
-    unpacked_middleware.append(cur)
-
-    # if no cache the outermost middleware is ExceptionMiddleware and we'll get MethodType instead
-    assert len([m for m in unpacked_middleware if isinstance(m, FunctionType)]) == int(expect_applied)
+    assert (
+        ResponseCacheMiddleware.__call__.__qualname__ in cur.__qualname__
+        if expect_applied
+        else isinstance(cur, ExceptionHandlerMiddleware)
+    )
 
 
 async def test_compression_applies_before_cache() -> None:
