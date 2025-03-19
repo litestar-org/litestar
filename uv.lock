@@ -2737,7 +2737,7 @@ test = [
 
 [package.metadata]
 requires-dist = [
-    { name = "advanced-alchemy", marker = "extra == 'sqlalchemy'" },
+    { name = "advanced-alchemy", marker = "extra == 'sqlalchemy'", specifier = ">=0.2.2" },
     { name = "annotated-types", marker = "extra == 'annotated-types'" },
     { name = "anyio", specifier = ">=3" },
     { name = "attrs", marker = "extra == 'attrs'" },
@@ -6274,8 +6274,8 @@ name = "taskgroup"
 version = "0.2.2"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "exceptiongroup", marker = "python_full_version < '3.13'" },
-    { name = "typing-extensions", marker = "python_full_version < '3.13'" },
+    { name = "exceptiongroup", marker = "python_full_version < '3.11'" },
+    { name = "typing-extensions", marker = "python_full_version < '3.11'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/f0/8d/e218e0160cc1b692e6e0e5ba34e8865dbb171efeb5fc9a704544b3020605/taskgroup-0.2.2.tar.gz", hash = "sha256:078483ac3e78f2e3f973e2edbf6941374fbea81b9c5d0a96f51d297717f4752d", size = 11504 }
 wheels = [

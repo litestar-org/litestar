@@ -103,7 +103,7 @@ pydantic = [
   "pydantic-extra-types; python_version >= \"3.9\"",
 ]
 redis = ["redis[hiredis]>=4.4.4"]
-sqlalchemy = ["advanced-alchemy"]
+sqlalchemy = ["advanced-alchemy>=0.2.2"]
 standard = [
   "jinja2",
   "jsbeautifier",
