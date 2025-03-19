@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Any, cast
+from typing import TYPE_CHECKING
 
 import pytest
 
@@ -13,21 +13,15 @@ if TYPE_CHECKING:
     pass
 
 
-@pytest.mark.skip(reason="This test is not working on refactor")
 def test_allowed_hosts_middleware() -> None:
     @get(path="/")
     def handler() -> None: ...
 
-    client = create_test_client(route_handlers=[handler], allowed_hosts=["*.example.com", "moishe.zuchmir.com"])
-    unpacked_middleware = []
+    config = AllowedHostsConfig(allowed_hosts=["*.example.com", "moishe.zuchmir.com"])
+    allowed_hosts_middleware = AllowedHostsMiddleware(config)
+    client = create_test_client(route_handlers=[handler], allowed_hosts=config, middleware=[allowed_hosts_middleware])
     cur = client.app.asgi_router.root_route_map_node.children["/"].asgi_handlers["GET"][0]
-    while hasattr(cur, "app"):
-        unpacked_middleware.append(cur)
-        cur = cast("Any", cur.app)
-    unpacked_middleware.append(cur)
-
-    allowed_hosts_middleware, *_ = unpacked_middleware
-    assert isinstance(allowed_hosts_middleware, AllowedHostsMiddleware)
+    assert AllowedHostsMiddleware.__call__.__qualname__ in cur.__qualname__
     assert allowed_hosts_middleware.allowed_hosts_regex.pattern == ".*\\.example.com$|moishe.zuchmir.com"  # type: ignore[union-attr]
 
 
