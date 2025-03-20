@@ -18,6 +18,7 @@ from litestar.enums import ScopeType
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.middleware import ASGIMiddleware
 from litestar.serialization import encode_json
+from litestar.utils import warn_deprecation
 from litestar.utils.empty import value_or_default
 from litestar.utils.scope import get_serializer_from_scope
 from litestar.utils.scope.state import ScopeState
@@ -298,6 +299,21 @@ class LoggingMiddlewareConfig:
             Thus, re-arranging the log-message is as simple as changing the iterable.
         -  To turn off logging of responses, use and empty iterable.
     """
+    middleware_class: type[LoggingMiddleware] = field(default=LoggingMiddleware)
+    """Middleware class to use.
+    Should be a subclass of [litestar.middleware.LoggingMiddleware].
+    """
+
+    @property
+    def middleware(self) -> LoggingMiddleware:
+        warn_deprecation(
+            deprecated_name="litestar.middleware.logging.LoggingMiddlewareConfig.middleware",
+            version="3.0",
+            kind="property",
+            removal_in="4.0",
+            info="Configure your LoggingMiddleware using LoggingMiddleware(LoggingMiddlewareConfig()) instead",
+        )
+        return self.middleware_class(self)
 
     def __post_init__(self) -> None:
         """Override default Pydantic type conversion for iterables.
