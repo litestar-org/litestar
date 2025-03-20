@@ -27,7 +27,7 @@ if TYPE_CHECKING:
     from _pytest.logging import LogCaptureFixture
     from pytest import MonkeyPatch
 
-    from litestar.middleware.session.server_side import ServerSideSessionBackend, ServerSideSessionConfig
+    from litestar.middleware.session.server_side import ServerSideSessionConfig
     from litestar.types.callable_types import GetLogger
 
 
@@ -345,3 +345,12 @@ def test_structlog_invalid_request_body_handled() -> None:
         middleware=[LoggingMiddleware(LoggingMiddlewareConfig())],
     ) as client:
         assert client.post("/", headers={"Content-Type": "application/json"}, content=b'{"a": "b",}').status_code == 400
+
+
+def test_raise_deprecation_warning() -> None:
+    with pytest.warns(
+        DeprecationWarning,
+        match="Configure your LoggingMiddleware using LoggingMiddleware\\(LoggingMiddlewareConfig\\(\\)\\) instead",
+    ):
+        with create_test_client(middleware=[LoggingMiddlewareConfig().middleware]):
+            pass
