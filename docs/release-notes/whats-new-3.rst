@@ -281,3 +281,11 @@ The unsupported ``body`` parameter of :class:`~.ASGIStreamingResponse`
 and :class:`.ASGIFileResponse` has been removed.
 
 This does not change any behaviour, as this parameter was previously ignored.
+
+
+``polyfactory`` package removed from default dependencies
+----------------------------------------------------------
+
+The `polyfactory <https://polyfactory.litestar.dev/>`_ library is not included by
+default anymore, and has been moved to the ``litestar[polyfactory]`` package extra. It
+is also included in ``litestar[full]``.
