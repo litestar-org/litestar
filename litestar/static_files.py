@@ -8,6 +8,7 @@ from typing import TYPE_CHECKING, Any, Literal, cast
 
 from litestar.exceptions import ImproperlyConfiguredException, NotFoundException
 from litestar.file_system import (
+    AnyFileSystem,
     BaseFileSystem,
     FileInfo,
     FileSystemRegistry,
@@ -44,7 +45,7 @@ if TYPE_CHECKING:
 def create_static_files_router(
     path: str,
     directories: Sequence[PathType],
-    file_system: Any = None,
+    file_system: AnyFileSystem | str | None = None,
     send_as_attachment: bool = False,
     html_mode: bool = False,
     name: str = "static",
@@ -117,11 +118,12 @@ def create_static_files_router(
             path=file_path.as_posix(),
             is_head_response=False,
             directories=resolved_directories,
-            fs=file_system or request.app.plugins.get(FileSystemRegistry).default,
+            fs=file_system,
             is_html_mode=html_mode,
             send_as_attachment=send_as_attachment,
             headers=headers,
             allow_symlinks_outside_directory=allow_symlinks_outside_directory,
+            request=request,
         )
 
     @head("/{file_path:path}", name=f"{name}/head")
@@ -130,11 +132,12 @@ def create_static_files_router(
             path=file_path.as_posix(),
             is_head_response=True,
             directories=resolved_directories,
-            fs=file_system or request.app.plugins.get(FileSystemRegistry).default,
+            fs=file_system,
             is_html_mode=html_mode,
             send_as_attachment=send_as_attachment,
             headers=headers,
             allow_symlinks_outside_directory=allow_symlinks_outside_directory,
+            request=request,
         )
 
     handlers = [get_handler, head_handler]
@@ -147,11 +150,12 @@ def create_static_files_router(
                 path="/",
                 is_head_response=False,
                 directories=resolved_directories,
-                fs=file_system or request.app.plugins.get(FileSystemRegistry).default,
+                fs=file_system,
                 is_html_mode=True,
                 send_as_attachment=send_as_attachment,
                 headers=headers,
                 allow_symlinks_outside_directory=allow_symlinks_outside_directory,
+                request=request,
             )
 
         handlers.append(index_handler)
@@ -179,14 +183,17 @@ async def _handler(
     is_head_response: bool,
     directories: tuple[str, ...],
     send_as_attachment: bool,
-    fs: BaseFileSystem,
+    fs: BaseFileSystem | str | None,
     is_html_mode: bool,
     headers: dict[str, str] | None,
     allow_symlinks_outside_directory: bool | None,
+    request: Request,
 ) -> ASGIFileResponse:
     split_path = path.split("/")
     filename = split_path[-1]
     joined_path = Path(*split_path)
+
+    fs = _get_file_system(fs, request)
 
     resolved_path, fs_info = await _get_fs_info(
         directories=directories,
@@ -316,3 +323,15 @@ def _validate_config(path: str, directories: tuple[PathType, ...]) -> None:
 
     if "{" in path:
         raise ImproperlyConfiguredException("path parameters are not supported for static files")
+
+
+def _get_file_system(fs: BaseFileSystem | str | None, request: Request) -> BaseFileSystem:
+    if isinstance(fs, BaseFileSystem):
+        return fs
+
+    registry = request.app.plugins.get(FileSystemRegistry)
+
+    if isinstance(fs, str):
+        return registry[fs]
+
+    return registry.default

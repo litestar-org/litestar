@@ -86,10 +86,9 @@ under which a specific file will be available:
 ---------------------
 
 To customize how Litestar interacts with the file system, a class implementing the
-:class:`~litestar.file_system.BaseFileSystem` can be passed to ``file_system``. An
-example of this are the file systems provided by
-`fsspec <https://filesystem-spec.readthedocs.io/en/latest/>`_, which includes support
-for FTP, SFTP, Hadoop, SMB, GitHub and
+:class:`~litestar.file_system.BaseFileSystem` or any
+`fsspec <https://filesystem-spec.readthedocs.io/en/latest/>`_ file system can be passed
+to ``file_system``, providing integrations for FTP, SFTP, Hadoop, SMB, GitHub and
 `many more <https://filesystem-spec.readthedocs.io/en/latest/api.html#implementations>`_,
 with support for popular cloud providers available via 3rd party implementations such as
 
@@ -99,5 +98,4 @@ with support for popular cloud providers available via 3rd party implementations
 
 .. literalinclude:: /examples/static_files/file_system.py
     :language: python
-    :caption: Using a custom file system with
-      :func:`create_static_files_router`
+    :caption: Using a custom file system with :func:`create_static_files_router`

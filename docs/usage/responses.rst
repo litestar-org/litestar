@@ -620,21 +620,17 @@ File responses send a file:
            filename="report.pdf",
        )
 
-The :class:`File <.response.File>` class expects two kwargs:
+Where ``path`` is the path of the file to be sent and ``filename`` an optional filename to set
+in the response `Content-Disposition <https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Disposition>`_
+attachment.
 
 
-* ``path``: path of the file to download.
-* ``filename``: the filename to set in the response
-  `Content-Disposition <https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Disposition>`_
-  attachment.
+Media types
++++++++++++
 
-.. attention::
-
-    When a route handler's return value is annotated with :class:`File <.response.File>`, the default
-    ``media_type`` for the route_handler is switched from :class:`MediaType.JSON <.enums.MediaType>` to
-    :class:`MediaType.TEXT <.enums.MediaType>` (i.e. ``"text/plain"``). If the file being sent has an
-    `IANA media type <https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types>`_, you should set it
-    as the value for ``media_type`` instead.
+If ``filename`` is provided, Litestar will try to guess the MIME type, otherwise fall
+back to ``application/octet-stream``. If the type cannot be inferred via the file name,
+you can set it manually via ``media_type``
 
 For example:
 
@@ -651,6 +647,14 @@ For example:
            path=Path(Path(__file__).resolve().parent, "report").with_suffix(".pdf"),
            filename="report.pdf",
        )
+
+
+Streaming
++++++++++
+
+File responses are streamed or sent in one chunk. This depends on the file's size and
+the ``chunk_size`` set, which defaults to 1 MB. If the file exceeds ``chunk_size``, it
+will be streamed.
 
 
 File systems
@@ -672,11 +676,6 @@ supported.
 .. literalinclude:: /examples/responses/file_response_fs_registry.py
     :language: python
     :caption: Sending files from S3 by using the registry
-
-
-.. literalinclude:: /examples/responses/file_response_fs_registry.py
-    :language: python
-    :caption: Changing the default file system
 
 
 Streaming Responses

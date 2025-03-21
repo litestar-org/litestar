@@ -372,6 +372,12 @@ def parse_stat_result(path: PathType, result: os.stat_result) -> FileInfo:
 
 
 def maybe_wrap_fsspec_file_system(file_system: AnyFileSystem) -> BaseFileSystem:
+    """If ``file_system`` is an fsspec file system, wrap it in
+    :class:`~litestar.file_system.FsspecSyncWrapper` or
+    :class:`~litestar.file_system.FsspecAsyncWrapper` depending on its type. If fsspec
+    is not installed or ``file_system`` is not an fsspec file system, return
+    ``file_system``
+    """
     try:
         from fsspec import AbstractFileSystem
         from fsspec.asyn import AsyncFileSystem

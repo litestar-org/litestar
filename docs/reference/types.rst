@@ -178,4 +178,3 @@ Composite Types
 .. autoclass:: litestar.types.TypeDecodersSequence
 
 .. autoclass:: litestar.types.ParametersMap
-
