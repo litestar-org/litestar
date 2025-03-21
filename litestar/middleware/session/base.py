@@ -15,7 +15,7 @@ from litestar.connection import ASGIConnection
 from litestar.enums import ScopeType
 from litestar.middleware import ASGIMiddleware
 from litestar.serialization import decode_json, encode_json
-from litestar.utils import get_serializer_from_scope
+from litestar.utils import get_serializer_from_scope, warn_deprecation
 
 __all__ = ("BaseBackendConfig", "BaseSessionBackend", "SessionMiddleware")
 
@@ -69,6 +69,17 @@ class BaseBackendConfig(ABC, Generic[BaseSessionBackendT]):  # pyright: ignore
     """A pattern or list of patterns to skip in the session middleware."""
     exclude_opt_key: str
     """An identifier to use on routes to disable the session middleware for a particular route."""
+
+    @property
+    def middleware(self) -> SessionMiddleware:
+        warn_deprecation(
+            deprecated_name="litestar.middleware.session.base.BaseBackendConfig.middleware",
+            version="3.0",
+            kind="property",
+            removal_in="4.0",
+            info="Configure your SessionMiddleware using SessionMiddleware(backend) instead",
+        )
+        return SessionMiddleware(backend=self._backend_class(config=self))
 
 
 class BaseSessionBackend(ABC, Generic[ConfigT]):

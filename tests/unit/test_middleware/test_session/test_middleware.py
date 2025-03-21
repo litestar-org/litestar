@@ -1,5 +1,7 @@
 from typing import TYPE_CHECKING, Optional, Union
 
+import pytest
+
 from litestar import HttpMethod, Request, Response, get, post, route
 from litestar.middleware.session import SessionMiddleware
 from litestar.middleware.session.server_side import ServerSideSessionBackend, ServerSideSessionConfig
@@ -222,3 +224,12 @@ def test_does_not_override_cookies(session_backend_config_memory: "ServerSideSes
     ) as client:
         res = client.get("/")
         assert res.cookies.get("foo") == "bar"
+
+
+def test_raise_deprecation_warning() -> None:
+    with pytest.warns(
+        DeprecationWarning,
+        match="Configure your SessionMiddleware using SessionMiddleware\\(backend\\) instead",
+    ):
+        with create_test_client(middleware=[ServerSideSessionConfig().middleware]):
+            pass
