@@ -10,6 +10,7 @@ from litestar.plugins.prometheus.middleware import (
 
 __all__ = ("PrometheusConfig",)
 
+from litestar.utils import warn_deprecation
 
 try:
     import prometheus_client  # noqa: F401
@@ -54,3 +55,14 @@ class PrometheusConfig:
     group_path: bool = field(default=False)
     """Whether to group paths in the metrics to avoid cardinality explosion.
     """
+
+    @property
+    def middleware(self) -> PrometheusMiddleware:
+        warn_deprecation(
+            deprecated_name="litestar.plugins.prometheus.config.PrometheusConfig.middleware",
+            version="3.0",
+            kind="property",
+            removal_in="4.0",
+            info="Configure your PrometheusMiddleware using PrometheusMiddleware(PrometheusConfig()) instead",
+        )
+        return self.middleware_class(self)
