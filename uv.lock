@@ -354,18 +354,6 @@ wheels = [
 ]
 
 [[package]]
-name = "blacken-docs"
-version = "1.18.0"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "black" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/12/a9/99fe0283575297466df65eb54873a892f0db5fd24459abef4c2691db883a/blacken_docs-1.18.0.tar.gz", hash = "sha256:47bed628679d008a8eb55d112df950582e68d0f57615223929e366348d935444", size = 14743 }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/3d/7e/532f6c8b81346c2337c54b0e16f49f2968d86b0c535d6318b3f21f3ff4cf/blacken_docs-1.18.0-py3-none-any.whl", hash = "sha256:64f592246784131e9f84dad1db397f44eeddc77fdf01726bab920a3f00a3815c", size = 8243 },
-]
-
-[[package]]
 name = "brotli"
 version = "1.1.0"
 source = { registry = "https://pypi.org/simple" }
@@ -1611,7 +1599,6 @@ dependencies = [
     { name = "msgspec" },
     { name = "multidict" },
     { name = "multipart" },
-    { name = "polyfactory" },
     { name = "pyyaml" },
     { name = "rich" },
     { name = "rich-click" },
@@ -1651,6 +1638,7 @@ full = [
     { name = "opentelemetry-instrumentation-asgi" },
     { name = "piccolo" },
     { name = "picologging", marker = "python_full_version < '3.13'" },
+    { name = "polyfactory" },
     { name = "prometheus-client" },
     { name = "pydantic" },
     { name = "pydantic-extra-types" },
@@ -1682,6 +1670,9 @@ piccolo = [
 ]
 picologging = [
     { name = "picologging", marker = "python_full_version < '3.13'" },
+]
+polyfactory = [
+    { name = "polyfactory" },
 ]
 prometheus = [
     { name = "prometheus-client" },
@@ -1793,8 +1784,8 @@ requires-dist = [
     { name = "jinja2", marker = "extra == 'standard'" },
     { name = "jsbeautifier", marker = "extra == 'cli'" },
     { name = "jsbeautifier", marker = "extra == 'standard'" },
-    { name = "litestar", extras = ["annotated-types", "attrs", "brotli", "cli", "cryptography", "jinja", "jwt", "mako", "minijinja", "opentelemetry", "piccolo", "picologging", "prometheus", "pydantic", "redis", "sqlalchemy", "standard", "structlog", "valkey"], marker = "python_full_version < '3.13' and extra == 'full'" },
-    { name = "litestar", extras = ["annotated-types", "attrs", "brotli", "cli", "cryptography", "jinja", "jwt", "mako", "minijinja", "opentelemetry", "piccolo", "prometheus", "pydantic", "redis", "sqlalchemy", "standard", "structlog", "valkey"], marker = "python_full_version >= '3.13' and extra == 'full'" },
+    { name = "litestar", extras = ["annotated-types", "attrs", "brotli", "cli", "cryptography", "jinja", "jwt", "mako", "minijinja", "opentelemetry", "piccolo", "polyfactory", "picologging", "prometheus", "pydantic", "redis", "sqlalchemy", "standard", "structlog", "valkey"], marker = "python_full_version < '3.13' and extra == 'full'" },
+    { name = "litestar", extras = ["annotated-types", "attrs", "brotli", "cli", "cryptography", "jinja", "jwt", "mako", "minijinja", "opentelemetry", "piccolo", "polyfactory", "prometheus", "pydantic", "redis", "sqlalchemy", "standard", "structlog", "valkey"], marker = "python_full_version >= '3.13' and extra == 'full'" },
     { name = "litestar-htmx", specifier = ">=0.4.0" },
     { name = "mako", marker = "extra == 'mako'", specifier = ">=1.2.4" },
     { name = "minijinja", marker = "extra == 'minijinja'", specifier = ">=1.0.0" },
@@ -1804,7 +1795,7 @@ requires-dist = [
     { name = "opentelemetry-instrumentation-asgi", marker = "extra == 'opentelemetry'" },
     { name = "piccolo", marker = "extra == 'piccolo'" },
     { name = "picologging", marker = "python_full_version < '3.13' and extra == 'picologging'" },
-    { name = "polyfactory", specifier = ">=2.6.3" },
+    { name = "polyfactory", marker = "extra == 'polyfactory'", specifier = ">=2.6.3" },
     { name = "prometheus-client", marker = "extra == 'prometheus'" },
     { name = "pydantic", marker = "extra == 'pydantic'" },
     { name = "pydantic-extra-types", marker = "extra == 'pydantic'" },
@@ -1821,7 +1812,7 @@ requires-dist = [
     { name = "uvloop", marker = "sys_platform != 'win32' and extra == 'standard'", specifier = ">=0.18.0" },
     { name = "valkey", extras = ["libvalkey"], marker = "extra == 'valkey'", specifier = ">=6.0.2" },
 ]
-provides-extras = ["annotated-types", "attrs", "brotli", "cli", "cryptography", "full", "jinja", "jwt", "mako", "minijinja", "opentelemetry", "piccolo", "picologging", "prometheus", "pydantic", "redis", "valkey", "sqlalchemy", "standard", "structlog"]
+provides-extras = ["annotated-types", "attrs", "brotli", "cli", "cryptography", "full", "jinja", "jwt", "mako", "minijinja", "opentelemetry", "piccolo", "picologging", "prometheus", "pydantic", "redis", "sqlalchemy", "standard", "structlog", "valkey", "polyfactory"]
 
 [package.metadata.requires-dev]
 dev = [
@@ -1898,9 +1889,8 @@ wheels = [
 [[package]]
 name = "litestar-sphinx-theme"
 version = "0.3.1"
-source = { git = "https://github.com/litestar-org/litestar-sphinx-theme.git?rev=v3#e5f1df5af973eafafbc683e56d0f5762b2e0c315" }
+source = { git = "https://github.com/litestar-org/litestar-sphinx-theme.git?rev=v3#3a2dd24bdb6484c1c0da1116043586ec22a32962" }
 dependencies = [
-    { name = "blacken-docs" },
     { name = "shibuya" },
     { name = "sphinx-autobuild" },
     { name = "sphinx-copybutton" },
