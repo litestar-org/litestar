@@ -62,6 +62,9 @@ Installation
     :doc:`Mako Templating </usage/templating>`
         :code:`pip install litestar[mako]`
 
+    :ref:`Polyfactory to generate OpenAPI examples <usage/openapi/schema_generation:Generating examples>`
+        :code:`pip install litestar[structlog]`
+
     Standard Installation (includes Uvicorn and Jinja2 templating):
         :code:`pip install litestar[standard]`
 
