@@ -10,6 +10,7 @@ from litestar.security.session_auth.middleware import SessionAuthMiddleware
 
 __all__ = ("SessionAuth",)
 
+from litestar.utils import warn_deprecation
 
 if TYPE_CHECKING:
     from collections.abc import Iterable, Sequence
@@ -63,6 +64,13 @@ class SessionAuth(Generic[UserType, BaseSessionBackendT], AbstractSecurityConfig
 
     @property
     def middleware(self) -> SessionAuthMiddleware:
+        warn_deprecation(
+            deprecated_name="litestar.security.session_auth.auth.SessionAuth.middleware",
+            version="3.0",
+            kind="property",
+            removal_in="4.0",
+            info="Configure your SessionMiddleware using SessionPlugin(session_auth) instead",
+        )
         return SessionAuthMiddleware(self)
 
     @property
