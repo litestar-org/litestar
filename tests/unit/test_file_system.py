@@ -45,34 +45,34 @@ def http_server_port() -> int:
     return _get_available_port()
 
 
-@pytest.fixture
-def file() -> pathlib.Path:
-    return pathlib.Path("test.txt")
+@pytest.fixture(scope="session")
+def file_path(tmp_dir: pathlib.Path) -> pathlib.Path:
+    path = tmp_dir / "test.txt"
+    path.write_bytes(b"0123456789")
+    return path
+
+
+@pytest.fixture(scope="session")
+def file(file_path: pathlib.Path) -> pathlib.Path:
+    return pathlib.Path(file_path.name)
 
 
 @pytest.fixture()
-def local_fs(tmp_path: pathlib.Path, monkeypatch: pytest.MonkeyPatch) -> BaseLocalFileSystem:
-    monkeypatch.chdir(tmp_path)
-    file = tmp_path / "test.txt"
-    file.write_bytes(b"0123456789")
+def local_fs(monkeypatch: pytest.MonkeyPatch, file_path: pathlib.Path) -> BaseLocalFileSystem:
+    monkeypatch.chdir(file_path.parent)
     return BaseLocalFileSystem()
 
 
 @pytest.fixture()
-def fsspec_local_fs(tmp_path: pathlib.Path, monkeypatch: pytest.MonkeyPatch) -> BaseFileSystem:
-    monkeypatch.chdir(tmp_path)
-    file = tmp_path / "test.txt"
-    file.write_bytes(b"0123456789")
+def fsspec_local_fs(monkeypatch: pytest.MonkeyPatch, file_path: pathlib.Path) -> BaseFileSystem:
+    monkeypatch.chdir(file_path.parent)
     return FsspecSyncWrapper(LocalFileSystem())
 
 
 @pytest.fixture(scope="session")
-def http_server(tmp_dir: pathlib.Path, http_server_port: int) -> Generator[None, None, None]:
+def http_server(tmp_dir: pathlib.Path, http_server_port: int, file_path: pathlib.Path) -> Generator[None, None, None]:
     current_dir = os.getcwd()
-    os.chdir(tmp_dir)
-
-    file = tmp_dir / "test.txt"
-    file.write_bytes(b"0123456789")
+    os.chdir(file_path.parent)
 
     server = HTTPServer(("127.0.0.1", http_server_port), RangeRequestHandler)  # pyright: ignore
     thread = threading.Thread(daemon=True, target=server.serve_forever)
@@ -109,8 +109,13 @@ async def http_fs(
         pytest.param("http_fs", marks=[pytest.mark.flaky(reruns=10)]),
     ]
 )
-def fs(request: pytest.FixtureRequest) -> BaseFileSystem:
-    return request.getfixturevalue(request.param)  # type: ignore[no-any-return]
+def fs_name(request: pytest.FixtureRequest) -> str:
+    return request.param  # type: ignore[no-any-return]
+
+
+@pytest.fixture()
+def fs(fs_name: str, request: pytest.FixtureRequest) -> BaseFileSystem:
+    return request.getfixturevalue(fs_name)  # type: ignore[no-any-return]
 
 
 async def test_read_bytes(fs: BaseFileSystem, file: pathlib.Path) -> None:
@@ -155,6 +160,19 @@ async def test_iter_end(fs: BaseFileSystem, file: pathlib.Path, chunksize: int) 
 async def test_iter_start_end(fs: BaseFileSystem, file: pathlib.Path, chunksize: int) -> None:
     content = b"".join([c async for c in fs.iter(file, chunksize=chunksize, start=1, end=5)])
     assert content == file.read_bytes()[1:5]
+
+
+async def test_info(fs: BaseFileSystem, fs_name: str, file: pathlib.Path) -> None:
+    info = await fs.info(file)
+    assert info.get("islink") is False
+
+    if fs_name != "http_fs":
+        # mtime not supported on http fs
+        assert info.get("mtime") == file.stat().st_mtime
+
+    assert pathlib.Path(info["name"]).name == file.name
+    assert info.get("size") == 10
+    assert info.get("type") == "file"
 
 
 def test_registry_get() -> None:

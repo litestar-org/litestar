@@ -193,8 +193,9 @@ class FsspecSyncWrapper(BaseFileSystem):
         Return info verbatim from :meth:`fsspec.spec.AbstractFileSystem.info`, but try to
         patch 'mtime' using :func:`litestar.file_system.get_fsspec_mtime_equivalent`.
         """
-        result = await sync_to_thread(self._fs.info, str(path), **kwargs)
+        result: dict[str, Any] = await sync_to_thread(self._fs.info, str(path), **kwargs)
         result["mtime"] = get_fsspec_mtime_equivalent(result)
+        result.setdefault("islink", False)
         return cast("FileInfo", result)
 
     async def read_bytes(
@@ -278,8 +279,9 @@ class FsspecAsyncWrapper(BaseFileSystem):
         Return info verbatim from ``fsspec.async.AsyncFileSystem._info``, but try
         to patch 'mtime' using :func:`litestar.file_system.get_fsspec_mtime_equivalent`.
         """
-        result = await self._fs._info(str(path), **kwargs)
+        result: dict[str, Any] = await self._fs._info(str(path), **kwargs)
         result["mtime"] = get_fsspec_mtime_equivalent(result)
+        result.setdefault("islink", False)
         return cast("FileInfo", result)
 
     async def read_bytes(
