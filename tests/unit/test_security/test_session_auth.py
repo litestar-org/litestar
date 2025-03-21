@@ -2,6 +2,7 @@ from typing import TYPE_CHECKING, Any, Optional
 from uuid import uuid4
 
 import msgspec
+import pytest
 from starlette.status import (
     HTTP_200_OK,
     HTTP_201_CREATED,
@@ -110,3 +111,16 @@ def test_session_auth_openapi(session_backend_config_memory: "ServerSideSessionC
         },
         "security": [{"sessionCookie": []}],
     }
+
+
+def test_raise_deprecation_warning(session_backend_config_memory: ServerSideSessionConfig) -> None:
+    session_auth = SessionAuth[Any, ServerSideSessionBackend](
+        retrieve_user_handler=retrieve_user_handler,
+        exclude=("login"),
+        session_backend_config=session_backend_config_memory,
+    )
+    with pytest.warns(
+        DeprecationWarning, match="Configure your SessionMiddleware using SessionPlugin\\(session_auth\\) instead"
+    ):
+        with create_test_client(middleware=[session_auth.middleware]) as _:
+            pass
