@@ -1595,7 +1595,6 @@ dependencies = [
     { name = "exceptiongroup", marker = "python_full_version < '3.11'" },
     { name = "httpx" },
     { name = "importlib-metadata", marker = "python_full_version < '3.10'" },
-    { name = "litestar-htmx" },
     { name = "msgspec" },
     { name = "multidict" },
     { name = "multipart" },
@@ -1633,6 +1632,7 @@ full = [
     { name = "fast-query-parsers" },
     { name = "jinja2" },
     { name = "jsbeautifier" },
+    { name = "litestar-htmx" },
     { name = "mako" },
     { name = "minijinja" },
     { name = "opentelemetry-instrumentation-asgi" },
@@ -1648,6 +1648,9 @@ full = [
     { name = "uvicorn", extra = ["standard"] },
     { name = "uvloop", marker = "sys_platform != 'win32'" },
     { name = "valkey", extra = ["libvalkey"] },
+]
+htmx = [
+    { name = "litestar-htmx" },
 ]
 jinja = [
     { name = "jinja2" },
@@ -1784,9 +1787,9 @@ requires-dist = [
     { name = "jinja2", marker = "extra == 'standard'" },
     { name = "jsbeautifier", marker = "extra == 'cli'" },
     { name = "jsbeautifier", marker = "extra == 'standard'" },
-    { name = "litestar", extras = ["annotated-types", "attrs", "brotli", "cli", "cryptography", "jinja", "jwt", "mako", "minijinja", "opentelemetry", "piccolo", "polyfactory", "picologging", "prometheus", "pydantic", "redis", "sqlalchemy", "standard", "structlog", "valkey"], marker = "python_full_version < '3.13' and extra == 'full'" },
-    { name = "litestar", extras = ["annotated-types", "attrs", "brotli", "cli", "cryptography", "jinja", "jwt", "mako", "minijinja", "opentelemetry", "piccolo", "polyfactory", "prometheus", "pydantic", "redis", "sqlalchemy", "standard", "structlog", "valkey"], marker = "python_full_version >= '3.13' and extra == 'full'" },
-    { name = "litestar-htmx", specifier = ">=0.4.0" },
+    { name = "litestar", extras = ["annotated-types", "attrs", "brotli", "cli", "cryptography", "jinja", "jwt", "mako", "minijinja", "opentelemetry", "piccolo", "polyfactory", "picologging", "prometheus", "pydantic", "redis", "sqlalchemy", "standard", "structlog", "valkey", "htmx"], marker = "python_full_version < '3.13' and extra == 'full'" },
+    { name = "litestar", extras = ["annotated-types", "attrs", "brotli", "cli", "cryptography", "jinja", "jwt", "mako", "minijinja", "opentelemetry", "piccolo", "polyfactory", "prometheus", "pydantic", "redis", "sqlalchemy", "standard", "structlog", "valkey", "htmx"], marker = "python_full_version >= '3.13' and extra == 'full'" },
+    { name = "litestar-htmx", marker = "extra == 'htmx'", specifier = ">=0.4.0" },
     { name = "mako", marker = "extra == 'mako'", specifier = ">=1.2.4" },
     { name = "minijinja", marker = "extra == 'minijinja'", specifier = ">=1.0.0" },
     { name = "msgspec", specifier = ">=0.19.0" },
@@ -1812,7 +1815,7 @@ requires-dist = [
     { name = "uvloop", marker = "sys_platform != 'win32' and extra == 'standard'", specifier = ">=0.18.0" },
     { name = "valkey", extras = ["libvalkey"], marker = "extra == 'valkey'", specifier = ">=6.0.2" },
 ]
-provides-extras = ["annotated-types", "attrs", "brotli", "cli", "cryptography", "full", "jinja", "jwt", "mako", "minijinja", "opentelemetry", "piccolo", "picologging", "prometheus", "pydantic", "redis", "sqlalchemy", "standard", "structlog", "valkey", "polyfactory"]
+provides-extras = ["annotated-types", "attrs", "brotli", "cli", "cryptography", "full", "jinja", "jwt", "mako", "minijinja", "opentelemetry", "piccolo", "picologging", "prometheus", "pydantic", "redis", "sqlalchemy", "standard", "structlog", "valkey", "polyfactory", "htmx"]
 
 [package.metadata.requires-dev]
 dev = [
