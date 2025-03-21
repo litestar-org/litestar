@@ -215,3 +215,12 @@ def test_procdir(monkeypatch: MonkeyPatch, tmp_path: Path, mocker: MockerFixture
         client.get("/metrics")
 
     mock_collector.assert_called_once_with(mock_registry.return_value)
+
+
+def test_raise_deprecation_warning() -> None:
+    with pytest.warns(
+        DeprecationWarning,
+        match="Configure your PrometheusMiddleware using PrometheusMiddleware\\(PrometheusConfig\\(\\)\\) instead",
+    ):
+        with create_test_client(middleware=[PrometheusConfig().middleware]):
+            pass
