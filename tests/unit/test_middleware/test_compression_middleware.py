@@ -196,6 +196,8 @@ async def test_compression_streaming_response_emitted_messages(
     # second body message with more_body=True will be empty if zlib buffers output and is not flushed
     await wrapped_send(HTTPResponseBodyEvent(type="http.response.body", body=b"abc", more_body=True))
     assert mock.mock_calls[-1].args[0]["body"]
+    # send a more_body=False so resources close properly
+    await wrapped_send(HTTPResponseBodyEvent(type="http.response.body", body=b"", more_body=False))
 
 
 @pytest.mark.parametrize(

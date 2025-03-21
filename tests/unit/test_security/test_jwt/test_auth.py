@@ -60,6 +60,7 @@ async def test_jwt_auth(
     token_unique_jwt_id: Optional[str],
     token_extras: Optional[Dict[str, Any]],
 ) -> None:
+    mock_block_list: Dict[str, str] = {}
     user = UserFactory.build()
 
     await mock_db.set(str(user.id), user, 120)  # type: ignore[arg-type]
@@ -67,12 +68,18 @@ async def test_jwt_auth(
     async def retrieve_user_handler(token: Token, _: "ASGIConnection") -> Any:
         return await mock_db.get(token.sub)
 
+    async def revoked_token_handler(token: Token, _: "ASGIConnection") -> bool:
+        if token.jti:
+            return mock_block_list.get(token.jti) == "revoked"
+        return False
+
     jwt_auth = JWTAuth[Any](
         algorithm=algorithm,
         auth_header=auth_header,
         default_token_expiration=default_token_expiration,
         token_secret=token_secret,
         retrieve_user_handler=retrieve_user_handler,
+        revoked_token_handler=revoked_token_handler,
     )
 
     @get("/my-endpoint", middleware=[jwt_auth.middleware])
@@ -94,7 +101,15 @@ async def test_jwt_auth(
             token_extras=token_extras,
         )
 
-    with create_test_client(route_handlers=[my_handler, login_handler]) as client:
+    @get("/logout", middleware=[jwt_auth.middleware])
+    def logout_handler(request: Request["User", Token, Any]) -> Dict[str, str]:
+        jti = request.auth.jti
+        if jti:
+            mock_block_list[jti] = "revoked"
+            return {"message": "logged out successfully"}
+        return {"message": f"can't logout, jti is {jti}"}
+
+    with create_test_client(route_handlers=[my_handler, login_handler, logout_handler]) as client:
         response = client.get("/login")
         assert response.status_code == response_status_code
         _, _, encoded_token = response.headers.get(auth_header).partition(" ")
@@ -113,6 +128,14 @@ async def test_jwt_auth(
 
         response = client.get("/my-endpoint", headers={auth_header: jwt_auth.format_auth_header(encoded_token)})
         assert response.status_code == HTTP_200_OK
+
+        response = client.get("/logout", headers={auth_header: jwt_auth.format_auth_header(encoded_token)})
+        if decoded_token.jti:
+            assert response.json()["message"] == "logged out successfully"
+            response = client.get("/my-endpoint", headers={auth_header: jwt_auth.format_auth_header(encoded_token)})
+            assert response.status_code == HTTP_401_UNAUTHORIZED
+        else:
+            assert response.json()["message"] == f"can't logout, jti is {decoded_token.jti}"
 
         response = client.get("/my-endpoint", headers={auth_header: encoded_token})
         assert response.status_code == HTTP_401_UNAUTHORIZED
@@ -216,6 +239,7 @@ async def test_jwt_cookie_auth(
     token_unique_jwt_id: Optional[str],
     token_extras: Optional[Dict[str, Any]],
 ) -> None:
+    mock_block_list: Dict[str, str] = {}
     user = UserFactory.build()
 
     await mock_db.set(str(user.id), user, 120)  # type: ignore[arg-type]
@@ -224,12 +248,18 @@ async def test_jwt_cookie_auth(
         assert connection
         return await mock_db.get(token.sub)
 
+    async def revoked_token_handler(token: Token, _: Any) -> bool:
+        if token.jti:
+            return mock_block_list.get(token.jti) == "revoked"
+        return False
+
     jwt_auth = JWTCookieAuth(
         algorithm=algorithm,
         key=auth_cookie,
         auth_header=auth_header,
         default_token_expiration=default_token_expiration,
         retrieve_user_handler=retrieve_user_handler,  # type: ignore[var-annotated]
+        revoked_token_handler=revoked_token_handler,
         token_secret=token_secret,
     )
 
@@ -252,7 +282,15 @@ async def test_jwt_cookie_auth(
             token_extras=token_extras,
         )
 
-    with create_test_client(route_handlers=[my_handler, login_handler]) as client:
+    @get("/logout", middleware=[jwt_auth.middleware])
+    def logout_handler(request: Request["User", Token, Any]) -> Dict[str, str]:
+        jti = request.auth.jti
+        if jti:
+            mock_block_list[jti] = "revoked"
+            return {"message": "logged out successfully"}
+        return {"message": f"can't logout, jti is {jti}"}
+
+    with create_test_client(route_handlers=[my_handler, login_handler, logout_handler]) as client:
         response = client.get("/login")
         assert response.status_code == response_status_code
         _, _, encoded_token = response.headers.get(auth_header).partition(" ")
@@ -314,6 +352,18 @@ async def test_jwt_cookie_auth(
         client.cookies = {auth_cookie: jwt_auth.format_auth_header(fake_token)}  # type: ignore[assignment]
         response = client.get("/my-endpoint")
         assert response.status_code == HTTP_401_UNAUTHORIZED
+
+        client.cookies.clear()
+        client.cookies = {auth_cookie: jwt_auth.format_auth_header(encoded_token)}  # type: ignore[assignment]
+        response = client.get("/my-endpoint")
+        assert response.status_code == HTTP_200_OK
+        response = client.get("/logout")
+        if decoded_token.jti:
+            assert response.json()["message"] == "logged out successfully"
+            response = client.get("/my-endpoint")
+            assert response.status_code == HTTP_401_UNAUTHORIZED
+        else:
+            assert response.json()["message"] == f"can't logout, jti is {decoded_token.jti}"
 
 
 async def test_path_exclusion() -> None:

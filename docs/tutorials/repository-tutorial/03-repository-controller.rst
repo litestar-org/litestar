@@ -13,7 +13,7 @@ parameters.
 
 .. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_async_repository.py
     :language: python
-    :caption: app.py
+    :caption: ``app.py``
     :lines: 78-80
     :linenos:
 
@@ -26,7 +26,7 @@ statement:
 
 .. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_async_repository.py
     :language: python
-    :caption: app.py
+    :caption: ``app.py``
     :lines: 83-90
     :linenos:
 
@@ -37,11 +37,11 @@ option. This option configures the specified relationship to load via
 Next, we define the ``AuthorController``. This controller exposes five routes for
 interacting with the ``Author`` model:
 
-.. dropdown:: AuthorController (click to expand)
+.. dropdown:: ``AuthorController`` (click to toggle)
 
     .. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_async_repository.py
         :language: python
-        :caption: app.py
+        :caption: ``app.py``
         :lines: 116-194
         :linenos:
 
@@ -52,11 +52,11 @@ In the above examples, we've used the asynchronous repository implementation. Ho
 Litestar also supports synchronous database drivers with an identical implementation.
 Here's a corresponding synchronous version of the previous example:
 
-.. dropdown:: Synchronous Repository (click to expand)
+.. dropdown:: Synchronous Repository (click to toggle)
 
     .. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_sync_repository.py
         :language: python
-        :caption: app.py
+        :caption: ``app.py``
         :linenos:
 
 The examples above enable a feature-complete CRUD service that includes pagination! In
@@ -68,10 +68,10 @@ functionality to our application.
 Full Code
 ---------
 
-.. dropdown:: Full Code (click to expand)
+.. dropdown:: Full Code (click to toggle)
 
     .. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_async_repository.py
         :language: python
-        :caption: app.py
+        :caption: ``app.py``
         :emphasize-lines: 78-80, 83-90, 116-194
         :linenos:

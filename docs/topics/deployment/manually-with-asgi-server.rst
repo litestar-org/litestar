@@ -160,3 +160,14 @@ ASGI server with the following command:
 
             [INFO] Starting granian
             [INFO] Listening at: 127.0.0.1:8000
+
+Gunicorn with Uvicorn workers
+-----------------------------
+
+.. important:: **Deprecation Notice**
+
+    The Gunicorn+Uvicorn pattern is considered legacy for ASGI deployments since `Uvicorn 0.30.0+ <https://github.com/encode/uvicorn/releases/tag/0.30.0/>`_ includes native worker management.
+
+    Uvicorn added a new multiprocess manager, that is meant to replace Gunicorn entirely. Refer to the pull request `#2183 <https://github.com/encode/uvicorn/pull/2183/>`_ for implementation details.
+
+    For new deployments, use Uvicorn directly.

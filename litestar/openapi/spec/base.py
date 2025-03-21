@@ -42,6 +42,10 @@ def _normalize_value(value: Any) -> Any:
 class BaseSchemaObject:
     """Base class for schema spec objects"""
 
+    @property
+    def _exclude_fields(self) -> set[str]:
+        return set()
+
     def _iter_fields(self) -> Iterator[Field[Any]]:
         yield from fields(self)
 
@@ -50,8 +54,11 @@ class BaseSchemaObject:
         recursively.
         """
         result: dict[str, Any] = {}
+        exclude = self._exclude_fields
 
         for field in self._iter_fields():
+            if field.name in exclude:
+                continue
             value = _normalize_value(getattr(self, field.name, None))
 
             if value is not None:

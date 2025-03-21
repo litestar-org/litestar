@@ -100,3 +100,15 @@ dictionary representing the decoded payload, which will then used by
 .. literalinclude:: /examples/security/jwt/custom_decode_payload.py
    :language: python
    :caption: Customizing payload decoding
+
+
+Using token revocation
+----------------------
+Token revocation can be implemented by maintaining a list of revoked tokens and checking against this list during authentication.
+When a token is revoked, it should be added to the list, and any subsequent requests with that token should be denied.
+
+.. dropdown:: Click to see the code
+
+    .. literalinclude:: /examples/security/jwt/using_token_revocation.py
+        :language: python
+        :caption: Implementing token revocation

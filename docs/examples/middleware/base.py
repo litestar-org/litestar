@@ -4,16 +4,16 @@ from typing import Dict
 from litestar import Litestar, WebSocket, get, websocket
 from litestar.datastructures import MutableScopeHeaders
 from litestar.enums import ScopeType
-from litestar.middleware import AbstractMiddleware
-from litestar.types import Message, Receive, Scope, Send
+from litestar.middleware import ASGIMiddleware
+from litestar.types import ASGIApp, Message, Receive, Scope, Send
 
 
-class MyMiddleware(AbstractMiddleware):
-    scopes = {ScopeType.HTTP}
-    exclude = ["first_path", "second_path"]
+class MyMiddleware(ASGIMiddleware):
+    scopes = (ScopeType.HTTP,)
+    exclude_path_pattern = ("first_path", "second_path")
     exclude_opt_key = "exclude_from_my_middleware"
 
-    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
+    async def handle(self, scope: Scope, receive: Receive, send: Send, next_app: ASGIApp) -> None:
         start_time = time.monotonic()
 
         async def send_wrapper(message: "Message") -> None:
@@ -23,7 +23,7 @@ class MyMiddleware(AbstractMiddleware):
                 headers["X-Process-Time"] = str(process_time)
             await send(message)
 
-        await self.app(scope, receive, send_wrapper)
+        await next_app(scope, receive, send_wrapper)
 
 
 @websocket("/my-websocket")
@@ -68,5 +68,5 @@ app = Litestar(
         third_handler,
         not_excluded_handler,
     ],
-    middleware=[MyMiddleware],
+    middleware=[MyMiddleware()],
 )

@@ -113,7 +113,7 @@ class FileSystemAdapter:
                         buffering=buffering,
                     ),
                 )
-            return AsyncFile(await sync_to_thread(self.file_system.open, file, mode, buffering))  # type: ignore[arg-type]
+            return AsyncFile(await sync_to_thread(self.file_system.open, file, mode=mode, buffering=buffering))  # type: ignore[arg-type]
         except PermissionError as e:
             raise NotAuthorizedException(f"failed to open {file} due to missing permissions") from e
         except OSError as e:

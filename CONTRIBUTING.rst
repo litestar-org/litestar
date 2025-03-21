@@ -40,12 +40,12 @@ the environment will bootstrap itself automatically. The steps below are for loc
 #. Install `uv <https://docs.astral.sh/uv/getting-started/installation/>`_:
 
 #. Run ``make install`` to create a `virtual environment <https://docs.python.org/3/tutorial/venv.html>`_
-   and install the required development dependencies or run the uv sync command manually:
+   and install the required development dependencies or run the ``uv sync`` command manually:
 
    .. code-block:: shell
-        :caption: Installing the documentation dependencies
+        :caption: Installing the development dependencies
 
-        uv install
+        uv sync
 
 
 .. tip:: Many modern IDEs like PyCharm or VS Code will enable the uv-managed virtualenv that is created in step 2

@@ -1,14 +1,14 @@
-Introduction to Database Modeling and Repository Features
----------------------------------------------------------
+Introduction to Database Modelling and Repository Features
+----------------------------------------------------------
 In this tutorial, we will cover the integrated repository features in Litestar, starting
-with database modeling using the included SQLAlchemy declarative model helpers. These
+with database modelling using the included SQLAlchemy declarative model helpers. These
 are a series of classes and mixins that incorporate commonly used functions/column types
 to make working with models easier.
 
 .. tip:: The full code for this tutorial can be found below in the :ref:`Full Code <01-repo-full-code>` section.
 
-Modeling
---------
+Modelling
+---------
 
 We'll begin by modelling the entities and relationships between authors and books.
 We'll start by creating the ``Author`` table, utilizing the
@@ -17,8 +17,8 @@ simple, our first model will encompass only three fields: ``id``, ``name``, and 
 
 .. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_declarative_models.py
     :language: python
-    :caption: app.py
-    :lines: 9,11,18,19,20
+    :caption: ``app.py``
+    :lines: 9, 11, 18-20
     :linenos:
 
 The book entity is not considered a "strong" entity and therefore always requires an
@@ -30,8 +30,8 @@ key constraints when using the ``author_id`` field in each ``Book`` record.
 
 .. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_declarative_models.py
     :language: python
-    :caption: app.py
-    :lines: 9,11,18,19,20,21,22,27,28,29,30
+    :caption: ``app.py``
+    :lines: 9, 11, 18-22, 27-30
     :linenos:
 
 By using the audit model, we can automatically record the time a record was created and
@@ -83,10 +83,10 @@ Let's build on this as we look at the repository classes.
 Full Code
 ---------
 
-.. dropdown:: Full Code (click to expand)
+.. dropdown:: Full Code (click to toggle)
 
     .. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_declarative_models.py
         :language: python
-        :caption: app.py
-        :emphasize-lines: 9,18,19,20, 21,27,28,29,30
+        :caption: ``app.py``
+        :emphasize-lines: 9, 18-21, 27-30
         :linenos:

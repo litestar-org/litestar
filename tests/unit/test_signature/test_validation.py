@@ -78,6 +78,20 @@ def test_validation_failure_raises_400() -> None:
     }
 
 
+def test_invalid_path_parameter() -> None:
+    @get("/{param:int}")
+    def test(param: Annotated[int, Parameter(le=10)]) -> None: ...
+
+    with create_test_client(route_handlers=[test]) as client:
+        response = client.get("/11")
+
+    assert response.json() == {
+        "detail": "Validation failed for GET /11",
+        "extra": [{"key": "param", "message": "Expected `int` <= 10", "source": "path"}],
+        "status_code": 400,
+    }
+
+
 def test_client_backend_error_precedence_over_server_error() -> None:
     dependencies = {
         "dep": Provide(lambda: "thirteen", sync_to_thread=False),

@@ -23,7 +23,7 @@ PY_OBJ = "py:obj"
 PY_FUNC = "py:func"
 
 project = "Litestar"
-copyright = "2024, Litestar-Org"
+copyright = "2025, Litestar-Org"
 author = "Litestar-Org"
 release = os.getenv("_LITESTAR_DOCS_BUILD_VERSION", importlib.metadata.version("litestar").rsplit(".")[0])
 
@@ -63,6 +63,7 @@ intersphinx_mapping = {
     "trio": ("https://trio.readthedocs.io/en/stable/", None),
     "pydantic": ("https://docs.pydantic.dev/latest/", None),
     "typing_extensions": ("https://typing-extensions.readthedocs.io/en/stable/", None),
+    "valkey": ("https://valkey-py.readthedocs.io/en/latest/", None),
 }
 
 napoleon_google_docstring = True
@@ -102,6 +103,7 @@ nitpick_ignore = [
     (PY_CLASS, "sqlalchemy.dialects.postgresql.named_types.ENUM"),
     (PY_CLASS, "sqlalchemy.orm.decl_api.DeclarativeMeta"),
     (PY_CLASS, "sqlalchemy.sql.sqltypes.TupleType"),
+    (PY_CLASS, "valkey.asyncio.Valkey"),
     (PY_METH, "_types.TypeDecorator.process_bind_param"),
     (PY_METH, "_types.TypeDecorator.process_result_value"),
     (PY_METH, "litestar.typing.ParsedType.is_subclass_of"),
@@ -191,6 +193,11 @@ nitpick_ignore = [
     (PY_CLASS, "advanced_alchemy.types.BigIntIdentity"),
     (PY_CLASS, "advanced_alchemy.types.JsonB"),
     (PY_CLASS, "advanced_alchemy.repository.SQLAlchemyAsyncRepository"),
+    # docs in flux as we prepare for `advanced_alchemy` 1.0 release. re-enable when finished
+    (PY_CLASS, "advanced_alchemy.base.UUIDBase"),
+    (PY_CLASS, "advanced_alchemy.base.UUIDAuditBase"),
+    (PY_CLASS, "advanced_alchemy.base.BigIntBase"),
+    (PY_CLASS, "advanced_alchemy.base.BigIntAuditBase"),
 ]
 
 nitpick_ignore_regex = [
@@ -245,6 +252,7 @@ ignore_missing_refs = {
     "litestar.concurrency.set_asyncio_executor": {"ThreadPoolExecutor"},
     "litestar.concurrency.get_asyncio_executor": {"ThreadPoolExecutor"},
     re.compile(r"litestar\.channels\.backends\.asyncpg.*"): {"asyncpg.connection.Connection", "asyncpg.Connection"},
+    re.compile(r"litestar\.handlers\.websocket_handlers\.stream.*"): {"WebSocketMode"},
 }
 
 # Do not warn about broken links to the following:

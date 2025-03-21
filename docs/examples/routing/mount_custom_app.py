@@ -8,7 +8,7 @@ if TYPE_CHECKING:
     from litestar.types import Receive, Scope, Send
 
 
-@asgi("/some/sub-path", is_mount=True)
+@asgi("/some/sub-path", is_mount=True, copy_scope=True)
 async def my_asgi_app(scope: "Scope", receive: "Receive", send: "Send") -> None:
     """
     Args:

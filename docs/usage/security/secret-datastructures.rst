@@ -15,7 +15,7 @@ The following example demonstrates how to use :class:`~datastructures.SecretStri
 
 .. literalinclude:: /examples/datastructures/secrets/secret_header.py
     :language: python
-    :caption: Example of using SecretString for a Header Parameter
+    :caption: Example of using ``SecretString`` for a Header Parameter
 
 .. note::
 
@@ -37,7 +37,7 @@ within the HTTP body of a request:
 
 .. literalinclude:: /examples/datastructures/secrets/secret_body.py
     :language: python
-    :caption: Example of using SecretString for a Request Body
+    :caption: Example of using ``SecretString`` for a Request Body
 
 Security Considerations
 -----------------------

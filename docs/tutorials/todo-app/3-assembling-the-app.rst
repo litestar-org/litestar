@@ -10,7 +10,7 @@ Final application
 
 .. literalinclude:: /examples/todo_app/full_app.py
     :language: python
-    :caption: app.py
+    :caption: ``app.py``
     :linenos:
 
 
@@ -20,7 +20,7 @@ Recap
 
 .. literalinclude:: /examples/todo_app/full_app.py
     :language: python
-    :caption: app.py
+    :caption: ``app.py``
     :lines: 28-32
     :lineno-start: 28
 
@@ -33,7 +33,7 @@ a :class:`bool`, and wrapping it in :class:`Optional <typing.Optional>` makes it
 
 .. literalinclude:: /examples/todo_app/full_app.py
     :language: python
-    :caption: app.py
+    :caption: ``app.py``
     :lines: 35-38
     :lineno-start: 35
 
@@ -48,7 +48,7 @@ instance of the ``TodoItem`` dataclass, which - finally - gets passed into the f
 
 .. literalinclude:: /examples/todo_app/full_app.py
     :language: python
-    :caption: app.py
+    :caption: ``app.py``
     :lines: 41-46
     :lineno-start: 41
 
@@ -63,7 +63,7 @@ route handler receives data of a ``TodoItem`` the same way as the ``POST`` handl
 
 .. literalinclude:: /examples/todo_app/full_app.py
     :language: python
-    :caption: app.py
+    :caption: ``app.py``
     :lines: 49
     :lineno-start: 49
 

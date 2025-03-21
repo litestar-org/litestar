@@ -20,7 +20,7 @@ def middleware_factory(*, app: "ASGIApp") -> "ASGIApp":
     """A middleware can access application state via `scope`."""
 
     async def my_middleware(scope: "Scope", receive: "Receive", send: "Send") -> None:
-        state = scope["app"].state
+        state = Litestar.from_scope(scope).state
         logger.info("state value in middleware: %s", state.value)
         await app(scope, receive, send)
 

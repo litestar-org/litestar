@@ -1,9 +1,11 @@
 from __future__ import annotations
 
+import warnings
 from typing import TYPE_CHECKING, Any
 
 from litestar.connection import ASGIConnection
 from litestar.enums import ScopeType
+from litestar.exceptions import LitestarWarning
 from litestar.routes.base import BaseRoute
 
 if TYPE_CHECKING:
@@ -51,4 +53,21 @@ class ASGIRoute(BaseRoute):
             connection = ASGIConnection["ASGIRouteHandler", Any, Any, Any](scope=scope, receive=receive)
             await self.route_handler.authorize_connection(connection=connection)
 
-        await self.route_handler.fn(scope=scope, receive=receive, send=send)
+        handler_scope = scope.copy()
+        copy_scope = self.route_handler.copy_scope
+
+        await self.route_handler.fn(
+            scope=handler_scope if copy_scope is True else scope,
+            receive=receive,
+            send=send,
+        )
+
+        if copy_scope is None and handler_scope != scope:
+            warnings.warn(
+                f"{self.route_handler}: Mounted ASGI app {self.route_handler.fn} modified 'scope' with 'copy_scope' "
+                "set to 'None'. Set 'copy_scope=True' to avoid mutating the original scope or set 'copy_scope=False' "
+                "if mutating the scope from within the mounted ASGI app is intentional. Note: 'copy_scope' will "
+                "default to 'True' by default in Litestar 3",
+                category=LitestarWarning,
+                stacklevel=1,
+            )

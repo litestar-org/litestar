@@ -1,9 +1,11 @@
 from __future__ import annotations
 
 import itertools
-from typing import TYPE_CHECKING, Any, Iterable, Literal
+from typing import TYPE_CHECKING, Any, Iterable, Literal, Sequence
+from urllib.parse import urlencode
 
 from litestar.constants import REDIRECT_ALLOWED_MEDIA_TYPES, REDIRECT_STATUS_CODES
+from litestar.datastructures import MultiDict
 from litestar.enums import MediaType
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.response.base import ASGIResponse, Response
@@ -13,6 +15,8 @@ from litestar.utils.deprecation import warn_deprecation
 from litestar.utils.helpers import get_enum_string_value
 
 if TYPE_CHECKING:
+    from collections.abc import Mapping
+
     from litestar.app import Litestar
     from litestar.background_tasks import BackgroundTask, BackgroundTasks
     from litestar.connection import Request
@@ -94,6 +98,7 @@ class Redirect(Response[Any]):
         media_type: str | MediaType | None = None,
         status_code: RedirectStatusType | None = None,
         type_encoders: TypeEncodersMap | None = None,
+        query_params: Mapping[str, str | Sequence[str]] | MultiDict | None = None,
     ) -> None:
         """Initialize the response.
 
@@ -108,12 +113,21 @@ class Redirect(Response[Any]):
             status_code: An HTTP status code. The status code should be one of 301, 302, 303, 307 or 308,
                 otherwise an exception will be raised.
             type_encoders: A mapping of types to callables that transform them into types supported for serialization.
+            query_params: A dictionary of values from which the request's query will be generated.
 
         Raises:
             ImproperlyConfiguredException: Either if status code is not a redirect status code or media type is not
                 supported.
         """
-        self.url = path
+        if query_params is None:
+            self.url = path
+        elif isinstance(query_params, MultiDict):
+            # We can't use MultiDictMixin.dict() because it's not deterministic
+            query_params_dict = {k: query_params.getall(k) for k in query_params}
+            self.url = f"{path}?{urlencode(query_params_dict, doseq=True)}"
+        else:
+            self.url = f"{path}?{urlencode(query_params, doseq=True)}"
+
         if status_code is None:
             status_code = HTTP_302_FOUND
         super().__init__(

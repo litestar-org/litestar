@@ -19,8 +19,6 @@ def test_included_header_fields() -> None:
 
     assert app1.openapi_schema.to_schema()["paths"]["/"]["get"]["responses"]["200"]["headers"] == {
         "X-Version": {
-            "allowEmptyValue": False,
-            "allowReserved": False,
             "deprecated": False,
             "description": "Test",
             "required": False,

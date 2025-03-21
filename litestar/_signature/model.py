@@ -156,6 +156,8 @@ class SignatureModel(Struct):
                 message["source"] = "body"
             elif key in connection.query_params:
                 message["source"] = ParamType.QUERY
+            elif key in connection.path_params:
+                message["source"] = ParamType.PATH
 
             elif key in cls._fields and isinstance(cls._fields[key].kwarg_definition, ParameterKwarg):
                 if cast(ParameterKwarg, cls._fields[key].kwarg_definition).cookie:

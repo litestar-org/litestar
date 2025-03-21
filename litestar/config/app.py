@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import enum
+import pdb  # noqa: T100
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Any, Callable
 
@@ -38,6 +39,7 @@ if TYPE_CHECKING:
         BeforeMessageSendHookHandler,
         BeforeRequestHookHandler,
         ControllerRouterHandler,
+        Debugger,
         ExceptionHandlersMap,
         Guard,
         Middleware,
@@ -159,6 +161,9 @@ class AppConfig:
     """
     pdb_on_exception: bool = field(default=False)
     """Drop into the PDB on an exception"""
+    debugger_module: Debugger = field(default=pdb)
+    """A `pdb`-like debugger module that supports the `post_mortem()` protocol.
+    This module will be used when `pdb_on_exception` is set to True."""
     plugins: list[PluginProtocol] = field(default_factory=list)
     """List of :class:`SerializationPluginProtocol <.plugins.SerializationPluginProtocol>`."""
     request_class: type[Request] | None = field(default=None)
@@ -188,9 +193,9 @@ class AppConfig:
     :data:`SecurityRequirement <.openapi.spec.SecurityRequirement>` for details.
     """
     signature_namespace: dict[str, Any] = field(default_factory=dict)
-    """A mapping of names to types for use in forward reference resolution during signature modeling."""
+    """A mapping of names to types for use in forward reference resolution during signature modelling."""
     signature_types: list[Any] = field(default_factory=list)
-    """A sequence of types for use in forward reference resolution during signature modeling.
+    """A sequence of types for use in forward reference resolution during signature modelling.
 
     These types will be added to the signature namespace using their ``__name__`` attribute.
     """

@@ -30,6 +30,7 @@ class JWTAuthenticationMiddleware(AbstractAuthenticationMiddleware):
         "auth_header",
         "require_claims",
         "retrieve_user_handler",
+        "revoked_token_handler",
         "strict_audience",
         "token_audience",
         "token_cls",
@@ -57,6 +58,7 @@ class JWTAuthenticationMiddleware(AbstractAuthenticationMiddleware):
         verify_expiry: bool = True,
         verify_not_before: bool = True,
         strict_audience: bool = False,
+        revoked_token_handler: Callable[[Token, ASGIConnection[Any, Any, Any, Any]], Awaitable[Any]] | None = None,
     ) -> None:
         """Check incoming requests for an encoded token in the auth header specified, and if present retrieve the user
         from persistence using the provided function.
@@ -86,6 +88,8 @@ class JWTAuthenticationMiddleware(AbstractAuthenticationMiddleware):
             strict_audience: Verify that the value of the ``aud`` (*audience*) claim is a single value, and
                 not a list of values, and matches ``audience`` exactly. Requires that
                 ``accepted_audiences`` is a sequence of length 1
+            revoked_token_handler: A function that receives a :class:`Token <.security.jwt.Token>` and returns a boolean
+                indicating whether the token has been revoked.
         """
         super().__init__(
             app=app,
@@ -97,6 +101,7 @@ class JWTAuthenticationMiddleware(AbstractAuthenticationMiddleware):
         self.algorithm = algorithm
         self.auth_header = auth_header
         self.retrieve_user_handler = retrieve_user_handler
+        self.revoked_token_handler = revoked_token_handler
         self.token_secret = token_secret
         self.token_cls = token_cls
         self.token_audience = token_audience
@@ -153,8 +158,12 @@ class JWTAuthenticationMiddleware(AbstractAuthenticationMiddleware):
         )
 
         user = await self.retrieve_user_handler(token, connection)
+        token_revoked = False
 
-        if not user:
+        if self.revoked_token_handler:
+            token_revoked = await self.revoked_token_handler(token, connection)
+
+        if not user or token_revoked:
             raise NotAuthorizedException()
 
         return AuthenticationResult(user=user, auth=token)
@@ -184,6 +193,7 @@ class JWTCookieAuthenticationMiddleware(JWTAuthenticationMiddleware):
         verify_expiry: bool = True,
         verify_not_before: bool = True,
         strict_audience: bool = False,
+        revoked_token_handler: Callable[[Token, ASGIConnection[Any, Any, Any, Any]], Awaitable[Any]] | None = None,
     ) -> None:
         """Check incoming requests for an encoded token in the auth header or cookie name specified, and if present
         retrieves the user from persistence using the provided function.
@@ -214,6 +224,8 @@ class JWTCookieAuthenticationMiddleware(JWTAuthenticationMiddleware):
             strict_audience: Verify that the value of the ``aud`` (*audience*) claim is a single value, and
                 not a list of values, and matches ``audience`` exactly. Requires that
                 ``accepted_audiences`` is a sequence of length 1
+            revoked_token_handler: A function that receives a :class:`Token <.security.jwt.Token>` and returns a boolean
+                indicating whether the token has been revoked.
         """
         super().__init__(
             algorithm=algorithm,
@@ -223,6 +235,7 @@ class JWTCookieAuthenticationMiddleware(JWTAuthenticationMiddleware):
             exclude_http_methods=exclude_http_methods,
             exclude_opt_key=exclude_opt_key,
             retrieve_user_handler=retrieve_user_handler,
+            revoked_token_handler=revoked_token_handler,
             scopes=scopes,
             token_secret=token_secret,
             token_cls=token_cls,

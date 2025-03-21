@@ -67,7 +67,7 @@ class RateLimitMiddleware(AbstractMiddleware):
         Returns:
             None
         """
-        app = scope["app"]
+        app = scope["litestar_app"]
         request: Request[Any, Any, Any] = app.request_class(scope)
         store = self.config.get_store_from_app(app)
         if await self.should_check_request(request=request):
@@ -189,7 +189,7 @@ class RateLimitMiddleware(AbstractMiddleware):
         """Create ratelimit response headers.
 
         Notes:
-            * see the `IETF RateLimit draft <https://datatracker.ietf.org/doc/draft-ietf-httpapi-ratelimit-headers/>_`
+            * see the `IETF RateLimit draft <https://datatracker.ietf.org/doc/draft-ietf-httpapi-ratelimit-headers/>`_
 
         Args:
             cache_object:A :class:`CacheObject`.

@@ -5,8 +5,10 @@ from .websocket_handlers import (
     WebsocketListener,
     WebsocketListenerRouteHandler,
     WebsocketRouteHandler,
+    send_websocket_stream,
     websocket,
     websocket_listener,
+    websocket_stream,
 )
 
 __all__ = (
@@ -24,6 +26,8 @@ __all__ = (
     "post",
     "put",
     "route",
+    "send_websocket_stream",
     "websocket",
     "websocket_listener",
+    "websocket_stream",
 )

@@ -46,19 +46,19 @@ def test_dependency_and_aliased_param_raises(param_field: str) -> None:
 @pytest.mark.parametrize("reserved_kwarg", sorted(RESERVED_KWARGS))
 def test_raises_when_reserved_kwargs_are_misused(reserved_kwarg: str) -> None:
     decorator = post if reserved_kwarg != "socket" else websocket
-
-    exec(f"async def test_fn({reserved_kwarg}: int) -> None: pass")
-    handler_with_path_param = decorator("/{" + reserved_kwarg + ":int}")(locals()["test_fn"])
+    local = dict(locals(), **globals())
+    exec(f"async def test_fn({reserved_kwarg}: int) -> None: pass", local, local)
+    handler_with_path_param = decorator("/{" + reserved_kwarg + ":int}")(local["test_fn"])
     with pytest.raises(ImproperlyConfiguredException):
         Litestar(route_handlers=[handler_with_path_param])
 
-    exec(f"async def test_fn({reserved_kwarg}: int) -> None: pass")
-    handler_with_dependency = decorator("/", dependencies={reserved_kwarg: Provide(my_dependency)})(locals()["test_fn"])
+    exec(f"async def test_fn({reserved_kwarg}: int) -> None: pass", local, local)
+    handler_with_dependency = decorator("/", dependencies={reserved_kwarg: Provide(my_dependency)})(local["test_fn"])
     with pytest.raises(ImproperlyConfiguredException):
         Litestar(route_handlers=[handler_with_dependency])
 
-    exec(f"async def test_fn({reserved_kwarg}: int = Parameter(query='my_param')) -> None: pass")
-    handler_with_aliased_param = decorator("/")(locals()["test_fn"])
+    exec(f"async def test_fn({reserved_kwarg}: int = Parameter(query='my_param')) -> None: pass", local, local)
+    handler_with_aliased_param = decorator("/")(local["test_fn"])
     with pytest.raises(ImproperlyConfiguredException):
         Litestar(route_handlers=[handler_with_aliased_param])
 
