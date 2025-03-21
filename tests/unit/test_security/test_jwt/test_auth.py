@@ -907,3 +907,37 @@ async def test_jwt_auth_verify_nbf(
 
     response = client.get("/", headers={"Authorization": header})
     assert response.status_code == expected_status_code
+
+
+@pytest.mark.parametrize("auth_cls", [JWTAuth, JWTCookieAuth, OAuth2PasswordBearerAuth])
+def test_raise_deprecation_warning(
+    auth_cls: Any,
+) -> None:
+    async def retrieve_user_handler(token: Token, _: "ASGIConnection") -> Any:
+        return object()
+
+    token_secret = secrets.token_hex()
+
+    if auth_cls is OAuth2PasswordBearerAuth:
+        jwt_auth = auth_cls(
+            token_secret=token_secret,
+            retrieve_user_handler=retrieve_user_handler,
+            token_url="http://testserver.local",
+        )
+    else:
+        jwt_auth = auth_cls[Any](
+            token_secret=token_secret,
+            retrieve_user_handler=retrieve_user_handler,
+        )
+
+    with pytest.warns(
+        DeprecationWarning,
+        match="Security middlewares should be configured using the middlewares directly instead of using this property.",
+    ):
+
+        @get("/", middleware=[jwt_auth.middleware])
+        def handler() -> None:
+            return None
+
+        with create_test_client(route_handlers=[handler]) as _:
+            pass
