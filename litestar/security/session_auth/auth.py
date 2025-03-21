@@ -6,8 +6,10 @@ from typing import TYPE_CHECKING, Any, Callable, Generic, cast
 from litestar.middleware.session.base import BaseBackendConfig, BaseSessionBackendT
 from litestar.openapi.spec import Components, SecurityRequirement, SecurityScheme
 from litestar.security.base import AbstractSecurityConfig, UserType
+from litestar.security.session_auth.middleware import SessionAuthMiddleware
 
 __all__ = ("SessionAuth",)
+
 
 if TYPE_CHECKING:
     from collections.abc import Iterable, Sequence
@@ -33,6 +35,10 @@ class SessionAuth(Generic[UserType, BaseSessionBackendT], AbstractSecurityConfig
         - The callable can be sync or async. If it is sync, it will be wrapped to support async.
 
     """
+    authentication_middleware_class: type[SessionAuthMiddleware] = field(default=SessionAuthMiddleware)  # pyright: ignore
+    """The authentication middleware class to use.
+    Must inherit from :class:`SessionAuthMiddleware <litestar.security.session_auth.middleware.SessionAuthMiddleware>`
+    """
 
     guards: Iterable[Guard] | None = field(default=None)
     """An iterable of guards to call for requests, providing authorization functionalities."""
@@ -54,6 +60,10 @@ class SessionAuth(Generic[UserType, BaseSessionBackendT], AbstractSecurityConfig
 
     type_encoders: TypeEncodersMap | None = field(default=None)
     """A mapping of types to callables that transform them into types supported for serialization."""
+
+    @property
+    def middleware(self) -> SessionAuthMiddleware:
+        return SessionAuthMiddleware(self)
 
     @property
     def session_backend(self) -> BaseSessionBackendT:

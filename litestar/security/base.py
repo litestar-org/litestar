@@ -15,6 +15,7 @@ if TYPE_CHECKING:
     from litestar.connection import ASGIConnection
     from litestar.di import Provide
     from litestar.enums import MediaType, OpenAPIMediaType
+    from litestar.middleware.base import ASGIAuthenticationMiddleware
     from litestar.openapi.spec import Components, SecurityRequirement
     from litestar.types import (
         ControllerRouterHandler,
@@ -37,6 +38,11 @@ class AbstractSecurityConfig(ABC, Generic[UserType, AuthType]):
     or be manually configured on the router / controller level to provide auth.
     """
 
+    authentication_middleware_class: type[ASGIAuthenticationMiddleware]
+    """The authentication middleware class to use.
+    Must inherit from
+    :class:`AbstractAuthenticationMiddleware <litestar.middleware.authentication.AbstractAuthenticationMiddleware>`
+    """
     guards: Iterable[Guard] | None = None
     """An iterable of guards to call for requests, providing authorization functionalities."""
     exclude: str | tuple[str, ...] | None = None
@@ -159,4 +165,9 @@ class AbstractSecurityConfig(ABC, Generic[UserType, AuthType]):
         Returns:
             An OpenAPI 3.1 :data:`SecurityRequirement <.openapi.spec.SecurityRequirement>` dictionary.
         """
+        raise NotImplementedError
+
+    @property
+    @abstractmethod
+    def middleware(self) -> ASGIAuthenticationMiddleware:
         raise NotImplementedError

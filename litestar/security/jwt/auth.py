@@ -10,12 +10,14 @@ from litestar.datastructures import Cookie
 from litestar.enums import MediaType
 from litestar.openapi.spec import Components, OAuthFlow, OAuthFlows, SecurityRequirement, SecurityScheme
 from litestar.security.base import AbstractSecurityConfig
+from litestar.security.jwt.middleware import JWTAuthenticationMiddleware, JWTCookieAuthenticationMiddleware
 from litestar.security.jwt.token import Token
 from litestar.status_codes import HTTP_201_CREATED
 from litestar.types import ControllerRouterHandler, Empty, Guard, Method, Scopes, SyncOrAsyncUnion, TypeEncodersMap
 
 __all__ = ("BaseJWTAuth", "JWTAuth", "JWTCookieAuth", "OAuth2Login", "OAuth2PasswordBearerAuth")
 
+from litestar.utils import warn_deprecation
 
 if TYPE_CHECKING:
     from collections.abc import Iterable, Sequence
@@ -64,6 +66,10 @@ class BaseJWTAuth(Generic[UserType, TokenT], AbstractSecurityConfig[UserType, To
     """The value to use for the OpenAPI security scheme and security requirements."""
     description: str
     """Description for the OpenAPI security scheme."""
+    authentication_middleware_class: type[JWTAuthenticationMiddleware]  # pyright: ignore
+    """The authentication middleware class to use.
+    Must inherit from :class:`JWTAuthenticationMiddleware`
+    """
     token_cls: type[Token] = Token
     """Target type the JWT payload will be converted into"""
     accepted_audiences: Sequence[str] | None = None
@@ -119,6 +125,17 @@ class BaseJWTAuth(Generic[UserType, TokenT], AbstractSecurityConfig[UserType, To
             dictionary.
         """
         return {self.openapi_security_scheme_name: []}
+
+    @property
+    def middleware(self) -> JWTAuthenticationMiddleware:
+        warn_deprecation(
+            deprecated_name="litestar.security.jwt.auth.BaseJWTAuth.middleware",
+            version="3.0",
+            kind="property",
+            removal_in="4.0",
+            info="Security middlewares should be configured using the middlewares directly instead of using this property.",
+        )
+        return self.authentication_middleware_class(self)
 
     def login(
         self,
@@ -284,6 +301,10 @@ class JWTAuth(Generic[UserType, TokenT], BaseJWTAuth[UserType, TokenT]):
     """The value to use for the OpenAPI security scheme and security requirements."""
     description: str = field(default="JWT api-key authentication and authorization.")
     """Description for the OpenAPI security scheme."""
+    authentication_middleware_class: type[JWTAuthenticationMiddleware] = field(default=JWTAuthenticationMiddleware)
+    """The authentication middleware class to use.
+    Must inherit from :class:`JWTAuthenticationMiddleware`
+    """
     token_cls: type[Token] = Token
     """Target type the JWT payload will be converted into"""
     accepted_audiences: Sequence[str] | None = None
@@ -383,6 +404,11 @@ class JWTCookieAuth(Generic[UserType, TokenT], BaseJWTAuth[UserType, TokenT]):
     """Controls whether or not a cookie is sent with cross-site requests. Defaults to ``lax``. """
     description: str = field(default="JWT cookie-based authentication and authorization.")
     """Description for the OpenAPI security scheme."""
+    authentication_middleware_class: type[JWTCookieAuthenticationMiddleware] = field(  # pyright: ignore
+        default=JWTCookieAuthenticationMiddleware
+    )
+    """The authentication middleware class to use. Must inherit from :class:`JWTCookieAuthenticationMiddleware`
+    """
     token_cls: type[Token] = Token
     """Target type the JWT payload will be converted into"""
     accepted_audiences: Sequence[str] | None = None
@@ -587,6 +613,12 @@ class OAuth2PasswordBearerAuth(Generic[UserType, TokenT], BaseJWTAuth[UserType, 
     """Controls whether or not a cookie is sent with cross-site requests. Defaults to ``lax``. """
     description: str = field(default="OAUTH2 password bearer authentication and authorization.")
     """Description for the OpenAPI security scheme."""
+    authentication_middleware_class: type[JWTCookieAuthenticationMiddleware] = field(  # pyright: ignore
+        default=JWTCookieAuthenticationMiddleware
+    )
+    """The authentication middleware class to use.
+    Must inherit from :class:`JWTCookieAuthenticationMiddleware`
+    """
     token_cls: type[Token] = Token
     """Target type the JWT payload will be converted into"""
     accepted_audiences: Sequence[str] | None = None
