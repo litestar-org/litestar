@@ -432,7 +432,7 @@ class OpenAPIController(Controller):
                     SwaggerUIBundle.SwaggerUIStandalonePreset
                 ],
             }})
-            ui.initOAuth({encode_json(self.swagger_ui_init_oauth).decode('utf-8')})
+            ui.initOAuth({encode_json(self.swagger_ui_init_oauth).decode("utf-8")})
             </script>
           </body>
         """

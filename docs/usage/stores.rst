@@ -264,7 +264,7 @@ with minimal boilerplate:
 
 
 Without any extra configuration, every call to ``app.stores.get`` with a unique name will return a namespace for this
-name only, while re-using the underlying Redis instance.
+name only, while reusing the underlying Redis instance.
 
 
 Store lifetime
