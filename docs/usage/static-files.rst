@@ -157,4 +157,3 @@ file system's symlink capabilities:
   If the file system supports symlinking, the default value is ``False``.
   This means that, unless explicitly enabled, symlinks will be restricted to paths
   inside the defined base directories.
-
