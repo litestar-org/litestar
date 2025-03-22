@@ -4,10 +4,12 @@ from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Any, Callable
 
 from litestar.contrib.opentelemetry._utils import get_route_details_from_scope
+from litestar.contrib.opentelemetry.middleware import OpenTelemetryInstrumentationMiddleware
 from litestar.exceptions import MissingDependencyException
 
 __all__ = ("OpenTelemetryConfig",)
 
+from litestar.utils import warn_deprecation
 
 try:
     import opentelemetry  # noqa: F401
@@ -75,3 +77,21 @@ class OpenTelemetryConfig:
     """
     scopes: Scopes | None = field(default=None)
     """ASGI scopes processed by the middleware, if None both ``http`` and ``websocket`` will be processed."""
+    middleware_class: type[OpenTelemetryInstrumentationMiddleware] = field(
+        default=OpenTelemetryInstrumentationMiddleware
+    )
+    """The middleware class to use.
+    Should be a subclass of OpenTelemetry
+    InstrumentationMiddleware][litestar.contrib.opentelemetry.OpenTelemetryInstrumentationMiddleware].
+    """
+
+    @property
+    def middleware(self) -> OpenTelemetryInstrumentationMiddleware:
+        warn_deprecation(
+            deprecated_name="litestar.contrib.opentelemetry.config.OpenTelemetryConfig.middleware",
+            version="3.0",
+            kind="property",
+            removal_in="4.0",
+            info="Configure your OpenTelemetryInstrumentMiddleware using OpenTelemetryPlugin instead",
+        )
+        return self.middleware_class(self)
