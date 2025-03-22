@@ -70,14 +70,14 @@ async def test_registry_access_integration() -> None:
 
     assert app.stores.get("rate_limit") is rate_limit_store
     # this is a weird assertion but the easiest way to check if our example is correct
-    assert app.middleware[0].kwargs["config"].get_store_from_app(app) is rate_limit_store
+    assert app.middleware[0].config.get_store_from_app(app) is rate_limit_store
 
 
 @patch("litestar.stores.redis.Redis")
 async def test_configure_integrations(mock_redis: MagicMock) -> None:
     from docs.examples.stores.registry_configure_integrations import app
 
-    session_store = app.middleware[0].kwargs["backend"].config.get_store_from_app(app)
+    session_store = app.middleware[0].backend.config.get_store_from_app(app)
     cache_store = app.response_cache_config.get_store_from_app(app)
 
     assert isinstance(session_store, RedisStore)

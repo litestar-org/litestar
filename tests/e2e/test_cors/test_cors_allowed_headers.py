@@ -1,5 +1,6 @@
 from litestar import Litestar, get
 from litestar.config.cors import CORSConfig
+from litestar.middleware._internal.cors import CORSMiddleware
 from litestar.status_codes import HTTP_204_NO_CONTENT, HTTP_400_BAD_REQUEST
 from litestar.testing import TestClient
 
@@ -14,7 +15,7 @@ cors_config = CORSConfig(
     allow_origins=["https://allowed-origin.com"],
     allow_headers=["X-Custom-Header", "Content-Type"],
 )
-app = Litestar(route_handlers=[headers_handler], cors_config=cors_config)
+app = Litestar(route_handlers=[headers_handler], middleware=[CORSMiddleware(cors_config)])
 
 
 def test_cors_with_specific_allowed_headers() -> None:

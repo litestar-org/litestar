@@ -13,9 +13,9 @@ from typing import (
 
 from litestar.connection import ASGIConnection
 from litestar.enums import ScopeType
-from litestar.middleware.base import AbstractMiddleware, DefineMiddleware
+from litestar.middleware import ASGIMiddleware
 from litestar.serialization import decode_json, encode_json
-from litestar.utils import get_serializer_from_scope
+from litestar.utils import get_serializer_from_scope, warn_deprecation
 
 __all__ = ("BaseBackendConfig", "BaseSessionBackend", "SessionMiddleware")
 
@@ -71,31 +71,15 @@ class BaseBackendConfig(ABC, Generic[BaseSessionBackendT]):  # pyright: ignore
     """An identifier to use on routes to disable the session middleware for a particular route."""
 
     @property
-    def middleware(self) -> DefineMiddleware:
-        """Use this property to insert the config into a middleware list on one of the application layers.
-
-        Examples:
-            .. code-block:: python
-
-                from os import urandom
-
-                from litestar import Litestar, Request, get
-                from litestar.middleware.sessions.cookie_backend import CookieBackendConfig
-
-                session_config = CookieBackendConfig(secret=urandom(16))
-
-
-                @get("/")
-                def my_handler(request: Request) -> None: ...
-
-
-                app = Litestar(route_handlers=[my_handler], middleware=[session_config.middleware])
-
-
-        Returns:
-            An instance of DefineMiddleware including ``self`` as the config kwarg value.
-        """
-        return DefineMiddleware(SessionMiddleware, backend=self._backend_class(config=self))
+    def middleware(self) -> SessionMiddleware:
+        warn_deprecation(
+            deprecated_name="litestar.middleware.session.base.BaseBackendConfig.middleware",
+            version="3.0",
+            kind="property",
+            removal_in="4.0",
+            info="Configure your SessionMiddleware using SessionMiddleware(backend) instead",
+        )
+        return SessionMiddleware(backend=self._backend_class(config=self))
 
 
 class BaseSessionBackend(ABC, Generic[ConfigT]):
@@ -187,24 +171,19 @@ class BaseSessionBackend(ABC, Generic[ConfigT]):
         """
 
 
-class SessionMiddleware(AbstractMiddleware, Generic[BaseSessionBackendT]):
+class SessionMiddleware(ASGIMiddleware, Generic[BaseSessionBackendT]):
     """Litestar session middleware for storing session data."""
 
-    def __init__(self, app: ASGIApp, backend: BaseSessionBackendT) -> None:
+    def __init__(self, backend: BaseSessionBackendT) -> None:
         """Initialize ``SessionMiddleware``
 
         Args:
-            app: An ASGI application
             backend: A :class:`BaseSessionBackend` instance used to store and retrieve session data
         """
 
-        super().__init__(
-            app=app,
-            exclude=backend.config.exclude,
-            exclude_opt_key=backend.config.exclude_opt_key,
-            scopes=backend.config.scopes,
-        )
         self.backend = backend
+        self.exclude_path_pattern = self.backend.config.exclude
+        self.exclude_opt_key = self.backend.config.exclude_opt_key
 
     def create_send_wrapper(self, connection: ASGIConnection) -> Callable[[Message], Awaitable[None]]:
         """Create a wrapper for the ASGI send function, which handles setting the cookies on the outgoing response.
@@ -238,20 +217,9 @@ class SessionMiddleware(AbstractMiddleware, Generic[BaseSessionBackendT]):
 
         return wrapped_send
 
-    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
-        """ASGI-callable.
-
-        Args:
-            scope: The ASGI connection scope.
-            receive: The ASGI receive function.
-            send: The ASGI send function.
-
-        Returns:
-            None
-        """
-
+    async def handle(self, scope: Scope, receive: Receive, send: Send, next_app: ASGIApp) -> None:
         connection = ASGIConnection[Any, Any, Any, Any](scope, receive=receive, send=send)
         scope["session"] = await self.backend.load_from_connection(connection)
         connection._connection_state.session_id = self.backend.get_session_id(connection)  # pyright: ignore [reportGeneralTypeIssues]
 
-        await self.app(scope, receive, self.create_send_wrapper(connection))
+        await next_app(scope, receive, self.create_send_wrapper(connection))

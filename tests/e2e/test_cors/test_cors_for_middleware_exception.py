@@ -4,6 +4,7 @@ from litestar import Litestar, get
 from litestar.config.cors import CORSConfig
 from litestar.exceptions import HTTPException
 from litestar.middleware import AbstractMiddleware
+from litestar.middleware._internal.cors import CORSMiddleware
 from litestar.testing import TestClient
 from litestar.types.asgi_types import Receive, Scope, Send
 
@@ -19,7 +20,7 @@ async def handler() -> str:
 
 
 cors_config = CORSConfig(allow_methods=["GET"], allow_origins=["https://allowed-origin.com"], allow_credentials=True)
-app = Litestar(route_handlers=[handler], cors_config=cors_config, middleware=[ExceptionMiddleware])
+app = Litestar(route_handlers=[handler], middleware=[ExceptionMiddleware, CORSMiddleware(cors_config)])
 
 
 def test_cors_on_middleware_exception() -> None:

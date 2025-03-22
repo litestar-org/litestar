@@ -8,12 +8,9 @@ from typing import TYPE_CHECKING, Any
 
 import litestar.exceptions
 from litestar.exceptions import MissingDependencyException
-from litestar.middleware import DefineMiddleware
 from litestar.middleware.session import SessionMiddleware
 from litestar.plugins import InitPlugin
-from litestar.security.session_auth.middleware import MiddlewareWrapper
 from litestar.template.base import _get_request_from_context
-from litestar.utils.predicates import is_class_and_subclass
 
 if TYPE_CHECKING:
     from collections.abc import Callable, Mapping
@@ -51,9 +48,7 @@ class FlashPlugin(InitPlugin):
             The application configuration with the message callable registered.
         """
         for mw in app_config.middleware:
-            if isinstance(mw, DefineMiddleware) and is_class_and_subclass(
-                mw.middleware, (MiddlewareWrapper, SessionMiddleware)
-            ):
+            if isinstance(mw, SessionMiddleware):
                 break
         else:
             raise litestar.exceptions.ImproperlyConfiguredException("Flash messages require a session middleware.")
