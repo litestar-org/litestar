@@ -304,3 +304,31 @@ OpenAPI schema as YAML has been moved from the default dependencies to the
 
 The `litestar-htmx <https://github.com/litestar-org/litestar-htmx/>`_ package powering
 the :doc:`HTMX plugin </usage/htmx>` has been moved to the ``litestar[htmx]`` extra.
+
+
+Improved file system handling / fsspec integration
+---------------------------------------------------
+
+A more coherent :doc:`file system </usage/file_systems>` integration was added, with
+improved support for `fsspec <https://filesystem-spec.readthedocs.io/en/latest/>`_.
+This new implementation is more stable, performant and consistent, and includes new
+features such as random access to all supported file systems as well as streaming
+(optionally with offsets, even if the underlying file system does not support it
+natively).
+
+.. seealso::
+    :doc:`/usage/file_systems`
+
+
+Removal of ``resolve_symlinks`` parameter to ``create_static_files_router``
+---------------------------------------------------------------------------
+
+``resolve_symlinks`` parameter of
+:func:`~litestar.static_files.create_static_files_router` has been removed in favour of
+the new
+:paramref:`~litestar.static_files.create_static_files_router.allow_symlinks_outside_directory`
+parameter.
+
+.. attention::
+    This has been intentionally made a breaking change because the new parameter has
+    slightly different behaviour and defaults to ``False`` instead of ``True``.

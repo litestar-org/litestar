@@ -7,20 +7,21 @@ from typing import TYPE_CHECKING
 
 import brotli
 import pytest
+from fsspec.implementations.local import LocalFileSystem
+from pytest_mock import MockerFixture
 
 from litestar import MediaType, get
-from litestar.file_system import FileSystemAdapter
+from litestar.file_system import BaseFileSystem, BaseLocalFileSystem, FileSystemRegistry, maybe_wrap_fsspec_file_system
 from litestar.static_files import _get_fs_info, create_static_files_router
 from litestar.status_codes import HTTP_200_OK
 from litestar.testing import create_test_client
+from tests.unit.test_response.test_file_response import MockFileSystem
 
 if TYPE_CHECKING:
-    from litestar.types import FileSystemProtocol
+    pass
 
 
-def test_default_static_files_router(
-    tmpdir: Path,
-) -> None:
+def test_default_static_files_router(tmpdir: Path) -> None:
     path = tmpdir / "test.txt"
     path.write_text("content", "utf-8")
 
@@ -28,6 +29,26 @@ def test_default_static_files_router(
         response = client.get("/static/test.txt")
         assert response.status_code == HTTP_200_OK, response.text
         assert response.text == "content"
+
+
+def test_default_file_system(tmpdir: Path) -> None:
+    with create_test_client(
+        [create_static_files_router(path="/static", directories=[tmpdir])],
+        plugins=[FileSystemRegistry(default=MockFileSystem())],
+    ) as client:
+        response = client.get("/static/test.txt")
+        assert response.status_code == HTTP_200_OK, response.text
+        assert response.text == str(tmpdir / "test.txt")
+
+
+def test_file_system_registry_lookup(tmpdir: Path) -> None:
+    with create_test_client(
+        [create_static_files_router(path="/static", directories=[tmpdir], file_system="my_fs")],
+        plugins=[FileSystemRegistry({"my_fs": MockFileSystem()})],
+    ) as client:
+        response = client.get("/static/test.txt")
+        assert response.status_code == HTTP_200_OK, response.text
+        assert response.text == str(tmpdir / "test.txt")
 
 
 @pytest.fixture()
@@ -62,7 +83,7 @@ def test_multiple_static_files_routers(setup_dirs: tuple[Path, Path]) -> None:
 
 
 def test_static_files_routers_with_mixed_file_systems(
-    file_system: FileSystemProtocol, setup_dirs: tuple[Path, Path]
+    file_system: BaseFileSystem, setup_dirs: tuple[Path, Path]
 ) -> None:
     root1, root2 = setup_dirs
 
@@ -82,7 +103,7 @@ def test_static_files_routers_with_mixed_file_systems(
 
 
 def test_static_files_routers_with_multiple_directories(
-    file_system: FileSystemProtocol, setup_dirs: tuple[Path, Path]
+    file_system: BaseFileSystem, setup_dirs: tuple[Path, Path]
 ) -> None:
     root1, root2 = setup_dirs
 
@@ -206,9 +227,7 @@ def test_static_files_content_disposition(
         assert response.headers["content-disposition"].startswith(disposition)
 
 
-def test_service_from_relative_path_using_string(
-    tmpdir: Path,
-) -> None:
+def test_serve_from_relative_path_using_string(tmpdir: Path) -> None:
     sub_dir = Path(tmpdir.mkdir("low")).resolve()  # type: ignore[arg-type, func-returns-value]
 
     path = tmpdir / "test.txt"
@@ -220,7 +239,7 @@ def test_service_from_relative_path_using_string(
         assert response.text == "content"
 
 
-def test_service_from_relative_path_using_path(
+def test_serve_from_relative_path_using_path(
     tmpdir: Path,
 ) -> None:
     sub_dir = Path(tmpdir.mkdir("low")).resolve()  # type: ignore[arg-type, func-returns-value]
@@ -236,45 +255,149 @@ def test_service_from_relative_path_using_path(
         assert response.text == "content"
 
 
-@pytest.mark.parametrize("resolve", [True, False])
-def test_resolve_symlinks(tmp_path: Path, resolve: bool) -> None:
-    source_dir = tmp_path / "foo"
-    source_dir.mkdir()
-    linked_dir = tmp_path / "bar"
-    linked_dir.symlink_to(source_dir, target_is_directory=True)
-    source_dir.joinpath("test.txt").write_text("hello")
+@pytest.mark.parametrize("file_system", [BaseLocalFileSystem(), LocalFileSystem()])
+@pytest.mark.parametrize("allow_symlinks_outside_directory", [True, False, None])
+def test_allow_symlinks_outside_directory(
+    tmp_path: Path,
+    allow_symlinks_outside_directory: bool | None,
+    tmp_path_factory: pytest.TempPathFactory,
+    file_system: BaseFileSystem,
+) -> None:
+    static_file_dir = Path(tmp_path) / "static"
+    static_file_dir.mkdir()
 
-    router = create_static_files_router(path="/", directories=[linked_dir], resolve_symlinks=resolve)
+    source_file_path = tmp_path_factory.mktemp("test") / "test.txt"
+    source_file_path.write_text("hello")
+
+    linked_file_path = static_file_dir / "linked.txt"
+    linked_file_path.symlink_to(source_file_path)
+
+    if allow_symlinks_outside_directory is not None:
+        router = create_static_files_router(
+            path="/",
+            directories=[static_file_dir],
+            file_system=file_system,
+            allow_symlinks_outside_directory=allow_symlinks_outside_directory,
+        )
+    else:
+        router = create_static_files_router(
+            path="/",
+            directories=[static_file_dir],
+            file_system=file_system,
+        )
 
     with create_test_client(router) as client:
-        if not resolve:
-            linked_dir.unlink()
-            assert client.get("/test.txt").status_code == 404
+        if allow_symlinks_outside_directory:
+            assert client.get("/linked.txt").status_code == 200
         else:
-            assert client.get("/test.txt").status_code == 200
+            assert client.get("/linked.txt").status_code == 404
 
 
+@pytest.mark.parametrize("allow_symlinks_outside_directory", [True, False, None])
+def test_allow_symlinks_outside_directory_internal_link(
+    tmp_path: Path,
+    allow_symlinks_outside_directory: bool | None,
+    tmp_path_factory: pytest.TempPathFactory,
+) -> None:
+    static_file_dir = tmp_path / "static"
+    static_file_dir.mkdir()
+
+    source_file_path = static_file_dir / "test.txt"
+    source_file_path.write_text("hello")
+
+    linked_file_path = static_file_dir / "linked.txt"
+    linked_file_path.symlink_to(source_file_path.name)
+
+    if allow_symlinks_outside_directory is not None:
+        router = create_static_files_router(
+            path="/",
+            directories=[static_file_dir],
+            allow_symlinks_outside_directory=allow_symlinks_outside_directory,
+        )
+    else:
+        router = create_static_files_router(
+            path="/",
+            directories=[static_file_dir],
+        )
+
+    with create_test_client(router) as client:
+        assert client.get("/linked.txt").status_code == 200
+
+
+@pytest.mark.parametrize("allow_symlinks_outside_directory", [False, None])
+def test_symlinked_file_without_symlink_resolution_support_on_file_system_raises(
+    tmp_path: Path,
+    allow_symlinks_outside_directory: bool | None,
+    tmp_path_factory: pytest.TempPathFactory,
+    mocker: MockerFixture,
+) -> None:
+    # if a path contains a symlink, but the file system does not support resolving
+    # symlinks, we expect an internal error to be raised
+
+    src_file = tmp_path / "source.txt"
+    src_file.touch()
+
+    linked_file = tmp_path / "linked.txt"
+    linked_file.symlink_to(src_file)
+
+    mocker.patch("litestar.file_system.LinkableFileSystem.get_symlink_resolver", return_value=None)
+
+    if allow_symlinks_outside_directory is not None:
+        router = create_static_files_router(
+            path="/",
+            directories=[tmp_path],
+            allow_symlinks_outside_directory=allow_symlinks_outside_directory,
+        )
+    else:
+        router = create_static_files_router(
+            path="/",
+            directories=[tmp_path],
+        )
+
+    with create_test_client(router, raise_server_exceptions=True) as client:
+        res = client.get("/linked.txt")
+        assert res.status_code == 500
+        assert "does not support resolving symlinks" in res.text
+
+
+@pytest.mark.parametrize("file_system", (BaseLocalFileSystem(), maybe_wrap_fsspec_file_system(LocalFileSystem())))
+@pytest.mark.parametrize("allow_symlinks_outside_directory", (True, False))
 async def test_staticfiles_get_fs_info_no_access_to_non_static_directory(
     tmp_path: Path,
-    file_system: FileSystemProtocol,
+    file_system: BaseFileSystem,
+    allow_symlinks_outside_directory: bool,
 ) -> None:
     assets = tmp_path / "assets"
     assets.mkdir()
     index = tmp_path / "index.html"
     index.write_text("content", "utf-8")
-    path, info = await _get_fs_info([assets], "../index.html", adapter=FileSystemAdapter(file_system))
+    path, info = await _get_fs_info(
+        [assets],
+        "../index.html",
+        fs=file_system,
+        allow_symlinks_outside_directory=allow_symlinks_outside_directory,
+    )
     assert path is None
     assert info is None
 
 
+@pytest.mark.parametrize("file_system", (BaseLocalFileSystem(), maybe_wrap_fsspec_file_system(LocalFileSystem())))
+@pytest.mark.parametrize("allow_symlinks_outside_directory", (True, False))
 async def test_staticfiles_get_fs_info_no_access_to_non_static_file_with_prefix(
     tmp_path: Path,
-    file_system: FileSystemProtocol,
+    file_system: BaseFileSystem,
+    allow_symlinks_outside_directory: bool,
 ) -> None:
     static = tmp_path / "static"
     static.mkdir()
     private_file = tmp_path / "staticsecrets.env"
     private_file.write_text("content", "utf-8")
-    path, info = await _get_fs_info([static], "../staticsecrets.env", adapter=FileSystemAdapter(file_system))
+    path, info = await _get_fs_info(
+        [static],
+        "../staticsecrets.env",
+        fs=file_system,
+        allow_symlinks_outside_directory=allow_symlinks_outside_directory,
+    )
+
     assert path is None
     assert info is None

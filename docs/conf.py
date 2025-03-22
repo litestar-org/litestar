@@ -72,6 +72,7 @@ intersphinx_mapping = {
     "pydantic": ("https://docs.pydantic.dev/latest/", None),
     "typing_extensions": ("https://typing-extensions.readthedocs.io/en/stable/", None),
     "valkey": ("https://valkey-py.readthedocs.io/en/latest/", None),
+    "fsspec": ("https://filesystem-spec.readthedocs.io/en/latest/", None),
 }
 
 napoleon_google_docstring = True
@@ -262,6 +263,7 @@ ignore_missing_refs = {
     "litestar.concurrency.get_asyncio_executor": {"ThreadPoolExecutor"},
     re.compile(r"litestar\.channels\.backends\.asyncpg.*"): {"asyncpg.connection.Connection", "asyncpg.Connection"},
     re.compile(r"litestar\.handlers\.websocket_handlers\.stream.*"): {"WebSocketMode"},
+    re.compile(r"litestar\.file_system.*"): {"AnyFileSystem", "SymlinkResolver"},
 }
 
 # Do not warn about broken links to the following:

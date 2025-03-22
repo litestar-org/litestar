@@ -9,10 +9,10 @@ from litestar.testing import create_test_client
 if TYPE_CHECKING:
     from pathlib import Path
 
-    from litestar.types import FileSystemProtocol
+    from litestar.file_system import BaseFileSystem
 
 
-def test_staticfiles_is_html_mode(tmpdir: Path, file_system: FileSystemProtocol) -> None:
+def test_staticfiles_is_html_mode(tmpdir: Path, file_system: BaseFileSystem) -> None:
     path = tmpdir / "index.html"
     path.write_text("content", "utf-8")
 
@@ -26,7 +26,7 @@ def test_staticfiles_is_html_mode(tmpdir: Path, file_system: FileSystemProtocol)
         assert response.headers["content-disposition"].startswith("inline")
 
 
-def test_staticfiles_is_html_mode_serves_404_when_present(tmpdir: Path, file_system: FileSystemProtocol) -> None:
+def test_staticfiles_is_html_mode_serves_404_when_present(tmpdir: Path, file_system: BaseFileSystem) -> None:
     path = tmpdir / "404.html"
     path.write_text("not found", "utf-8")
 
@@ -40,7 +40,7 @@ def test_staticfiles_is_html_mode_serves_404_when_present(tmpdir: Path, file_sys
 
 
 def test_staticfiles_is_html_mode_raises_exception_when_no_404_html_is_present(
-    tmpdir: Path, file_system: FileSystemProtocol
+    tmpdir: Path, file_system: BaseFileSystem
 ) -> None:
     with create_test_client(
         [create_static_files_router(path="/static", directories=[tmpdir], html_mode=True, file_system=file_system)]

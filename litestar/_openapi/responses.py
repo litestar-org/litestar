@@ -308,7 +308,7 @@ def create_error_responses(exceptions: list[type[HTTPException]]) -> Iterator[tu
                     examples=[{"status_code": status_code, "detail": example_detail, "extra": {}}],
                 )
             )
-        if len(exceptions_schemas) > 1:  # noqa: SIM108
+        if len(exceptions_schemas) > 1:
             schema = Schema(one_of=exceptions_schemas)
         else:
             schema = exceptions_schemas[0]
