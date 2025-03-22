@@ -191,7 +191,6 @@ dev = [
   "daphne>=4.0.0",
   "opentelemetry-sdk",
   "httpx-sse",
-  "tomlkit>=0.13.2",
 ]
 
 docs = [
