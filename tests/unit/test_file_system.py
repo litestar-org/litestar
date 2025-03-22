@@ -164,7 +164,7 @@ async def test_iter_start_end(fs: BaseFileSystem, file: pathlib.Path, chunksize:
 
 async def test_info(fs: BaseFileSystem, fs_name: str, file: pathlib.Path) -> None:
     info = await fs.info(file)
-    assert info.get("islink") is False
+    assert not info.get("is_symlink")
 
     if fs_name != "http_fs":
         # mtime not supported on http fs

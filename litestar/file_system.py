@@ -45,7 +45,7 @@ AnyFileSystem: TypeAlias = "Union[BaseFileSystem, FsspecFileSystem, FsspecAsyncF
 class FileInfo(TypedDict):
     """File information gathered from a file system."""
 
-    islink: bool
+    is_symlink: NotRequired[bool]
     """True if the file is a symbolic link."""
     mtime: NotRequired[float]
     """Modified time stamp."""
@@ -195,7 +195,6 @@ class FsspecSyncWrapper(BaseFileSystem):
         """
         result: dict[str, Any] = await sync_to_thread(self._fs.info, str(path), **kwargs)
         result["mtime"] = get_fsspec_mtime_equivalent(result)
-        result.setdefault("islink", False)
         return cast("FileInfo", result)
 
     async def read_bytes(
@@ -281,7 +280,6 @@ class FsspecAsyncWrapper(BaseFileSystem):
         """
         result: dict[str, Any] = await self._fs._info(str(path), **kwargs)
         result["mtime"] = get_fsspec_mtime_equivalent(result)
-        result.setdefault("islink", False)
         return cast("FileInfo", result)
 
     async def read_bytes(
@@ -365,7 +363,7 @@ def parse_stat_result(path: PathType, result: os.stat_result) -> FileInfo:
         A dictionary of file info.
     """
     return {
-        "islink": S_ISLNK(result.st_mode),
+        "is_symlink": S_ISLNK(result.st_mode),
         "mtime": result.st_mtime,
         "name": str(path),
         "size": result.st_size,

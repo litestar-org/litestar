@@ -372,7 +372,7 @@ async def test_file_response_with_missing_file_raises_error(tmpdir: Path) -> Non
 class MockFileSystem(BaseFileSystem):
     async def info(self, path: PathType, **kwargs: Any) -> FileInfo:
         return FileInfo(
-            islink=False,
+            is_symlink=False,
             mtime=0.0,
             name=str(path),
             size=len(str(path).encode()),
