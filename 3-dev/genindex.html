@@ -274,8 +274,6 @@ data-aria-dark="Switch to auto color mode">
 </li>
         <li><a href="reference/template.html#litestar.template.TemplateProtocol.render.params.**kwargs">(litestar.template.TemplateProtocol.render parameter)</a>
 </li>
-        <li><a href="reference/types.html#litestar.types.FileSystemProtocol.info.params.**kwargs">(litestar.types.FileSystemProtocol.info parameter)</a>
-</li>
         <li><a href="reference/types.html#litestar.types.Logger.critical.params.**kwargs">(litestar.types.Logger.critical parameter)</a>
 </li>
         <li><a href="reference/types.html#litestar.types.Logger.debug.params.**kwargs">(litestar.types.Logger.debug parameter)</a>
@@ -345,8 +343,6 @@ data-aria-dark="Switch to auto color mode">
       </ul></li>
       <li><a href="reference/events.html#litestar.events.EventListener.params.*event_ids">*event_ids (litestar.events.EventListener parameter)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/repository/abc.html#litestar.repository.abc.AbstractAsyncRepository.count.params.*filters">*filters (litestar.repository.abc.AbstractAsyncRepository.count parameter)</a>
 
       <ul>
@@ -365,6 +361,8 @@ data-aria-dark="Switch to auto color mode">
         <li><a href="reference/repository/abc.html#litestar.repository.abc.AbstractSyncRepository.list_and_count.params.*filters">(litestar.repository.abc.AbstractSyncRepository.list_and_count parameter)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/logging/standard.html#litestar.logging.standard.LoggingQueueListener.params.*handlers">*handlers (litestar.logging.standard.LoggingQueueListener parameter)</a>
 </li>
       <li>
@@ -833,6 +831,12 @@ data-aria-dark="Switch to auto color mode">
 </li>
         <li><a href="reference/exceptions.html#litestar.exceptions.WebSocketException.__init__">(litestar.exceptions.WebSocketException method)</a>
 </li>
+        <li><a href="reference/file_system.html#litestar.file_system.FileSystemRegistry.__init__">(litestar.file_system.FileSystemRegistry method)</a>
+</li>
+        <li><a href="reference/file_system.html#litestar.file_system.FsspecAsyncWrapper.__init__">(litestar.file_system.FsspecAsyncWrapper method)</a>
+</li>
+        <li><a href="reference/file_system.html#litestar.file_system.FsspecSyncWrapper.__init__">(litestar.file_system.FsspecSyncWrapper method)</a>
+</li>
         <li><a href="reference/handlers.html#litestar.handlers.ASGIRouteHandler.__init__">(litestar.handlers.ASGIRouteHandler method)</a>
 </li>
         <li><a href="reference/handlers.html#litestar.handlers.BaseRouteHandler.__init__">(litestar.handlers.BaseRouteHandler method)</a>
@@ -1133,8 +1137,6 @@ data-aria-dark="Switch to auto color mode">
 </li>
         <li><a href="reference/testing.html#litestar.testing.WebSocketTestSession.__init__">(litestar.testing.WebSocketTestSession method)</a>
 </li>
-        <li><a href="reference/types.html#litestar.types.FileSystemProtocol.__init__">(litestar.types.FileSystemProtocol method)</a>
-</li>
         <li><a href="reference/types.html#litestar.types.Logger.__init__">(litestar.types.Logger method)</a>
 </li>
         <li><a href="reference/typing.html#litestar.typing.FieldDefinition.__init__">(litestar.typing.FieldDefinition method)</a>
@@ -1275,8 +1277,6 @@ data-aria-dark="Switch to auto color mode">
       <li><a href="reference/datastructures/index.html#litestar.datastructures.Accept.accepts">accepts() (litestar.datastructures.Accept method)</a>
 </li>
       <li><a href="reference/security/jwt.html#litestar.security.jwt.OAuth2Login.access_token">access_token (litestar.security.jwt.OAuth2Login attribute)</a>
-</li>
-      <li><a href="reference/response/file.html#litestar.response.file.async_file_iterator.params.adapter">adapter (litestar.response.file.async_file_iterator parameter)</a>, <a href="reference/response/file.html#litestar.response.file.async_file_iterator.params.adapter">[1]</a>
 </li>
       <li><a href="reference/datastructures/index.html#litestar.datastructures.MutableScopeHeaders.add">add() (litestar.datastructures.MutableScopeHeaders method)</a>
 
@@ -1434,6 +1434,8 @@ data-aria-dark="Switch to auto color mode">
         <li><a href="reference/openapi/spec.html#litestar.openapi.spec.Parameter.allow_reserved">(litestar.openapi.spec.Parameter attribute)</a>
 </li>
       </ul></li>
+      <li><a href="reference/static_files.html#litestar.static_files.create_static_files_router.params.allow_symlinks_outside_directory">allow_symlinks_outside_directory (litestar.static_files.create_static_files_router parameter)</a>
+</li>
       <li><a href="reference/app.html#litestar.app.Litestar.params.allowed_hosts">allowed_hosts (litestar.app.Litestar parameter)</a>
 
       <ul>
@@ -1601,8 +1603,6 @@ data-aria-dark="Switch to auto color mode">
       <li><a href="reference/response/streaming.html#litestar.response.streaming.ASGIStreamingResponse">ASGIStreamingResponse (class in litestar.response.streaming)</a>
 </li>
       <li><a href="reference/types.html#litestar.types.ASGIVersion">ASGIVersion (class in litestar.types)</a>
-</li>
-      <li><a href="reference/response/file.html#litestar.response.file.async_file_iterator">async_file_iterator() (in module litestar.response.file)</a>
 </li>
       <li><a href="reference/types.html#litestar.types.AsyncAnyCallable">AsyncAnyCallable (in module litestar.types)</a>
 </li>
@@ -1848,7 +1848,11 @@ data-aria-dark="Switch to auto color mode">
 </li>
       <li><a href="reference/events.html#litestar.events.BaseEventEmitterBackend">BaseEventEmitterBackend (class in litestar.events)</a>
 </li>
+      <li><a href="reference/file_system.html#litestar.file_system.BaseFileSystem">BaseFileSystem (class in litestar.file_system)</a>
+</li>
       <li><a href="reference/security/jwt.html#litestar.security.jwt.BaseJWTAuth">BaseJWTAuth (class in litestar.security.jwt)</a>
+</li>
+      <li><a href="reference/file_system.html#litestar.file_system.BaseLocalFileSystem">BaseLocalFileSystem (class in litestar.file_system)</a>
 </li>
       <li><a href="reference/logging/config.html#litestar.logging.config.BaseLoggingConfig">BaseLoggingConfig (class in litestar.logging.config)</a>
 </li>
@@ -1961,8 +1965,6 @@ data-aria-dark="Switch to auto color mode">
       <li><a href="reference/plugins/prometheus.html#litestar.plugins.prometheus.PrometheusConfig.buckets">buckets (litestar.plugins.prometheus.PrometheusConfig attribute)</a>
 </li>
       <li><a href="reference/middleware/compression.html#litestar.middleware.compression.CompressionFacade.params.buffer">buffer (litestar.middleware.compression.CompressionFacade parameter)</a>
-</li>
-      <li><a href="reference/types.html#litestar.types.FileSystemProtocol.open.params.buffering">buffering (litestar.types.FileSystemProtocol.open parameter)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -2103,9 +2105,17 @@ data-aria-dark="Switch to auto color mode">
       <ul>
         <li><a href="reference/response/file.html#litestar.response.file.ASGIFileResponse.params.chunk_size">(litestar.response.file.ASGIFileResponse parameter)</a>
 </li>
-        <li><a href="reference/response/file.html#litestar.response.file.async_file_iterator.params.chunk_size">(litestar.response.file.async_file_iterator parameter)</a>
-</li>
         <li><a href="reference/response/file.html#litestar.response.file.File.params.chunk_size">(litestar.response.file.File parameter)</a>
+</li>
+      </ul></li>
+      <li><a href="reference/file_system.html#litestar.file_system.BaseFileSystem.iter.params.chunksize">chunksize (litestar.file_system.BaseFileSystem.iter parameter)</a>
+
+      <ul>
+        <li><a href="reference/file_system.html#litestar.file_system.BaseLocalFileSystem.iter.params.chunksize">(litestar.file_system.BaseLocalFileSystem.iter parameter)</a>
+</li>
+        <li><a href="reference/file_system.html#litestar.file_system.FsspecAsyncWrapper.iter.params.chunksize">(litestar.file_system.FsspecAsyncWrapper.iter parameter)</a>
+</li>
+        <li><a href="reference/file_system.html#litestar.file_system.FsspecSyncWrapper.iter.params.chunksize">(litestar.file_system.FsspecSyncWrapper.iter parameter)</a>
 </li>
       </ul></li>
       <li><a href="reference/typing.html#litestar.typing.FieldDefinition.has_inner_subclass_of.params.cl">cl (litestar.typing.FieldDefinition.has_inner_subclass_of parameter)</a>
@@ -2338,10 +2348,10 @@ data-aria-dark="Switch to auto color mode">
         <li><a href="reference/params.html#litestar.params.Parameter.params.const">(litestar.params.Parameter parameter)</a>
 </li>
       </ul></li>
-      <li><a href="reference/openapi/spec.html#litestar.openapi.spec.Contact">Contact (class in litestar.openapi.spec)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="reference/openapi/spec.html#litestar.openapi.spec.Contact">Contact (class in litestar.openapi.spec)</a>
+</li>
       <li><a href="reference/openapi/openapi.html#litestar.openapi.OpenAPIConfig.contact">contact (litestar.openapi.OpenAPIConfig attribute)</a>
 
       <ul>
@@ -2652,8 +2662,6 @@ data-aria-dark="Switch to auto color mode">
 </li>
       <li><a href="reference/channels/plugin.html#litestar.channels.plugin.ChannelsPlugin.params.create_ws_route_handlers">create_ws_route_handlers (litestar.channels.plugin.ChannelsPlugin parameter)</a>
 </li>
-      <li><a href="reference/types.html#litestar.types.FileInfo.created">created (litestar.types.FileInfo attribute)</a>
-</li>
       <li><a href="reference/types.html#litestar.types.Logger.critical">critical() (litestar.types.Logger method)</a>
 </li>
       <li><a href="reference/app.html#litestar.app.Litestar.params.csrf_config">csrf_config (litestar.app.Litestar parameter)</a>
@@ -2846,6 +2854,10 @@ data-aria-dark="Switch to auto color mode">
 
       <ul>
         <li><a href="reference/datastructures/index.html#litestar.datastructures.MutableScopeHeaders.getall.params.default">(litestar.datastructures.MutableScopeHeaders.getall parameter)</a>
+</li>
+        <li><a href="reference/file_system.html#litestar.file_system.FileSystemRegistry.params.default">(litestar.file_system.FileSystemRegistry parameter)</a>
+</li>
+        <li><a href="reference/file_system.html#litestar.file_system.FileSystemRegistry.default">(litestar.file_system.FileSystemRegistry property)</a>
 </li>
         <li><a href="reference/openapi/spec.html#litestar.openapi.spec.Schema.default">(litestar.openapi.spec.Schema attribute)</a>
 </li>
@@ -3128,8 +3140,6 @@ data-aria-dark="Switch to auto color mode">
       </ul></li>
       <li><a href="reference/middleware/session/base.html#litestar.middleware.session.base.BaseSessionBackend.deserialize_data">deserialize_data() (litestar.middleware.session.base.BaseSessionBackend static method)</a>
 </li>
-      <li><a href="reference/types.html#litestar.types.FileInfo.destination">destination (litestar.types.FileInfo attribute)</a>
-</li>
       <li><a href="reference/exceptions.html#litestar.exceptions.HTTPException.detail">detail (litestar.exceptions.HTTPException attribute)</a>
 
       <ul>
@@ -3406,6 +3416,24 @@ data-aria-dark="Switch to auto color mode">
         <li><a href="reference/testing.html#litestar.testing.WebSocketTestSession.send_text.params.encoding">(litestar.testing.WebSocketTestSession.send_text parameter)</a>
 </li>
       </ul></li>
+      <li><a href="reference/file_system.html#litestar.file_system.BaseFileSystem.iter.params.end">end (litestar.file_system.BaseFileSystem.iter parameter)</a>
+
+      <ul>
+        <li><a href="reference/file_system.html#litestar.file_system.BaseFileSystem.read_bytes.params.end">(litestar.file_system.BaseFileSystem.read_bytes parameter)</a>
+</li>
+        <li><a href="reference/file_system.html#litestar.file_system.BaseLocalFileSystem.iter.params.end">(litestar.file_system.BaseLocalFileSystem.iter parameter)</a>
+</li>
+        <li><a href="reference/file_system.html#litestar.file_system.BaseLocalFileSystem.read_bytes.params.end">(litestar.file_system.BaseLocalFileSystem.read_bytes parameter)</a>
+</li>
+        <li><a href="reference/file_system.html#litestar.file_system.FsspecAsyncWrapper.iter.params.end">(litestar.file_system.FsspecAsyncWrapper.iter parameter)</a>
+</li>
+        <li><a href="reference/file_system.html#litestar.file_system.FsspecAsyncWrapper.read_bytes.params.end">(litestar.file_system.FsspecAsyncWrapper.read_bytes parameter)</a>
+</li>
+        <li><a href="reference/file_system.html#litestar.file_system.FsspecSyncWrapper.iter.params.end">(litestar.file_system.FsspecSyncWrapper.iter parameter)</a>
+</li>
+        <li><a href="reference/file_system.html#litestar.file_system.FsspecSyncWrapper.read_bytes.params.end">(litestar.file_system.FsspecSyncWrapper.read_bytes parameter)</a>
+</li>
+      </ul></li>
       <li><a href="reference/template.html#litestar.template.TemplateConfig.engine">engine (litestar.template.TemplateConfig attribute)</a>
 </li>
       <li><a href="reference/template.html#litestar.template.TemplateConfig.engine_callback">engine_callback (litestar.template.TemplateConfig attribute)</a>
@@ -3626,6 +3654,8 @@ data-aria-dark="Switch to auto color mode">
         <li><a href="reference/testing.html#litestar.testing.create_test_client.params.exception_handlers">(litestar.testing.create_test_client parameter)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/logging/config.html#litestar.logging.config.BaseLoggingConfig.exception_logging_handler">exception_logging_handler (litestar.logging.config.BaseLoggingConfig attribute)</a>
 
       <ul>
@@ -3634,8 +3664,6 @@ data-aria-dark="Switch to auto color mode">
         <li><a href="reference/logging/config.html#litestar.logging.config.StructLoggingConfig.exception_logging_handler">(litestar.logging.config.StructLoggingConfig attribute)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/plugins/problem_details.html#litestar.plugins.problem_details.ProblemDetailsConfig.exception_to_problem_detail_map">exception_to_problem_detail_map (litestar.plugins.problem_details.ProblemDetailsConfig attribute)</a>
 </li>
       <li><a href="reference/types.html#litestar.types.ExceptionHandler">ExceptionHandler (in module litestar.types)</a>
@@ -4058,8 +4086,6 @@ data-aria-dark="Switch to auto color mode">
         <li><a href="reference/response/file.html#litestar.response.file.File">(class in litestar.response.file)</a>
 </li>
       </ul></li>
-      <li><a href="reference/types.html#litestar.types.FileSystemProtocol.open.params.file">file (litestar.types.FileSystemProtocol.open parameter)</a>
-</li>
       <li><a href="reference/datastructures/index.html#litestar.datastructures.UploadFile.params.file_data">file_data (litestar.datastructures.UploadFile parameter)</a>
 </li>
       <li><a href="reference/response/index.html#litestar.response.File.params.file_info">file_info (litestar.response.File parameter)</a>
@@ -4071,11 +4097,7 @@ data-aria-dark="Switch to auto color mode">
 </li>
       </ul></li>
       <li><a href="reference/response/file.html#litestar.response.file.ASGIFileResponse.params.file_path">file_path (litestar.response.file.ASGIFileResponse parameter)</a>
-
-      <ul>
-        <li><a href="reference/response/file.html#litestar.response.file.async_file_iterator.params.file_path">(litestar.response.file.async_file_iterator parameter)</a>
 </li>
-      </ul></li>
       <li><a href="reference/response/index.html#litestar.response.File.params.file_system">file_system (litestar.response.File parameter)</a>
 
       <ul>
@@ -4086,7 +4108,9 @@ data-aria-dark="Switch to auto color mode">
         <li><a href="reference/static_files.html#litestar.static_files.create_static_files_router.params.file_system">(litestar.static_files.create_static_files_router parameter)</a>
 </li>
       </ul></li>
-      <li><a href="reference/types.html#litestar.types.FileInfo">FileInfo (class in litestar.types)</a>
+      <li><a href="reference/file_system.html#litestar.file_system.FileSystemRegistry.params.file_systems">file_systems (litestar.file_system.FileSystemRegistry parameter)</a>
+</li>
+      <li><a href="reference/file_system.html#litestar.file_system.FileInfo">FileInfo (class in litestar.file_system)</a>
 </li>
       <li><a href="reference/datastructures/index.html#litestar.datastructures.UploadFile.params.filename">filename (litestar.datastructures.UploadFile parameter)</a>
 
@@ -4100,7 +4124,7 @@ data-aria-dark="Switch to auto color mode">
       </ul></li>
       <li><a href="reference/stores/file.html#litestar.stores.file.FileStore">FileStore (class in litestar.stores.file)</a>
 </li>
-      <li><a href="reference/types.html#litestar.types.FileSystemProtocol">FileSystemProtocol (class in litestar.types)</a>
+      <li><a href="reference/file_system.html#litestar.file_system.FileSystemRegistry">FileSystemRegistry (class in litestar.file_system)</a>
 </li>
       <li><a href="reference/repository/abc.html#litestar.repository.abc.AbstractAsyncRepository.filter_collection_by_kwargs">filter_collection_by_kwargs() (litestar.repository.abc.AbstractAsyncRepository method)</a>
 
@@ -4108,12 +4132,12 @@ data-aria-dark="Switch to auto color mode">
         <li><a href="reference/repository/abc.html#litestar.repository.abc.AbstractSyncRepository.filter_collection_by_kwargs">(litestar.repository.abc.AbstractSyncRepository method)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/logging/config.html#litestar.logging.config.LoggingConfig.filters">filters (litestar.logging.config.LoggingConfig attribute)</a>
 </li>
       <li><a href="reference/plugins/flash_messages.html#litestar.plugins.flash.FlashConfig">FlashConfig (class in litestar.plugins.flash)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/plugins/flash_messages.html#litestar.plugins.flash.FlashPlugin">FlashPlugin (class in litestar.plugins.flash)</a>
 </li>
       <li><a href="reference/openapi/spec.html#litestar.openapi.spec.SecurityScheme.flows">flows (litestar.openapi.spec.SecurityScheme attribute)</a>
@@ -4212,6 +4236,14 @@ data-aria-dark="Switch to auto color mode">
       </ul></li>
       <li><a href="reference/contrib/mako.html#litestar.contrib.mako.MakoTemplateEngine.from_template_lookup">from_template_lookup() (litestar.contrib.mako.MakoTemplateEngine class method)</a>
 </li>
+      <li><a href="reference/file_system.html#litestar.file_system.FsspecAsyncWrapper.params.fs">fs (litestar.file_system.FsspecAsyncWrapper parameter)</a>
+</li>
+      <li><a href="reference/file_system.html#litestar.file_system.LinkableFileSystem.register_as_linkable.params.fs_type">fs_type (litestar.file_system.LinkableFileSystem.register_as_linkable parameter)</a>
+</li>
+      <li><a href="reference/file_system.html#litestar.file_system.FsspecAsyncWrapper">FsspecAsyncWrapper (class in litestar.file_system)</a>
+</li>
+      <li><a href="reference/file_system.html#litestar.file_system.FsspecSyncWrapper">FsspecSyncWrapper (class in litestar.file_system)</a>
+</li>
       <li><a href="reference/config.html#litestar.config.app.ExperimentalFeatures.FUTURE">FUTURE (litestar.config.app.ExperimentalFeatures attribute)</a>
 </li>
   </ul></td>
@@ -4251,6 +4283,8 @@ data-aria-dark="Switch to auto color mode">
       <li><a href="reference/handlers.html#litestar.handlers.get">get() (in module litestar.handlers)</a>
 
       <ul>
+        <li><a href="reference/file_system.html#litestar.file_system.FileSystemRegistry.get">(litestar.file_system.FileSystemRegistry method)</a>
+</li>
         <li><a href="reference/middleware/session/server_side.html#litestar.middleware.session.server_side.ServerSideSessionBackend.get">(litestar.middleware.session.server_side.ServerSideSessionBackend method)</a>
 </li>
         <li><a href="reference/repository/abc.html#litestar.repository.abc.AbstractAsyncRepository.get">(litestar.repository.abc.AbstractAsyncRepository method)</a>
@@ -4285,6 +4319,8 @@ data-aria-dark="Switch to auto color mode">
       <li><a href="reference/middleware/session/client_side.html#litestar.middleware.session.client_side.ClientSideSessionBackend.get_cookie_keys">get_cookie_keys() (litestar.middleware.session.client_side.ClientSideSessionBackend method)</a>
 </li>
       <li><a href="reference/dto/base_dto.html#litestar.dto.base_dto.AbstractDTO.get_dto_config_from_annotated_type">get_dto_config_from_annotated_type() (litestar.dto.base_dto.AbstractDTO static method)</a>
+</li>
+      <li><a href="reference/file_system.html#litestar.file_system.get_fsspec_mtime_equivalent">get_fsspec_mtime_equivalent() (in module litestar.file_system)</a>
 </li>
       <li><a href="reference/app.html#litestar.app.Litestar.get_handler_index_by_name">get_handler_index_by_name() (litestar.app.Litestar method)</a>
 </li>
@@ -4358,10 +4394,10 @@ data-aria-dark="Switch to auto color mode">
       </ul></li>
       <li><a href="reference/controller.html#litestar.controller.Controller.get_route_handlers">get_route_handlers() (litestar.controller.Controller method)</a>
 </li>
-      <li><a href="reference/datastructures/secret_values.html#litestar.datastructures.secret_values.SecretValue.get_secret">get_secret() (litestar.datastructures.secret_values.SecretValue method)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="reference/datastructures/secret_values.html#litestar.datastructures.secret_values.SecretValue.get_secret">get_secret() (litestar.datastructures.secret_values.SecretValue method)</a>
+</li>
       <li><a href="reference/serialization.html#litestar.serialization.get_serializer">get_serializer() (in module litestar.serialization)</a>
 </li>
       <li><a href="reference/testing.html#litestar.testing.AsyncTestClient.get_session_data">get_session_data() (litestar.testing.AsyncTestClient method)</a>
@@ -4386,6 +4422,8 @@ data-aria-dark="Switch to auto color mode">
         <li><a href="reference/middleware/session/server_side.html#litestar.middleware.session.server_side.ServerSideSessionConfig.get_store_from_app">(litestar.middleware.session.server_side.ServerSideSessionConfig method)</a>
 </li>
       </ul></li>
+      <li><a href="reference/file_system.html#litestar.file_system.LinkableFileSystem.get_symlink_resolver">get_symlink_resolver() (litestar.file_system.LinkableFileSystem class method)</a>
+</li>
       <li><a href="reference/contrib/jinja.html#litestar.contrib.jinja.JinjaTemplateEngine.get_template">get_template() (litestar.contrib.jinja.JinjaTemplateEngine method)</a>
 
       <ul>
@@ -4415,8 +4453,6 @@ data-aria-dark="Switch to auto color mode">
 </li>
       </ul></li>
       <li><a href="reference/datastructures/index.html#litestar.datastructures.MutableScopeHeaders.getall">getall() (litestar.datastructures.MutableScopeHeaders method)</a>
-</li>
-      <li><a href="reference/types.html#litestar.types.FileInfo.gid">gid (litestar.types.FileInfo attribute)</a>
 </li>
       <li><a href="reference/openapi/plugins.html#litestar.openapi.plugins.RedocRenderPlugin.params.google_fonts">google_fonts (litestar.openapi.plugins.RedocRenderPlugin parameter)</a>
 </li>
@@ -5022,9 +5058,15 @@ data-aria-dark="Switch to auto color mode">
 </li>
       <li><a href="reference/openapi/spec.html#litestar.openapi.spec.OpenAPI.info">info (litestar.openapi.spec.OpenAPI attribute)</a>
 </li>
-      <li><a href="reference/types.html#litestar.types.FileSystemProtocol.info">info() (litestar.types.FileSystemProtocol method)</a>
+      <li><a href="reference/file_system.html#litestar.file_system.BaseFileSystem.info">info() (litestar.file_system.BaseFileSystem method)</a>
 
       <ul>
+        <li><a href="reference/file_system.html#litestar.file_system.BaseLocalFileSystem.info">(litestar.file_system.BaseLocalFileSystem method)</a>
+</li>
+        <li><a href="reference/file_system.html#litestar.file_system.FsspecAsyncWrapper.info">(litestar.file_system.FsspecAsyncWrapper method)</a>
+</li>
+        <li><a href="reference/file_system.html#litestar.file_system.FsspecSyncWrapper.info">(litestar.file_system.FsspecSyncWrapper method)</a>
+</li>
         <li><a href="reference/types.html#litestar.types.Logger.info">(litestar.types.Logger method)</a>
 </li>
       </ul></li>
@@ -5040,8 +5082,6 @@ data-aria-dark="Switch to auto color mode">
         <li><a href="reference/typing.html#litestar.typing.FieldDefinition.from_kwarg.params.inner_types">(litestar.typing.FieldDefinition.from_kwarg parameter)</a>
 </li>
       </ul></li>
-      <li><a href="reference/types.html#litestar.types.FileInfo.ino">ino (litestar.types.FileInfo attribute)</a>
-</li>
       <li><a href="reference/dto/data_structures.html#litestar.dto.data_structures.DTOData.update_instance.params.instance">instance (litestar.dto.data_structures.DTOData.update_instance parameter)</a>
 
       <ul>
@@ -5080,10 +5120,10 @@ data-aria-dark="Switch to auto color mode">
         <li><a href="reference/plugins/pydantic.html#litestar.plugins.pydantic.PydanticSchemaPlugin.is_constrained_field">(litestar.plugins.pydantic.PydanticSchemaPlugin static method)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/typing.html#litestar.typing.FieldDefinition.is_dataclass_type">is_dataclass_type (litestar.typing.FieldDefinition property)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/typing.html#litestar.typing.FieldDefinition.is_forward_ref">is_forward_ref (litestar.typing.FieldDefinition property)</a>
 </li>
       <li><a href="reference/typing.html#litestar.typing.FieldDefinition.is_generic">is_generic (litestar.typing.FieldDefinition property)</a>
@@ -5162,6 +5202,8 @@ data-aria-dark="Switch to auto color mode">
 </li>
       <li><a href="reference/dto/base_dto.html#litestar.dto.base_dto.AbstractDTO.is_supported_model_type_field">is_supported_model_type_field() (litestar.dto.base_dto.AbstractDTO class method)</a>
 </li>
+      <li><a href="reference/file_system.html#litestar.file_system.FileInfo.is_symlink">is_symlink (litestar.file_system.FileInfo attribute)</a>
+</li>
       <li><a href="reference/typing.html#litestar.typing.FieldDefinition.is_tuple">is_tuple (litestar.typing.FieldDefinition property)</a>
 </li>
       <li><a href="reference/typing.html#litestar.typing.FieldDefinition.is_type_alias_type">is_type_alias_type (litestar.typing.FieldDefinition property)</a>
@@ -5177,8 +5219,6 @@ data-aria-dark="Switch to auto color mode">
 </li>
       </ul></li>
       <li><a href="reference/typing.html#litestar.typing.FieldDefinition.is_union">is_union (litestar.typing.FieldDefinition property)</a>
-</li>
-      <li><a href="reference/types.html#litestar.types.FileInfo.islink">islink (litestar.types.FileInfo attribute)</a>
 </li>
       <li><a href="reference/security/jwt.html#litestar.security.jwt.Token.iss">iss (litestar.security.jwt.Token attribute)</a>
 </li>
@@ -5228,6 +5268,16 @@ data-aria-dark="Switch to auto color mode">
         <li><a href="reference/pagination.html#litestar.pagination.CursorPagination.items">(litestar.pagination.CursorPagination attribute)</a>
 </li>
         <li><a href="reference/pagination.html#litestar.pagination.OffsetPagination.items">(litestar.pagination.OffsetPagination attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="reference/file_system.html#litestar.file_system.BaseFileSystem.iter">iter() (litestar.file_system.BaseFileSystem method)</a>
+
+      <ul>
+        <li><a href="reference/file_system.html#litestar.file_system.BaseLocalFileSystem.iter">(litestar.file_system.BaseLocalFileSystem method)</a>
+</li>
+        <li><a href="reference/file_system.html#litestar.file_system.FsspecAsyncWrapper.iter">(litestar.file_system.FsspecAsyncWrapper method)</a>
+</li>
+        <li><a href="reference/file_system.html#litestar.file_system.FsspecSyncWrapper.iter">(litestar.file_system.FsspecSyncWrapper method)</a>
 </li>
       </ul></li>
       <li><a href="reference/connection.html#litestar.connection.WebSocket.iter_data">iter_data() (litestar.connection.WebSocket method)</a>
@@ -5483,6 +5533,8 @@ data-aria-dark="Switch to auto color mode">
 </li>
       </ul></li>
       <li><a href="reference/openapi/spec.html#litestar.openapi.spec.Link">Link (class in litestar.openapi.spec)</a>
+</li>
+      <li><a href="reference/file_system.html#litestar.file_system.LinkableFileSystem">LinkableFileSystem (class in litestar.file_system)</a>
 </li>
       <li><a href="reference/openapi/spec.html#litestar.openapi.spec.Components.links">links (litestar.openapi.spec.Components attribute)</a>
 
@@ -5926,6 +5978,13 @@ data-aria-dark="Switch to auto color mode">
 
       <ul>
         <li><a href="reference/exceptions.html#module-litestar.exceptions.responses">module</a>
+</li>
+      </ul></li>
+      <li>
+    litestar.file_system
+
+      <ul>
+        <li><a href="reference/file_system.html#module-litestar.file_system">module</a>
 </li>
       </ul></li>
       <li>
@@ -6468,6 +6527,8 @@ data-aria-dark="Switch to auto color mode">
 </li>
       <li><a href="reference/openapi/spec.html#litestar.openapi.spec.Schema.maximum">maximum (litestar.openapi.spec.Schema attribute)</a>
 </li>
+      <li><a href="reference/file_system.html#litestar.file_system.maybe_wrap_fsspec_file_system">maybe_wrap_fsspec_file_system() (in module litestar.file_system)</a>
+</li>
       <li><a href="reference/datastructures/index.html#litestar.datastructures.Accept.accepts.params.media_type">media_type (litestar.datastructures.Accept.accepts parameter)</a>
 
       <ul>
@@ -6704,10 +6765,10 @@ data-aria-dark="Switch to auto color mode">
       </ul></li>
       <li><a href="reference/openapi/spec.html#litestar.openapi.spec.Schema.min_properties">min_properties (litestar.openapi.spec.Schema attribute)</a>
 </li>
-      <li><a href="reference/openapi/spec.html#litestar.openapi.spec.Schema.minimum">minimum (litestar.openapi.spec.Schema attribute)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="reference/openapi/spec.html#litestar.openapi.spec.Schema.minimum">minimum (litestar.openapi.spec.Schema attribute)</a>
+</li>
       <li><a href="reference/config.html#litestar.config.compression.CompressionConfig.minimum_size">minimum_size (litestar.config.compression.CompressionConfig attribute)</a>
 </li>
       <li><a href="reference/exceptions.html#litestar.exceptions.MissingDependencyException">MissingDependencyException</a>
@@ -6734,10 +6795,6 @@ data-aria-dark="Switch to auto color mode">
         <li><a href="reference/testing.html#litestar.testing.WebSocketTestSession.send.params.mode">(litestar.testing.WebSocketTestSession.send parameter)</a>
 </li>
         <li><a href="reference/testing.html#litestar.testing.WebSocketTestSession.send_json.params.mode">(litestar.testing.WebSocketTestSession.send_json parameter)</a>
-</li>
-        <li><a href="reference/types.html#litestar.types.FileInfo.mode">(litestar.types.FileInfo attribute)</a>
-</li>
-        <li><a href="reference/types.html#litestar.types.FileSystemProtocol.open.params.mode">(litestar.types.FileSystemProtocol.open parameter)</a>
 </li>
       </ul></li>
       <li><a href="reference/dto/data_structures.html#litestar.dto.data_structures.DTOFieldDefinition.model_name">model_name (litestar.dto.data_structures.DTOFieldDefinition attribute)</a>
@@ -6841,6 +6898,8 @@ data-aria-dark="Switch to auto color mode">
         <li><a href="reference/exceptions.html#module-litestar.exceptions">litestar.exceptions</a>
 </li>
         <li><a href="reference/exceptions.html#module-litestar.exceptions.responses">litestar.exceptions.responses</a>
+</li>
+        <li><a href="reference/file_system.html#module-litestar.file_system">litestar.file_system</a>
 </li>
         <li><a href="reference/handlers.html#module-litestar.handlers">litestar.handlers</a>
 </li>
@@ -6959,7 +7018,7 @@ data-aria-dark="Switch to auto color mode">
 </li>
       <li><a href="reference/dto/msgspec_dto.html#litestar.dto.msgspec_dto.MsgspecDTO">MsgspecDTO (class in litestar.dto.msgspec_dto)</a>
 </li>
-      <li><a href="reference/types.html#litestar.types.FileInfo.mtime">mtime (litestar.types.FileInfo attribute)</a>
+      <li><a href="reference/file_system.html#litestar.file_system.FileInfo.mtime">mtime (litestar.file_system.FileInfo attribute)</a>
 </li>
       <li><a href="reference/datastructures/index.html#litestar.datastructures.MultiMixin.multi_items">multi_items() (litestar.datastructures.MultiMixin method)</a>
 </li>
@@ -7018,6 +7077,8 @@ data-aria-dark="Switch to auto color mode">
 </li>
         <li><a href="reference/datastructures/index.html#litestar.datastructures.ResponseHeader.name">(litestar.datastructures.ResponseHeader attribute)</a>
 </li>
+        <li><a href="reference/file_system.html#litestar.file_system.FileInfo.name">(litestar.file_system.FileInfo attribute)</a>
+</li>
         <li><a href="reference/handlers.html#litestar.handlers.asgi.params.name">(litestar.handlers.asgi parameter)</a>
 </li>
         <li><a href="reference/handlers.html#litestar.handlers.ASGIRouteHandler.params.name">(litestar.handlers.ASGIRouteHandler parameter)</a>
@@ -7072,8 +7133,6 @@ data-aria-dark="Switch to auto color mode">
 </li>
         <li><a href="reference/stores/registry.html#litestar.stores.registry.StoreRegistry.register.params.name">(litestar.stores.registry.StoreRegistry.register parameter)</a>
 </li>
-        <li><a href="reference/types.html#litestar.types.FileInfo.name">(litestar.types.FileInfo attribute)</a>
-</li>
         <li><a href="reference/typing.html#litestar.typing.FieldDefinition.name">(litestar.typing.FieldDefinition attribute)</a>
 </li>
         <li><a href="reference/typing.html#litestar.typing.FieldDefinition.from_kwarg.params.name">(litestar.typing.FieldDefinition.from_kwarg parameter)</a>
@@ -7108,8 +7167,6 @@ data-aria-dark="Switch to auto color mode">
       <li><a href="reference/stores/base.html#litestar.stores.base.StorageObject.new">new() (litestar.stores.base.StorageObject class method)</a>
 </li>
       <li><a href="reference/middleware/index.html#litestar.middleware.ASGIMiddleware.handle.params.next_app">next_app (litestar.middleware.ASGIMiddleware.handle parameter)</a>
-</li>
-      <li><a href="reference/types.html#litestar.types.FileInfo.nlink">nlink (litestar.types.FileInfo attribute)</a>
 </li>
       <li><a href="reference/datastructures/index.html#litestar.datastructures.CacheControlHeader.no_cache">no_cache (litestar.datastructures.CacheControlHeader attribute)</a>
 </li>
@@ -7296,8 +7353,6 @@ data-aria-dark="Switch to auto color mode">
       <li><a href="reference/types.html#litestar.types.OnAppInitHandler">OnAppInitHandler (in module litestar.types)</a>
 </li>
       <li><a href="reference/openapi/spec.html#litestar.openapi.spec.Schema.one_of">one_of (litestar.openapi.spec.Schema attribute)</a>
-</li>
-      <li><a href="reference/types.html#litestar.types.FileSystemProtocol.open">open() (litestar.types.FileSystemProtocol method)</a>
 </li>
       <li><a href="reference/openapi/spec.html#litestar.openapi.spec.SecurityScheme.open_id_connect_url">open_id_connect_url (litestar.openapi.spec.SecurityScheme attribute)</a>
 </li>
@@ -7634,6 +7689,22 @@ data-aria-dark="Switch to auto color mode">
 </li>
         <li><a href="reference/datastructures/index.html#litestar.datastructures.URL.with_replacements.params.path">(litestar.datastructures.URL.with_replacements parameter)</a>
 </li>
+        <li><a href="reference/file_system.html#litestar.file_system.BaseFileSystem.iter.params.path">(litestar.file_system.BaseFileSystem.iter parameter)</a>
+</li>
+        <li><a href="reference/file_system.html#litestar.file_system.BaseFileSystem.read_bytes.params.path">(litestar.file_system.BaseFileSystem.read_bytes parameter)</a>
+</li>
+        <li><a href="reference/file_system.html#litestar.file_system.BaseLocalFileSystem.iter.params.path">(litestar.file_system.BaseLocalFileSystem.iter parameter)</a>
+</li>
+        <li><a href="reference/file_system.html#litestar.file_system.BaseLocalFileSystem.read_bytes.params.path">(litestar.file_system.BaseLocalFileSystem.read_bytes parameter)</a>
+</li>
+        <li><a href="reference/file_system.html#litestar.file_system.FsspecAsyncWrapper.iter.params.path">(litestar.file_system.FsspecAsyncWrapper.iter parameter)</a>
+</li>
+        <li><a href="reference/file_system.html#litestar.file_system.FsspecAsyncWrapper.read_bytes.params.path">(litestar.file_system.FsspecAsyncWrapper.read_bytes parameter)</a>
+</li>
+        <li><a href="reference/file_system.html#litestar.file_system.FsspecSyncWrapper.iter.params.path">(litestar.file_system.FsspecSyncWrapper.iter parameter)</a>
+</li>
+        <li><a href="reference/file_system.html#litestar.file_system.FsspecSyncWrapper.read_bytes.params.path">(litestar.file_system.FsspecSyncWrapper.read_bytes parameter)</a>
+</li>
         <li><a href="reference/handlers.html#litestar.handlers.asgi.params.path">(litestar.handlers.asgi parameter)</a>
 </li>
         <li><a href="reference/handlers.html#litestar.handlers.ASGIRouteHandler.params.path">(litestar.handlers.ASGIRouteHandler parameter)</a>
@@ -7743,8 +7814,6 @@ data-aria-dark="Switch to auto color mode">
         <li><a href="reference/testing.html#litestar.testing.RequestFactory.post.params.path">(litestar.testing.RequestFactory.post parameter)</a>
 </li>
         <li><a href="reference/testing.html#litestar.testing.RequestFactory.put.params.path">(litestar.testing.RequestFactory.put parameter)</a>
-</li>
-        <li><a href="reference/types.html#litestar.types.FileSystemProtocol.info.params.path">(litestar.types.FileSystemProtocol.info parameter)</a>
 </li>
       </ul></li>
   </ul></td>
@@ -8049,6 +8118,16 @@ data-aria-dark="Switch to auto color mode">
 </li>
       <li><a href="reference/datastructures/index.html#litestar.datastructures.UploadFile.read">read() (litestar.datastructures.UploadFile method)</a>
 </li>
+      <li><a href="reference/file_system.html#litestar.file_system.BaseFileSystem.read_bytes">read_bytes() (litestar.file_system.BaseFileSystem method)</a>
+
+      <ul>
+        <li><a href="reference/file_system.html#litestar.file_system.BaseLocalFileSystem.read_bytes">(litestar.file_system.BaseLocalFileSystem method)</a>
+</li>
+        <li><a href="reference/file_system.html#litestar.file_system.FsspecAsyncWrapper.read_bytes">(litestar.file_system.FsspecAsyncWrapper method)</a>
+</li>
+        <li><a href="reference/file_system.html#litestar.file_system.FsspecSyncWrapper.read_bytes">(litestar.file_system.FsspecSyncWrapper method)</a>
+</li>
+      </ul></li>
       <li><a href="reference/dto/field.html#litestar.dto.field.Mark.READ_ONLY">READ_ONLY (litestar.dto.field.Mark attribute)</a>
 </li>
       <li><a href="reference/openapi/spec.html#litestar.openapi.spec.Schema.read_only">read_only (litestar.openapi.spec.Schema attribute)</a>
@@ -8192,11 +8271,15 @@ data-aria-dark="Switch to auto color mode">
       <li><a href="reference/app.html#litestar.app.Litestar.register">register() (litestar.app.Litestar method)</a>
 
       <ul>
+        <li><a href="reference/file_system.html#litestar.file_system.FileSystemRegistry.register">(litestar.file_system.FileSystemRegistry method)</a>
+</li>
         <li><a href="reference/router.html#litestar.router.Router.register">(litestar.router.Router method)</a>
 </li>
         <li><a href="reference/stores/registry.html#litestar.stores.registry.StoreRegistry.register">(litestar.stores.registry.StoreRegistry method)</a>
 </li>
       </ul></li>
+      <li><a href="reference/file_system.html#litestar.file_system.LinkableFileSystem.register_as_linkable">register_as_linkable() (litestar.file_system.LinkableFileSystem class method)</a>
+</li>
       <li><a href="reference/contrib/jinja.html#litestar.contrib.jinja.JinjaTemplateEngine.register_template_callable">register_template_callable() (litestar.contrib.jinja.JinjaTemplateEngine method)</a>
 
       <ul>
@@ -8443,10 +8526,10 @@ data-aria-dark="Switch to auto color mode">
         <li><a href="reference/params.html#litestar.params.ParameterKwarg.required">(litestar.params.ParameterKwarg attribute)</a>
 </li>
       </ul></li>
-      <li><a href="reference/handlers.html#litestar.handlers.HTTPRouteHandler.resolve_after_response">resolve_after_response() (litestar.handlers.HTTPRouteHandler method)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="reference/handlers.html#litestar.handlers.HTTPRouteHandler.resolve_after_response">resolve_after_response() (litestar.handlers.HTTPRouteHandler method)</a>
+</li>
       <li><a href="reference/handlers.html#litestar.handlers.HTTPRouteHandler.resolve_before_request">resolve_before_request() (litestar.handlers.HTTPRouteHandler method)</a>
 </li>
       <li><a href="reference/handlers.html#litestar.handlers.BaseRouteHandler.resolve_dependencies">resolve_dependencies() (litestar.handlers.BaseRouteHandler method)</a>
@@ -8473,8 +8556,12 @@ data-aria-dark="Switch to auto color mode">
 </li>
       <li><a href="reference/handlers.html#litestar.handlers.BaseRouteHandler.resolve_signature_namespace">resolve_signature_namespace() (litestar.handlers.BaseRouteHandler method)</a>
 </li>
-      <li><a href="reference/static_files.html#litestar.static_files.create_static_files_router.params.resolve_symlinks">resolve_symlinks (litestar.static_files.create_static_files_router parameter)</a>
+      <li><a href="reference/file_system.html#litestar.file_system.BaseLocalFileSystem.resolve_symlinks">resolve_symlinks() (litestar.file_system.BaseLocalFileSystem method)</a>
+
+      <ul>
+        <li><a href="reference/file_system.html#litestar.file_system.LinkableFileSystem.resolve_symlinks">(litestar.file_system.LinkableFileSystem method)</a>
 </li>
+      </ul></li>
       <li><a href="reference/handlers.html#litestar.handlers.HTTPRouteHandler.resolve_tags">resolve_tags() (litestar.handlers.HTTPRouteHandler method)</a>
 </li>
       <li><a href="reference/handlers.html#litestar.handlers.BaseRouteHandler.resolve_type_decoders">resolve_type_decoders() (litestar.handlers.BaseRouteHandler method)</a>
@@ -8482,6 +8569,8 @@ data-aria-dark="Switch to auto color mode">
       <li><a href="reference/handlers.html#litestar.handlers.BaseRouteHandler.resolve_type_encoders">resolve_type_encoders() (litestar.handlers.BaseRouteHandler method)</a>
 </li>
       <li><a href="reference/handlers.html#litestar.handlers.WebsocketRouteHandler.resolve_websocket_class">resolve_websocket_class() (litestar.handlers.WebsocketRouteHandler method)</a>
+</li>
+      <li><a href="reference/file_system.html#litestar.file_system.LinkableFileSystem.register_as_linkable.params.resolver">resolver (litestar.file_system.LinkableFileSystem.register_as_linkable parameter)</a>
 </li>
       <li><a href="reference/logging/standard.html#litestar.logging.standard.LoggingQueueListener.params.respect_handler_level">respect_handler_level (litestar.logging.standard.LoggingQueueListener parameter)</a>
 </li>
@@ -9582,7 +9671,7 @@ data-aria-dark="Switch to auto color mode">
       <li><a href="reference/datastructures/index.html#litestar.datastructures.UploadFile.read.params.size">size (litestar.datastructures.UploadFile.read parameter)</a>
 
       <ul>
-        <li><a href="reference/types.html#litestar.types.FileInfo.size">(litestar.types.FileInfo attribute)</a>
+        <li><a href="reference/file_system.html#litestar.file_system.FileInfo.size">(litestar.file_system.FileInfo attribute)</a>
 </li>
       </ul></li>
       <li><a href="reference/data_extractors.html#litestar.data_extractors.ConnectionDataExtractor.params.skip_parse_malformed_body">skip_parse_malformed_body (litestar.data_extractors.ConnectionDataExtractor parameter)</a>
@@ -9605,6 +9694,24 @@ data-aria-dark="Switch to auto color mode">
 </li>
       <li><a href="reference/logging/config.html#litestar.logging.config.StructLoggingConfig.standard_lib_logging_config">standard_lib_logging_config (litestar.logging.config.StructLoggingConfig attribute)</a>
 </li>
+      <li><a href="reference/file_system.html#litestar.file_system.BaseFileSystem.iter.params.start">start (litestar.file_system.BaseFileSystem.iter parameter)</a>
+
+      <ul>
+        <li><a href="reference/file_system.html#litestar.file_system.BaseFileSystem.read_bytes.params.start">(litestar.file_system.BaseFileSystem.read_bytes parameter)</a>
+</li>
+        <li><a href="reference/file_system.html#litestar.file_system.BaseLocalFileSystem.iter.params.start">(litestar.file_system.BaseLocalFileSystem.iter parameter)</a>
+</li>
+        <li><a href="reference/file_system.html#litestar.file_system.BaseLocalFileSystem.read_bytes.params.start">(litestar.file_system.BaseLocalFileSystem.read_bytes parameter)</a>
+</li>
+        <li><a href="reference/file_system.html#litestar.file_system.FsspecAsyncWrapper.iter.params.start">(litestar.file_system.FsspecAsyncWrapper.iter parameter)</a>
+</li>
+        <li><a href="reference/file_system.html#litestar.file_system.FsspecAsyncWrapper.read_bytes.params.start">(litestar.file_system.FsspecAsyncWrapper.read_bytes parameter)</a>
+</li>
+        <li><a href="reference/file_system.html#litestar.file_system.FsspecSyncWrapper.iter.params.start">(litestar.file_system.FsspecSyncWrapper.iter parameter)</a>
+</li>
+        <li><a href="reference/file_system.html#litestar.file_system.FsspecSyncWrapper.read_bytes.params.start">(litestar.file_system.FsspecSyncWrapper.read_bytes parameter)</a>
+</li>
+      </ul></li>
       <li><a href="reference/response/base.html#litestar.response.base.ASGIResponse.start_response">start_response() (litestar.response.base.ASGIResponse method)</a>
 
       <ul>
@@ -9613,14 +9720,6 @@ data-aria-dark="Switch to auto color mode">
       </ul></li>
       <li><a href="reference/channels/plugin.html#litestar.channels.plugin.ChannelsPlugin.start_subscription">start_subscription() (litestar.channels.plugin.ChannelsPlugin method)</a>
 </li>
-      <li><a href="reference/response/index.html#litestar.response.File.params.stat_result">stat_result (litestar.response.File parameter)</a>
-
-      <ul>
-        <li><a href="reference/response/file.html#litestar.response.file.ASGIFileResponse.params.stat_result">(litestar.response.file.ASGIFileResponse parameter)</a>
-</li>
-        <li><a href="reference/response/file.html#litestar.response.file.File.params.stat_result">(litestar.response.file.File parameter)</a>
-</li>
-      </ul></li>
       <li><a href="reference/datastructures/index.html#litestar.datastructures.State">State (class in litestar.datastructures)</a>
 </li>
       <li><a href="reference/app.html#litestar.app.Litestar.params.state">state (litestar.app.Litestar parameter)</a>
@@ -10333,12 +10432,12 @@ data-aria-dark="Switch to auto color mode">
 </li>
       <li><a href="reference/plugins/htmx.html#litestar.plugins.htmx.HTMXDetails.triggering_event">triggering_event (litestar.plugins.htmx.HTMXDetails property)</a>
 </li>
-      <li><a href="reference/openapi/spec.html#litestar.openapi.spec.Schema.type">type (litestar.openapi.spec.Schema attribute)</a>
+      <li><a href="reference/file_system.html#litestar.file_system.FileInfo.type">type (litestar.file_system.FileInfo attribute)</a>
 
       <ul>
-        <li><a href="reference/openapi/spec.html#litestar.openapi.spec.SecurityScheme.type">(litestar.openapi.spec.SecurityScheme attribute)</a>
+        <li><a href="reference/openapi/spec.html#litestar.openapi.spec.Schema.type">(litestar.openapi.spec.Schema attribute)</a>
 </li>
-        <li><a href="reference/types.html#litestar.types.FileInfo.type">(litestar.types.FileInfo attribute)</a>
+        <li><a href="reference/openapi/spec.html#litestar.openapi.spec.SecurityScheme.type">(litestar.openapi.spec.SecurityScheme attribute)</a>
 </li>
       </ul></li>
       <li><a href="reference/plugins/problem_details.html#litestar.plugins.problem_details.ProblemDetailsException.params.type_">type_ (litestar.plugins.problem_details.ProblemDetailsException parameter)</a>
@@ -10489,8 +10588,6 @@ data-aria-dark="Switch to auto color mode">
 <h2 id="U">U</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="reference/types.html#litestar.types.FileInfo.uid">uid (litestar.types.FileInfo attribute)</a>
-</li>
       <li><a href="reference/dto/config.html#litestar.dto.config.DTOConfig.underscore_fields_private">underscore_fields_private (litestar.dto.config.DTOConfig attribute)</a>
 </li>
       <li><a href="reference/openapi/spec.html#litestar.openapi.spec.Schema.unevaluated_items">unevaluated_items (litestar.openapi.spec.Schema attribute)</a>
@@ -10547,10 +10644,10 @@ data-aria-dark="Switch to auto color mode">
         <li><a href="reference/repository/abc.html#litestar.repository.abc.AbstractSyncRepository.upsert_many">(litestar.repository.abc.AbstractSyncRepository method)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/datastructures/index.html#litestar.datastructures.URL">URL (class in litestar.datastructures)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/connection.html#litestar.connection.ASGIConnection.url">url (litestar.connection.ASGIConnection property)</a>
 
       <ul>

@@ -194,6 +194,7 @@ data-aria-dark="Switch to auto color mode">
 </li>
 <li class="toctree-l2"><a class="reference internal" href="events.html">Events</a></li>
 <li class="toctree-l2"><a class="reference internal" href="exceptions.html">Exceptions and exception handling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file_systems.html">File Systems</a></li>
 <li class="toctree-l2"><a class="reference internal" href="htmx.html">HTMX</a></li>
 <li class="toctree-l2"><a class="reference internal" href="lifecycle-hooks.html">Life Cycle Hooks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="logging.html">Logging</a></li>
@@ -307,6 +308,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2"><a class="reference internal" href="../reference/enums.html">enums</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/events.html">events</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/exceptions.html">exceptions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/file_system.html">file_system</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/handlers.html">handlers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/logging/index.html">logging</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../reference/logging/config.html">config</a></li>
@@ -519,7 +521,12 @@ data-aria-dark="Switch to auto color mode">
 </ul>
 </li>
 <li><a class="reference internal" href="#redirect-responses">Redirect Responses</a></li>
-<li><a class="reference internal" href="#file-responses">File Responses</a></li>
+<li><a class="reference internal" href="#file-responses">File Responses</a><ul>
+<li><a class="reference internal" href="#media-types">Media types</a></li>
+<li><a class="reference internal" href="#streaming">Streaming</a></li>
+<li><a class="reference internal" href="#file-systems">File systems</a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#streaming-responses">Streaming Responses</a></li>
 <li><a class="reference internal" href="#server-sent-event-responses">Server Sent Event Responses</a></li>
 <li><a class="reference internal" href="#template-responses">Template Responses</a></li>
@@ -1645,21 +1652,14 @@ status code in the 30x range.</p>
 </span><span data-line="11">    <span class="p">)</span>
 </span></pre></div>
 </div>
-<p>The <a class="reference internal" href="../reference/response/index.html#litestar.response.File" title="litestar.response.File"><code class="xref py py-class docutils literal notranslate"><span class="pre">File</span></code></a> class expects two kwargs:</p>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">path</span></code>: path of the file to download.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">filename</span></code>: the filename to set in the response
-<a class="reference external" href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Disposition">Content-Disposition</a>
-attachment.</p></li>
-</ul>
-<div class="admonition attention">
-<p class="admonition-title">Attention</p>
-<p>When a route handler’s return value is annotated with <a class="reference internal" href="../reference/response/index.html#litestar.response.File" title="litestar.response.File"><code class="xref py py-class docutils literal notranslate"><span class="pre">File</span></code></a>, the default
-<code class="docutils literal notranslate"><span class="pre">media_type</span></code> for the route_handler is switched from <a class="reference internal" href="../reference/enums.html#litestar.enums.MediaType" title="litestar.enums.MediaType"><code class="xref py py-class docutils literal notranslate"><span class="pre">MediaType.JSON</span></code></a> to
-<a class="reference internal" href="../reference/enums.html#litestar.enums.MediaType" title="litestar.enums.MediaType"><code class="xref py py-class docutils literal notranslate"><span class="pre">MediaType.TEXT</span></code></a> (i.e. <code class="docutils literal notranslate"><span class="pre">&quot;text/plain&quot;</span></code>). If the file being sent has an
-<a class="reference external" href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types">IANA media type</a>, you should set it
-as the value for <code class="docutils literal notranslate"><span class="pre">media_type</span></code> instead.</p>
-</div>
+<p>Where <code class="docutils literal notranslate"><span class="pre">path</span></code> is the path of the file to be sent and <code class="docutils literal notranslate"><span class="pre">filename</span></code> an optional filename to set
+in the response <a class="reference external" href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Disposition">Content-Disposition</a>
+attachment.</p>
+<section id="media-types">
+<h3>Media types<a class="headerlink" href="#media-types" title="Permalink to this heading">¶</a></h3>
+<p>If <code class="docutils literal notranslate"><span class="pre">filename</span></code> is provided, Litestar will try to guess the MIME type, otherwise fall
+back to <code class="docutils literal notranslate"><span class="pre">application/octet-stream</span></code>. If the type cannot be inferred via the file name,
+you can set it manually via <code class="docutils literal notranslate"><span class="pre">media_type</span></code></p>
 <p>For example:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 </span><span data-line="2"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">get</span>
@@ -1674,6 +1674,65 @@ as the value for <code class="docutils literal notranslate"><span class="pre">me
 </span><span data-line="11">    <span class="p">)</span>
 </span></pre></div>
 </div>
+</section>
+<section id="streaming">
+<h3>Streaming<a class="headerlink" href="#streaming" title="Permalink to this heading">¶</a></h3>
+<p>File responses are streamed or sent in one chunk. This depends on the file’s size and
+the <code class="docutils literal notranslate"><span class="pre">chunk_size</span></code> set, which defaults to 1 MB. If the file exceeds <code class="docutils literal notranslate"><span class="pre">chunk_size</span></code>, it
+will be streamed.</p>
+</section>
+<section id="file-systems">
+<h3>File systems<a class="headerlink" href="#file-systems" title="Permalink to this heading">¶</a></h3>
+<p><a class="reference internal" href="../reference/response/index.html#litestar.response.File" title="litestar.response.File"><code class="xref py py-class docutils literal notranslate"><span class="pre">File</span></code></a> supports Litestar’s <em>file system protocol and registry</em>.
+If no file system is passed explicitly, files will be sent using the registry’s default
+file system, which itself defaults to
+<a class="reference internal" href="../reference/file_system.html#litestar.file_system.BaseLocalFileSystem" title="litestar.file_system.BaseLocalFileSystem"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseLocalFileSystem</span></code></a>, sending files from disk.
+In addition to Litestar’s own file system protocol, all
+<a class="reference external" href="https://filesystem-spec.readthedocs.io/en/latest/">fsspec</a> file systems are
+supported.</p>
+<div class="literal-block-wrapper docutils container" id="id7">
+<div class="code-block-caption"><span class="caption-text">Sending files from S3</span><a class="headerlink" href="#id7" title="Permalink to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">import</span> <span class="nn">fsspec</span>
+</span><span data-line="2">
+</span><span data-line="3"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
+</span><span data-line="4"><span class="kn">from</span> <span class="nn">litestar.response</span> <span class="kn">import</span> <span class="n">File</span>
+</span><span data-line="5">
+</span><span data-line="6"><span class="n">s3_fs</span> <span class="o">=</span> <span class="n">fsspec</span><span class="o">.</span><span class="n">filesystem</span><span class="p">(</span><span class="s2">&quot;s3&quot;</span><span class="p">,</span> <span class="n">asynchronous</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span data-line="7">
+</span><span data-line="8">
+</span><span data-line="9"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/{file_name:str}&quot;</span><span class="p">)</span>
+</span><span data-line="10"><span class="k">async</span> <span class="k">def</span> <span class="nf">file_handler</span><span class="p">(</span><span class="n">file_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">File</span><span class="p">:</span>
+</span><span data-line="11">    <span class="k">return</span> <span class="n">File</span><span class="p">(</span><span class="n">file_name</span><span class="p">,</span> <span class="n">file_system</span><span class="o">=</span><span class="n">s3_fs</span><span class="p">)</span>
+</span><span data-line="12">
+</span><span data-line="13">
+</span><span data-line="14"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">([</span><span class="n">file_handler</span><span class="p">])</span>
+</span></pre></div>
+</div>
+</div>
+<div class="literal-block-wrapper docutils container" id="id8">
+<div class="code-block-caption"><span class="caption-text">Sending files from S3 by using the registry</span><a class="headerlink" href="#id8" title="Permalink to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">import</span> <span class="nn">fsspec</span>
+</span><span data-line="2">
+</span><span data-line="3"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
+</span><span data-line="4"><span class="kn">from</span> <span class="nn">litestar.file_system</span> <span class="kn">import</span> <span class="n">FileSystemRegistry</span>
+</span><span data-line="5"><span class="kn">from</span> <span class="nn">litestar.response</span> <span class="kn">import</span> <span class="n">File</span>
+</span><span data-line="6">
+</span><span data-line="7">
+</span><span data-line="8"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/{file_name:str}&quot;</span><span class="p">)</span>
+</span><span data-line="9"><span class="k">async</span> <span class="k">def</span> <span class="nf">file_handler</span><span class="p">(</span><span class="n">file_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">File</span><span class="p">:</span>
+</span><span data-line="10">    <span class="k">return</span> <span class="n">File</span><span class="p">(</span><span class="n">file_name</span><span class="p">,</span> <span class="n">file_system</span><span class="o">=</span><span class="s2">&quot;s3&quot;</span><span class="p">)</span>
+</span><span data-line="11">
+</span><span data-line="12">
+</span><span data-line="13"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
+</span><span data-line="14">    <span class="p">[</span><span class="n">file_handler</span><span class="p">],</span>
+</span><span data-line="15">    <span class="n">plugins</span><span class="o">=</span><span class="p">[</span>
+</span><span data-line="16">        <span class="n">FileSystemRegistry</span><span class="p">({</span><span class="s2">&quot;s3&quot;</span><span class="p">:</span> <span class="n">fsspec</span><span class="o">.</span><span class="n">filesystem</span><span class="p">(</span><span class="s2">&quot;s3&quot;</span><span class="p">,</span> <span class="n">asynchronous</span><span class="o">=</span><span class="kc">True</span><span class="p">)}),</span>
+</span><span data-line="17">    <span class="p">],</span>
+</span><span data-line="18"><span class="p">)</span>
+</span></pre></div>
+</div>
+</div>
+</section>
 </section>
 <section id="streaming-responses">
 <h2>Streaming Responses<a class="headerlink" href="#streaming-responses" title="Permalink to this heading">¶</a></h2>
@@ -1827,8 +1886,8 @@ class on multiple layers, the layer closest to the route handler will take prece
 <p>A background task is a sync or async callable (function, method, or class that implements the <a class="reference external" href="https://docs.python.org/3/reference/datamodel.html#object.__call__" title="(in Python v3.13)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">object.__call__()</span></code></a>
 dunder method) that will be called after the response finishes sending the data.</p>
 <p>Thus, in the following example the passed in background task will be executed after the response sends:</p>
-<div class="literal-block-wrapper docutils container" id="id7">
-<div class="code-block-caption"><span class="caption-text">Background Task Passed into Response</span><a class="headerlink" href="#id7" title="Permalink to this code">¶</a></div>
+<div class="literal-block-wrapper docutils container" id="id9">
+<div class="code-block-caption"><span class="caption-text">Background Task Passed into Response</span><a class="headerlink" href="#id9" title="Permalink to this code">¶</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">import</span> <span class="nn">logging</span>
 </span><span data-line="2">
 </span><span data-line="3"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">Response</span><span class="p">,</span> <span class="n">get</span>
@@ -1863,8 +1922,8 @@ The function signature of <code class="docutils literal notranslate"><span class
 enabling correct type checking for arguments and keyword arguments passed to it.</p>
 </div>
 <p>Route decorators (e.g. <code class="docutils literal notranslate"><span class="pre">&#64;get</span></code>, <code class="docutils literal notranslate"><span class="pre">&#64;post</span></code>, etc.) also allow passing in a background task with the <code class="docutils literal notranslate"><span class="pre">background</span></code> kwarg:</p>
-<div class="literal-block-wrapper docutils container" id="id8">
-<div class="code-block-caption"><span class="caption-text">Background Task Passed into Decorator</span><a class="headerlink" href="#id8" title="Permalink to this code">¶</a></div>
+<div class="literal-block-wrapper docutils container" id="id10">
+<div class="code-block-caption"><span class="caption-text">Background Task Passed into Decorator</span><a class="headerlink" href="#id10" title="Permalink to this code">¶</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">import</span> <span class="nn">logging</span>
 </span><span data-line="2">
 </span><span data-line="3"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
@@ -1894,8 +1953,8 @@ enabling correct type checking for arguments and keyword arguments passed to it.
 <h3>Executing Multiple Background Tasks<a class="headerlink" href="#executing-multiple-background-tasks" title="Permalink to this heading">¶</a></h3>
 <p>You can also use the <a class="reference internal" href="../reference/background_tasks.html#litestar.background_tasks.BackgroundTasks" title="litestar.background_tasks.BackgroundTasks"><code class="xref py py-class docutils literal notranslate"><span class="pre">BackgroundTasks</span></code></a> class and pass to it an iterable
 (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></a>, etc.) of <a class="reference internal" href="../reference/background_tasks.html#litestar.background_tasks.BackgroundTask" title="litestar.background_tasks.BackgroundTask"><code class="xref py py-class docutils literal notranslate"><span class="pre">BackgroundTask</span></code></a> instances:</p>
-<div class="literal-block-wrapper docutils container" id="id9">
-<div class="code-block-caption"><span class="caption-text">Multiple Background Tasks</span><a class="headerlink" href="#id9" title="Permalink to this code">¶</a></div>
+<div class="literal-block-wrapper docutils container" id="id11">
+<div class="code-block-caption"><span class="caption-text">Multiple Background Tasks</span><a class="headerlink" href="#id11" title="Permalink to this code">¶</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">import</span> <span class="nn">logging</span>
 </span><span data-line="2">
 </span><span data-line="3"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">Response</span><span class="p">,</span> <span class="n">get</span>
@@ -1952,8 +2011,8 @@ of the box:</p>
 <section id="classic-pagination">
 <h3>Classic Pagination<a class="headerlink" href="#classic-pagination" title="Permalink to this heading">¶</a></h3>
 <p>In classic pagination the dataset is divided into pages of a specific size and the consumer then requests a specific page.</p>
-<div class="literal-block-wrapper docutils container" id="id10">
-<div class="code-block-caption"><span class="caption-text">Classic Pagination</span><a class="headerlink" href="#id10" title="Permalink to this code">¶</a></div>
+<div class="literal-block-wrapper docutils container" id="id12">
+<div class="code-block-caption"><span class="caption-text">Classic Pagination</span><a class="headerlink" href="#id12" title="Permalink to this code">¶</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">polyfactory.factories.pydantic_factory</span> <span class="kn">import</span> <span class="n">ModelFactory</span>
 </span><span data-line="2"><span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseModel</span>
 </span><span data-line="3">
@@ -2010,8 +2069,8 @@ the <a class="reference internal" href="../reference/pagination.html#litestar.pa
 <h3>Offset Pagination<a class="headerlink" href="#offset-pagination" title="Permalink to this heading">¶</a></h3>
 <p>In offset pagination the consumer requests a number of items specified by <code class="docutils literal notranslate"><span class="pre">limit</span></code> and the <code class="docutils literal notranslate"><span class="pre">offset</span></code> from the beginning of the dataset.
 For example, given a list of 50 items, you could request <code class="docutils literal notranslate"><span class="pre">limit=10</span></code>, <code class="docutils literal notranslate"><span class="pre">offset=39</span></code> to request items 40-50.</p>
-<div class="literal-block-wrapper docutils container" id="id11">
-<div class="code-block-caption"><span class="caption-text">Offset Pagination</span><a class="headerlink" href="#id11" title="Permalink to this code">¶</a></div>
+<div class="literal-block-wrapper docutils container" id="id13">
+<div class="code-block-caption"><span class="caption-text">Offset Pagination</span><a class="headerlink" href="#id13" title="Permalink to this code">¶</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">islice</span>
 </span><span data-line="2">
 </span><span data-line="3"><span class="kn">from</span> <span class="nn">polyfactory.factories.pydantic_factory</span> <span class="kn">import</span> <span class="n">ModelFactory</span>
@@ -2069,8 +2128,8 @@ the <a class="reference internal" href="../reference/pagination.html#litestar.pa
 <h4>Offset Pagination With SQLAlchemy<a class="headerlink" href="#offset-pagination-with-sqlalchemy" title="Permalink to this heading">¶</a></h4>
 <p>When retrieving paginated data from the database using SQLAlchemy, the Paginator instance requires an SQLAlchemy session
 instance to make queries. This can be achieved with <a class="reference internal" href="dependency-injection.html"><span class="doc">Dependency Injection</span></a></p>
-<div class="literal-block-wrapper docutils container" id="id12">
-<div class="code-block-caption"><span class="caption-text">Offset Pagination With SQLAlchemy</span><a class="headerlink" href="#id12" title="Permalink to this code">¶</a></div>
+<div class="literal-block-wrapper docutils container" id="id14">
+<div class="code-block-caption"><span class="caption-text">Offset Pagination With SQLAlchemy</span><a class="headerlink" href="#id14" title="Permalink to this code">¶</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">cast</span>
 </span><span data-line="2">
 </span><span data-line="3"><span class="kn">from</span> <span class="nn">sqlalchemy</span> <span class="kn">import</span> <span class="n">func</span><span class="p">,</span> <span class="n">select</span>
@@ -2137,8 +2196,8 @@ Cursor is unique identifier within the dataset that serves as a way to point the
 <input id="sd-tab-item-2" name="sd-tab-set-1" type="radio">
 </input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-2">
 Python 3.8+</label><div class="sd-tab-content docutils">
-<div class="literal-block-wrapper docutils container" id="id13">
-<div class="code-block-caption"><span class="caption-text">Cursor Pagination</span><a class="headerlink" href="#id13" title="Permalink to this code">¶</a></div>
+<div class="literal-block-wrapper docutils container" id="id15">
+<div class="code-block-caption"><span class="caption-text">Cursor Pagination</span><a class="headerlink" href="#id15" title="Permalink to this code">¶</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span>
 </span><span data-line="2">
 </span><span data-line="3"><span class="kn">from</span> <span class="nn">polyfactory.factories.pydantic_factory</span> <span class="kn">import</span> <span class="n">ModelFactory</span>
@@ -2187,8 +2246,8 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 <input checked="checked" id="sd-tab-item-3" name="sd-tab-set-1" type="radio">
 </input><label class="sd-tab-label" data-sync-id="3.10" for="sd-tab-item-3">
 Python 3.10+</label><div class="sd-tab-content docutils">
-<div class="literal-block-wrapper docutils container" id="id14">
-<div class="code-block-caption"><span class="caption-text">Cursor Pagination</span><a class="headerlink" href="#id14" title="Permalink to this code">¶</a></div>
+<div class="literal-block-wrapper docutils container" id="id16">
+<div class="code-block-caption"><span class="caption-text">Cursor Pagination</span><a class="headerlink" href="#id16" title="Permalink to this code">¶</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">polyfactory.factories.pydantic_factory</span> <span class="kn">import</span> <span class="n">ModelFactory</span>
 </span><span data-line="2"><span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseModel</span>
 </span><span data-line="3">

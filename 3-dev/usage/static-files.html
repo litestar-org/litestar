@@ -194,6 +194,7 @@ data-aria-dark="Switch to auto color mode">
 </li>
 <li class="toctree-l2"><a class="reference internal" href="events.html">Events</a></li>
 <li class="toctree-l2"><a class="reference internal" href="exceptions.html">Exceptions and exception handling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file_systems.html">File Systems</a></li>
 <li class="toctree-l2"><a class="reference internal" href="htmx.html">HTMX</a></li>
 <li class="toctree-l2"><a class="reference internal" href="lifecycle-hooks.html">Life Cycle Hooks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="logging.html">Logging</a></li>
@@ -307,6 +308,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2"><a class="reference internal" href="../reference/enums.html">enums</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/events.html">events</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/exceptions.html">exceptions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/file_system.html">file_system</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/handlers.html">handlers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/logging/index.html">logging</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../reference/logging/config.html">config</a></li>
@@ -480,6 +482,11 @@ data-aria-dark="Switch to auto color mode">
 <li><a class="reference internal" href="#using-a-custom-router-class">Using a custom router class</a></li>
 <li><a class="reference internal" href="#retrieving-paths-to-static-files">Retrieving paths to static files</a></li>
 <li><a class="reference internal" href="#remote-file-systems">(Remote) file systems</a></li>
+<li><a class="reference internal" href="#handling-symlinks">Handling symlinks</a><ul>
+<li><a class="reference internal" href="#security-considerations">Security considerations</a></li>
+<li><a class="reference internal" href="#behavior-based-on-file-system-support">Behavior based on file system support</a></li>
+</ul>
+</li>
 </ul>
 </div><a class="js-repo-stats repo-stats flex items-center" href="https://github.com/litestar-org/litestar"
   data-type="github" data-user="litestar-org" data-repo="litestar">
@@ -737,10 +744,9 @@ under which a specific file will be available:</p>
 <section id="remote-file-systems">
 <h2>(Remote) file systems<a class="headerlink" href="#remote-file-systems" title="Permalink to this heading">¶</a></h2>
 <p>To customize how Litestar interacts with the file system, a class implementing the
-<a class="reference internal" href="../reference/types.html#litestar.types.FileSystemProtocol" title="litestar.types.FileSystemProtocol"><code class="xref py py-class docutils literal notranslate"><span class="pre">FileSystemProtocol</span></code></a> can be passed to <code class="docutils literal notranslate"><span class="pre">file_system</span></code>. An example
-of this are the file systems provided by
-<a class="reference external" href="https://filesystem-spec.readthedocs.io/en/latest/">fsspec</a>, which includes support
-for FTP, SFTP, Hadoop, SMB, GitHub and
+<a class="reference internal" href="../reference/file_system.html#litestar.file_system.BaseFileSystem" title="litestar.file_system.BaseFileSystem"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseFileSystem</span></code></a> or any
+<a class="reference external" href="https://filesystem-spec.readthedocs.io/en/latest/">fsspec</a> file system can be passed
+to <code class="docutils literal notranslate"><span class="pre">file_system</span></code>, providing integrations for FTP, SFTP, Hadoop, SMB, GitHub and
 <a class="reference external" href="https://filesystem-spec.readthedocs.io/en/latest/api.html#implementations">many more</a>,
 with support for popular cloud providers available via 3rd party implementations such as</p>
 <ul class="simple">
@@ -749,8 +755,7 @@ with support for popular cloud providers available via 3rd party implementations
 <li><p>Azure Blob Storage via <a class="reference external" href="https://github.com/fsspec/adlfs">adlfs</a></p></li>
 </ul>
 <div class="literal-block-wrapper docutils container" id="id7">
-<div class="code-block-caption"><span class="caption-text">Using a custom file system with
-<a class="reference internal" href="../reference/static_files.html#litestar.static_files.create_static_files_router" title="litestar.static_files.create_static_files_router"><code class="xref py py-func docutils literal notranslate"><span class="pre">create_static_files_router()</span></code></a></span><a class="headerlink" href="#id7" title="Permalink to this code">¶</a></div>
+<div class="code-block-caption"><span class="caption-text">Using a custom file system with <a class="reference internal" href="../reference/static_files.html#litestar.static_files.create_static_files_router" title="litestar.static_files.create_static_files_router"><code class="xref py py-func docutils literal notranslate"><span class="pre">create_static_files_router()</span></code></a></span><a class="headerlink" href="#id7" title="Permalink to this code">¶</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">fsspec.implementations.ftp</span> <span class="kn">import</span> <span class="n">FTPFileSystem</span>
 </span><span data-line="2">
 </span><span data-line="3"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span>
@@ -768,6 +773,53 @@ with support for popular cloud providers available via 3rd party implementations
 </span></pre></div>
 </div>
 </div>
+</section>
+<section id="handling-symlinks">
+<h2>Handling symlinks<a class="headerlink" href="#handling-symlinks" title="Permalink to this heading">¶</a></h2>
+<p>Local file systems (e.g. Litestar’s <a class="reference internal" href="../reference/file_system.html#litestar.file_system.BaseLocalFileSystem" title="litestar.file_system.BaseLocalFileSystem"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseLocalFileSystem</span></code></a>
+or <a class="reference external" href="https://filesystem-spec.readthedocs.io/en/latest/api.html#fsspec.implementations.local.LocalFileSystem" title="(in fsspec v2025.3.0.post3+g6b85a47.d20250314)"><code class="xref py py-class docutils literal notranslate"><span class="pre">fsspec.implementations.local.LocalFileSystem</span></code></a>) may support symlinks, which
+can cause unexpected behaviour.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">allow_symlinks_outside_directory</span></code> parameter controls whether symbolic links
+inside the configured base directories can point to locations outside those directories.
+By default, this setting is disabled to ensure strict access control and prevent
+unintended exposure of files outside the specified directories.</p>
+<div class="admonition danger">
+<p class="admonition-title">Danger</p>
+<p>Keep this option disabled (default) unless absolutely necessary, to prevent
+accidental exposure of files outside the intended directories.</p>
+<p><strong>It should only be enabled in controlled environments where symlink behavior is
+well understood.</strong></p>
+</div>
+<section id="security-considerations">
+<h3>Security considerations<a class="headerlink" href="#security-considerations" title="Permalink to this heading">¶</a></h3>
+<p>Enabling this option introduces potential security risks, as it may allow access to
+files that were not intended to be served. Improperly
+configured symlinks could allow to traverse directory boundaries and expose sensitive
+information.</p>
+<p>This option should only be enabled if all symlinks in the base directory are known and
+it is ensured that proper file system permissions are in place to prevent unintended
+exposure.</p>
+</section>
+<section id="behavior-based-on-file-system-support">
+<h3>Behavior based on file system support<a class="headerlink" href="#behavior-based-on-file-system-support" title="Permalink to this heading">¶</a></h3>
+<p>The behavior of <code class="docutils literal notranslate"><span class="pre">allow_symlinks_outside_directory</span></code> depends on the underlying
+file system’s symlink capabilities:</p>
+<dl class="simple">
+<dt><strong>File systems that do not support symlinks</strong></dt><dd><p>If the configured <code class="docutils literal notranslate"><span class="pre">file_system</span></code> does not inherit from <a class="reference internal" href="../reference/file_system.html#litestar.file_system.LinkableFileSystem" title="litestar.file_system.LinkableFileSystem"><code class="xref py py-class docutils literal notranslate"><span class="pre">LinkableFileSystem</span></code></a>,
+setting <code class="docutils literal notranslate"><span class="pre">allow_symlinks_outside_directory</span></code> to any value other than <code class="docutils literal notranslate"><span class="pre">None</span></code>
+will raise a <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.13)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">TypeError</span></code></a>. This ensures that unsupported file systems
+do not inadvertently allow symlink traversal.</p>
+</dd>
+<dt><strong>File systems that support symlinks</strong></dt><dd><p>If the file system supports symlinking, the default value is <code class="docutils literal notranslate"><span class="pre">False</span></code>.
+This means that, unless explicitly enabled, symlinks will be restricted to paths
+inside the defined base directories.</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="file_systems.html#adapting-file-systems-that-support-symlinks"><span class="std std-ref">Adapting file systems that support symlinks</span></a></p>
+</div>
+</section>
 </section>
 </section>
 

@@ -194,6 +194,7 @@ data-aria-dark="Switch to auto color mode">
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../usage/events.html">Events</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../usage/exceptions.html">Exceptions and exception handling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../usage/file_systems.html">File Systems</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../usage/htmx.html">HTMX</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../usage/lifecycle-hooks.html">Life Cycle Hooks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../usage/logging.html">Logging</a></li>
@@ -307,6 +308,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2"><a class="reference internal" href="../reference/enums.html">enums</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/events.html">events</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/exceptions.html">exceptions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/file_system.html">file_system</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/handlers.html">handlers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/logging/index.html">logging</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../reference/logging/config.html">config</a></li>
@@ -500,6 +502,8 @@ data-aria-dark="Switch to auto color mode">
 <li><a class="reference internal" href="#polyfactory-package-removed-from-default-dependencies"><code class="docutils literal notranslate"><span class="pre">polyfactory</span></code> package removed from default dependencies</a></li>
 <li><a class="reference internal" href="#pyyaml-package-removed-from-default-dependencies"><code class="docutils literal notranslate"><span class="pre">pyyaml</span></code> package removed from default dependencies</a></li>
 <li><a class="reference internal" href="#litestar-htmx-package-removed-from-default-dependencies"><code class="docutils literal notranslate"><span class="pre">litestar-htmx</span></code> package removed from default dependencies</a></li>
+<li><a class="reference internal" href="#improved-file-system-handling-fsspec-integration">Improved file system handling / fsspec integration</a></li>
+<li><a class="reference internal" href="#removal-of-resolve-symlinks-parameter-to-create-static-files-router">Removal of <code class="docutils literal notranslate"><span class="pre">resolve_symlinks</span></code> parameter to <code class="docutils literal notranslate"><span class="pre">create_static_files_router</span></code></a></li>
 </ul>
 </div><a class="js-repo-stats repo-stats flex items-center" href="https://github.com/litestar-org/litestar"
   data-type="github" data-user="litestar-org" data-repo="litestar">
@@ -799,6 +803,32 @@ OpenAPI schema as YAML has been moved from the default dependencies to the
 <h2><code class="docutils literal notranslate"><span class="pre">litestar-htmx</span></code> package removed from default dependencies<a class="headerlink" href="#litestar-htmx-package-removed-from-default-dependencies" title="Permalink to this heading">¶</a></h2>
 <p>The <a class="reference external" href="https://github.com/litestar-org/litestar-htmx/">litestar-htmx</a> package powering
 the <a class="reference internal" href="../usage/htmx.html"><span class="doc">HTMX plugin</span></a> has been moved to the <code class="docutils literal notranslate"><span class="pre">litestar[htmx]</span></code> extra.</p>
+</section>
+<section id="improved-file-system-handling-fsspec-integration">
+<h2>Improved file system handling / fsspec integration<a class="headerlink" href="#improved-file-system-handling-fsspec-integration" title="Permalink to this heading">¶</a></h2>
+<p>A more coherent <a class="reference internal" href="../usage/file_systems.html"><span class="doc">file system</span></a> integration was added, with
+improved support for <a class="reference external" href="https://filesystem-spec.readthedocs.io/en/latest/">fsspec</a>.
+This new implementation is more stable, performant and consistent, and includes new
+features such as random access to all supported file systems as well as streaming
+(optionally with offsets, even if the underlying file system does not support it
+natively).</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="../usage/file_systems.html"><span class="doc">File Systems</span></a></p>
+</div>
+</section>
+<section id="removal-of-resolve-symlinks-parameter-to-create-static-files-router">
+<h2>Removal of <code class="docutils literal notranslate"><span class="pre">resolve_symlinks</span></code> parameter to <code class="docutils literal notranslate"><span class="pre">create_static_files_router</span></code><a class="headerlink" href="#removal-of-resolve-symlinks-parameter-to-create-static-files-router" title="Permalink to this heading">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">resolve_symlinks</span></code> parameter of
+<a class="reference internal" href="../reference/static_files.html#litestar.static_files.create_static_files_router" title="litestar.static_files.create_static_files_router"><code class="xref py py-func docutils literal notranslate"><span class="pre">create_static_files_router()</span></code></a> has been removed in favour of
+the new
+<a class="reference internal" href="../reference/static_files.html#litestar.static_files.create_static_files_router.params.allow_symlinks_outside_directory" title="litestar.static_files.create_static_files_router"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">allow_symlinks_outside_directory</span></code></a>
+parameter.</p>
+<div class="admonition attention">
+<p class="admonition-title">Attention</p>
+<p>This has been intentionally made a breaking change because the new parameter has
+slightly different behaviour and defaults to <code class="docutils literal notranslate"><span class="pre">False</span></code> instead of <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
+</div>
 </section>
 </section>
 
