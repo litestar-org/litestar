@@ -41,6 +41,16 @@ def test_default_file_system(tmpdir: Path) -> None:
         assert response.text == str(tmpdir / "test.txt")
 
 
+def test_file_system_registry_lookup(tmpdir: Path) -> None:
+    with create_test_client(
+        [create_static_files_router(path="/static", directories=[tmpdir], file_system="my_fs")],
+        plugins=[FileSystemRegistry({"my_fs": MockFileSystem()})],
+    ) as client:
+        response = client.get("/static/test.txt")
+        assert response.status_code == HTTP_200_OK, response.text
+        assert response.text == str(tmpdir / "test.txt")
+
+
 @pytest.fixture()
 def setup_dirs(tmpdir: Path) -> tuple[Path, Path]:
     paths = []
@@ -348,21 +358,6 @@ def test_symlinked_file_without_symlink_resolution_support_on_file_system_raises
         res = client.get("/linked.txt")
         assert res.status_code == 500
         assert "does not support resolving symlinks" in res.text
-
-
-@pytest.mark.skip
-@pytest.mark.parametrize("allow_symlinks_outside_directory", [True, False])
-def test_allow_symlinks_outside_directory_raises_on_non_linkable_file_system(
-    tmp_path: Path,
-    allow_symlinks_outside_directory: bool,
-) -> None:
-    with pytest.raises(TypeError, match="allow_symlinks_outside_directory"):
-        create_static_files_router(
-            path="/",
-            directories=[tmp_path],
-            allow_symlinks_outside_directory=allow_symlinks_outside_directory,
-            file_system=LocalFileSystem(),
-        )
 
 
 @pytest.mark.parametrize("file_system", (BaseLocalFileSystem(), maybe_wrap_fsspec_file_system(LocalFileSystem())))
