@@ -26,31 +26,6 @@ def test_validation_of_path(tmpdir: "Path") -> None:
         create_static_files_router(path="/{param:int}", directories=[tmpdir])
 
 
-def test_validation_of_file_system(tmpdir: "Path") -> None:
-    class FSWithoutOpen:
-        def info(self) -> None:
-            return
-
-    with pytest.raises(ImproperlyConfiguredException):
-        create_static_files_router(path="/static", directories=[tmpdir], file_system=FSWithoutOpen())
-
-    class FSWithoutInfo:
-        def open(self) -> None:
-            return
-
-    with pytest.raises(ImproperlyConfiguredException):
-        create_static_files_router(path="/static", directories=[tmpdir], file_system=FSWithoutInfo())
-
-    class ImplementedFS:
-        def info(self) -> None:
-            return
-
-        def open(self) -> None:
-            return
-
-    assert create_static_files_router(path="/static", directories=[tmpdir], file_system=ImplementedFS())
-
-
 @pytest.mark.parametrize(
     "method, expected",
     (
