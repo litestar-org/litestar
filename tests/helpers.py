@@ -70,7 +70,7 @@ class _AsyncContextManagerWrapper(AsyncContextManager):
 def maybe_async_cm(obj: ContextManager[T] | AsyncContextManager[T]) -> AsyncContextManager[T]:
     if isinstance(obj, AbstractContextManager):
         return cast(AsyncContextManager[T], _AsyncContextManagerWrapper(obj))
-    return obj
+    return obj  # pyright: ignore[reportReturnType]
 
 
 def get_schema_for_field_definition(

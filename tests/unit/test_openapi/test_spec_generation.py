@@ -16,7 +16,7 @@ from tests.models import DataclassPerson, MsgSpecStructPerson, TypedDictPerson
 @pytest.mark.parametrize("cls", (DataclassPerson, TypedDictPerson, MsgSpecStructPerson))
 def test_spec_generation(cls: Any) -> None:
     @post("/")
-    def handler(data: cls) -> cls:
+    def handler(data: cls) -> cls:  # pyright: ignore[reportInvalidTypeForm]
         return data
 
     with create_test_client(handler) as client:
