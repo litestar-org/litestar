@@ -99,7 +99,7 @@ def create_static_files_router(
                 :ref:`usage/static-files:Handling symlinks`
     """
 
-    if file_system is not None:
+    if file_system is not None and not isinstance(file_system, str):
         file_system = maybe_wrap_fsspec_file_system(file_system)
 
     resolved_directories = tuple(os.path.normpath(Path(p).absolute()) for p in directories)
