@@ -6,14 +6,14 @@
     function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
     setColorMode(localStorage._theme||"auto");
   </script><link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=397bb51e" />
-    <link rel="stylesheet" type="text/css" href="../../_static/shibuya.css?v=36d120a7" />
+    <link rel="stylesheet" type="text/css" href="../../_static/shibuya.css?v=83eaa723" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css?v=13237357" />
     <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
     <link rel="stylesheet" type="text/css" href="../../_static/sphinx_paramlinks.css" />
     <link media="print" rel="stylesheet" type="text/css" href="../../_static/print.css?v=20ff2c19" />
-    <link rel="stylesheet" type="text/css" href="../../_static/style.css?v=10936375" />
-    <link rel="stylesheet" type="text/css" href="../../_static/litestar-sphinx-theme.css?v=9989272a" />
+    <link rel="stylesheet" type="text/css" href="../../_static/style.css?v=50ea2f63" />
+    <link rel="stylesheet" type="text/css" href="../../_static/litestar-sphinx-theme.css?v=9a8390f1" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -29,7 +29,7 @@
   </head>
 <body><div class="announcement">
     <div class="announcement-inner">
-      <p>You are viewing the <bold>v3-development</bold> version of the documentation. Click here to go to the latest version.</p>
+      <p>You are viewing the <bold>local</bold> version of the documentation. Click here to go to the latest version.</p>
       <button class="announcement-close" aria-label="Close announcement">
         <i class="i-lucide close"></i>
       </button>
@@ -214,6 +214,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l3"><a class="reference internal" href="../openapi/schema_generation.html#accessing-the-openapi-schema-in-code">Accessing the OpenAPI schema in code</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../openapi/schema_generation.html#customizing-pydantic-model-schemas">Customizing Pydantic model schemas</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../openapi/schema_generation.html#customizing-operation-class">Customizing <code class="docutils literal notranslate"><span class="pre">Operation</span></code> class</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../openapi/schema_generation.html#generating-examples">Generating examples</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../openapi/ui_plugins.html">OpenAPI UI Plugins</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../openapi/ui_plugins.html#using-openapi-ui-plugins">Using OpenAPI UI Plugins</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../openapi/ui_plugins.html#configuring-openapi-ui-plugins">Configuring OpenAPI UI Plugins</a></li>
@@ -338,8 +339,12 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2"><a class="reference internal" href="../../reference/pagination.html">pagination</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/params.html">params</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/plugins/index.html">plugins</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/attrs.html">attrs</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/flash_messages.html">flash</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/htmx.html">htmx</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/problem_details.html">problem details</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/prometheus.html">prometheus</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/pydantic.html">pydantic</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/structlog.html">structlog</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/sqlalchemy.html">sqlalchemy</a></li>
 </ul>
@@ -377,6 +382,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l3"><a class="reference internal" href="../../reference/stores/memory.html">memory</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/stores/redis.html">redis</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/stores/registry.html">registry</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/stores/valkey.html">valkey</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/template.html">template</a></li>
@@ -435,9 +441,9 @@ data-aria-dark="Switch to auto color mode">
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../tutorials/repository-tutorial/index.html">SQLAlchemy Repository Tutorial</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../tutorials/repository-tutorial/01-modeling-and-features.html">Introduction to Database Modeling and Repository Features</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../tutorials/repository-tutorial/01-modeling-and-features.html#modeling">Modeling</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../tutorials/repository-tutorial/01-modeling-and-features.html#full-code">Full Code</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../tutorials/repository-tutorial/01-modelling-and-features.html">Introduction to Database Modelling and Repository Features</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../tutorials/repository-tutorial/01-modelling-and-features.html#modelling">Modelling</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../tutorials/repository-tutorial/01-modelling-and-features.html#full-code">Full Code</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../tutorials/repository-tutorial/02-repository-introduction.html">Interacting with repositories</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../tutorials/repository-tutorial/02-repository-introduction.html#working-with-bulk-data-operations">Working with Bulk Data Operations</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../tutorials/repository-tutorial/02-repository-introduction.html#full-code">Full Code</a></li>
@@ -454,12 +460,13 @@ data-aria-dark="Switch to auto color mode">
 <p class="caption" role="heading" aria-level="3"><span class="caption-text">Contributing</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../contribution-guide.html">Contribution Guide</a></li>
-<li class="toctree-l1"><a class="reference external" href="https://github.com/search?q=user%3Alitestar-org+state%3Aopen+label%3A%22good+first+issue%22+++no%3Aassignee+&amp;type=issues">Available Issues</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/search?q=user%3Alitestar-org+state%3Aopen+label%3A%22good+first+issue%22+++no%3Aassignee+&amp;type=issues=">Available Issues</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/litestar-org/.github?tab=coc-ov-file#readme">Code of Conduct</a></li>
 </ul>
 
         </div>
-      </div></div>
+      </div>
+    </div>
   </aside>
   <div class="lside-overlay js-menu" role="button" aria-label="Close left sidebar" aria-controls="lside" aria-expanded="false"></div>
   <aside id="rside" class="sy-rside pb-3 w-64 shrink-0 order-last">
@@ -467,6 +474,11 @@ data-aria-dark="Switch to auto color mode">
       <i class="i-lucide close"></i>
     </button>
     <div class="sy-scrollbar sy-rside-inner px-6 xl:top-16 xl:sticky xl:pl-0 pt-6 pb-4"><div class="localtoc"><h3>On this page</h3><ul>
+<li><a class="reference internal" href="#extending-asgimiddleware">Extending <code class="docutils literal notranslate"><span class="pre">ASGIMiddleware</span></code></a><ul>
+<li><a class="reference internal" href="#modifying-requests-and-responses">Modifying Requests and Responses</a></li>
+<li><a class="reference internal" href="#migrating-from-middlewareprotocol-abstractmiddleware">Migrating from <code class="docutils literal notranslate"><span class="pre">MiddlewareProtocol</span></code> / <code class="docutils literal notranslate"><span class="pre">AbstractMiddleware</span></code></a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#using-middlewareprotocol">Using MiddlewareProtocol</a><ul>
 <li><a class="reference internal" href="#responding-using-the-middlewareprotocol">Responding using the MiddlewareProtocol</a></li>
 <li><a class="reference internal" href="#modifying-asgi-requests-and-responses-using-the-middlewareprotocol">Modifying ASGI Requests and Responses using the MiddlewareProtocol</a></li>
@@ -533,7 +545,7 @@ data-aria-dark="Switch to auto color mode">
         <article class="yue" role="main">
           <section id="creating-middleware">
 <h1>Creating Middleware<a class="headerlink" href="#creating-middleware" title="Permalink to this heading">¶</a></h1>
-<p>As mentioned in <a class="reference internal" href="using-middleware.html"><span class="doc">using middleware</span></a>, a middleware in Litestar
+<p>As mentioned in <a class="reference internal" href="using-middleware.html#using-middleware"><span class="std std-ref">using middleware</span></a>, a middleware in Litestar
 is <strong>any callable</strong> that takes a kwarg called <code class="docutils literal notranslate"><span class="pre">app</span></code>, which is the next ASGI handler, i.e. an
 <a class="reference internal" href="../../reference/types.html#litestar.types.ASGIApp" title="litestar.types.ASGIApp"><code class="xref py py-class docutils literal notranslate"><span class="pre">ASGIApp</span></code></a>, and returns an <code class="docutils literal notranslate"><span class="pre">ASGIApp</span></code>.</p>
 <p>The example previously given was using a factory function, i.e.:</p>
@@ -549,10 +561,151 @@ is <strong>any callable</strong> that takes a kwarg called <code class="docutils
 </span><span data-line="10">    <span class="k">return</span> <span class="n">my_middleware</span>
 </span></pre></div>
 </div>
-<p>While using functions is a perfectly viable approach, you can also use classes to do the same. See the next sections on
-two base classes you can use for this purpose - the <a class="reference internal" href="../../reference/middleware/index.html#litestar.middleware.MiddlewareProtocol" title="litestar.middleware.base.MiddlewareProtocol"><code class="xref py py-class docutils literal notranslate"><span class="pre">MiddlewareProtocol</span></code></a> ,
-which gives a bare-bones type, or the <a class="reference internal" href="../../reference/middleware/index.html#litestar.middleware.AbstractMiddleware" title="litestar.middleware.base.AbstractMiddleware"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractMiddleware</span></code></a> that offers a
-base class with some built in functionality.</p>
+<section id="extending-asgimiddleware">
+<h2>Extending <code class="docutils literal notranslate"><span class="pre">ASGIMiddleware</span></code><a class="headerlink" href="#extending-asgimiddleware" title="Permalink to this heading">¶</a></h2>
+<p>While using functions is a perfectly viable approach, the recommended way to handle this
+is by using the <a class="reference internal" href="../../reference/middleware/index.html#litestar.middleware.ASGIMiddleware" title="litestar.middleware.ASGIMiddleware"><code class="xref py py-class docutils literal notranslate"><span class="pre">ASGIMiddleware</span></code></a> abstract base class, which
+also includes functionality to dynamically skip the middleware based on ASGI
+<code class="docutils literal notranslate"><span class="pre">scope[&quot;type&quot;]</span></code>, handler <code class="docutils literal notranslate"><span class="pre">opt</span></code> keys or path patterns and a simple way to pass
+configuration to middlewares; It does not implement an <code class="docutils literal notranslate"><span class="pre">__init__</span></code> method, so
+subclasses are free to use it to customize the middleware’s configuration.</p>
+<section id="modifying-requests-and-responses">
+<h3>Modifying Requests and Responses<a class="headerlink" href="#modifying-requests-and-responses" title="Permalink to this heading">¶</a></h3>
+<p>Middlewares can not only be used to execute <em>around</em> other ASGI callable, they can also
+intercept and modify both incoming and outgoing data in a request / response cycle by
+“wrapping” the respective <code class="docutils literal notranslate"><span class="pre">receive</span></code> and <code class="docutils literal notranslate"><span class="pre">send</span></code> ASGI callables.</p>
+<p>The following demonstrates how to add a request timing header with a timestamp to all
+outgoing responses:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">import</span> <span class="nn">time</span>
+</span><span data-line="2">
+</span><span data-line="3"><span class="kn">from</span> <span class="nn">litestar.datastructures</span> <span class="kn">import</span> <span class="n">MutableScopeHeaders</span>
+</span><span data-line="4"><span class="kn">from</span> <span class="nn">litestar.enums</span> <span class="kn">import</span> <span class="n">ScopeType</span>
+</span><span data-line="5"><span class="kn">from</span> <span class="nn">litestar.middleware</span> <span class="kn">import</span> <span class="n">ASGIMiddleware</span>
+</span><span data-line="6"><span class="kn">from</span> <span class="nn">litestar.types</span> <span class="kn">import</span> <span class="n">ASGIApp</span><span class="p">,</span> <span class="n">Message</span><span class="p">,</span> <span class="n">Receive</span><span class="p">,</span> <span class="n">Scope</span><span class="p">,</span> <span class="n">Send</span>
+</span><span data-line="7">
+</span><span data-line="8">
+</span><span data-line="9"><span class="k">class</span> <span class="nc">ProcessTimeHeader</span><span class="p">(</span><span class="n">ASGIMiddleware</span><span class="p">):</span>
+</span><span data-line="10">    <span class="n">scopes</span> <span class="o">=</span> <span class="p">(</span><span class="n">ScopeType</span><span class="o">.</span><span class="n">HTTP</span><span class="p">,</span> <span class="n">ScopeType</span><span class="o">.</span><span class="n">ASGI</span><span class="p">)</span>
+</span><span data-line="11">
+</span><span data-line="12">    <span class="k">async</span> <span class="k">def</span> <span class="nf">handle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scope</span><span class="p">:</span> <span class="n">Scope</span><span class="p">,</span> <span class="n">receive</span><span class="p">:</span> <span class="n">Receive</span><span class="p">,</span> <span class="n">send</span><span class="p">:</span> <span class="n">Send</span><span class="p">,</span> <span class="n">next_app</span><span class="p">:</span> <span class="n">ASGIApp</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="13">        <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">monotonic</span><span class="p">()</span>
+</span><span data-line="14">
+</span><span data-line="15">        <span class="k">async</span> <span class="k">def</span> <span class="nf">send_wrapper</span><span class="p">(</span><span class="n">message</span><span class="p">:</span> <span class="n">Message</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="16">            <span class="k">if</span> <span class="n">message</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;http.response.start&quot;</span><span class="p">:</span>
+</span><span data-line="17">                <span class="n">process_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">monotonic</span><span class="p">()</span> <span class="o">-</span> <span class="n">start_time</span>
+</span><span data-line="18">                <span class="n">headers</span> <span class="o">=</span> <span class="n">MutableScopeHeaders</span><span class="o">.</span><span class="n">from_message</span><span class="p">(</span><span class="n">message</span><span class="o">=</span><span class="n">message</span><span class="p">)</span>
+</span><span data-line="19">                <span class="n">headers</span><span class="p">[</span><span class="s2">&quot;X-Process-Time&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">process_time</span><span class="p">)</span>
+</span><span data-line="20">            <span class="k">await</span> <span class="n">send</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+</span><span data-line="21">
+</span><span data-line="22">        <span class="k">await</span> <span class="n">next_app</span><span class="p">(</span><span class="n">scope</span><span class="p">,</span> <span class="n">receive</span><span class="p">,</span> <span class="n">send_wrapper</span><span class="p">)</span>
+</span></pre></div>
+</div>
+</section>
+<section id="migrating-from-middlewareprotocol-abstractmiddleware">
+<h3>Migrating from <code class="docutils literal notranslate"><span class="pre">MiddlewareProtocol</span></code> / <code class="docutils literal notranslate"><span class="pre">AbstractMiddleware</span></code><a class="headerlink" href="#migrating-from-middlewareprotocol-abstractmiddleware" title="Permalink to this heading">¶</a></h3>
+<p><a class="reference internal" href="../../reference/middleware/index.html#litestar.middleware.ASGIMiddleware" title="litestar.middleware.ASGIMiddleware"><code class="xref py py-class docutils literal notranslate"><span class="pre">ASGIMiddleware</span></code></a> was introduced in Litestar 2.15. If you’ve
+been using <code class="docutils literal notranslate"><span class="pre">MiddlewareProtocol</span></code> / <code class="docutils literal notranslate"><span class="pre">AbstractMiddleware</span></code> to implement your middlewares
+before, there’s a simple migration path to using <code class="docutils literal notranslate"><span class="pre">ASGIMiddleware</span></code>.</p>
+<p><strong>From MiddlewareProtocol</strong></p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-0" name="sd-tab-set-0" type="radio">
+</input><label class="sd-tab-label" for="sd-tab-item-0">
+MiddlewareProtocol</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">litestar.middleware</span> <span class="kn">import</span> <span class="n">MiddlewareProtocol</span>
+</span><span data-line="2"><span class="kn">from</span> <span class="nn">litestar.types</span> <span class="kn">import</span> <span class="n">ASGIApp</span><span class="p">,</span> <span class="n">Receive</span><span class="p">,</span> <span class="n">Scope</span><span class="p">,</span> <span class="n">Send</span>
+</span><span data-line="3">
+</span><span data-line="4">
+</span><span data-line="5"><span class="k">class</span> <span class="nc">MyMiddleware</span><span class="p">(</span><span class="n">MiddlewareProtocol</span><span class="p">):</span>
+</span><span data-line="6">    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">app</span><span class="p">:</span> <span class="n">ASGIApp</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="7">        <span class="bp">self</span><span class="o">.</span><span class="n">app</span> <span class="o">=</span> <span class="n">app</span>
+</span><span data-line="8">
+</span><span data-line="9">    <span class="k">async</span> <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scope</span><span class="p">:</span> <span class="n">Scope</span><span class="p">,</span> <span class="n">receive</span><span class="p">:</span> <span class="n">Receive</span><span class="p">,</span> <span class="n">send</span><span class="p">:</span> <span class="n">Send</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="10">        <span class="c1"># do stuff</span>
+</span><span data-line="11">        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="p">(</span><span class="n">scope</span><span class="p">,</span> <span class="n">receive</span><span class="p">,</span> <span class="n">send</span><span class="p">)</span>
+</span></pre></div>
+</div>
+</div>
+<input id="sd-tab-item-1" name="sd-tab-set-0" type="radio">
+</input><label class="sd-tab-label" for="sd-tab-item-1">
+ASGIMiddleware</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">litestar.middleware</span> <span class="kn">import</span> <span class="n">ASGIMiddleware</span>
+</span><span data-line="2"><span class="kn">from</span> <span class="nn">litestar.types</span> <span class="kn">import</span> <span class="n">ASGIApp</span><span class="p">,</span> <span class="n">Receive</span><span class="p">,</span> <span class="n">Scope</span><span class="p">,</span> <span class="n">Send</span>
+</span><span data-line="3">
+</span><span data-line="4">
+</span><span data-line="5"><span class="k">class</span> <span class="nc">MyMiddleware</span><span class="p">(</span><span class="n">ASGIMiddleware</span><span class="p">):</span>
+</span><span data-line="6">    <span class="k">async</span> <span class="k">def</span> <span class="nf">handle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scope</span><span class="p">:</span> <span class="n">Scope</span><span class="p">,</span> <span class="n">receive</span><span class="p">:</span> <span class="n">Receive</span><span class="p">,</span> <span class="n">send</span><span class="p">:</span> <span class="n">Send</span><span class="p">,</span> <span class="n">next_app</span><span class="p">:</span> <span class="n">ASGIApp</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="7">        <span class="c1"># do stuff</span>
+</span><span data-line="8">        <span class="k">await</span> <span class="n">next_app</span><span class="p">(</span><span class="n">scope</span><span class="p">,</span> <span class="n">receive</span><span class="p">,</span> <span class="n">send</span><span class="p">)</span>
+</span></pre></div>
+</div>
+</div>
+</div>
+<p><strong>From AbstractMiddleware</strong></p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-2" name="sd-tab-set-1" type="radio">
+</input><label class="sd-tab-label" for="sd-tab-item-2">
+MiddlewareProtocol</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">import</span> <span class="nn">anyio</span>
+</span><span data-line="2">
+</span><span data-line="3"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span>
+</span><span data-line="4"><span class="kn">from</span> <span class="nn">litestar.middleware</span> <span class="kn">import</span> <span class="n">AbstractMiddleware</span><span class="p">,</span> <span class="n">DefineMiddleware</span>
+</span><span data-line="5"><span class="kn">from</span> <span class="nn">litestar.types</span> <span class="kn">import</span> <span class="n">ASGIApp</span><span class="p">,</span> <span class="n">Receive</span><span class="p">,</span> <span class="n">Scope</span><span class="p">,</span> <span class="n">Scopes</span><span class="p">,</span> <span class="n">Send</span>
+</span><span data-line="6">
+</span><span data-line="7">
+</span><span data-line="8"><span class="k">class</span> <span class="nc">TimeoutMiddleware</span><span class="p">(</span><span class="n">AbstractMiddleware</span><span class="p">):</span>
+</span><span data-line="9">    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+</span><span data-line="10">        <span class="bp">self</span><span class="p">,</span>
+</span><span data-line="11">        <span class="n">app</span><span class="p">:</span> <span class="n">ASGIApp</span><span class="p">,</span>
+</span><span data-line="12">        <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+</span><span data-line="13">        <span class="n">exclude</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="14">        <span class="n">exclude_opt_key</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="15">        <span class="n">scopes</span><span class="p">:</span> <span class="n">Scopes</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="16">    <span class="p">):</span>
+</span><span data-line="17">        <span class="bp">self</span><span class="o">.</span><span class="n">timeout</span> <span class="o">=</span> <span class="n">timeout</span>
+</span><span data-line="18">        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">app</span><span class="o">=</span><span class="n">app</span><span class="p">,</span> <span class="n">exclude</span><span class="o">=</span><span class="n">exclude</span><span class="p">,</span> <span class="n">exclude_opt_key</span><span class="o">=</span><span class="n">exclude_opt_key</span><span class="p">,</span> <span class="n">scopes</span><span class="o">=</span><span class="n">scopes</span><span class="p">)</span>
+</span><span data-line="19">
+</span><span data-line="20">    <span class="k">async</span> <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scope</span><span class="p">:</span> <span class="n">Scope</span><span class="p">,</span> <span class="n">receive</span><span class="p">:</span> <span class="n">Receive</span><span class="p">,</span> <span class="n">send</span><span class="p">:</span> <span class="n">Send</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="21">        <span class="k">with</span> <span class="n">anyio</span><span class="o">.</span><span class="n">move_on_after</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">timeout</span><span class="p">):</span>
+</span><span data-line="22">            <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="p">(</span><span class="n">scope</span><span class="p">,</span> <span class="n">receive</span><span class="p">,</span> <span class="n">send</span><span class="p">)</span>
+</span><span data-line="23">
+</span><span data-line="24">
+</span><span data-line="25"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
+</span><span data-line="26">    <span class="n">middleware</span><span class="o">=</span><span class="p">[</span>
+</span><span data-line="27">        <span class="n">DefineMiddleware</span><span class="p">(</span>
+</span><span data-line="28">            <span class="n">TimeoutMiddleware</span><span class="p">,</span>
+</span><span data-line="29">            <span class="n">timeout</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+</span><span data-line="30">        <span class="p">)</span>
+</span><span data-line="31">    <span class="p">]</span>
+</span><span data-line="32"><span class="p">)</span>
+</span></pre></div>
+</div>
+</div>
+<input id="sd-tab-item-3" name="sd-tab-set-1" type="radio">
+</input><label class="sd-tab-label" for="sd-tab-item-3">
+ASGIMiddleware</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">import</span> <span class="nn">anyio</span>
+</span><span data-line="2">
+</span><span data-line="3"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span>
+</span><span data-line="4"><span class="kn">from</span> <span class="nn">litestar.middleware</span> <span class="kn">import</span> <span class="n">ASGIMiddleware</span>
+</span><span data-line="5"><span class="kn">from</span> <span class="nn">litestar.types</span> <span class="kn">import</span> <span class="n">ASGIApp</span><span class="p">,</span> <span class="n">Receive</span><span class="p">,</span> <span class="n">Scope</span><span class="p">,</span> <span class="n">Send</span>
+</span><span data-line="6">
+</span><span data-line="7">
+</span><span data-line="8"><span class="k">class</span> <span class="nc">TimeoutMiddleware</span><span class="p">(</span><span class="n">ASGIMiddleware</span><span class="p">):</span>
+</span><span data-line="9">    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
+</span><span data-line="10">        <span class="bp">self</span><span class="o">.</span><span class="n">timeout</span> <span class="o">=</span> <span class="n">timeout</span>
+</span><span data-line="11">
+</span><span data-line="12">    <span class="k">async</span> <span class="k">def</span> <span class="nf">handle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scope</span><span class="p">:</span> <span class="n">Scope</span><span class="p">,</span> <span class="n">receive</span><span class="p">:</span> <span class="n">Receive</span><span class="p">,</span> <span class="n">send</span><span class="p">:</span> <span class="n">Send</span><span class="p">,</span> <span class="n">next_app</span><span class="p">:</span> <span class="n">ASGIApp</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="13">        <span class="k">with</span> <span class="n">anyio</span><span class="o">.</span><span class="n">move_on_after</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">timeout</span><span class="p">):</span>
+</span><span data-line="14">            <span class="k">await</span> <span class="n">next_app</span><span class="p">(</span><span class="n">scope</span><span class="p">,</span> <span class="n">receive</span><span class="p">,</span> <span class="n">send</span><span class="p">)</span>
+</span><span data-line="15">
+</span><span data-line="16">
+</span><span data-line="17"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">middleware</span><span class="o">=</span><span class="p">[</span><span class="n">TimeoutMiddleware</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="mi">5</span><span class="p">)])</span>
+</span></pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
 <section id="using-middlewareprotocol">
 <h2>Using MiddlewareProtocol<a class="headerlink" href="#using-middlewareprotocol" title="Permalink to this heading">¶</a></h2>
 <p>The <a class="reference internal" href="../../reference/middleware/index.html#litestar.middleware.MiddlewareProtocol" title="litestar.middleware.base.MiddlewareProtocol"><code class="xref py py-class docutils literal notranslate"><span class="pre">MiddlewareProtocol</span></code></a> class is a
@@ -573,7 +726,7 @@ this case, but rather the next middleware in the stack, which is also an ASGI ap
 <p>The <code class="docutils literal notranslate"><span class="pre">__call__</span></code> method makes this class into a <code class="docutils literal notranslate"><span class="pre">callable</span></code>, i.e. once instantiated this class acts like a function, that
 has the signature of an ASGI app: The three parameters, <code class="docutils literal notranslate"><span class="pre">scope,</span> <span class="pre">receive,</span> <span class="pre">send</span></code> are specified
 by <a class="reference external" href="https://asgi.readthedocs.io/en/latest/index.html">the ASGI specification</a>, and their values originate with the ASGI
-server (e.g. <em>uvicorn</em>) used to run Litestar.</p>
+server (e.g. <code class="docutils literal notranslate"><span class="pre">uvicorn</span></code>) used to run Litestar.</p>
 <p>To use this protocol as a basis, simply subclass it - as you would any other class, and implement the two methods it
 specifies:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">import</span> <span class="nn">logging</span>
@@ -586,15 +739,14 @@ specifies:</p>
 </span><span data-line="8">
 </span><span data-line="9">
 </span><span data-line="10"><span class="k">class</span> <span class="nc">MyRequestLoggingMiddleware</span><span class="p">(</span><span class="n">MiddlewareProtocol</span><span class="p">):</span>
-</span><span data-line="11">    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">app</span><span class="p">:</span> <span class="n">ASGIApp</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="12">        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">app</span><span class="p">)</span>
-</span><span data-line="13">        <span class="bp">self</span><span class="o">.</span><span class="n">app</span> <span class="o">=</span> <span class="n">app</span>
-</span><span data-line="14">
-</span><span data-line="15">    <span class="k">async</span> <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scope</span><span class="p">:</span> <span class="n">Scope</span><span class="p">,</span> <span class="n">receive</span><span class="p">:</span> <span class="n">Receive</span><span class="p">,</span> <span class="n">send</span><span class="p">:</span> <span class="n">Send</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="16">        <span class="k">if</span> <span class="n">scope</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;http&quot;</span><span class="p">:</span>
-</span><span data-line="17">            <span class="n">request</span> <span class="o">=</span> <span class="n">Request</span><span class="p">(</span><span class="n">scope</span><span class="p">)</span>
-</span><span data-line="18">            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> - </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">*</span><span class="n">request</span><span class="o">.</span><span class="n">method</span><span class="p">),</span> <span class="n">request</span><span class="o">.</span><span class="n">url</span><span class="p">)</span>
-</span><span data-line="19">        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="p">(</span><span class="n">scope</span><span class="p">,</span> <span class="n">receive</span><span class="p">,</span> <span class="n">send</span><span class="p">)</span>
+</span><span data-line="11">    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">app</span><span class="p">:</span> <span class="n">ASGIApp</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># can have other parameters as well</span>
+</span><span data-line="12">        <span class="bp">self</span><span class="o">.</span><span class="n">app</span> <span class="o">=</span> <span class="n">app</span>
+</span><span data-line="13">
+</span><span data-line="14">    <span class="k">async</span> <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scope</span><span class="p">:</span> <span class="n">Scope</span><span class="p">,</span> <span class="n">receive</span><span class="p">:</span> <span class="n">Receive</span><span class="p">,</span> <span class="n">send</span><span class="p">:</span> <span class="n">Send</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="15">        <span class="k">if</span> <span class="n">scope</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;http&quot;</span><span class="p">:</span>
+</span><span data-line="16">            <span class="n">request</span> <span class="o">=</span> <span class="n">Request</span><span class="p">(</span><span class="n">scope</span><span class="p">)</span>
+</span><span data-line="17">            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Got request: </span><span class="si">%s</span><span class="s2"> - </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span><span class="p">,</span> <span class="n">request</span><span class="o">.</span><span class="n">url</span><span class="p">)</span>
+</span><span data-line="18">        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="p">(</span><span class="n">scope</span><span class="p">,</span> <span class="n">receive</span><span class="p">,</span> <span class="n">send</span><span class="p">)</span>
 </span></pre></div>
 </div>
 <div class="admonition important">
@@ -618,18 +770,17 @@ explore another example - redirecting the request to a different url from a midd
 </span><span data-line="7">
 </span><span data-line="8"><span class="k">class</span> <span class="nc">RedirectMiddleware</span><span class="p">(</span><span class="n">MiddlewareProtocol</span><span class="p">):</span>
 </span><span data-line="9">    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">app</span><span class="p">:</span> <span class="n">ASGIApp</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="10">        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">app</span><span class="p">)</span>
-</span><span data-line="11">        <span class="bp">self</span><span class="o">.</span><span class="n">app</span> <span class="o">=</span> <span class="n">app</span>
-</span><span data-line="12">
-</span><span data-line="13">    <span class="k">async</span> <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scope</span><span class="p">:</span> <span class="n">Scope</span><span class="p">,</span> <span class="n">receive</span><span class="p">:</span> <span class="n">Receive</span><span class="p">,</span> <span class="n">send</span><span class="p">:</span> <span class="n">Send</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="14">        <span class="k">if</span> <span class="n">Request</span><span class="p">(</span><span class="n">scope</span><span class="p">)</span><span class="o">.</span><span class="n">session</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="15">            <span class="n">response</span> <span class="o">=</span> <span class="n">ASGIRedirectResponse</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/login&quot;</span><span class="p">)</span>
-</span><span data-line="16">            <span class="k">await</span> <span class="n">response</span><span class="p">(</span><span class="n">scope</span><span class="p">,</span> <span class="n">receive</span><span class="p">,</span> <span class="n">send</span><span class="p">)</span>
-</span><span data-line="17">        <span class="k">else</span><span class="p">:</span>
-</span><span data-line="18">            <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="p">(</span><span class="n">scope</span><span class="p">,</span> <span class="n">receive</span><span class="p">,</span> <span class="n">send</span><span class="p">)</span>
+</span><span data-line="10">        <span class="bp">self</span><span class="o">.</span><span class="n">app</span> <span class="o">=</span> <span class="n">app</span>
+</span><span data-line="11">
+</span><span data-line="12">    <span class="k">async</span> <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scope</span><span class="p">:</span> <span class="n">Scope</span><span class="p">,</span> <span class="n">receive</span><span class="p">:</span> <span class="n">Receive</span><span class="p">,</span> <span class="n">send</span><span class="p">:</span> <span class="n">Send</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="13">        <span class="k">if</span> <span class="n">Request</span><span class="p">(</span><span class="n">scope</span><span class="p">)</span><span class="o">.</span><span class="n">session</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="14">            <span class="n">response</span> <span class="o">=</span> <span class="n">ASGIRedirectResponse</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/login&quot;</span><span class="p">)</span>
+</span><span data-line="15">            <span class="k">await</span> <span class="n">response</span><span class="p">(</span><span class="n">scope</span><span class="p">,</span> <span class="n">receive</span><span class="p">,</span> <span class="n">send</span><span class="p">)</span>
+</span><span data-line="16">        <span class="k">else</span><span class="p">:</span>
+</span><span data-line="17">            <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="p">(</span><span class="n">scope</span><span class="p">,</span> <span class="n">receive</span><span class="p">,</span> <span class="n">send</span><span class="p">)</span>
 </span></pre></div>
 </div>
-<p>As you can see in the above, given some condition (<code class="docutils literal notranslate"><span class="pre">request.session</span></code> being None) we create a
+<p>As you can see in the above, given some condition (<code class="docutils literal notranslate"><span class="pre">request.session</span></code> being <code class="docutils literal notranslate"><span class="pre">None</span></code>) we create a
 <a class="reference internal" href="../../reference/response/redirect.html#litestar.response.redirect.ASGIRedirectResponse" title="litestar.response.redirect.ASGIRedirectResponse"><code class="xref py py-class docutils literal notranslate"><span class="pre">ASGIRedirectResponse</span></code></a> and then await it. Otherwise, we await <code class="docutils literal notranslate"><span class="pre">self.app</span></code></p>
 </section>
 <section id="modifying-asgi-requests-and-responses-using-the-middlewareprotocol">
@@ -644,7 +795,7 @@ modify the ASGI response message itself, which is a step further in the response
 <p>Using the <a class="reference internal" href="../../reference/middleware/index.html#litestar.middleware.MiddlewareProtocol" title="litestar.middleware.base.MiddlewareProtocol"><code class="xref py py-class docutils literal notranslate"><span class="pre">MiddlewareProtocol</span></code></a> you can intercept and modifying both the
 incoming and outgoing data in a request / response cycle by “wrapping” that respective <code class="docutils literal notranslate"><span class="pre">receive</span></code> and <code class="docutils literal notranslate"><span class="pre">send</span></code> ASGI
 functions.</p>
-<p>To demonstrate this, lets say we want to append a header with a timestamp to all outgoing responses. We could achieve
+<p>To demonstrate this, let’s say we want to append a header with a timestamp to all outgoing responses. We could achieve
 this by doing the following:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">import</span> <span class="nn">time</span>
 </span><span data-line="2">
@@ -661,11 +812,11 @@ this by doing the following:</p>
 </span><span data-line="13">
 </span><span data-line="14">    <span class="k">async</span> <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scope</span><span class="p">:</span> <span class="n">Scope</span><span class="p">,</span> <span class="n">receive</span><span class="p">:</span> <span class="n">Receive</span><span class="p">,</span> <span class="n">send</span><span class="p">:</span> <span class="n">Send</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 </span><span data-line="15">        <span class="k">if</span> <span class="n">scope</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;http&quot;</span><span class="p">:</span>
-</span><span data-line="16">            <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+</span><span data-line="16">            <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">monotonic</span><span class="p">()</span>
 </span><span data-line="17">
 </span><span data-line="18">            <span class="k">async</span> <span class="k">def</span> <span class="nf">send_wrapper</span><span class="p">(</span><span class="n">message</span><span class="p">:</span> <span class="n">Message</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 </span><span data-line="19">                <span class="k">if</span> <span class="n">message</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;http.response.start&quot;</span><span class="p">:</span>
-</span><span data-line="20">                    <span class="n">process_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start_time</span>
+</span><span data-line="20">                    <span class="n">process_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">monotonic</span><span class="p">()</span> <span class="o">-</span> <span class="n">start_time</span>
 </span><span data-line="21">                    <span class="n">headers</span> <span class="o">=</span> <span class="n">MutableScopeHeaders</span><span class="o">.</span><span class="n">from_message</span><span class="p">(</span><span class="n">message</span><span class="o">=</span><span class="n">message</span><span class="p">)</span>
 </span><span data-line="22">                    <span class="n">headers</span><span class="p">[</span><span class="s2">&quot;X-Process-Time&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">process_time</span><span class="p">)</span>
 </span><span data-line="23">                <span class="k">await</span> <span class="n">send</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
@@ -681,217 +832,112 @@ this by doing the following:</p>
 <h2>Inheriting AbstractMiddleware<a class="headerlink" href="#inheriting-abstractmiddleware" title="Permalink to this heading">¶</a></h2>
 <p>Litestar offers an <a class="reference internal" href="../../reference/middleware/index.html#litestar.middleware.AbstractMiddleware" title="litestar.middleware.base.AbstractMiddleware"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractMiddleware</span></code></a> class that can be extended to
 create middleware:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
-</span><span data-line="2"><span class="kn">from</span> <span class="nn">time</span> <span class="kn">import</span> <span class="n">time</span>
-</span><span data-line="3">
-</span><span data-line="4"><span class="kn">from</span> <span class="nn">litestar.enums</span> <span class="kn">import</span> <span class="n">ScopeType</span>
-</span><span data-line="5"><span class="kn">from</span> <span class="nn">litestar.middleware</span> <span class="kn">import</span> <span class="n">AbstractMiddleware</span>
-</span><span data-line="6"><span class="kn">from</span> <span class="nn">litestar.datastructures</span> <span class="kn">import</span> <span class="n">MutableScopeHeaders</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">import</span> <span class="nn">time</span>
+</span><span data-line="2">
+</span><span data-line="3"><span class="kn">from</span> <span class="nn">litestar.enums</span> <span class="kn">import</span> <span class="n">ScopeType</span>
+</span><span data-line="4"><span class="kn">from</span> <span class="nn">litestar.middleware</span> <span class="kn">import</span> <span class="n">AbstractMiddleware</span>
+</span><span data-line="5"><span class="kn">from</span> <span class="nn">litestar.datastructures</span> <span class="kn">import</span> <span class="n">MutableScopeHeaders</span>
+</span><span data-line="6"><span class="kn">from</span> <span class="nn">litestar.types</span> <span class="kn">import</span> <span class="n">Message</span><span class="p">,</span> <span class="n">Receive</span><span class="p">,</span> <span class="n">Scope</span><span class="p">,</span> <span class="n">Send</span>
 </span><span data-line="7">
 </span><span data-line="8">
-</span><span data-line="9"><span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
-</span><span data-line="10">    <span class="kn">from</span> <span class="nn">litestar.types</span> <span class="kn">import</span> <span class="n">Message</span><span class="p">,</span> <span class="n">Receive</span><span class="p">,</span> <span class="n">Scope</span><span class="p">,</span> <span class="n">Send</span>
-</span><span data-line="11">
-</span><span data-line="12">
-</span><span data-line="13"><span class="k">class</span> <span class="nc">MyMiddleware</span><span class="p">(</span><span class="n">AbstractMiddleware</span><span class="p">):</span>
-</span><span data-line="14">    <span class="n">scopes</span> <span class="o">=</span> <span class="p">{</span><span class="n">ScopeType</span><span class="o">.</span><span class="n">HTTP</span><span class="p">}</span>
-</span><span data-line="15">    <span class="n">exclude</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;first_path&quot;</span><span class="p">,</span> <span class="s2">&quot;second_path&quot;</span><span class="p">]</span>
-</span><span data-line="16">    <span class="n">exclude_opt_key</span> <span class="o">=</span> <span class="s2">&quot;exclude_from_middleware&quot;</span>
-</span><span data-line="17">
-</span><span data-line="18">    <span class="k">async</span> <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scope</span><span class="p">:</span> <span class="s2">&quot;Scope&quot;</span><span class="p">,</span> <span class="n">receive</span><span class="p">:</span> <span class="s2">&quot;Receive&quot;</span><span class="p">,</span> <span class="n">send</span><span class="p">:</span> <span class="s2">&quot;Send&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="19">        <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="p">()</span>
-</span><span data-line="20">
-</span><span data-line="21">        <span class="k">async</span> <span class="k">def</span> <span class="nf">send_wrapper</span><span class="p">(</span><span class="n">message</span><span class="p">:</span> <span class="s2">&quot;Message&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="22">            <span class="k">if</span> <span class="n">message</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;http.response.start&quot;</span><span class="p">:</span>
-</span><span data-line="23">                <span class="n">process_time</span> <span class="o">=</span> <span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start_time</span>
-</span><span data-line="24">                <span class="n">headers</span> <span class="o">=</span> <span class="n">MutableScopeHeaders</span><span class="o">.</span><span class="n">from_message</span><span class="p">(</span><span class="n">message</span><span class="o">=</span><span class="n">message</span><span class="p">)</span>
-</span><span data-line="25">                <span class="n">headers</span><span class="p">[</span><span class="s2">&quot;X-Process-Time&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">process_time</span><span class="p">)</span>
-</span><span data-line="26">                <span class="k">await</span> <span class="n">send</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
-</span><span data-line="27">
-</span><span data-line="28">        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="p">(</span><span class="n">scope</span><span class="p">,</span> <span class="n">receive</span><span class="p">,</span> <span class="n">send_wrapper</span><span class="p">)</span>
+</span><span data-line="9"><span class="k">class</span> <span class="nc">MyMiddleware</span><span class="p">(</span><span class="n">AbstractMiddleware</span><span class="p">):</span>
+</span><span data-line="10">    <span class="n">scopes</span> <span class="o">=</span> <span class="p">{</span><span class="n">ScopeType</span><span class="o">.</span><span class="n">HTTP</span><span class="p">}</span>
+</span><span data-line="11">    <span class="n">exclude</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;first_path&quot;</span><span class="p">,</span> <span class="s2">&quot;second_path&quot;</span><span class="p">]</span>
+</span><span data-line="12">    <span class="n">exclude_opt_key</span> <span class="o">=</span> <span class="s2">&quot;exclude_from_middleware&quot;</span>
+</span><span data-line="13">
+</span><span data-line="14">    <span class="k">async</span> <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scope</span><span class="p">:</span> <span class="n">Scope</span><span class="p">,</span> <span class="n">receive</span><span class="p">:</span> <span class="n">Receive</span><span class="p">,</span> <span class="n">send</span><span class="p">:</span> <span class="n">Send</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="15">        <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">monotonic</span><span class="p">()</span>
+</span><span data-line="16">
+</span><span data-line="17">        <span class="k">async</span> <span class="k">def</span> <span class="nf">send_wrapper</span><span class="p">(</span><span class="n">message</span><span class="p">:</span> <span class="s2">&quot;Message&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="18">            <span class="k">if</span> <span class="n">message</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;http.response.start&quot;</span><span class="p">:</span>
+</span><span data-line="19">                <span class="n">process_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">monotonic</span><span class="p">()</span> <span class="o">-</span> <span class="n">start_time</span>
+</span><span data-line="20">                <span class="n">headers</span> <span class="o">=</span> <span class="n">MutableScopeHeaders</span><span class="o">.</span><span class="n">from_message</span><span class="p">(</span><span class="n">message</span><span class="o">=</span><span class="n">message</span><span class="p">)</span>
+</span><span data-line="21">                <span class="n">headers</span><span class="p">[</span><span class="s2">&quot;X-Process-Time&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">process_time</span><span class="p">)</span>
+</span><span data-line="22">            <span class="k">await</span> <span class="n">send</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+</span><span data-line="23">
+</span><span data-line="24">        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="p">(</span><span class="n">scope</span><span class="p">,</span> <span class="n">receive</span><span class="p">,</span> <span class="n">send_wrapper</span><span class="p">)</span>
 </span></pre></div>
 </div>
 <p>The three class variables defined in the above example <code class="docutils literal notranslate"><span class="pre">scopes</span></code>, <code class="docutils literal notranslate"><span class="pre">exclude</span></code>, and <code class="docutils literal notranslate"><span class="pre">exclude_opt_key</span></code> can be used to
 fine-tune for which routes and request types the middleware is called:</p>
 <ul class="simple">
-<li><p>The scopes variable is a set that can include either or both <code class="docutils literal notranslate"><span class="pre">ScopeType.HTTP</span></code> and <code class="docutils literal notranslate"><span class="pre">ScopeType.WEBSOCKET</span></code> , with the default being both.</p></li>
+<li><p>The scopes variable is a set that can include either or both : <code class="docutils literal notranslate"><span class="pre">ScopeType.HTTP</span></code> and <code class="docutils literal notranslate"><span class="pre">ScopeType.WEBSOCKET</span></code> , with the default being both.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">exclude</span></code> accepts either a single string or list of strings that are compiled into a regex against which the request’s <code class="docutils literal notranslate"><span class="pre">path</span></code> is checked.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">exclude_opt_key</span></code> is the key to use for in a route handler’s <code class="docutils literal notranslate"><span class="pre">opt</span></code> dict for a boolean, whether to omit from the middleware.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">exclude_opt_key</span></code> is the key to use for in a route handler’s <a class="reference internal" href="../../reference/router.html#litestar.router.Router" title="litestar.router.Router"><code class="xref py py-class docutils literal notranslate"><span class="pre">Router.opt</span></code></a> dict for a boolean, whether to omit from the middleware.</p></li>
 </ul>
-<p>Thus, in the following example, the middleware will only run against the route handler called <code class="docutils literal notranslate"><span class="pre">not_excluded_handler</span></code>:</p>
-<div class="sd-tab-set docutils">
-<input id="sd-tab-item-0" name="sd-tab-set-0" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-0">
-Python 3.8+</label><div class="sd-tab-content docutils">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">time</span> <span class="kn">import</span> <span class="n">time</span>
-</span><span data-line="2"><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Dict</span>
-</span><span data-line="3">
-</span><span data-line="4"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span><span class="p">,</span> <span class="n">websocket</span>
-</span><span data-line="5"><span class="kn">from</span> <span class="nn">litestar.datastructures</span> <span class="kn">import</span> <span class="n">MutableScopeHeaders</span>
-</span><span data-line="6"><span class="kn">from</span> <span class="nn">litestar.enums</span> <span class="kn">import</span> <span class="n">ScopeType</span>
-</span><span data-line="7"><span class="kn">from</span> <span class="nn">litestar.middleware</span> <span class="kn">import</span> <span class="n">AbstractMiddleware</span>
+<p>Thus, in the following example, the middleware will only run against the handler called <code class="docutils literal notranslate"><span class="pre">not_excluded_handler</span></code> for <code class="docutils literal notranslate"><span class="pre">/greet</span></code> route:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">import</span> <span class="nn">time</span>
+</span><span data-line="2">
+</span><span data-line="3"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">WebSocket</span><span class="p">,</span> <span class="n">get</span><span class="p">,</span> <span class="n">websocket</span>
+</span><span data-line="4"><span class="kn">from</span> <span class="nn">litestar.datastructures</span> <span class="kn">import</span> <span class="n">MutableScopeHeaders</span>
+</span><span data-line="5"><span class="kn">from</span> <span class="nn">litestar.enums</span> <span class="kn">import</span> <span class="n">ScopeType</span>
+</span><span data-line="6"><span class="kn">from</span> <span class="nn">litestar.middleware</span> <span class="kn">import</span> <span class="n">ASGIMiddleware</span>
+</span><span data-line="7"><span class="kn">from</span> <span class="nn">litestar.types</span> <span class="kn">import</span> <span class="n">ASGIApp</span><span class="p">,</span> <span class="n">Message</span><span class="p">,</span> <span class="n">Receive</span><span class="p">,</span> <span class="n">Scope</span><span class="p">,</span> <span class="n">Send</span>
 </span><span data-line="8">
-</span><span data-line="9"><span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
-</span><span data-line="10">    <span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">WebSocket</span>
-</span><span data-line="11">    <span class="kn">from</span> <span class="nn">litestar.types</span> <span class="kn">import</span> <span class="n">Message</span><span class="p">,</span> <span class="n">Receive</span><span class="p">,</span> <span class="n">Scope</span><span class="p">,</span> <span class="n">Send</span>
-</span><span data-line="12">
-</span><span data-line="13">
-</span><span data-line="14"><span class="k">class</span> <span class="nc">MyMiddleware</span><span class="p">(</span><span class="n">AbstractMiddleware</span><span class="p">):</span>
-</span><span data-line="15">    <span class="n">scopes</span> <span class="o">=</span> <span class="p">{</span><span class="n">ScopeType</span><span class="o">.</span><span class="n">HTTP</span><span class="p">}</span>
-</span><span data-line="16">    <span class="n">exclude</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;first_path&quot;</span><span class="p">,</span> <span class="s2">&quot;second_path&quot;</span><span class="p">]</span>
-</span><span data-line="17">    <span class="n">exclude_opt_key</span> <span class="o">=</span> <span class="s2">&quot;exclude_from_middleware&quot;</span>
-</span><span data-line="18">
-</span><span data-line="19">    <span class="k">async</span> <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span>
-</span><span data-line="20">        <span class="bp">self</span><span class="p">,</span>
-</span><span data-line="21">        <span class="n">scope</span><span class="p">:</span> <span class="s2">&quot;Scope&quot;</span><span class="p">,</span>
-</span><span data-line="22">        <span class="n">receive</span><span class="p">:</span> <span class="s2">&quot;Receive&quot;</span><span class="p">,</span>
-</span><span data-line="23">        <span class="n">send</span><span class="p">:</span> <span class="s2">&quot;Send&quot;</span><span class="p">,</span>
-</span><span data-line="24">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="25">        <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="p">()</span>
+</span><span data-line="9">
+</span><span data-line="10"><span class="k">class</span> <span class="nc">MyMiddleware</span><span class="p">(</span><span class="n">ASGIMiddleware</span><span class="p">):</span>
+</span><span data-line="11">    <span class="n">scopes</span> <span class="o">=</span> <span class="p">(</span><span class="n">ScopeType</span><span class="o">.</span><span class="n">HTTP</span><span class="p">,)</span>
+</span><span data-line="12">    <span class="n">exclude_path_pattern</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;first_path&quot;</span><span class="p">,</span> <span class="s2">&quot;second_path&quot;</span><span class="p">)</span>
+</span><span data-line="13">    <span class="n">exclude_opt_key</span> <span class="o">=</span> <span class="s2">&quot;exclude_from_my_middleware&quot;</span>
+</span><span data-line="14">
+</span><span data-line="15">    <span class="k">async</span> <span class="k">def</span> <span class="nf">handle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scope</span><span class="p">:</span> <span class="n">Scope</span><span class="p">,</span> <span class="n">receive</span><span class="p">:</span> <span class="n">Receive</span><span class="p">,</span> <span class="n">send</span><span class="p">:</span> <span class="n">Send</span><span class="p">,</span> <span class="n">next_app</span><span class="p">:</span> <span class="n">ASGIApp</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="16">        <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">monotonic</span><span class="p">()</span>
+</span><span data-line="17">
+</span><span data-line="18">        <span class="k">async</span> <span class="k">def</span> <span class="nf">send_wrapper</span><span class="p">(</span><span class="n">message</span><span class="p">:</span> <span class="s2">&quot;Message&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="19">            <span class="k">if</span> <span class="n">message</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;http.response.start&quot;</span><span class="p">:</span>
+</span><span data-line="20">                <span class="n">process_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">monotonic</span><span class="p">()</span> <span class="o">-</span> <span class="n">start_time</span>
+</span><span data-line="21">                <span class="n">headers</span> <span class="o">=</span> <span class="n">MutableScopeHeaders</span><span class="o">.</span><span class="n">from_message</span><span class="p">(</span><span class="n">message</span><span class="o">=</span><span class="n">message</span><span class="p">)</span>
+</span><span data-line="22">                <span class="n">headers</span><span class="p">[</span><span class="s2">&quot;X-Process-Time&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">process_time</span><span class="p">)</span>
+</span><span data-line="23">            <span class="k">await</span> <span class="n">send</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+</span><span data-line="24">
+</span><span data-line="25">        <span class="k">await</span> <span class="n">next_app</span><span class="p">(</span><span class="n">scope</span><span class="p">,</span> <span class="n">receive</span><span class="p">,</span> <span class="n">send_wrapper</span><span class="p">)</span>
 </span><span data-line="26">
-</span><span data-line="27">        <span class="k">async</span> <span class="k">def</span> <span class="nf">send_wrapper</span><span class="p">(</span><span class="n">message</span><span class="p">:</span> <span class="s2">&quot;Message&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="28">            <span class="k">if</span> <span class="n">message</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;http.response.start&quot;</span><span class="p">:</span>
-</span><span data-line="29">                <span class="n">process_time</span> <span class="o">=</span> <span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start_time</span>
-</span><span data-line="30">                <span class="n">headers</span> <span class="o">=</span> <span class="n">MutableScopeHeaders</span><span class="o">.</span><span class="n">from_message</span><span class="p">(</span><span class="n">message</span><span class="o">=</span><span class="n">message</span><span class="p">)</span>
-</span><span data-line="31">                <span class="n">headers</span><span class="p">[</span><span class="s2">&quot;X-Process-Time&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">process_time</span><span class="p">)</span>
-</span><span data-line="32">                <span class="k">await</span> <span class="n">send</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
-</span><span data-line="33">
-</span><span data-line="34">        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="p">(</span><span class="n">scope</span><span class="p">,</span> <span class="n">receive</span><span class="p">,</span> <span class="n">send_wrapper</span><span class="p">)</span>
-</span><span data-line="35">
+</span><span data-line="27">
+</span><span data-line="28"><span class="nd">@websocket</span><span class="p">(</span><span class="s2">&quot;/my-websocket&quot;</span><span class="p">)</span>
+</span><span data-line="29"><span class="k">async</span> <span class="k">def</span> <span class="nf">websocket_handler</span><span class="p">(</span><span class="n">socket</span><span class="p">:</span> <span class="n">WebSocket</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="30"><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+</span><span data-line="31"><span class="sd">    Websocket handler - is excluded because the middleware scopes includes &#39;ScopeType.HTTP&#39;</span>
+</span><span data-line="32"><span class="sd">    &quot;&quot;&quot;</span>
+</span><span data-line="33">    <span class="k">await</span> <span class="n">socket</span><span class="o">.</span><span class="n">accept</span><span class="p">()</span>
+</span><span data-line="34">    <span class="k">await</span> <span class="n">socket</span><span class="o">.</span><span class="n">send_json</span><span class="p">({</span><span class="s2">&quot;hello&quot;</span><span class="p">:</span> <span class="s2">&quot;websocket&quot;</span><span class="p">})</span>
+</span><span data-line="35">    <span class="k">await</span> <span class="n">socket</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 </span><span data-line="36">
-</span><span data-line="37"><span class="nd">@websocket</span><span class="p">(</span><span class="s2">&quot;/my-websocket&quot;</span><span class="p">)</span>
-</span><span data-line="38"><span class="k">async</span> <span class="k">def</span> <span class="nf">websocket_handler</span><span class="p">(</span><span class="n">socket</span><span class="p">:</span> <span class="s2">&quot;WebSocket&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="39"><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-</span><span data-line="40"><span class="sd">    Websocket handler - is excluded because the middleware scopes includes &#39;ScopeType.HTTP&#39;</span>
-</span><span data-line="41"><span class="sd">    &quot;&quot;&quot;</span>
-</span><span data-line="42">    <span class="k">await</span> <span class="n">socket</span><span class="o">.</span><span class="n">accept</span><span class="p">()</span>
-</span><span data-line="43">    <span class="k">await</span> <span class="n">socket</span><span class="o">.</span><span class="n">send_json</span><span class="p">({</span><span class="s2">&quot;hello websocket&quot;</span><span class="p">})</span>
-</span><span data-line="44">    <span class="k">await</span> <span class="n">socket</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-</span><span data-line="45">
-</span><span data-line="46">
-</span><span data-line="47"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/first_path&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-</span><span data-line="48"><span class="k">def</span> <span class="nf">first_handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
-</span><span data-line="49"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Handler is excluded due to regex pattern matching &quot;first_path&quot;.&quot;&quot;&quot;</span>
-</span><span data-line="50">    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;hello&quot;</span><span class="p">:</span> <span class="s2">&quot;first&quot;</span><span class="p">}</span>
-</span><span data-line="51">
-</span><span data-line="52">
-</span><span data-line="53"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/second_path&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-</span><span data-line="54"><span class="k">def</span> <span class="nf">second_handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
-</span><span data-line="55"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Handler is excluded due to regex pattern matching &quot;second_path&quot;.&quot;&quot;&quot;</span>
-</span><span data-line="56">    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;hello&quot;</span><span class="p">:</span> <span class="s2">&quot;second&quot;</span><span class="p">}</span>
-</span><span data-line="57">
-</span><span data-line="58">
-</span><span data-line="59"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/third_path&quot;</span><span class="p">,</span> <span class="n">exclude_from_middleware</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-</span><span data-line="60"><span class="k">def</span> <span class="nf">third_handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
-</span><span data-line="61"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Handler is excluded due to the opt key &#39;exclude_from_middleware&#39; matching the middleware &#39;exclude_opt_key&#39;.&quot;&quot;&quot;</span>
-</span><span data-line="62">    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;hello&quot;</span><span class="p">:</span> <span class="s2">&quot;second&quot;</span><span class="p">}</span>
-</span><span data-line="63">
-</span><span data-line="64">
-</span><span data-line="65"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/greet&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-</span><span data-line="66"><span class="k">def</span> <span class="nf">not_excluded_handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
-</span><span data-line="67"><span class="w">    </span><span class="sd">&quot;&quot;&quot;This handler is not excluded, and thus the middleware will execute on every incoming request to it.&quot;&quot;&quot;</span>
-</span><span data-line="68">    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;hello&quot;</span><span class="p">:</span> <span class="s2">&quot;world&quot;</span><span class="p">}</span>
-</span><span data-line="69">
-</span><span data-line="70">
-</span><span data-line="71"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
-</span><span data-line="72">    <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span>
-</span><span data-line="73">        <span class="n">websocket_handler</span><span class="p">,</span>
-</span><span data-line="74">        <span class="n">first_handler</span><span class="p">,</span>
-</span><span data-line="75">        <span class="n">second_handler</span><span class="p">,</span>
-</span><span data-line="76">        <span class="n">third_handler</span><span class="p">,</span>
-</span><span data-line="77">        <span class="n">not_excluded_handler</span><span class="p">,</span>
-</span><span data-line="78">    <span class="p">],</span>
-</span><span data-line="79">    <span class="n">middleware</span><span class="o">=</span><span class="p">[</span><span class="n">MyMiddleware</span><span class="p">],</span>
-</span><span data-line="80"><span class="p">)</span>
+</span><span data-line="37">
+</span><span data-line="38"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/first_path&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</span><span data-line="39"><span class="k">def</span> <span class="nf">first_handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+</span><span data-line="40"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Handler is excluded due to regex pattern matching &quot;first_path&quot;.&quot;&quot;&quot;</span>
+</span><span data-line="41">    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;hello&quot;</span><span class="p">:</span> <span class="s2">&quot;first&quot;</span><span class="p">}</span>
+</span><span data-line="42">
+</span><span data-line="43">
+</span><span data-line="44"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/second_path&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</span><span data-line="45"><span class="k">def</span> <span class="nf">second_handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+</span><span data-line="46"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Handler is excluded due to regex pattern matching &quot;second_path&quot;.&quot;&quot;&quot;</span>
+</span><span data-line="47">    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;hello&quot;</span><span class="p">:</span> <span class="s2">&quot;second&quot;</span><span class="p">}</span>
+</span><span data-line="48">
+</span><span data-line="49">
+</span><span data-line="50"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/third_path&quot;</span><span class="p">,</span> <span class="n">exclude_from_my_middleware</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</span><span data-line="51"><span class="k">def</span> <span class="nf">third_handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+</span><span data-line="52"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Handler is excluded due to the opt key &#39;exclude_from_my_middleware&#39; matching the middleware &#39;exclude_opt_key&#39;.&quot;&quot;&quot;</span>
+</span><span data-line="53">    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;hello&quot;</span><span class="p">:</span> <span class="s2">&quot;third&quot;</span><span class="p">}</span>
+</span><span data-line="54">
+</span><span data-line="55">
+</span><span data-line="56"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/greet&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</span><span data-line="57"><span class="k">def</span> <span class="nf">not_excluded_handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+</span><span data-line="58"><span class="w">    </span><span class="sd">&quot;&quot;&quot;This handler is not excluded, and thus the middleware will execute on every incoming request to it.&quot;&quot;&quot;</span>
+</span><span data-line="59">    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;hello&quot;</span><span class="p">:</span> <span class="s2">&quot;world&quot;</span><span class="p">}</span>
+</span><span data-line="60">
+</span><span data-line="61">
+</span><span data-line="62"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
+</span><span data-line="63">    <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span>
+</span><span data-line="64">        <span class="n">websocket_handler</span><span class="p">,</span>
+</span><span data-line="65">        <span class="n">first_handler</span><span class="p">,</span>
+</span><span data-line="66">        <span class="n">second_handler</span><span class="p">,</span>
+</span><span data-line="67">        <span class="n">third_handler</span><span class="p">,</span>
+</span><span data-line="68">        <span class="n">not_excluded_handler</span><span class="p">,</span>
+</span><span data-line="69">    <span class="p">],</span>
+</span><span data-line="70">    <span class="n">middleware</span><span class="o">=</span><span class="p">[</span><span class="n">MyMiddleware</span><span class="p">()],</span>
+</span><span data-line="71"><span class="p">)</span>
 </span></pre></div>
-</div>
-</div>
-<input checked="checked" id="sd-tab-item-1" name="sd-tab-set-0" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.9" for="sd-tab-item-1">
-Python 3.9+</label><div class="sd-tab-content docutils">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">time</span> <span class="kn">import</span> <span class="n">time</span>
-</span><span data-line="2"><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
-</span><span data-line="3">
-</span><span data-line="4"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span><span class="p">,</span> <span class="n">websocket</span>
-</span><span data-line="5"><span class="kn">from</span> <span class="nn">litestar.datastructures</span> <span class="kn">import</span> <span class="n">MutableScopeHeaders</span>
-</span><span data-line="6"><span class="kn">from</span> <span class="nn">litestar.enums</span> <span class="kn">import</span> <span class="n">ScopeType</span>
-</span><span data-line="7"><span class="kn">from</span> <span class="nn">litestar.middleware</span> <span class="kn">import</span> <span class="n">AbstractMiddleware</span>
-</span><span data-line="8">
-</span><span data-line="9"><span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
-</span><span data-line="10">    <span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">WebSocket</span>
-</span><span data-line="11">    <span class="kn">from</span> <span class="nn">litestar.types</span> <span class="kn">import</span> <span class="n">Message</span><span class="p">,</span> <span class="n">Receive</span><span class="p">,</span> <span class="n">Scope</span><span class="p">,</span> <span class="n">Send</span>
-</span><span data-line="12">
-</span><span data-line="13">
-</span><span data-line="14"><span class="k">class</span> <span class="nc">MyMiddleware</span><span class="p">(</span><span class="n">AbstractMiddleware</span><span class="p">):</span>
-</span><span data-line="15">    <span class="n">scopes</span> <span class="o">=</span> <span class="p">{</span><span class="n">ScopeType</span><span class="o">.</span><span class="n">HTTP</span><span class="p">}</span>
-</span><span data-line="16">    <span class="n">exclude</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;first_path&quot;</span><span class="p">,</span> <span class="s2">&quot;second_path&quot;</span><span class="p">]</span>
-</span><span data-line="17">    <span class="n">exclude_opt_key</span> <span class="o">=</span> <span class="s2">&quot;exclude_from_middleware&quot;</span>
-</span><span data-line="18">
-</span><span data-line="19">    <span class="k">async</span> <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span>
-</span><span data-line="20">        <span class="bp">self</span><span class="p">,</span>
-</span><span data-line="21">        <span class="n">scope</span><span class="p">:</span> <span class="s2">&quot;Scope&quot;</span><span class="p">,</span>
-</span><span data-line="22">        <span class="n">receive</span><span class="p">:</span> <span class="s2">&quot;Receive&quot;</span><span class="p">,</span>
-</span><span data-line="23">        <span class="n">send</span><span class="p">:</span> <span class="s2">&quot;Send&quot;</span><span class="p">,</span>
-</span><span data-line="24">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="25">        <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="p">()</span>
-</span><span data-line="26">
-</span><span data-line="27">        <span class="k">async</span> <span class="k">def</span> <span class="nf">send_wrapper</span><span class="p">(</span><span class="n">message</span><span class="p">:</span> <span class="s2">&quot;Message&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="28">            <span class="k">if</span> <span class="n">message</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;http.response.start&quot;</span><span class="p">:</span>
-</span><span data-line="29">                <span class="n">process_time</span> <span class="o">=</span> <span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start_time</span>
-</span><span data-line="30">                <span class="n">headers</span> <span class="o">=</span> <span class="n">MutableScopeHeaders</span><span class="o">.</span><span class="n">from_message</span><span class="p">(</span><span class="n">message</span><span class="o">=</span><span class="n">message</span><span class="p">)</span>
-</span><span data-line="31">                <span class="n">headers</span><span class="p">[</span><span class="s2">&quot;X-Process-Time&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">process_time</span><span class="p">)</span>
-</span><span data-line="32">                <span class="k">await</span> <span class="n">send</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
-</span><span data-line="33">
-</span><span data-line="34">        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="p">(</span><span class="n">scope</span><span class="p">,</span> <span class="n">receive</span><span class="p">,</span> <span class="n">send_wrapper</span><span class="p">)</span>
-</span><span data-line="35">
-</span><span data-line="36">
-</span><span data-line="37"><span class="nd">@websocket</span><span class="p">(</span><span class="s2">&quot;/my-websocket&quot;</span><span class="p">)</span>
-</span><span data-line="38"><span class="k">async</span> <span class="k">def</span> <span class="nf">websocket_handler</span><span class="p">(</span><span class="n">socket</span><span class="p">:</span> <span class="s2">&quot;WebSocket&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="39"><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-</span><span data-line="40"><span class="sd">    Websocket handler - is excluded because the middleware scopes includes &#39;ScopeType.HTTP&#39;</span>
-</span><span data-line="41"><span class="sd">    &quot;&quot;&quot;</span>
-</span><span data-line="42">    <span class="k">await</span> <span class="n">socket</span><span class="o">.</span><span class="n">accept</span><span class="p">()</span>
-</span><span data-line="43">    <span class="k">await</span> <span class="n">socket</span><span class="o">.</span><span class="n">send_json</span><span class="p">({</span><span class="s2">&quot;hello websocket&quot;</span><span class="p">})</span>
-</span><span data-line="44">    <span class="k">await</span> <span class="n">socket</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-</span><span data-line="45">
-</span><span data-line="46">
-</span><span data-line="47"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/first_path&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-</span><span data-line="48"><span class="k">def</span> <span class="nf">first_handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
-</span><span data-line="49"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Handler is excluded due to regex pattern matching &quot;first_path&quot;.&quot;&quot;&quot;</span>
-</span><span data-line="50">    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;hello&quot;</span><span class="p">:</span> <span class="s2">&quot;first&quot;</span><span class="p">}</span>
-</span><span data-line="51">
-</span><span data-line="52">
-</span><span data-line="53"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/second_path&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-</span><span data-line="54"><span class="k">def</span> <span class="nf">second_handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
-</span><span data-line="55"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Handler is excluded due to regex pattern matching &quot;second_path&quot;.&quot;&quot;&quot;</span>
-</span><span data-line="56">    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;hello&quot;</span><span class="p">:</span> <span class="s2">&quot;second&quot;</span><span class="p">}</span>
-</span><span data-line="57">
-</span><span data-line="58">
-</span><span data-line="59"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/third_path&quot;</span><span class="p">,</span> <span class="n">exclude_from_middleware</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-</span><span data-line="60"><span class="k">def</span> <span class="nf">third_handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
-</span><span data-line="61"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Handler is excluded due to the opt key &#39;exclude_from_middleware&#39; matching the middleware &#39;exclude_opt_key&#39;.&quot;&quot;&quot;</span>
-</span><span data-line="62">    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;hello&quot;</span><span class="p">:</span> <span class="s2">&quot;second&quot;</span><span class="p">}</span>
-</span><span data-line="63">
-</span><span data-line="64">
-</span><span data-line="65"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/greet&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-</span><span data-line="66"><span class="k">def</span> <span class="nf">not_excluded_handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
-</span><span data-line="67"><span class="w">    </span><span class="sd">&quot;&quot;&quot;This handler is not excluded, and thus the middleware will execute on every incoming request to it.&quot;&quot;&quot;</span>
-</span><span data-line="68">    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;hello&quot;</span><span class="p">:</span> <span class="s2">&quot;world&quot;</span><span class="p">}</span>
-</span><span data-line="69">
-</span><span data-line="70">
-</span><span data-line="71"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
-</span><span data-line="72">    <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span>
-</span><span data-line="73">        <span class="n">websocket_handler</span><span class="p">,</span>
-</span><span data-line="74">        <span class="n">first_handler</span><span class="p">,</span>
-</span><span data-line="75">        <span class="n">second_handler</span><span class="p">,</span>
-</span><span data-line="76">        <span class="n">third_handler</span><span class="p">,</span>
-</span><span data-line="77">        <span class="n">not_excluded_handler</span><span class="p">,</span>
-</span><span data-line="78">    <span class="p">],</span>
-</span><span data-line="79">    <span class="n">middleware</span><span class="o">=</span><span class="p">[</span><span class="n">MyMiddleware</span><span class="p">],</span>
-</span><span data-line="80"><span class="p">)</span>
-</span></pre></div>
-</div>
-</div>
 </div>
 <div class="admonition danger">
 <p class="admonition-title">Danger</p>
@@ -901,7 +947,7 @@ since, as a regex, it matches <em>every</em> path</p>
 </section>
 <section id="using-definemiddleware-to-pass-arguments">
 <h2>Using DefineMiddleware to pass arguments<a class="headerlink" href="#using-definemiddleware-to-pass-arguments" title="Permalink to this heading">¶</a></h2>
-<p>Litestar offers a simple way to pass positional arguments (<code class="docutils literal notranslate"><span class="pre">*args</span></code>) and key-word arguments (<code class="docutils literal notranslate"><span class="pre">**kwargs</span></code>) to middleware
+<p>Litestar offers a simple way to pass positional arguments (<code class="docutils literal notranslate"><span class="pre">*args</span></code>) and keyword arguments (<code class="docutils literal notranslate"><span class="pre">**kwargs</span></code>) to middleware
 using the <a class="reference internal" href="../../reference/middleware/index.html#litestar.middleware.DefineMiddleware" title="litestar.middleware.base.DefineMiddleware"><code class="xref py py-class docutils literal notranslate"><span class="pre">DefineMiddleware</span></code></a> class. Let’s extend
 the factory function used in the examples above to take some args and kwargs and then use <code class="docutils literal notranslate"><span class="pre">DefineMiddleware</span></code> to pass
 these values to our middleware:</p>
@@ -957,7 +1003,7 @@ as the kwarg <code class="docutils literal notranslate"><span class="pre">app</s
 <footer class="sy-foot">
   <div class="sy-foot-inner sy-container mx-auto">
     <div class="sy-foot-reserved md:flex justify-between items-center">
-      <div class="sy-foot-copyright"><p>2024, Litestar Organization</p>
+      <div class="sy-foot-copyright"><p>2025, Litestar Organization</p>
   
   <p>
     Made with
@@ -992,6 +1038,6 @@ as the kwarg <code class="docutils literal notranslate"><span class="pre">app</s
       <script src="../../_static/togglebutton.js?v=4a39c7ea"></script>
       <script src="../../_static/design-tabs.js?v=36754332"></script>
       <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
-      <script src="../../_static/shibuya.js?v=c5fc9e80"></script>
+      <script src="../../_static/shibuya.js?v=e2e99575"></script>
       <script src="../../_static/versioning.js?v=bc681eff"></script></body>
 </html>

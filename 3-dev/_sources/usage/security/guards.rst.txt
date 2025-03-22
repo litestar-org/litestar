@@ -1,8 +1,7 @@
 Guards
 ======
 
-Guards are :term:`callables <python:callable>` that receive two arguments - ``connection``, which is the
-:class:`~.connection.ASGIConnection` instance, and ``route_handler``, which is a copy of the
+Guards are :term:`callables <python:callable>` that receive two arguments - ``connection``, which is the :class:`Request <.connection.Request>` or :class:`WebSocket <.connection.WebSocket>` instance (both sub-classes of :class:`~.connection.ASGIConnection`), and ``route_handler``, which is a copy of the
 :class:`~.handlers.BaseRouteHandler`. Their role is to *authorize* the request by verifying that
 the connection is allowed to reach the endpoint handler in question. If verification fails, the guard should raise an
 :exc:`HTTPException`, usually a :class:`~.exceptions.NotAuthorizedException` with a
@@ -15,7 +14,7 @@ the example.
 We begin by creating an :class:`~enum.Enum` with two roles - ``consumer`` and ``admin``:
 
 .. code-block:: python
-    :caption: Defining the UserRole enum
+    :caption: Defining the enum ``UserRole``
 
     from enum import Enum
 
@@ -26,7 +25,7 @@ We begin by creating an :class:`~enum.Enum` with two roles - ``consumer`` and ``
 
 Our ``User`` model will now look like this:
 
-.. dropdown:: Click to expand the User model
+.. dropdown:: Click to toggle the model ``User``
 
     .. code-block:: python
         :caption: User model for role based authorization
@@ -53,10 +52,10 @@ Given that the ``User`` model has a ``role`` property we can use it to authorize
 Let us create a guard that only allows admin users to access certain route handlers and then add it to a route
 handler function:
 
-.. dropdown:: Click to expand the ``admin_user_guard`` guard
+.. dropdown:: Click to toggle the guard ``admin_user_guard``
 
     .. code-block:: python
-        :caption: Defining the ``admin_user_guard`` guard used to authorize certain route handlers
+        :caption: Defining the guard ``admin_user_guard`` used to authorize certain route handlers
 
         from enum import Enum
 

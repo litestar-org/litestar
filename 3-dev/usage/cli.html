@@ -6,14 +6,14 @@
     function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
     setColorMode(localStorage._theme||"auto");
   </script><link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=397bb51e" />
-    <link rel="stylesheet" type="text/css" href="../_static/shibuya.css?v=36d120a7" />
+    <link rel="stylesheet" type="text/css" href="../_static/shibuya.css?v=83eaa723" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
     <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx_paramlinks.css" />
     <link media="print" rel="stylesheet" type="text/css" href="../_static/print.css?v=20ff2c19" />
-    <link rel="stylesheet" type="text/css" href="../_static/style.css?v=10936375" />
-    <link rel="stylesheet" type="text/css" href="../_static/litestar-sphinx-theme.css?v=9989272a" />
+    <link rel="stylesheet" type="text/css" href="../_static/style.css?v=50ea2f63" />
+    <link rel="stylesheet" type="text/css" href="../_static/litestar-sphinx-theme.css?v=9a8390f1" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -29,7 +29,7 @@
   </head>
 <body><div class="announcement">
     <div class="announcement-inner">
-      <p>You are viewing the <bold>v3-development</bold> version of the documentation. Click here to go to the latest version.</p>
+      <p>You are viewing the <bold>local</bold> version of the documentation. Click here to go to the latest version.</p>
       <button class="announcement-close" aria-label="Close announcement">
         <i class="i-lucide close"></i>
       </button>
@@ -214,6 +214,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l3"><a class="reference internal" href="openapi/schema_generation.html#accessing-the-openapi-schema-in-code">Accessing the OpenAPI schema in code</a></li>
 <li class="toctree-l3"><a class="reference internal" href="openapi/schema_generation.html#customizing-pydantic-model-schemas">Customizing Pydantic model schemas</a></li>
 <li class="toctree-l3"><a class="reference internal" href="openapi/schema_generation.html#customizing-operation-class">Customizing <code class="docutils literal notranslate"><span class="pre">Operation</span></code> class</a></li>
+<li class="toctree-l3"><a class="reference internal" href="openapi/schema_generation.html#generating-examples">Generating examples</a></li>
 <li class="toctree-l3"><a class="reference internal" href="openapi/ui_plugins.html">OpenAPI UI Plugins</a></li>
 <li class="toctree-l3"><a class="reference internal" href="openapi/ui_plugins.html#using-openapi-ui-plugins">Using OpenAPI UI Plugins</a></li>
 <li class="toctree-l3"><a class="reference internal" href="openapi/ui_plugins.html#configuring-openapi-ui-plugins">Configuring OpenAPI UI Plugins</a></li>
@@ -338,8 +339,12 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2"><a class="reference internal" href="../reference/pagination.html">pagination</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/params.html">params</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/plugins/index.html">plugins</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../reference/plugins/attrs.html">attrs</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/plugins/flash_messages.html">flash</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/plugins/htmx.html">htmx</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/plugins/problem_details.html">problem details</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/plugins/prometheus.html">prometheus</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/plugins/pydantic.html">pydantic</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/plugins/structlog.html">structlog</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/plugins/sqlalchemy.html">sqlalchemy</a></li>
 </ul>
@@ -377,6 +382,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l3"><a class="reference internal" href="../reference/stores/memory.html">memory</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/stores/redis.html">redis</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/stores/registry.html">registry</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/stores/valkey.html">valkey</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/template.html">template</a></li>
@@ -435,9 +441,9 @@ data-aria-dark="Switch to auto color mode">
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/repository-tutorial/index.html">SQLAlchemy Repository Tutorial</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../tutorials/repository-tutorial/01-modeling-and-features.html">Introduction to Database Modeling and Repository Features</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../tutorials/repository-tutorial/01-modeling-and-features.html#modeling">Modeling</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../tutorials/repository-tutorial/01-modeling-and-features.html#full-code">Full Code</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tutorials/repository-tutorial/01-modelling-and-features.html">Introduction to Database Modelling and Repository Features</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tutorials/repository-tutorial/01-modelling-and-features.html#modelling">Modelling</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tutorials/repository-tutorial/01-modelling-and-features.html#full-code">Full Code</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tutorials/repository-tutorial/02-repository-introduction.html">Interacting with repositories</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tutorials/repository-tutorial/02-repository-introduction.html#working-with-bulk-data-operations">Working with Bulk Data Operations</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tutorials/repository-tutorial/02-repository-introduction.html#full-code">Full Code</a></li>
@@ -454,12 +460,13 @@ data-aria-dark="Switch to auto color mode">
 <p class="caption" role="heading" aria-level="3"><span class="caption-text">Contributing</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../contribution-guide.html">Contribution Guide</a></li>
-<li class="toctree-l1"><a class="reference external" href="https://github.com/search?q=user%3Alitestar-org+state%3Aopen+label%3A%22good+first+issue%22+++no%3Aassignee+&amp;type=issues">Available Issues</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/search?q=user%3Alitestar-org+state%3Aopen+label%3A%22good+first+issue%22+++no%3Aassignee+&amp;type=issues=">Available Issues</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/litestar-org/.github?tab=coc-ov-file#readme">Code of Conduct</a></li>
 </ul>
 
         </div>
-      </div></div>
+      </div>
+    </div>
   </aside>
   <div class="lside-overlay js-menu" role="button" aria-label="Close left sidebar" aria-controls="lside" aria-expanded="false"></div>
   <aside id="rside" class="sy-rside pb-3 w-64 shrink-0 order-last">
@@ -469,42 +476,6 @@ data-aria-dark="Switch to auto color mode">
     <div class="sy-scrollbar sy-rside-inner px-6 xl:top-16 xl:sticky xl:pl-0 pt-6 pb-4"><div class="localtoc"><h3>On this page</h3><ul>
 <li><a class="reference internal" href="#enabling-all-cli-features">Enabling all CLI features</a></li>
 <li><a class="reference internal" href="#autodiscovery">Autodiscovery</a></li>
-<li><a class="reference internal" href="#commands">Commands</a><ul>
-<li><a class="reference internal" href="#litestar">litestar</a><ul>
-<li><a class="reference internal" href="#options">Options</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#version">version</a><ul>
-<li><a class="reference internal" href="#id1">Options</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#run">run</a><ul>
-<li><a class="reference internal" href="#cli-run-options">Options</a><ul>
-<li><a class="reference internal" href="#reload-dir">&#8211;reload-dir</a></li>
-<li><a class="reference internal" href="#reload-include">&#8211;reload-include</a></li>
-<li><a class="reference internal" href="#reload-exclude">&#8211;reload-exclude</a></li>
-<li><a class="reference internal" href="#ssl">SSL</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li><a class="reference internal" href="#info">info</a></li>
-<li><a class="reference internal" href="#routes">routes</a><ul>
-<li><a class="reference internal" href="#id3">Options</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#sessions">sessions</a><ul>
-<li><a class="reference internal" href="#delete">delete</a></li>
-<li><a class="reference internal" href="#clear">clear</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#openapi">openapi</a><ul>
-<li><a class="reference internal" href="#schema">schema</a></li>
-<li><a class="reference internal" href="#typescript">typescript</a></li>
-</ul>
-</li>
-</ul>
-</li>
 <li><a class="reference internal" href="#extending-the-cli">Extending the CLI</a><ul>
 <li><a class="reference internal" href="#using-entry-points">Using entry points</a></li>
 <li><a class="reference internal" href="#using-a-plugin">Using a plugin</a></li>
@@ -574,12 +545,16 @@ and <a class="reference external" href="https://github.com/ewels/rich-click">ric
 <h2>Enabling all CLI features<a class="headerlink" href="#enabling-all-cli-features" title="Permalink to this heading">¶</a></h2>
 <p>The CLI and its hard dependencies are included by default. However, if you want to run your application
 (using <code class="docutils literal notranslate"><span class="pre">litestar</span> <span class="pre">run</span></code> ) or beautify the Typescript generated by the <code class="docutils literal notranslate"><span class="pre">litestar</span> <span class="pre">schema</span> <span class="pre">typescript</span></code>
-command, you’ll need <code class="docutils literal notranslate"><span class="pre">uvicorn</span></code> and <code class="docutils literal notranslate"><span class="pre">jsbeautifier</span></code> . They can be installed independently, but we
-recommend installing the <code class="docutils literal notranslate"><span class="pre">standard</span></code> group which conveniently bundles commonly used optional dependencies.</p>
+command, you will need <a class="reference external" href="https://www.uvicorn.org/">uvicorn</a> and <a class="reference external" href="https://pypi.org/project/jsbeautifier/">jsbeautifier</a>.
+They can be installed independently, but we recommend installing the <code class="docutils literal notranslate"><span class="pre">standard</span></code> extra which conveniently bundles
+commonly used optional dependencies.</p>
+<div class="literal-block-wrapper docutils container" id="id2">
+<div class="code-block-caption"><span class="caption-text">Install the standard group</span><a class="headerlink" href="#id2" title="Permalink to this code">¶</a></div>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span data-line="1">pip<span class="w"> </span>install<span class="w"> </span>litestar<span class="o">[</span>standard<span class="o">]</span>
 </span></pre></div>
 </div>
-<p>Once you have installed <code class="docutils literal notranslate"><span class="pre">standard</span></code>, you’ll have access to the <code class="docutils literal notranslate"><span class="pre">litestar</span> <span class="pre">run</span></code> command.</p>
+</div>
+<p>Once you have installed <code class="docutils literal notranslate"><span class="pre">standard</span></code>, you will have access to the <code class="docutils literal notranslate"><span class="pre">litestar</span> <span class="pre">run</span></code> command.</p>
 </section>
 <section id="autodiscovery">
 <h2>Autodiscovery<a class="headerlink" href="#autodiscovery" title="Permalink to this heading">¶</a></h2>
@@ -598,333 +573,46 @@ callables annotated to return a <a class="reference internal" href="../reference
 </ol>
 <p>Within these locations, Litestar CLI looks for:</p>
 <ol class="arabic simple">
-<li><p>An object named <code class="docutils literal notranslate"><span class="pre">app</span></code> that is an instance of <a class="reference internal" href="../reference/app.html#litestar.app.Litestar" title="litestar.app.Litestar"><code class="xref py py-class docutils literal notranslate"><span class="pre">Litestar</span></code></a></p></li>
+<li><p>An <a class="reference external" href="https://docs.python.org/3/glossary.html#term-object" title="(in Python v3.13)"><span class="xref std std-term">object</span></a> named <code class="docutils literal notranslate"><span class="pre">app</span></code> that is an instance of <a class="reference internal" href="../reference/app.html#litestar.app.Litestar" title="litestar.app.Litestar"><code class="xref py py-class docutils literal notranslate"><span class="pre">Litestar</span></code></a></p></li>
 <li><p>An object named <code class="docutils literal notranslate"><span class="pre">application</span></code> that is an instance of <a class="reference internal" href="../reference/app.html#litestar.app.Litestar" title="litestar.app.Litestar"><code class="xref py py-class docutils literal notranslate"><span class="pre">Litestar</span></code></a></p></li>
 <li><p>Any object that is an instance of <a class="reference internal" href="../reference/app.html#litestar.app.Litestar" title="litestar.app.Litestar"><code class="xref py py-class docutils literal notranslate"><span class="pre">Litestar</span></code></a></p></li>
-<li><p>A callable named <code class="docutils literal notranslate"><span class="pre">create_app</span></code></p></li>
+<li><p>A <a class="reference external" href="https://docs.python.org/3/glossary.html#term-callable" title="(in Python v3.13)"><span class="xref std std-term">callable</span></a> named <code class="docutils literal notranslate"><span class="pre">create_app</span></code></p></li>
 <li><p>A callable annotated to return an instance of <a class="reference internal" href="../reference/app.html#litestar.app.Litestar" title="litestar.app.Litestar"><code class="xref py py-class docutils literal notranslate"><span class="pre">Litestar</span></code></a></p></li>
 </ol>
 </section>
-<section id="commands">
-<h2>Commands<a class="headerlink" href="#commands" title="Permalink to this heading">¶</a></h2>
-<section id="litestar">
-<h3>litestar<a class="headerlink" href="#litestar" title="Permalink to this heading">¶</a></h3>
-<p>The main entrypoint to the Litestar CLI is the <code class="docutils literal notranslate"><span class="pre">litestar</span></code> command.</p>
-<p>If you don’t pass the <code class="docutils literal notranslate"><span class="pre">--app</span></code> flag, the application will be automatically discovered, as explained in
-<a class="reference internal" href="#autodiscovery">Autodiscovery</a>.</p>
-<section id="options">
-<h4>Options<a class="headerlink" href="#options" title="Permalink to this heading">¶</a></h4>
-<div class="table-wrapper docutils container">
-<table class="docutils align-default">
-<thead>
-<tr class="row-odd"><th class="head"><p>Flag</p></th>
-<th class="head"><p>Environment variable</p></th>
-<th class="head"><p>Description</p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--app</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">LITESTAR_APP</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">&lt;modulename&gt;.&lt;submodule&gt;:&lt;app</span> <span class="pre">instance&gt;</span></code></p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--app-dir</span></code></p></td>
-<td><p>N/A</p></td>
-<td><p>Look for the app in the specified directory by adding it to the
-PYTHONPATH. Defaults to the current working directory.</p></td>
-</tr>
-</tbody>
-</table>
-</div>
-</section>
-</section>
-<section id="version">
-<h3>version<a class="headerlink" href="#version" title="Permalink to this heading">¶</a></h3>
-<p>Prints the currently installed version of Litestar.</p>
-<section id="id1">
-<h4>Options<a class="headerlink" href="#id1" title="Permalink to this heading">¶</a></h4>
-<div class="table-wrapper docutils container">
-<table class="docutils align-default">
-<thead>
-<tr class="row-odd"><th class="head"><p>Name</p></th>
-<th class="head"><p>Description</p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">-s</span></code>, <code class="docutils literal notranslate"><span class="pre">--short</span></code></p></td>
-<td><p>Include only <code class="docutils literal notranslate"><span class="pre">MAJOR.MINOR.PATCH</span></code></p></td>
-</tr>
-</tbody>
-</table>
-</div>
-</section>
-</section>
-<section id="run">
-<h3>run<a class="headerlink" href="#run" title="Permalink to this heading">¶</a></h3>
-<p>The <code class="docutils literal notranslate"><span class="pre">run</span></code> command executes a Litestar application using <a class="reference external" href="https://www.uvicorn.org/">uvicorn</a>.</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span data-line="1">litestar<span class="w"> </span>run
-</span></pre></div>
-</div>
-<div class="admonition caution">
-<p class="admonition-title">Caution</p>
-<p>This feature is intended for development purposes only and should not be used to deploy production applications.</p>
-</div>
-<div class="versionchanged">
-<p><span class="versionmodified changed">Changed in version 2.8.0: </span>CLI options take precedence over environment variables!</p>
-</div>
-<section id="cli-run-options">
-<span id="id2"></span><h4>Options<a class="headerlink" href="#cli-run-options" title="Permalink to this heading">¶</a></h4>
-<div class="table-wrapper docutils container">
-<table class="docutils align-default">
-<thead>
-<tr class="row-odd"><th class="head"><p>Flag</p></th>
-<th class="head"><p>Environment variable</p></th>
-<th class="head"><p>Description</p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">-r</span></code>, <code class="docutils literal notranslate"><span class="pre">--reload</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">LITESTAR_RELOAD</span></code></p></td>
-<td><p>Reload the application when files in its directory are changed</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">-R</span></code>, <code class="docutils literal notranslate"><span class="pre">--reload-dir</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">LITESTAR_RELOAD_DIRS</span></code></p></td>
-<td><p>Specify directories to watch for reload.</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">-I</span></code>, <code class="docutils literal notranslate"><span class="pre">--reload-include</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">LITESTAR_RELOAD_INCLUDES</span></code></p></td>
-<td><p>Specify glob patterns for files to include when watching for reload.</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">-E</span></code>, <code class="docutils literal notranslate"><span class="pre">--reload-exclude</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">LITESTAR_RELOAD_EXCLUDES</span></code></p></td>
-<td><p>Specify glob patterns for files to exclude when watching for reload.</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">-p</span></code>, <code class="docutils literal notranslate"><span class="pre">--port</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">LITESTAR_PORT</span></code></p></td>
-<td><p>Bind the server to this port [default: 8000]</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--wc</span></code>, <code class="docutils literal notranslate"><span class="pre">--web-concurrency</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">LITESTAR_WEB_CONCURRENCY</span></code>
-<code class="docutils literal notranslate"><span class="pre">WEB_CONCURRENCY</span></code></p></td>
-<td><div class="versionchanged">
-<p><span class="versionmodified changed">Changed in version 2.8: </span><code class="docutils literal notranslate"><span class="pre">LITESTAR_WEB_CONCURRENCY</span></code> is supported and takes precedence over <code class="docutils literal notranslate"><span class="pre">WEB_CONCURRENCY</span></code></p>
-</div>
-<p>The number of concurrent web workers to start [default: 1]</p>
-</td>
-</tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">-H</span></code>, <code class="docutils literal notranslate"><span class="pre">--host</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">LITESTAR_HOST</span></code></p></td>
-<td><p>Bind the server to this host [default: 127.0.0.1]</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--fd</span></code>, <code class="docutils literal notranslate"><span class="pre">--file-descriptor</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">LITESTAR_FILE_DESCRIPTOR</span></code></p></td>
-<td><p>Bind to a socket from this file descriptor.</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--uds</span></code>, <code class="docutils literal notranslate"><span class="pre">--unix-domain-socket</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">LITESTAR_UNIX_DOMAIN_SOCKET</span></code></p></td>
-<td><p>Bind to a UNIX domain socket.</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">-d</span></code>, <code class="docutils literal notranslate"><span class="pre">--debug</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">LITESTAR_DEBUG</span></code></p></td>
-<td><p>Run the application in debug mode</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--pdb</span></code>, <code class="docutils literal notranslate"><span class="pre">--use_pdb</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">LITESTAR_PDB</span></code></p></td>
-<td><p>Drop into the Python debugger when an exception occurs</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--ssl-certfile</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">LITESTAR_SSL_CERT_PATH</span></code></p></td>
-<td><p>Path to a SSL certificate file</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--ssl-keyfile</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">LITESTAR_SSL_KEY_PATH</span></code></p></td>
-<td><p>Path to the private key to the SSL certificate</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--create-self-signed-cert</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">LITESTAR_CREATE_SELF_SIGNED_CERT</span></code></p></td>
-<td><p>If the SSL certificate and key are not found, generate a self-signed certificate</p></td>
-</tr>
-</tbody>
-</table>
-</div>
-<section id="reload-dir">
-<h5>–reload-dir<a class="headerlink" href="#reload-dir" title="Permalink to this heading">¶</a></h5>
-<p>The <code class="docutils literal notranslate"><span class="pre">--reload-dir</span></code> flag allows you to specify directories to watch for changes. If you specify this flag, the <code class="docutils literal notranslate"><span class="pre">--reload</span></code> flag is implied. You can specify multiple directories by passing the flag multiple times:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span data-line="1">litestar<span class="w"> </span>run<span class="w"> </span>--reload-dir<span class="o">=</span>.<span class="w"> </span>--reload-dir<span class="o">=</span>../other-library/src
-</span></pre></div>
-</div>
-<p>To set multiple directories via an environment variable, use a comma-separated list:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="nv">LITESTAR_RELOAD_DIRS</span><span class="o">=</span>.,../other-library/src
-</span></pre></div>
-</div>
-</section>
-<section id="reload-include">
-<h5>–reload-include<a class="headerlink" href="#reload-include" title="Permalink to this heading">¶</a></h5>
-<p>The <code class="docutils literal notranslate"><span class="pre">--reload-include</span></code> flag allows you to specify glob patterns to include when watching for file changes. If you specify this flag, the <code class="docutils literal notranslate"><span class="pre">--reload</span></code> flag is implied. Furthermore, <code class="docutils literal notranslate"><span class="pre">.py</span></code> files are included implicitly by default.</p>
-<p>You can specify multiple glob patterns by passing the flag multiple times:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span data-line="1">litestar<span class="w"> </span>run<span class="w"> </span>--reload-include<span class="o">=</span><span class="s2">&quot;*.rst&quot;</span><span class="w"> </span>--reload-include<span class="o">=</span><span class="s2">&quot;*.yml&quot;</span>
-</span></pre></div>
-</div>
-<p>To set multiple directories via an environment variable, use a comma-separated list:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="nv">LITESTAR_RELOAD_INCLUDES</span><span class="o">=</span>*.rst,*.yml
-</span></pre></div>
-</div>
-</section>
-<section id="reload-exclude">
-<h5>–reload-exclude<a class="headerlink" href="#reload-exclude" title="Permalink to this heading">¶</a></h5>
-<p>The <code class="docutils literal notranslate"><span class="pre">--reload-exclude</span></code> flag allows you to specify glob patterns to exclude when watching for file changes. If you specify this flag, the <code class="docutils literal notranslate"><span class="pre">--reload</span></code> flag is implied.</p>
-<p>You can specify multiple glob patterns by passing the flag multiple times:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span data-line="1">litestar<span class="w"> </span>run<span class="w"> </span>--reload-exclude<span class="o">=</span><span class="s2">&quot;*.py&quot;</span><span class="w"> </span>--reload-exclude<span class="o">=</span><span class="s2">&quot;*.yml&quot;</span>
-</span></pre></div>
-</div>
-<p>To set multiple directories via an environment variable, use a comma-separated list:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="nv">LITESTAR_RELOAD_EXCLUDES</span><span class="o">=</span>*.py,*.yml
-</span></pre></div>
-</div>
-</section>
-<section id="ssl">
-<h5>SSL<a class="headerlink" href="#ssl" title="Permalink to this heading">¶</a></h5>
-<p>You can pass paths to an SSL certificate and it’s private key to run the server using the HTTPS protocol:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span data-line="1">litestar<span class="w"> </span>run<span class="w"> </span>--ssl-certfile<span class="o">=</span>certs/cert.pem<span class="w"> </span>--ssl-keyfile<span class="o">=</span>certs/key.pem
-</span></pre></div>
-</div>
-<p>Both flags must be provided and both files must exist. These are then passed to <code class="docutils literal notranslate"><span class="pre">uvicorn</span></code>.
-You can also use the  <code class="docutils literal notranslate"><span class="pre">--create-self-signed-cert</span></code> flag:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span data-line="1">litestar<span class="w"> </span>run<span class="w"> </span>--ssl-certfile<span class="o">=</span>certs/cert.pem<span class="w"> </span>--ssl-keyfile<span class="o">=</span>certs/key.pem<span class="w"> </span>--create-self-signed-cert
-</span></pre></div>
-</div>
-<p>This way, if the given files don’t exist, a self-signed certificate and a passwordless key will be generated.
-If the files are found, they will be reused.</p>
-</section>
-</section>
-</section>
-<section id="info">
-<h3>info<a class="headerlink" href="#info" title="Permalink to this heading">¶</a></h3>
-<p>The <code class="docutils literal notranslate"><span class="pre">info</span></code> command displays useful information about the selected application and its configuration.</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span data-line="1">litestar<span class="w"> </span>info
-</span></pre></div>
-</div>
-<img alt="litestar info" src="../_images/litestar_info.png" />
-</section>
-<section id="routes">
-<h3>routes<a class="headerlink" href="#routes" title="Permalink to this heading">¶</a></h3>
-<p>The <code class="docutils literal notranslate"><span class="pre">routes</span></code> command displays a tree view of the routing table.</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span data-line="1">litestar<span class="w"> </span>routes
-</span></pre></div>
-</div>
-<section id="id3">
-<h4>Options<a class="headerlink" href="#id3" title="Permalink to this heading">¶</a></h4>
-<div class="table-wrapper docutils container">
-<table class="docutils align-default">
-<thead>
-<tr class="row-odd"><th class="head"><p>Flag</p></th>
-<th class="head"><p>Description</p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--schema</span></code></p></td>
-<td><p>Include default auto generated openAPI schema routes</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--exclude</span></code></p></td>
-<td><p>Exclude endpoints from query with given regex patterns. Multiple excludes allowed. e.g., <code class="docutils literal notranslate"><span class="pre">litestar</span> <span class="pre">routes</span>&#160; <span class="pre">--schema</span> <span class="pre">--exclude=routes/.*</span> <span class="pre">--exclude=[]</span></code></p></td>
-</tr>
-</tbody>
-</table>
-</div>
-<img alt="litestar info" src="../_images/litestar_routes.png" />
-</section>
-</section>
-<section id="sessions">
-<h3>sessions<a class="headerlink" href="#sessions" title="Permalink to this heading">¶</a></h3>
-<p>This command and its subcommands provide management utilities for server-side session backends.</p>
-<section id="delete">
-<h4>delete<a class="headerlink" href="#delete" title="Permalink to this heading">¶</a></h4>
-<p>The <code class="docutils literal notranslate"><span class="pre">delete</span></code> subcommand deletes a specific session from the backend.</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span data-line="1">litestar<span class="w"> </span>sessions<span class="w"> </span>delete<span class="w"> </span>cc3debc7-1ab6-4dc8-a220-91934a473717
-</span></pre></div>
-</div>
-</section>
-<section id="clear">
-<h4>clear<a class="headerlink" href="#clear" title="Permalink to this heading">¶</a></h4>
-<p>The <cite>clear</cite> subcommand is used to remove all sessions from the backend.</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span data-line="1">litestar<span class="w"> </span>sessions<span class="w"> </span>clear
-</span></pre></div>
-</div>
-</section>
-</section>
-<section id="openapi">
-<h3>openapi<a class="headerlink" href="#openapi" title="Permalink to this heading">¶</a></h3>
-<p>This command provides utilities to generate OpenAPI schemas and TypeScript types.</p>
-<section id="schema">
-<h4>schema<a class="headerlink" href="#schema" title="Permalink to this heading">¶</a></h4>
-<p>The <cite>schema</cite> subcommand generates OpenAPI specifications from the Litestar application and serializes them as either
-JSON or YAML. The serialization format depends on the filename, which is by default <cite>openapi_schema.json</cite>. You can
-specify a different filename using the <cite>–output</cite> flag. For example:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span data-line="1">litestar<span class="w"> </span>schema<span class="w"> </span>openapi<span class="w"> </span>--output<span class="w"> </span>my-specs.yml
-</span></pre></div>
-</div>
-</section>
-<section id="typescript">
-<h4>typescript<a class="headerlink" href="#typescript" title="Permalink to this heading">¶</a></h4>
-<p>The <cite>typescript</cite> subcommand generates TypeScript definitions from the Litestar application’s OpenAPI specifications.
-For example:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span data-line="1">litestar<span class="w"> </span>schema<span class="w"> </span>typescript
-</span></pre></div>
-</div>
-<p>By default, this command outputs a file called <cite>api-specs.ts</cite>. You can change this using the <cite>–output</cite> option:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span data-line="1">litestar<span class="w"> </span>schema<span class="w"> </span>typescript<span class="w"> </span>--output<span class="w"> </span>my-types.ts
-</span></pre></div>
-</div>
-<p>You can also specify the top-level TypeScript namespace that will be created, which is <cite>API</cite> by default:</p>
-<div class="highlight-typescript notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">export</span><span class="w"> </span><span class="nx">namespace</span><span class="w"> </span><span class="nx">API</span><span class="w"> </span><span class="p">{</span>
-</span><span data-line="2"><span class="w">    </span><span class="c1">// ...</span>
-</span><span data-line="3"><span class="p">}</span>
-</span></pre></div>
-</div>
-<p>To do this, use the <cite>–namespace</cite> option:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span data-line="1">litestar<span class="w"> </span>schema<span class="w"> </span>typescript<span class="w"> </span>--namespace<span class="w"> </span>MyNamespace
-</span></pre></div>
-</div>
-<p>This will result in:</p>
-<div class="highlight-typescript notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">export</span><span class="w"> </span><span class="nx">namespace</span><span class="w"> </span><span class="nx">MyNamespace</span><span class="w"> </span><span class="p">{</span>
-</span><span data-line="2"><span class="w">    </span><span class="c1">// ...</span>
-</span><span data-line="3"><span class="p">}</span>
-</span></pre></div>
-</div>
-</section>
-</section>
-</section>
 <section id="extending-the-cli">
 <h2>Extending the CLI<a class="headerlink" href="#extending-the-cli" title="Permalink to this heading">¶</a></h2>
-<p>Litestar’s CLI is built with <a class="reference external" href="https://click.palletsprojects.com/">click</a> and can be
-extended by making use of
+<p>Litestar’s CLI is built with <a class="reference external" href="https://click.palletsprojects.com/">click</a> and can be extended by making use of
 <a class="reference external" href="https://packaging.python.org/en/latest/specifications/entry-points/">entry points</a>,
-or by creating a plugin that conforms to the
-<a class="reference internal" href="../reference/plugins/index.html#litestar.plugins.CLIPluginProtocol" title="litestar.plugins.CLIPluginProtocol"><code class="xref py py-class docutils literal notranslate"><span class="pre">CLIPluginProtocol</span></code></a>.</p>
+or by creating a plugin inheriting from <a class="reference internal" href="../reference/plugins/index.html#litestar.plugins.CLIPlugin" title="litestar.plugins.CLIPlugin"><code class="xref py py-class docutils literal notranslate"><span class="pre">CLIPlugin</span></code></a>.</p>
 <section id="using-entry-points">
 <h3>Using entry points<a class="headerlink" href="#using-entry-points" title="Permalink to this heading">¶</a></h3>
 <p>Entry points for the CLI can be added under the <code class="docutils literal notranslate"><span class="pre">litestar.commands</span></code> group. These
-entries should point to a <a class="reference external" href="https://click.palletsprojects.com/en/8.1.x/api/#click.Command" title="(in Click v8.1.x)"><code class="xref py py-class docutils literal notranslate"><span class="pre">click.Command</span></code></a> or <a class="reference external" href="https://click.palletsprojects.com/en/8.1.x/api/#click.Group" title="(in Click v8.1.x)"><code class="xref py py-class docutils literal notranslate"><span class="pre">click.Group</span></code></a>:</p>
+entries should point to a <a class="reference external" href="https://click.palletsprojects.com/en/stable/api/#click.Command" title="(in Click v8.1.x)"><code class="xref py py-class docutils literal notranslate"><span class="pre">click.Command</span></code></a> or <a class="reference external" href="https://click.palletsprojects.com/en/stable/api/#click.Group" title="(in Click v8.1.x)"><code class="xref py py-class docutils literal notranslate"><span class="pre">click.Group</span></code></a>:</p>
 <div class="sd-tab-set docutils">
 <input checked="checked" id="sd-tab-item-0" name="sd-tab-set-0" type="radio">
 </input><label class="sd-tab-label" for="sd-tab-item-0">
 setup.py</label><div class="sd-tab-content docutils">
+<div class="literal-block-wrapper docutils container" id="id3">
+<div class="code-block-caption"><span class="caption-text">Using <a class="reference external" href="https://setuptools.pypa.io/en/latest/">setuptools</a></span><a class="headerlink" href="#id3" title="Permalink to this code">¶</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">setuptools</span> <span class="kn">import</span> <span class="n">setup</span>
 </span><span data-line="2">
 </span><span data-line="3"><span class="n">setup</span><span class="p">(</span>
-</span><span data-line="4">    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;my-litestar-plugin&quot;</span><span class="p">,</span>
-</span><span data-line="5">    <span class="o">...</span><span class="p">,</span>
-</span><span data-line="6">    <span class="n">entry_points</span><span class="o">=</span><span class="p">{</span>
-</span><span data-line="7">        <span class="s2">&quot;litestar.commands&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;my_command=my_litestar_plugin.cli:main&quot;</span><span class="p">],</span>
-</span><span data-line="8">    <span class="p">},</span>
+</span><span data-line="4">   <span class="n">name</span><span class="o">=</span><span class="s2">&quot;my-litestar-plugin&quot;</span><span class="p">,</span>
+</span><span data-line="5">   <span class="o">...</span><span class="p">,</span>
+</span><span data-line="6">   <span class="n">entry_points</span><span class="o">=</span><span class="p">{</span>
+</span><span data-line="7">       <span class="s2">&quot;litestar.commands&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;my_command=my_litestar_plugin.cli:main&quot;</span><span class="p">],</span>
+</span><span data-line="8">   <span class="p">},</span>
 </span><span data-line="9"><span class="p">)</span>
 </span></pre></div>
+</div>
 </div>
 </div>
 <input id="sd-tab-item-1" name="sd-tab-set-0" type="radio">
 </input><label class="sd-tab-label" for="sd-tab-item-1">
 pdm</label><div class="sd-tab-content docutils">
-<div class="literal-block-wrapper docutils container" id="id5">
-<div class="code-block-caption"><span class="caption-text">Using <a class="reference external" href="https://pdm.fming.dev/">PDM</a></span><a class="headerlink" href="#id5" title="Permalink to this code">¶</a></div>
+<div class="literal-block-wrapper docutils container" id="id4">
+<div class="code-block-caption"><span class="caption-text">Using <a class="reference external" href="https://pdm.fming.dev/">PDM</a></span><a class="headerlink" href="#id4" title="Permalink to this code">¶</a></div>
 <div class="highlight-toml notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">[project.scripts]</span>
 </span><span data-line="2"><span class="n">my_command</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;my_litestar_plugin.cli:main&quot;</span>
 </span><span data-line="3">
@@ -939,8 +627,8 @@ pdm</label><div class="sd-tab-content docutils">
 <input id="sd-tab-item-2" name="sd-tab-set-0" type="radio">
 </input><label class="sd-tab-label" for="sd-tab-item-2">
 Poetry</label><div class="sd-tab-content docutils">
-<div class="literal-block-wrapper docutils container" id="id6">
-<div class="code-block-caption"><span class="caption-text">Using <a class="reference external" href="https://python-poetry.org/">Poetry</a></span><a class="headerlink" href="#id6" title="Permalink to this code">¶</a></div>
+<div class="literal-block-wrapper docutils container" id="id5">
+<div class="code-block-caption"><span class="caption-text">Using <a class="reference external" href="https://python-poetry.org/">Poetry</a></span><a class="headerlink" href="#id5" title="Permalink to this code">¶</a></div>
 <div class="highlight-toml notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">[tool.poetry.plugins.</span><span class="s2">&quot;litestar.commands&quot;</span><span class="k">]</span>
 </span><span data-line="2"><span class="n">my_command</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;my_litestar_plugin.cli:main&quot;</span>
 </span></pre></div>
@@ -951,25 +639,26 @@ Poetry</label><div class="sd-tab-content docutils">
 </section>
 <section id="using-a-plugin">
 <h3>Using a plugin<a class="headerlink" href="#using-a-plugin" title="Permalink to this heading">¶</a></h3>
-<p>A plugin extending the CLI can be created using the
-<a class="reference internal" href="../reference/plugins/index.html#litestar.plugins.CLIPluginProtocol" title="litestar.plugins.CLIPluginProtocol"><code class="xref py py-class docutils literal notranslate"><span class="pre">CLIPluginProtocol</span></code></a>. Its
-<a class="reference internal" href="../reference/plugins/index.html#litestar.plugins.CLIPluginProtocol.on_cli_init" title="litestar.plugins.CLIPluginProtocol.on_cli_init"><code class="xref py py-meth docutils literal notranslate"><span class="pre">on_cli_init()</span></code></a> will be called during the
-initialization of the CLI, and receive the root <a class="reference external" href="https://click.palletsprojects.com/en/8.1.x/api/#click.Group" title="(in Click v8.1.x)"><code class="xref py py-class docutils literal notranslate"><span class="pre">click.Group</span></code></a> as its first
-argument, which can then be used to add or override commands:</p>
+<p>A plugin extending the CLI can be created using the <a class="reference internal" href="../reference/plugins/index.html#litestar.plugins.CLIPlugin" title="litestar.plugins.CLIPlugin"><code class="xref py py-class docutils literal notranslate"><span class="pre">CLIPlugin</span></code></a>.
+Its <a class="reference internal" href="../reference/plugins/index.html#litestar.plugins.CLIPlugin.on_cli_init" title="litestar.plugins.CLIPlugin.on_cli_init"><code class="xref py py-meth docutils literal notranslate"><span class="pre">on_cli_init()</span></code></a> will be called during the initialization of the CLI,
+and receive the root <a class="reference external" href="https://click.palletsprojects.com/en/stable/api/#click.Group" title="(in Click v8.1.x)"><code class="xref py py-class docutils literal notranslate"><span class="pre">click.Group</span></code></a> as its first argument, which can then be used to add or override commands:</p>
+<div class="literal-block-wrapper docutils container" id="id6">
+<div class="code-block-caption"><span class="caption-text">Creating a CLI plugin</span><a class="headerlink" href="#id6" title="Permalink to this code">¶</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span>
-</span><span data-line="2"><span class="kn">from</span> <span class="nn">litestar.plugins</span> <span class="kn">import</span> <span class="n">CLIPluginProtocol</span>
+</span><span data-line="2"><span class="kn">from</span> <span class="nn">litestar.plugins</span> <span class="kn">import</span> <span class="n">CLIPlugin</span>
 </span><span data-line="3"><span class="kn">from</span> <span class="nn">click</span> <span class="kn">import</span> <span class="n">Group</span>
 </span><span data-line="4">
 </span><span data-line="5">
-</span><span data-line="6"><span class="k">class</span> <span class="nc">CLIPlugin</span><span class="p">(</span><span class="n">CLIPluginProtocol</span><span class="p">):</span>
+</span><span data-line="6"><span class="k">class</span> <span class="nc">MyPlugin</span><span class="p">(</span><span class="n">CLIPlugin</span><span class="p">):</span>
 </span><span data-line="7">    <span class="k">def</span> <span class="nf">on_cli_init</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cli</span><span class="p">:</span> <span class="n">Group</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 </span><span data-line="8">        <span class="nd">@cli</span><span class="o">.</span><span class="n">command</span><span class="p">()</span>
 </span><span data-line="9">        <span class="k">def</span> <span class="nf">is_debug_mode</span><span class="p">(</span><span class="n">app</span><span class="p">:</span> <span class="n">Litestar</span><span class="p">):</span>
 </span><span data-line="10">            <span class="nb">print</span><span class="p">(</span><span class="n">app</span><span class="o">.</span><span class="n">debug</span><span class="p">)</span>
 </span><span data-line="11">
 </span><span data-line="12">
-</span><span data-line="13"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">plugins</span><span class="o">=</span><span class="p">[</span><span class="n">CLIPlugin</span><span class="p">()])</span>
+</span><span data-line="13"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">plugins</span><span class="o">=</span><span class="p">[</span><span class="n">MyPlugin</span><span class="p">()])</span>
 </span></pre></div>
+</div>
 </div>
 </section>
 <section id="accessing-the-app-instance">
@@ -977,6 +666,8 @@ argument, which can then be used to add or override commands:</p>
 <p>When extending the Litestar CLI, you will most likely need access to the loaded <code class="docutils literal notranslate"><span class="pre">Litestar</span></code> instance.
 You can achieve this by adding the special <code class="docutils literal notranslate"><span class="pre">app</span></code> parameter to your CLI functions. This will cause the
 <code class="docutils literal notranslate"><span class="pre">Litestar</span></code> instance to be injected into the function whenever it is called from a click-context.</p>
+<div class="literal-block-wrapper docutils container" id="id7">
+<div class="code-block-caption"><span class="caption-text">Accessing the app instance programmatically</span><a class="headerlink" href="#id7" title="Permalink to this code">¶</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">import</span> <span class="nn">click</span>
 </span><span data-line="2"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span>
 </span><span data-line="3">
@@ -985,11 +676,20 @@ You can achieve this by adding the special <code class="docutils literal notrans
 </span><span data-line="6"><span class="k">def</span> <span class="nf">my_command</span><span class="p">(</span><span class="n">app</span><span class="p">:</span> <span class="n">Litestar</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
 </span></pre></div>
 </div>
+</div>
 </section>
 </section>
 <section id="cli-reference">
 <h2>CLI Reference<a class="headerlink" href="#cli-reference" title="Permalink to this heading">¶</a></h2>
-<p>For more information, visit the <a class="reference internal" href="../reference/cli.html"><span class="doc">Litestar CLI Click API Reference</span></a>.</p>
+<p>The most up-to-date reference for the Litestar CLI can be found by running:</p>
+<div class="literal-block-wrapper docutils container" id="id8">
+<div class="code-block-caption"><span class="caption-text">Display the CLI help</span><a class="headerlink" href="#id8" title="Permalink to this code">¶</a></div>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span data-line="1">litestar<span class="w"> </span>--help
+</span></pre></div>
+</div>
+</div>
+<p>You can also visit the <a class="reference internal" href="../reference/cli.html"><span class="doc">Litestar CLI Click API Reference</span></a> for that same
+information.</p>
 </section>
 </section>
 
@@ -1019,7 +719,7 @@ You can achieve this by adding the special <code class="docutils literal notrans
 <footer class="sy-foot">
   <div class="sy-foot-inner sy-container mx-auto">
     <div class="sy-foot-reserved md:flex justify-between items-center">
-      <div class="sy-foot-copyright"><p>2024, Litestar Organization</p>
+      <div class="sy-foot-copyright"><p>2025, Litestar Organization</p>
   
   <p>
     Made with
@@ -1054,6 +754,6 @@ You can achieve this by adding the special <code class="docutils literal notrans
       <script src="../_static/togglebutton.js?v=4a39c7ea"></script>
       <script src="../_static/design-tabs.js?v=36754332"></script>
       <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
-      <script src="../_static/shibuya.js?v=c5fc9e80"></script>
+      <script src="../_static/shibuya.js?v=e2e99575"></script>
       <script src="../_static/versioning.js?v=bc681eff"></script></body>
 </html>

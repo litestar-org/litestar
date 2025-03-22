@@ -101,7 +101,7 @@ When to use a synchronous function
 ----------------------------------
 
 As an inverse of the previous paragraph, it follows that synchronous functions should
-be used for non-blocking, non-computationally intensive tasks. The synchronous execution
+be used for non-io intensive tasks. The synchronous execution
 model allows for the smallest amount of overhead and should therefore be preferred in
 such situations where no asynchronous functionality is made use of.
 

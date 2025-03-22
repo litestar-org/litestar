@@ -23,6 +23,7 @@ Litestar supports a mechanism where you provide encoding and decoding hook funct
 Here is an example:
 
 .. literalinclude:: /examples/encoding_decoding/custom_type_encoding_decoding.py
+   :language: python
    :caption: Tell Litestar how to encode and decode a custom type
 
 Custom Pydantic types
@@ -31,4 +32,5 @@ Custom Pydantic types
 If you use a custom Pydantic type you can use it directly:
 
 .. literalinclude:: /examples/encoding_decoding/custom_type_pydantic.py
+   :language: python
    :caption: Tell Litestar how to encode and decode a custom Pydantic type

@@ -137,7 +137,7 @@ Their purpose is to allow users to utilize Python OOP for better code organizati
     .. code-block:: python
         :caption: Registering a :class:`~.controller.Controller`
 
-        from litestar.contrib.pydantic import PydanticDTO
+        from litestar.plugins.pydantic import PydanticDTO
         from litestar.controller import Controller
         from litestar.dto import DTOConfig, DTOData
         from litestar.handlers import get, post, patch, delete
@@ -251,6 +251,7 @@ requests addressed to a given path.
 .. dropdown:: Click to see an example of mounting an ASGI app
 
     .. literalinclude:: /examples/routing/mount_custom_app.py
+        :language: python
         :caption: Mounting an ASGI App
 
 The handler function will receive all requests with an url that begins with ``/some/sub-path``, e.g, ``/some/sub-path``,
@@ -270,6 +271,7 @@ party libraries. The following example is identical in principle to the one abov
 .. dropdown:: Click to see an example of mounting a Starlette app
 
     .. literalinclude:: /examples/routing/mounting_starlette_app.py
+       :language: python
        :caption: Mounting a Starlette App
 
 .. admonition:: Why Litestar uses radix based routing

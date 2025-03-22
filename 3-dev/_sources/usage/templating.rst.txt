@@ -401,34 +401,34 @@ the call method. For example:
         :sync: jinja
 
         .. literalinclude:: /examples/templating/template_functions_jinja.py
-            :caption: template_functions.py
+            :caption: ``template_functions.py``
             :language: python
 
         .. literalinclude:: /examples/templating/templates/index.html.jinja2
             :language: html
-            :caption: templates/index.html.jinja2
+            :caption: ``templates/index.html.jinja2``
 
     .. tab-item:: Mako
         :sync: mako
 
         .. literalinclude:: /examples/templating/template_functions_mako.py
-            :caption: template_functions.py
+            :caption: ``template_functions.py``
             :language: python
 
         .. literalinclude:: /examples/templating/templates/index.html.mako
             :language: html
-            :caption: templates/index.html.mako
+            :caption: ``templates/index.html.mako``
 
     .. tab-item:: Minijinja
         :sync: minijinja
 
         .. literalinclude:: /examples/templating/template_functions_minijinja.py
-            :caption: template_functions.py
+            :caption: ``template_functions.py``
             :language: python
 
         .. literalinclude:: /examples/templating/templates/index.html.minijinja
             :language: html
-            :caption: templates/index.html.minijinja
+            :caption: ``templates/index.html.minijinja``
 
 Run the example with ``uvicorn template_functions:app`` , visit  http://127.0.0.1:8000, and
 you'll see

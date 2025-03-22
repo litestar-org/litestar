@@ -6,14 +6,14 @@
     function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
     setColorMode(localStorage._theme||"auto");
   </script><link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=397bb51e" />
-    <link rel="stylesheet" type="text/css" href="../_static/shibuya.css?v=36d120a7" />
+    <link rel="stylesheet" type="text/css" href="../_static/shibuya.css?v=83eaa723" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
     <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx_paramlinks.css" />
     <link media="print" rel="stylesheet" type="text/css" href="../_static/print.css?v=20ff2c19" />
-    <link rel="stylesheet" type="text/css" href="../_static/style.css?v=10936375" />
-    <link rel="stylesheet" type="text/css" href="../_static/litestar-sphinx-theme.css?v=9989272a" />
+    <link rel="stylesheet" type="text/css" href="../_static/style.css?v=50ea2f63" />
+    <link rel="stylesheet" type="text/css" href="../_static/litestar-sphinx-theme.css?v=9a8390f1" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -29,7 +29,7 @@
   </head>
 <body><div class="announcement">
     <div class="announcement-inner">
-      <p>You are viewing the <bold>v3-development</bold> version of the documentation. Click here to go to the latest version.</p>
+      <p>You are viewing the <bold>local</bold> version of the documentation. Click here to go to the latest version.</p>
       <button class="announcement-close" aria-label="Close announcement">
         <i class="i-lucide close"></i>
       </button>
@@ -214,6 +214,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l3"><a class="reference internal" href="openapi/schema_generation.html#accessing-the-openapi-schema-in-code">Accessing the OpenAPI schema in code</a></li>
 <li class="toctree-l3"><a class="reference internal" href="openapi/schema_generation.html#customizing-pydantic-model-schemas">Customizing Pydantic model schemas</a></li>
 <li class="toctree-l3"><a class="reference internal" href="openapi/schema_generation.html#customizing-operation-class">Customizing <code class="docutils literal notranslate"><span class="pre">Operation</span></code> class</a></li>
+<li class="toctree-l3"><a class="reference internal" href="openapi/schema_generation.html#generating-examples">Generating examples</a></li>
 <li class="toctree-l3"><a class="reference internal" href="openapi/ui_plugins.html">OpenAPI UI Plugins</a></li>
 <li class="toctree-l3"><a class="reference internal" href="openapi/ui_plugins.html#using-openapi-ui-plugins">Using OpenAPI UI Plugins</a></li>
 <li class="toctree-l3"><a class="reference internal" href="openapi/ui_plugins.html#configuring-openapi-ui-plugins">Configuring OpenAPI UI Plugins</a></li>
@@ -338,8 +339,12 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2"><a class="reference internal" href="../reference/pagination.html">pagination</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/params.html">params</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/plugins/index.html">plugins</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../reference/plugins/attrs.html">attrs</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/plugins/flash_messages.html">flash</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/plugins/htmx.html">htmx</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/plugins/problem_details.html">problem details</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/plugins/prometheus.html">prometheus</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/plugins/pydantic.html">pydantic</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/plugins/structlog.html">structlog</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/plugins/sqlalchemy.html">sqlalchemy</a></li>
 </ul>
@@ -377,6 +382,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l3"><a class="reference internal" href="../reference/stores/memory.html">memory</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/stores/redis.html">redis</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/stores/registry.html">registry</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/stores/valkey.html">valkey</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/template.html">template</a></li>
@@ -435,9 +441,9 @@ data-aria-dark="Switch to auto color mode">
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/repository-tutorial/index.html">SQLAlchemy Repository Tutorial</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../tutorials/repository-tutorial/01-modeling-and-features.html">Introduction to Database Modeling and Repository Features</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../tutorials/repository-tutorial/01-modeling-and-features.html#modeling">Modeling</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../tutorials/repository-tutorial/01-modeling-and-features.html#full-code">Full Code</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tutorials/repository-tutorial/01-modelling-and-features.html">Introduction to Database Modelling and Repository Features</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tutorials/repository-tutorial/01-modelling-and-features.html#modelling">Modelling</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tutorials/repository-tutorial/01-modelling-and-features.html#full-code">Full Code</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tutorials/repository-tutorial/02-repository-introduction.html">Interacting with repositories</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tutorials/repository-tutorial/02-repository-introduction.html#working-with-bulk-data-operations">Working with Bulk Data Operations</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tutorials/repository-tutorial/02-repository-introduction.html#full-code">Full Code</a></li>
@@ -454,12 +460,13 @@ data-aria-dark="Switch to auto color mode">
 <p class="caption" role="heading" aria-level="3"><span class="caption-text">Contributing</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../contribution-guide.html">Contribution Guide</a></li>
-<li class="toctree-l1"><a class="reference external" href="https://github.com/search?q=user%3Alitestar-org+state%3Aopen+label%3A%22good+first+issue%22+++no%3Aassignee+&amp;type=issues">Available Issues</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/search?q=user%3Alitestar-org+state%3Aopen+label%3A%22good+first+issue%22+++no%3Aassignee+&amp;type=issues=">Available Issues</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/litestar-org/.github?tab=coc-ov-file#readme">Code of Conduct</a></li>
 </ul>
 
         </div>
-      </div></div>
+      </div>
+    </div>
   </aside>
   <div class="lside-overlay js-menu" role="button" aria-label="Close left sidebar" aria-controls="lside" aria-expanded="false"></div>
   <aside id="rside" class="sy-rside pb-3 w-64 shrink-0 order-last">
@@ -553,7 +560,7 @@ third party integration (for example plugins).</p>
 <dl class="simple">
 <dt><a class="reference internal" href="../reference/stores/memory.html#litestar.stores.memory.MemoryStore" title="litestar.stores.memory.MemoryStore"><code class="xref py py-class docutils literal notranslate"><span class="pre">MemoryStore</span></code></a></dt><dd><p>A simple in-memory store, using a dictionary to hold data. This store offers no persistence and is not thread or multiprocess safe,
 but it is suitable for basic applications such as caching and has generally the lowest overhead. This is the default store used by
-Litestar internally. If you plan to enable <a class="reference internal" href="cli.html#cli-run-options"><span class="std std-ref">multiple web workers</span></a> and you need inter-process communication
+Litestar internally. If you plan to enable <a class="reference internal" href="../reference/cli.html"><span class="doc">multiple web workers</span></a> and you need inter-process communication
 across multiple worker processes, you should use one of the other non-memory stores instead.</p>
 </dd>
 <dt><a class="reference internal" href="../reference/stores/file.html#litestar.stores.file.FileStore" title="litestar.stores.file.FileStore"><code class="xref py py-class docutils literal notranslate"><span class="pre">FileStore</span></code></a></dt><dd><p>A store that saves data as files on disk. Persistence is built in, and data is easy to extract and back up.
@@ -562,6 +569,11 @@ need to be stored, is particularly long-lived, or persistence has a very high im
 </dd>
 <dt><a class="reference internal" href="../reference/stores/redis.html#litestar.stores.redis.RedisStore" title="litestar.stores.redis.RedisStore"><code class="xref py py-class docutils literal notranslate"><span class="pre">RedisStore</span></code></a></dt><dd><p>A store backend by <a class="reference external" href="https://redis.io/">redis</a>. It offers all the guarantees and features of Redis, making it
 suitable for almost all applications. Offers <a class="reference internal" href="#namespacing">namespacing</a>.</p>
+</dd>
+<dt><a class="reference internal" href="../reference/stores/valkey.html#litestar.stores.valkey.ValkeyStore" title="litestar.stores.valkey.ValkeyStore"><code class="xref py py-class docutils literal notranslate"><span class="pre">ValkeyStore</span></code></a></dt><dd><p>A store backed by <a class="reference external" href="https://valkey.io">valkey</a>, a fork of Redis created as the result of Redis’ license changes.
+Similarly to the RedisStore, it is suitable for almost all applications and supports <a class="reference internal" href="#namespacing">namespacing</a>.
+At the time of writing, <code class="xref py py-class docutils literal notranslate"><span class="pre">Valkey</span></code> is equivalent to <code class="xref py py-class docutils literal notranslate"><span class="pre">redis.asyncio.Redis</span></code>,
+and all notes pertaining to Redis also apply to Valkey.</p>
 </dd>
 </dl>
 <div class="info admonition">
@@ -701,13 +713,13 @@ This means that every time a new instance of this store is created, it will star
 </section>
 <section id="what-can-be-stored">
 <h3>What can be stored<a class="headerlink" href="#what-can-be-stored" title="Permalink to this heading">¶</a></h3>
-<p>Stores generally operate on <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code></a>; They accept bytes to store, and will return bytes. For convenience, the
+<p>Stores generally operate on <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code></a>; They accept bytes to store, and will return bytes. For convenience, the
 <a class="reference internal" href="../reference/stores/base.html#litestar.stores.base.Store.set" title="litestar.stores.base.Store.set"><code class="xref py py-meth docutils literal notranslate"><span class="pre">set</span></code></a> method also allows to pass in strings, which will be UTF-8 encoded before being stored.
 This means that <a class="reference internal" href="../reference/stores/base.html#litestar.stores.base.Store.get" title="litestar.stores.base.Store.get"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get</span></code></a> will return bytes even when a string has been passed to
 <a class="reference internal" href="../reference/stores/base.html#litestar.stores.base.Store.set" title="litestar.stores.base.Store.set"><code class="xref py py-meth docutils literal notranslate"><span class="pre">set</span></code></a>.</p>
 <p>The reason for this limitation is simple: Different backends used to store the data offer vastly different encoding,
 storage, and (de)serialization capacities. Since stores are designed to be interchangeable, this means settling for a
-common denominator, a type that all backends will support. <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code></a> meet these requirements and make it possible
+common denominator, a type that all backends will support. <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code></a> meet these requirements and make it possible
 to store a very wide variety of data.</p>
 <div class="admonition-technical-details admonition">
 <p class="admonition-title">Technical details</p>
@@ -804,7 +816,7 @@ its store internally via <code class="docutils literal notranslate"><span class=
 <h3>The default factory<a class="headerlink" href="#the-default-factory" title="Permalink to this heading">¶</a></h3>
 <p>The pattern above is made possible by using the registry’s default factory; A callable that gets invoked
 every time a store is requested that hasn’t been registered yet. It’s similar to the <code class="docutils literal notranslate"><span class="pre">default</span></code> argument to
-<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict.get" title="(in Python v3.12)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">dict.get()</span></code></a>.</p>
+<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict.get" title="(in Python v3.13)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">dict.get()</span></code></a>.</p>
 <p>By default, the default factory is a function that returns a new
 <a class="reference internal" href="../reference/stores/memory.html#litestar.stores.memory.MemoryStore" title="litestar.stores.memory.MemoryStore"><code class="xref py py-class docutils literal notranslate"><span class="pre">MemoryStore</span></code></a> instance. This behaviour can be changed by supplying a
 custom <code class="docutils literal notranslate"><span class="pre">default_factory</span></code> method to the registry.</p>
@@ -937,7 +949,7 @@ In this case you’re responsible to close the Redis instance yourself.</p>
 <footer class="sy-foot">
   <div class="sy-foot-inner sy-container mx-auto">
     <div class="sy-foot-reserved md:flex justify-between items-center">
-      <div class="sy-foot-copyright"><p>2024, Litestar Organization</p>
+      <div class="sy-foot-copyright"><p>2025, Litestar Organization</p>
   
   <p>
     Made with
@@ -972,6 +984,6 @@ In this case you’re responsible to close the Redis instance yourself.</p>
       <script src="../_static/togglebutton.js?v=4a39c7ea"></script>
       <script src="../_static/design-tabs.js?v=36754332"></script>
       <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
-      <script src="../_static/shibuya.js?v=c5fc9e80"></script>
+      <script src="../_static/shibuya.js?v=e2e99575"></script>
       <script src="../_static/versioning.js?v=bc681eff"></script></body>
 </html>

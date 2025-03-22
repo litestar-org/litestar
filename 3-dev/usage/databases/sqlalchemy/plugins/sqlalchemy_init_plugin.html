@@ -6,14 +6,14 @@
     function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
     setColorMode(localStorage._theme||"auto");
   </script><link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=397bb51e" />
-    <link rel="stylesheet" type="text/css" href="../../../../_static/shibuya.css?v=36d120a7" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/shibuya.css?v=83eaa723" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/togglebutton.css?v=13237357" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx_paramlinks.css" />
     <link media="print" rel="stylesheet" type="text/css" href="../../../../_static/print.css?v=20ff2c19" />
-    <link rel="stylesheet" type="text/css" href="../../../../_static/style.css?v=10936375" />
-    <link rel="stylesheet" type="text/css" href="../../../../_static/litestar-sphinx-theme.css?v=9989272a" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/style.css?v=50ea2f63" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/litestar-sphinx-theme.css?v=9a8390f1" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -29,7 +29,7 @@
   </head>
 <body><div class="announcement">
     <div class="announcement-inner">
-      <p>You are viewing the <bold>v3-development</bold> version of the documentation. Click here to go to the latest version.</p>
+      <p>You are viewing the <bold>local</bold> version of the documentation. Click here to go to the latest version.</p>
       <button class="announcement-close" aria-label="Close announcement">
         <i class="i-lucide close"></i>
       </button>
@@ -214,6 +214,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l3"><a class="reference internal" href="../../../openapi/schema_generation.html#accessing-the-openapi-schema-in-code">Accessing the OpenAPI schema in code</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../openapi/schema_generation.html#customizing-pydantic-model-schemas">Customizing Pydantic model schemas</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../openapi/schema_generation.html#customizing-operation-class">Customizing <code class="docutils literal notranslate"><span class="pre">Operation</span></code> class</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../openapi/schema_generation.html#generating-examples">Generating examples</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../openapi/ui_plugins.html">OpenAPI UI Plugins</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../openapi/ui_plugins.html#using-openapi-ui-plugins">Using OpenAPI UI Plugins</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../openapi/ui_plugins.html#configuring-openapi-ui-plugins">Configuring OpenAPI UI Plugins</a></li>
@@ -338,8 +339,12 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2"><a class="reference internal" href="../../../../reference/pagination.html">pagination</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../reference/params.html">params</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../reference/plugins/index.html">plugins</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../reference/plugins/attrs.html">attrs</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../reference/plugins/flash_messages.html">flash</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../reference/plugins/htmx.html">htmx</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../reference/plugins/problem_details.html">problem details</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../reference/plugins/prometheus.html">prometheus</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../reference/plugins/pydantic.html">pydantic</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../reference/plugins/structlog.html">structlog</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../reference/plugins/sqlalchemy.html">sqlalchemy</a></li>
 </ul>
@@ -377,6 +382,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l3"><a class="reference internal" href="../../../../reference/stores/memory.html">memory</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../reference/stores/redis.html">redis</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../reference/stores/registry.html">registry</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../reference/stores/valkey.html">valkey</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../reference/template.html">template</a></li>
@@ -435,9 +441,9 @@ data-aria-dark="Switch to auto color mode">
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../tutorials/repository-tutorial/index.html">SQLAlchemy Repository Tutorial</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../../../tutorials/repository-tutorial/01-modeling-and-features.html">Introduction to Database Modeling and Repository Features</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../../tutorials/repository-tutorial/01-modeling-and-features.html#modeling">Modeling</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../../tutorials/repository-tutorial/01-modeling-and-features.html#full-code">Full Code</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../tutorials/repository-tutorial/01-modelling-and-features.html">Introduction to Database Modelling and Repository Features</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../tutorials/repository-tutorial/01-modelling-and-features.html#modelling">Modelling</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../tutorials/repository-tutorial/01-modelling-and-features.html#full-code">Full Code</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../tutorials/repository-tutorial/02-repository-introduction.html">Interacting with repositories</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../tutorials/repository-tutorial/02-repository-introduction.html#working-with-bulk-data-operations">Working with Bulk Data Operations</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../tutorials/repository-tutorial/02-repository-introduction.html#full-code">Full Code</a></li>
@@ -454,12 +460,13 @@ data-aria-dark="Switch to auto color mode">
 <p class="caption" role="heading" aria-level="3"><span class="caption-text">Contributing</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../../contribution-guide.html">Contribution Guide</a></li>
-<li class="toctree-l1"><a class="reference external" href="https://github.com/search?q=user%3Alitestar-org+state%3Aopen+label%3A%22good+first+issue%22+++no%3Aassignee+&amp;type=issues">Available Issues</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/search?q=user%3Alitestar-org+state%3Aopen+label%3A%22good+first+issue%22+++no%3Aassignee+&amp;type=issues=">Available Issues</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/litestar-org/.github?tab=coc-ov-file#readme">Code of Conduct</a></li>
 </ul>
 
         </div>
-      </div></div>
+      </div>
+    </div>
   </aside>
   <div class="lside-overlay js-menu" role="button" aria-label="Close left sidebar" aria-controls="lside" aria-expanded="false"></div>
   <aside id="rside" class="sy-rside pb-3 w-64 shrink-0 order-last">
@@ -541,7 +548,7 @@ data-aria-dark="Switch to auto color mode">
         <article class="yue" role="main">
           <section id="sqlalchemy-init-plugin">
 <h1>SQLAlchemy Init Plugin<a class="headerlink" href="#sqlalchemy-init-plugin" title="Permalink to this heading">¶</a></h1>
-<p>The <code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyInitPlugin</span></code> adds functionality to the
+<p>The <a class="reference external" href="https://docs.advanced-alchemy.litestar.dev/latest/reference/extensions/litestar/index.html#advanced_alchemy.extensions.litestar.SQLAlchemyInitPlugin" title="(in advanced_alchemy)"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyInitPlugin</span></code></a> adds functionality to the
 application that supports using Litestar with <a class="reference external" href="http://www.sqlalchemy.org/">SQLAlchemy</a>.</p>
 <p>The plugin:</p>
 <ul class="simple">
@@ -569,23 +576,22 @@ Async</label><div class="sd-tab-content docutils">
 </span><span data-line="8"><span class="linenos"> 8</span><span class="kn">from</span> <span class="nn">litestar.plugins.sqlalchemy</span> <span class="kn">import</span> <span class="n">SQLAlchemyAsyncConfig</span><span class="p">,</span> <span class="n">SQLAlchemyInitPlugin</span>
 </span><span data-line="9"><span class="linenos"> 9</span>
 </span><span data-line="10"><span class="linenos">10</span><span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
-</span><span data-line="11"><span class="linenos">11</span>
-</span><span data-line="12"><span class="linenos">12</span>    <span class="kn">from</span> <span class="nn">sqlalchemy.ext.asyncio</span> <span class="kn">import</span> <span class="n">AsyncEngine</span><span class="p">,</span> <span class="n">AsyncSession</span>
+</span><span data-line="11"><span class="linenos">11</span>    <span class="kn">from</span> <span class="nn">sqlalchemy.ext.asyncio</span> <span class="kn">import</span> <span class="n">AsyncEngine</span><span class="p">,</span> <span class="n">AsyncSession</span>
+</span><span data-line="12"><span class="linenos">12</span>
 </span><span data-line="13"><span class="linenos">13</span>
-</span><span data-line="14"><span class="linenos">14</span>
-</span><span data-line="15"><span class="linenos">15</span><span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
-</span><span data-line="16"><span class="linenos">16</span><span class="k">async</span> <span class="k">def</span> <span class="nf">handler</span><span class="p">(</span><span class="n">db_session</span><span class="p">:</span> <span class="n">AsyncSession</span><span class="p">,</span> <span class="n">db_engine</span><span class="p">:</span> <span class="n">AsyncEngine</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
-</span><span data-line="17"><span class="linenos">17</span>    <span class="n">one</span> <span class="o">=</span> <span class="p">(</span><span class="k">await</span> <span class="n">db_session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">select</span><span class="p">(</span><span class="mi">1</span><span class="p">)))</span><span class="o">.</span><span class="n">scalar</span><span class="p">()</span>
-</span><span data-line="18"><span class="linenos">18</span>
-</span><span data-line="19"><span class="linenos">19</span>    <span class="k">async</span> <span class="k">with</span> <span class="n">db_engine</span><span class="o">.</span><span class="n">begin</span><span class="p">()</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
-</span><span data-line="20"><span class="linenos">20</span>        <span class="n">two</span> <span class="o">=</span> <span class="p">(</span><span class="k">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">select</span><span class="p">(</span><span class="mi">2</span><span class="p">)))</span><span class="o">.</span><span class="n">scalar</span><span class="p">()</span>
-</span><span data-line="21"><span class="linenos">21</span>
-</span><span data-line="22"><span class="linenos">22</span>    <span class="k">return</span> <span class="n">one</span><span class="p">,</span> <span class="n">two</span>
+</span><span data-line="14"><span class="linenos">14</span><span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+</span><span data-line="15"><span class="linenos">15</span><span class="k">async</span> <span class="k">def</span> <span class="nf">handler</span><span class="p">(</span><span class="n">db_session</span><span class="p">:</span> <span class="n">AsyncSession</span><span class="p">,</span> <span class="n">db_engine</span><span class="p">:</span> <span class="n">AsyncEngine</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
+</span><span data-line="16"><span class="linenos">16</span>    <span class="n">one</span> <span class="o">=</span> <span class="p">(</span><span class="k">await</span> <span class="n">db_session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">select</span><span class="p">(</span><span class="mi">1</span><span class="p">)))</span><span class="o">.</span><span class="n">scalar</span><span class="p">()</span>
+</span><span data-line="17"><span class="linenos">17</span>
+</span><span data-line="18"><span class="linenos">18</span>    <span class="k">async</span> <span class="k">with</span> <span class="n">db_engine</span><span class="o">.</span><span class="n">begin</span><span class="p">()</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
+</span><span data-line="19"><span class="linenos">19</span>        <span class="n">two</span> <span class="o">=</span> <span class="p">(</span><span class="k">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">select</span><span class="p">(</span><span class="mi">2</span><span class="p">)))</span><span class="o">.</span><span class="n">scalar</span><span class="p">()</span>
+</span><span data-line="20"><span class="linenos">20</span>
+</span><span data-line="21"><span class="linenos">21</span>    <span class="k">return</span> <span class="n">one</span><span class="p">,</span> <span class="n">two</span>
+</span><span data-line="22"><span class="linenos">22</span>
 </span><span data-line="23"><span class="linenos">23</span>
-</span><span data-line="24"><span class="linenos">24</span>
-</span><span data-line="25"><span class="linenos">25</span><span class="n">config</span> <span class="o">=</span> <span class="n">SQLAlchemyAsyncConfig</span><span class="p">(</span><span class="n">connection_string</span><span class="o">=</span><span class="s2">&quot;sqlite+aiosqlite:///async.sqlite&quot;</span><span class="p">)</span>
-</span><span data-line="26"><span class="linenos">26</span><span class="n">plugin</span> <span class="o">=</span> <span class="n">SQLAlchemyInitPlugin</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">)</span>
-</span><span data-line="27"><span class="linenos">27</span><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">handler</span><span class="p">],</span> <span class="n">plugins</span><span class="o">=</span><span class="p">[</span><span class="n">plugin</span><span class="p">])</span>
+</span><span data-line="24"><span class="linenos">24</span><span class="n">config</span> <span class="o">=</span> <span class="n">SQLAlchemyAsyncConfig</span><span class="p">(</span><span class="n">connection_string</span><span class="o">=</span><span class="s2">&quot;sqlite+aiosqlite:///async.sqlite&quot;</span><span class="p">)</span>
+</span><span data-line="25"><span class="linenos">25</span><span class="n">plugin</span> <span class="o">=</span> <span class="n">SQLAlchemyInitPlugin</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">)</span>
+</span><span data-line="26"><span class="linenos">26</span><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">handler</span><span class="p">],</span> <span class="n">plugins</span><span class="o">=</span><span class="p">[</span><span class="n">plugin</span><span class="p">])</span>
 </span></pre></div>
 </div>
 </div>
@@ -605,24 +611,23 @@ Sync</label><div class="sd-tab-content docutils">
 </span><span data-line="8"><span class="linenos"> 8</span><span class="kn">from</span> <span class="nn">litestar.plugins.sqlalchemy</span> <span class="kn">import</span> <span class="n">SQLAlchemyInitPlugin</span><span class="p">,</span> <span class="n">SQLAlchemySyncConfig</span>
 </span><span data-line="9"><span class="linenos"> 9</span>
 </span><span data-line="10"><span class="linenos">10</span><span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
-</span><span data-line="11"><span class="linenos">11</span>
-</span><span data-line="12"><span class="linenos">12</span>    <span class="kn">from</span> <span class="nn">sqlalchemy</span> <span class="kn">import</span> <span class="n">Engine</span>
-</span><span data-line="13"><span class="linenos">13</span>    <span class="kn">from</span> <span class="nn">sqlalchemy.orm</span> <span class="kn">import</span> <span class="n">Session</span>
+</span><span data-line="11"><span class="linenos">11</span>    <span class="kn">from</span> <span class="nn">sqlalchemy</span> <span class="kn">import</span> <span class="n">Engine</span>
+</span><span data-line="12"><span class="linenos">12</span>    <span class="kn">from</span> <span class="nn">sqlalchemy.orm</span> <span class="kn">import</span> <span class="n">Session</span>
+</span><span data-line="13"><span class="linenos">13</span>
 </span><span data-line="14"><span class="linenos">14</span>
-</span><span data-line="15"><span class="linenos">15</span>
-</span><span data-line="16"><span class="linenos">16</span><span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</span><span data-line="17"><span class="linenos">17</span><span class="k">def</span> <span class="nf">handler</span><span class="p">(</span><span class="n">db_session</span><span class="p">:</span> <span class="n">Session</span><span class="p">,</span> <span class="n">db_engine</span><span class="p">:</span> <span class="n">Engine</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
-</span><span data-line="18"><span class="linenos">18</span>    <span class="n">one</span> <span class="o">=</span> <span class="n">db_session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">select</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span><span class="o">.</span><span class="n">scalar</span><span class="p">()</span>
-</span><span data-line="19"><span class="linenos">19</span>
-</span><span data-line="20"><span class="linenos">20</span>    <span class="k">with</span> <span class="n">db_engine</span><span class="o">.</span><span class="n">begin</span><span class="p">()</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
-</span><span data-line="21"><span class="linenos">21</span>        <span class="n">two</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">select</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span><span class="o">.</span><span class="n">scalar</span><span class="p">()</span>
-</span><span data-line="22"><span class="linenos">22</span>
-</span><span data-line="23"><span class="linenos">23</span>    <span class="k">return</span> <span class="n">one</span><span class="p">,</span> <span class="n">two</span>
+</span><span data-line="15"><span class="linenos">15</span><span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span data-line="16"><span class="linenos">16</span><span class="k">def</span> <span class="nf">handler</span><span class="p">(</span><span class="n">db_session</span><span class="p">:</span> <span class="n">Session</span><span class="p">,</span> <span class="n">db_engine</span><span class="p">:</span> <span class="n">Engine</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
+</span><span data-line="17"><span class="linenos">17</span>    <span class="n">one</span> <span class="o">=</span> <span class="n">db_session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">select</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span><span class="o">.</span><span class="n">scalar</span><span class="p">()</span>
+</span><span data-line="18"><span class="linenos">18</span>
+</span><span data-line="19"><span class="linenos">19</span>    <span class="k">with</span> <span class="n">db_engine</span><span class="o">.</span><span class="n">begin</span><span class="p">()</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
+</span><span data-line="20"><span class="linenos">20</span>        <span class="n">two</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">select</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span><span class="o">.</span><span class="n">scalar</span><span class="p">()</span>
+</span><span data-line="21"><span class="linenos">21</span>
+</span><span data-line="22"><span class="linenos">22</span>    <span class="k">return</span> <span class="n">one</span><span class="p">,</span> <span class="n">two</span>
+</span><span data-line="23"><span class="linenos">23</span>
 </span><span data-line="24"><span class="linenos">24</span>
-</span><span data-line="25"><span class="linenos">25</span>
-</span><span data-line="26"><span class="linenos">26</span><span class="n">config</span> <span class="o">=</span> <span class="n">SQLAlchemySyncConfig</span><span class="p">(</span><span class="n">connection_string</span><span class="o">=</span><span class="s2">&quot;sqlite:///sync.sqlite&quot;</span><span class="p">)</span>
-</span><span data-line="27"><span class="linenos">27</span><span class="n">plugin</span> <span class="o">=</span> <span class="n">SQLAlchemyInitPlugin</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">)</span>
-</span><span data-line="28"><span class="linenos">28</span><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">handler</span><span class="p">],</span> <span class="n">plugins</span><span class="o">=</span><span class="p">[</span><span class="n">plugin</span><span class="p">])</span>
+</span><span data-line="25"><span class="linenos">25</span><span class="n">config</span> <span class="o">=</span> <span class="n">SQLAlchemySyncConfig</span><span class="p">(</span><span class="n">connection_string</span><span class="o">=</span><span class="s2">&quot;sqlite:///sync.sqlite&quot;</span><span class="p">)</span>
+</span><span data-line="26"><span class="linenos">26</span><span class="n">plugin</span> <span class="o">=</span> <span class="n">SQLAlchemyInitPlugin</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">)</span>
+</span><span data-line="27"><span class="linenos">27</span><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">handler</span><span class="p">],</span> <span class="n">plugins</span><span class="o">=</span><span class="p">[</span><span class="n">plugin</span><span class="p">])</span>
 </span></pre></div>
 </div>
 </div>
@@ -633,8 +638,8 @@ can also be injected into other dependency functions.</p>
 <section id="renaming-the-dependencies">
 <h3>Renaming the dependencies<a class="headerlink" href="#renaming-the-dependencies" title="Permalink to this heading">¶</a></h3>
 <p>You can change the name that the engine and session are bound to by setting the
-<a class="reference external" href="https://docs.advanced-alchemy.litestar.dev/latest/reference/extensions/litestar/plugins/init/config/asyncio.html#advanced_alchemy.extensions.litestar.plugins.init.config.asyncio.SQLAlchemyAsyncConfig.engine_dependency_key" title="(in advanced_alchemy)"><code class="xref py py-attr docutils literal notranslate"><span class="pre">engine_dependency_key</span></code></a>
-and <a class="reference external" href="https://docs.advanced-alchemy.litestar.dev/latest/reference/extensions/litestar/plugins/init/config/asyncio.html#advanced_alchemy.extensions.litestar.plugins.init.config.asyncio.SQLAlchemyAsyncConfig.session_dependency_key" title="(in advanced_alchemy)"><code class="xref py py-attr docutils literal notranslate"><span class="pre">session_dependency_key</span></code></a>
+<a class="reference external" href="https://docs.advanced-alchemy.litestar.dev/latest/reference/extensions/litestar/index.html#advanced_alchemy.extensions.litestar.SQLAlchemyAsyncConfig.engine_dependency_key" title="(in advanced_alchemy)"><code class="xref py py-attr docutils literal notranslate"><span class="pre">engine_dependency_key</span></code></a>
+and <a class="reference external" href="https://docs.advanced-alchemy.litestar.dev/latest/reference/extensions/litestar/index.html#advanced_alchemy.extensions.litestar.SQLAlchemyAsyncConfig.session_dependency_key" title="(in advanced_alchemy)"><code class="xref py py-attr docutils literal notranslate"><span class="pre">session_dependency_key</span></code></a>
 attributes on the plugin configuration.</p>
 </section>
 <section id="configuring-the-before-send-handler">
@@ -642,7 +647,7 @@ attributes on the plugin configuration.</p>
 <p>The plugin configures a <code class="docutils literal notranslate"><span class="pre">before_send</span></code> handler that is called before sending a response. The default handler closes the
 session and removes it from the connection scope.</p>
 <p>You can change the handler by setting the
-<a class="reference external" href="https://docs.advanced-alchemy.litestar.dev/latest/reference/extensions/litestar/plugins/init/config/asyncio.html#advanced_alchemy.extensions.litestar.plugins.init.config.asyncio.SQLAlchemyAsyncConfig.before_send_handler" title="(in advanced_alchemy)"><code class="xref py py-attr docutils literal notranslate"><span class="pre">before_send_handler</span></code></a>
+<a class="reference external" href="https://docs.advanced-alchemy.litestar.dev/latest/reference/extensions/litestar/index.html#advanced_alchemy.extensions.litestar.SQLAlchemyAsyncConfig.before_send_handler" title="(in advanced_alchemy)"><code class="xref py py-attr docutils literal notranslate"><span class="pre">before_send_handler</span></code></a>
 attribute on the configuration object. For example, an alternate handler is available that will also commit the session
 on success and rollback upon failure.</p>
 <div class="sd-tab-set docutils">
@@ -695,19 +700,19 @@ Sync</label><div class="sd-tab-content docutils">
 </section>
 <section id="configuring-the-plugins">
 <h3>Configuring the plugins<a class="headerlink" href="#configuring-the-plugins" title="Permalink to this heading">¶</a></h3>
-<p>Both the <code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyAsyncConfig</span></code> and the
-<code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemySyncConfig</span></code> have an <code class="docutils literal notranslate"><span class="pre">engine_config</span></code>
+<p>Both the <a class="reference external" href="https://docs.advanced-alchemy.litestar.dev/latest/reference/extensions/litestar/index.html#advanced_alchemy.extensions.litestar.SQLAlchemyAsyncConfig" title="(in advanced_alchemy)"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyAsyncConfig</span></code></a> and the
+<a class="reference external" href="https://docs.advanced-alchemy.litestar.dev/latest/reference/extensions/litestar/index.html#advanced_alchemy.extensions.litestar.SQLAlchemySyncConfig" title="(in advanced_alchemy)"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemySyncConfig</span></code></a> have an <code class="docutils literal notranslate"><span class="pre">engine_config</span></code>
 attribute that is used to configure the engine. The <code class="docutils literal notranslate"><span class="pre">engine_config</span></code> attribute is an instance of
-<code class="xref py py-class docutils literal notranslate"><span class="pre">EngineConfig</span></code> and exposes all of the configuration options
+<a class="reference external" href="https://docs.advanced-alchemy.litestar.dev/latest/reference/extensions/litestar/index.html#advanced_alchemy.extensions.litestar.EngineConfig" title="(in advanced_alchemy)"><code class="xref py py-class docutils literal notranslate"><span class="pre">EngineConfig</span></code></a> and exposes all of the configuration options
 available to the SQLAlchemy engine.</p>
-<p>The <code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyAsyncConfig</span></code> class and the
-<code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemySyncConfig</span></code> class also have a
+<p>The <a class="reference external" href="https://docs.advanced-alchemy.litestar.dev/latest/reference/extensions/litestar/index.html#advanced_alchemy.extensions.litestar.SQLAlchemyAsyncConfig" title="(in advanced_alchemy)"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyAsyncConfig</span></code></a> class and the
+<a class="reference external" href="https://docs.advanced-alchemy.litestar.dev/latest/reference/extensions/litestar/index.html#advanced_alchemy.extensions.litestar.SQLAlchemySyncConfig" title="(in advanced_alchemy)"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemySyncConfig</span></code></a> class also have a
 <code class="docutils literal notranslate"><span class="pre">session_config</span></code> attribute that is used to configure the session. This is either an instance of
-<code class="xref py py-class docutils literal notranslate"><span class="pre">AsyncSessionConfig</span></code> or
-<code class="xref py py-class docutils literal notranslate"><span class="pre">SyncSessionConfig</span></code> depending on the type of config
+<a class="reference external" href="https://docs.advanced-alchemy.litestar.dev/latest/reference/extensions/litestar/index.html#advanced_alchemy.extensions.litestar.AsyncSessionConfig" title="(in advanced_alchemy)"><code class="xref py py-class docutils literal notranslate"><span class="pre">AsyncSessionConfig</span></code></a> or
+<a class="reference external" href="https://docs.advanced-alchemy.litestar.dev/latest/reference/extensions/litestar/index.html#advanced_alchemy.extensions.litestar.SyncSessionConfig" title="(in advanced_alchemy)"><code class="xref py py-class docutils literal notranslate"><span class="pre">SyncSessionConfig</span></code></a> depending on the type of config
 object. These classes expose all of the configuration options available to the SQLAlchemy session.</p>
-<p>Finally, the <code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyAsyncConfig</span></code> class and the
-<code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemySyncConfig</span></code> class expose configuration
+<p>Finally, the <a class="reference external" href="https://docs.advanced-alchemy.litestar.dev/latest/reference/extensions/litestar/index.html#advanced_alchemy.extensions.litestar.SQLAlchemyAsyncConfig" title="(in advanced_alchemy)"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyAsyncConfig</span></code></a> class and the
+<a class="reference external" href="https://docs.advanced-alchemy.litestar.dev/latest/reference/extensions/litestar/index.html#advanced_alchemy.extensions.litestar.SQLAlchemySyncConfig" title="(in advanced_alchemy)"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemySyncConfig</span></code></a> class expose configuration
 options to control their behavior.</p>
 <p>Consult the reference documentation for more information.</p>
 </section>
@@ -717,7 +722,7 @@ options to control their behavior.</p>
 <p>The below example is a complete demonstration of use of the init plugin. Readers who are familiar with the prior section
 may note the additional complexity involved in managing the conversion to and from SQLAlchemy objects within the
 handlers. Read on to see how this increased complexity is efficiently handled by the
-<code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemySerializationPlugin</span></code>.</p>
+<a class="reference external" href="https://docs.advanced-alchemy.litestar.dev/latest/reference/extensions/litestar/index.html#advanced_alchemy.extensions.litestar.SQLAlchemySerializationPlugin" title="(in advanced_alchemy)"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemySerializationPlugin</span></code></a>.</p>
 <div class="sd-tab-set docutils">
 <input checked="checked" id="sd-tab-item-4" name="sd-tab-set-2" type="radio">
 </input><label class="sd-tab-label" for="sd-tab-item-4">
@@ -861,7 +866,7 @@ Sync</label><div class="sd-tab-content docutils">
 <footer class="sy-foot">
   <div class="sy-foot-inner sy-container mx-auto">
     <div class="sy-foot-reserved md:flex justify-between items-center">
-      <div class="sy-foot-copyright"><p>2024, Litestar Organization</p>
+      <div class="sy-foot-copyright"><p>2025, Litestar Organization</p>
   
   <p>
     Made with
@@ -896,6 +901,6 @@ Sync</label><div class="sd-tab-content docutils">
       <script src="../../../../_static/togglebutton.js?v=4a39c7ea"></script>
       <script src="../../../../_static/design-tabs.js?v=36754332"></script>
       <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
-      <script src="../../../../_static/shibuya.js?v=c5fc9e80"></script>
+      <script src="../../../../_static/shibuya.js?v=e2e99575"></script>
       <script src="../../../../_static/versioning.js?v=bc681eff"></script></body>
 </html>

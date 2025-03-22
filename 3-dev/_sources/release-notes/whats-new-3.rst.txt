@@ -14,11 +14,11 @@ Imports
 -------
 
 +----------------------------------------------------+------------------------------------------------------------------------+
-| ``2.11``                                           | ``3.x``                                                                |
+| ``2.x``                                            | ``3.x``                                                                |
 +====================================================+========================================================================+
 | **SECTION**                                                                                                                 |
 +----------------------------------------------------+------------------------------------------------------------------------+
-| Put your shit here from v2                         | Put your shit here from v3                                             |
+| Put your changes here from v2                         | Put your changes here from v3                                       |
 +----------------------------------------------------+------------------------------------------------------------------------+
 
 
@@ -194,3 +194,98 @@ Removal of deprecated ``litestar.middleware.exceptions`` module and ``ExceptionH
 The deprecated ``litestar.middleware.exceptions`` module and the
 ``ExceptionHandlerMiddleware`` have been removed. Since ``ExceptionHandlerMiddleware``
 has been applied automatically behind the scenes if necessary, no action is required.
+
+
+Update MessagePack media type to ``application/vnd.msgpack``
+------------------------------------------------------------
+
+Change the default media type of ``MessagePack`` from ``application/x-msgpack`` to the
+newly introduced official ``application/vnd.msgpack``.
+
+https://www.iana.org/assignments/media-types/application/vnd.msgpack
+
+
+Deprecated ``resolve_`` methods on route handlers
+-------------------------------------------------
+
+All ``resolve_`` methods on the route handlers
+(e.g. ``HTTPRouteHandler.resolve_response_headers``) have been
+deprecated and will be removed in ``4.0``. The attributes can now safely be accessed
+directly (e.g. `HTTPRouteHandlers.response_headers`).
+
+
+Moved routing related methods from ``Router`` to ``Litestar``
+-------------------------------------------------------------
+
+:class:`~litestar.router.Router` now only holds route handlers and configuration, while
+the actual routing is done in :class:`~litestar.app.Litestar`. With this, several
+methods and properties have been moved from ``Router`` to ``Litestar``:
+
+- ``route_handler_method_map``
+- ``get_route_handler_map``
+- ``routes``
+
+
+Removal of  ``CLIPluginProtocol``
+---------------------------------
+
+The :class:`~typing.Protocol` ``CLIPluginProtocol`` has been removed in favour
+of the abstract ``CLIPluginProtocol``. The functionality and interface remain the same,
+the only difference being that plugins that wish to provide this functionality are now
+required to inherit from :class:`~.plugins.CLIPlugin`.
+
+
+Removal of ``OpenAPISchemaPluginProtocol``
+------------------------------------------
+
+The :class:`~typing.Protocol` ``OpenAPISchemaPluginProtocol`` has been removed in favour
+of the abstract :class:`~litestar.plugins.OpenAPISchemaPlugin`. The functionality and
+interface remain the same, the only difference being that plugins that wish to provide
+this functionality are now required to inherit from
+:class:`~.plugins.OpenAPISchemaPlugin`.
+
+
+Dropped support for starlette middleware protocol
+-------------------------------------------------
+
+The `starlette middleware protocol <https://www.starlette.io/middleware>`_ is no longer
+supported.
+
+Only the "factory" pattern will now be supported, i.e. a callable that receives an ASGI
+callable as its only argument and returns another ASGI callable:
+
+.. code-block:: python
+
+    def middleware(app: ASGIApp) -> ASGIApp:
+        ...
+
+
+.. seealso::
+    :doc:`/usage/middleware/index`
+
+
+Removal of ``SerializationPluginProtocol``
+------------------------------------------
+
+The :class:`~typing.Protocol` ``SerializationPluginProtocol`` has been removed in favour
+of the abstract :class:`~litestar.plugins.SerializationPlugin`. The functionality and
+interface remain the same, the only difference being that plugins that wish to provide
+this functionality are now required to inherit from
+:class:`~.plugins.SerializationPlugin`.
+
+
+Removal of ``body`` in streaming responses
+-------------------------------------------
+
+The unsupported ``body`` parameter of :class:`~.ASGIStreamingResponse`
+and :class:`.ASGIFileResponse` has been removed.
+
+This does not change any behaviour, as this parameter was previously ignored.
+
+
+``polyfactory`` package removed from default dependencies
+----------------------------------------------------------
+
+The `polyfactory <https://polyfactory.litestar.dev/>`_ library is not included by
+default anymore, and has been moved to the ``litestar[polyfactory]`` package extra. It
+is also included in ``litestar[full]``.

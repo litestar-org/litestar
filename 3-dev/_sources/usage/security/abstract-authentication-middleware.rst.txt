@@ -48,7 +48,7 @@ We start off by creating a user model. It can be implemented using Pydantic, an 
 example here let us say it is a `SQLAlchemy <https://docs.sqlalchemy.org/>`_ model:
 
 .. code-block:: python
-    :caption: my_app/db/models.py
+    :caption: ``my_app/db/models.py``
 
     import uuid
 
@@ -65,13 +65,13 @@ example here let us say it is a `SQLAlchemy <https://docs.sqlalchemy.org/>`_ mod
         # ... other fields follow, but we only require id for this example
 
 We will also need some utility methods to encode and decode tokens. To this end we will use
-the `python-jose <https://github.com/mpdavis/python-jose>`_ library. We will also create a Pydantic model representing a
+the `pyjwt <https://pyjwt.readthedocs.io/en/stable/>`_ library. We will also create a Pydantic model representing a
 JWT Token:
 
 .. dropdown:: Click to see the JWT utility methods and Token model
 
     .. code-block:: python
-        :caption: my_app/security/jwt.py
+        :caption: ``my_app/security/jwt.py``
 
         from datetime import datetime, timedelta
         from uuid import UUID
@@ -115,10 +115,10 @@ JWT Token:
 
 We can now create our authentication middleware:
 
-.. dropdown:: Click to see the JWTAuthenticationMiddleware
+.. dropdown:: Click to see ``JWTAuthenticationMiddleware``
 
     .. code-block:: python
-        :caption: my_app/security/authentication_middleware.py
+        :caption: ``my_app/security/authentication_middleware.py``
 
         from typing import TYPE_CHECKING, cast
 
@@ -165,7 +165,7 @@ Finally, we need to pass our middleware to the Litestar constructor:
 
 
 .. code-block:: python
-    :caption: my_app/main.py
+    :caption: ``my_app/main.py``
 
     from litestar import Litestar
     from litestar.middleware.base import DefineMiddleware
@@ -178,11 +178,11 @@ Finally, we need to pass our middleware to the Litestar constructor:
 
     app = Litestar(route_handlers=[...], middleware=[auth_mw])
 
-That is it. The ``JWTAuthenticationMiddleware`` will now run for every request, and we would be able to access these in a
+That is it. ``JWTAuthenticationMiddleware`` will now run for every request, and we would be able to access these in a
 http route handler in the following way:
 
 .. code-block:: python
-    :caption: Accessing the user and auth in a route handler with the JWTAuthenticationMiddleware
+    :caption: Accessing the user and auth in a route handler with ``JWTAuthenticationMiddleware``
 
     from litestar import Request, get
     from litestar.datastructures import State
@@ -201,7 +201,7 @@ http route handler in the following way:
 Or for a websocket route:
 
 .. code-block:: python
-    :caption: Accessing the user and auth in a websocket route handler with the JWTAuthenticationMiddleware
+    :caption: Accessing the user and auth in a websocket route handler with ``JWTAuthenticationMiddleware``
 
     from litestar import WebSocket, websocket
     from litestar.datastructures import State
@@ -219,10 +219,10 @@ Or for a websocket route:
 
 And if you would like to exclude individual routes outside those configured:
 
-.. dropdown:: Click to see how to exclude individual routes from the JWTAuthenticationMiddleware
+.. dropdown:: Click to see how to exclude individual routes from ``JWTAuthenticationMiddleware``
 
     .. code-block:: python
-        :caption: Excluding individual routes from the JWTAuthenticationMiddleware
+        :caption: Excluding individual routes from ``JWTAuthenticationMiddleware``
 
         import anyio
         from litestar import Litestar, MediaType, Response, get
@@ -254,7 +254,7 @@ And if you would like to exclude individual routes outside those configured:
 And of course use the same kind of mechanism for dependencies:
 
 .. code-block:: python
-    :caption: Using the JWTAuthenticationMiddleware in a dependency
+    :caption: Using ``JWTAuthenticationMiddleware`` in a dependency
 
     from typing import Any
 

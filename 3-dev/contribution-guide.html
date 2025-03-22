@@ -6,14 +6,14 @@
     function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
     setColorMode(localStorage._theme||"auto");
   </script><link rel="stylesheet" type="text/css" href="_static/pygments.css?v=397bb51e" />
-    <link rel="stylesheet" type="text/css" href="_static/shibuya.css?v=36d120a7" />
+    <link rel="stylesheet" type="text/css" href="_static/shibuya.css?v=83eaa723" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=13237357" />
     <link rel="stylesheet" type="text/css" href="_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
     <link rel="stylesheet" type="text/css" href="_static/sphinx_paramlinks.css" />
     <link media="print" rel="stylesheet" type="text/css" href="_static/print.css?v=20ff2c19" />
-    <link rel="stylesheet" type="text/css" href="_static/style.css?v=10936375" />
-    <link rel="stylesheet" type="text/css" href="_static/litestar-sphinx-theme.css?v=9989272a" />
+    <link rel="stylesheet" type="text/css" href="_static/style.css?v=50ea2f63" />
+    <link rel="stylesheet" type="text/css" href="_static/litestar-sphinx-theme.css?v=9a8390f1" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -29,7 +29,7 @@
   </head>
 <body><div class="announcement">
     <div class="announcement-inner">
-      <p>You are viewing the <bold>v3-development</bold> version of the documentation. Click here to go to the latest version.</p>
+      <p>You are viewing the <bold>local</bold> version of the documentation. Click here to go to the latest version.</p>
       <button class="announcement-close" aria-label="Close announcement">
         <i class="i-lucide close"></i>
       </button>
@@ -214,6 +214,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l3"><a class="reference internal" href="usage/openapi/schema_generation.html#accessing-the-openapi-schema-in-code">Accessing the OpenAPI schema in code</a></li>
 <li class="toctree-l3"><a class="reference internal" href="usage/openapi/schema_generation.html#customizing-pydantic-model-schemas">Customizing Pydantic model schemas</a></li>
 <li class="toctree-l3"><a class="reference internal" href="usage/openapi/schema_generation.html#customizing-operation-class">Customizing <code class="docutils literal notranslate"><span class="pre">Operation</span></code> class</a></li>
+<li class="toctree-l3"><a class="reference internal" href="usage/openapi/schema_generation.html#generating-examples">Generating examples</a></li>
 <li class="toctree-l3"><a class="reference internal" href="usage/openapi/ui_plugins.html">OpenAPI UI Plugins</a></li>
 <li class="toctree-l3"><a class="reference internal" href="usage/openapi/ui_plugins.html#using-openapi-ui-plugins">Using OpenAPI UI Plugins</a></li>
 <li class="toctree-l3"><a class="reference internal" href="usage/openapi/ui_plugins.html#configuring-openapi-ui-plugins">Configuring OpenAPI UI Plugins</a></li>
@@ -338,8 +339,12 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2"><a class="reference internal" href="reference/pagination.html">pagination</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference/params.html">params</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference/plugins/index.html">plugins</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="reference/plugins/attrs.html">attrs</a></li>
 <li class="toctree-l3"><a class="reference internal" href="reference/plugins/flash_messages.html">flash</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reference/plugins/htmx.html">htmx</a></li>
 <li class="toctree-l3"><a class="reference internal" href="reference/plugins/problem_details.html">problem details</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reference/plugins/prometheus.html">prometheus</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reference/plugins/pydantic.html">pydantic</a></li>
 <li class="toctree-l3"><a class="reference internal" href="reference/plugins/structlog.html">structlog</a></li>
 <li class="toctree-l3"><a class="reference internal" href="reference/plugins/sqlalchemy.html">sqlalchemy</a></li>
 </ul>
@@ -377,6 +382,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l3"><a class="reference internal" href="reference/stores/memory.html">memory</a></li>
 <li class="toctree-l3"><a class="reference internal" href="reference/stores/redis.html">redis</a></li>
 <li class="toctree-l3"><a class="reference internal" href="reference/stores/registry.html">registry</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reference/stores/valkey.html">valkey</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="reference/template.html">template</a></li>
@@ -435,9 +441,9 @@ data-aria-dark="Switch to auto color mode">
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="tutorials/repository-tutorial/index.html">SQLAlchemy Repository Tutorial</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="tutorials/repository-tutorial/01-modeling-and-features.html">Introduction to Database Modeling and Repository Features</a></li>
-<li class="toctree-l3"><a class="reference internal" href="tutorials/repository-tutorial/01-modeling-and-features.html#modeling">Modeling</a></li>
-<li class="toctree-l3"><a class="reference internal" href="tutorials/repository-tutorial/01-modeling-and-features.html#full-code">Full Code</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tutorials/repository-tutorial/01-modelling-and-features.html">Introduction to Database Modelling and Repository Features</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tutorials/repository-tutorial/01-modelling-and-features.html#modelling">Modelling</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tutorials/repository-tutorial/01-modelling-and-features.html#full-code">Full Code</a></li>
 <li class="toctree-l3"><a class="reference internal" href="tutorials/repository-tutorial/02-repository-introduction.html">Interacting with repositories</a></li>
 <li class="toctree-l3"><a class="reference internal" href="tutorials/repository-tutorial/02-repository-introduction.html#working-with-bulk-data-operations">Working with Bulk Data Operations</a></li>
 <li class="toctree-l3"><a class="reference internal" href="tutorials/repository-tutorial/02-repository-introduction.html#full-code">Full Code</a></li>
@@ -454,12 +460,13 @@ data-aria-dark="Switch to auto color mode">
 <p class="caption" role="heading" aria-level="3"><span class="caption-text">Contributing</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Contribution Guide</a></li>
-<li class="toctree-l1"><a class="reference external" href="https://github.com/search?q=user%3Alitestar-org+state%3Aopen+label%3A%22good+first+issue%22+++no%3Aassignee+&amp;type=issues">Available Issues</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/search?q=user%3Alitestar-org+state%3Aopen+label%3A%22good+first+issue%22+++no%3Aassignee+&amp;type=issues=">Available Issues</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/litestar-org/.github?tab=coc-ov-file#readme">Code of Conduct</a></li>
 </ul>
 
         </div>
-      </div></div>
+      </div>
+    </div>
   </aside>
   <div class="lside-overlay js-menu" role="button" aria-label="Close left sidebar" aria-controls="lside" aria-expanded="false"></div>
   <aside id="rside" class="sy-rside pb-3 w-64 shrink-0 order-last">
@@ -570,96 +577,12 @@ You can run <code class="docutils literal notranslate"><span class="pre">make</s
 <p>If you are utilizing <a class="reference external" href="https://codespaces.new/litestar-org/litestar?quickstart=1">GitHub Codespaces</a>,
 the environment will bootstrap itself automatically. The steps below are for local development.</p>
 <ol class="arabic">
-<li><p>Install <a class="reference external" href="https://pdm.fming.dev/latest/">PDM</a>:</p>
-<div class="sd-tab-set docutils">
-<input checked="checked" id="sd-tab-item-0" name="sd-tab-set-0" type="radio">
-</input><label class="sd-tab-label" data-sync-id="makefile" for="sd-tab-item-0">
-Makefile</label><div class="sd-tab-content docutils">
-<div class="literal-block-wrapper docutils container" id="id5">
-<div class="code-block-caption"><span class="caption-text">Using our Make target to install PDM</span><a class="headerlink" href="#id5" title="Permalink to this code">¶</a></div>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">make<span class="w"> </span>install-pdm
-</span></pre></div>
-</div>
-</div>
-</div>
-<input id="sd-tab-item-1" name="sd-tab-set-0" type="radio">
-</input><label class="sd-tab-label" data-sync-id="pipx" for="sd-tab-item-1">
-pipx</label><div class="sd-tab-content docutils">
-<div class="literal-block-wrapper docutils container" id="id6">
-<div class="code-block-caption"><span class="caption-text">Using <a class="reference external" href="https://pypa.github.io/pipx/">pipx</a></span><a class="headerlink" href="#id6" title="Permalink to this code">¶</a></div>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">pipx<span class="w"> </span>install<span class="w"> </span>pdm
-</span></pre></div>
-</div>
-</div>
-</div>
-<input id="sd-tab-item-2" name="sd-tab-set-0" type="radio">
-</input><label class="sd-tab-label" data-sync-id="homebrew" for="sd-tab-item-2">
-Homebrew</label><div class="sd-tab-content docutils">
-<div class="literal-block-wrapper docutils container" id="id7">
-<div class="code-block-caption"><span class="caption-text">Using <a class="reference external" href="https://brew.sh/">Homebrew</a></span><a class="headerlink" href="#id7" title="Permalink to this code">¶</a></div>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">brew<span class="w"> </span>install<span class="w"> </span>pdm
-</span></pre></div>
-</div>
-</div>
-</div>
-</div>
-</li>
+<li><p>Install <a class="reference external" href="https://docs.astral.sh/uv/getting-started/installation/">uv</a>:</p></li>
 <li><p>Run <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">install</span></code> to create a <a class="reference external" href="https://docs.python.org/3/tutorial/venv.html">virtual environment</a>
-and install the required development dependencies or run the PDM installation command manually:</p>
-<div class="literal-block-wrapper docutils container" id="id8">
-<div class="code-block-caption"><span class="caption-text">Installing the documentation dependencies</span><a class="headerlink" href="#id8" title="Permalink to this code">¶</a></div>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span data-line="1">pdm<span class="w"> </span>install
-</span></pre></div>
-</div>
-</div>
-</li>
-<li><p>If you’re working on the documentation and need to build it locally, install the extra dependencies with
-<code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">docs-install</span></code> or:</p>
-<div class="literal-block-wrapper docutils container" id="id9">
-<div class="code-block-caption"><span class="caption-text">Installing the documentation dependencies</span><a class="headerlink" href="#id9" title="Permalink to this code">¶</a></div>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span data-line="1">pdm<span class="w"> </span>install<span class="w"> </span>-G:docs
-</span></pre></div>
-</div>
-</div>
-</li>
-<li><p>Install <a class="reference external" href="https://pre-commit.com/">pre-commit</a>:</p>
-<div class="sd-tab-set docutils">
-<input checked="checked" id="sd-tab-item-3" name="sd-tab-set-1" type="radio">
-</input><label class="sd-tab-label" data-sync-id="pip" for="sd-tab-item-3">
-pip</label><div class="sd-tab-content docutils">
-<div class="literal-block-wrapper docutils container" id="id10">
-<div class="code-block-caption"><span class="caption-text">Using pip</span><a class="headerlink" href="#id10" title="Permalink to this code">¶</a></div>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">python3<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>pre-commit
-</span></pre></div>
-</div>
-</div>
-</div>
-<input id="sd-tab-item-4" name="sd-tab-set-1" type="radio">
-</input><label class="sd-tab-label" data-sync-id="pipx" for="sd-tab-item-4">
-pipx</label><div class="sd-tab-content docutils">
-<div class="literal-block-wrapper docutils container" id="id11">
-<div class="code-block-caption"><span class="caption-text">Using <a class="reference external" href="https://pypa.github.io/pipx/">pipx</a></span><a class="headerlink" href="#id11" title="Permalink to this code">¶</a></div>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">pipx<span class="w"> </span>install<span class="w"> </span>pre-commit
-</span></pre></div>
-</div>
-</div>
-</div>
-<input id="sd-tab-item-5" name="sd-tab-set-1" type="radio">
-</input><label class="sd-tab-label" data-sync-id="homebrew" for="sd-tab-item-5">
-Homebrew</label><div class="sd-tab-content docutils">
-<div class="literal-block-wrapper docutils container" id="id12">
-<div class="code-block-caption"><span class="caption-text">Using <a class="reference external" href="https://brew.sh/">Homebrew</a></span><a class="headerlink" href="#id12" title="Permalink to this code">¶</a></div>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">brew<span class="w"> </span>install<span class="w"> </span>pre-commit
-</span></pre></div>
-</div>
-</div>
-</div>
-</div>
-</li>
-<li><p>Install our pre-commit hooks. by running <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">install</span></code> or:</p>
-<div class="literal-block-wrapper docutils container" id="id13">
-<div class="code-block-caption"><span class="caption-text">Installing pre-commit hooks</span><a class="headerlink" href="#id13" title="Permalink to this code">¶</a></div>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span data-line="1">pre-commit<span class="w"> </span>install<span class="w"> </span>--install-hooks
+and install the required development dependencies or run the <code class="docutils literal notranslate"><span class="pre">uv</span> <span class="pre">sync</span></code> command manually:</p>
+<div class="literal-block-wrapper docutils container" id="id5">
+<div class="code-block-caption"><span class="caption-text">Installing the development dependencies</span><a class="headerlink" href="#id5" title="Permalink to this code">¶</a></div>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span data-line="1">uv<span class="w"> </span>sync
 </span></pre></div>
 </div>
 </div>
@@ -667,14 +590,13 @@ Homebrew</label><div class="sd-tab-content docutils">
 </ol>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
-<p>Many modern IDEs like PyCharm or VS Code will enable the PDM-managed virtualenv that is created in step 2
+<p>Many modern IDEs like PyCharm or VS Code will enable the uv-managed virtualenv that is created in step 2
 for you automatically.
 If your IDE / editor does not offer this functionality, then you will need to manually activate the virtualenv
 yourself. Otherwise you may encounter errors or unexpected behaviour when trying to run the commands referenced
 within this document.</p>
-<p>To activate the virtualenv manually, please consult PDM’s documentation on
-<a class="reference external" href="https://pdm-project.org/latest/usage/venv/#working-with-virtual-environments">working with virtual environments</a>.
-A simpler alternative is using the PDM plugin <a class="reference external" href="https://github.com/abersheeran/pdm-shell">pdm-shell</a>.</p>
+<p>To activate the virtualenv manually, please consult uv’s documentation on
+<a class="reference external" href="https://docs.astral.sh/uv/pip/environments/">working with virtual environments</a>.</p>
 <p>The rest of this document will assume this environment is active wherever commands are referenced.</p>
 </div>
 </section>
@@ -709,9 +631,9 @@ indicating what it changes. The style of the PR title should also follow
 <ul>
 <li><p>When requiring complex types, use a <a class="reference external" href="https://docs.python.org/3/library/typing.html#type-aliases">type alias</a>.
 Check <a class="reference internal" href="reference/types.html"><span class="doc">types</span></a> if a type alias for your use case already exists</p></li>
-<li><p>If something cannot be typed correctly due to a limitation of the type checkers, you may use <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.cast" title="(in Python v3.12)"><code class="xref py py-func docutils literal notranslate"><span class="pre">typing.cast()</span></code></a>
+<li><p>If something cannot be typed correctly due to a limitation of the type checkers, you may use <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.cast" title="(in Python v3.13)"><code class="xref py py-func docutils literal notranslate"><span class="pre">typing.cast()</span></code></a>
 to rectify the situation. However, you should only use this as a last resort if you’ve exhausted all other options
-of <a class="reference external" href="https://mypy.readthedocs.io/en/stable/type_narrowing.html">type narrowing</a>, such as <a class="reference external" href="https://docs.python.org/3/library/functions.html#isinstance" title="(in Python v3.12)"><code class="xref py py-func docutils literal notranslate"><span class="pre">isinstance()</span></code></a> checks
+of <a class="reference external" href="https://mypy.readthedocs.io/en/stable/type_narrowing.html">type narrowing</a>, such as <a class="reference external" href="https://docs.python.org/3/library/functions.html#isinstance" title="(in Python v3.13)"><code class="xref py py-func docutils literal notranslate"><span class="pre">isinstance()</span></code></a> checks
 and <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.TypeGuard">type guards</a>.</p></li>
 <li><p>You may use a properly scoped <code class="docutils literal notranslate"><span class="pre">type:</span> <span class="pre">ignore</span></code> if you ensured that a line is correct, but mypy / pyright has
 issues with it.</p>
@@ -777,17 +699,17 @@ as a first step.</p>
 </section>
 <section id="running-the-docs-locally">
 <h3>Running the docs locally<a class="headerlink" href="#running-the-docs-locally" title="Permalink to this heading">¶</a></h3>
-<p>To run or build the docs locally, you need to first install the required dependencies:</p>
-<div class="literal-block-wrapper docutils container" id="id14">
-<div class="code-block-caption"><span class="caption-text">Installing the documentation dependencies</span><a class="headerlink" href="#id14" title="Permalink to this code">¶</a></div>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span data-line="1">pdm<span class="w"> </span>install<span class="w"> </span>-G:docs
+<p>You can serve the documentation locally with</p>
+<div class="literal-block-wrapper docutils container" id="id6">
+<div class="code-block-caption"><span class="caption-text">Serving the documentation locally</span><a class="headerlink" href="#id6" title="Permalink to this code">¶</a></div>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span data-line="1">make<span class="w"> </span>docs-serve
 </span></pre></div>
 </div>
 </div>
-<p>Then you can serve the documentation with our helpful Makefile targets:</p>
-<div class="literal-block-wrapper docutils container" id="id15">
-<div class="code-block-caption"><span class="caption-text">Serving the documentation locally</span><a class="headerlink" href="#id15" title="Permalink to this code">¶</a></div>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span data-line="1">make<span class="w"> </span>docs-serve
+<p>or build it with</p>
+<div class="literal-block-wrapper docutils container" id="id7">
+<div class="code-block-caption"><span class="caption-text">Serving the documentation locally</span><a class="headerlink" href="#id7" title="Permalink to this code">¶</a></div>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span data-line="1">make<span class="w"> </span>docs
 </span></pre></div>
 </div>
 </div>
@@ -817,10 +739,11 @@ to test them alongside the rest of the test suite, ensuring they do not become s
 <li><p>Create a suite for the module in <code class="docutils literal notranslate"><span class="pre">/tests/examples</span></code> that tests the aspects of the example that it demonstrates</p></li>
 <li><p>Reference the example in the rst file with an external reference code block, e.g.</p></li>
 </ul>
-<div class="literal-block-wrapper docutils container" id="id16">
-<div class="code-block-caption"><span class="caption-text">An example of how to use literal includes of external files</span><a class="headerlink" href="#id16" title="Permalink to this code">¶</a></div>
+<div class="literal-block-wrapper docutils container" id="id8">
+<div class="code-block-caption"><span class="caption-text">An example of how to use literal includes of external files</span><a class="headerlink" href="#id8" title="Permalink to this code">¶</a></div>
 <div class="highlight-rst notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="p">..</span> <span class="ow">literalinclude</span><span class="p">::</span> /examples/test_thing.py
-</span><span data-line="2">   <span class="nc">:caption:</span> All includes should have a descriptive caption
+</span><span data-line="2">   <span class="nc">:language:</span> python
+</span><span data-line="3">   <span class="nc">:caption:</span> All includes should have a descriptive caption
 </span></pre></div>
 </div>
 </div>
@@ -841,8 +764,8 @@ after the example code-block.</p>
 the <code class="docutils literal notranslate"><span class="pre">curl</span></code> command that’s being invoked. The URL is built automatically, so the
 specified path can just be a path relative to the app.</p>
 <p>In practice, this looks like the following:</p>
-<div class="literal-block-wrapper docutils container" id="id17">
-<div class="code-block-caption"><span class="caption-text">An example of how to use the automatic example runner</span><a class="headerlink" href="#id17" title="Permalink to this code">¶</a></div>
+<div class="literal-block-wrapper docutils container" id="id9">
+<div class="code-block-caption"><span class="caption-text">An example of how to use the automatic example runner</span><a class="headerlink" href="#id9" title="Permalink to this code">¶</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span>
 </span><span data-line="2">
 </span><span data-line="3"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
@@ -861,8 +784,8 @@ specified path can just be a path relative to the app.</p>
 </div>
 </div>
 <p>This is equivalent to:</p>
-<div class="literal-block-wrapper docutils container" id="id18">
-<div class="code-block-caption"><span class="caption-text">An example of how to use the automatic example runner</span><a class="headerlink" href="#id18" title="Permalink to this code">¶</a></div>
+<div class="literal-block-wrapper docutils container" id="id10">
+<div class="code-block-caption"><span class="caption-text">An example of how to use the automatic example runner</span><a class="headerlink" href="#id10" title="Permalink to this code">¶</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1">   <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span>
 </span><span data-line="2">
 </span><span data-line="3">   <span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
@@ -892,16 +815,16 @@ specified path can just be a path relative to the app.</p>
 <h2>Creating a New Release<a class="headerlink" href="#creating-a-new-release" title="Permalink to this heading">¶</a></h2>
 <ol class="arabic">
 <li><p>Checkout the <code class="docutils literal notranslate"><span class="pre">main</span></code> branch:</p>
-<div class="literal-block-wrapper docutils container" id="id19">
-<div class="code-block-caption"><span class="caption-text">Checking out the main branch of the <code class="docutils literal notranslate"><span class="pre">litestar</span></code> repository</span><a class="headerlink" href="#id19" title="Permalink to this code">¶</a></div>
+<div class="literal-block-wrapper docutils container" id="id11">
+<div class="code-block-caption"><span class="caption-text">Checking out the main branch of the <code class="docutils literal notranslate"><span class="pre">litestar</span></code> repository</span><a class="headerlink" href="#id11" title="Permalink to this code">¶</a></div>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span data-line="1">git<span class="w"> </span>checkout<span class="w"> </span>main
 </span></pre></div>
 </div>
 </div>
 </li>
 <li><p>Run the release preparation script:</p>
-<div class="literal-block-wrapper docutils container" id="id20">
-<div class="code-block-caption"><span class="caption-text">Preparing  a new release</span><a class="headerlink" href="#id20" title="Permalink to this code">¶</a></div>
+<div class="literal-block-wrapper docutils container" id="id12">
+<div class="code-block-caption"><span class="caption-text">Preparing  a new release</span><a class="headerlink" href="#id12" title="Permalink to this code">¶</a></div>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span data-line="1">python<span class="w"> </span>tools/prepare_release.py<span class="w"> </span>&lt;new<span class="w"> </span>version<span class="w"> </span>number&gt;<span class="w"> </span>--update-version<span class="w"> </span>--create-draft-release
 </span></pre></div>
 </div>
@@ -917,8 +840,8 @@ specified path can just be a path relative to the app.</p>
 </li>
 <li><p>Review the generated changelog entry in <a class="reference internal" href="release-notes/changelog.html"><span class="doc">3.x Changelog</span></a> to ensure it looks correct.</p></li>
 <li><p>Commit the changes to <code class="docutils literal notranslate"><span class="pre">main</span></code>:</p>
-<div class="literal-block-wrapper docutils container" id="id21">
-<div class="code-block-caption"><span class="caption-text">Committing the changes to the main branch</span><a class="headerlink" href="#id21" title="Permalink to this code">¶</a></div>
+<div class="literal-block-wrapper docutils container" id="id13">
+<div class="code-block-caption"><span class="caption-text">Committing the changes to the main branch</span><a class="headerlink" href="#id13" title="Permalink to this code">¶</a></div>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span data-line="1">git<span class="w"> </span>commit<span class="w"> </span>-am<span class="w"> </span><span class="s2">&quot;chore(release): prepare release vX.Y.Z&quot;</span>
 </span></pre></div>
 </div>
@@ -926,16 +849,16 @@ specified path can just be a path relative to the app.</p>
 <p>Replace <code class="docutils literal notranslate"><span class="pre">vX.Y.Z</span></code> with the actual version number.</p>
 </li>
 <li><p>Create a new branch for the release:</p>
-<div class="literal-block-wrapper docutils container" id="id22">
-<div class="code-block-caption"><span class="caption-text">Creating a new branch for the release</span><a class="headerlink" href="#id22" title="Permalink to this code">¶</a></div>
+<div class="literal-block-wrapper docutils container" id="id14">
+<div class="code-block-caption"><span class="caption-text">Creating a new branch for the release</span><a class="headerlink" href="#id14" title="Permalink to this code">¶</a></div>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span data-line="1">git<span class="w"> </span>checkout<span class="w"> </span>-b<span class="w"> </span>vX.Y.Z
 </span></pre></div>
 </div>
 </div>
 </li>
 <li><p>Push the changes to a <code class="docutils literal notranslate"><span class="pre">vX.Y.Z</span></code> branch:</p>
-<div class="literal-block-wrapper docutils container" id="id23">
-<div class="code-block-caption"><span class="caption-text">Pushing the changes to the <code class="docutils literal notranslate"><span class="pre">vX.Y.Z</span></code> branch</span><a class="headerlink" href="#id23" title="Permalink to this code">¶</a></div>
+<div class="literal-block-wrapper docutils container" id="id15">
+<div class="code-block-caption"><span class="caption-text">Pushing the changes to the <code class="docutils literal notranslate"><span class="pre">vX.Y.Z</span></code> branch</span><a class="headerlink" href="#id15" title="Permalink to this code">¶</a></div>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span data-line="1">git<span class="w"> </span>push<span class="w"> </span>origin<span class="w"> </span>vX.Y.Z
 </span></pre></div>
 </div>
@@ -976,7 +899,7 @@ the release workflow if necessary.</p></li>
 <footer class="sy-foot">
   <div class="sy-foot-inner sy-container mx-auto">
     <div class="sy-foot-reserved md:flex justify-between items-center">
-      <div class="sy-foot-copyright"><p>2024, Litestar Organization</p>
+      <div class="sy-foot-copyright"><p>2025, Litestar Organization</p>
   
   <p>
     Made with
@@ -1011,6 +934,6 @@ the release workflow if necessary.</p></li>
       <script src="_static/togglebutton.js?v=4a39c7ea"></script>
       <script src="_static/design-tabs.js?v=36754332"></script>
       <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
-      <script src="_static/shibuya.js?v=c5fc9e80"></script>
+      <script src="_static/shibuya.js?v=e2e99575"></script>
       <script src="_static/versioning.js?v=bc681eff"></script></body>
 </html>

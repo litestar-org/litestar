@@ -1,18 +1,50 @@
 HTMX
 ====
 
-Litestar HTMX integration.
+Litestar `HTMX <https://htmx.org>`_ integration.
+
+HTMX is a JavaScript library that gives you access to AJAX, CSS Transitions, WebSockets and Server Sent Events directly in HTML, using attributes, so you can build modern user interfaces with the simplicity and power of hypertext.
+
+This section assumes that you have prior knowledge of HTMX.
+If you want to learn HTMX, we recommend consulting their `official tutorial <https://htmx.org/docs>`_.
+
+HTMXPlugin
+------------
+
+a Litestar plugin ``HTMXPlugin`` is available to easily configure the default request class for all Litestar routes.
+
+.. code-block:: python
+
+    from litestar.plugins.htmx import HTMXPlugin
+    from litestar import Litestar
+
+    from litestar.contrib.jinja import JinjaTemplateEngine
+    from litestar.template.config import TemplateConfig
+
+    from pathlib import Path
+
+    app = Litestar(
+        route_handlers=[get_form],
+        debug=True,
+        plugins=[HTMXPlugin()],
+        template_config=TemplateConfig(
+            directory=Path("litestar_htmx/templates"),
+            engine=JinjaTemplateEngine,
+        ),
+    )
+
+See :class:`~litestar.plugins.htmx.HTMXDetails` for a full list of
+available properties.
 
 HTMXRequest
 ------------
 
 A special :class:`~litestar.connection.Request` class, providing interaction with the
-HTMX client.
+HTMX client.  You can configure this globally by using the ``HTMXPlugin`` or by setting the `request_class` setting on any route, controller, router, or application.
 
 .. code-block:: python
 
-    from litestar.contrib.htmx.request import HTMXRequest
-    from litestar.contrib.htmx.response import HTMXTemplate
+    from litestar.plugins.htmx import HTMXRequest, HTMXTemplate
     from litestar import get, Litestar
     from litestar.response import Template
 
@@ -24,11 +56,8 @@ HTMX client.
 
     @get(path="/form")
     def get_form(request: HTMXRequest) -> Template:
-        htmx = request.htmx  #  if true will return HTMXDetails class object
-        if htmx:
-            print(htmx.current_url)
-        # OR
-        if request.htmx:
+        if request.htmx:  # if request has "HX-Request" header, then
+            print(request.htmx)  # HTMXDetails instance
             print(request.htmx.current_url)
         return HTMXTemplate(template_name="partial.html", context=context, push_url="/form")
 
@@ -43,7 +72,7 @@ HTMX client.
         ),
     )
 
-See :class:`HTMXDetails <litestar.contrib.htmx.request.HTMXDetails>` for a full list of
+See :class:`~litestar.plugins.htmx.HTMXDetails` for a full list of
 available properties.
 
 
@@ -54,12 +83,12 @@ HTMX Response Classes
 HTMXTemplate Response Classes
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The most common  use-case for `htmx` to render an html page or html snippet. Litestar makes this easy by providing
-an :class:`HTMXTemplate <litestar.contrib.htmx.response.HTMXTemplate>` response:
+The most common  use-case for HTMX to render an html page or html snippet. Litestar makes this easy by providing
+an :class:`~litestar.plugins.htmx.HTMXTemplate` response:
 
 .. code-block:: python
 
-    from litestar.contrib.htmx.response import HTMXTemplate
+    from litestar.plugins.htmx import HTMXTemplate
     from litestar.response import Template
 
 
@@ -89,10 +118,10 @@ an :class:`HTMXTemplate <litestar.contrib.htmx.response.HTMXTemplate>` response:
 HTMX provides two types of responses - one that doesn't allow changes to the DOM and one that does.
 Litestar supports both of these:
 
-1 - Responses that don't make any changes to DOM.
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+1 - Responses that don't make any changes to DOM
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Use :class:`HXStopPolling <litestar.contrib.htmx.response.HXStopPolling>` to stop polling for a response.
+Use :class:`~litestar.plugins.htmx.HXStopPolling` to stop polling for a response.
 
 .. code-block:: python
 
@@ -101,7 +130,7 @@ Use :class:`HXStopPolling <litestar.contrib.htmx.response.HXStopPolling>` to sto
         ...
         return HXStopPolling()
 
-Use :class:`ClientRedirect  <litestar.contrib.htmx.response.ClientRedirect>` to redirect with a page reload.
+Use :class:`~litestar.plugins.htmx.ClientRedirect` to redirect with a page reload.
 
 .. code-block:: python
 
@@ -110,7 +139,7 @@ Use :class:`ClientRedirect  <litestar.contrib.htmx.response.ClientRedirect>` to 
         ...
         return ClientRedirect(redirect_to="/contact-us")
 
-Use :class:`ClientRefresh  <litestar.contrib.htmx.response.ClientRefresh>` to force a full page refresh.
+Use :class:`~litestar.plugins.htmx.ClientRefresh` to force a full page refresh.
 
 .. code-block:: python
 
@@ -119,12 +148,12 @@ Use :class:`ClientRefresh  <litestar.contrib.htmx.response.ClientRefresh>` to fo
         ...
         return ClientRefresh()
 
-2 - Responses that may change DOM.
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+2 - Responses that may change DOM
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Use :class:`HXLocation <litestar.contrib.htmx.response.HXLocation>` to redirect to a new location without page reload.
+Use :class:`~litestar.plugins.htmx.HXLocation` to redirect to a new location without page reload.
 
-- Note: this class provides the ability to change ``target``, ``swapping`` method, the sent ``values``, and the ``headers``.)
+.. note:: This class provides the ability to change ``target``, ``swapping`` method, the sent ``values``, and the ``headers``.
 
 .. code-block:: python
 
@@ -138,13 +167,13 @@ Use :class:`HXLocation <litestar.contrib.htmx.response.HXLocation>` to redirect 
             event,  # an event that "triggered" the request.
             target="#target",  # element id to target to.
             swap="outerHTML",  # swapping method to use.
-            hx_headers={"attr": "val"},  # headers to pass to htmx.
+            hx_headers={"attr": "val"},  # headers to pass to HTMX.
             values={"val": "one"},
         )  # values to submit with response.
 
-Use :class:`PushUrl <litestar.contrib.htmx.response.PushUrl>` to carry a response and push a url to the browser, optionally updating the `history` stack.
+Use :class:`~litestar.plugins.htmx.PushUrl` to carry a response and push a url to the browser, optionally updating the ``history`` stack.
 
-- Note: If the value for ``push_url`` is set to ``False`` it will prevent updating browser history.
+.. note:: If the value for ``push_url`` is set to ``False`` it will prevent updating browser history.
 
 .. code-block:: python
 
@@ -153,8 +182,9 @@ Use :class:`PushUrl <litestar.contrib.htmx.response.PushUrl>` to carry a respons
         ...
         return PushUrl(content="Success!", push_url="/about")
 
-Use :class:`ReplaceUrl <litestar.contrib.htmx.response.ReplaceUrl>` to carry a response and replace the url in the browser's ``location`` bar.
-- Note: If the value to ``replace_url`` is set to ``False`` it will prevent it updating the browser location bar.
+Use :class:`~litestar.plugins.htmx.ReplaceUrl` to carry a response and replace the url in the browser's ``location`` bar.
+
+.. note:: If the value to ``replace_url`` is set to ``False`` it will prevent updating the browser's location.
 
 .. code-block:: python
 
@@ -163,7 +193,7 @@ Use :class:`ReplaceUrl <litestar.contrib.htmx.response.ReplaceUrl>` to carry a r
         ...
         return ReplaceUrl(content="Success!", replace_url="/contact-us")
 
-Use :class:`Reswap <litestar.contrib.htmx.response.Reswap>` to carry a response perhaps a swap
+Use :class:`~litestar.plugins.htmx.Reswap` to carry a response with a possible swap.
 
 .. code-block:: python
 
@@ -172,7 +202,7 @@ Use :class:`Reswap <litestar.contrib.htmx.response.Reswap>` to carry a response 
         ...
         return Reswap(content="Success!", method="beforebegin")
 
-Use :class:`Retarget <litestar.contrib.htmx.response.Retarget>` to carry a response and change the target element.
+Use :class:`~litestar.plugins.htmx.Retarget` to carry a response and change the target element.
 
 .. code-block:: python
 
@@ -181,7 +211,7 @@ Use :class:`Retarget <litestar.contrib.htmx.response.Retarget>` to carry a respo
         ...
         return Retarget(content="Success!", target="#new-target")
 
-Use :class:`TriggerEvent <litestar.contrib.htmx.response.TriggerEvent>` to carry a response and trigger an event.
+Use :class:`~litestar.plugins.htmx.TriggerEvent` to carry a response and trigger an event.
 
 .. code-block:: python
 

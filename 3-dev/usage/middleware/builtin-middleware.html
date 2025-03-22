@@ -6,14 +6,14 @@
     function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
     setColorMode(localStorage._theme||"auto");
   </script><link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=397bb51e" />
-    <link rel="stylesheet" type="text/css" href="../../_static/shibuya.css?v=36d120a7" />
+    <link rel="stylesheet" type="text/css" href="../../_static/shibuya.css?v=83eaa723" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css?v=13237357" />
     <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
     <link rel="stylesheet" type="text/css" href="../../_static/sphinx_paramlinks.css" />
     <link media="print" rel="stylesheet" type="text/css" href="../../_static/print.css?v=20ff2c19" />
-    <link rel="stylesheet" type="text/css" href="../../_static/style.css?v=10936375" />
-    <link rel="stylesheet" type="text/css" href="../../_static/litestar-sphinx-theme.css?v=9989272a" />
+    <link rel="stylesheet" type="text/css" href="../../_static/style.css?v=50ea2f63" />
+    <link rel="stylesheet" type="text/css" href="../../_static/litestar-sphinx-theme.css?v=9a8390f1" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -29,7 +29,7 @@
   </head>
 <body><div class="announcement">
     <div class="announcement-inner">
-      <p>You are viewing the <bold>v3-development</bold> version of the documentation. Click here to go to the latest version.</p>
+      <p>You are viewing the <bold>local</bold> version of the documentation. Click here to go to the latest version.</p>
       <button class="announcement-close" aria-label="Close announcement">
         <i class="i-lucide close"></i>
       </button>
@@ -214,6 +214,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l3"><a class="reference internal" href="../openapi/schema_generation.html#accessing-the-openapi-schema-in-code">Accessing the OpenAPI schema in code</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../openapi/schema_generation.html#customizing-pydantic-model-schemas">Customizing Pydantic model schemas</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../openapi/schema_generation.html#customizing-operation-class">Customizing <code class="docutils literal notranslate"><span class="pre">Operation</span></code> class</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../openapi/schema_generation.html#generating-examples">Generating examples</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../openapi/ui_plugins.html">OpenAPI UI Plugins</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../openapi/ui_plugins.html#using-openapi-ui-plugins">Using OpenAPI UI Plugins</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../openapi/ui_plugins.html#configuring-openapi-ui-plugins">Configuring OpenAPI UI Plugins</a></li>
@@ -338,8 +339,12 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2"><a class="reference internal" href="../../reference/pagination.html">pagination</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/params.html">params</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/plugins/index.html">plugins</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/attrs.html">attrs</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/flash_messages.html">flash</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/htmx.html">htmx</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/problem_details.html">problem details</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/prometheus.html">prometheus</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/pydantic.html">pydantic</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/structlog.html">structlog</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/sqlalchemy.html">sqlalchemy</a></li>
 </ul>
@@ -377,6 +382,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l3"><a class="reference internal" href="../../reference/stores/memory.html">memory</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/stores/redis.html">redis</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/stores/registry.html">registry</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/stores/valkey.html">valkey</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/template.html">template</a></li>
@@ -435,9 +441,9 @@ data-aria-dark="Switch to auto color mode">
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../tutorials/repository-tutorial/index.html">SQLAlchemy Repository Tutorial</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../tutorials/repository-tutorial/01-modeling-and-features.html">Introduction to Database Modeling and Repository Features</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../tutorials/repository-tutorial/01-modeling-and-features.html#modeling">Modeling</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../tutorials/repository-tutorial/01-modeling-and-features.html#full-code">Full Code</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../tutorials/repository-tutorial/01-modelling-and-features.html">Introduction to Database Modelling and Repository Features</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../tutorials/repository-tutorial/01-modelling-and-features.html#modelling">Modelling</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../tutorials/repository-tutorial/01-modelling-and-features.html#full-code">Full Code</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../tutorials/repository-tutorial/02-repository-introduction.html">Interacting with repositories</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../tutorials/repository-tutorial/02-repository-introduction.html#working-with-bulk-data-operations">Working with Bulk Data Operations</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../tutorials/repository-tutorial/02-repository-introduction.html#full-code">Full Code</a></li>
@@ -454,12 +460,13 @@ data-aria-dark="Switch to auto color mode">
 <p class="caption" role="heading" aria-level="3"><span class="caption-text">Contributing</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../contribution-guide.html">Contribution Guide</a></li>
-<li class="toctree-l1"><a class="reference external" href="https://github.com/search?q=user%3Alitestar-org+state%3Aopen+label%3A%22good+first+issue%22+++no%3Aassignee+&amp;type=issues">Available Issues</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/search?q=user%3Alitestar-org+state%3Aopen+label%3A%22good+first+issue%22+++no%3Aassignee+&amp;type=issues=">Available Issues</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/litestar-org/.github?tab=coc-ov-file#readme">Code of Conduct</a></li>
 </ul>
 
         </div>
-      </div></div>
+      </div>
+    </div>
   </aside>
   <div class="lside-overlay js-menu" role="button" aria-label="Close left sidebar" aria-controls="lside" aria-expanded="false"></div>
   <aside id="rside" class="sy-rside pb-3 w-64 shrink-0 order-last">
@@ -562,7 +569,7 @@ of <a class="reference internal" href="../../reference/config.html#litestar.conf
 </section>
 <section id="csrf">
 <h2>CSRF<a class="headerlink" href="#csrf" title="Permalink to this heading">¶</a></h2>
-<p>CSRF (Cross-site request forgery) is a type of attack where unauthorized commands are submitted from a user that the web
+<p><a class="reference external" href="https://owasp.org/www-community/attacks/csrf">CSRF (Cross-site request forgery)</a> is a type of attack where unauthorized commands are submitted from a user that the web
 application trusts. This attack often uses social engineering that tricks the victim into clicking a URL that contains a
 maliciously crafted, unauthorized request for a particular Web application. The user’s browser then sends this
 maliciously crafted request to the targeted Web application. If the user is in an active session with the Web application,
@@ -605,18 +612,18 @@ user to perform an action the user didn’t intend, for example:</p>
 </span><span data-line="17"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">([</span><span class="n">get_resource</span><span class="p">,</span> <span class="n">create_resource</span><span class="p">],</span> <span class="n">csrf_config</span><span class="o">=</span><span class="n">csrf_config</span><span class="p">)</span>
 </span></pre></div>
 </div>
-<p>The following snippet demonstrates how to change the cookie name to “some-cookie-name” and header name to “some-header-name”.</p>
+<p>The following snippet demonstrates how to change the cookie name to <code class="docutils literal notranslate"><span class="pre">&quot;some-cookie-name&quot;</span></code> and header name to <code class="docutils literal notranslate"><span class="pre">&quot;some-header-name&quot;</span></code>.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="n">csrf_config</span> <span class="o">=</span> <span class="n">CSRFConfig</span><span class="p">(</span><span class="n">secret</span><span class="o">=</span><span class="s2">&quot;my-secret&quot;</span><span class="p">,</span> <span class="n">cookie_name</span><span class="o">=</span><span class="s1">&#39;some-cookie-name&#39;</span><span class="p">,</span> <span class="n">header_name</span><span class="o">=</span><span class="s1">&#39;some-header-name&#39;</span><span class="p">)</span>
 </span></pre></div>
 </div>
 <p>A CSRF protected route can be accessed by any client that can make a request with either the header or form-data key.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>The form-data key can not be currently configured. It should only be passed via the key “_csrf_token”</p>
+<p>The form-data key can not be currently configured. It should only be passed via the key <code class="docutils literal notranslate"><span class="pre">&quot;_csrf_token&quot;</span></code></p>
 </div>
 <p>In Python, any client such as <a class="reference external" href="https://github.com/psf/requests">requests</a> or <a class="reference external" href="https://github.com/encode/httpx">httpx</a> can be used.
 The usage of clients or sessions is recommended due to the cookie persistence it offers across requests.
-The following is an example using <code class="docutils literal notranslate"><span class="pre">httpx.Client</span></code>.</p>
+The following is an example using <a class="reference external" href="https://www.python-httpx.org/api/#client">httpx.Client</a>.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">import</span> <span class="nn">httpx</span>
 </span><span data-line="2">
 </span><span data-line="3">
@@ -627,7 +634,7 @@ The following is an example using <code class="docutils literal notranslate"><sp
 </span><span data-line="8">    <span class="n">csrf</span> <span class="o">=</span> <span class="n">get_response</span><span class="o">.</span><span class="n">cookies</span><span class="p">[</span><span class="s2">&quot;csrftoken&quot;</span><span class="p">]</span>
 </span><span data-line="9">
 </span><span data-line="10">    <span class="c1"># &quot;x-csrftoken&quot; is the default header name</span>
-</span><span data-line="11">    <span class="n">post_response_using_header</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">&quot;http://localhost:8000/&quot;</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;x-csrftoken&quot;</span><span class="p">:</span> <span class="n">csrf</span><span class="p">})</span>
+</span><span data-line="11">    <span class="n">post_response_using_header</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">&quot;http://localhost:8000/1&quot;</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;x-csrftoken&quot;</span><span class="p">:</span> <span class="n">csrf</span><span class="p">})</span>
 </span><span data-line="12">    <span class="k">assert</span> <span class="n">post_response_using_header</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">201</span>
 </span><span data-line="13">
 </span><span data-line="14">    <span class="c1"># &quot;_csrf_token&quot; is the default *non* configurable form-data key</span>
@@ -661,7 +668,7 @@ patterns to skip in the middleware.</p>
 </section>
 <section id="allowed-hosts">
 <h2>Allowed Hosts<a class="headerlink" href="#allowed-hosts" title="Permalink to this heading">¶</a></h2>
-<p>Another common security mechanism is to require that each incoming request has a “Host” or “X-Forwarded-Host” header,
+<p>Another common security mechanism is to require that each incoming request has a <code class="docutils literal notranslate"><span class="pre">&quot;Host&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;X-Forwarded-Host&quot;</span></code> header,
 and then to restrict hosts to a specific set of domains - what’s called “allowed hosts”.</p>
 <p>Litestar includes an <a class="reference internal" href="../../reference/middleware/allowed_hosts.html#litestar.middleware.allowed_hosts.AllowedHostsMiddleware" title="litestar.middleware.allowed_hosts.AllowedHostsMiddleware"><code class="xref py py-class docutils literal notranslate"><span class="pre">AllowedHostsMiddleware</span></code></a> class that can be
 easily enabled by either passing an instance of <a class="reference internal" href="../../reference/config.html#litestar.config.allowed_hosts.AllowedHostsConfig" title="litestar.config.allowed_hosts.AllowedHostsConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">AllowedHostsConfig</span></code></a> or a
@@ -722,34 +729,34 @@ the <code class="docutils literal notranslate"><span class="pre">backend</span><
 </section>
 <section id="brotli">
 <h3>Brotli<a class="headerlink" href="#brotli" title="Permalink to this heading">¶</a></h3>
-<p>The Brotli package is required to run this middleware. It is available as an extras to litestar with the <code class="docutils literal notranslate"><span class="pre">brotli</span></code>
+<p>The <a class="reference external" href="https://pypi.org/project/Brotli">Brotli</a> package is required to run this middleware. It is available as an extras to litestar with the <code class="docutils literal notranslate"><span class="pre">brotli</span></code>
 extra (<code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">litestar[brotli]</span></code>).</p>
 <p>You can enable brotli compression of responses by passing an instance of
 <a class="reference internal" href="../../reference/config.html#litestar.config.compression.CompressionConfig" title="litestar.config.compression.CompressionConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">CompressionConfig</span></code></a> with the <code class="docutils literal notranslate"><span class="pre">backend</span></code> parameter set to <code class="docutils literal notranslate"><span class="pre">&quot;brotli&quot;</span></code>.</p>
 <p>You can configure the following additional brotli-specific values:</p>
 <ul class="simple">
 <li><dl class="simple">
-<dt><code class="docutils literal notranslate"><span class="pre">minimum_size</span></code>: the minimum threshold for response size to enable compression. Smaller responses will not be</dt><dd><p>compressed. Defaults is <code class="docutils literal notranslate"><span class="pre">500</span></code>, i.e. half a kilobyte.</p>
+<dt><code class="docutils literal notranslate"><span class="pre">minimum_size</span></code>: the minimum threshold for response size to enable compression. Smaller responses will not be</dt><dd><p>compressed. Default is 500, i.e. half a kilobyte</p>
 </dd>
 </dl>
 </li>
 <li><dl class="simple">
-<dt><code class="docutils literal notranslate"><span class="pre">brotli_quality</span></code>: Range [0-11], Controls the compression-speed vs compression-density tradeoff. The higher the</dt><dd><p>quality, the slower the compression.</p>
+<dt><code class="docutils literal notranslate"><span class="pre">brotli_quality</span></code>: Range [0-11], Controls the compression-speed vs compression-density tradeoff. The higher the</dt><dd><p>quality, the slower the compression. Defaults to 5</p>
 </dd>
 </dl>
 </li>
 <li><dl class="simple">
-<dt><code class="docutils literal notranslate"><span class="pre">brotli_mode</span></code>: The compression mode can be MODE_GENERIC (default), MODE_TEXT (for UTF-8 format text input), or</dt><dd><p>MODE_FONT (for WOFF 2.0).</p>
+<dt><code class="docutils literal notranslate"><span class="pre">brotli_mode</span></code>: The compression mode can be <code class="docutils literal notranslate"><span class="pre">&quot;generic&quot;</span></code> (for mixed content), <code class="docutils literal notranslate"><span class="pre">&quot;text&quot;</span></code> (for UTF-8 format text input), or</dt><dd><p><code class="docutils literal notranslate"><span class="pre">&quot;font&quot;</span></code> (for WOFF 2.0). Defaults to <code class="docutils literal notranslate"><span class="pre">&quot;text&quot;</span></code></p>
 </dd>
 </dl>
 </li>
-<li><p><code class="docutils literal notranslate"><span class="pre">brotli_lgwin</span></code>: Base 2 logarithm of size. Range is 10 to 24. Defaults to 22.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">brotli_lgwin</span></code>: Base 2 logarithm of size. Range [10-24]. Defaults to 22.</p></li>
 <li><dl class="simple">
-<dt><code class="docutils literal notranslate"><span class="pre">brotli_lgblock</span></code>: Base 2 logarithm of the maximum input block size. Range is 16 to 24. If set to 0, the value will</dt><dd><p>be set based on the quality. Defaults to 0.</p>
+<dt><code class="docutils literal notranslate"><span class="pre">brotli_lgblock</span></code>: Base 2 logarithm of the maximum input block size. Range [16-24]. If set to 0, the value will</dt><dd><p>be set based on the quality. Defaults to 0</p>
 </dd>
 </dl>
 </li>
-<li><p><code class="docutils literal notranslate"><span class="pre">brotli_gzip_fallback</span></code>: a boolean to indicate if gzip should be used if brotli is not supported.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">brotli_gzip_fallback</span></code>: a boolean to indicate if gzip should be used if brotli is not supported</p></li>
 </ul>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span>
 </span><span data-line="2"><span class="kn">from</span> <span class="nn">litestar.config.compression</span> <span class="kn">import</span> <span class="n">CompressionConfig</span>
@@ -782,42 +789,13 @@ the <a class="reference external" href="https://datatracker.ietf.org/doc/draft-i
 </span><span data-line="13"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">handler</span><span class="p">],</span> <span class="n">middleware</span><span class="o">=</span><span class="p">[</span><span class="n">rate_limit_config</span><span class="o">.</span><span class="n">middleware</span><span class="p">])</span>
 </span></pre></div>
 </div>
-<p>The only required configuration kwarg is <code class="docutils literal notranslate"><span class="pre">rate_limit</span></code>, which expects a tuple containing a time-unit (<code class="docutils literal notranslate"><span class="pre">second</span></code>,
-<code class="docutils literal notranslate"><span class="pre">minute</span></code>, <code class="docutils literal notranslate"><span class="pre">hour</span></code>, <code class="docutils literal notranslate"><span class="pre">day</span></code>) and a value for the request quota (integer).</p>
+<p>The only required configuration kwarg is <code class="docutils literal notranslate"><span class="pre">rate_limit</span></code>, which expects a tuple containing a time-unit (<code class="docutils literal notranslate"><span class="pre">&quot;second&quot;</span></code>,
+<code class="docutils literal notranslate"><span class="pre">&quot;minute&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;hour&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;day&quot;</span></code>) and a value for the request quota (integer).</p>
 </section>
 <section id="logging-middleware">
 <h2>Logging Middleware<a class="headerlink" href="#logging-middleware" title="Permalink to this heading">¶</a></h2>
 <p>Litestar ships with a robust logging middleware that allows logging HTTP request and responses while building on
-the <a class="reference internal" href="../logging.html"><span class="doc">logging configuration</span></a>:</p>
-<div class="sd-tab-set docutils">
-<input id="sd-tab-item-0" name="sd-tab-set-0" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-0">
-Python 3.8+</label><div class="sd-tab-content docutils">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span>
-</span><span data-line="2">
-</span><span data-line="3"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
-</span><span data-line="4"><span class="kn">from</span> <span class="nn">litestar.logging.config</span> <span class="kn">import</span> <span class="n">LoggingConfig</span>
-</span><span data-line="5"><span class="kn">from</span> <span class="nn">litestar.middleware.logging</span> <span class="kn">import</span> <span class="n">LoggingMiddlewareConfig</span>
-</span><span data-line="6">
-</span><span data-line="7"><span class="n">logging_middleware_config</span> <span class="o">=</span> <span class="n">LoggingMiddlewareConfig</span><span class="p">()</span>
-</span><span data-line="8">
-</span><span data-line="9">
-</span><span data-line="10"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-</span><span data-line="11"><span class="k">def</span> <span class="nf">my_handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
-</span><span data-line="12">    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;hello&quot;</span><span class="p">:</span> <span class="s2">&quot;world&quot;</span><span class="p">}</span>
-</span><span data-line="13">
-</span><span data-line="14">
-</span><span data-line="15"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
-</span><span data-line="16">    <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">my_handler</span><span class="p">],</span>
-</span><span data-line="17">    <span class="n">logging_config</span><span class="o">=</span><span class="n">LoggingConfig</span><span class="p">(),</span>
-</span><span data-line="18">    <span class="n">middleware</span><span class="o">=</span><span class="p">[</span><span class="n">logging_middleware_config</span><span class="o">.</span><span class="n">middleware</span><span class="p">],</span>
-</span><span data-line="19"><span class="p">)</span>
-</span></pre></div>
-</div>
-</div>
-<input checked="checked" id="sd-tab-item-1" name="sd-tab-set-0" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.9" for="sd-tab-item-1">
-Python 3.9+</label><div class="sd-tab-content docutils">
+the Litestar’s <a class="reference internal" href="../logging.html#logging-usage"><span class="std std-ref">logging configuration</span></a>:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
 </span><span data-line="2"><span class="kn">from</span> <span class="nn">litestar.logging.config</span> <span class="kn">import</span> <span class="n">LoggingConfig</span>
 </span><span data-line="3"><span class="kn">from</span> <span class="nn">litestar.middleware.logging</span> <span class="kn">import</span> <span class="n">LoggingMiddlewareConfig</span>
@@ -837,11 +815,8 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 </span><span data-line="17"><span class="p">)</span>
 </span></pre></div>
 </div>
-</div>
-</div>
-<p>The logging middleware uses the logger configuration defined on the application level, which allows for using both stdlib
-logging or <a class="reference external" href="https://www.structlog.org/en/stable/index.html">structlog</a> , depending on the configuration used
-(see <a class="reference internal" href="../logging.html"><span class="doc">logging configuration</span></a> for more details).</p>
+<p>The logging middleware uses the logger configuration defined on the application level, which allows for using any supported logging tool, depending on the configuration used
+(see <a class="reference internal" href="../logging.html#logging-usage"><span class="std std-ref">logging configuration</span></a> for more details).</p>
 <section id="obfuscating-logging-output">
 <h3>Obfuscating Logging Output<a class="headerlink" href="#obfuscating-logging-output" title="Permalink to this heading">¶</a></h3>
 <p>Sometimes certain data, e.g. request or response headers, needs to be obfuscated. This is supported by the middleware
@@ -884,55 +859,6 @@ offering client- and server-side sessions. Server-side sessions are backed by Li
 <p>To start using sessions in your application all you have to do is create an instance
 of a <a class="reference internal" href="../../reference/middleware/session/base.html#litestar.middleware.session.base.BaseBackendConfig" title="litestar.middleware.session.base.BaseBackendConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">configuration</span></code></a> object and
 add its middleware to your application’s middleware stack:</p>
-<div class="sd-tab-set docutils">
-<input id="sd-tab-item-2" name="sd-tab-set-1" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-2">
-Python 3.8+</label><div class="sd-tab-content docutils">
-<div class="literal-block-wrapper docutils container" id="id1">
-<div class="code-block-caption"><span class="caption-text">Hello World</span><a class="headerlink" href="#id1" title="Permalink to this code">¶</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">os</span> <span class="kn">import</span> <span class="n">urandom</span>
-</span><span data-line="2"><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span>
-</span><span data-line="3">
-</span><span data-line="4"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">Request</span><span class="p">,</span> <span class="n">delete</span><span class="p">,</span> <span class="n">get</span><span class="p">,</span> <span class="n">post</span>
-</span><span data-line="5"><span class="kn">from</span> <span class="nn">litestar.middleware.session.client_side</span> <span class="kn">import</span> <span class="n">CookieBackendConfig</span>
-</span><span data-line="6">
-</span><span data-line="7"><span class="c1"># we initialize to config with a 16 byte key, i.e. 128 a bit key.</span>
-</span><span data-line="8"><span class="c1"># in real world usage we should inject the secret from the environment</span>
-</span><span data-line="9"><span class="n">session_config</span> <span class="o">=</span> <span class="n">CookieBackendConfig</span><span class="p">(</span><span class="n">secret</span><span class="o">=</span><span class="n">urandom</span><span class="p">(</span><span class="mi">16</span><span class="p">))</span>  <span class="c1"># type: ignore[arg-type]</span>
-</span><span data-line="10">
-</span><span data-line="11">
-</span><span data-line="12"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/session&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-</span><span data-line="13"><span class="k">def</span> <span class="nf">check_session_handler</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bool</span><span class="p">]:</span>
-</span><span data-line="14"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Handler function that accesses request.session.&quot;&quot;&quot;</span>
-</span><span data-line="15">    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;has_session&quot;</span><span class="p">:</span> <span class="n">request</span><span class="o">.</span><span class="n">session</span> <span class="o">!=</span> <span class="p">{}}</span>
-</span><span data-line="16">
-</span><span data-line="17">
-</span><span data-line="18"><span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/session&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-</span><span data-line="19"><span class="k">def</span> <span class="nf">create_session_handler</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="20"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Handler to set the session.&quot;&quot;&quot;</span>
-</span><span data-line="21">    <span class="k">if</span> <span class="ow">not</span> <span class="n">request</span><span class="o">.</span><span class="n">session</span><span class="p">:</span>
-</span><span data-line="22">        <span class="c1"># value can be a dictionary or pydantic model</span>
-</span><span data-line="23">        <span class="n">request</span><span class="o">.</span><span class="n">set_session</span><span class="p">({</span><span class="s2">&quot;username&quot;</span><span class="p">:</span> <span class="s2">&quot;moishezuchmir&quot;</span><span class="p">})</span>
-</span><span data-line="24">
-</span><span data-line="25">
-</span><span data-line="26"><span class="nd">@delete</span><span class="p">(</span><span class="s2">&quot;/session&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-</span><span data-line="27"><span class="k">def</span> <span class="nf">delete_session_handler</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="28"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Handler to clear the session.&quot;&quot;&quot;</span>
-</span><span data-line="29">    <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">session</span><span class="p">:</span>
-</span><span data-line="30">        <span class="n">request</span><span class="o">.</span><span class="n">clear_session</span><span class="p">()</span>
-</span><span data-line="31">
-</span><span data-line="32">
-</span><span data-line="33"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
-</span><span data-line="34">    <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">check_session_handler</span><span class="p">,</span> <span class="n">create_session_handler</span><span class="p">,</span> <span class="n">delete_session_handler</span><span class="p">],</span>
-</span><span data-line="35">    <span class="n">middleware</span><span class="o">=</span><span class="p">[</span><span class="n">session_config</span><span class="o">.</span><span class="n">middleware</span><span class="p">],</span>
-</span><span data-line="36"><span class="p">)</span>
-</span></pre></div>
-</div>
-</div>
-</div>
-<input checked="checked" id="sd-tab-item-3" name="sd-tab-set-1" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.9" for="sd-tab-item-3">
-Python 3.9+</label><div class="sd-tab-content docutils">
 <div class="literal-block-wrapper docutils container" id="id2">
 <div class="code-block-caption"><span class="caption-text">Hello World</span><a class="headerlink" href="#id2" title="Permalink to this code">¶</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">os</span> <span class="kn">import</span> <span class="n">urandom</span>
@@ -973,8 +899,6 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 </span></pre></div>
 </div>
 </div>
-</div>
-</div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>Since both client- and server-side sessions rely on cookies (one for storing the actual session
@@ -992,7 +916,7 @@ which offers strong AES-CGM encryption security best practices while support coo
 which can be installed together with litestar as an extra using <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">litestar[cryptography]</span></code></p>
 </div>
 <div class="literal-block-wrapper docutils container" id="id3">
-<div class="code-block-caption"><span class="caption-text">cookie_backend.py</span><a class="headerlink" href="#id3" title="Permalink to this code">¶</a></div>
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">cookie_backend.py</span></code></span><a class="headerlink" href="#id3" title="Permalink to this code">¶</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">os</span> <span class="kn">import</span> <span class="n">urandom</span>
 </span><span data-line="2">
 </span><span data-line="3"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span>
@@ -1065,7 +989,7 @@ and load the appropriate data from the store</p>
 <footer class="sy-foot">
   <div class="sy-foot-inner sy-container mx-auto">
     <div class="sy-foot-reserved md:flex justify-between items-center">
-      <div class="sy-foot-copyright"><p>2024, Litestar Organization</p>
+      <div class="sy-foot-copyright"><p>2025, Litestar Organization</p>
   
   <p>
     Made with
@@ -1100,6 +1024,6 @@ and load the appropriate data from the store</p>
       <script src="../../_static/togglebutton.js?v=4a39c7ea"></script>
       <script src="../../_static/design-tabs.js?v=36754332"></script>
       <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
-      <script src="../../_static/shibuya.js?v=c5fc9e80"></script>
+      <script src="../../_static/shibuya.js?v=e2e99575"></script>
       <script src="../../_static/versioning.js?v=bc681eff"></script></body>
 </html>
