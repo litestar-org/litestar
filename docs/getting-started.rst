@@ -65,6 +65,9 @@ Installation
     :ref:`Polyfactory to generate OpenAPI examples <usage/openapi/schema_generation:Generating examples>`
         :code:`pip install litestar[structlog]`
 
+    :doc:`HTMX plugin </usage/htmx>`
+        :code:`pip install litestar[htmx]`
+
     Standard Installation (includes Uvicorn and Jinja2 templating):
         :code:`pip install litestar[standard]`
 
