@@ -6,12 +6,19 @@ from pathlib import Path, PurePath
 from typing import TYPE_CHECKING, Any, Literal
 
 from litestar.exceptions import ImproperlyConfiguredException, NotFoundException
-from litestar.file_system import BaseLocalFileSystem, FileSystemAdapter
+from litestar.file_system import (
+    AnyFileSystem,
+    BaseFileSystem,
+    FileInfo,
+    FileSystemRegistry,
+    LinkableFileSystem,
+    maybe_wrap_fsspec_file_system,
+)
 from litestar.handlers import get, head
 from litestar.response.file import ASGIFileResponse
 from litestar.router import Router
 from litestar.status_codes import HTTP_404_NOT_FOUND
-from litestar.types import Empty, FileInfo
+from litestar.types import Empty
 from litestar.utils import normalize_path
 
 __all__ = ("create_static_files_router",)
@@ -19,6 +26,7 @@ __all__ = ("create_static_files_router",)
 if TYPE_CHECKING:
     from collections.abc import Mapping, Sequence
 
+    from litestar import Request
     from litestar.datastructures import CacheControlHeader
     from litestar.openapi.spec import SecurityRequirement
     from litestar.types import (
@@ -36,7 +44,7 @@ if TYPE_CHECKING:
 def create_static_files_router(
     path: str,
     directories: Sequence[PathType],
-    file_system: Any = None,
+    file_system: AnyFileSystem | str | None = None,
     send_as_attachment: bool = False,
     html_mode: bool = False,
     name: str = "static",
@@ -52,17 +60,18 @@ def create_static_files_router(
     security: Sequence[SecurityRequirement] | None = None,
     tags: Sequence[str] | None = None,
     router_class: type[Router] = Router,
-    resolve_symlinks: bool = True,
+    allow_symlinks_outside_directory: bool = False,
 ) -> Router:
     """Create a router with handlers to serve static files.
 
     Args:
         path: Path to serve static files under
         directories: Directories to serve static files from
-        file_system: A *file system* implementing
-            :class:`~litestar.types.FileSystemProtocol`.
-            `fsspec <https://filesystem-spec.readthedocs.io/en/latest/>`_ can be passed
-            here as well
+        file_system: The file system to load the file from. Instances of
+            :class:`~litestar.file_system.BaseFileSystem`, :class:`fsspec.spec.AbstractFileSystem`,
+            :class:`fsspec.asyn.AsyncFileSystem` will be used directly. If passed string, use it to look up the
+            corresponding file system from the :class:`~litestar.file_system.FileSystemRegistry`. If not given, the
+            file will be loaded from :attr:`~litestar.file_system.FileSystemRegistry.default`
         send_as_attachment: Whether to send the file as an attachment
         html_mode: When in HTML:
             - Serve an ``index.html`` file from ``/``
@@ -80,46 +89,54 @@ def create_static_files_router(
         security: Security options passed to the router
         tags: ``tags`` passed to the router
         router_class: The class used to construct a router from
-        resolve_symlinks: Resolve symlinks of ``directories``
+        allow_symlinks_outside_directory: Allow serving files that link a path inside a
+            base directory (as specified in 'directories') to a path outside it. This
+            should be handled with caution, as it allows potentially unintended access
+            to files outside the defined 'directories' via symlink chains.
+
+            .. seealso::
+
+                :ref:`usage/static-files:Handling symlinks`
     """
 
-    if file_system is None:
-        file_system = BaseLocalFileSystem()
+    if file_system is not None and not isinstance(file_system, str):
+        file_system = maybe_wrap_fsspec_file_system(file_system)
 
-    directories = tuple(os.path.normpath(Path(p).resolve() if resolve_symlinks else Path(p)) for p in directories)
+    resolved_directories = tuple(os.path.normpath(Path(p).absolute()) for p in directories)
 
-    _validate_config(path=path, directories=directories, file_system=file_system)
+    _validate_config(path=path, directories=resolved_directories)
     path = normalize_path(path)
 
     headers = None
     if cache_control:
         headers = {cache_control.HEADER_NAME: cache_control.to_header()}
 
-    resolved_directories = tuple(Path(p).resolve() if resolve_symlinks else Path(p) for p in directories)
-    adapter = FileSystemAdapter(file_system)
-
     @get("{file_path:path}", name=name)
-    async def get_handler(file_path: PurePath) -> ASGIFileResponse:
+    async def get_handler(file_path: PurePath, request: Request) -> ASGIFileResponse:
         return await _handler(
             path=file_path.as_posix(),
             is_head_response=False,
             directories=resolved_directories,
-            adapter=adapter,
+            fs=file_system,
             is_html_mode=html_mode,
             send_as_attachment=send_as_attachment,
             headers=headers,
+            allow_symlinks_outside_directory=allow_symlinks_outside_directory,
+            request=request,
         )
 
     @head("/{file_path:path}", name=f"{name}/head")
-    async def head_handler(file_path: PurePath) -> ASGIFileResponse:
+    async def head_handler(file_path: PurePath, request: Request) -> ASGIFileResponse:
         return await _handler(
             path=file_path.as_posix(),
             is_head_response=True,
             directories=resolved_directories,
-            adapter=adapter,
+            fs=file_system,
             is_html_mode=html_mode,
             send_as_attachment=send_as_attachment,
             headers=headers,
+            allow_symlinks_outside_directory=allow_symlinks_outside_directory,
+            request=request,
         )
 
     handlers = [get_handler, head_handler]
@@ -127,15 +144,17 @@ def create_static_files_router(
     if html_mode:
 
         @get("/", name=f"{name}/index")
-        async def index_handler() -> ASGIFileResponse:
+        async def index_handler(request: Request) -> ASGIFileResponse:
             return await _handler(
                 path="/",
                 is_head_response=False,
                 directories=resolved_directories,
-                adapter=adapter,
+                fs=file_system,
                 is_html_mode=True,
                 send_as_attachment=send_as_attachment,
                 headers=headers,
+                allow_symlinks_outside_directory=allow_symlinks_outside_directory,
+                request=request,
             )
 
         handlers.append(index_handler)
@@ -161,16 +180,26 @@ async def _handler(
     *,
     path: str,
     is_head_response: bool,
-    directories: tuple[Path, ...],
+    directories: tuple[str, ...],
     send_as_attachment: bool,
-    adapter: FileSystemAdapter,
+    fs: BaseFileSystem | str | None,
     is_html_mode: bool,
     headers: dict[str, str] | None,
+    allow_symlinks_outside_directory: bool,
+    request: Request,
 ) -> ASGIFileResponse:
     split_path = path.split("/")
     filename = split_path[-1]
     joined_path = Path(*split_path)
-    resolved_path, fs_info = await _get_fs_info(directories=directories, file_path=joined_path, adapter=adapter)
+
+    fs = _get_file_system(fs, request)
+
+    resolved_path, fs_info = await _get_fs_info(
+        directories=directories,
+        file_path=joined_path,
+        fs=fs,
+        allow_symlinks_outside_directory=allow_symlinks_outside_directory,
+    )
     content_disposition_type: Literal["inline", "attachment"] = "attachment" if send_as_attachment else "inline"
 
     if is_html_mode and fs_info and fs_info["type"] == "directory":
@@ -178,14 +207,15 @@ async def _handler(
         resolved_path, fs_info = await _get_fs_info(
             directories=directories,
             file_path=Path(resolved_path or joined_path) / filename,
-            adapter=adapter,
+            fs=fs,
+            allow_symlinks_outside_directory=allow_symlinks_outside_directory,
         )
 
     if fs_info and fs_info["type"] == "file":
         return ASGIFileResponse(
             file_path=resolved_path or joined_path,
             file_info=fs_info,
-            file_system=adapter.file_system,
+            file_system=fs,
             filename=filename,
             content_disposition_type=content_disposition_type,
             is_head_response=is_head_response,
@@ -198,14 +228,15 @@ async def _handler(
         resolved_path, fs_info = await _get_fs_info(  # pragma: no cover
             directories=directories,
             file_path=filename,
-            adapter=adapter,
+            fs=fs,
+            allow_symlinks_outside_directory=allow_symlinks_outside_directory,
         )
 
         if fs_info and fs_info["type"] == "file":
             return ASGIFileResponse(
                 file_path=resolved_path or joined_path,
                 file_info=fs_info,
-                file_system=adapter.file_system,
+                file_system=fs,
                 filename=filename,
                 status_code=HTTP_404_NOT_FOUND,
                 content_disposition_type=content_disposition_type,
@@ -221,20 +252,45 @@ async def _handler(
 async def _get_fs_info(
     directories: Sequence[PathType],
     file_path: PathType,
-    adapter: FileSystemAdapter,
+    fs: BaseFileSystem | LinkableFileSystem,
+    allow_symlinks_outside_directory: bool,
 ) -> tuple[Path, FileInfo] | tuple[None, None]:
-    """Return the resolved path and a :class:`stat_result <os.stat_result>`"""
+    """Return the resolved path and a :class:`~litestar.file_system.FileInfo`"""
+
     for directory in directories:
         try:
             joined_path = Path(directory, file_path)
-            file_info = await adapter.info(joined_path)
-            normalized_file_path = os.path.normpath(joined_path)
+            file_info = await fs.info(joined_path)
+            if not file_info.get("is_symlink"):
+                # not a symlink, just normalize the path
+                normalized_file_path = os.path.normpath(joined_path)
+            elif allow_symlinks_outside_directory:
+                # we want to read 'through' a symlink. in both
+                # cases we can just get the normpath.
+                normalized_file_path = os.path.normpath(joined_path)
+            else:
+                # file *is* a symlink, *and* we do not want to read 'through' it, so ask
+                # the fs to resolve potential symlinks and return the real path to the
+                # file. this means that if our path is '/path/to/file' and a symlink
+                # pointing to '/some/other/location', the latter part will be used to
+                # check if we are allowed to serve this file. in this example, if the
+                # configured base directory is '/path/to', we would not serve the file
+                # located at '/path/to/file', since it links to '/some/other/location',
+                # which is *not* a subpath of '/path/to'
+                resolver = LinkableFileSystem.get_symlink_resolver(fs)
+                if resolver is None:
+                    raise TypeError(
+                        f"path {joined_path} contains a a symlink, but the file system "
+                        f"{fs} does not support resolving symlinks."
+                    )
+
+                normalized_file_path = await resolver(fs, joined_path)
+
             directory_path = str(directory)
             if (
                 file_info
                 and commonpath([directory_path, file_info["name"], joined_path]) == directory_path
                 and os.path.commonpath([directory, normalized_file_path]) == directory_path
-                and (file_info := await adapter.info(joined_path))
             ):
                 return joined_path, file_info
         except FileNotFoundError:
@@ -242,7 +298,7 @@ async def _get_fs_info(
     return None, None
 
 
-def _validate_config(path: str, directories: tuple[PathType, ...], file_system: Any) -> None:
+def _validate_config(path: str, directories: tuple[PathType, ...]) -> None:
     if not path:
         raise ImproperlyConfiguredException("path must be a non-zero length string")
 
@@ -252,5 +308,14 @@ def _validate_config(path: str, directories: tuple[PathType, ...], file_system: 
     if "{" in path:
         raise ImproperlyConfiguredException("path parameters are not supported for static files")
 
-    if not (callable(getattr(file_system, "info", None)) and callable(getattr(file_system, "open", None))):
-        raise ImproperlyConfiguredException("file_system must adhere to the FileSystemProtocol type")
+
+def _get_file_system(fs: BaseFileSystem | str | None, request: Request) -> BaseFileSystem:
+    if isinstance(fs, BaseFileSystem):
+        return fs
+
+    registry = request.app.plugins.get(FileSystemRegistry)
+
+    if isinstance(fs, str):
+        return registry[fs]
+
+    return registry.default

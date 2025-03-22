@@ -174,7 +174,7 @@ dev = [
   "litestar[full]",
   "beanie>=1.21.0",
   "beautifulsoup4",
-  "fsspec",
+  "fsspec>=2025",
   "greenlet",
   "hypothesis",
   "python-dotenv",
@@ -222,6 +222,7 @@ linting = [
   "types-psutil",
 ]
 test = [
+  "aiohttp>=3.11.14",
   "covdefaults",
   "pytest",
   "pytest-asyncio>0.24.0",
@@ -231,6 +232,8 @@ test = [
   "pytest-rerunfailures",
   "pytest-timeout",
   "pytest-xdist",
+#  "rangehttpserver>=1.4.0", # until https://github.com/danvk/RangeHTTPServer/pull/42 is merged
+  "rangehttpserver @ git+https://github.com/provinzkraut/RangeHTTPServer@fix-unclosed-resource",
   "time-machine",
 ]
 
@@ -467,6 +470,7 @@ lint.ignore = [
   "RUF012",  # Ruff-specific rule - annotated with classvar
   "ISC001",  # Ruff formatter incompatible
   "CPY001",  # ruff - copyright notice at the top of the file
+  "SIM108",  # Use ternary operator
 ]
 
 line-length = 120

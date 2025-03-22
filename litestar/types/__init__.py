@@ -74,7 +74,6 @@ from .composite_types import (
 )
 from .debugger_types import Debugger
 from .empty import Empty, EmptyType
-from .file_types import FileInfo, FileSystemProtocol
 from .helper_types import AnyIOBackend, MaybePartial, OptionalSequence, SSEData, StreamType, SyncOrAsyncUnion
 from .internal_types import ControllerRouterHandler, ReservedKwargs, RouteHandlerMapItem, RouteHandlerType
 from .protocols import DataclassProtocol, Logger
@@ -103,8 +102,6 @@ __all__ = (
     "EmptyType",
     "ExceptionHandler",
     "ExceptionHandlersMap",
-    "FileInfo",
-    "FileSystemProtocol",
     "GetLogger",
     "Guard",
     "HTTPDisconnectEvent",
