@@ -122,7 +122,6 @@ class HTTPRouteHandler(BaseRouteHandler):
         "response_description",
         "response_headers",
         "responses",
-        "security",
         "status_code",
         "summary",
         "tags",
@@ -171,6 +170,7 @@ class HTTPRouteHandler(BaseRouteHandler):
         responses: Mapping[int, ResponseSpec] | None = None,
         signature_namespace: Mapping[str, Any] | None = None,
         security: Sequence[SecurityRequirement] | None = None,
+        security_override: Sequence[SecurityRequirement] | None = None,
         summary: str | None = None,
         tags: Sequence[str] | None = None,
         type_decoders: TypeDecodersSequence | None = None,
@@ -248,7 +248,15 @@ class HTTPRouteHandler(BaseRouteHandler):
                 This list should describe all exceptions raised within the route handler's function/method. The Litestar
                 ValidationException will be added automatically for the schema if any validation is involved.
             response_description: Text used for the route's response schema description section.
-            security: A sequence of dictionaries that contain information about which security scheme can be used on the endpoint.
+            security: A sequence of security requirement dictionaries that contain information about which security
+                schemes should be used on the endpoint. Will be appended to existing security requirements.
+                It can be overridden by routes that specify the `security_override` parameter.
+                Cannot be passed together with the `security_override` parameter.
+                See :data:`SecurityRequirement <.openapi.spec.SecurityRequirement>` for details.
+            security_override: A sequence of dicts that will override the previous security requirements of the
+                previous layers. It can be overridden by child routes using specifying the `security_override` parameter.
+                Cannot be passed together with the `security` parameter.
+                See :data:`SecurityRequirement <.openapi.spec.SecurityRequirement>` for details.
             summary: Text used for the route's schema summary section.
             tags: A sequence of string tags that will be appended to the OpenAPI schema.
             type_decoders: A sequence of tuples, each composed of a predicate testing for type identity and a msgspec hook for deserialization.
@@ -258,6 +266,11 @@ class HTTPRouteHandler(BaseRouteHandler):
         """
         if not http_method:
             raise ImproperlyConfiguredException("An http_method kwarg is required")
+
+        if security and security_override:
+            raise ImproperlyConfiguredException(
+                "Both 'security' and 'security_override' cannot be specified simultaneously."
+            )
 
         self.http_methods = normalize_http_method(http_methods=http_method)
         self.status_code = status_code or get_default_status_code(http_methods=self.http_methods)
@@ -331,7 +344,8 @@ class HTTPRouteHandler(BaseRouteHandler):
         self.response_description = response_description
         self.summary = summary
         self.tags = frozenset(tags) if tags else frozenset()
-        self.security = tuple(security) if security else ()
+        self.security = None if security is None else tuple(security)
+        self.security_override = None if security_override is None else tuple(security_override)
         self.responses = responses
         # memoized attributes, defaulted to Empty
         self._kwargs_models: dict[tuple[str, ...], KwargsModel] = {}
@@ -372,7 +386,6 @@ class HTTPRouteHandler(BaseRouteHandler):
             merge_opts["etag"] = merge_opts.get("etag") or other.etag
             merge_opts["response_cookies"] = (*merge_opts.get("response_cookies", ()), *other.response_cookies)
             merge_opts["response_headers"] = (*other.response_headers, *merge_opts.get("response_headers", ()))
-            merge_opts["security"] = (*other.security, *merge_opts.get("security", ()))
             merge_opts["tags"] = (*other.tags, *merge_opts.get("tags", ()))
 
             # these are all properties which return a safe default if the corresponding
@@ -505,15 +518,17 @@ class HTTPRouteHandler(BaseRouteHandler):
         return self._include_in_schema if self._include_in_schema is not Empty else True
 
     @litestar_deprecated("3.0", removal_in="4.0", alternative=".security attribute")
-    def resolve_security(self) -> tuple[SecurityRequirement, ...]:
+    def resolve_security(self) -> Sequence[SecurityRequirement] | None:
         """Resolve the security property by starting from the route handler and moving up.
 
-        Security requirements are additive, so the security requirements of the route handler are the sum of all
-        security requirements of the ownership layers.
+        Security requirements provided via the `security` parameter across the routing layers are
+        additive, but with `security_override` they are overridden with the latest value in the most
+        specific layer.
 
         Returns:
             list[SecurityRequirement]: The resolved security property.
         """
+
         return self.security
 
     @litestar_deprecated("3.0", removal_in="4.0", alternative=".tags attribute")
