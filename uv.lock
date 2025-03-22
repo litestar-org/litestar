@@ -1598,7 +1598,6 @@ dependencies = [
     { name = "msgspec" },
     { name = "multidict" },
     { name = "multipart" },
-    { name = "pyyaml" },
     { name = "rich" },
     { name = "rich-click" },
     { name = "typing-extensions" },
@@ -1643,6 +1642,7 @@ full = [
     { name = "pydantic" },
     { name = "pydantic-extra-types" },
     { name = "pyjwt" },
+    { name = "pyyaml" },
     { name = "redis", extra = ["hiredis"] },
     { name = "structlog" },
     { name = "uvicorn", extra = ["standard"] },
@@ -1703,6 +1703,9 @@ structlog = [
 ]
 valkey = [
     { name = "valkey", extra = ["libvalkey"] },
+]
+yaml = [
+    { name = "pyyaml" },
 ]
 
 [package.dev-dependencies]
@@ -1787,8 +1790,8 @@ requires-dist = [
     { name = "jinja2", marker = "extra == 'standard'" },
     { name = "jsbeautifier", marker = "extra == 'cli'" },
     { name = "jsbeautifier", marker = "extra == 'standard'" },
-    { name = "litestar", extras = ["annotated-types", "attrs", "brotli", "cli", "cryptography", "jinja", "jwt", "mako", "minijinja", "opentelemetry", "piccolo", "polyfactory", "picologging", "prometheus", "pydantic", "redis", "sqlalchemy", "standard", "structlog", "valkey", "htmx"], marker = "python_full_version < '3.13' and extra == 'full'" },
-    { name = "litestar", extras = ["annotated-types", "attrs", "brotli", "cli", "cryptography", "jinja", "jwt", "mako", "minijinja", "opentelemetry", "piccolo", "polyfactory", "prometheus", "pydantic", "redis", "sqlalchemy", "standard", "structlog", "valkey", "htmx"], marker = "python_full_version >= '3.13' and extra == 'full'" },
+    { name = "litestar", extras = ["annotated-types", "attrs", "brotli", "cli", "cryptography", "jinja", "jwt", "mako", "minijinja", "opentelemetry", "piccolo", "polyfactory", "picologging", "prometheus", "pydantic", "redis", "sqlalchemy", "standard", "structlog", "valkey", "htmx", "yaml"], marker = "python_full_version < '3.13' and extra == 'full'" },
+    { name = "litestar", extras = ["annotated-types", "attrs", "brotli", "cli", "cryptography", "jinja", "jwt", "mako", "minijinja", "opentelemetry", "piccolo", "polyfactory", "prometheus", "pydantic", "redis", "sqlalchemy", "standard", "structlog", "valkey", "htmx", "yaml"], marker = "python_full_version >= '3.13' and extra == 'full'" },
     { name = "litestar-htmx", marker = "extra == 'htmx'", specifier = ">=0.4.0" },
     { name = "mako", marker = "extra == 'mako'", specifier = ">=1.2.4" },
     { name = "minijinja", marker = "extra == 'minijinja'", specifier = ">=1.0.0" },
@@ -1803,7 +1806,7 @@ requires-dist = [
     { name = "pydantic", marker = "extra == 'pydantic'" },
     { name = "pydantic-extra-types", marker = "extra == 'pydantic'" },
     { name = "pyjwt", marker = "extra == 'jwt'", specifier = ">=2.9.0" },
-    { name = "pyyaml" },
+    { name = "pyyaml", marker = "extra == 'yaml'" },
     { name = "redis", extras = ["hiredis"], marker = "extra == 'redis'", specifier = ">=4.4.4" },
     { name = "rich", specifier = ">=13.0.0" },
     { name = "rich-click" },
@@ -1815,7 +1818,7 @@ requires-dist = [
     { name = "uvloop", marker = "sys_platform != 'win32' and extra == 'standard'", specifier = ">=0.18.0" },
     { name = "valkey", extras = ["libvalkey"], marker = "extra == 'valkey'", specifier = ">=6.0.2" },
 ]
-provides-extras = ["annotated-types", "attrs", "brotli", "cli", "cryptography", "full", "jinja", "jwt", "mako", "minijinja", "opentelemetry", "piccolo", "picologging", "prometheus", "pydantic", "redis", "sqlalchemy", "standard", "structlog", "valkey", "polyfactory", "htmx"]
+provides-extras = ["annotated-types", "attrs", "brotli", "cli", "cryptography", "full", "jinja", "jwt", "mako", "minijinja", "opentelemetry", "piccolo", "picologging", "prometheus", "pydantic", "redis", "sqlalchemy", "standard", "structlog", "valkey", "polyfactory", "htmx", "yaml"]
 
 [package.metadata.requires-dev]
 dev = [

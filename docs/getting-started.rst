@@ -68,6 +68,9 @@ Installation
     :doc:`HTMX plugin </usage/htmx>`
         :code:`pip install litestar[htmx]`
 
+    :ref:`OpenAPI YAML rendering <usage/openapi/ui_plugins:Using OpenAPI UI Plugins>`
+      :code:`pip install litestar[yaml]`
+
     Standard Installation (includes Uvicorn and Jinja2 templating):
         :code:`pip install litestar[standard]`
 
