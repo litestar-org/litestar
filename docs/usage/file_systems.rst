@@ -22,9 +22,9 @@ Supported file systems
 
 In addition to file systems implemented on top of
 :class:`~litestar.file_system.BaseFileSystem`, all ``fsspec`` file systems, synchronous
-and asynchronous, as supported. They will be wrapped in
+and asynchronous, are supported. They will be wrapped in
 :class:`~litestar.file_system.FsspecSyncWrapper` or
-:class:`~litestar.file_system.FsspecAsyncWrapper` respective to conform to a common
+:class:`~litestar.file_system.FsspecAsyncWrapper` respectively to conform to a common
 interface.
 
 
@@ -34,7 +34,7 @@ fsspec
 Everywhere :class:`~litestar.file_system.BaseFileSystem` is accepted, ``fsspec``
 file systems are usually accepted as well.
 
-It can still make sense to set them up in the `Registry` instead or wrap them manually
+It can still make sense to set them up in the `Registry` instead, or wrap them manually
 with :func:`~litestar.file_system.maybe_wrap_fsspec_file_system` once and use that
 wrapper, so they don't have to be wrapped again for every usage:
 
@@ -86,7 +86,7 @@ can be used to register file systems under a name by which they can be reference
 
 
 :class:`~litestar.file_system.FileSystemRegistry` is implemented as a plugin which is
-set up automatically unless an instance of it is passed to the application
+automatically set up unless an instance of it is passed to the application
 explicitly.
 
 If needed, the registry can be accessed like any other plugin:
