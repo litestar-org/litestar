@@ -37,7 +37,6 @@ dependencies = [
   "importlib-metadata; python_version < \"3.10\"",
   "msgspec>=0.19.0",
   "multidict>=6.0.2",
-  "pyyaml",
   "typing-extensions",
   "click",
   "rich>=13.0.0",
@@ -83,8 +82,53 @@ brotli = ["brotli"]
 cli = ["jsbeautifier", "uvicorn[standard]", "uvloop>=0.18.0; sys_platform != 'win32'"]
 cryptography = ["cryptography"]
 full = [
-  "litestar[annotated-types,attrs,brotli,cli,cryptography,jinja,jwt,mako,minijinja,opentelemetry,piccolo,polyfactory,picologging,prometheus,pydantic,redis,sqlalchemy,standard,structlog,valkey,htmx]; python_version < \"3.13\"",
-  "litestar[annotated-types,attrs,brotli,cli,cryptography,jinja,jwt,mako,minijinja,opentelemetry,piccolo,polyfactory,prometheus,pydantic,redis,sqlalchemy,standard,structlog,valkey,htmx]; python_version >= \"3.13\"",
+  """litestar[annotated-types, \
+    attrs, \
+    brotli, \
+    cli, \
+    cryptography, \
+    jinja, \
+    jwt, \
+    mako, \
+    minijinja, \
+    opentelemetry, \
+    piccolo, \
+    polyfactory, \
+    picologging, \
+    prometheus, \
+    pydantic, \
+    redis, \
+    sqlalchemy, \
+    standard, \
+    structlog, \
+    valkey, \
+    htmx, \
+    yaml]; \
+    python_version < \"3.13\"""",
+
+  # full extra without picologging
+  """litestar[annotated-types, \
+    attrs, \
+    brotli, \
+    cli, \
+    cryptography, \
+    jinja, \
+    jwt, \
+    mako, \
+    minijinja, \
+    opentelemetry, \
+    piccolo, \
+    polyfactory, \
+    prometheus, \
+    pydantic, \
+    redis, \
+    sqlalchemy, \
+    standard, \
+    structlog, \
+    valkey, \
+    htmx, \
+    yaml]; \
+    python_version >= \"3.13\"""",
 ]
 jinja = ["jinja2>=3.1.2"]
 jwt = ["cryptography", "pyjwt>=2.9.0"]
@@ -112,6 +156,7 @@ structlog = ["structlog"]
 valkey = ["valkey[libvalkey]>=6.0.2"]
 polyfactory = ["polyfactory>=2.6.3"]
 htmx = ["litestar-htmx>=0.4.0"]
+yaml = ["pyyaml"]
 
 [project.scripts]
 litestar = "litestar.__main__:run_cli"
