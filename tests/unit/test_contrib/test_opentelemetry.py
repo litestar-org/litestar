@@ -271,3 +271,11 @@ def test_open_telemetry_middleware_handles_errors_caused_on_middleware(
             "http.route": "GET /",
             "http.status_code": 401,
         }
+
+
+def test_raise_deprecation_warning(config: OpenTelemetryConfig) -> None:
+    with pytest.warns(
+        DeprecationWarning, match="Configure your OpenTelemetryInstrumentMiddleware using OpenTelemetryPlugin instead"
+    ):
+        with create_test_client(middleware=[config.middleware]) as _:
+            pass
