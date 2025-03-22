@@ -6,7 +6,7 @@ import secrets
 from collections.abc import AsyncGenerator
 from datetime import datetime, timezone
 from email.utils import formatdate
-from os import stat, urandom
+from os import urandom
 from pathlib import Path
 from typing import Any
 
@@ -302,24 +302,6 @@ def test_file_with_passed_in_file_info(tmpdir: Path) -> None:
     with create_test_client(handler) as client:
         response = client.get("/")
         assert response.status_code == HTTP_200_OK, response.text
-        assert response.text == "content"
-        assert response.headers.get("content-disposition") == 'attachment; filename="text.txt"'
-
-
-def test_file_with_passed_in_stat_result(tmpdir: Path) -> None:
-    path = tmpdir / "text.txt"
-    path.write_text("content", "utf-8")
-
-    fs = LocalFileSystem()
-    stat_result = stat(path)
-
-    @get("/", media_type="application/octet-stream")
-    def handler() -> File:
-        return File(filename="text.txt", path=path, file_system=fs, file_info=stat_result)  # pyright: ignore
-
-    with create_test_client(handler) as client:
-        response = client.get("/")
-        assert response.status_code == HTTP_200_OK
         assert response.text == "content"
         assert response.headers.get("content-disposition") == 'attachment; filename="text.txt"'
 

@@ -1,10 +1,9 @@
 from __future__ import annotations
 
-import functools
 import os
 from os.path import commonpath
 from pathlib import Path, PurePath
-from typing import TYPE_CHECKING, Any, Literal, cast
+from typing import TYPE_CHECKING, Any, Literal
 
 from litestar.exceptions import ImproperlyConfiguredException, NotFoundException
 from litestar.file_system import (
@@ -61,7 +60,7 @@ def create_static_files_router(
     security: Sequence[SecurityRequirement] | None = None,
     tags: Sequence[str] | None = None,
     router_class: type[Router] = Router,
-    allow_symlinks_outside_directory: bool | None = None,
+    allow_symlinks_outside_directory: bool = False,
 ) -> Router:
     """Create a router with handlers to serve static files.
 
@@ -93,15 +92,15 @@ def create_static_files_router(
         allow_symlinks_outside_directory: Allow serving files that link a path inside a
             base directory (as specified in 'directories') to a path outside it. This
             should be handled with caution, as it allows potentially unintended access
-            to files outside the defined 'directories' via symlink chains. For
-            'file_system's that do not support symlinking (i.e. do not inherit from
-            'LinkableFileSystem'), raise a :exc:`TypeError` when given a value other
-            than ``None``. For file systems that support symlinks, default to ``False``
+            to files outside the defined 'directories' via symlink chains.
+
+            .. seealso::
+
+                :ref:`usage/static-files:Handling symlinks`
     """
 
     if file_system is not None:
         file_system = maybe_wrap_fsspec_file_system(file_system)
-        _validate_allow_symlinks_outside_directory(file_system, allow_symlinks_outside_directory)
 
     resolved_directories = tuple(os.path.normpath(Path(p).absolute()) for p in directories)
 
@@ -186,7 +185,7 @@ async def _handler(
     fs: BaseFileSystem | str | None,
     is_html_mode: bool,
     headers: dict[str, str] | None,
-    allow_symlinks_outside_directory: bool | None,
+    allow_symlinks_outside_directory: bool,
     request: Request,
 ) -> ASGIFileResponse:
     split_path = path.split("/")
@@ -250,57 +249,42 @@ async def _handler(
     )  # pragma: no cover
 
 
-@functools.cache
-def _validate_allow_symlinks_outside_directory(
-    fs: BaseFileSystem,
-    allow_symlinks_outside_directory: bool | None,
-) -> bool:
-    is_linkable_fs = isinstance(fs, LinkableFileSystem)
-    if is_linkable_fs:
-        if allow_symlinks_outside_directory is None:
-            return False
-        return allow_symlinks_outside_directory
-
-    # not a linkable fs, so 'allow' following symlinks blindly, i.e. do not attempt to
-    # resolve symlinks
-    if allow_symlinks_outside_directory is None:
-        return True
-
-    raise TypeError(
-        "'allow_symlinks_outside_directory' not supported for file system "
-        f"{type(fs)!r}. This option can only be used with a file system that supports "
-        "symlinks. For a file system to support symlinks, it must implement '"
-        "LinkableFileSystem'"
-    )
-
-
 async def _get_fs_info(
     directories: Sequence[PathType],
     file_path: PathType,
     fs: BaseFileSystem | LinkableFileSystem,
-    allow_symlinks_outside_directory: bool | None,
+    allow_symlinks_outside_directory: bool,
 ) -> tuple[Path, FileInfo] | tuple[None, None]:
-    """Return the resolved path and a :class:`stat_result <os.stat_result>`"""
-    allow_symlinks_outside_directory = _validate_allow_symlinks_outside_directory(fs, allow_symlinks_outside_directory)
+    """Return the resolved path and a :class:`~litestar.file_system.FileInfo`"""
 
     for directory in directories:
         try:
             joined_path = Path(directory, file_path)
             file_info = await fs.info(joined_path)
-            if allow_symlinks_outside_directory:
-                # we want to read 'through' a symlink, so just get the normpath.
-                # this flag may also be set if the file system has no notion of symlinks
+            if not file_info.get("is_symlink"):
+                # not a symlink, just normalize the path
+                normalized_file_path = os.path.normpath(joined_path)
+            elif allow_symlinks_outside_directory:
+                # we want to read 'through' a symlink. in both
+                # cases we can just get the normpath.
                 normalized_file_path = os.path.normpath(joined_path)
             else:
-                # we do not want to read 'through' a symlink, so ask the fs to resolve
-                # potential symlinks and return the real path to the file.
-                # this means that if our path is '/path/to/file' and a symlink pointing
-                # to '/some/other/location', the latter part will be used to check if
-                # we are allowed to serve this file.
-                # in this example, if the configured base directory is '/path/to', we
-                # would not serve the file located at '/path/to/file', since it links to
-                # '/some/other/location', which is *not* a subpath of '/path/to'
-                normalized_file_path = await cast("LinkableFileSystem", fs).resolve_symlinks(joined_path)
+                # file *is* a symlink, *and* we do not want to read 'through' it, so ask
+                # the fs to resolve potential symlinks and return the real path to the
+                # file. this means that if our path is '/path/to/file' and a symlink
+                # pointing to '/some/other/location', the latter part will be used to
+                # check if we are allowed to serve this file. in this example, if the
+                # configured base directory is '/path/to', we would not serve the file
+                # located at '/path/to/file', since it links to '/some/other/location',
+                # which is *not* a subpath of '/path/to'
+                resolver = LinkableFileSystem.get_symlink_resolver(fs)
+                if resolver is None:
+                    raise TypeError(
+                        f"path {joined_path} contains a a symlink, but the file system "
+                        f"{fs} does not support resolving symlinks."
+                    )
+
+                normalized_file_path = await resolver(fs, joined_path)
 
             directory_path = str(directory)
             if (

@@ -6,8 +6,8 @@ import os
 import os.path
 import pathlib
 from datetime import datetime
-from stat import S_ISDIR, S_ISLNK
-from typing import TYPE_CHECKING, Any, Final, Union, cast
+from stat import S_ISDIR
+from typing import TYPE_CHECKING, Any, Callable, ClassVar, Final, Union, cast
 
 import anyio
 from typing_extensions import NotRequired, TypeAlias, TypedDict
@@ -26,12 +26,10 @@ __all__ = (
     "LinkableFileSystem",
     "get_fsspec_mtime_equivalent",
     "maybe_wrap_fsspec_file_system",
-    "parse_stat_result",
 )
 
-
 if TYPE_CHECKING:
-    from collections.abc import AsyncGenerator, Mapping
+    from collections.abc import AsyncGenerator, Awaitable, Mapping
 
     from fsspec import AbstractFileSystem as FsspecFileSystem
     from fsspec.asyn import AsyncFileSystem as FsspecAsyncFileSystem
@@ -40,16 +38,14 @@ if TYPE_CHECKING:
 
 
 AnyFileSystem: TypeAlias = "Union[BaseFileSystem, FsspecFileSystem, FsspecAsyncFileSystem]"
+SymlinkResolver: TypeAlias = "Callable[[AnyFileSystem, PathType], Awaitable[str]]"
 
 
 class FileInfo(TypedDict):
     """File information gathered from a file system."""
 
-    is_symlink: NotRequired[bool] | None
-    """
-    'True' if the file is a symbolic link. 'None' if the file system does not support 
-    symlinks
-    """
+    is_symlink: NotRequired[bool | None]
+    """'True' if the file is a symbolic link. 'None' if the file system does not support symlinks"""
     mtime: NotRequired[float]
     """Modified time stamp."""
     name: str
@@ -101,18 +97,79 @@ class BaseFileSystem(abc.ABC):
 class LinkableFileSystem(BaseFileSystem, abc.ABC):
     """A file system that supports symlinks"""
 
+    _registry: ClassVar[dict[type[AnyFileSystem], SymlinkResolver]] = {}
+
     @abc.abstractmethod
     async def resolve_symlinks(self, path: PathType) -> str:
         """Return ``path`` with all symlinks resolved"""
+
+    @classmethod
+    def register_as_linkable(cls, fs_type: type[AnyFileSystem], resolver: SymlinkResolver) -> None:
+        """Register a file system as 'linkable', i.e. supporting symlinks,
+        that does not itself implement :class:`~litestar.file_system.LinkableFileSystem`.
+
+        By default, :class:`fsspec.implementations.local.LocalFileSystem` is registered.
+
+        Args:
+            fs_type: The file system type
+            resolver: A function that takes in a path and returns an absolute path
+                with all symlinks resolved
+
+        """
+        cls._registry[fs_type] = resolver
+
+    @classmethod
+    def get_symlink_resolver(cls, fs: AnyFileSystem) -> SymlinkResolver | None:
+        """For a given file system, get a function to resolve potential symlinks in a path.
+
+        For classes implementing :class:`~litestar.file_system.LinkableFileSystem`,
+        their :meth:`~litestar.file_system.LinkableFileSystem.resolve_symlinks` is
+        returned. Otherwise, the ``resolver`` registered via
+        :class:`~litestar.file_system.LinkableFileSystem.register_as_linkable` will be
+        returned.
+        """
+        if isinstance(fs, LinkableFileSystem):
+            return type(fs).resolve_symlinks  # type: ignore[return-value]
+
+        if isinstance(fs, (FsspecAsyncWrapper, FsspecSyncWrapper)):
+            fs = fs.wrapped_fs
+
+        for fs_type, resolver in cls._registry.items():
+            if isinstance(fs, fs_type):
+                return resolver
+
+        return None
+
+
+try:
+    from fsspec.implementations.local import LocalFileSystem as FsspecLocalFileSystem
+
+    async def _resolve_symlink_fsspec_local(fs: AnyFileSystem, path: PathType) -> str:
+        return os.path.realpath(path)
+
+    LinkableFileSystem.register_as_linkable(FsspecLocalFileSystem, _resolve_symlink_fsspec_local)
+except ImportError:
+    pass
 
 
 class BaseLocalFileSystem(LinkableFileSystem):
     """Base class for a local file system."""
 
+    def _info(self, path: PathType) -> FileInfo:
+        """Return a :class:`~litestar.file_system.FileInfo` for the given ``path``"""
+        path = pathlib.Path(path)
+        result = path.stat()
+        return {
+            "is_symlink": path.is_symlink(),
+            "mtime": result.st_mtime,
+            "name": str(path),
+            "size": result.st_size,
+            "type": "directory" if S_ISDIR(result.st_mode) else "file",
+        }
+
     async def info(self, path: PathType, **kwargs: Any) -> FileInfo:
         """Return a :class:`~litestar.file_system.FileInfo` for the given ``path``"""
-        result = await sync_to_thread(pathlib.Path(path).stat)
-        return parse_stat_result(path=path, result=result)
+        return await sync_to_thread(self._info, path)
 
     async def read_bytes(
         self,
@@ -188,7 +245,7 @@ class FsspecSyncWrapper(BaseFileSystem):
         """Wrap a :class:`fsspec.spec.AbstractFileSystem` to provide a
         :class:`litestar.file_system.BaseFileSystem` compatible interface
         """
-        self._fs = fs
+        self.wrapped_fs = fs
 
     async def info(self, path: PathType, **kwargs: Any) -> FileInfo:
         """Return a :class:`~litestar.file_system.FileInfo` for the given ``path``.
@@ -196,7 +253,7 @@ class FsspecSyncWrapper(BaseFileSystem):
         Return info verbatim from :meth:`fsspec.spec.AbstractFileSystem.info`, but try to
         patch 'mtime' using :func:`litestar.file_system.get_fsspec_mtime_equivalent`.
         """
-        result: dict[str, Any] = await sync_to_thread(self._fs.info, str(path), **kwargs)
+        result: dict[str, Any] = await sync_to_thread(self.wrapped_fs.info, str(path), **kwargs)
         result["mtime"] = get_fsspec_mtime_equivalent(result)
         result.setdefault("is_symlink", result.get("islink"))
         return cast("FileInfo", result)
@@ -215,7 +272,7 @@ class FsspecSyncWrapper(BaseFileSystem):
             end: Offset to stop reading at (inclusive)
         """
         return await sync_to_thread(
-            self._fs.cat_file,  # pyright: ignore
+            self.wrapped_fs.cat_file,  # pyright: ignore
             str(path),
             start=start or None,
             end=end if end != -1 else None,
@@ -237,7 +294,7 @@ class FsspecSyncWrapper(BaseFileSystem):
             end: Offset to stop reading at (inclusive)
         """
 
-        fh = cast(io.BytesIO, await sync_to_thread(self._fs.open, str(path), mode="rb"))
+        fh = cast(io.BytesIO, await sync_to_thread(self.wrapped_fs.open, str(path), mode="rb"))
         try:
             if start != 0:
                 await sync_to_thread(fh.seek, start)
@@ -272,7 +329,7 @@ class FsspecAsyncWrapper(BaseFileSystem):
         """
         import fsspec.asyn
 
-        self._fs = fs
+        self.wrapped_fs = fs
         # 'open_async' may not be implemented
         self._supports_open_async = type(fs).open_async is not fsspec.asyn.AsyncFileSystem.open_async
 
@@ -282,7 +339,7 @@ class FsspecAsyncWrapper(BaseFileSystem):
         Return info verbatim from ``fsspec.async.AsyncFileSystem._info``, but try
         to patch 'mtime' using :func:`litestar.file_system.get_fsspec_mtime_equivalent`.
         """
-        result: dict[str, Any] = await self._fs._info(str(path), **kwargs)
+        result: dict[str, Any] = await self.wrapped_fs._info(str(path), **kwargs)
         result["mtime"] = get_fsspec_mtime_equivalent(result)
         result.setdefault("is_symlink", result.get("islink"))
         return cast("FileInfo", result)
@@ -302,7 +359,7 @@ class FsspecAsyncWrapper(BaseFileSystem):
         """
         return cast(
             bytes,
-            await self._fs._cat_file(
+            await self.wrapped_fs._cat_file(
                 str(path),
                 start=start or None,
                 end=end if end != -1 else None,
@@ -328,7 +385,7 @@ class FsspecAsyncWrapper(BaseFileSystem):
         # if we want to stream the whole thing we can use '.open_async' if it's
         # implemented
         if start == 0 and end == -1 and self._supports_open_async:
-            async with await self._fs.open_async(path, mode="rb") as fh:  # pyright: ignore
+            async with await self.wrapped_fs.open_async(path, mode="rb") as fh:  # pyright: ignore
                 while chunk := await fh.read(chunksize):
                     yield chunk
             return
@@ -355,25 +412,6 @@ class FsspecAsyncWrapper(BaseFileSystem):
             current_pos += len(chunk)
 
             yield chunk
-
-
-def parse_stat_result(path: PathType, result: os.stat_result) -> FileInfo:
-    """Convert a ``stat_result`` instance into a ``FileInfo``.
-
-    Args:
-        path: The file path for which the :class:`~os.stat_result` is provided
-        result: The :class:`~os.stat_result` instance
-
-    Returns:
-        A dictionary of file info.
-    """
-    return {
-        "is_symlink": S_ISLNK(result.st_mode),
-        "mtime": result.st_mtime,
-        "name": str(path),
-        "size": result.st_size,
-        "type": "directory" if S_ISDIR(result.st_mode) else "file",
-    }
 
 
 def maybe_wrap_fsspec_file_system(file_system: AnyFileSystem) -> BaseFileSystem:

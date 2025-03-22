@@ -3,7 +3,6 @@ from __future__ import annotations
 import itertools
 from email.utils import formatdate
 from mimetypes import encodings_map, guess_type
-from os import stat_result as stat_result_type
 from typing import TYPE_CHECKING, Literal
 from urllib.parse import quote
 from zlib import adler32
@@ -14,7 +13,6 @@ from litestar.file_system import (
     BaseFileSystem,
     FileSystemRegistry,
     maybe_wrap_fsspec_file_system,
-    parse_stat_result,
 )
 from litestar.response.base import Response
 from litestar.response.streaming import ASGIStreamingResponse
@@ -84,7 +82,7 @@ class ASGIFileResponse(ASGIStreamingResponse):
         encoded_headers: Iterable[tuple[bytes, bytes]] | None = None,
         encoding: str = "utf-8",
         etag: ETag | None = None,
-        file_info: FileInfo | stat_result_type | None = None,
+        file_info: FileInfo | None = None,
         file_path: str | PathLike | Path,
         file_system: BaseFileSystem,
         filename: str = "",
@@ -186,8 +184,6 @@ class ASGIFileResponse(ASGIStreamingResponse):
         try:
             if self.file_info is None:
                 file_info = await self._file_system.info(self.file_path)
-            elif isinstance(self.file_info, stat_result_type):
-                file_info = parse_stat_result(self.file_path, self.file_info)
             else:
                 file_info = self.file_info
         except FileNotFoundError as e:
@@ -230,7 +226,6 @@ class File(Response):
         "file_path",
         "file_system",
         "filename",
-        "stat_result",
     )
 
     def __init__(
@@ -243,7 +238,7 @@ class File(Response):
         cookies: ResponseCookies | None = None,
         encoding: str = "utf-8",
         etag: ETag | None = None,
-        file_info: FileInfo | stat_result_type | None = None,
+        file_info: FileInfo | None = None,
         file_system: str | BaseFileSystem | AbstractFileSystem | AbstractAsyncFileSystem | None = None,
         filename: str | None = None,
         headers: ResponseHeaders | None = None,
@@ -264,8 +259,7 @@ class File(Response):
             encoding: The encoding to be used for the response headers.
             etag: An optional :class:`ETag <.datastructures.ETag>` instance. If not provided, an etag will be
                 generated.
-            file_info: The output of calling :meth:`file_system.info <litestar.file_system.BaseFileSystem.info>`,
-                equivalent to providing an :class:`os.stat_result`.
+            file_info: The output of calling :meth:`file_system.info <litestar.file_system.BaseFileSystem.info>`
             file_system: The file system to load the file from. Instances of
                 :class:`~litestar.file_system.BaseFileSystem`, :class:`fsspec.spec.AbstractFileSystem`,
                 :class:`fsspec.asyn.AsyncFileSystem` will be used directly. If passed string, use it to look up the

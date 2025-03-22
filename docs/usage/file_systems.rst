@@ -69,6 +69,26 @@ wrapper, so they don't have to be wrapped again for every usage:
 
 
 
+Adapting file systems that support symlinks
++++++++++++++++++++++++++++++++++++++++++++
+
+Handling symlinks can be tricky. To ensure Litestar always does the right thing,
+existing file systems that do support symlinks can be registered as "linkable" without
+having to implement :class:`~litestar.file_system.LinkableFileSystem`.
+
+To register a file system as linkable,
+:meth:`~litestar.file_system.LinkableFileSystem.register_as_linkable` can be used to
+register a type and a function to resolve symlinks on this file system.
+
+.. literalinclude:: /examples/file_systems/register_linkable.py
+    :language: python
+
+.. tip::
+
+    By default, :class:`fsspec.implementations.local.LocalFileSystem` is already
+    registered as a linkable file system
+
+
 Registry
 --------
 

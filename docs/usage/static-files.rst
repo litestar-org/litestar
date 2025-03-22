@@ -158,3 +158,7 @@ file system's symlink capabilities:
   This means that, unless explicitly enabled, symlinks will be restricted to paths
   inside the defined base directories.
 
+
+.. seealso::
+
+    :ref:`usage/file_systems:Adapting file systems that support symlinks`
