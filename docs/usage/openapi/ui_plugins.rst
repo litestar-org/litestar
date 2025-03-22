@@ -63,11 +63,17 @@ Using OpenAPI UI Plugins is as simple as importing the plugin, instantiating it,
         .. literalinclude:: /examples/openapi/plugins/yaml_simple.py
             :language: python
 
+        .. tip::
+            Rendering YAML requires the
+            `PyYAML <https://pyyaml.org/wiki/PyYAMLDocumentation>`_ library, which can
+            be installed via the ``litestar[yaml]`` package extra
+
     .. tab-item:: multiple
 
         .. literalinclude:: /examples/openapi/plugins/serving_multiple_uis.py
             :caption: Any combination of UIs can be served.
             :language: python
+
 
 Configuring OpenAPI UI Plugins
 ------------------------------
