@@ -289,3 +289,10 @@ This does not change any behaviour, as this parameter was previously ignored.
 The `polyfactory <https://polyfactory.litestar.dev/>`_ library is not included by
 default anymore, and has been moved to the ``litestar[polyfactory]`` package extra. It
 is also included in ``litestar[full]``.
+
+
+``litestar-htmx`` package removed from default dependencies
+-----------------------------------------------------------
+
+The `litestar-htmx <https://github.com/litestar-org/litestar-htmx/>`_ package powering
+the :doc:`HTMX plugin </usage/htmx>` has been moved to the ``litestar[htmx]`` extra.
