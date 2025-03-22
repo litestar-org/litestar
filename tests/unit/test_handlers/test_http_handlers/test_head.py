@@ -5,6 +5,7 @@ import pytest
 
 from litestar import Litestar, Response, head
 from litestar.exceptions import ImproperlyConfiguredException
+from litestar.file_system import BaseLocalFileSystem
 from litestar.response.file import ASGIFileResponse, File
 from litestar.routes import HTTPRoute
 from litestar.status_codes import HTTP_200_OK
@@ -62,6 +63,6 @@ def test_head_decorator_does_not_raise_for_file_response() -> None:
 def test_head_decorator_does_not_raise_for_asgi_file_response() -> None:
     @head("/")
     def handler() -> ASGIFileResponse:
-        return ASGIFileResponse(file_path=Path("test_head.py"))
+        return ASGIFileResponse(file_path=Path("test_head.py"), file_system=BaseLocalFileSystem())
 
     Litestar(route_handlers=[handler])
