@@ -303,7 +303,7 @@ or read more about it [here](https://docs.litestar.dev/latest/benchmarks) in our
 
 ## Contributing
 
-Litestar is open to contributions big and small. You can always [join our discord](https://discord.gg/X3FJqy8d2j) server
+Litestar is open to contributions big and small. You can always [join our discord](https://discord.gg/litestar) server
 or [join our Matrix](https://matrix.to/#/#litestar:matrix.org) space
 to discuss contributions and project maintenance. For guidelines on how to contribute, please
 see [the contribution guide](CONTRIBUTING.rst).
