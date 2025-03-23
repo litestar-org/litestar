@@ -22,7 +22,6 @@ __all__ = (
 
 
 if TYPE_CHECKING:
-    from collections.abc import Sequence
 
     from litestar.middleware import AuthenticationResult
     from litestar.types import ASGIApp, Method, Receive, Scope, Scopes, Send
@@ -264,7 +263,7 @@ class ASGIAuthenticationMiddleware(ASGIMiddleware):
     """
 
     exclude_opt_key = "exclude_from_auth"
-    exclude_http_methods: Sequence[Method] = (HttpMethod.OPTIONS,)
+    exclude_http_methods: tuple[Method, ...] = (HttpMethod.OPTIONS,)
 
     async def handle(self, scope: Scope, receive: Receive, send: Send, next_app: ASGIApp) -> None:
         """Create the actual middleware callable"""

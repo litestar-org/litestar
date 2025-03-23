@@ -36,7 +36,7 @@ class JWTAuthenticationMiddleware(ASGIAuthenticationMiddleware):
         self.jwt_auth = jwt_auth
         self.exclude_path_pattern = self.jwt_auth.exclude
         self.exclude_opt_key = self.jwt_auth.exclude_opt_key
-        self.exclude_http_methods = self.jwt_auth.exclude_http_methods or []
+        self.exclude_http_methods = tuple(self.jwt_auth.exclude_http_methods or ())
 
     async def authenticate_request(self, connection: ASGIConnection[Any, Any, Any, Any]) -> AuthenticationResult:
         """Given an HTTP Connection, parse the JWT api key stored in the header and retrieve the user correlating to the
@@ -122,7 +122,7 @@ class JWTCookieAuthenticationMiddleware(JWTAuthenticationMiddleware):
         self.auth_cookie_key = jwt_cookie_auth.key
         self.exclude_path_pattern = self.jwt_auth.exclude
         self.exclude_opt_key = self.jwt_auth.exclude_opt_key
-        self.exclude_http_methods = self.jwt_auth.exclude_http_methods or []
+        self.exclude_http_methods = tuple(self.jwt_auth.exclude_http_methods or ())
 
     async def authenticate_request(self, connection: ASGIConnection[Any, Any, Any, Any]) -> AuthenticationResult:
         """Given an HTTP Connection, parse the JWT api key stored in the header and retrieve the user correlating to the

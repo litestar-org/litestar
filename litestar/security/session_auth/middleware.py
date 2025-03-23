@@ -33,7 +33,7 @@ class SessionAuthMiddleware(ASGIAuthenticationMiddleware):
         self.retrieve_user_handler = self.session_auth.retrieve_user_handler
         self.exclude_path_pattern = self.session_auth.exclude
         self.exclude_opt_key = self.session_auth.exclude_opt_key
-        self.exclude_http_methods = self.session_auth.exclude_http_methods or []
+        self.exclude_http_methods = tuple(self.session_auth.exclude_http_methods or ())
 
     async def authenticate_request(self, connection: ASGIConnection[Any, Any, Any, Any]) -> AuthenticationResult:
         """Authenticate an incoming connection.
