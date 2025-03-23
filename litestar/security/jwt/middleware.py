@@ -17,7 +17,7 @@ if TYPE_CHECKING:
     from typing import Any
 
     from litestar.connection import ASGIConnection
-    from litestar.security.jwt import JWTAuth, JWTCookieAuth
+    from litestar.security.jwt import BaseJWTAuth, JWTCookieAuth
 
 
 class JWTAuthenticationMiddleware(ASGIAuthenticationMiddleware):
@@ -28,7 +28,7 @@ class JWTAuthenticationMiddleware(ASGIAuthenticationMiddleware):
 
     def __init__(
         self,
-        jwt_auth: JWTAuth,
+        jwt_auth: BaseJWTAuth[Any, Any]
     ) -> None:
         """Check incoming requests for an encoded token in the auth header specified, and if present retrieve the user
         from persistence using the provided function.
@@ -121,7 +121,7 @@ class JWTCookieAuthenticationMiddleware(JWTAuthenticationMiddleware):
         Args:
             jwt_cookie_auth: JWTAuth instance.
         """
-        self.jwt_auth = jwt_cookie_auth  # type: ignore[assignment]
+        self.jwt_auth = jwt_cookie_auth
         self.auth_cookie_key = jwt_cookie_auth.key
         self.exclude_path_pattern = self.jwt_auth.exclude
         self.exclude_opt_key = self.jwt_auth.exclude_opt_key
