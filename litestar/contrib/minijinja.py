@@ -207,7 +207,7 @@ class MiniJinjaTemplateEngine(TemplateEngineProtocol["MiniJinjaTemplate", StateP
 @pass_state
 def _minijinja_from_state(func: Callable, state: StateProtocol, *args: Any, **kwargs: Any) -> str:  # pragma: no cover
     template_context = {"request": state.lookup("request"), "csrf_input": state.lookup("csrf_input")}
-    return cast(str, func(template_context, *args, **kwargs))
+    return cast("str", func(template_context, *args, **kwargs))
 
 
 def __getattr__(name: str) -> Any:

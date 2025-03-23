@@ -293,7 +293,7 @@ def test_private_fields(model_type: BaseModelType) -> None:
 )
 def test_dto_with_non_instantiable_types(base_model: BaseModelType, type_: Any, in_: Any) -> None:
     class Model(base_model):  # type: ignore[misc, valid-type]
-        foo: type_
+        foo: type_  # pyright: ignore[reportInvalidTypeForm]
 
     @post("/", dto=PydanticDTO[Model])
     async def handler(data: Model) -> Model:

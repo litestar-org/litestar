@@ -53,7 +53,7 @@ class HTTPRoute(BaseRoute):
         self.route_handler_map: dict[Method, tuple[HTTPRouteHandler, KwargsModel]] = {}
 
         super().__init__(
-            methods=methods,
+            methods=methods,  # pyright: ignore[reportArgumentType]
             path=path,
             scope_type=ScopeType.HTTP,
             handler_names=[route_handler.handler_name for route_handler in self.route_handlers],

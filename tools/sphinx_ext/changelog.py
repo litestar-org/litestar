@@ -1,12 +1,14 @@
 from functools import partial
-from typing import Literal, cast
+from typing import TYPE_CHECKING, List, Literal, cast
 
 from docutils import nodes
 from docutils.parsers.rst import directives
 from sphinx.application import Sphinx
-from sphinx.domains.std import StandardDomain
 from sphinx.util.docutils import SphinxDirective
 from sphinx.util.nodes import clean_astext
+
+if TYPE_CHECKING:
+    from sphinx.domains.std import StandardDomain
 
 _GH_BASE_URL = "https://github.com/litestar-org/litestar"
 
@@ -30,7 +32,7 @@ class ChangeDirective(SphinxDirective):
         "pr": directives.unchanged,
     }
 
-    def run(self) -> list[nodes.Node]:
+    def run(self) -> List[nodes.Node]:
         self.assert_has_content()
 
         change_type = self.options.get("type", "misc").lower()
@@ -73,7 +75,7 @@ class ChangelogDirective(SphinxDirective):
     has_content = True
     option_spec = {"date": directives.unchanged}
 
-    def run(self) -> list[nodes.Node]:
+    def run(self) -> List[nodes.Node]:
         self.assert_has_content()
 
         version = self.arguments[0]
@@ -89,7 +91,7 @@ class ChangelogDirective(SphinxDirective):
 
         self.state.nested_parse(self.content, self.content_offset, changelog_node)
 
-        domain = cast(StandardDomain, self.env.get_domain("std"))
+        domain = cast("StandardDomain", self.env.get_domain("std"))
 
         change_group_lists = {
             "feature": nodes.definition_list(),

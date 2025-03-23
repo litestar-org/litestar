@@ -293,7 +293,7 @@ class Router:
 
         copied_value = copy(value)
         if isinstance(value, HTTPRouteHandler):
-            return {path: {http_method: copied_value for http_method in value.http_methods} for path in value.paths}
+            return {path: dict.fromkeys(value.http_methods, copied_value) for path in value.paths}
 
         return {
             path: {"websocket" if isinstance(value, WebsocketRouteHandler) else "asgi": copied_value}

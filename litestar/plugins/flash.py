@@ -64,7 +64,7 @@ class FlashPlugin(InitPlugin):
             if isinstance(self.config.template_config.engine_instance, MiniJinjaTemplateEngine):
                 template_callable = _transform_state(get_flashes)
 
-        self.config.template_config.engine_instance.register_template_callable("get_flashes", template_callable)  # pyright: ignore[reportGeneralTypeIssues]
+        self.config.template_config.engine_instance.register_template_callable("get_flashes", template_callable)  # pyright: ignore[reportGeneralTypeIssues,reportArgumentType]
         return app_config
 
 
