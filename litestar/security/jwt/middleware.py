@@ -26,10 +26,7 @@ class JWTAuthenticationMiddleware(ASGIAuthenticationMiddleware):
     This class provides JWT authentication functionalities.
     """
 
-    def __init__(
-        self,
-        jwt_auth: BaseJWTAuth[Any, Any]
-    ) -> None:
+    def __init__(self, jwt_auth: BaseJWTAuth[Any, Any]) -> None:
         """Check incoming requests for an encoded token in the auth header specified, and if present retrieve the user
         from persistence using the provided function.
 
