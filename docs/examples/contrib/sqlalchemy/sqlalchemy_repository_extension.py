@@ -38,7 +38,7 @@ class SlugKey:
     slug: Mapped[str] = mapped_column(String(length=100), nullable=False, unique=True, sort_order=-9)
 
 
-# this class can be re-used with any model that has the `SlugKey` Mixin
+# this class can be reused with any model that has the `SlugKey` Mixin
 class SQLAlchemyAsyncSlugRepository(SQLAlchemyAsyncRepository[ModelT]):
     """Extends the repository to include slug model features.."""
 
