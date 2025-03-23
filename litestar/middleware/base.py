@@ -13,6 +13,7 @@ from litestar.middleware._utils import (
 from litestar.utils.deprecation import warn_deprecation
 
 __all__ = (
+    "ASGIAuthenticationMiddleware",
     "ASGIMiddleware",
     "AbstractMiddleware",
     "DefineMiddleware",
