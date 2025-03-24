@@ -8,6 +8,7 @@ import msgspec
 from litestar.constants import OPENAPI_JSON_HANDLER_NAME
 from litestar.enums import MediaType, OpenAPIMediaType
 from litestar.handlers import get
+from litestar.middleware.csrf import CSRFMiddleware
 from litestar.serialization import encode_json, get_serializer
 
 if TYPE_CHECKING:
@@ -260,10 +261,17 @@ class RapidocRenderPlugin(OpenAPIRenderPlugin):
           </head>
         """
 
+        if request.app.csrf_config:
+            c = request.app.csrf_config
+        elif next((m.config for m in request.app.middleware if isinstance(m, CSRFMiddleware)), None):
+            c = next(m.config for m in request.app.middleware if isinstance(m, CSRFMiddleware))
+        else:
+            c = None
+
         body = f"""
           <body>
             <rapi-doc spec-url="{self.get_openapi_json_route(request)}" />
-            {create_request_interceptor(request.app.csrf_config) if request.app.csrf_config else ""}
+            {create_request_interceptor(c) if c else ""}
           </body>
         """
 
@@ -577,6 +585,13 @@ class SwaggerRenderPlugin(OpenAPIRenderPlugin):
           </head>
         """
 
+        if request.app.csrf_config:
+            c = request.app.csrf_config
+        elif next((m.config for m in request.app.middleware if isinstance(m, CSRFMiddleware)), None):
+            c = next(m.config for m in request.app.middleware if isinstance(m, CSRFMiddleware))
+        else:
+            c = None
+
         body = b"".join(
             [
                 b"""
@@ -595,7 +610,7 @@ class SwaggerRenderPlugin(OpenAPIRenderPlugin):
                       SwaggerUIBundle.presets.apis,
                       SwaggerUIBundle.SwaggerUIStandalonePreset
                   ],""",
-                create_request_interceptor(request.app.csrf_config) if request.app.csrf_config else b"",
+                create_request_interceptor(c) if c else b"",
                 b"""
                 })
             ui.initOAuth(""",
