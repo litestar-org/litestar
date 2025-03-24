@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import re
 from collections import defaultdict
+from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Iterator, Sequence, _GenericAlias  # type: ignore[attr-defined]
 
 from litestar.exceptions import ImproperlyConfiguredException
@@ -246,3 +247,10 @@ class OpenAPIContext:
                 f"please ensure the value of 'operation_id' is either not set or unique for {operation_id}"
             )
         self.operation_ids.add(operation_id)
+
+
+@dataclass
+class SchemaContext:
+    """Context data for schema creator."""
+
+    is_response: bool = field(default=False)

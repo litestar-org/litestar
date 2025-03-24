@@ -8,6 +8,7 @@ from http import HTTPStatus
 from operator import attrgetter
 from typing import TYPE_CHECKING, Any, Iterator
 
+from litestar._openapi.datastructures import SchemaContext
 from litestar._openapi.schema_generation import SchemaCreator
 from litestar._openapi.schema_generation.utils import get_formatted_examples
 from litestar.enums import MediaType
@@ -76,7 +77,9 @@ class ResponseFactory:
         self.context = context
         self.route_handler = route_handler
         self.field_definition = route_handler.parsed_fn_signature.return_type
-        self.schema_creator = SchemaCreator.from_openapi_context(context, prefer_alias=False)
+        self.schema_creator = SchemaCreator.from_openapi_context(
+            context, prefer_alias=False, schema_context=SchemaContext(is_response=True)
+        )
 
     def create_responses(self, raises_validation_error: bool) -> Responses | None:
         """Create the schema for responses, if any.
@@ -146,7 +149,6 @@ class ResponseFactory:
                     media_type = media_type or MediaType.JSON
                 else:
                     field_def = self.field_definition
-
                 result = self.schema_creator.for_field_definition(field_def)
 
             schema = (

@@ -260,11 +260,27 @@ class PydanticSchemaPlugin(OpenAPISchemaPlugin):
         """
 
         model_info = get_model_info(field_definition.annotation, prefer_alias=schema_creator.prefer_alias)
+        model_field_info = model_info.model_fields
+
+        if schema_creator.schema_context.is_response is True:
+            required = sorted(
+                f.name
+                for f in model_info.field_definitions.values()
+                if f.is_required and (not model_field_info.get(f.name) or not model_field_info[f.name].exclude)
+            )
+            property_fields = {
+                key: f
+                for key, f in model_info.field_definitions.items()
+                if not model_field_info.get(f.name) or not model_field_info[f.name].exclude
+            }
+        else:
+            required = sorted(f.name for f in model_info.field_definitions.values() if f.is_required)
+            property_fields = model_info.field_definitions
 
         return schema_creator.create_component_schema(
             field_definition,
-            required=sorted(f.name for f in model_info.field_definitions.values() if f.is_required),
-            property_fields=model_info.field_definitions,
+            required=required,
+            property_fields=property_fields,
             title=model_info.title,
             examples=None if model_info.example is None else [model_info.example],
         )

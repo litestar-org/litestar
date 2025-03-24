@@ -33,7 +33,7 @@ from uuid import UUID
 
 from typing_extensions import Self, get_args
 
-from litestar._openapi.datastructures import SchemaRegistry
+from litestar._openapi.datastructures import SchemaContext, SchemaRegistry
 from litestar._openapi.schema_generation.constrained_fields import (
     create_date_constrained_field_schema,
     create_numerical_constrained_field_schema,
@@ -230,7 +230,7 @@ def create_schema_for_annotation(annotation: Any) -> Schema:
 
 
 class SchemaCreator:
-    __slots__ = ("generate_examples", "plugins", "prefer_alias", "schema_registry")
+    __slots__ = ("generate_examples", "plugins", "prefer_alias", "schema_context", "schema_registry")
 
     def __init__(
         self,
@@ -238,6 +238,7 @@ class SchemaCreator:
         plugins: Iterable[OpenAPISchemaPluginProtocol] | None = None,
         prefer_alias: bool = True,
         schema_registry: SchemaRegistry | None = None,
+        schema_context: SchemaContext | None = None,
     ) -> None:
         """Instantiate a SchemaCreator.
 
@@ -246,11 +247,13 @@ class SchemaCreator:
             plugins: A list of plugins.
             prefer_alias: Whether to prefer the alias name for the schema.
             schema_registry: A SchemaRegistry instance.
+            schema_context: A context information for generated schema
         """
         self.generate_examples = generate_examples
         self.plugins = plugins if plugins is not None else []
         self.prefer_alias = prefer_alias
         self.schema_registry = schema_registry or SchemaRegistry()
+        self.schema_context = schema_context or SchemaContext()
 
     @classmethod
     def from_openapi_context(cls, context: OpenAPIContext, prefer_alias: bool = True, **kwargs: Any) -> Self:
