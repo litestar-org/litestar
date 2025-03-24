@@ -292,11 +292,6 @@ SQLAlchemy Plugin
 Support for SQLAlchemy 1 has been dropped and the new plugin will now support
 SQLAlchemy 2 only.
 
-TODO: Migration instructions
-
-.. seealso::
-    The :doc:`/usage/databases/sqlalchemy/index` usage documentation and the
-    :doc:`/reference/contrib/sqlalchemy/index` API reference
 
 
 Removal of Pydantic models

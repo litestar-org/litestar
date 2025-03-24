@@ -2,12 +2,12 @@ import json
 from pathlib import Path
 from typing import Any
 
+from advanced_alchemy.base import UUIDBase
+from advanced_alchemy.repository import SQLAlchemySyncRepository
 from rich import get_console
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Mapped, Session, sessionmaker
 
-from litestar.contrib.sqlalchemy.base import UUIDBase
-from litestar.contrib.sqlalchemy.repository import SQLAlchemySyncRepository
 from litestar.repository.filters import LimitOffset
 
 here = Path(__file__).parent

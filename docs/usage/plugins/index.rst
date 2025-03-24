@@ -77,9 +77,34 @@ Example
 The following example shows the actual implementation of the ``SerializationPlugin`` for
 `SQLAlchemy <https://www.sqlalchemy.org/>`_ models that is is provided in ``advanced_alchemy``.
 
-.. literalinclude:: ../../../litestar/contrib/sqlalchemy/plugins/serialization.py
-   :language: python
+.. code-block:: python
    :caption: ``SerializationPlugin`` implementation example
+
+    class SQLAlchemySerializationPlugin(SerializationPlugin, _slots_base.SlotsBase):
+        def __init__(self) -> None:
+            self._type_dto_map: dict[type[DeclarativeBase], type[SQLAlchemyDTO[Any]]] = {}
+
+        def supports_type(self, field_definition: FieldDefinition) -> bool:
+            return (
+                field_definition.is_collection and field_definition.has_inner_subclass_of(DeclarativeBase)
+            ) or field_definition.is_subclass_of(DeclarativeBase)
+
+        def create_dto_for_type(self, field_definition: FieldDefinition) -> type[SQLAlchemyDTO[Any]]:
+            # assumes that the type is a container of SQLAlchemy models or a single SQLAlchemy model
+            annotation = next(
+                (
+                    inner_type.annotation
+                    for inner_type in field_definition.inner_types
+                    if inner_type.is_subclass_of(DeclarativeBase)
+                ),
+                field_definition.annotation,
+            )
+            if annotation in self._type_dto_map:
+                return self._type_dto_map[annotation]
+
+            self._type_dto_map[annotation] = dto_type = SQLAlchemyDTO[annotation]  # type:ignore[valid-type]
+
+            return dto_type
 
 :meth:`supports_type(self, field_definition: FieldDefinition) -> bool: <advanced_alchemy.extensions.litestar.SQLAlchemySerializationPlugin.supports_type>`
 returns a :class:`bool` indicating whether the plugin supports serialization for the given type. Specifically, we return

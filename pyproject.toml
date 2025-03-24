@@ -347,7 +347,6 @@ module = [
 
 [[tool.mypy.overrides]]
 module = [
-  "litestar.contrib.sqlalchemy.*",
   "litestar.plugins.pydantic.*",
   "tests.unit.test_contrib.test_sqlalchemy",
   "tests.unit.test_contrib.test_pydantic.*",

@@ -2,10 +2,10 @@ Final touches and recap
 -----------------------
 
 There is one more improvement that we can make to our application. Currently, we utilize both the
-:class:`SQLAlchemyInitPlugin <litestar.contrib.sqlalchemy.plugins.SQLAlchemyInitPlugin>` and the
-:class:`SQLAlchemySerializationPlugin <litestar.contrib.sqlalchemy.plugins.SQLAlchemySerializationPlugin>`, but there
+:class:`SQLAlchemyInitPlugin <advanced_alchemy.extensions.litestar.SQLAlchemyInitPlugin>` and the
+:class:`SQLAlchemySerializationPlugin <advanced_alchemy.extensions.litestar.SQLAlchemySerializationPlugin>`, but there
 is a shortcut for this configuration: the
-:class:`SQLAlchemyPlugin <litestar.contrib.sqlalchemy.plugins.SQLAlchemyPlugin>` is a combination of the two, so we
+:class:`SQLAlchemyPlugin <advanced_alchemy.extensions.litestar.SQLAlchemyPlugin>` is a combination of the two, so we
 can simplify our configuration by using it instead.
 
 Here is our final application:
@@ -53,7 +53,7 @@ We define our route handlers, which are the interface through which TODO items c
     :lines: 54-70
 
 Finally, we define our application, using the
-:class:`SQLAlchemyPlugin <litestar.contrib.sqlalchemy.plugins.SQLAlchemyPlugin>` to configure SQLAlchemy and manage the
+:class:`SQLAlchemyPlugin <advanced_alchemy.extensions.litestar.SQLAlchemyPlugin>` to configure SQLAlchemy and manage the
 engine and session lifecycle, and register our ``transaction`` dependency.
 
 .. literalinclude:: /examples/contrib/sqlalchemy/plugins/tutorial/full_app_with_plugin.py

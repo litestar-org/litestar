@@ -7,15 +7,15 @@ import unicodedata
 from typing import TYPE_CHECKING, Any
 from uuid import UUID
 
+from advanced_alchemy.base import UUIDAuditBase
+from advanced_alchemy.extensions.litestar import AsyncSessionConfig, SQLAlchemyAsyncConfig, SQLAlchemyInitPlugin
+from advanced_alchemy.repository import ModelT, SQLAlchemyAsyncRepository
 from pydantic import BaseModel as _BaseModel
 from pydantic import TypeAdapter
 from sqlalchemy.orm import Mapped, declarative_mixin, mapped_column
 from sqlalchemy.types import String
 
 from litestar import Litestar, get, post
-from litestar.contrib.sqlalchemy.base import UUIDAuditBase
-from litestar.contrib.sqlalchemy.plugins import AsyncSessionConfig, SQLAlchemyAsyncConfig, SQLAlchemyInitPlugin
-from litestar.contrib.sqlalchemy.repository import ModelT, SQLAlchemyAsyncRepository
 from litestar.di import Provide
 
 if TYPE_CHECKING:
