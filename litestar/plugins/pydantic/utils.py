@@ -14,7 +14,12 @@ from litestar.openapi.spec import Example
 from litestar.params import KwargDefinition, ParameterKwarg
 from litestar.types import Empty
 from litestar.typing import FieldDefinition
-from litestar.utils import deprecated, is_class_and_subclass, is_generic, is_undefined_sentinel
+from litestar.utils import (
+    deprecated,
+    is_class_and_subclass,
+    is_generic,
+    is_undefined_sentinel,
+)
 from litestar.utils.typing import (
     _substitute_typevars,
     get_origin_or_inner_type,
@@ -448,10 +453,10 @@ def get_model_info(
     }
 
     if is_v2_model:
-        # extract the annotations from the FieldInfo. This allows us to skip fields
-        # which have been marked as private
-        # if there's a default factory, we wrap the field in 'Optional', to signal
-        # that it is not required
+        # extract the annotations from the FieldInfo.
+        # This allows us to skip fields which have been marked as private
+        # if there's a default factory, we wrap the field in 'Optional',
+        #  to signal that it is not required
         model_annotations = {
             k: Optional[field_info.annotation] if field_info.default_factory else field_info.annotation  # type: ignore[union-attr]
             for k, field_info in model_fields.items()
@@ -466,10 +471,12 @@ def get_model_info(
 
     if is_generic_model:
         # if the model is generic, resolve the type variables. We pass in the
-        # already extracted annotations, to keep the logic of respecting private
-        # fields consistent with the above
+        # already extracted annotations, to keep the logic of respecting
+        # private fields consistent with the above
         model_annotations = pydantic_get_type_hints_with_generics_resolved(
-            annotation, model_annotations=model_annotations, include_extras=True
+            annotation,
+            model_annotations=model_annotations,
+            include_extras=True,
         )
 
     create_field_definition: _CreateFieldDefinition = (
@@ -481,11 +488,12 @@ def get_model_info(
             field_annotation=model_annotations[k],
             name=field_info.alias if field_info.alias and prefer_alias else k,
             default=Empty
-            if is_undefined_sentinel(field_info.default) or is_pydantic_undefined(field_info.default)
+            if (is_undefined_sentinel(field_info.default) or is_pydantic_undefined(field_info.default))
             else field_info.default,
             field_info=field_info,
         )
         for k, field_info in model_fields.items()
+        if bool(field_info.exclude) is False
     }
 
     computed_field_definitions = create_field_definitions_for_computed_fields(
