@@ -1,4 +1,3 @@
-import pytest
 from advanced_alchemy.extensions import litestar as sa_litestar
 from advanced_alchemy.extensions.litestar import base as sa_base
 from advanced_alchemy.extensions.litestar import exceptions as sa_exceptions
@@ -37,15 +36,3 @@ def test_re_exports() -> None:
     assert sqlalchemy.SQLAlchemySerializationPlugin is sa_litestar.SQLAlchemySerializationPlugin
     assert sqlalchemy.SQLAlchemySyncConfig is sa_litestar.SQLAlchemySyncConfig
     assert sqlalchemy.SyncSessionConfig is sa_litestar.SyncSessionConfig
-
-    # deprecated, to be removed later
-    with pytest.warns(DeprecationWarning):
-        assert sqlalchemy.AuditColumns is sa_mixins.AuditColumns
-        assert sqlalchemy.BigIntAuditBase is sa_base.BigIntAuditBase
-        assert sqlalchemy.BigIntBase is sa_base.BigIntBase
-        assert sqlalchemy.BigIntPrimaryKey is sa_mixins.BigIntPrimaryKey
-        assert sqlalchemy.CommonTableAttributes is sa_base.CommonTableAttributes
-        assert sqlalchemy.UUIDAuditBase is sa_base.UUIDAuditBase
-        assert sqlalchemy.UUIDBase is sa_base.UUIDBase
-        assert sqlalchemy.UUIDPrimaryKey is sa_mixins.UUIDPrimaryKey
-        assert sqlalchemy.orm_registry is sa_base.orm_registry
