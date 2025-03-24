@@ -112,8 +112,8 @@ class AbstractAuthenticationMiddleware(ABC):
 
 
 class BaseAuthenticationMiddleware(ASGIMiddleware):
-    """ASGI Authentication Middleware that allows users to create their own authentication middleware by extending it
-    and overriding :meth:`ASGIAuthenticationMiddleware.authenticate_request`.
+    """Base Authentication Middleware that allows users to create their own authentication middleware by extending it
+    and overriding :meth:`BaseAuthenticationMiddleware.authenticate_request`.
     """
 
     exclude_opt_key = "exclude_from_auth"
