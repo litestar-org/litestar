@@ -3,10 +3,10 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any
 
 from litestar.exceptions import NotAuthorizedException
+from litestar.middleware import BaseAuthenticationMiddleware
 from litestar.middleware.authentication import (
     AuthenticationResult,
 )
-from litestar.middleware.base import ASGIAuthenticationMiddleware
 from litestar.types import Empty
 
 __all__ = ("SessionAuthMiddleware",)
@@ -16,7 +16,7 @@ if TYPE_CHECKING:
     from litestar.security.session_auth import SessionAuth
 
 
-class SessionAuthMiddleware(ASGIAuthenticationMiddleware):
+class SessionAuthMiddleware(BaseAuthenticationMiddleware):
     """Session Authentication Middleware."""
 
     def __init__(

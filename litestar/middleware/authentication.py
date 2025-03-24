@@ -10,8 +10,9 @@ from litestar.middleware._utils import (
     build_exclude_path_pattern,
     should_bypass_middleware,
 )
+from litestar.middleware.base import ASGIMiddleware
 
-__all__ = ("AbstractAuthenticationMiddleware", "AuthenticationResult")
+__all__ = ("AbstractAuthenticationMiddleware", "AuthenticationResult", "BaseAuthenticationMiddleware")
 
 
 if TYPE_CHECKING:
@@ -108,3 +109,38 @@ class AbstractAuthenticationMiddleware(ABC):
             An instance of :class:`AuthenticationResult <litestar.middleware.authentication.AuthenticationResult>`.
         """
         raise NotImplementedError("authenticate_request must be overridden by subclasses")
+
+
+class BaseAuthenticationMiddleware(ASGIMiddleware):
+    """ASGI Authentication Middleware that allows users to create their own authentication middleware by extending it
+    and overriding :meth:`ASGIAuthenticationMiddleware.authenticate_request`.
+    """
+
+    exclude_opt_key = "exclude_from_auth"
+    exclude_http_methods: tuple[Method, ...] = (HttpMethod.OPTIONS,)
+
+    async def handle(self, scope: Scope, receive: Receive, send: Send, next_app: ASGIApp) -> None:
+        """Create the actual middleware callable"""
+
+        auth_result = await self.authenticate_request(ASGIConnection(scope))
+        scope["user"] = auth_result.user
+        scope["auth"] = auth_result.auth
+        await next_app(scope, receive, send)
+
+    @abstractmethod
+    async def authenticate_request(self, connection: ASGIConnection) -> AuthenticationResult:
+        """Receive the ASGI connection and return an :class:`AuthenticationResult`.
+
+        Notes:
+            - This method must be overridden by subclasses.
+
+        Args:
+            connection: An :class:`ASGIConnection <litestar.connection.ASGIConnection>` instance.
+
+        Raises:
+            NotAuthorizedException | PermissionDeniedException: if authentication fails.
+
+        Returns:
+            An instance of :class:`AuthenticationResult <litestar.middleware.authentication.AuthenticationResult>`.
+        """
+        raise NotImplementedError("handle must be overridden by subclasses")

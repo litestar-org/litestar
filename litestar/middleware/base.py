@@ -4,8 +4,7 @@ import abc
 from abc import abstractmethod
 from typing import TYPE_CHECKING, Any, Callable, Protocol, runtime_checkable
 
-from litestar.connection import ASGIConnection
-from litestar.enums import HttpMethod, ScopeType
+from litestar.enums import ScopeType
 from litestar.middleware._utils import (
     build_exclude_path_pattern,
     should_bypass_middleware,
@@ -13,7 +12,6 @@ from litestar.middleware._utils import (
 from litestar.utils.deprecation import warn_deprecation
 
 __all__ = (
-    "ASGIAuthenticationMiddleware",
     "ASGIMiddleware",
     "AbstractMiddleware",
     "DefineMiddleware",
@@ -22,8 +20,6 @@ __all__ = (
 
 
 if TYPE_CHECKING:
-
-    from litestar.middleware import AuthenticationResult
     from litestar.types import ASGIApp, Method, Receive, Scope, Scopes, Send
 
 
@@ -255,38 +251,3 @@ class ASGIMiddleware(abc.ABC):
         """
 
         raise NotImplementedError
-
-
-class ASGIAuthenticationMiddleware(ASGIMiddleware):
-    """ASGI Authentication Middleware that allows users to create their own authentication middleware by extending it
-    and overriding :meth:`ASGIAuthenticationMiddleware.authenticate_request`.
-    """
-
-    exclude_opt_key = "exclude_from_auth"
-    exclude_http_methods: tuple[Method, ...] = (HttpMethod.OPTIONS,)
-
-    async def handle(self, scope: Scope, receive: Receive, send: Send, next_app: ASGIApp) -> None:
-        """Create the actual middleware callable"""
-
-        auth_result = await self.authenticate_request(ASGIConnection(scope))
-        scope["user"] = auth_result.user
-        scope["auth"] = auth_result.auth
-        await next_app(scope, receive, send)
-
-    @abstractmethod
-    async def authenticate_request(self, connection: ASGIConnection) -> AuthenticationResult:
-        """Receive the ASGI connection and return an :class:`AuthenticationResult`.
-
-        Notes:
-            - This method must be overridden by subclasses.
-
-        Args:
-            connection: An :class:`ASGIConnection <litestar.connection.ASGIConnection>` instance.
-
-        Raises:
-            NotAuthorizedException | PermissionDeniedException: if authentication fails.
-
-        Returns:
-            An instance of :class:`AuthenticationResult <litestar.middleware.authentication.AuthenticationResult>`.
-        """
-        raise NotImplementedError("handle must be overridden by subclasses")

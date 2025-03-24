@@ -7,11 +7,10 @@ from litestar import Litestar, get, websocket
 from litestar.connection import Request, WebSocket
 from litestar.enums import HttpMethod, ScopeType
 from litestar.exceptions import PermissionDeniedException, WebSocketDisconnect
-from litestar.middleware import AbstractAuthenticationMiddleware
+from litestar.middleware import AbstractAuthenticationMiddleware, BaseAuthenticationMiddleware
 from litestar.middleware.authentication import (
     AuthenticationResult,
 )
-from litestar.middleware.base import ASGIAuthenticationMiddleware
 from litestar.status_codes import (
     HTTP_200_OK,
     HTTP_403_FORBIDDEN,
@@ -52,7 +51,7 @@ class OldAuthMiddleware(AbstractAuthenticationMiddleware):
         raise PermissionDeniedException("unauthenticated")
 
 
-class AuthMiddleware(ASGIAuthenticationMiddleware):
+class AuthMiddleware(BaseAuthenticationMiddleware):
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         self.scopes = kwargs.pop("scopes", (ScopeType.HTTP, ScopeType.WEBSOCKET))
         self.exclude_path_pattern = kwargs.pop("exclude", None)

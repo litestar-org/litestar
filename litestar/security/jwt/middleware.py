@@ -5,10 +5,10 @@ from asyncio import iscoroutinefunction
 from typing import TYPE_CHECKING
 
 from litestar.exceptions import NotAuthorizedException
+from litestar.middleware import BaseAuthenticationMiddleware
 from litestar.middleware.authentication import (
     AuthenticationResult,
 )
-from litestar.middleware.base import ASGIAuthenticationMiddleware
 
 __all__ = ("JWTAuthenticationMiddleware", "JWTCookieAuthenticationMiddleware")
 
@@ -20,7 +20,7 @@ if TYPE_CHECKING:
     from litestar.security.jwt import BaseJWTAuth, JWTCookieAuth
 
 
-class JWTAuthenticationMiddleware(ASGIAuthenticationMiddleware):
+class JWTAuthenticationMiddleware(BaseAuthenticationMiddleware):
     """JWT Authentication middleware.
 
     This class provides JWT authentication functionalities.
