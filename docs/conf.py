@@ -170,6 +170,9 @@ nitpick_ignore = [
     (PY_CLASS, "advanced_alchemy.extensions.litestar.SQLAlchemyPlugin"),
     (PY_CLASS, "advanced_alchemy.extensions.litestar.SQLAlchemySerializationPlugin"),
     (PY_CLASS, "advanced_alchemy.extensions.litestar.SQLAlchemyInitPlugin"),
+    (PY_CLASS, "advanced_alchemy.dto.SQLAlchemyDTO"),
+    (PY_CLASS, "advanced_alchemy.types.BigIntIdentity"),
+    (PY_CLASS, "advanced_alchemy.types.JsonB"),
     (PY_CLASS, "litestar.contrib.htmx.request.HTMXRequest"),
     (PY_CLASS, "litestar.typing.ParsedType"),
     (PY_METH, "litestar.dto.factory.DTOData.create_instance"),
@@ -260,6 +263,10 @@ ignore_missing_refs = {
     re.compile(r"litestar\.channels\.backends\.asyncpg.*"): {"asyncpg.connection.Connection", "asyncpg.Connection"},
     re.compile(r"litestar\.handlers\.websocket_handlers\.stream.*"): {"WebSocketMode"},
     re.compile(r"litestar\.file_system.*"): {"AnyFileSystem", "SymlinkResolver"},
+    re.compile(r"advanced_alchemy\.extensions\.litestar\.plugins"): {
+        "advanced_alchemy.extensions.litestar.plugins._slots_base.SlotsBase",
+        "litestar.dto.base_dto.SQLAlchemyDTO",
+    },
 }
 
 # Do not warn about broken links to the following:
