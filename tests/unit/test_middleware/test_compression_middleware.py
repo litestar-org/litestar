@@ -257,3 +257,14 @@ def test_compression_with_custom_backend(handler: HTTPRouteHandler) -> None:
         assert response.text == "_litestar_" * 4000
         assert response.headers["Content-Encoding"] == "deflate"
         assert int(response.headers["Content-Length"]) < 40000
+
+
+@pytest.mark.parametrize("backend", (("brotli"), ("gzip")))
+def test_raise_deprecation_warning(backend: Literal["gzip", "brotli"]) -> None:
+    config = CompressionConfig(backend=backend)
+    with pytest.warns(
+        DeprecationWarning,
+        match="compression_config is deprecated and will be removed in 4.0. Use CompressionMiddleware directly.",
+    ):
+        with create_test_client(compression_config=config):
+            pass

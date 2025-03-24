@@ -294,3 +294,13 @@ def test_csrf_middleware_configure_name_for_exclude_from_check_via_opts() -> Non
         response = client.post("/handler2", data=data)
         assert response.status_code == HTTP_201_CREATED
         assert response.json() == data
+
+
+def test_raise_deprecation_warning() -> None:
+    config = CSRFConfig(secret="deprecated")
+    with pytest.warns(
+        DeprecationWarning,
+        match="csrf_config is deprecated and will be removed in 4.0. Use CSRFMiddleware directly.",
+    ):
+        with create_test_client(csrf_config=config):
+            pass

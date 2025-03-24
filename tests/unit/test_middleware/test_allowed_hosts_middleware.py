@@ -127,3 +127,13 @@ def test_middleware_does_not_redirect_when_off() -> None:
 def test_validation_raises_for_wrong_wildcard_domain() -> None:
     with pytest.raises(ImproperlyConfiguredException):
         AllowedHostsConfig(allowed_hosts=["www.moishe.*.com"])
+
+
+def test_raise_deprecation_warning() -> None:
+    config = AllowedHostsConfig(allowed_hosts=["www.moishe.zuchmir.com"], www_redirect=False)
+    with pytest.warns(
+        DeprecationWarning,
+        match="allowed_hosts is deprecated and will be removed in 4.0. Use AllowedHostsMiddleware directly.",
+    ):
+        with create_test_client(allowed_hosts=config):
+            pass

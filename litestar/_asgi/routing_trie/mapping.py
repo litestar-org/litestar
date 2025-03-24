@@ -13,6 +13,7 @@ from litestar.types.internal_types import PathParameterDefinition
 
 __all__ = ("add_mount_route", "add_route_to_trie", "build_route_middleware_stack", "configure_node")
 
+from litestar.utils import warn_deprecation
 
 if TYPE_CHECKING:
     from litestar._asgi.routing_trie.types import RouteTrieNode
@@ -185,6 +186,9 @@ def build_route_middleware_stack(
 
     from litestar.contrib.opentelemetry import OpenTelemetryInstrumentationMiddleware
     from litestar.middleware._internal.cors import CORSMiddleware
+    from litestar.middleware.allowed_hosts import AllowedHostsMiddleware
+    from litestar.middleware.compression.middleware import CompressionMiddleware
+    from litestar.middleware.csrf import CSRFMiddleware
     from litestar.routes import HTTPRoute
 
     asgi_handler: ASGIApp = route.handle  # type: ignore[assignment]
@@ -196,12 +200,45 @@ def build_route_middleware_stack(
     # wrappers instated by middleware are called. If there is no middleware, we can skip this step.
     asgi_handler = wrap_in_exception_handler(app=asgi_handler)
 
-    # original order is csrf > compression > cache > allowed_hosts
     for middleware in handler_middleware:
         if not isinstance(middleware, CORSMiddleware) and not isinstance(
             middleware, OpenTelemetryInstrumentationMiddleware
         ):
             asgi_handler = middleware(asgi_handler)
+
+    # we keep the 2.x behaviour but add a check to see if the middleware is already in the stack, and raise a deprecation warning
+    if app.csrf_config and not any(isinstance(middleware, CSRFMiddleware) for middleware in handler_middleware):
+        warn_deprecation(
+            deprecated_name="crsf_config",
+            version="3.0",
+            kind="attribute",
+            removal_in="4.0",
+            info="csrf_config is deprecated and will be removed in 4.0. Use CSRFMiddleware directly.",
+        )
+        asgi_handler = CSRFMiddleware(config=app.csrf_config)(asgi_handler)
+    if app.compression_config and not any(
+        isinstance(middleware, CompressionMiddleware) for middleware in handler_middleware
+    ):
+        warn_deprecation(
+            deprecated_name="compression_config",
+            version="3.0",
+            kind="attribute",
+            removal_in="4.0",
+            info="compression_config is deprecated and will be removed in 4.0. Use CompressionMiddleware directly.",
+        )
+        asgi_handler = CompressionMiddleware(config=app.compression_config)(asgi_handler)
+    if app.allowed_hosts and not any(
+        isinstance(middleware, AllowedHostsMiddleware) for middleware in handler_middleware
+    ):
+        warn_deprecation(
+            deprecated_name="allowed_hosts",
+            version="3.0",
+            kind="attribute",
+            removal_in="4.0",
+            info="allowed_hosts is deprecated and will be removed in 4.0. Use AllowedHostsMiddleware directly.",
+        )
+        asgi_handler = AllowedHostsMiddleware(config=app.allowed_hosts)(asgi_handler)
+
     if has_cached_route:
         from litestar.middleware.response_cache import ResponseCacheMiddleware
 
