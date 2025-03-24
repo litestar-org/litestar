@@ -195,7 +195,7 @@ requires = ["hatchling"]
 [tool.codespell]
 ignore-words-list = "documen,re-using,re-used,selectin"
 ignore-regex = "\\bParma\\b"
-skip = 'uv.lock,us_state_lookup.json'
+skip = 'uv.lock,docs/examples/contrib/sqlalchemy/us_state_lookup.json,us_state_lookup.json'
 
 [tool.coverage.run]
 concurrency = ["multiprocessing", "thread"]
