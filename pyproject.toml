@@ -193,8 +193,8 @@ build-backend = "hatchling.build"
 requires = ["hatchling"]
 
 [tool.codespell]
-ignore-words-list = "selectin, documen"
-skip = 'uv.lock,docs/examples/contrib/sqlalchemy/us_state_lookup.json'
+ignore-words-list = "documen,parma,re-using,re-used,selectin"
+skip = 'uv.lock,us_state_lookup.json'
 
 [tool.coverage.run]
 concurrency = ["multiprocessing", "thread"]
