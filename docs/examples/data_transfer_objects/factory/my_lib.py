@@ -2,9 +2,9 @@ from __future__ import annotations
 
 from typing import Any
 
+from advanced_alchemy.base import CommonTableAttributes, create_registry
+from advanced_alchemy.mixins import UUIDPrimaryKey
 from sqlalchemy.orm import DeclarativeBase
-
-from litestar.contrib.sqlalchemy.base import CommonTableAttributes, UUIDPrimaryKey, create_registry
 
 
 class _Base(CommonTableAttributes, UUIDPrimaryKey, DeclarativeBase):

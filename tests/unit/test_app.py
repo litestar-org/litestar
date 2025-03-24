@@ -10,13 +10,13 @@ from typing import TYPE_CHECKING, Any, Callable
 from unittest.mock import MagicMock, Mock, PropertyMock
 
 import pytest
+from advanced_alchemy.extensions.litestar import SQLAlchemySerializationPlugin
 from click import Group
 from pytest import MonkeyPatch
 
 from litestar import Litestar, MediaType, Request, Response, get
 from litestar.config.app import AppConfig, ExperimentalFeatures
 from litestar.config.response_cache import ResponseCacheConfig
-from litestar.contrib.sqlalchemy.plugins import SQLAlchemySerializationPlugin
 from litestar.datastructures import MutableScopeHeaders, State
 from litestar.events.emitter import SimpleEventEmitter
 from litestar.exceptions import (
