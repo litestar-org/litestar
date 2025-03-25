@@ -19,7 +19,7 @@ def test_allowed_hosts_middleware() -> None:
 
     config = AllowedHostsConfig(allowed_hosts=["*.example.com", "moishe.zuchmir.com"])
     allowed_hosts_middleware = AllowedHostsMiddleware(config)
-    client = create_test_client(route_handlers=[handler], allowed_hosts=config, middleware=[allowed_hosts_middleware])
+    client = create_test_client(route_handlers=[handler], middleware=[allowed_hosts_middleware])
     cur = client.app.asgi_router.root_route_map_node.children["/"].asgi_handlers["GET"][0]
     assert AllowedHostsMiddleware.__call__.__qualname__ in cur.__qualname__
     assert allowed_hosts_middleware.allowed_hosts_regex.pattern == ".*\\.example.com$|moishe.zuchmir.com"  # type: ignore[union-attr]
