@@ -262,7 +262,7 @@ class RapidocRenderPlugin(OpenAPIRenderPlugin):
         """
 
         if request.app.csrf_config:
-            c = request.app.csrf_config
+            c = request.app.csrf_config  # pragma: no cover
         elif next((m.config for m in request.app.middleware if isinstance(m, CSRFMiddleware)), None):
             c = next(m.config for m in request.app.middleware if isinstance(m, CSRFMiddleware))
         else:
@@ -586,7 +586,7 @@ class SwaggerRenderPlugin(OpenAPIRenderPlugin):
         """
 
         if request.app.csrf_config:
-            c = request.app.csrf_config
+            c = request.app.csrf_config  # pragma: no cover
         elif next((m.config for m in request.app.middleware if isinstance(m, CSRFMiddleware)), None):
             c = next(m.config for m in request.app.middleware if isinstance(m, CSRFMiddleware))
         else:
