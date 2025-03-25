@@ -1,5 +1,3 @@
-from copy import copy
-
 from litestar.config.app import AppConfig
 from litestar.middleware.session import SessionMiddleware
 from litestar.plugins import InitPlugin
@@ -22,20 +20,7 @@ class SessionPlugin(InitPlugin):
         if self.session_auth.type_encoders is None:
             self.type_encoders = app_config.type_encoders
 
-        if app_config.openapi_config:
-            app_config.openapi_config = copy(app_config.openapi_config)
-            if isinstance(app_config.openapi_config.components, list):
-                app_config.openapi_config.components.append(self.session_auth.openapi_components)
-            else:
-                app_config.openapi_config.components = [
-                    self.session_auth.openapi_components,
-                    app_config.openapi_config.components,
-                ]
-
-            if isinstance(app_config.openapi_config.security, list):
-                app_config.openapi_config.security.append(self.session_auth.security_requirement)
-            else:
-                app_config.openapi_config.security = [self.session_auth.security_requirement]
+        self.configure_openapi(app_config, self.session_auth)
 
         app_config.middleware.append(SessionMiddleware(self.session_auth.session_backend))
         app_config.middleware.append(SessionAuthMiddleware(self.session_auth))

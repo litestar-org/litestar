@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import abc
 from contextlib import contextmanager
+from copy import copy
 from typing import TYPE_CHECKING, Any, Protocol, TypeVar, Union, cast, runtime_checkable
 
 if TYPE_CHECKING:
@@ -16,6 +17,8 @@ if TYPE_CHECKING:
     from litestar.dto import AbstractDTO
     from litestar.openapi.spec import Schema
     from litestar.routes import BaseRoute
+    from litestar.security.jwt import JWTAuth
+    from litestar.security.session_auth import SessionAuth
     from litestar.typing import FieldDefinition
 
 __all__ = (
@@ -119,6 +122,29 @@ class InitPlugin(InitPluginProtocol):
             The app config object.
         """
         return app_config  # pragma: no cover
+
+    @staticmethod
+    def configure_openapi(app_config: AppConfig, config: SessionAuth | JWTAuth) -> None:
+        """Configure OpenAPI schema generation.
+
+        Args:
+            app_config: The :class:`AppConfig <litestar.config.app.AppConfig>` instance.
+            config: The security configuration.
+        """
+        if app_config.openapi_config:
+            app_config.openapi_config = copy(app_config.openapi_config)
+            if isinstance(app_config.openapi_config.components, list):
+                app_config.openapi_config.components.append(config.openapi_components)
+            else:
+                app_config.openapi_config.components = [
+                    config.openapi_components,
+                    app_config.openapi_config.components,
+                ]
+
+            if isinstance(app_config.openapi_config.security, list):
+                app_config.openapi_config.security.append(config.security_requirement)
+            else:
+                app_config.openapi_config.security = [config.security_requirement]
 
 
 class ReceiveRoutePlugin:
