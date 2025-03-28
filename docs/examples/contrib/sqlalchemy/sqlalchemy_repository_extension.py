@@ -13,10 +13,14 @@ from sqlalchemy.orm import Mapped, declarative_mixin, mapped_column
 from sqlalchemy.types import String
 
 from litestar import Litestar, get, post
-from litestar.contrib.sqlalchemy.base import UUIDAuditBase
-from litestar.contrib.sqlalchemy.plugins import AsyncSessionConfig, SQLAlchemyAsyncConfig, SQLAlchemyInitPlugin
-from litestar.contrib.sqlalchemy.repository import ModelT, SQLAlchemyAsyncRepository
 from litestar.di import Provide
+from litestar.plugins.sqlalchemy import (
+    AsyncSessionConfig,
+    SQLAlchemyAsyncConfig,
+    SQLAlchemyInitPlugin,
+    base,
+    repository,
+)
 
 if TYPE_CHECKING:
     from sqlalchemy.ext.asyncio import AsyncSession
@@ -39,7 +43,7 @@ class SlugKey:
 
 
 # this class can be re-used with any model that has the `SlugKey` Mixin
-class SQLAlchemyAsyncSlugRepository(SQLAlchemyAsyncRepository[ModelT]):
+class SQLAlchemyAsyncSlugRepository(repository.SQLAlchemyAsyncRepository[repository.ModelT]):
     """Extends the repository to include slug model features.."""
 
     async def get_available_slug(
@@ -99,7 +103,7 @@ class SQLAlchemyAsyncSlugRepository(SQLAlchemyAsyncRepository[ModelT]):
 # The `UUIDAuditBase` class includes the same UUID` based primary key (`id`) and 2
 # additional columns: `created_at` and `updated_at`. `created_at` is a timestamp of when the
 # record created, and `updated_at` is the last time the record was modified.
-class BlogPost(UUIDAuditBase, SlugKey):
+class BlogPost(base.UUIDAuditBase, SlugKey):
     title: Mapped[str]
     content: Mapped[str]
 
@@ -140,7 +144,7 @@ sqlalchemy_plugin = SQLAlchemyInitPlugin(config=sqlalchemy_config)
 async def on_startup() -> None:
     """Initializes the database."""
     async with sqlalchemy_config.get_engine().begin() as conn:
-        await conn.run_sync(UUIDAuditBase.metadata.create_all)
+        await conn.run_sync(base.UUIDAuditBase.metadata.create_all)
 
 
 @get(path="/")

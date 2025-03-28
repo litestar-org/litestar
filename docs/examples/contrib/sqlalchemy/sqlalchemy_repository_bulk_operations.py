@@ -6,22 +6,21 @@ from rich import get_console
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Mapped, Session, sessionmaker
 
-from litestar.contrib.sqlalchemy.base import UUIDBase
-from litestar.contrib.sqlalchemy.repository import SQLAlchemySyncRepository
+from litestar.plugins.sqlalchemy import base, repository
 from litestar.repository.filters import LimitOffset
 
 here = Path(__file__).parent
 console = get_console()
 
 
-class USState(UUIDBase):
+class USState(base.UUIDBase):
     # you can optionally override the generated table name by manually setting it.
     __tablename__ = "us_state_lookup"  # type: ignore[assignment]
     abbreviation: Mapped[str]
     name: Mapped[str]
 
 
-class USStateRepository(SQLAlchemySyncRepository[USState]):
+class USStateRepository(repository.SQLAlchemySyncRepository[USState]):
     """US State repository."""
 
     model_type = USState

@@ -10,14 +10,17 @@ from sqlalchemy import ForeignKey, select
 from sqlalchemy.orm import Mapped, mapped_column, relationship, selectinload
 
 from litestar import Litestar, get
-from litestar.contrib.sqlalchemy import SQLAlchemyInitPlugin, SQLAlchemySyncConfig
-from litestar.contrib.sqlalchemy.base import UUIDAuditBase, UUIDBase
-from litestar.contrib.sqlalchemy.repository import SQLAlchemySyncRepository
 from litestar.controller import Controller
 from litestar.di import Provide
 from litestar.handlers.http_handlers.decorators import delete, patch, post
 from litestar.pagination import OffsetPagination
 from litestar.params import Parameter
+from litestar.plugins.sqlalchemy import (
+    SQLAlchemyInitPlugin,
+    SQLAlchemySyncConfig,
+    base,
+    repository,
+)
 from litestar.repository.filters import LimitOffset
 
 if TYPE_CHECKING:
@@ -32,7 +35,7 @@ class BaseModel(_BaseModel):
 
 # The SQLAlchemy base includes a declarative model for you to use in your models.
 # The `UUIDBase` class includes a `UUID` based primary key (`id`)
-class AuthorModel(UUIDBase):
+class AuthorModel(base.UUIDBase):
     # we can optionally provide the table name instead of auto-generating it
     __tablename__ = "author"  #  type: ignore[assignment]
     name: Mapped[str]
@@ -43,7 +46,7 @@ class AuthorModel(UUIDBase):
 # The `UUIDAuditBase` class includes the same UUID` based primary key (`id`) and 2
 # additional columns: `created_at` and `updated_at`. `created_at` is a timestamp of when the
 # record created, and `updated_at` is the last time the record was modified.
-class BookModel(UUIDAuditBase):
+class BookModel(base.UUIDAuditBase):
     __tablename__ = "book"  #  type: ignore[assignment]
     title: Mapped[str]
     author_id: Mapped[UUID] = mapped_column(ForeignKey("author.id"))
@@ -69,7 +72,7 @@ class AuthorUpdate(BaseModel):
     dob: date | None = None
 
 
-class AuthorRepository(SQLAlchemySyncRepository[AuthorModel]):
+class AuthorRepository(repository.SQLAlchemySyncRepository[AuthorModel]):
     """Author repository."""
 
     model_type = AuthorModel
@@ -206,7 +209,7 @@ sqlalchemy_plugin = SQLAlchemyInitPlugin(config=sqlalchemy_config)
 def on_startup() -> None:
     """Initializes the database."""
     with sqlalchemy_config.get_engine().begin() as conn:
-        UUIDBase.metadata.create_all(conn)
+        base.UUIDBase.metadata.create_all(conn)
 
 
 app = Litestar(
