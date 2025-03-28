@@ -10,21 +10,20 @@ from rich import get_console
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 from sqlalchemy.orm import Mapped
 
-from litestar.contrib.sqlalchemy.base import UUIDBase
-from litestar.contrib.sqlalchemy.repository import SQLAlchemyAsyncRepository
+from litestar.plugins.sqlalchemy import base, repository
 
 console = get_console()
 
 
 # the SQLAlchemy base includes a declarative model for you to use in your models.
 # The `Base` class includes a `UUID` based primary key (`id`)
-class Author(UUIDBase):
+class Author(base.UUIDBase):
     name: Mapped[str]
     dob: Mapped[date]
     dod: Mapped[date | None]
 
 
-class AuthorRepository(SQLAlchemyAsyncRepository[Author]):
+class AuthorRepository(repository.SQLAlchemyAsyncRepository[Author]):
     """Author repository."""
 
     model_type = Author
@@ -88,7 +87,7 @@ async def get_author_if_exists(id: UUID) -> Author | None:
 async def run_script() -> None:
     """Load data from a fixture."""
     async with engine.begin() as conn:
-        await conn.run_sync(UUIDBase.metadata.create_all)
+        await conn.run_sync(base.UUIDBase.metadata.create_all)
 
     # 1) create a new Author record.
     console.print("1) Adding a new record")
