@@ -29,13 +29,10 @@ repos:
       - id: ruff
         args: ["--fix"]
       - id: ruff-format
-  - repo: https://github.com/codespell-project/codespell
-    rev: v2.3.0
+  - repo: https://github.com/crate-ci/typos
+    rev: v1.30.3
     hooks:
-      - id: codespell
-        exclude: "tests/openapi/typescript_converter/test_converter|README.md"
-        additional_dependencies:
-          - tomli
+      - id: typos
   - repo: https://github.com/python-formate/flake8-dunder-all
     rev: v0.4.1
     hooks:

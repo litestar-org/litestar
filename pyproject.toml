@@ -192,10 +192,6 @@ test = [
 build-backend = "hatchling.build"
 requires = ["hatchling"]
 
-[tool.codespell]
-ignore-words-list = "selectin, documen"
-skip = 'uv.lock,docs/examples/contrib/sqlalchemy/us_state_lookup.json'
-
 [tool.coverage.run]
 concurrency = ["multiprocessing", "thread"]
 omit = ["*/tests/*", "*/litestar/plugins/sqlalchemy.py", "*/litestar/_kwargs/types.py"]
