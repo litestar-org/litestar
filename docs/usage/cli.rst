@@ -54,7 +54,7 @@ Extending the CLI
 
 Litestar's CLI is built with `click <https://click.palletsprojects.com/>`_ and can be extended by making use of
 `entry points <https://packaging.python.org/en/latest/specifications/entry-points/>`_,
-or by creating a plugin that conforms to the :class:`~.plugins.CLIPluginProtocol`.
+or by creating a plugin inheriting from :class:`~.plugins.CLIPlugin`.
 
 Using entry points
 ^^^^^^^^^^^^^^^^^^
@@ -103,26 +103,26 @@ entries should point to a :class:`click.Command` or :class:`click.Group`:
 Using a plugin
 ^^^^^^^^^^^^^^
 
-A plugin extending the CLI can be created using the :class:`~.plugins.CLIPluginProtocol`.
-Its :meth:`~.plugins.CLIPluginProtocol.on_cli_init` will be called during the initialization of the CLI,
+A plugin extending the CLI can be created using the :class:`~.plugins.CLIPlugin`.
+Its :meth:`~.plugins.CLIPlugin.on_cli_init` will be called during the initialization of the CLI,
 and receive the root :class:`click.Group` as its first argument, which can then be used to add or override commands:
 
 .. code-block:: python
     :caption: Creating a CLI plugin
 
     from litestar import Litestar
-    from litestar.plugins import CLIPluginProtocol
+    from litestar.plugins import CLIPlugin
     from click import Group
 
 
-    class CLIPlugin(CLIPluginProtocol):
+    class MyPlugin(CLIPlugin):
         def on_cli_init(self, cli: Group) -> None:
             @cli.command()
             def is_debug_mode(app: Litestar):
                 print(app.debug)
 
 
-    app = Litestar(plugins=[CLIPlugin()])
+    app = Litestar(plugins=[MyPlugin()])
 
 Accessing the app instance
 ^^^^^^^^^^^^^^^^^^^^^^^^^^

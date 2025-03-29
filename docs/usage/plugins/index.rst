@@ -47,20 +47,21 @@ In the ``on_app_init()`` method, the dependency mapping is updated to include a 
 is provided by the ``get_name()`` function, and ``route_handlers`` is updated to include the ``route_handler()``
 function. The modified :class:`AppConfig <litestar.config.app.AppConfig>` instance is then returned.
 
-SerializationPluginProtocol
+SerializationPlugin
 ---------------------------
 
-The SerializationPluginProtocol defines a contract for plugins that provide serialization functionality for data types
-that are otherwise unsupported by the framework.
+The :class:`~litestar.plugins.SerializationPlugin` defines a contract for plugins that
+provide serialization functionality for data types that are otherwise unsupported by the
+framework.
 
 Implementations of these plugins must define the following methods.
 
-1. :meth:`supports_type(self, field_definition: FieldDefinition) -> bool: <litestar.plugins.SerializationPluginProtocol>`
+1. :meth:`supports_type(self, field_definition: FieldDefinition) -> bool: <litestar.plugins.SerializationPlugin>`
 
 The method takes a :class:`FieldDefinition <litestar.typing.FieldDefinition>` instance as an argument and returns a :class:`bool`
 indicating whether the plugin supports serialization for that type.
 
-2. :meth:`create_dto_for_type(self, field_definition: FieldDefinition) -> type[AbstractDTO]: <litestar.plugins.SerializationPluginProtocol.create_dto_for_type>`
+2. :meth:`create_dto_for_type(self, field_definition: FieldDefinition) -> type[AbstractDTO]: <litestar.plugins.SerializationPlugin.create_dto_for_type>`
 
 This method accepts a :class:`FieldDefinition <litestar.typing.FieldDefinition>` instance as an argument and must return a
 :class:`AbstractDTO <litestar.dto.base_dto.AbstractDTO>` implementation that can be used to serialize and deserialize
@@ -73,12 +74,12 @@ that annotation.
 Example
 +++++++
 
-The following example shows the actual implementation of the ``SerializationPluginProtocol`` for
+The following example shows the actual implementation of the ``SerializationPlugin`` for
 `SQLAlchemy <https://www.sqlalchemy.org/>`_ models that is is provided in ``advanced_alchemy``.
 
 .. literalinclude:: ../../../litestar/contrib/sqlalchemy/plugins/serialization.py
    :language: python
-   :caption: ``SerializationPluginProtocol`` implementation example
+   :caption: ``SerializationPlugin`` implementation example
 
 :meth:`supports_type(self, field_definition: FieldDefinition) -> bool: <advanced_alchemy.extensions.litestar.SQLAlchemySerializationPlugin.supports_type>`
 returns a :class:`bool` indicating whether the plugin supports serialization for the given type. Specifically, we return

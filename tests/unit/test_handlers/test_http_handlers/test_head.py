@@ -3,9 +3,11 @@ from typing import Generic, TypeVar
 
 import pytest
 
-from litestar import HttpMethod, Litestar, Response, head
+from litestar import Litestar, Response, head
 from litestar.exceptions import ImproperlyConfiguredException
+from litestar.file_system import BaseLocalFileSystem
 from litestar.response.file import ASGIFileResponse, File
+from litestar.routes import HTTPRoute
 from litestar.status_codes import HTTP_200_OK
 from litestar.testing import create_test_client
 
@@ -27,7 +29,7 @@ def test_head_decorator_raises_validation_error_if_body_is_declared() -> None:
         def handler() -> dict:
             return {}
 
-        Litestar(route_handlers=[handler])
+        handler.on_registration(HTTPRoute(path="/", route_handlers=[handler]), app=Litestar())
 
 
 def test_head_decorator_none_response_return_value_allowed() -> None:
@@ -37,25 +39,17 @@ def test_head_decorator_none_response_return_value_allowed() -> None:
     class MyResponse(Generic[T], Response[T]):
         pass
 
-    @head("/1")
+    @head("/")
     def handler() -> Response[None]:
         return Response(None)
 
-    @head("/2")
+    Litestar([handler])
+
+    @head("/")
     def handler_subclass() -> MyResponse[None]:
         return MyResponse(None)
 
-    Litestar(route_handlers=[handler, handler_subclass])
-
-
-def test_head_decorator_raises_validation_error_if_method_is_passed() -> None:
-    with pytest.raises(ImproperlyConfiguredException):
-
-        @head("/", http_method=HttpMethod.HEAD)
-        def handler() -> None:
-            return
-
-        handler.on_registration(Litestar())
+    Litestar([handler_subclass])
 
 
 def test_head_decorator_does_not_raise_for_file_response() -> None:
@@ -65,14 +59,10 @@ def test_head_decorator_does_not_raise_for_file_response() -> None:
 
     Litestar(route_handlers=[handler])
 
-    handler.on_registration(Litestar())
-
 
 def test_head_decorator_does_not_raise_for_asgi_file_response() -> None:
     @head("/")
     def handler() -> ASGIFileResponse:
-        return ASGIFileResponse(file_path=Path("test_head.py"))
+        return ASGIFileResponse(file_path=Path("test_head.py"), file_system=BaseLocalFileSystem())
 
     Litestar(route_handlers=[handler])
-
-    handler.on_registration(Litestar())

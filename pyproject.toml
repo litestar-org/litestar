@@ -12,7 +12,6 @@ classifiers = [
   "License :: OSI Approved :: MIT License",
   "Natural Language :: English",
   "Operating System :: OS Independent",
-  "Programming Language :: Python :: 3.8",
   "Programming Language :: Python :: 3.9",
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
@@ -36,18 +35,13 @@ dependencies = [
   "httpx>=0.22",
   "exceptiongroup; python_version < \"3.11\"",
   "importlib-metadata; python_version < \"3.10\"",
-  "importlib-resources>=5.12.0; python_version < \"3.9\"",
-  "msgspec>=0.18.2",
+  "msgspec>=0.19.0",
   "multidict>=6.0.2",
-  "polyfactory>=2.6.3",
-  "pyyaml",
   "typing-extensions",
   "click",
   "rich>=13.0.0",
   "rich-click",
   "multipart>=1.2.0",
-  # default litestar plugins
-  "litestar-htmx>=0.4.0",
 ]
 description = "Litestar - A production-ready, highly performant, extensible ASGI API Framework"
 keywords = ["api", "rest", "asgi", "litestar", "starlite"]
@@ -62,7 +56,7 @@ maintainers = [
 ]
 name = "litestar"
 readme = "README.md"
-requires-python = ">=3.8,<4.0"
+requires-python = ">=3.9,<4.0"
 version = "2.15.1"
 
 [project.urls]
@@ -85,8 +79,53 @@ brotli = ["brotli"]
 cli = ["jsbeautifier", "uvicorn[standard]", "uvloop>=0.18.0; sys_platform != 'win32'"]
 cryptography = ["cryptography"]
 full = [
-  "litestar[annotated-types,attrs,brotli,cli,cryptography,jinja,jwt,mako,minijinja,opentelemetry,piccolo,picologging,prometheus,pydantic,redis,sqlalchemy,standard,structlog,valkey]; python_version < \"3.13\"",
-  "litestar[annotated-types,attrs,brotli,cli,cryptography,jinja,jwt,mako,minijinja,opentelemetry,piccolo,prometheus,pydantic,redis,sqlalchemy,standard,structlog,valkey]; python_version >= \"3.13\"",
+  """litestar[annotated-types, \
+    attrs, \
+    brotli, \
+    cli, \
+    cryptography, \
+    jinja, \
+    jwt, \
+    mako, \
+    minijinja, \
+    opentelemetry, \
+    piccolo, \
+    polyfactory, \
+    picologging, \
+    prometheus, \
+    pydantic, \
+    redis, \
+    sqlalchemy, \
+    standard, \
+    structlog, \
+    valkey, \
+    htmx, \
+    yaml]; \
+    python_version < \"3.13\"""",
+
+  # full extra without picologging
+  """litestar[annotated-types, \
+    attrs, \
+    brotli, \
+    cli, \
+    cryptography, \
+    jinja, \
+    jwt, \
+    mako, \
+    minijinja, \
+    opentelemetry, \
+    piccolo, \
+    polyfactory, \
+    prometheus, \
+    pydantic, \
+    redis, \
+    sqlalchemy, \
+    standard, \
+    structlog, \
+    valkey, \
+    htmx, \
+    yaml]; \
+    python_version >= \"3.13\"""",
 ]
 jinja = ["jinja2>=3.1.2"]
 jwt = ["cryptography", "pyjwt>=2.9.0"]
@@ -99,11 +138,10 @@ prometheus = ["prometheus-client"]
 pydantic = [
   "pydantic",
   "email-validator",
-  "pydantic-extra-types!=2.9.0; python_version < \"3.9\"",
-  "pydantic-extra-types; python_version >= \"3.9\"",
+  "pydantic-extra-types",
 ]
 redis = ["redis[hiredis]>=4.4.4"]
-sqlalchemy = ["advanced-alchemy>=0.2.2"]
+sqlalchemy = ["advanced-alchemy>=0.32.2"]
 standard = [
   "jinja2",
   "jsbeautifier",
@@ -113,6 +151,9 @@ standard = [
 ]
 structlog = ["structlog"]
 valkey = ["valkey[libvalkey]>=6.0.2"]
+polyfactory = ["polyfactory>=2.6.3"]
+htmx = ["litestar-htmx>=0.4.0"]
+yaml = ["pyyaml"]
 
 [project.scripts]
 litestar = "litestar.__main__:run_cli"
@@ -120,6 +161,9 @@ litestar = "litestar.__main__:run_cli"
 
 [tool.hatch.build.targets.sdist]
 include = ['docs/PYPI_README.md', '/litestar']
+
+[tool.hatch.metadata]
+allow-direct-references = true
 
 
 [tool.uv]
@@ -130,7 +174,7 @@ dev = [
   "litestar[full]",
   "beanie>=1.21.0",
   "beautifulsoup4",
-  "fsspec",
+  "fsspec>=2025",
   "greenlet",
   "hypothesis",
   "python-dotenv",
@@ -158,8 +202,11 @@ docs = [
   "sphinx-click>=4.4.0",
   "sphinxcontrib-mermaid>=0.9.2",
   "auto-pytabs[sphinx]>=0.5.0",
-  "litestar-sphinx-theme @ git+https://github.com/litestar-org/litestar-sphinx-theme.git",
   "sphinx-paramlinks>=0.6.0",
+#    "litestar-sphinx-theme @ {root:uri}/../litestar-sphinx-theme", # only needed when working on the theme
+  "litestar-sphinx-theme @ git+https://github.com/litestar-org/litestar-sphinx-theme.git@v3",
+  "asyncpg",
+  "psycopg",
 ]
 linting = [
   "ruff>=0.2.1",
@@ -175,16 +222,18 @@ linting = [
   "types-psutil",
 ]
 test = [
+  "aiohttp>=3.11.14",
   "covdefaults",
   "pytest",
-  "pytest-asyncio<=0.24.0; python_version < \"3.9\"",
-  "pytest-asyncio>0.24.0; python_version >= \"3.9\"",
+  "pytest-asyncio>0.24.0",
   "pytest-cov",
   "pytest-lazy-fixtures",
   "pytest-mock",
   "pytest-rerunfailures",
   "pytest-timeout",
   "pytest-xdist",
+#  "rangehttpserver>=1.4.0", # until https://github.com/danvk/RangeHTTPServer/pull/42 is merged
+  "rangehttpserver @ git+https://github.com/provinzkraut/RangeHTTPServer@fix-unclosed-resource",
   "time-machine",
 ]
 
@@ -229,6 +278,7 @@ filterwarnings = [
   "ignore: Dropping max_length:litestar.exceptions.LitestarWarning:litestar.contrib.piccolo",
   "ignore: Python Debugger on exception enabled:litestar.exceptions.LitestarWarning:",
   "ignore: datetime.datetime.utcnow:DeprecationWarning:time_machine",
+  "ignore:Registering routes.*:litestar.exceptions.base_exceptions.LitestarWarning"
 ]
 markers = [
   "sqlalchemy_integration: SQLAlchemy integration tests",
@@ -248,7 +298,7 @@ enable_error_code = [
 ]
 packages = ["litestar", "tests"]
 plugins = ["pydantic.mypy"]
-python_version = "3.8"
+python_version = "3.9"
 
 disallow_any_generics = false
 local_partial_types = true
@@ -337,7 +387,7 @@ exclude = [
   "tests/unit/test_contrib/test_sqlalchemy.py",
 ]
 include = ["litestar", "tests"]
-pythonVersion = "3.8"
+pythonVersion = "3.9"
 reportUnnecessaryTypeIgnoreComments = true
 
 [tool.slotscheck]
@@ -401,8 +451,6 @@ lint.select = [
   "W",   # pycodestyle - warning
   "YTT", # flake8-2020
 ]
-
-line-length = 120
 lint.ignore = [
   "A003",    # flake8-builtins - class attribute {name} is shadowing a python builtin
   "B010",    # flake8-bugbear - do not call setattr with a constant attribute value
@@ -422,9 +470,12 @@ lint.ignore = [
   "RUF012",  # Ruff-specific rule - annotated with classvar
   "ISC001",  # Ruff formatter incompatible
   "CPY001",  # ruff - copyright notice at the top of the file
+  "SIM108",  # Use ternary operator
 ]
+
+line-length = 120
 src = ["litestar", "tests", "docs/examples"]
-target-version = "py38"
+target-version = "py39"
 
 [tool.ruff.lint.pydocstyle]
 convention = "google"
@@ -457,6 +508,9 @@ known-first-party = ["litestar", "tests", "examples"]
 "litestar/handlers/**/*.*" = ["N801"]
 "litestar/handlers/websocket_handlers/listener.py" = ["B027"]
 "litestar/params.py" = ["N802"]
+"litestar/utils/typing.py" = ["UP006", "UP035"]
+"litestar/utils/predicates.py" = ["UP006", "UP035"]
+"tests/unit/test_typing.py" = ["UP006", "UP035"]
 "test_apps/**/*.*" = ["D", "TRY", "EM", "S", "PTH"]
 "tests/**/*.*" = [
   "A",
