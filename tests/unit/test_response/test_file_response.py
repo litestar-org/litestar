@@ -431,7 +431,14 @@ def file(tmpdir: Path) -> Path:
     return path
 
 
-@pytest.mark.parametrize("header_name", ["content-length", "Content-Length", "contenT-leNgTh"])
+@pytest.mark.parametrize(
+    "header_name",
+    [
+        "content-length",
+        "Content-Length",
+        "contenT-leNgTh",  # codespell:ignore
+    ],
+)
 def test_does_not_override_existing_content_length_header(header_name: str, file: Path) -> None:
     @get("/")
     def handler() -> File:

@@ -108,7 +108,7 @@ def _run_uvicorn_in_subprocess(
     )
 
 
-class CommaSplittedPath(click.Path):
+class CommaSplitPath(click.Path):
     """A Click Path that splits the input string by commas.
 
     .. versionadded:: 2.8.0
@@ -139,7 +139,7 @@ def info_command(app: Litestar) -> None:
     "-R",
     "--reload-dir",
     help="Directories to watch for file changes",
-    type=CommaSplittedPath(),
+    type=CommaSplitPath(),
     multiple=True,
     envvar="LITESTAR_RELOAD_DIRS",
 )
@@ -147,7 +147,7 @@ def info_command(app: Litestar) -> None:
     "-I",
     "--reload-include",
     help="Glob patterns for files to include when watching for file changes",
-    type=CommaSplittedPath(),
+    type=CommaSplitPath(),
     multiple=True,
     envvar="LITESTAR_RELOAD_INCLUDES",
 )
@@ -155,7 +155,7 @@ def info_command(app: Litestar) -> None:
     "-E",
     "--reload-exclude",
     help="Glob patterns for files to exclude when watching for file changes",
-    type=CommaSplittedPath(),
+    type=CommaSplitPath(),
     multiple=True,
     envvar="LITESTAR_RELOAD_EXCLUDES",
 )

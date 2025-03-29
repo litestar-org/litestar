@@ -275,7 +275,7 @@ def optional_default_client_fixture() -> Generator[TestClient, None, None]:
         yield client
 
 
-def test_optional_query_parameter_consistency_wiht_default_queried_without_param(
+def test_optional_query_parameter_consistency_with_default_queried_without_param(
     optional_default_client: TestClient,
 ) -> None:
     assert optional_default_client.get("/optional-default", params={}).json() == {"key": None}

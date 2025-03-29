@@ -15,7 +15,7 @@ from litestar import Litestar, get
 async def zero_division_error() -> dict[str, str]:
     """Handler function that returns a greeting dictionary."""
     1 / 0  # pyright: ignore # noqa: B018
-    return {"message": "ZeroDevisionError didn't occur."}
+    return {"message": "ZeroDivisionError didn't occur."}
 
 
 pdb_app = Litestar(route_handlers=[zero_division_error], pdb_on_exception=True, debugger_module=pdb)

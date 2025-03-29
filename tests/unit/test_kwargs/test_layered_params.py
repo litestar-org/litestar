@@ -172,7 +172,7 @@ def test_layered_include_in_schema_parameter() -> None:
             # included at controller layer
             return None
 
-    class ExlcudedAtController(Controller):
+    class ExcludedAtController(Controller):
         path = "excluded_controller"
         include_in_schema = False
 
@@ -213,14 +213,14 @@ def test_layered_include_in_schema_parameter() -> None:
         route_handlers=common_routes,
         include_in_schema=True,
     )
-    ExlcudedAtRouter = Router(
+    ExcludedAtRouter = Router(
         "excluded_router",
         route_handlers=common_routes,
         include_in_schema=False,
     )
 
     with create_test_client(
-        [IncludedAtController, ExlcudedAtController, IncludedAtRouter, ExlcudedAtRouter, *common_routes],
+        [IncludedAtController, ExcludedAtController, IncludedAtRouter, ExcludedAtRouter, *common_routes],
         include_in_schema=False,
     ) as client:
         app = client.app

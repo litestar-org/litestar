@@ -1,0 +1,12 @@
+[default]
+extend-ignore-re = ["(?Rm)^.*(#|//)\\s*codespell:ignore\\s*$"]
+
+[default.extend-words]
+selectin = 'selectin'
+odf = 'odf'
+
+[files]
+extend-exclude = [
+    "docs/changelog.rst",
+    '/docs/examples/contrib/sqlalchemy/us_state_lookup.json',
+]
