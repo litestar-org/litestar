@@ -10,8 +10,9 @@ from litestar.contrib.jinja import JinjaTemplateEngine
 from litestar.contrib.mako import MakoTemplateEngine
 from litestar.contrib.minijinja import MiniJinjaTemplateEngine
 from litestar.exceptions import ImproperlyConfiguredException
-from litestar.middleware.rate_limit import RateLimitConfig
-from litestar.middleware.session.server_side import ServerSideSessionConfig
+from litestar.middleware.rate_limit import RateLimitConfig, RateLimitMiddleware
+from litestar.middleware.session import SessionMiddleware
+from litestar.middleware.session.server_side import ServerSideSessionBackend, ServerSideSessionConfig
 from litestar.plugins.flash import FlashConfig, FlashPlugin, flash
 from litestar.response import Redirect, Template
 from litestar.template import TemplateConfig, TemplateEngineProtocol
@@ -84,7 +85,7 @@ def test_flash_plugin(
         plugins=[FlashPlugin(config=flash_config)],
         route_handlers=[index, login, check],
         template_config=template_config,
-        middleware=[session_config.middleware],
+        middleware=[SessionMiddleware(ServerSideSessionBackend(session_config))],
     ) as client:
         r = client.get("/")
         assert r.status_code == 200
@@ -108,6 +109,6 @@ def test_flash_config_doesnt_have_session() -> None:
 def test_flash_config_has_wrong_middleware_type() -> None:
     template_config = TemplateConfig(directory=Path("tests/templates"), engine=JinjaTemplateEngine)
     flash_config = FlashConfig(template_config=template_config)
-    rate_limit_config = RateLimitConfig(rate_limit=("minute", 1), exclude=["/schema"])
+    rate_limit_config = RateLimitConfig(rate_limit=("minute", 1), exclude=("/schema"))
     with pytest.raises(ImproperlyConfiguredException):
-        Litestar(plugins=[FlashPlugin(config=flash_config)], middleware=[rate_limit_config.middleware])
+        Litestar(plugins=[FlashPlugin(config=flash_config)], middleware=[RateLimitMiddleware(rate_limit_config)])

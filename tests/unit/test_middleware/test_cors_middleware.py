@@ -21,14 +21,9 @@ def test_setting_cors_middleware() -> None:
     assert cors_config.max_age == 600
     assert cors_config.expose_headers == []
 
-    with create_test_client(cors_config=cors_config) as client:
-        unpacked_middleware = []
-        cur = client.app.asgi_handler
-        while hasattr(cur, "app"):
-            unpacked_middleware.append(cur)
-            cur = cast("Any", cur.app)
-        unpacked_middleware.append(cur)
-        assert len(unpacked_middleware) == 4
+    with create_test_client(middleware=[CORSMiddleware(cors_config)]) as client:
+        unpacked_middleware = client.app.middleware
+        assert len(unpacked_middleware) == 1
         cors_middleware = cast("Any", unpacked_middleware[0])
         assert isinstance(cors_middleware, CORSMiddleware)
         assert cors_middleware.config.allow_headers == ["*"]
@@ -67,7 +62,7 @@ def test_cors_simple_response(
         allow_methods=allow_methods,
     )
 
-    with create_test_client(handler, cors_config=cors_config) as client:
+    with create_test_client(handler, middleware=[CORSMiddleware(cors_config)]) as client:
         headers: Mapping[str, str] = {"Origin": origin} if origin else {}
         response = client.get("/", headers=headers)
         assert response.status_code == HTTP_200_OK
@@ -113,7 +108,7 @@ def test_cors_applied_on_exception_response_if_origin_is_present(
 
     cors_config = CORSConfig(allow_origins=["http://www.example.com"])
 
-    with create_test_client(handler, cors_config=cors_config) as client:
+    with create_test_client(handler, middleware=[CORSMiddleware(cors_config)]) as client:
         headers: Mapping[str, str] = {"Origin": origin} if origin else {}
         response = client.get("/abc", headers=headers)
         assert response.status_code == HTTP_404_NOT_FOUND
