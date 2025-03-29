@@ -147,7 +147,7 @@ nitpick_ignore = [
     (PY_CLASS, "NoneType"),
     (PY_CLASS, "litestar._openapi.schema_generation.schema.SchemaCreator"),
     (PY_CLASS, "litestar._signature.model.SignatureModel"),
-    (PY_CLASS, "litestar.contrib.sqlalchemy.plugins.init.config.compat._CreateEngineMixin"),
+    (PY_CLASS, "advanced_alchemy.extensions.litestar.init.config.compat._CreateEngineMixin"),
     (PY_CLASS, "litestar.utils.signature.ParsedSignature"),
     (PY_CLASS, "litestar.utils.sync.AsyncCallable"),
     # types in changelog that no longer exist
@@ -167,12 +167,12 @@ nitpick_ignore = [
     (PY_CLASS, "litestar.response.RedirectResponse"),
     (PY_CLASS, "litestar.response_containers.Redirect"),
     (PY_CLASS, "litestar.response_containers.Template"),
-    (PY_CLASS, "litestar.contrib.sqlalchemy.plugins.SQLAlchemyPlugin"),
-    (PY_CLASS, "litestar.contrib.sqlalchemy.plugins.SQLAlchemySerializationPlugin"),
-    (PY_CLASS, "litestar.contrib.sqlalchemy.plugins.SQLAlchemyInitPlugin"),
-    (PY_CLASS, "litestar.contrib.sqlalchemy.dto.SQLAlchemyDTO"),
-    (PY_CLASS, "litestar.contrib.sqlalchemy.types.BigIntIdentity"),
-    (PY_CLASS, "litestar.contrib.sqlalchemy.types.JsonB"),
+    (PY_CLASS, "advanced_alchemy.extensions.litestar.SQLAlchemyPlugin"),
+    (PY_CLASS, "advanced_alchemy.extensions.litestar.SQLAlchemySerializationPlugin"),
+    (PY_CLASS, "advanced_alchemy.extensions.litestar.SQLAlchemyInitPlugin"),
+    (PY_CLASS, "advanced_alchemy.dto.SQLAlchemyDTO"),
+    (PY_CLASS, "advanced_alchemy.types.BigIntIdentity"),
+    (PY_CLASS, "advanced_alchemy.types.JsonB"),
     (PY_CLASS, "litestar.contrib.htmx.request.HTMXRequest"),
     (PY_CLASS, "litestar.typing.ParsedType"),
     (PY_METH, "litestar.dto.factory.DTOData.create_instance"),
@@ -220,7 +220,6 @@ nitpick_ignore_regex = [
     (PY_RE, r".*UserType"),
     (PY_RE, r"ModelT"),
     (PY_RE, r"litestar.*\.T"),
-    (PY_RE, r"litestar.contrib.sqlalchemy.repository.ModelT"),
     (PY_RE, r"litestar\.middleware\.session\.base\.BaseSessionBackendT"),
     (PY_RE, r"litestar\.types.*"),
     (PY_RE, r"httpx.*"),
@@ -264,6 +263,10 @@ ignore_missing_refs = {
     re.compile(r"litestar\.channels\.backends\.asyncpg.*"): {"asyncpg.connection.Connection", "asyncpg.Connection"},
     re.compile(r"litestar\.handlers\.websocket_handlers\.stream.*"): {"WebSocketMode"},
     re.compile(r"litestar\.file_system.*"): {"AnyFileSystem", "SymlinkResolver"},
+    re.compile(r"advanced_alchemy\.extensions\.litestar\.plugins"): {
+        "advanced_alchemy.extensions.litestar.plugins._slots_base.SlotsBase",
+        "litestar.dto.base_dto.SQLAlchemyDTO",
+    },
 }
 
 # Do not warn about broken links to the following:
