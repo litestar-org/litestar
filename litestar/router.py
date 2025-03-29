@@ -264,7 +264,7 @@ class Router:
 
     @property
     def route_handler_method_map(self) -> dict[str, RouteHandlerMapItem]:
-        """Map route paths to :class:`RouteHandlerMapItem <litestar.types.internal_typ es.RouteHandlerMapItem>`
+        """Map route paths to :class:`RouteHandlerMapItem <litestar.types.internal_types es.RouteHandlerMapItem>`
 
         Returns:
              A dictionary mapping paths to route handlers

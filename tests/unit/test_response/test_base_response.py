@@ -41,11 +41,17 @@ def test_response_headers_do_not_lowercase_values() -> None:
 
     @get("/")
     def handler() -> Response:
-        return Response(content="hello world", media_type=MediaType.TEXT, headers={"foo": "BaR"})
+        return Response(
+            content="hello world",
+            media_type=MediaType.TEXT,
+            headers={
+                "foo": "BaR"  # codespell:ignore
+            },
+        )
 
     with create_test_client(handler) as client:
         response = client.get("/")
-        assert response.headers["foo"] == "BaR"
+        assert response.headers["foo"] == "BaR"  # codespell:ignore
 
 
 @pytest.mark.parametrize("as_instance", [True, False])

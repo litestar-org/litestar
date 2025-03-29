@@ -137,10 +137,10 @@ class DTOBackend:
         Fields for data transfer.
         """
         defined_fields = []
-        generic_field_definitons = list(FieldDefinition.from_annotation(model_type).generic_types or ())
+        generic_field_definitions = list(FieldDefinition.from_annotation(model_type).generic_types or ())
         for field_definition in self.dto_factory.generate_field_definitions(model_type):
             if field_definition.is_type_var:
-                base_arg_field = generic_field_definitons.pop()
+                base_arg_field = generic_field_definitions.pop()
                 field_definition = replace(
                     field_definition, annotation=base_arg_field.annotation, raw=base_arg_field.raw
                 )

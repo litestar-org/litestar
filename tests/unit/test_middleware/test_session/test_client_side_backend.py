@@ -204,7 +204,7 @@ def test_load_session_cookies_and_expire_previous(
 
 
 def test_load_data_should_raise_invalid_tag_if_tampered_aad(cookie_session_backend: ClientSideSessionBackend) -> None:
-    """If AAD has been tampered with, the integrity of the data cannot be verified and InavlidTag exception is
+    """If AAD has been tampered with, the integrity of the data cannot be verified and InvalidTag exception is
     raised.
     """
     encrypted_session = cookie_session_backend.dump_data(create_session())
