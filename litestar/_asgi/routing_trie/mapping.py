@@ -209,7 +209,7 @@ def build_route_middleware_stack(
     # we keep the 2.x behaviour but add a check to see if the middleware is already in the stack, and raise a deprecation warning
     if app.csrf_config and not any(isinstance(middleware, CSRFMiddleware) for middleware in handler_middleware):
         warn_deprecation(
-            deprecated_name="crsf_config",
+            deprecated_name="csrf_config",
             version="3.0",
             kind="attribute",
             removal_in="4.0",
