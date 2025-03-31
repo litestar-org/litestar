@@ -964,15 +964,18 @@ class Litestar(Router):
             cors_middleware = next(m for m in self.middleware if isinstance(m, CORSMiddleware))
             asgi_handler = cors_middleware(asgi_handler)
 
-        from litestar.contrib.opentelemetry import OpenTelemetryInstrumentationMiddleware
+        try:
+            from litestar.contrib.opentelemetry import OpenTelemetryInstrumentationMiddleware
 
-        if any(isinstance(m, OpenTelemetryInstrumentationMiddleware) for m in self.middleware):
-            opentelemetry_middleware = next(
-                m for m in self.middleware if isinstance(m, OpenTelemetryInstrumentationMiddleware)
-            )
-            asgi_handler = opentelemetry_middleware(asgi_handler)
+            if any(isinstance(m, OpenTelemetryInstrumentationMiddleware) for m in self.middleware):
+                opentelemetry_middleware = next(
+                    m for m in self.middleware if isinstance(m, OpenTelemetryInstrumentationMiddleware)
+                )
+                asgi_handler = opentelemetry_middleware(asgi_handler)
 
-        return asgi_handler
+            return asgi_handler
+        except ImportError:
+            pass
 
     def _wrap_send(self, send: Send, scope: Scope) -> Send:
         """Wrap the ASGI send and handles any 'before send' hooks.
