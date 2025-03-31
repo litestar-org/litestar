@@ -29,7 +29,6 @@ from litestar.config.allowed_hosts import AllowedHostsConfig
 from litestar.config.app import AppConfig, ExperimentalFeatures
 from litestar.config.response_cache import ResponseCacheConfig
 from litestar.connection import Request, WebSocket
-from litestar.contrib.opentelemetry import OpenTelemetryInstrumentationMiddleware
 from litestar.datastructures.state import State
 from litestar.events.emitter import BaseEventEmitterBackend, SimpleEventEmitter
 from litestar.exceptions import (
@@ -964,6 +963,8 @@ class Litestar(Router):
         if any(isinstance(m, CORSMiddleware) for m in self.middleware):
             cors_middleware = next(m for m in self.middleware if isinstance(m, CORSMiddleware))
             asgi_handler = cors_middleware(asgi_handler)
+
+        from litestar.contrib.opentelemetry import OpenTelemetryInstrumentationMiddleware
 
         if any(isinstance(m, OpenTelemetryInstrumentationMiddleware) for m in self.middleware):
             opentelemetry_middleware = next(
