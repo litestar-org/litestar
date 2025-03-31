@@ -184,7 +184,6 @@ def build_route_middleware_stack(
         An ASGIApp that is composed of a "stack" of middlewares.
     """
 
-    from litestar.contrib.opentelemetry import OpenTelemetryInstrumentationMiddleware
     from litestar.middleware.allowed_hosts import AllowedHostsMiddleware
     from litestar.middleware.compression.middleware import CompressionMiddleware
     from litestar.middleware.csrf import CSRFMiddleware
@@ -200,8 +199,7 @@ def build_route_middleware_stack(
     asgi_handler = wrap_in_exception_handler(app=asgi_handler)
 
     for middleware in handler_middleware:
-        if not isinstance(middleware, OpenTelemetryInstrumentationMiddleware):
-            asgi_handler = middleware(asgi_handler)
+        asgi_handler = middleware(asgi_handler)
 
     # we keep the 2.x behaviour but add a check to see if the middleware is already in the stack, and raise a deprecation warning
     if app.csrf_config and not any(isinstance(middleware, CSRFMiddleware) for middleware in handler_middleware):
