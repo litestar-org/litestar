@@ -26,9 +26,43 @@ def test_rapidoc_csrf() -> None:
         assert rapidoc_fragment in resp.text
 
 
+def test_rapidoc_csrf_deprecated() -> None:
+    app = Litestar(
+        csrf_config=CSRFConfig(secret="litestar"),
+        openapi_config=OpenAPIConfig(
+            title="Litestar Example",
+            version="0.0.1",
+            render_plugins=[RapidocRenderPlugin()],
+        ),
+    )
+
+    with TestClient(app=app) as client:
+        resp = client.get("/schema/rapidoc")
+        assert resp.status_code == 200
+        assert resp.headers["content-type"] == "text/html; charset=utf-8"
+        assert rapidoc_fragment in resp.text
+
+
 def test_swagger_ui_csrf() -> None:
     app = Litestar(
         middleware=[CSRFMiddleware(CSRFConfig(secret="litestar"))],
+        openapi_config=OpenAPIConfig(
+            title="Litestar Example",
+            version="0.0.1",
+            render_plugins=[SwaggerRenderPlugin()],
+        ),
+    )
+
+    with TestClient(app=app) as client:
+        resp = client.get("/schema/swagger")
+        assert resp.status_code == 200
+        assert resp.headers["content-type"] == "text/html; charset=utf-8"
+        assert swagger_fragment in resp.text
+
+
+def test_swagger_ui_csrf_deprecated() -> None:
+    app = Litestar(
+        csrf_config=CSRFConfig(secret="litestar"),
         openapi_config=OpenAPIConfig(
             title="Litestar Example",
             version="0.0.1",
