@@ -975,7 +975,7 @@ class Litestar(Router):
 
             return asgi_handler
         except ImportError:
-            pass
+            return asgi_handler
 
     def _wrap_send(self, send: Send, scope: Scope) -> Send:
         """Wrap the ASGI send and handles any 'before send' hooks.
