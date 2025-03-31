@@ -199,7 +199,13 @@ def build_route_middleware_stack(
     asgi_handler = wrap_in_exception_handler(app=asgi_handler)
 
     for middleware in handler_middleware:
-        asgi_handler = middleware(asgi_handler)
+        try:
+            from litestar.contrib.opentelemetry import OpenTelemetryInstrumentationMiddleware
+
+            if not isinstance(middleware, OpenTelemetryInstrumentationMiddleware):
+                asgi_handler = middleware(asgi_handler)
+        except ImportError:
+            asgi_handler = middleware(asgi_handler)
 
     # we keep the 2.x behaviour but add a check to see if the middleware is already in the stack, and raise a deprecation warning
     if app.csrf_config and not any(isinstance(middleware, CSRFMiddleware) for middleware in handler_middleware):
