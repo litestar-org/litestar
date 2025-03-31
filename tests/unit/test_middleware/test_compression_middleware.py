@@ -126,7 +126,6 @@ def test_brotli_gzip_fallback_disabled(handler: HTTPRouteHandler) -> None:
         assert int(response.headers["Content-Length"]) == 40000
 
 
-@pytest.mark.skip("This test hangs currently with the refactor")
 async def test_skips_for_websocket() -> None:
     @websocket("/")
     async def websocket_handler(socket: WebSocket) -> None:

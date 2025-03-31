@@ -4,7 +4,7 @@ from io import BytesIO
 from typing import TYPE_CHECKING, Any, Literal
 
 from litestar.datastructures import Headers, MutableScopeHeaders
-from litestar.enums import CompressionEncoding
+from litestar.enums import CompressionEncoding, ScopeType
 from litestar.middleware import ASGIMiddleware
 from litestar.middleware.compression.gzip_facade import GzipCompression
 from litestar.utils.empty import value_or_default
@@ -33,6 +33,8 @@ class CompressionMiddleware(ASGIMiddleware):
 
     This is a wrapper allowing for generic compression configuration / handler middleware
     """
+
+    scopes = (ScopeType.HTTP,)
 
     def __init__(self, config: CompressionConfig) -> None:
         """Initialize ``CompressionMiddleware``
