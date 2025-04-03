@@ -8,7 +8,6 @@ from typing_extensions import TypeVar
 
 from litestar.datastructures import Cookie
 from litestar.enums import MediaType
-from litestar.middleware import DefineMiddleware
 from litestar.openapi.spec import Components, OAuthFlow, OAuthFlows, SecurityRequirement, SecurityScheme
 from litestar.security.base import AbstractSecurityConfig
 from litestar.security.jwt.middleware import JWTAuthenticationMiddleware, JWTCookieAuthenticationMiddleware
@@ -18,6 +17,7 @@ from litestar.types import ControllerRouterHandler, Empty, Guard, Method, Scopes
 
 __all__ = ("BaseJWTAuth", "JWTAuth", "JWTCookieAuth", "OAuth2Login", "OAuth2PasswordBearerAuth")
 
+from litestar.utils import warn_deprecation
 
 if TYPE_CHECKING:
     from collections.abc import Iterable, Sequence
@@ -68,7 +68,6 @@ class BaseJWTAuth(Generic[UserType, TokenT], AbstractSecurityConfig[UserType, To
     """Description for the OpenAPI security scheme."""
     authentication_middleware_class: type[JWTAuthenticationMiddleware]  # pyright: ignore
     """The authentication middleware class to use.
-
     Must inherit from :class:`JWTAuthenticationMiddleware`
     """
     token_cls: type[Token] = Token
@@ -128,32 +127,15 @@ class BaseJWTAuth(Generic[UserType, TokenT], AbstractSecurityConfig[UserType, To
         return {self.openapi_security_scheme_name: []}
 
     @property
-    def middleware(self) -> DefineMiddleware:
-        """Create :class:`JWTAuthenticationMiddleware` wrapped in
-        :class:`DefineMiddleware <.middleware.base.DefineMiddleware>`.
-
-        Returns:
-            An instance of :class:`DefineMiddleware <.middleware.base.DefineMiddleware>`.
-        """
-        return DefineMiddleware(
-            self.authentication_middleware_class,
-            algorithm=self.algorithm,
-            auth_header=self.auth_header,
-            exclude=self.exclude,
-            exclude_opt_key=self.exclude_opt_key,
-            exclude_http_methods=self.exclude_http_methods,
-            retrieve_user_handler=self.retrieve_user_handler,
-            revoked_token_handler=self.revoked_token_handler,
-            scopes=self.scopes,
-            token_secret=self.token_secret,
-            token_cls=self.token_cls,
-            token_issuer=self.accepted_issuers,
-            token_audience=self.accepted_audiences,
-            require_claims=self.require_claims,
-            verify_expiry=self.verify_expiry,
-            verify_not_before=self.verify_not_before,
-            strict_audience=self.strict_audience,
+    def middleware(self) -> JWTAuthenticationMiddleware:
+        warn_deprecation(
+            deprecated_name="litestar.security.jwt.auth.BaseJWTAuth.middleware",
+            version="3.0",
+            kind="property",
+            removal_in="4.0",
+            info="Security middlewares should be configured using the middlewares directly instead of using this property.",
         )
+        return self.authentication_middleware_class(self)
 
     def login(
         self,
@@ -287,7 +269,7 @@ class JWTAuth(Generic[UserType, TokenT], BaseJWTAuth[UserType, TokenT]):
     returning True if revoked, False otherwise."""
     guards: Iterable[Guard] | None = field(default=None)
     """An iterable of guards to call for requests, providing authorization functionalities."""
-    exclude: str | list[str] | None = field(default=None)
+    exclude: str | tuple[str, ...] | None = field(default=None)
     """A pattern or list of patterns to skip in the authentication middleware."""
     exclude_opt_key: str = field(default="exclude_from_auth")
     """An identifier to use on routes to disable authentication and authorization checks for a particular route."""
@@ -321,7 +303,6 @@ class JWTAuth(Generic[UserType, TokenT], BaseJWTAuth[UserType, TokenT]):
     """Description for the OpenAPI security scheme."""
     authentication_middleware_class: type[JWTAuthenticationMiddleware] = field(default=JWTAuthenticationMiddleware)
     """The authentication middleware class to use.
-
     Must inherit from :class:`JWTAuthenticationMiddleware`
     """
     token_cls: type[Token] = Token
@@ -378,7 +359,7 @@ class JWTCookieAuth(Generic[UserType, TokenT], BaseJWTAuth[UserType, TokenT]):
     returning True if revoked, False otherwise."""
     guards: Iterable[Guard] | None = field(default=None)
     """An iterable of guards to call for requests, providing authorization functionalities."""
-    exclude: str | list[str] | None = field(default=None)
+    exclude: str | tuple[str, ...] | None = field(default=None)
     """A pattern or list of patterns to skip in the authentication middleware."""
     exclude_opt_key: str = field(default="exclude_from_auth")
     """An identifier to use on routes to disable authentication and authorization checks for a particular route."""
@@ -470,35 +451,6 @@ class JWTCookieAuth(Generic[UserType, TokenT], BaseJWTAuth[UserType, TokenT]):
                     description=self.description,
                 )
             }
-        )
-
-    @property
-    def middleware(self) -> DefineMiddleware:
-        """Create :class:`JWTCookieAuthenticationMiddleware` wrapped in
-            :class:`DefineMiddleware <.middleware.base.DefineMiddleware>`.
-
-        Returns:
-            An instance of :class:`DefineMiddleware <.middleware.base.DefineMiddleware>`.
-        """
-        return DefineMiddleware(
-            self.authentication_middleware_class,
-            algorithm=self.algorithm,
-            auth_cookie_key=self.key,
-            auth_header=self.auth_header,
-            exclude=self.exclude,
-            exclude_opt_key=self.exclude_opt_key,
-            exclude_http_methods=self.exclude_http_methods,
-            retrieve_user_handler=self.retrieve_user_handler,
-            revoked_token_handler=self.revoked_token_handler,
-            scopes=self.scopes,
-            token_secret=self.token_secret,
-            token_cls=self.token_cls,
-            token_issuer=self.accepted_issuers,
-            token_audience=self.accepted_audiences,
-            require_claims=self.require_claims,
-            verify_expiry=self.verify_expiry,
-            verify_not_before=self.verify_not_before,
-            strict_audience=self.strict_audience,
         )
 
     def login(
@@ -616,7 +568,7 @@ class OAuth2PasswordBearerAuth(Generic[UserType, TokenT], BaseJWTAuth[UserType, 
     returning True if revoked, False otherwise."""
     guards: Iterable[Guard] | None = field(default=None)
     """An iterable of guards to call for requests, providing authorization functionalities."""
-    exclude: str | list[str] | None = field(default=None)
+    exclude: str | tuple[str, ...] | None = field(default=None)
     """A pattern or list of patterns to skip in the authentication middleware."""
     exclude_opt_key: str = field(default="exclude_from_auth")
     """An identifier to use on routes to disable authentication and authorization checks for a particular route."""
@@ -665,7 +617,6 @@ class OAuth2PasswordBearerAuth(Generic[UserType, TokenT], BaseJWTAuth[UserType, 
         default=JWTCookieAuthenticationMiddleware
     )
     """The authentication middleware class to use.
-
     Must inherit from :class:`JWTCookieAuthenticationMiddleware`
     """
     token_cls: type[Token] = Token
@@ -691,35 +642,6 @@ class OAuth2PasswordBearerAuth(Generic[UserType, TokenT], BaseJWTAuth[UserType, 
     not a list of values, and matches ``audience`` exactly. Requires that
     ``accepted_audiences`` is a sequence of length 1
     """
-
-    @property
-    def middleware(self) -> DefineMiddleware:
-        """Create ``JWTCookieAuthenticationMiddleware`` wrapped in
-            :class:`DefineMiddleware <.middleware.base.DefineMiddleware>`.
-
-        Returns:
-            An instance of :class:`DefineMiddleware <.middleware.base.DefineMiddleware>`.
-        """
-        return DefineMiddleware(
-            self.authentication_middleware_class,
-            algorithm=self.algorithm,
-            auth_cookie_key=self.key,
-            auth_header=self.auth_header,
-            exclude=self.exclude,
-            exclude_opt_key=self.exclude_opt_key,
-            exclude_http_methods=self.exclude_http_methods,
-            retrieve_user_handler=self.retrieve_user_handler,
-            revoked_token_handler=self.revoked_token_handler,
-            scopes=self.scopes,
-            token_secret=self.token_secret,
-            token_cls=self.token_cls,
-            token_issuer=self.accepted_issuers,
-            token_audience=self.accepted_audiences,
-            require_claims=self.require_claims,
-            verify_expiry=self.verify_expiry,
-            verify_not_before=self.verify_not_before,
-            strict_audience=self.strict_audience,
-        )
 
     @property
     def oauth_flow(self) -> OAuthFlow:

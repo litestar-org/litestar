@@ -68,7 +68,6 @@ if TYPE_CHECKING:
     from litestar.config.compression import CompressionConfig
     from litestar.config.cors import CORSConfig
     from litestar.config.csrf import CSRFConfig
-    from litestar.contrib.opentelemetry import OpenTelemetryPlugin
     from litestar.datastructures import CacheControlHeader, ETag
     from litestar.dto import AbstractDTO
     from litestar.events.listener import EventListener
@@ -400,7 +399,6 @@ class Litestar(Router):
         for handler in chain(
             on_app_init or [],
             (p.on_app_init for p in config.plugins if isinstance(p, InitPluginProtocol)),
-            [self._patch_opentelemetry_middleware],
         ):
             config = handler(config)  # pyright: ignore
 
@@ -511,23 +509,6 @@ class Litestar(Router):
             self.logger = self.get_logger("litestar")
 
         self.asgi_handler = self._create_asgi_handler()
-
-    @staticmethod
-    def _patch_opentelemetry_middleware(config: AppConfig) -> AppConfig:
-        # workaround to support otel middleware priority. Should be replaced by regular
-        # middleware priorities once available
-        try:
-            from litestar.contrib.opentelemetry import OpenTelemetryPlugin
-
-            if not any(isinstance(p, OpenTelemetryPlugin) for p in config.plugins):
-                config.middleware, otel_middleware = OpenTelemetryPlugin._pop_otel_middleware(config.middleware)
-                if otel_middleware:
-                    otel_plugin = OpenTelemetryPlugin()
-                    otel_plugin._middleware = otel_middleware
-                    config.plugins = [*config.plugins, otel_plugin]
-        except ImportError:
-            pass
-        return config
 
     @property
     @deprecated(version="2.0", alternative="Litestar.plugins.cli", kind="property")
@@ -978,16 +959,22 @@ class Litestar(Router):
         """
         asgi_handler = wrap_in_exception_handler(app=self.asgi_router)
 
-        if self.cors_config:
-            asgi_handler = CORSMiddleware(app=asgi_handler, config=self.cors_config)
+        if any(isinstance(m, CORSMiddleware) for m in self.middleware):
+            cors_middleware = next(m for m in self.middleware if isinstance(m, CORSMiddleware))
+            asgi_handler = cors_middleware(asgi_handler)
 
         try:
-            otel_plugin: OpenTelemetryPlugin = self.plugins.get("OpenTelemetryPlugin")
-            asgi_handler = otel_plugin.middleware(app=asgi_handler)
-        except KeyError:
-            pass
+            from litestar.contrib.opentelemetry import OpenTelemetryInstrumentationMiddleware
 
-        return asgi_handler
+            if any(isinstance(m, OpenTelemetryInstrumentationMiddleware) for m in self.middleware):
+                opentelemetry_middleware = next(
+                    m for m in self.middleware if isinstance(m, OpenTelemetryInstrumentationMiddleware)
+                )
+                asgi_handler = opentelemetry_middleware(asgi_handler)
+
+            return asgi_handler
+        except ImportError:
+            return asgi_handler
 
     def _wrap_send(self, send: Send, scope: Scope) -> Send:
         """Wrap the ASGI send and handles any 'before send' hooks.

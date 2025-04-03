@@ -7,7 +7,7 @@ from pydantic import BaseModel, EmailStr
 from litestar import Litestar, Request, Response, get, post
 from litestar.connection import ASGIConnection
 from litestar.openapi.config import OpenAPIConfig
-from litestar.security.jwt import JWTAuth, Token
+from litestar.security.jwt import JWTAuth, JWTAuthenticationMiddleware, Token
 
 
 # Let's assume we have a User model that is a pydantic model.
@@ -78,7 +78,7 @@ async def logout_handler(request: Request["User", Token, Any]) -> dict[str, str]
 
 
 # We also have some other routes, for example:
-@get("/some-path", sync_to_thread=False, middleware=[jwt_auth.middleware])
+@get("/some-path", sync_to_thread=False, middleware=[JWTAuthenticationMiddleware(jwt_auth)])
 def some_route_handler(request: "Request[User, Token, Any]") -> Any:
     # request.user is set to the instance of user returned by the middleware
     assert isinstance(request.user, User)
@@ -97,6 +97,6 @@ openapi_config = OpenAPIConfig(
 # The hook handler will inject the JWT middleware and openapi configuration into the app.
 app = Litestar(
     route_handlers=[login_handler, logout_handler, some_route_handler],
-    on_app_init=[jwt_auth.on_app_init],
+    middleware=[JWTAuthenticationMiddleware(jwt_auth)],
     openapi_config=openapi_config,
 )

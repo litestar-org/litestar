@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import re
-from collections.abc import Sequence
 from re import Pattern
 from typing import TYPE_CHECKING
 
@@ -12,7 +11,7 @@ __all__ = ("build_exclude_path_pattern", "should_bypass_middleware")
 from litestar.utils.warnings import warn_middleware_excluded_on_all_routes
 
 if TYPE_CHECKING:
-    from collections.abc import Iterable, Sequence
+    from collections.abc import Container, Iterable
 
     from litestar.types import Method, Scope, Scopes
 
@@ -50,7 +49,7 @@ def build_exclude_path_pattern(
 
 def should_bypass_middleware(
     *,
-    exclude_http_methods: Sequence[Method] | None = None,
+    exclude_http_methods: Container[Method] | None = None,
     exclude_opt_key: str | None = None,
     exclude_path_pattern: Pattern | None = None,
     scope: Scope,

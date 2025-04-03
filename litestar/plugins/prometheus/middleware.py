@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING, Any, Callable, ClassVar, cast
 from litestar.connection.request import Request
 from litestar.enums import ScopeType
 from litestar.exceptions import MissingDependencyException
-from litestar.middleware.base import AbstractMiddleware
+from litestar.middleware import ASGIMiddleware
 
 __all__ = ("PrometheusMiddleware",)
 
@@ -27,21 +27,21 @@ if TYPE_CHECKING:
     from litestar.types import ASGIApp, Message, Receive, Scope, Send
 
 
-class PrometheusMiddleware(AbstractMiddleware):
+class PrometheusMiddleware(ASGIMiddleware):
     """Prometheus Middleware."""
 
     _metrics: ClassVar[dict[str, MetricWrapperBase]] = {}
 
-    def __init__(self, app: ASGIApp, config: PrometheusConfig) -> None:
+    def __init__(self, config: PrometheusConfig) -> None:
         """Middleware that adds Prometheus instrumentation to the application.
 
         Args:
-            app: The ``next`` ASGI app to call.
             config: An instance of :class:`PrometheusConfig <.plugins.prometheus.PrometheusConfig>`
         """
-        super().__init__(app=app, scopes=config.scopes, exclude=config.exclude, exclude_opt_key=config.exclude_opt_key)
         self._config = config
         self._kwargs: dict[str, Any] = {}
+        self.exclude_opt_key = config.exclude_opt_key
+        self.exclude_path_pattern = config.exclude
 
         if self._config.buckets is not None:
             self._kwargs["buckets"] = self._config.buckets
@@ -125,22 +125,11 @@ class PrometheusMiddleware(AbstractMiddleware):
             "app_name": self._config.app_name,
         }
 
-    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
-        """ASGI callable.
-
-        Args:
-            scope: The ASGI connection scope.
-            receive: The ASGI receive function.
-            send: The ASGI send function.
-
-        Returns:
-            None
-        """
-
+    async def handle(self, scope: Scope, receive: Receive, send: Send, next_app: ASGIApp) -> None:
         request = Request[Any, Any, Any](scope, receive)
 
         if self._config.excluded_http_methods and request.method in self._config.excluded_http_methods:
-            await self.app(scope, receive, send)
+            await next_app(scope, receive, send)
             return
 
         labels = {**self._get_default_labels(request), **self._get_extra_labels(request)}
@@ -152,7 +141,7 @@ class PrometheusMiddleware(AbstractMiddleware):
         self.requests_in_progress(labels).labels(*labels.values()).inc()
 
         try:
-            await self.app(scope, receive, wrapped_send)
+            await next_app(scope, receive, wrapped_send)
         finally:
             extra: dict[str, Any] = {}
             if self._config.exemplars:

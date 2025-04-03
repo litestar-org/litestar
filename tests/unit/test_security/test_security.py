@@ -11,6 +11,7 @@ from litestar.middleware.session.server_side import (
 from litestar.openapi.config import OpenAPIConfig
 from litestar.openapi.spec import Components, SecurityScheme
 from litestar.security.session_auth import SessionAuth
+from litestar.security.session_auth.plugin import SessionPlugin
 from litestar.status_codes import HTTP_200_OK
 from litestar.testing import create_test_client
 
@@ -33,7 +34,10 @@ def test_abstract_security_config_sets_guards(session_backend_config_memory: Ser
         guards=[guard],
     )
 
-    with create_test_client([], on_app_init=[security_config.on_app_init]) as client:
+    with create_test_client(
+        [],
+        plugins=[SessionPlugin(security_config)],
+    ) as client:
         assert client.app.guards
 
 
@@ -44,7 +48,10 @@ def test_abstract_security_config_sets_dependencies(session_backend_config_memor
         dependencies={"value": Provide(lambda: 13, sync_to_thread=False)},
     )
 
-    with create_test_client([], on_app_init=[security_config.on_app_init]) as client:
+    with create_test_client(
+        [],
+        plugins=[SessionPlugin(security_config)],
+    ) as client:
         assert client.app.dependencies.get("value")
 
 
@@ -58,12 +65,15 @@ def test_abstract_security_config_registers_route_handlers(
 
     security_config = SessionAuth[Any, ServerSideSessionBackend](
         retrieve_user_handler=retrieve_user_handler,
-        exclude=["/"],
+        exclude=("/"),
         session_backend_config=session_backend_config_memory,
         route_handlers=[handler],
     )
 
-    with create_test_client([], on_app_init=[security_config.on_app_init]) as client:
+    with create_test_client(
+        [],
+        plugins=[SessionPlugin(security_config)],
+    ) as client:
         response = client.get("/")
         assert response.status_code == HTTP_200_OK
         assert response.json() == {"hello": "world"}
@@ -151,9 +161,15 @@ def test_abstract_security_config_setting_openapi_components(
     openapi_config: Optional["OpenAPIConfig"], expected: dict, session_backend_config_memory: ServerSideSessionConfig
 ) -> None:
     security_config = SessionAuth[Any, ServerSideSessionBackend](
-        retrieve_user_handler=retrieve_user_handler, exclude=["/"], session_backend_config=session_backend_config_memory
+        retrieve_user_handler=retrieve_user_handler,
+        exclude=("^/$"),
+        session_backend_config=session_backend_config_memory,
     )
-    with create_test_client([], on_app_init=[security_config.on_app_init], openapi_config=openapi_config) as client:
+    with create_test_client(
+        [],
+        openapi_config=openapi_config,
+        plugins=[SessionPlugin(security_config)],
+    ) as client:
         if openapi_config is not None:
             assert client.app.openapi_schema
             assert client.app.openapi_config
@@ -178,10 +194,16 @@ def test_abstract_security_config_setting_openapi_security_requirements(
     openapi_config: Optional[OpenAPIConfig], expected: list, session_backend_config_memory: ServerSideSessionConfig
 ) -> None:
     security_config = SessionAuth[Any, ServerSideSessionBackend](
-        retrieve_user_handler=retrieve_user_handler, exclude=["/"], session_backend_config=session_backend_config_memory
+        retrieve_user_handler=retrieve_user_handler,
+        exclude=("^/$"),
+        session_backend_config=session_backend_config_memory,
     )
 
-    with create_test_client([], on_app_init=[security_config.on_app_init], openapi_config=openapi_config) as client:
+    with create_test_client(
+        [],
+        plugins=[SessionPlugin(security_config)],
+        openapi_config=openapi_config,
+    ) as client:
         if openapi_config is not None:
             assert client.app.openapi_config
             assert client.app.openapi_config.security

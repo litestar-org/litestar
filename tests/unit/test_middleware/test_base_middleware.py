@@ -3,7 +3,7 @@ from warnings import catch_warnings
 
 import pytest
 
-from litestar import MediaType, asgi, get
+from litestar import HttpMethod, MediaType, asgi, get, route
 from litestar.datastructures.headers import MutableScopeHeaders
 from litestar.exceptions import LitestarWarning, ValidationException
 from litestar.middleware import AbstractMiddleware, ASGIMiddleware, DefineMiddleware
@@ -314,13 +314,13 @@ def test_asgi_middleware_exclude_by_opt_key() -> None:
         exclude_opt_key = "exclude_route"
 
         async def handle(self, scope: "Scope", receive: "Receive", send: "Send", next_app: "ASGIApp") -> None:
-            async def _send(message: "Message") -> None:
+            async def wrapped_send(message: "Message") -> None:
                 if message["type"] == "http.response.start":
                     headers = MutableScopeHeaders(message)
                     headers.add("test", str(123))
                 await send(message)
 
-                await next_app(scope, receive, send)
+            await next_app(scope, receive, wrapped_send)
 
     @get("/", exclude_route=True)
     def handler() -> dict:
@@ -329,3 +329,25 @@ def test_asgi_middleware_exclude_by_opt_key() -> None:
     with create_test_client(handler, middleware=[SubclassMiddleware()]) as client:
         response = client.get("/")
         assert "test" not in response.headers
+
+
+def test_asgi_middleware_exclude_by_http_method() -> None:
+    class SubclassMiddleware(ASGIMiddleware):
+        exclude_http_methods = (HttpMethod.POST,)
+
+        async def handle(self, scope: "Scope", receive: "Receive", send: "Send", next_app: "ASGIApp") -> None:
+            async def wrapped_send(message: "Message") -> None:
+                if message["type"] == "http.response.start":
+                    headers = MutableScopeHeaders(message)
+                    headers.add("test", str(123))
+                await send(message)
+
+            await next_app(scope, receive, wrapped_send)
+
+    @route("/", http_method=[HttpMethod.GET, HttpMethod.POST])
+    def handler() -> dict:
+        return {"hello": "world"}
+
+    with create_test_client(handler, middleware=[SubclassMiddleware()]) as client:
+        assert "test" in client.get("/").headers
+        assert "test" not in client.post("/").headers

@@ -13,6 +13,8 @@ from litestar.config.compression import CompressionConfig
 from litestar.config.response_cache import CACHE_FOREVER, ResponseCacheConfig
 from litestar.datastructures import State
 from litestar.enums import CompressionEncoding
+from litestar.middleware._internal.exceptions import ExceptionHandlerMiddleware
+from litestar.middleware.compression import CompressionMiddleware
 from litestar.middleware.response_cache import ResponseCacheMiddleware
 from litestar.status_codes import HTTP_200_OK, HTTP_201_CREATED, HTTP_400_BAD_REQUEST, HTTP_500_INTERNAL_SERVER_ERROR
 from litestar.stores.base import Store
@@ -220,14 +222,12 @@ def test_middleware_not_applied_to_non_cached_routes(
     def handler() -> None: ...
 
     client = create_test_client(route_handlers=[handler])
-    unpacked_middleware = []
     cur = client.app.asgi_router.root_route_map_node.children["/"].asgi_handlers["GET"][0]
-    while hasattr(cur, "app"):
-        unpacked_middleware.append(cur)
-        cur = cur.app
-    unpacked_middleware.append(cur)
-
-    assert len([m for m in unpacked_middleware if isinstance(m, ResponseCacheMiddleware)]) == int(expect_applied)
+    assert (
+        ResponseCacheMiddleware.__call__.__qualname__ in cur.__qualname__
+        if expect_applied
+        else isinstance(cur, ExceptionHandlerMiddleware)
+    )
 
 
 async def test_compression_applies_before_cache() -> None:
@@ -240,7 +240,7 @@ async def test_compression_applies_before_cache() -> None:
 
     app = Litestar(
         route_handlers=[handler_fn],
-        compression_config=CompressionConfig(backend="gzip"),
+        middleware=[CompressionMiddleware(CompressionConfig(backend="gzip"))],
     )
 
     with TestClient(app) as client:
