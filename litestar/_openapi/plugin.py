@@ -86,7 +86,7 @@ class OpenAPIPlugin(InitPlugin, ReceiveRoutePlugin):
         """
         path = route.path_format or "/"
         if self.app.path != "/":
-            return path.replace(self.app.path, "") or "/"
+            return path[len(self.app.path) :] or "/"
         return path
 
     def _build_openapi(self) -> OpenAPI:
