@@ -4,6 +4,7 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 from litestar.openapi.spec.base import BaseSchemaObject
+from litestar.utils import normalize_path
 
 if TYPE_CHECKING:
     from litestar.openapi.spec.server_variable import ServerVariable
@@ -32,3 +33,7 @@ class Server(BaseSchemaObject):
 
     variables: dict[str, ServerVariable] | None = None
     """A map between a variable name and its value. The value is used for substitution in the server's URL template."""
+
+    def __post_init__(self) -> None:
+        """Normalize the url."""
+        self.url = normalize_path(self.url)
