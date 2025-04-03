@@ -956,7 +956,6 @@ class Litestar(Router):
         """Create an ASGIApp that wraps the ASGI router inside an exception handler.
 
         If CORS or TrustedHost configs are provided to the constructor, they will wrap the router as well.
-        ## TODO: modify the above as I dont see any TrustedHost on this, handled below in build_middleware_stack ?
         """
         asgi_handler = wrap_in_exception_handler(app=self.asgi_router)
 
