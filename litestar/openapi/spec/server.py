@@ -36,4 +36,5 @@ class Server(BaseSchemaObject):
 
     def __post_init__(self) -> None:
         """Normalize the url."""
-        self.url = normalize_path(self.url)
+        if self.url.startswith("http") is False:
+            self.url = normalize_path(self.url)
