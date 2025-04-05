@@ -167,6 +167,8 @@ class BaseLoggingConfig(ABC):
     """
     exception_logging_handler: ExceptionLoggingHandler | None
     """Handler function for logging exceptions."""
+    disable_stack_trace: list[int]
+    """List of http status codes to disable stack trace logging for."""
 
     @abstractmethod
     def configure(self) -> GetLogger:
@@ -244,6 +246,8 @@ class LoggingConfig(BaseLoggingConfig):
     """Should the root logger be configured, defaults to True for ease of configuration."""
     log_exceptions: Literal["always", "debug", "never"] = field(default="debug")
     """Should exceptions be logged, defaults to log exceptions when 'app.debug == True'"""
+    disable_stack_trace: list[int] = field(default_factory=list)
+    """List of http status codes to disable stack trace logging for."""
     traceback_line_limit: int = field(default=-1)
     """Max number of lines to print for exception traceback.
 
@@ -476,6 +480,8 @@ class StructLoggingConfig(BaseLoggingConfig):
     """Whether to cache the logger configuration and reuse."""
     log_exceptions: Literal["always", "debug", "never"] = field(default="debug")
     """Should exceptions be logged, defaults to log exceptions when 'app.debug == True'"""
+    disable_stack_trace: list[int] = field(default_factory=list)
+    """List of http status codes to disable stack trace logging for."""
     traceback_line_limit: int = field(default=-1)
     """Max number of lines to print for exception traceback.
 

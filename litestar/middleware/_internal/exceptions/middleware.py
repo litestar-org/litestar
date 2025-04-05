@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import contextlib
 from inspect import getmro
 from sys import exc_info
 from traceback import format_exception
@@ -256,8 +257,18 @@ class ExceptionHandlerMiddleware:
         Returns:
             None
         """
+        exc = exc_info()
+        status_code = HTTP_500_INTERNAL_SERVER_ERROR
+
+        with contextlib.suppress(Exception):
+            status_code = exc[1].__class__.status_code  # type: ignore[attr-defined]
+
         if (
-            logging_config.log_exceptions == "always"
-            or (logging_config.log_exceptions == "debug" and self._get_debug_scope(scope))
-        ) and logging_config.exception_logging_handler:
-            logging_config.exception_logging_handler(logger, scope, format_exception(*exc_info()))
+            (
+                logging_config.log_exceptions == "always"
+                or (logging_config.log_exceptions == "debug" and self._get_debug_scope(scope))
+            )
+            and logging_config.exception_logging_handler
+            and status_code not in logging_config.disable_stack_trace
+        ):
+            logging_config.exception_logging_handler(logger, scope, format_exception(*exc))
