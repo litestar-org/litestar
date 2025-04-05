@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import contextlib
 from inspect import getmro
 from sys import exc_info
 from traceback import format_exception
@@ -260,8 +259,11 @@ class ExceptionHandlerMiddleware:
         exc = exc_info()
         exception_type = exc[0]
 
-        with contextlib.suppress(AttributeError):
-            exception_type = exc[0].status_code  # type: ignore[attr-defined]
+        exception_status = None
+        if hasattr(exc[1], "status_code"):
+            exception_status = exc[1].status_code  # type: ignore[attr-defined]
+
+        check_value = exception_status if exception_status is not None else exception_type
 
         if (
             (
@@ -269,6 +271,6 @@ class ExceptionHandlerMiddleware:
                 or (logging_config.log_exceptions == "debug" and self._get_debug_scope(scope))
             )
             and logging_config.exception_logging_handler
-            and exception_type not in logging_config.disable_stack_trace
+            and check_value not in logging_config.disable_stack_trace
         ):
             logging_config.exception_logging_handler(logger, scope, format_exception(*exc))
