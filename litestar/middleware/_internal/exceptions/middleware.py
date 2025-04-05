@@ -260,8 +260,8 @@ class ExceptionHandlerMiddleware:
         exception_type = exc[0]
 
         exception_status = None
-        if hasattr(exc[1], "status_code"):
-            exception_status = exc[1].status_code  # type: ignore[attr-defined]
+        if hasattr(exception_type, "status_code"):
+            exception_status = exception_type.status_code  # type: ignore[attr-defined]
 
         check_value = exception_status if exception_status is not None else exception_type
 
