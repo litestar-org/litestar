@@ -258,10 +258,10 @@ class ExceptionHandlerMiddleware:
             None
         """
         exc = exc_info()
-        status_code = HTTP_500_INTERNAL_SERVER_ERROR
+        exception_type = exc[0]
 
-        with contextlib.suppress(Exception):
-            status_code = exc[1].__class__.status_code  # type: ignore[attr-defined]
+        with contextlib.suppress(AttributeError):
+            exception_type = exc[0].status_code  # type: ignore[attr-defined]
 
         if (
             (
@@ -269,6 +269,6 @@ class ExceptionHandlerMiddleware:
                 or (logging_config.log_exceptions == "debug" and self._get_debug_scope(scope))
             )
             and logging_config.exception_logging_handler
-            and status_code not in logging_config.disable_stack_trace
+            and exception_type not in logging_config.disable_stack_trace
         ):
             logging_config.exception_logging_handler(logger, scope, format_exception(*exc))
