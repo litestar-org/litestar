@@ -119,7 +119,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        typing-extensions: ["4.12.1", "4.13.1"]
+        typing-extensions: ["4.12.1", "4.13.1", "latest"]
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -135,8 +135,19 @@ jobs:
           version: "0.6.12"
           enable-cache: true
 
+      - name: Install dependencies
+        run: uv sync
+
+      - name: Install typing-extensions
+        if: typing-extensions != 'latest'
+        run: uv pip install typing-extensions==${{ matrix.typing-extensions }}"
+
+      - name: Install typing-extensions
+        if: typing-extensions == 'latest'
+        run: uv pip install typing-extensions --upgrade --prerelease=allow
+
       - name: Test
-        run: uv run --with="typing-extensions==${{ matrix.typing-extensions }}" -- python -m pytest tests/unit/test_typing.py
+        run: uv run --no-sync -- python -m pytest tests/unit/test_typing.py
 
 
   test_integration:
