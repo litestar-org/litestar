@@ -139,11 +139,11 @@ jobs:
         run: uv sync
 
       - name: Install typing-extensions
-        if: typing-extensions != 'latest'
-        run: uv pip install typing-extensions==${{ matrix.typing-extensions }}"
+        if: ${{ matrix.typing-extensions != 'latest' }}
+        run: uv pip install typing-extensions=="${{ matrix.typing-extensions }}"
 
       - name: Install typing-extensions
-        if: typing-extensions == 'latest'
+        if: ${{ matrix.typing-extensions == 'latest' }}
         run: uv pip install typing-extensions --upgrade --prerelease=allow
 
       - name: Test
