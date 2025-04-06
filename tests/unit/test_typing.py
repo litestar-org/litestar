@@ -484,9 +484,6 @@ def test_warn_default_inside_kwarg_definition_and_default_empty() -> None:
     ],
 )
 def test_is_type_alias_type(annotation: Any) -> None:
-    from importlib.metadata import version
-
-    assert version("typing_extensions") == "4.13.0"
     field_definition = FieldDefinition.from_annotation(annotation)
     assert field_definition.is_type_alias_type
 
