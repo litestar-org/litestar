@@ -564,7 +564,7 @@ def test_traceback_line_limit_deprecation(traceback_line_limit: int, expected_wa
 )
 def test_disable_stack_trace(
     disable_stack_trace: Set[Union[int, Type[Exception]]],
-    exception_to_raise: Exception,
+    exception_to_raise: Type[Exception],
     handler_called: bool,
 ) -> None:
     mock_handler = MagicMock()
@@ -576,10 +576,10 @@ def test_disable_stack_trace(
         raise exception_to_raise
 
     with create_test_client([error_route], logging_config=logging_config, debug=True) as client:
-        if exception_to_raise is not HTTPException:
-            _ = client.get("/error")
-        else:
+        if exception_to_raise is HTTPException:
             _ = client.get("/404-error")
+        else:
+            _ = client.get("/error")
 
         if handler_called:
             assert mock_handler.called, "Exception logging handler should have been called"

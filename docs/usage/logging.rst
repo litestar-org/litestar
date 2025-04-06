@@ -43,8 +43,8 @@ Application and request level loggers can be configured using the :class:`~lites
 Controlling Exception Logging
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-While ``log_exceptions`` controls when exceptions are logged, sometimes you may want to suppress stack traces for specific 
-exception types or HTTP status codes. The ``disable_stack_trace`` parameter allows you to specify a set of exception types 
+While ``log_exceptions`` controls when exceptions are logged, sometimes you may want to suppress stack traces for specific
+exception types or HTTP status codes. The ``disable_stack_trace`` parameter allows you to specify a set of exception types
 or status codes that should not generate stack traces in logs:
 
 .. code-block:: python
