@@ -69,7 +69,7 @@ from litestar import Litestar, get
 
 
 @get("/")
-def hello_world() -> dict[str, str]:
+async def hello_world() -> dict[str, str]:
     """Keeping the tradition alive with hello world."""
     return {"hello": "world"}
 
