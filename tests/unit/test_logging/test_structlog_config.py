@@ -1,7 +1,7 @@
 import datetime
 import sys
-from typing import Callable
-from unittest.mock import patch
+from typing import Callable, Set, Type, Union
+from unittest.mock import MagicMock, patch
 
 import pytest
 import structlog
@@ -10,6 +10,8 @@ from structlog import BytesLoggerFactory, get_logger
 from structlog.processors import JSONRenderer
 from structlog.types import BindableLogger, WrappedLogger
 
+from litestar import get
+from litestar.exceptions import HTTPException, NotFoundException
 from litestar.logging.config import LoggingConfig, StructlogEventFilter, StructLoggingConfig, default_json_serializer
 from litestar.plugins.structlog import StructlogConfig, StructlogPlugin
 from litestar.serialization import decode_json
@@ -172,3 +174,47 @@ def test_structlog_config_as_json(isatty: bool, pretty_print_tty: bool, expected
         isatty_mock.return_value = isatty
         logging_config = StructLoggingConfig(pretty_print_tty=pretty_print_tty)
         assert logging_config.as_json() is expected_as_json
+
+
+@pytest.mark.parametrize(
+    "disable_stack_trace, exception_to_raise, handler_called",
+    [
+        # will log the stack trace
+        [set(), HTTPException, True],
+        [set(), ValueError, True],
+        [{400}, HTTPException, True],
+        [{NameError}, ValueError, True],
+        [{400, NameError}, ValueError, True],
+        # will not log the stack trace
+        [{NotFoundException}, HTTPException, False],
+        [{404}, HTTPException, False],
+        [{ValueError}, ValueError, False],
+        [{400, ValueError}, ValueError, False],
+        [{404, NameError}, HTTPException, False],
+    ],
+)
+def test_structlog_disable_stack_trace(
+    disable_stack_trace: Set[Union[int, Type[Exception]]],
+    exception_to_raise: Exception,
+    handler_called: bool,
+) -> None:
+    mock_handler = MagicMock()
+
+    logging_config = StructLoggingConfig(
+        disable_stack_trace=disable_stack_trace, exception_logging_handler=mock_handler
+    )
+
+    @get("/error")
+    async def error_route() -> None:
+        raise exception_to_raise
+
+    with create_test_client([error_route], logging_config=logging_config, debug=True) as client:
+        if exception_to_raise is not HTTPException:
+            _ = client.get("/error")
+        else:
+            _ = client.get("/404-error")
+
+        if handler_called:
+            assert mock_handler.called, "Structlog exception handler should have been called"
+        else:
+            assert not mock_handler.called, "Structlog exception handler should not have been called"
