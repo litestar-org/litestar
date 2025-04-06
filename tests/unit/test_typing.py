@@ -18,7 +18,7 @@ from typing_extensions import (
 )
 
 try:
-    from typing import TypeAliasType
+    from typing import TypeAliasType  # type: ignore[attr-defined]
 except ImportError:
     TypeAliasType = TeTypeAliasType
 
@@ -479,8 +479,8 @@ def test_warn_default_inside_kwarg_definition_and_default_empty() -> None:
 @pytest.mark.parametrize(
     "annotation",
     [
-        pytest.param(TypeAliasType("IntAlias", int), id="typing.TypeAliasType"),
-        pytest.param(TeTypeAliasType("IntAlias", int), id="typing_extensions.TypeAliasType"),
+        pytest.param(TypeAliasType("IntAlias", int), id="typing.TypeAliasType"),  # pyright: ignore
+        pytest.param(TeTypeAliasType("IntAlias", int), id="typing_extensions.TypeAliasType"),  # pyright: ignore
     ],
 )
 def test_is_type_alias_type(annotation: Any) -> None:

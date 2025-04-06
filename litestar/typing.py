@@ -32,11 +32,11 @@ from typing_extensions import (
 )
 
 try:
-    from typing import TypeAliasType
+    from typing import TypeAliasType  # type: ignore[attr-defined]
 
     TypeAliasTypes = (TypeAliasType, TeTypeAliasType)
 except ImportError:
-    TypeAliasTypes = (TeTypeAliasType,)
+    TypeAliasTypes = (TeTypeAliasType,)  # type: ignore[assignment]
 
 from litestar.exceptions import ImproperlyConfiguredException, LitestarWarning
 from litestar.params import BodyKwarg, DependencyKwarg, KwargDefinition, ParameterKwarg
