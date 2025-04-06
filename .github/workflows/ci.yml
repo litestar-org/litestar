@@ -115,6 +115,41 @@ jobs:
       - name: Report success or fail
         run: exit ${{ needs.test.result == 'success' && '0' || '1' }}
 
+  test_typing_extensions:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        typing-extensions: ["4.12.1", "4.13.1", "latest"]
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up python
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.13
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          version: "0.6.12"
+          enable-cache: true
+
+      - name: Install dependencies
+        run: uv sync
+
+      - name: Install typing-extensions
+        if: ${{ matrix.typing-extensions != 'latest' }}
+        run: uv pip install typing-extensions=="${{ matrix.typing-extensions }}"
+
+      - name: Install typing-extensions
+        if: ${{ matrix.typing-extensions == 'latest' }}
+        run: uv pip install typing-extensions --upgrade --prerelease=allow
+
+      - name: Test
+        run: uv run --no-sync -- python -m pytest tests/unit/test_typing.py
+
+
   test_integration:
     name: Test server integration
     runs-on: ubuntu-latest

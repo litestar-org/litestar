@@ -3,6 +3,41 @@
 2.x Changelog
 =============
 
+.. changelog:: 2.15.2
+    :date: 2025-04-06
+
+    .. change:: Events: Fix error handling for synchronous handlers
+        :type: bugfix
+        :pr: 4045
+
+        Fix a bug where exceptions weren't handled correctly on synchronous event handlers,
+        and would result in another exception.
+
+        .. code-block:: python
+
+            @listener("raise_exception")
+            def raise_exception_if_odd(value) -> None:
+                if value is not None and value % 2 != 0:
+                    raise ValueError(f"{value} is odd")
+
+        Would raise an ``AttributeError: 'AsyncCallable' object has no attribute '__name__'. Did you mean: '__ne__'?``
+
+    .. change:: Fix wrong order of arguments in FileSystemAdapter passed to ``open`` fsspec file system
+        :type: bugfix
+        :pr: 4049
+
+        The order of arguments of various fsspec implementations varies, causing ``FileSystemAdapter.open`` to fail in
+        different ways. This was fixed by always passing arguments as keywords to the file system.
+
+    .. change:: Correctly handle ``typing_extensions.TypeAliasType`` on ``typing-extensions>4.13.0``
+        :type: bugfix
+        :pr: 4089
+        :issue: 4088
+
+        Handle the diverging ``TypeAliasType`` introduced in typing-extensions ``4.13.0``; This type is no longer
+        backwards compatible, as it is a distinct new type from ``typing.TypeAliasType``
+
+
 .. changelog:: 2.15.1
     :date: 2025-02-27
 
