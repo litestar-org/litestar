@@ -21,9 +21,7 @@ InitPlugin
 Init plugins can define dependencies, add route handlers, configure middleware, and much more!
 
 Implementations of these plugins must define a single method:
-
 :meth:`on_app_init(self, app_config: AppConfig) -> AppConfig: <litestar.plugins.InitPlugin.on_app_init>`
-----------------------------------------------------------------------------------------------------------------
 
 The method accepts and must return an :class:`AppConfig <litestar.config.app.AppConfig>` instance, which can be modified
 and is later used to instantiate the application.
@@ -57,14 +55,12 @@ that are otherwise unsupported by the framework.
 
 Implementations of these plugins must define the following methods.
 
-:meth:`supports_type(self, field_definition: FieldDefinition) -> bool: <litestar.plugins.SerializationPluginProtocol>`
-----------------------------------------------------------------------------------------------------------------------
+1. :meth:`supports_type(self, field_definition: FieldDefinition) -> bool: <litestar.plugins.SerializationPluginProtocol>`
 
 The method takes a :class:`FieldDefinition <litestar.typing.FieldDefinition>` instance as an argument and returns a :class:`bool`
 indicating whether the plugin supports serialization for that type.
 
-:meth:`create_dto_for_type(self, field_definition: FieldDefinition) -> type[AbstractDTO]: <litestar.plugins.SerializationPluginProtocol.create_dto_for_type>`
---------------------------------------------------------------------------------------------------------------------------------------------------------------
+2. :meth:`create_dto_for_type(self, field_definition: FieldDefinition) -> type[AbstractDTO]: <litestar.plugins.SerializationPluginProtocol.create_dto_for_type>`
 
 This method accepts a :class:`FieldDefinition <litestar.typing.FieldDefinition>` instance as an argument and must return a
 :class:`AbstractDTO <litestar.dto.base_dto.AbstractDTO>` implementation that can be used to serialize and deserialize

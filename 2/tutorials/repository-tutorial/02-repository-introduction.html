@@ -53,7 +53,7 @@
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="Working with Controllers and Repositories" href="03-repository-controller.html" />
-    <link rel="prev" title="Introduction to Database Modeling and Repository Features" href="01-modeling-and-features.html" />
+    <link rel="prev" title="Introduction to Database Modelling and Repository Features" href="01-modelling-and-features.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -1463,7 +1463,7 @@ document.write(`
 </ul>
 </li>
 <li class="toctree-l2 current active has-children"><a class="reference internal" href="index.html">SQLAlchemy Repository Tutorial</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-34" name="toctree-checkbox-34" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-34"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="01-modeling-and-features.html">Introduction to Database Modeling and Repository Features</a></li>
+<li class="toctree-l3"><a class="reference internal" href="01-modelling-and-features.html">Introduction to Database Modelling and Repository Features</a></li>
 
 
 <li class="toctree-l3 current active"><a class="current reference internal" href="#">Interacting with repositories</a></li>
@@ -1546,7 +1546,7 @@ document.write(`
                   
   <section id="interacting-with-repositories">
 <h1>Interacting with repositories<a class="headerlink" href="#interacting-with-repositories" title="Permalink to this heading">#</a></h1>
-<p>Now that we’ve covered the modeling basics, we are able to create our first repository
+<p>Now that we’ve covered the modelling basics, we are able to create our first repository
 class.  The repository classes include all of the standard CRUD operations as well as a
 few advanced features such as pagination, filtering and bulk operations.</p>
 <div class="admonition tip">
@@ -1648,16 +1648,34 @@ your applications.</p>
 <section id="model-repository">
 <h2>Model Repository<a class="headerlink" href="#model-repository" title="Permalink to this heading">#</a></h2>
 <p>Here we import the
-<code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyAsyncRepository</span></code>
+<a class="reference external" href="https://docs.advanced-alchemy.litestar.dev/latest/reference/repository.html#advanced_alchemy.repository.SQLAlchemyAsyncRepository" title="(in advanced_alchemy)"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyAsyncRepository</span></code></a>
 class and create an <code class="docutils literal notranslate"><span class="pre">AuthorRepository</span></code> repository class. This is all that’s required
 to include all of the integrated repository features.</p>
 <div class="literal-block-wrapper docutils container" id="id1">
-<div class="code-block-caption"><span class="caption-text">app.py</span><a class="headerlink" href="#id1" title="Permalink to this code">#</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="kn">from</span> <span class="nn">litestar.contrib.sqlalchemy.repository</span> <span class="kn">import</span> <span class="n">SQLAlchemyAsyncRepository</span>
-<span class="linenos">2</span><span class="k">class</span> <span class="nc">AuthorRepository</span><span class="p">(</span><span class="n">SQLAlchemyAsyncRepository</span><span class="p">[</span><span class="n">Author</span><span class="p">]):</span>
-<span class="linenos">3</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;Author repository.&quot;&quot;&quot;</span>
-<span class="linenos">4</span>
-<span class="linenos">5</span>    <span class="n">model_type</span> <span class="o">=</span> <span class="n">Author</span>
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">app.py</span></code></span><a class="headerlink" href="#id1" title="Permalink to this code">#</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">from</span> <span class="nn">litestar.contrib.sqlalchemy.repository</span> <span class="kn">import</span> <span class="n">SQLAlchemyAsyncRepository</span>
+<span class="linenos"> 2</span>
+<span class="linenos"> 3</span><span class="kn">from</span> <span class="nn">rich</span> <span class="kn">import</span> <span class="n">get_console</span>
+<span class="linenos"> 4</span><span class="kn">from</span> <span class="nn">sqlalchemy.orm</span> <span class="kn">import</span> <span class="n">Mapped</span>
+<span class="linenos"> 5</span>
+<span class="linenos"> 6</span><span class="kn">from</span> <span class="nn">litestar.contrib.sqlalchemy.base</span> <span class="kn">import</span> <span class="n">UUIDBase</span>
+<span class="linenos"> 7</span><span class="kn">from</span> <span class="nn">litestar.contrib.sqlalchemy.repository</span> <span class="kn">import</span> <span class="n">SQLAlchemyAsyncRepository</span>
+<span class="linenos"> 8</span>
+<span class="linenos"> 9</span><span class="n">console</span> <span class="o">=</span> <span class="n">get_console</span><span class="p">()</span>
+<span class="linenos">10</span>
+<span class="linenos">11</span>
+<span class="linenos">12</span><span class="c1"># the SQLAlchemy base includes a declarative model for you to use in your models.</span>
+<span class="linenos">13</span><span class="c1"># The `Base` class includes a `UUID` based primary key (`id`)</span>
+<span class="linenos">14</span><span class="k">class</span> <span class="nc">Author</span><span class="p">(</span><span class="n">UUIDBase</span><span class="p">):</span>
+<span class="linenos">15</span>    <span class="n">name</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
+<span class="linenos">16</span>    <span class="n">dob</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="n">date</span><span class="p">]</span>
+<span class="linenos">17</span>    <span class="n">dod</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="n">date</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]</span>
+<span class="linenos">18</span>
+<span class="linenos">19</span>
+<span class="linenos">20</span><span class="k">class</span> <span class="nc">AuthorRepository</span><span class="p">(</span><span class="n">SQLAlchemyAsyncRepository</span><span class="p">[</span><span class="n">Author</span><span class="p">]):</span>
+<span class="linenos">21</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;Author repository.&quot;&quot;&quot;</span>
+<span class="linenos">22</span>
+<span class="linenos">23</span>    <span class="n">model_type</span> <span class="o">=</span> <span class="n">Author</span>
 </pre></div>
 </div>
 </div>
@@ -1676,7 +1694,7 @@ of our Author repository.</p>
 </dd>
 </dl>
 <div class="literal-block-wrapper docutils container" id="id2">
-<div class="code-block-caption"><span class="caption-text">app.py</span><a class="headerlink" href="#id2" title="Permalink to this code">#</a></div>
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">app.py</span></code></span><a class="headerlink" href="#id2" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="c1"># let&#39;s make a simple context manager as an example here.</span>
 <span class="linenos">2</span><span class="nd">@asynccontextmanager</span>
 <span class="linenos">3</span><span class="k">async</span> <span class="k">def</span> <span class="nf">repository_factory</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">AsyncIterator</span><span class="p">[</span><span class="n">AuthorRepository</span><span class="p">]:</span>
@@ -1696,7 +1714,7 @@ various CRUD operations:</p>
 <p>Creating Data: Here’s a simple insert operation to populate our new Author table:</p>
 <blockquote>
 <div><div class="literal-block-wrapper docutils container" id="id3">
-<div class="code-block-caption"><span class="caption-text">app.py</span><a class="headerlink" href="#id3" title="Permalink to this code">#</a></div>
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">app.py</span></code></span><a class="headerlink" href="#id3" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="k">async</span> <span class="k">def</span> <span class="nf">create_author</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Author</span><span class="p">:</span>
 <span class="linenos"> 2</span>    <span class="k">async</span> <span class="k">with</span> <span class="n">repository_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">repo</span><span class="p">:</span>
 <span class="linenos"> 3</span>        <span class="n">obj</span> <span class="o">=</span> <span class="k">await</span> <span class="n">repo</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
@@ -1714,7 +1732,7 @@ various CRUD operations:</p>
 <p>Updating Data: The <code class="docutils literal notranslate"><span class="pre">update</span></code> method will ensure any updates made to the model object are executed on the database:</p>
 <blockquote>
 <div><div class="literal-block-wrapper docutils container" id="id4">
-<div class="code-block-caption"><span class="caption-text">app.py</span><a class="headerlink" href="#id4" title="Permalink to this code">#</a></div>
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">app.py</span></code></span><a class="headerlink" href="#id4" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="k">async</span> <span class="k">def</span> <span class="nf">update_author</span><span class="p">(</span><span class="n">obj</span><span class="p">:</span> <span class="n">Author</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Author</span><span class="p">:</span>
 <span class="linenos">2</span>    <span class="k">async</span> <span class="k">with</span> <span class="n">repository_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">repo</span><span class="p">:</span>
 <span class="linenos">3</span>        <span class="n">obj</span> <span class="o">=</span> <span class="k">await</span> <span class="n">repo</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
@@ -1727,7 +1745,7 @@ various CRUD operations:</p>
 <p>Removing Data: The <code class="docutils literal notranslate"><span class="pre">remove</span></code> method accepts the primary key of the row you want to delete:</p>
 <blockquote>
 <div><div class="literal-block-wrapper docutils container" id="id5">
-<div class="code-block-caption"><span class="caption-text">app.py</span><a class="headerlink" href="#id5" title="Permalink to this code">#</a></div>
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">app.py</span></code></span><a class="headerlink" href="#id5" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="k">async</span> <span class="k">def</span> <span class="nf">remove_author</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="n">UUID</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Author</span><span class="p">:</span>
 <span class="linenos">2</span>    <span class="k">async</span> <span class="k">with</span> <span class="n">repository_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">repo</span><span class="p">:</span>
 <span class="linenos">3</span>        <span class="n">obj</span> <span class="o">=</span> <span class="k">await</span> <span class="n">repo</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span>
@@ -1754,7 +1772,7 @@ US states and their abbreviations.</p>
 populates your database and helps test the behavior of your application under realistic
 conditions. This pattern can be extended and adjusted to meet your needs.</p>
 <div class="literal-block-wrapper docutils container" id="id6">
-<div class="code-block-caption"><span class="caption-text">app.py</span><a class="headerlink" href="#id6" title="Permalink to this code">#</a></div>
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">app.py</span></code></span><a class="headerlink" href="#id6" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="k">def</span> <span class="nf">open_fixture</span><span class="p">(</span><span class="n">fixtures_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">fixture_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
 <span class="linenos"> 2</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;Loads JSON file with the specified fixture name</span>
 <span class="linenos"> 3</span>
@@ -1788,7 +1806,7 @@ US State Lookup JSON<div class="sd-summary-down docutils">
 <p class="sd-card-text">You can download it: <a class="reference download internal" download="" href="../../_downloads/52dc67503af9349c016af0f44cbbfc1d/us_state_lookup.json"><code class="xref download docutils literal notranslate"><span class="pre">/examples/contrib/sqlalchemy/us_state_lookup.json</span></code></a>
 or view below:</p>
 <div class="literal-block-wrapper docutils container" id="id7">
-<div class="code-block-caption"><span class="caption-text">us_state_lookup.json</span><a class="headerlink" href="#id7" title="Permalink to this code">#</a></div>
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">us_state_lookup.json</span></code></span><a class="headerlink" href="#id7" title="Permalink to this code">#</a></div>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">[</span>
 <span class="w">  </span><span class="p">{</span>
 <span class="w">    </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Alabama&quot;</span><span class="p">,</span>
@@ -2018,7 +2036,7 @@ or view below:</p>
 you to add multiple records to your database in a single transaction, improving
 performance when working with larger data sets.</p>
 <div class="literal-block-wrapper docutils container" id="id8">
-<div class="code-block-caption"><span class="caption-text">app.py</span><a class="headerlink" href="#id8" title="Permalink to this code">#</a></div>
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">app.py</span></code></span><a class="headerlink" href="#id8" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span>        <span class="c1"># 1) Load the JSON data into the US States table.</span>
 <span class="linenos">2</span>        <span class="n">repo</span> <span class="o">=</span> <span class="n">USStateRepository</span><span class="p">(</span><span class="n">session</span><span class="o">=</span><span class="n">db_session</span><span class="p">)</span>
 <span class="linenos">3</span>        <span class="n">fixture</span> <span class="o">=</span> <span class="n">open_fixture</span><span class="p">(</span><span class="n">here</span><span class="p">,</span> <span class="n">USStateRepository</span><span class="o">.</span><span class="n">model_type</span><span class="o">.</span><span class="n">__tablename__</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
@@ -2036,7 +2054,7 @@ is useful for handling large amounts of data by breaking the data into manageabl
 ‘pages’ or subsets.  <code class="docutils literal notranslate"><span class="pre">LimitOffset</span></code> is one of several filter types you can use with the
 repository.</p>
 <div class="literal-block-wrapper docutils container" id="id9">
-<div class="code-block-caption"><span class="caption-text">app.py</span><a class="headerlink" href="#id9" title="Permalink to this code">#</a></div>
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">app.py</span></code></span><a class="headerlink" href="#id9" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span>        <span class="c1"># 2) Select paginated data and total row count.</span>
 <span class="linenos">2</span>        <span class="n">created_objs</span><span class="p">,</span> <span class="n">total_objs</span> <span class="o">=</span> <span class="n">repo</span><span class="o">.</span><span class="n">list_and_count</span><span class="p">(</span><span class="n">LimitOffset</span><span class="p">(</span><span class="n">limit</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span>
 <span class="linenos">3</span>        <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Selected </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">created_objs</span><span class="p">)</span><span class="si">}</span><span class="s2"> records out of a total of </span><span class="si">{</span><span class="n">total_objs</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
@@ -2050,7 +2068,7 @@ repository.</p>
 insert, deleting multiple records with the batch record methods is more efficient than
 executing row-by-row.</p>
 <div class="literal-block-wrapper docutils container" id="id10">
-<div class="code-block-caption"><span class="caption-text">app.py</span><a class="headerlink" href="#id10" title="Permalink to this code">#</a></div>
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">app.py</span></code></span><a class="headerlink" href="#id10" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span>        <span class="c1"># 3) Let&#39;s remove the batch of records selected.</span>
 <span class="linenos">2</span>        <span class="n">deleted_objs</span> <span class="o">=</span> <span class="n">repo</span><span class="o">.</span><span class="n">delete_many</span><span class="p">([</span><span class="n">new_obj</span><span class="o">.</span><span class="n">id</span> <span class="k">for</span> <span class="n">new_obj</span> <span class="ow">in</span> <span class="n">created_objs</span><span class="p">])</span>
 <span class="linenos">3</span>        <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Removed </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">deleted_objs</span><span class="p">)</span><span class="si">}</span><span class="s2"> records out of a total of </span><span class="si">{</span><span class="n">total_objs</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
@@ -2062,7 +2080,7 @@ executing row-by-row.</p>
 <h2>Counts<a class="headerlink" href="#counts" title="Permalink to this heading">#</a></h2>
 <p>Finally, we’ll demonstrate how to count the number of records remaining in the database.</p>
 <div class="literal-block-wrapper docutils container" id="id11">
-<div class="code-block-caption"><span class="caption-text">app.py</span><a class="headerlink" href="#id11" title="Permalink to this code">#</a></div>
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">app.py</span></code></span><a class="headerlink" href="#id11" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span>        <span class="c1"># 4) Let&#39;s count the remaining rows</span>
 <span class="linenos">2</span>        <span class="n">remaining_count</span> <span class="o">=</span> <span class="n">repo</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
 <span class="linenos">3</span>        <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Found </span><span class="si">{</span><span class="n">remaining_count</span><span class="si">}</span><span class="s2"> remaining records after delete.&quot;</span><span class="p">)</span>
@@ -2088,7 +2106,7 @@ Full Code (click to toggle)<div class="sd-summary-down docutils">
 </input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-0">
 Python 3.8+</label><div class="sd-tab-content docutils">
 <div class="literal-block-wrapper docutils container" id="id12">
-<div class="code-block-caption"><span class="caption-text">app.py</span><a class="headerlink" href="#id12" title="Permalink to this code">#</a></div>
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">app.py</span></code></span><a class="headerlink" href="#id12" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">  1</span><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
 <span class="linenos">  2</span>
 <span class="linenos">  3</span><span class="kn">from</span> <span class="nn">contextlib</span> <span class="kn">import</span> <span class="n">asynccontextmanager</span>
@@ -2210,7 +2228,7 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 </input><label class="sd-tab-label" data-sync-id="3.9" for="sd-tab-item-1">
 Python 3.9+</label><div class="sd-tab-content docutils">
 <div class="literal-block-wrapper docutils container" id="id13">
-<div class="code-block-caption"><span class="caption-text">app.py</span><a class="headerlink" href="#id13" title="Permalink to this code">#</a></div>
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">app.py</span></code></span><a class="headerlink" href="#id13" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">  1</span><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
 <span class="linenos">  2</span>
 <span class="linenos">  3</span><span class="kn">from</span> <span class="nn">contextlib</span> <span class="kn">import</span> <span class="n">asynccontextmanager</span>
@@ -2343,12 +2361,12 @@ Python 3.9+</label><div class="sd-tab-content docutils">
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="01-modeling-and-features.html"
+       href="01-modelling-and-features.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Introduction to Database Modeling and Repository Features</p>
+        <p class="prev-next-title">Introduction to Database Modelling and Repository Features</p>
       </div>
     </a>
     <a class="right-next"

@@ -1463,7 +1463,7 @@ document.write(`
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../tutorials/repository-tutorial/index.html">SQLAlchemy Repository Tutorial</a><input class="toctree-checkbox" id="toctree-checkbox-34" name="toctree-checkbox-34" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-34"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../tutorials/repository-tutorial/01-modeling-and-features.html">Introduction to Database Modeling and Repository Features</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../tutorials/repository-tutorial/01-modelling-and-features.html">Introduction to Database Modelling and Repository Features</a></li>
 
 
 <li class="toctree-l3"><a class="reference internal" href="../../tutorials/repository-tutorial/02-repository-introduction.html">Interacting with repositories</a></li>
@@ -1556,10 +1556,8 @@ the <a class="reference internal" href="../../reference/app.html#litestar.app.Li
 <h2>InitPlugin<a class="headerlink" href="#initplugin" title="Permalink to this heading">#</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">InitPlugin</span></code> defines an interface that allows for customization of the application’s initialization process.
 Init plugins can define dependencies, add route handlers, configure middleware, and much more!</p>
-<p>Implementations of these plugins must define a single method:</p>
-</section>
-<section id="on-app-init-self-app-config-appconfig-appconfig">
-<h2><a class="reference internal" href="../../reference/plugins/index.html#litestar.plugins.InitPlugin.on_app_init" title="litestar.plugins.InitPlugin.on_app_init"><code class="xref py py-meth docutils literal notranslate"><span class="pre">on_app_init(self,</span> <span class="pre">app_config:</span> <span class="pre">AppConfig)</span> <span class="pre">-&gt;</span> <span class="pre">AppConfig:</span></code></a><a class="headerlink" href="#on-app-init-self-app-config-appconfig-appconfig" title="Permalink to this heading">#</a></h2>
+<p>Implementations of these plugins must define a single method:
+<a class="reference internal" href="../../reference/plugins/index.html#litestar.plugins.InitPlugin.on_app_init" title="litestar.plugins.InitPlugin.on_app_init"><code class="xref py py-meth docutils literal notranslate"><span class="pre">on_app_init(self,</span> <span class="pre">app_config:</span> <span class="pre">AppConfig)</span> <span class="pre">-&gt;</span> <span class="pre">AppConfig:</span></code></a></p>
 <p>The method accepts and must return an <a class="reference internal" href="../../reference/config.html#litestar.config.app.AppConfig" title="litestar.config.app.AppConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">AppConfig</span></code></a> instance, which can be modified
 and is later used to instantiate the application.</p>
 <p>This method is invoked after any <code class="docutils literal notranslate"><span class="pre">on_app_init</span></code> hooks have been called, and each plugin is invoked in the order that
@@ -1656,14 +1654,14 @@ function. The modified <a class="reference internal" href="../../reference/confi
 <p>The SerializationPluginProtocol defines a contract for plugins that provide serialization functionality for data types
 that are otherwise unsupported by the framework.</p>
 <p>Implementations of these plugins must define the following methods.</p>
-</section>
-<section id="supports-type-self-field-definition-fielddefinition-bool">
-<h2><a class="reference internal" href="../../reference/plugins/index.html#litestar.plugins.SerializationPluginProtocol" title="litestar.plugins.SerializationPluginProtocol"><code class="xref py py-meth docutils literal notranslate"><span class="pre">supports_type(self,</span> <span class="pre">field_definition:</span> <span class="pre">FieldDefinition)</span> <span class="pre">-&gt;</span> <span class="pre">bool:</span></code></a><a class="headerlink" href="#supports-type-self-field-definition-fielddefinition-bool" title="Permalink to this heading">#</a></h2>
+<ol class="arabic simple">
+<li><p><a class="reference internal" href="../../reference/plugins/index.html#litestar.plugins.SerializationPluginProtocol" title="litestar.plugins.SerializationPluginProtocol"><code class="xref py py-meth docutils literal notranslate"><span class="pre">supports_type(self,</span> <span class="pre">field_definition:</span> <span class="pre">FieldDefinition)</span> <span class="pre">-&gt;</span> <span class="pre">bool:</span></code></a></p></li>
+</ol>
 <p>The method takes a <a class="reference internal" href="../../reference/typing.html#litestar.typing.FieldDefinition" title="litestar.typing.FieldDefinition"><code class="xref py py-class docutils literal notranslate"><span class="pre">FieldDefinition</span></code></a> instance as an argument and returns a <a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a>
 indicating whether the plugin supports serialization for that type.</p>
-</section>
-<section id="create-dto-for-type-self-field-definition-fielddefinition-type-abstractdto">
-<h2><a class="reference internal" href="../../reference/plugins/index.html#litestar.plugins.SerializationPluginProtocol.create_dto_for_type" title="litestar.plugins.SerializationPluginProtocol.create_dto_for_type"><code class="xref py py-meth docutils literal notranslate"><span class="pre">create_dto_for_type(self,</span> <span class="pre">field_definition:</span> <span class="pre">FieldDefinition)</span> <span class="pre">-&gt;</span> <span class="pre">type[AbstractDTO]:</span></code></a><a class="headerlink" href="#create-dto-for-type-self-field-definition-fielddefinition-type-abstractdto" title="Permalink to this heading">#</a></h2>
+<ol class="arabic simple" start="2">
+<li><p><a class="reference internal" href="../../reference/plugins/index.html#litestar.plugins.SerializationPluginProtocol.create_dto_for_type" title="litestar.plugins.SerializationPluginProtocol.create_dto_for_type"><code class="xref py py-meth docutils literal notranslate"><span class="pre">create_dto_for_type(self,</span> <span class="pre">field_definition:</span> <span class="pre">FieldDefinition)</span> <span class="pre">-&gt;</span> <span class="pre">type[AbstractDTO]:</span></code></a></p></li>
+</ol>
 <p>This method accepts a <a class="reference internal" href="../../reference/typing.html#litestar.typing.FieldDefinition" title="litestar.typing.FieldDefinition"><code class="xref py py-class docutils literal notranslate"><span class="pre">FieldDefinition</span></code></a> instance as an argument and must return a
 <a class="reference internal" href="../../reference/dto/base_dto.html#litestar.dto.base_dto.AbstractDTO" title="litestar.dto.base_dto.AbstractDTO"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractDTO</span></code></a> implementation that can be used to serialize and deserialize
 the type.</p>
@@ -1871,14 +1869,11 @@ hello
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#initplugin">InitPlugin</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#on-app-init-self-app-config-appconfig-appconfig"><code class="xref py py-meth docutils literal notranslate"><span class="pre">on_app_init(self,</span> <span class="pre">app_config:</span> <span class="pre">AppConfig)</span> <span class="pre">-&gt;</span> <span class="pre">AppConfig:</span></code></a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#initplugin">InitPlugin</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#example">Example</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#serializationpluginprotocol">SerializationPluginProtocol</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#supports-type-self-field-definition-fielddefinition-bool"><code class="xref py py-meth docutils literal notranslate"><span class="pre">supports_type(self,</span> <span class="pre">field_definition:</span> <span class="pre">FieldDefinition)</span> <span class="pre">-&gt;</span> <span class="pre">bool:</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#create-dto-for-type-self-field-definition-fielddefinition-type-abstractdto"><code class="xref py py-meth docutils literal notranslate"><span class="pre">create_dto_for_type(self,</span> <span class="pre">field_definition:</span> <span class="pre">FieldDefinition)</span> <span class="pre">-&gt;</span> <span class="pre">type[AbstractDTO]:</span></code></a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#serializationpluginprotocol">SerializationPluginProtocol</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">Example</a></li>
 </ul>
 </li>

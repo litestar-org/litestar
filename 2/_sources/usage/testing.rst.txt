@@ -14,7 +14,7 @@ instance of Litestar as the ``app`` kwarg.
 Let's say we have a very simple app with a health check endpoint:
 
 .. code-block:: python
-    :caption: my_app/main.py
+    :caption: ``my_app/main.py``
 
     from litestar import Litestar, MediaType, get
 
@@ -35,7 +35,7 @@ We would then test it using the test client like so:
         :sync: sync
 
         .. code-block:: python
-            :caption: tests/test_health_check.py
+            :caption: ``tests/test_health_check.py``
 
             from litestar.status_codes import HTTP_200_OK
             from litestar.testing import TestClient
@@ -55,7 +55,7 @@ We would then test it using the test client like so:
         :sync: async
 
         .. code-block:: python
-            :caption: tests/test_health_check.py
+            :caption: ``tests/test_health_check.py``
 
             from litestar.status_codes import HTTP_200_OK
             from litestar.testing import AsyncTestClient
@@ -81,7 +81,7 @@ Since we would probably need to use the client in multiple places, it's better t
         :sync: sync
 
         .. code-block:: python
-            :caption: tests/conftest.py
+            :caption: ``tests/conftest.py``
 
             from typing import TYPE_CHECKING, Iterator
 
@@ -107,7 +107,7 @@ Since we would probably need to use the client in multiple places, it's better t
         :sync: async
 
         .. code-block:: python
-            :caption: tests/conftest.py
+            :caption: ``tests/conftest.py``
 
             from typing import TYPE_CHECKING, AsyncIterator
 
@@ -137,7 +137,7 @@ We would then be able to rewrite our test like so:
         :sync: sync
 
         .. literalinclude:: /examples/testing/test_health_check_sync.py
-            :caption: tests/test_health_check.py
+            :caption: ``tests/test_health_check.py``
             :language: python
 
 
@@ -145,8 +145,19 @@ We would then be able to rewrite our test like so:
         :sync: async
 
         .. literalinclude:: /examples/testing/test_health_check_async.py
-            :caption: tests/test_health_check.py
+            :caption: ``tests/test_health_check.py``
             :language: python
+
+Testing websockets
+++++++++++++++++++
+
+Litestar's test client enhances the httpx client to support websockets. To test a websocket endpoint, you can use the :meth:`websocket_connect <litestar.testing.TestClient.websocket_connect>`
+method on the test client. The method returns a websocket connection object that you can use to send and receive messages, see an example below for json:
+
+For more information, see also the :class:`WebSocket <litestar.connection.WebSocket>` class in the API documentation and the :ref:`websocket <usage/websockets:websockets>` documentation.
+
+    .. literalinclude:: /examples/testing/test_websocket.py
+        :language: python
 
 
 Using sessions
@@ -255,7 +266,7 @@ expects ``route_handlers`` to be a list, here you can also pass individual value
 For example, you can do this:
 
 .. code-block:: python
-    :caption: my_app/tests/test_health_check.py
+    :caption: ``my_app/tests/test_health_check.py``
 
     from litestar.status_codes import HTTP_200_OK
     from litestar.testing import create_test_client
@@ -272,7 +283,7 @@ For example, you can do this:
 But also this:
 
 .. code-block:: python
-    :caption: my_app/tests/test_health_check.py
+    :caption: ``my_app/tests/test_health_check.py``
 
     from litestar.status_codes import HTTP_200_OK
     from litestar.testing import create_test_client
@@ -324,7 +335,7 @@ from the :doc:`route guards </usage/security/guards>` documentation:
 
 
 .. code-block:: python
-    :caption: my_app/guards.py
+    :caption: ``my_app/guards.py``
 
     from litestar import Request
     from litestar.exceptions import NotAuthorizedException
@@ -341,7 +352,7 @@ from the :doc:`route guards </usage/security/guards>` documentation:
 We already have our route handler in place:
 
 .. code-block:: python
-    :caption: my_app/secret.py
+    :caption: ``my_app/secret.py``
 
     from os import environ
 
@@ -356,7 +367,7 @@ We already have our route handler in place:
 We could thus test the guard function like so:
 
 .. code-block:: python
-    :caption: tests/guards/test_secret_token_guard.py
+    :caption: ``tests/guards/test_secret_token_guard.py``
 
     import pytest
 
@@ -391,7 +402,7 @@ and powerful way to generate mock data from pydantic models and dataclasses.
 Let's say we have an API that talks to an external service and retrieves some data:
 
 .. code-block:: python
-    :caption: main.py
+    :caption: ``main.py``
 
     from typing import Protocol, runtime_checkable
 
@@ -416,7 +427,7 @@ Let's say we have an API that talks to an external service and retrieves some da
 We could test the ``/item`` route like so:
 
 .. code-block:: python
-    :caption: tests/conftest.py
+    :caption: ``tests/conftest.py``
 
     import pytest
 
@@ -450,7 +461,7 @@ pydantic models and dataclasses based on type annotations. With it, we could rew
 
 
 .. code-block:: python
-    :caption: main.py
+    :caption: ``main.py``
 
     from typing import Protocol, runtime_checkable
 

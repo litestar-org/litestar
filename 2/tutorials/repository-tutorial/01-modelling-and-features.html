@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Introduction to Database Modeling and Repository Features &#8212; Litestar Framework</title>
+    <title>Introduction to Database Modelling and Repository Features &#8212; Litestar Framework</title>
   
   
   
@@ -47,7 +47,7 @@
     <script src="../../_static/copybutton.js?v=f281be69"></script>
     <script src="../../_static/litestar-theme.js?v=ab2dcc9e"></script>
     <script src="../../_static/design-tabs.js?v=36754332"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'tutorials/repository-tutorial/01-modeling-and-features';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'tutorials/repository-tutorial/01-modelling-and-features';</script>
     <script src="../../_static/versioning.js?v=68b42869"></script>
     <link rel="icon" href="../../_static/favicon.png"/>
     <link rel="index" title="Index" href="../../genindex.html" />
@@ -1463,7 +1463,7 @@ document.write(`
 </ul>
 </li>
 <li class="toctree-l2 current active has-children"><a class="reference internal" href="index.html">SQLAlchemy Repository Tutorial</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-34" name="toctree-checkbox-34" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-34"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
-<li class="toctree-l3 current active"><a class="current reference internal" href="#">Introduction to Database Modeling and Repository Features</a></li>
+<li class="toctree-l3 current active"><a class="current reference internal" href="#">Introduction to Database Modelling and Repository Features</a></li>
 
 
 <li class="toctree-l3"><a class="reference internal" href="02-repository-introduction.html">Interacting with repositories</a></li>
@@ -1544,10 +1544,10 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article" role="main">
                   
-  <section id="introduction-to-database-modeling-and-repository-features">
-<h1>Introduction to Database Modeling and Repository Features<a class="headerlink" href="#introduction-to-database-modeling-and-repository-features" title="Permalink to this heading">#</a></h1>
+  <section id="introduction-to-database-modelling-and-repository-features">
+<h1>Introduction to Database Modelling and Repository Features<a class="headerlink" href="#introduction-to-database-modelling-and-repository-features" title="Permalink to this heading">#</a></h1>
 <p>In this tutorial, we will cover the integrated repository features in Litestar, starting
-with database modeling using the included SQLAlchemy declarative model helpers. These
+with database modelling using the included SQLAlchemy declarative model helpers. These
 are a series of classes and mixins that incorporate commonly used functions/column types
 to make working with models easier.</p>
 <div class="admonition tip">
@@ -1555,14 +1555,14 @@ to make working with models easier.</p>
 <p>The full code for this tutorial can be found below in the <a class="reference internal" href="#repo-full-code"><span class="std std-ref">Full Code</span></a> section.</p>
 </div>
 </section>
-<section id="modeling">
-<h1>Modeling<a class="headerlink" href="#modeling" title="Permalink to this heading">#</a></h1>
+<section id="modelling">
+<h1>Modelling<a class="headerlink" href="#modelling" title="Permalink to this heading">#</a></h1>
 <p>We’ll begin by modelling the entities and relationships between authors and books.
 We’ll start by creating the <code class="docutils literal notranslate"><span class="pre">Author</span></code> table, utilizing the
 <code class="xref py py-class docutils literal notranslate"><span class="pre">UUIDBase</span></code> class. To keep things
 simple, our first model will encompass only three fields: <code class="docutils literal notranslate"><span class="pre">id</span></code>, <code class="docutils literal notranslate"><span class="pre">name</span></code>, and <code class="docutils literal notranslate"><span class="pre">dob</span></code>.</p>
 <div class="literal-block-wrapper docutils container" id="id1">
-<div class="code-block-caption"><span class="caption-text">app.py</span><a class="headerlink" href="#id1" title="Permalink to this code">#</a></div>
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">app.py</span></code></span><a class="headerlink" href="#id1" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="k">class</span> <span class="nc">Author</span><span class="p">(</span><span class="n">base</span><span class="o">.</span><span class="n">UUIDBase</span><span class="p">):</span>
 <span class="linenos">2</span>    <span class="n">__tablename__</span> <span class="o">=</span> <span class="s2">&quot;author&quot;</span>
 <span class="linenos">3</span>    <span class="n">name</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
@@ -1576,7 +1576,7 @@ relationship. This allows each <code class="docutils literal notranslate"><span 
 By configuring it this way, SQLAlchemy will automatically include the necessary foreign
 key constraints when using the <code class="docutils literal notranslate"><span class="pre">author_id</span></code> field in each <code class="docutils literal notranslate"><span class="pre">Book</span></code> record.</p>
 <div class="literal-block-wrapper docutils container" id="id2">
-<div class="code-block-caption"><span class="caption-text">app.py</span><a class="headerlink" href="#id2" title="Permalink to this code">#</a></div>
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">app.py</span></code></span><a class="headerlink" href="#id2" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="k">class</span> <span class="nc">Author</span><span class="p">(</span><span class="n">base</span><span class="o">.</span><span class="n">UUIDBase</span><span class="p">):</span>
 <span class="linenos">2</span>    <span class="n">__tablename__</span> <span class="o">=</span> <span class="s2">&quot;author&quot;</span>
 <span class="linenos">3</span>    <span class="n">name</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
@@ -1641,7 +1641,7 @@ Full Code (click to toggle)<div class="sd-summary-down docutils">
 <svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-up" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M18.78 15.28a.75.75 0 000-1.06l-6.25-6.25a.75.75 0 00-1.06 0l-6.25 6.25a.75.75 0 101.06 1.06L12 9.56l5.72 5.72a.75.75 0 001.06 0z"></path></svg></div>
 </summary><div class="sd-summary-content sd-card-body docutils">
 <div class="literal-block-wrapper docutils container" id="id3">
-<div class="code-block-caption"><span class="caption-text">app.py</span><a class="headerlink" href="#id3" title="Permalink to this code">#</a></div>
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">app.py</span></code></span><a class="headerlink" href="#id3" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
 <span class="linenos"> 2</span>
 <span class="linenos"> 3</span><span class="kn">import</span> <span class="nn">uuid</span>
@@ -1755,8 +1755,8 @@ Full Code (click to toggle)<div class="sd-summary-down docutils">
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">Introduction to Database Modeling and Repository Features</a></li>
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#modeling">Modeling</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">Introduction to Database Modelling and Repository Features</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#modelling">Modelling</a></li>
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#full-code">Full Code</a></li>
 </ul>
 

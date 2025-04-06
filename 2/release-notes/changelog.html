@@ -1461,7 +1461,7 @@ document.write(`
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../tutorials/repository-tutorial/index.html">SQLAlchemy Repository Tutorial</a><input class="toctree-checkbox" id="toctree-checkbox-34" name="toctree-checkbox-34" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-34"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../tutorials/repository-tutorial/01-modeling-and-features.html">Introduction to Database Modeling and Repository Features</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tutorials/repository-tutorial/01-modelling-and-features.html">Introduction to Database Modelling and Repository Features</a></li>
 
 
 <li class="toctree-l3"><a class="reference internal" href="../tutorials/repository-tutorial/02-repository-introduction.html">Interacting with repositories</a></li>
@@ -1538,6 +1538,39 @@ document.write(`
                   
   <section id="x-changelog">
 <h1>2.x Changelog<a class="headerlink" href="#x-changelog" title="Permalink to this heading">#</a></h1>
+<section id="2.15.2">
+<h2>2.15.2<a class="headerlink" href="#2.15.2" title="Permalink to this heading">#</a></h2>
+<strong>Released: </strong>2025-04-06<section id="2.15.2-bugfix">
+<h3>Bugfixes<a class="headerlink" href="#2.15.2-bugfix" title="Permalink to this heading">#</a></h3>
+<dl>
+<dt>Events: Fix error handling for synchronous handlers<a class="headerlink reference internal" href="#2.15.2-events: fix error handling for synchronous handlers" id="2.15.2-events: fix error handling for synchronous handlers">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Fix a bug where exceptions weren’t handled correctly on synchronous event handlers,
+and would result in another exception.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@listener</span><span class="p">(</span><span class="s2">&quot;raise_exception&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">raise_exception_if_odd</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">value</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2"> is odd&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Would raise an <code class="docutils literal notranslate"><span class="pre">AttributeError:</span> <span class="pre">'AsyncCallable'</span> <span class="pre">object</span> <span class="pre">has</span> <span class="pre">no</span> <span class="pre">attribute</span> <span class="pre">'__name__'.</span> <span class="pre">Did</span> <span class="pre">you</span> <span class="pre">mean:</span> <span class="pre">'__ne__'?</span></code></p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/4045">litestar-org/litestar#4045</a></span></p>
+</div>
+</dd>
+<dt>Fix wrong order of arguments in FileSystemAdapter passed to <code class="docutils literal notranslate"><span class="pre">open</span></code> fsspec file system<a class="headerlink reference internal" href="#2.15.2-fix wrong order of arguments in filesystemadapter passed to" id="2.15.2-fix wrong order of arguments in filesystemadapter passed to">#</a></dt><dd><div class="changelog-change docutils container">
+<p>The order of arguments of various fsspec implementations varies, causing <code class="docutils literal notranslate"><span class="pre">FileSystemAdapter.open</span></code> to fail in
+different ways. This was fixed by always passing arguments as keywords to the file system.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/4049">litestar-org/litestar#4049</a></span></p>
+</div>
+</dd>
+<dt>Correctly handle <code class="docutils literal notranslate"><span class="pre">typing_extensions.TypeAliasType</span></code> on <code class="docutils literal notranslate"><span class="pre">typing-extensions&gt;4.13.0</span></code><a class="headerlink reference internal" href="#2.15.2-correctly handle" id="2.15.2-correctly handle">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Handle the diverging <code class="docutils literal notranslate"><span class="pre">TypeAliasType</span></code> introduced in typing-extensions <code class="docutils literal notranslate"><span class="pre">4.13.0</span></code>; This type is no longer
+backwards compatible, as it is a distinct new type from <code class="docutils literal notranslate"><span class="pre">typing.TypeAliasType</span></code></p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/4088">litestar-org/litestar#4088</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/4089">litestar-org/litestar#4089</a></span></p>
+</div>
+</dd>
+</dl>
+</section>
+</section>
 <section id="2.15.1">
 <h2>2.15.1<a class="headerlink" href="#2.15.1" title="Permalink to this heading">#</a></h2>
 <strong>Released: </strong>2025-02-27<section id="2.15.1-bugfix">
@@ -3586,7 +3619,7 @@ consistent behaviour of applications in any case.</p>
 <p>Ensure <a class="reference internal" href="../reference/datastructures/index.html#litestar.datastructures.MultiDict" title="litestar.datastructures.MultiDict"><code class="xref py py-class docutils literal notranslate"><span class="pre">MultiDict</span></code></a> and
 <a class="reference internal" href="../reference/datastructures/index.html#litestar.datastructures.ImmutableMultiDict" title="litestar.datastructures.ImmutableMultiDict"><code class="xref py py-class docutils literal notranslate"><span class="pre">ImmutableMultiDict</span></code></a> copy methods return a new
 instance of <code class="docutils literal notranslate"><span class="pre">MultiDict</span></code> and <code class="docutils literal notranslate"><span class="pre">ImmutableMultiDict</span></code>. Previously, these would
-return a <a class="reference external" href="https://multidict.aio-libs.org/en/stable/multidict/#multidict.MultiDict" title="(in multidict v6.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">multidict.MultiDict</span></code></a> instance.</p>
+return a <a class="reference external" href="https://multidict.aio-libs.org/en/stable/multidict/#multidict.MultiDict" title="(in multidict v6.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">multidict.MultiDict</span></code></a> instance.</p>
 <p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/2549">litestar-org/litestar#2549</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3009">litestar-org/litestar#3009</a></span></p>
 </div>
 </dd>
@@ -7042,6 +7075,10 @@ the time it takes to <code class="docutils literal notranslate"><span class="pre
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#2.15.2">2.15.2</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#2.15.2-bugfix">Bugfixes</a></li>
+</ul>
+</li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#2.15.1">2.15.1</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#2.15.1-bugfix">Bugfixes</a></li>
 </ul>

@@ -10,7 +10,7 @@ the items on that TODO list.
 
 .. literalinclude:: /examples/todo_app/get_list/dict.py
     :language: python
-    :caption: app.py
+    :caption: ``app.py``
     :linenos:
 
 
@@ -41,7 +41,7 @@ To make your life a little easier, you can transform this example by using :py:m
     article: `Data Classes in Python 3.7+ <https://realpython.com/python-data-classes/>`_
 
 .. literalinclude:: /examples/todo_app/get_list/dataclass.py
-    :caption: app.py
+    :caption: ``app.py``
     :language: python
     :linenos:
 
@@ -72,7 +72,7 @@ of the same name.
 
 
 .. literalinclude:: /examples/todo_app/get_list/query_param.py
-    :caption: app.py
+    :caption: ``app.py``
     :language: python
     :linenos:
 
@@ -97,7 +97,7 @@ An easy solution for this would be to simply check if the query parameter is eit
 error if it's something else:
 
 .. literalinclude:: /examples/todo_app/get_list/query_param_validate_manually.py
-    :caption: app.py
+    :caption: ``app.py``
     :language: python
     :linenos:
 
@@ -105,7 +105,7 @@ If the query parameter equals ``1``, return all items that have ``done=True``:
 
 .. literalinclude:: /examples/todo_app/get_list/query_param_validate_manually.py
     :language: python
-    :caption: app.py
+    :caption: ``app.py``
     :lines: 23-24
     :dedent: 2
     :linenos:
@@ -116,7 +116,7 @@ If the query parameter equals ``0``, return all items that have ``done=False``:
 
 .. literalinclude:: /examples/todo_app/get_list/query_param_validate_manually.py
     :language: python
-    :caption: app.py
+    :caption: ``app.py``
     :lines: 25-26
     :dedent: 2
     :linenos:
@@ -129,7 +129,7 @@ returning a normal response, it will send a response with the HTTP status code g
 
 .. literalinclude:: /examples/todo_app/get_list/query_param_validate_manually.py
     :language: python
-    :caption: app.py
+    :caption: ``app.py``
     :lines: 27
     :dedent: 2
     :linenos:
@@ -159,7 +159,7 @@ for you should the supplied value not be a valid boolean.
 
 .. literalinclude:: /examples/todo_app/get_list/query_param_validate.py
     :language: python
-    :caption: app.py
+    :caption: ``app.py``
     :linenos:
 
 
@@ -178,7 +178,7 @@ instead.
 
 .. literalinclude:: /examples/todo_app/get_list/query_param_validate.py
     :language: python
-    :caption: app.py
+    :caption: ``app.py``
     :lines: 21
     :linenos:
     :lineno-start: 21
@@ -198,7 +198,7 @@ be compared against the ``TodoItem.done`` attribute:
 
 .. literalinclude:: /examples/todo_app/get_list/query_param_validate.py
     :language: python
-    :caption: app.py
+    :caption: ``app.py``
     :lines: 22
     :dedent: 2
     :linenos:
@@ -228,7 +228,7 @@ supplied.
 
 .. literalinclude:: /examples/todo_app/get_list/query_param_default.py
     :language: python
-    :caption: app.py
+    :caption: ``app.py``
     :linenos:
 
 

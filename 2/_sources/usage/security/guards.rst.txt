@@ -14,7 +14,7 @@ the example.
 We begin by creating an :class:`~enum.Enum` with two roles - ``consumer`` and ``admin``:
 
 .. code-block:: python
-    :caption: Defining the UserRole enum
+    :caption: Defining the enum ``UserRole``
 
     from enum import Enum
 
@@ -55,7 +55,7 @@ handler function:
 .. dropdown:: Click to toggle the guard ``admin_user_guard``
 
     .. code-block:: python
-        :caption: Defining the ``admin_user_guard`` guard used to authorize certain route handlers
+        :caption: Defining the guard ``admin_user_guard`` used to authorize certain route handlers
 
         from enum import Enum
 

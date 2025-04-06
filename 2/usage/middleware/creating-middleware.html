@@ -1463,7 +1463,7 @@ document.write(`
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../tutorials/repository-tutorial/index.html">SQLAlchemy Repository Tutorial</a><input class="toctree-checkbox" id="toctree-checkbox-34" name="toctree-checkbox-34" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-34"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../tutorials/repository-tutorial/01-modeling-and-features.html">Introduction to Database Modeling and Repository Features</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../tutorials/repository-tutorial/01-modelling-and-features.html">Introduction to Database Modelling and Repository Features</a></li>
 
 
 <li class="toctree-l3"><a class="reference internal" href="../../tutorials/repository-tutorial/02-repository-introduction.html">Interacting with repositories</a></li>
@@ -1602,16 +1602,16 @@ outgoing responses:</p>
 </pre></div>
 </div>
 </section>
-<section id="migrating-to-asgimiddleware-from-middlewareprotocol-abstractmiddleware">
-<h3>Migrating to <code class="docutils literal notranslate"><span class="pre">ASGIMiddleware</span></code> from <code class="docutils literal notranslate"><span class="pre">MiddlewareProtocol</span></code> / <code class="docutils literal notranslate"><span class="pre">AbstractMiddleware</span></code><a class="headerlink" href="#migrating-to-asgimiddleware-from-middlewareprotocol-abstractmiddleware" title="Permalink to this heading">#</a></h3>
+<section id="migrating-from-middlewareprotocol-abstractmiddleware">
+<h3>Migrating from <code class="docutils literal notranslate"><span class="pre">MiddlewareProtocol</span></code> / <code class="docutils literal notranslate"><span class="pre">AbstractMiddleware</span></code><a class="headerlink" href="#migrating-from-middlewareprotocol-abstractmiddleware" title="Permalink to this heading">#</a></h3>
 <p><a class="reference internal" href="../../reference/middleware/index.html#litestar.middleware.ASGIMiddleware" title="litestar.middleware.ASGIMiddleware"><code class="xref py py-class docutils literal notranslate"><span class="pre">ASGIMiddleware</span></code></a> was introduced in Litestar 2.15. If you’ve
 been using <code class="docutils literal notranslate"><span class="pre">MiddlewareProtocol</span></code> / <code class="docutils literal notranslate"><span class="pre">AbstractMiddleware</span></code> to implement your middlewares
 before, there’s a simple migration path to using <code class="docutils literal notranslate"><span class="pre">ASGIMiddleware</span></code>.</p>
-<p><strong>Migrating from ``MiddlewareProtocol``</strong></p>
+<p><strong>From MiddlewareProtocol</strong></p>
 <div class="sd-tab-set docutils">
 <input checked="checked" id="sd-tab-item-0" name="sd-tab-set-0" type="radio">
 </input><label class="sd-tab-label" for="sd-tab-item-0">
-&lt;literal&gt;MiddlewareProtocol&lt;/literal&gt;</label><div class="sd-tab-content docutils">
+MiddlewareProtocol</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar.middleware</span> <span class="kn">import</span> <span class="n">MiddlewareProtocol</span>
 <span class="kn">from</span> <span class="nn">litestar.types</span> <span class="kn">import</span> <span class="n">ASGIApp</span><span class="p">,</span> <span class="n">Receive</span><span class="p">,</span> <span class="n">Scope</span><span class="p">,</span> <span class="n">Send</span>
 
@@ -1628,7 +1628,7 @@ before, there’s a simple migration path to using <code class="docutils literal
 </div>
 <input id="sd-tab-item-1" name="sd-tab-set-0" type="radio">
 </input><label class="sd-tab-label" for="sd-tab-item-1">
-&lt;literal&gt;ASGIMiddleware&lt;/literal&gt;</label><div class="sd-tab-content docutils">
+ASGIMiddleware</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar.middleware</span> <span class="kn">import</span> <span class="n">ASGIMiddleware</span>
 <span class="kn">from</span> <span class="nn">litestar.types</span> <span class="kn">import</span> <span class="n">ASGIApp</span><span class="p">,</span> <span class="n">Receive</span><span class="p">,</span> <span class="n">Scope</span><span class="p">,</span> <span class="n">Send</span>
 
@@ -1641,11 +1641,11 @@ before, there’s a simple migration path to using <code class="docutils literal
 </div>
 </div>
 </div>
-<p><strong>Migrating from ``AbstractMiddleware``</strong></p>
+<p><strong>From AbstractMiddleware</strong></p>
 <div class="sd-tab-set docutils">
 <input checked="checked" id="sd-tab-item-2" name="sd-tab-set-1" type="radio">
 </input><label class="sd-tab-label" for="sd-tab-item-2">
-&lt;literal&gt;MiddlewareProtocol&lt;/literal&gt;</label><div class="sd-tab-content docutils">
+MiddlewareProtocol</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">anyio</span>
 
 <span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span>
@@ -1683,7 +1683,7 @@ before, there’s a simple migration path to using <code class="docutils literal
 </div>
 <input id="sd-tab-item-3" name="sd-tab-set-1" type="radio">
 </input><label class="sd-tab-label" for="sd-tab-item-3">
-&lt;literal&gt;ASGIMiddleware&lt;/literal&gt;</label><div class="sd-tab-content docutils">
+ASGIMiddleware</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">anyio</span>
 
 <span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span>
@@ -2108,7 +2108,7 @@ as the kwarg <code class="docutils literal notranslate"><span class="pre">app</s
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#extending-asgimiddleware">Extending <code class="docutils literal notranslate"><span class="pre">ASGIMiddleware</span></code></a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#modifying-requests-and-responses">Modifying Requests and Responses</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#migrating-to-asgimiddleware-from-middlewareprotocol-abstractmiddleware">Migrating to <code class="docutils literal notranslate"><span class="pre">ASGIMiddleware</span></code> from <code class="docutils literal notranslate"><span class="pre">MiddlewareProtocol</span></code> / <code class="docutils literal notranslate"><span class="pre">AbstractMiddleware</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#migrating-from-middlewareprotocol-abstractmiddleware">Migrating from <code class="docutils literal notranslate"><span class="pre">MiddlewareProtocol</span></code> / <code class="docutils literal notranslate"><span class="pre">AbstractMiddleware</span></code></a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#using-middlewareprotocol">Using MiddlewareProtocol</a><ul class="visible nav section-nav flex-column">

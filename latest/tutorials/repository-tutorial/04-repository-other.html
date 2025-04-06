@@ -1463,7 +1463,7 @@ document.write(`
 </ul>
 </li>
 <li class="toctree-l2 current active has-children"><a class="reference internal" href="index.html">SQLAlchemy Repository Tutorial</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-34" name="toctree-checkbox-34" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-34"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="01-modeling-and-features.html">Introduction to Database Modeling and Repository Features</a></li>
+<li class="toctree-l3"><a class="reference internal" href="01-modelling-and-features.html">Introduction to Database Modelling and Repository Features</a></li>
 
 
 <li class="toctree-l3"><a class="reference internal" href="02-repository-introduction.html">Interacting with repositories</a></li>
@@ -1557,7 +1557,7 @@ can add functionality on top of the repository pattern.</p>
 <section id="slug-fields">
 <h1>Slug Fields<a class="headerlink" href="#slug-fields" title="Permalink to this heading">#</a></h1>
 <div class="literal-block-wrapper docutils container" id="id1">
-<div class="code-block-caption"><span class="caption-text">app.py</span><a class="headerlink" href="#id1" title="Permalink to this code">#</a></div>
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">app.py</span></code></span><a class="headerlink" href="#id1" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">from</span> <span class="nn">sqlalchemy.orm</span> <span class="kn">import</span> <span class="n">Mapped</span><span class="p">,</span> <span class="n">declarative_mixin</span><span class="p">,</span> <span class="n">mapped_column</span>
 <span class="linenos"> 2</span><span class="nd">@declarative_mixin</span>
 <span class="linenos"> 3</span><span class="k">class</span> <span class="nc">SlugKey</span><span class="p">:</span>
@@ -1588,7 +1588,7 @@ the data passed to the <code class="docutils literal notranslate"><span class="p
 accomplish, we want a record that has a blog title of “Follow the Yellow Brick Road!”
 to have the slugified value of “follow-the-yellow-brick-road”.</p>
 <div class="literal-block-wrapper docutils container" id="id2">
-<div class="code-block-caption"><span class="caption-text">app.py</span><a class="headerlink" href="#id2" title="Permalink to this code">#</a></div>
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">app.py</span></code></span><a class="headerlink" href="#id2" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;Extends the repository to include slug model features..&quot;&quot;&quot;</span>
 <span class="linenos"> 2</span>
 <span class="linenos"> 3</span>    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_available_slug</span><span class="p">(</span>
@@ -1650,7 +1650,7 @@ to have the slugified value of “follow-the-yellow-brick-road”.</p>
 to test the slug value for uniqueness before the insert.  If the initial slug is found,
 a random set of digits are appended to the end of the slug to make it unique.</p>
 <div class="literal-block-wrapper docutils container" id="id3">
-<div class="code-block-caption"><span class="caption-text">app.py</span><a class="headerlink" href="#id3" title="Permalink to this code">#</a></div>
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">app.py</span></code></span><a class="headerlink" href="#id3" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;Create a new blog post.&quot;&quot;&quot;</span>
 <span class="linenos">2</span>    <span class="n">_data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">model_dump</span><span class="p">(</span><span class="n">exclude_unset</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">by_alias</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">exclude_none</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="linenos">3</span>    <span class="n">_data</span><span class="p">[</span><span class="s2">&quot;slug&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="k">await</span> <span class="n">blog_post_repo</span><span class="o">.</span><span class="n">get_available_slug</span><span class="p">(</span><span class="n">_data</span><span class="p">[</span><span class="s2">&quot;title&quot;</span><span class="p">])</span>
@@ -1676,7 +1676,7 @@ Full Code (click to toggle)<div class="sd-summary-down docutils">
 <svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-up" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M18.78 15.28a.75.75 0 000-1.06l-6.25-6.25a.75.75 0 00-1.06 0l-6.25 6.25a.75.75 0 101.06 1.06L12 9.56l5.72 5.72a.75.75 0 001.06 0z"></path></svg></div>
 </summary><div class="sd-summary-content sd-card-body docutils">
 <div class="literal-block-wrapper docutils container" id="id4">
-<div class="code-block-caption"><span class="caption-text">app.py</span><a class="headerlink" href="#id4" title="Permalink to this code">#</a></div>
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">app.py</span></code></span><a class="headerlink" href="#id4" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">from</span> <span class="nn">sqlalchemy.orm</span> <span class="kn">import</span> <span class="n">Mapped</span><span class="p">,</span> <span class="n">declarative_mixin</span><span class="p">,</span> <span class="n">mapped_column</span>
 <span class="linenos"> 2</span><span class="nd">@declarative_mixin</span>
 <span class="linenos"> 3</span><span class="k">class</span> <span class="nc">SlugKey</span><span class="p">:</span>
