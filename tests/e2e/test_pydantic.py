@@ -69,15 +69,15 @@ def test_pydantic_v1_model_with_field_default() -> None:
                         "responses": {
                             "201": {
                                 "content": {"text/plain": {"schema": {"type": "string"}}},
-                                "description": "Document " "created, " "URL " "follows",
+                                "description": "Document created, URL follows",
                                 "headers": {},
                             },
                             "400": {
                                 "content": {
                                     "application/json": {
                                         "schema": {
-                                            "description": "Validation " "Exception",
-                                            "examples": [{"detail": "Bad " "Request", "extra": {}, "status_code": 400}],
+                                            "description": "Validation Exception",
+                                            "examples": [{"detail": "Bad Request", "extra": {}, "status_code": 400}],
                                             "properties": {
                                                 "detail": {"type": "string"},
                                                 "extra": {
@@ -91,7 +91,7 @@ def test_pydantic_v1_model_with_field_default() -> None:
                                         }
                                     }
                                 },
-                                "description": "Bad " "request " "syntax or " "unsupported " "method",
+                                "description": "Bad request syntax or unsupported method",
                             },
                         },
                         "summary": "Test",

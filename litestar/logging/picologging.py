@@ -32,8 +32,8 @@ class QueueListenerHandler(QueueHandler):  # type: ignore[misc,unused-ignore]
             - Requires ``picologging`` to be installed.
         """
         super().__init__(Queue(-1))
-        handlers = resolve_handlers(handlers) if handlers else [StreamHandler()]  # pyright: ignore[reportGeneralTypeIssues]
-        self.listener = QueueListener(self.queue, *handlers)  # pyright: ignore[reportGeneralTypeIssues]
+        handlers = resolve_handlers(handlers) if handlers else [StreamHandler()]  # pyright: ignore
+        self.listener = QueueListener(self.queue, *handlers)  # pyright: ignore
         self.listener.start()
 
         atexit.register(self.listener.stop)

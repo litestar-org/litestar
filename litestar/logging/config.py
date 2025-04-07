@@ -297,9 +297,9 @@ class LoggingConfig(BaseLoggingConfig):
 
         if self.logging_module == "picologging":
             try:
-                from picologging import (  # pyright: ignore[reportMissingImports,reportGeneralTypeIssues]
-                    config,  # pyright: ignore[reportMissingImports,reportGeneralTypeIssues]
-                    getLogger,  # pyright: ignore[reportMissingImports,reportGeneralTypeIssues]
+                from picologging import (  # pyright: ignore
+                    config,  # pyright: ignore
+                    getLogger,  # pyright: ignore
                 )
             except ImportError as e:
                 raise MissingDependencyException("picologging") from e

@@ -99,20 +99,20 @@ def test_generic_mock_repository_parametrization(repository_type: type[GenericAs
     """Test that the mock repository handles multiple types."""
     author_repo = repository_type[UUIDAuthor]  # type: ignore[index]
     book_repo = repository_type[UUIDBook]  # type: ignore[index]
-    assert author_repo.model_type is UUIDAuthor
-    assert book_repo.model_type is UUIDBook
+    assert author_repo.model_type is UUIDAuthor  # pyright: ignore[reportGeneralTypeIssues]
+    assert book_repo.model_type is UUIDBook  # pyright: ignore[reportGeneralTypeIssues]
 
 
 def test_generic_mock_repository_seed_collection(author_repository_type: AuthorRepositoryType) -> None:
     """Test seeding instances."""
     author_repository_type.seed_collection([UUIDAuthor(id="abc")])
-    assert "abc" in author_repository_type.collection
+    assert "abc" in author_repository_type.collection  # pyright: ignore[reportGeneralTypeIssues]
 
 
 def test_generic_mock_repository_clear_collection(author_repository_type: AuthorRepositoryType) -> None:
     """Test clearing collection for type."""
     author_repository_type.clear_collection()
-    assert not author_repository_type.collection
+    assert not author_repository_type.collection  # pyright: ignore[reportGeneralTypeIssues]
 
 
 def test_generic_mock_repository_filter_collection_by_kwargs(author_repository: AuthorRepository) -> None:

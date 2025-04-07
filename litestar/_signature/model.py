@@ -160,9 +160,9 @@ class SignatureModel(Struct):
                 message["source"] = ParamType.PATH
 
             elif key in cls._fields and isinstance(cls._fields[key].kwarg_definition, ParameterKwarg):
-                if cast(ParameterKwarg, cls._fields[key].kwarg_definition).cookie:
+                if cast("ParameterKwarg", cls._fields[key].kwarg_definition).cookie:
                     message["source"] = ParamType.COOKIE
-                elif cast(ParameterKwarg, cls._fields[key].kwarg_definition).header:
+                elif cast("ParameterKwarg", cls._fields[key].kwarg_definition).header:
                     message["source"] = ParamType.HEADER
                 else:
                     message["source"] = ParamType.QUERY

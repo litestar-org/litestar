@@ -52,7 +52,7 @@ async def test_controller_http_method(
         path = test_path
 
         @decorator()  # type: ignore[misc]
-        def test_method(self) -> return_annotation:
+        def test_method(self) -> return_annotation:  # pyright: ignore[reportInvalidTypeForm]
             return return_value
 
     with create_test_client(MyController) as client:
