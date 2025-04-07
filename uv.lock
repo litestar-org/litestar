@@ -1775,7 +1775,7 @@ wheels = [
 
 [[package]]
 name = "litestar"
-version = "2.15.1"
+version = "2.15.2"
 source = { editable = "." }
 dependencies = [
     { name = "anyio", version = "4.5.2", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.9'" },
@@ -2001,7 +2001,7 @@ requires-dist = [
     { name = "uvloop", marker = "sys_platform != 'win32' and extra == 'standard'", specifier = ">=0.18.0" },
     { name = "valkey", extras = ["libvalkey"], marker = "extra == 'valkey'", specifier = ">=6.0.2" },
 ]
-provides-extras = ["annotated-types", "attrs", "brotli", "cli", "cryptography", "full", "jinja", "jwt", "mako", "minijinja", "opentelemetry", "piccolo", "picologging", "prometheus", "pydantic", "redis", "valkey", "sqlalchemy", "standard", "structlog"]
+provides-extras = ["annotated-types", "attrs", "brotli", "cli", "cryptography", "full", "jinja", "jwt", "mako", "minijinja", "opentelemetry", "piccolo", "picologging", "prometheus", "pydantic", "redis", "sqlalchemy", "standard", "structlog", "valkey"]
 
 [package.metadata.requires-dev]
 dev = [
