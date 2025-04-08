@@ -28,7 +28,7 @@ upgrade:       										## Upgrade all dependencies to the latest stable versio
 # =============================================================================
 
 .PHONY: install
-install:
+install:  											## Install dependencies
 	@uv sync
 
 .PHONY: clean
