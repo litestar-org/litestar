@@ -99,14 +99,14 @@ class ListenerHandler:
         connection_lifespan_dependencies: Dict[str, Any],  # noqa: UP006
         **kwargs: Any,
     ) -> None:
-        lifespan_mananger = self._listener._connection_lifespan or self._listener.default_connection_lifespan
+        lifespan_manager = self._listener._connection_lifespan or self._listener.default_connection_lifespan
         handle_send = self._listener.resolve_send_handler() if self._can_send_data else None
         handle_receive = self._listener.resolve_receive_handler()
 
         if self._pass_socket:
             kwargs["socket"] = socket
 
-        async with lifespan_mananger(**connection_lifespan_dependencies):
+        async with lifespan_manager(**connection_lifespan_dependencies):
             while True:
                 received_data = await handle_receive(socket)
                 data = await self._fn(*args, data=received_data, **kwargs)
