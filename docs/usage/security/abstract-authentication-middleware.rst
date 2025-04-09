@@ -64,7 +64,7 @@ Finally, we need to pass our middleware to the Litestar constructor:
 
 
 .. literalinclude:: /examples/security/using_abstract_authentication_middleware/main.py
-    :lines: 60-64
+    :lines: 60-69
     :language: python
     :caption: main.py
 
