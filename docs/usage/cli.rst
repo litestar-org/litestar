@@ -141,6 +141,38 @@ You can achieve this by adding the special ``app`` parameter to your CLI functio
     @click.command()
     def my_command(app: Litestar) -> None: ...
 
+Using the `server_lifespan` hook
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Server lifespan hooks are a powerful way to run code before and after the server starts and stops.
+It is useful when running the underlying asgi server with multiple workers, as it allows you to
+run code before the server starts and after it stops, regardless of the number of workers.
+
+.. code-block:: python
+    :caption: Using the `server_lifespan` hook
+
+    from contextlib import contextmanager
+    from typing import Generator
+
+    from litestar import Litestar
+    from litestar.config.app import AppConfig
+    from litestar.plugins.base import CLIPlugin
+
+
+    class StartupPrintPlugin(CLIPlugin):
+
+        @contextmanager
+        def server_lifespan(self, app: Litestar) -> Generator[None, None, None]:
+            print("i_run_before_startup_plugin")  # noqa: T201
+            try:
+                yield
+            finally:
+                print("i_run_after_shutdown_plugin")  # noqa: T201
+
+    def create_app() -> Litestar:
+        return Litestar(route_handlers=[], plugins=[StartupPrintPlugin()])
+
+
 CLI Reference
 -------------
 
