@@ -13,11 +13,14 @@ The body of HTTP requests can be accessed using the special ``data`` parameter i
 The type of ``data`` can be any supported type, including
 
 
-* :func:`dataclasses <dataclasses.dataclass>`
-* :class:`TypedDicts <typing.TypedDict>`
-* Pydantic models
 * Arbitrary stdlib types
-* Types supported via :doc:`plugins </usage/plugins/index>`
+* :class:`TypedDicts <typing.TypedDict>`
+* :func:`dataclasses <dataclasses.dataclass>`
+* Types supported via :doc:`plugins </usage/plugins/index>` ie.
+    - `Msgspec Struct <https://jcristharif.com/msgspec/structs.html>`_
+    - `Pydantic models <https://docs.pydantic.dev/usage/models/>`_
+    - `Attrs classes <https://www.attrs.org/en/stable/>`_
+
 
 .. literalinclude:: /examples/request_data/request_data_2.py
     :language: python
@@ -29,7 +32,7 @@ Validation and customization of OpenAPI documentation
 With the help of :class:`Body <litestar.params.Body>`, you have fine-grained control over the validation
 of the request body, and can also customize the OpenAPI documentation:
 
-.. literalinclude:: /examples/request_data/request_data_3.py
+.. literalinclude:: /examples/request_data/test_request_data_3.py
     :language: python
 
 
@@ -48,7 +51,7 @@ To access data sent as `url-encoded form data <https://developer.mozilla.org/en-
 i.e. ``application/x-www-form-urlencoded`` Content-Type header, use :class:`Body <litestar.params.Body>` and specify
 :class:`RequestEncodingType.URL_ENCODED <litestar.enums.RequestEncodingType>` as the ``media_type``:
 
-.. literalinclude:: /examples/request_data/request_data_4.py
+.. literalinclude:: /examples/request_data/test_request_data_4.py
     :language: python
 
 .. note::
@@ -64,7 +67,7 @@ You can access data uploaded using a request with a
 `multipart/form-data <https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/POST>`_
 Content-Type header by specifying it in the :class:`Body <litestar.params.Body>` function:
 
-.. literalinclude:: /examples/request_data/request_data_5.py
+.. literalinclude:: /examples/request_data/test_request_data_5.py
     :language: python
 
 
@@ -83,12 +86,12 @@ To access a single file simply type ``data`` as :class:`UploadFile <.datastructu
 
     .. tab-item:: Async
 
-        .. literalinclude:: /examples/request_data/request_data_6.py
+        .. literalinclude:: /examples/request_data/test_request_data_6.py
             :language: python
 
     .. tab-item:: Sync
 
-        .. literalinclude:: /examples/request_data/request_data_7.py
+        .. literalinclude:: /examples/request_data/test_request_data_7.py
             :language: python
 
 .. admonition:: Technical details
@@ -105,7 +108,7 @@ Multiple files
 
 To access multiple files with known filenames, you can use a pydantic model:
 
-.. literalinclude:: /examples/request_data/request_data_8.py
+.. literalinclude:: /examples/request_data/test_request_data_8.py
     :language: python
 
 
@@ -115,7 +118,7 @@ Files as a dictionary
 
 If you do not care about parsing and validation and only want to access the form data as a dictionary, you can use a ``dict`` instead:
 
-.. literalinclude:: /examples/request_data/request_data_9.py
+.. literalinclude:: /examples/request_data/test_request_data_9.py
     :language: python
 
 
@@ -125,7 +128,7 @@ Files as a list
 
 Finally, you can also access the files as a list without the filenames:
 
-.. literalinclude:: /examples/request_data/request_data_10.py
+.. literalinclude:: /examples/request_data/test_request_data_10.py
     :language: python
 
 
