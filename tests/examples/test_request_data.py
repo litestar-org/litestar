@@ -2,14 +2,14 @@ from docs.examples.request_data.custom_request import app as custom_request_clas
 from docs.examples.request_data.msgpack_request import app as msgpack_app
 from docs.examples.request_data.request_data_1 import app
 from docs.examples.request_data.request_data_2 import app as app_2
-from docs.examples.request_data.request_data_3 import app as app_3
-from docs.examples.request_data.request_data_4 import app as app_4
-from docs.examples.request_data.request_data_5 import app as app_5
-from docs.examples.request_data.request_data_6 import app as app_6
-from docs.examples.request_data.request_data_7 import app as app_7
-from docs.examples.request_data.request_data_8 import app as app_8
-from docs.examples.request_data.request_data_9 import app as app_9
-from docs.examples.request_data.request_data_10 import app as app_10
+from docs.examples.request_data.test_request_data_3 import app as app_3
+from docs.examples.request_data.test_request_data_4 import app as app_4
+from docs.examples.request_data.test_request_data_5 import app as app_5
+from docs.examples.request_data.test_request_data_6 import app as app_6
+from docs.examples.request_data.test_request_data_7 import app as app_7
+from docs.examples.request_data.test_request_data_8 import app as app_8
+from docs.examples.request_data.test_request_data_9 import app as app_9
+from docs.examples.request_data.test_request_data_10 import app as app_10
 
 from litestar.serialization import encode_msgpack
 from litestar.testing import TestClient
