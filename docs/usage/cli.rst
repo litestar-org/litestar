@@ -144,9 +144,9 @@ You can achieve this by adding the special ``app`` parameter to your CLI functio
 Using the `server_lifespan` hook
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Server lifespan hooks are a powerful way to run code before and after the server starts and stops.
-It is useful when running the underlying asgi server with multiple workers, as it allows you to
-run code before the server starts and after it stops, regardless of the number of workers.
+Server lifespan hooks provide a way to run code before and after the *server* starts and stops. In contrast to the regular `lifespan` hooks, they only run once, even when a server starts multiple workers, whereas `lifespan` hooks would run for each individual worker.
+
+This makes them suitable for tasks that should happen exactly once, like initializing a database.
 
 .. code-block:: python
     :caption: Using the `server_lifespan` hook
