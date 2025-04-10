@@ -141,6 +141,7 @@ class ServerSentEvent(Stream):
         retry_duration: int | None = None,
         comment_message: str | None = None,
         status_code: int | None = None,
+        ping_interval: int | None = None,
     ) -> None:
         """Initialize the response.
 
@@ -159,6 +160,7 @@ class ServerSentEvent(Stream):
             event_id: The event ID. This sets the event source's 'last event id'.
             retry_duration: Retry duration in milliseconds.
             comment_message: A comment message. This value is ignored by clients and is used mostly for pinging.
+            ping_interval: Interval for sending message with "ping" body.
         """
         super().__init__(
             content=_ServerSentEventIterator(
@@ -174,6 +176,7 @@ class ServerSentEvent(Stream):
             encoding=encoding,
             headers=headers,
             status_code=status_code,
+            ping_interval=ping_interval,
         )
         self.headers.setdefault("Cache-Control", "no-cache")
         self.headers["Connection"] = "keep-alive"
