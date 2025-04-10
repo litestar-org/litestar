@@ -4,7 +4,7 @@ import itertools
 from functools import partial
 from typing import TYPE_CHECKING, Any, AsyncGenerator, AsyncIterable, AsyncIterator, Callable, Iterable, Iterator, Union
 
-from anyio import CancelScope, create_task_group
+from anyio import CancelScope, create_task_group, sleep
 
 from litestar.enums import MediaType
 from litestar.response.base import ASGIResponse, Response
@@ -115,6 +115,25 @@ class ASGIStreamingResponse(ASGIResponse):
                 cancel_scope.cancel()
             else:
                 await self._listen_for_disconnect(cancel_scope=cancel_scope, receive=receive)
+
+    async def _send_ping_event(self, send: Send) -> None:
+        """Send ping events via ping_interval time.
+
+        Args:
+            send: The ASGI Send function.
+
+        Returns:
+            None
+        """
+        while True:
+            await sleep(self.ping_interval)
+
+            stream_event: HTTPResponseBodyEvent = {
+                "type": "http.response.body",
+                "body": b"ping\n",
+                "more_body": True,
+            }
+            await send(stream_event)
 
     async def _stream(self, send: Send) -> None:
         """Send the chunks from the iterator as a stream of ASGI 'http.response.body' events.
