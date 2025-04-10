@@ -34,7 +34,7 @@ handler function:
         :lines: 27-29, 32-33
         :caption: Defining the guard ``admin_user_guard`` used to authorize certain route handlers
 
-Here the ``admin_user_guard`` guard checks if the user is an admin.
+Here, the ``admin_user_guard`` guard checks if the user is an admin.
 
 The connection has a `user` object attached to it thanks to the JWT middleware, see :doc:`authentication </usage/security/jwt>`
 and in particular the :meth:`JWTAuth.retrieve_user_handler` method.
