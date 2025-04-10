@@ -1,4 +1,3 @@
-from base64 import urlsafe_b64encode
 from typing import Dict
 
 from pydantic import BaseModel, ConfigDict
@@ -24,7 +23,7 @@ async def handle_file_upload(
     cv_content = await data.cv.read()
     diploma_content = await data.diploma.read()
 
-    return {"cv": cv_content.decode(), "diploma": diploma_content.decode(), "what is it": cv_content}
+    return {"cv": cv_content.decode(), "diploma": diploma_content.decode()}
 
 
 app = Litestar(route_handlers=[handle_file_upload])
@@ -39,5 +38,4 @@ def test_file_upload() -> None:
         assert response.json() == {
             "cv": "cv content",
             "diploma": "diploma content",
-            "what is it": urlsafe_b64encode(b"cv content").decode(),
         }
