@@ -1662,6 +1662,33 @@ any <a class="reference internal" href="../reference/stores/base.html#litestar.s
 </div>
 </div>
 </section>
+<section id="using-the-cache-response-filter">
+<h3>Using the cache_response_filter<a class="headerlink" href="#using-the-cache-response-filter" title="Permalink to this heading">#</a></h3>
+<p>The <a class="reference internal" href="../reference/config.html#litestar.config.response_cache.ResponseCacheConfig.cache_response_filter" title="litestar.config.response_cache.ResponseCacheConfig.cache_response_filter"><code class="xref py py-attr docutils literal notranslate"><span class="pre">cache_response_filter</span></code></a> can be customized to implement any caching logic based on the application’s needs.
+For example, you might want to cache only successful responses, or cache responses based on certain headers or content.</p>
+<div class="literal-block-wrapper docutils container" id="id6">
+<div class="code-block-caption"><span class="caption-text">Using the cache_response_filter to customize caching behavior.</span><a class="headerlink" href="#id6" title="Permalink to this code">#</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span>
+<span class="kn">from</span> <span class="nn">litestar.config.response_cache</span> <span class="kn">import</span> <span class="n">ResponseCacheConfig</span>
+<span class="kn">from</span> <span class="nn">litestar.types</span> <span class="kn">import</span> <span class="n">HTTPScope</span>
+
+
+<span class="k">def</span> <span class="nf">custom_cache_response_filter</span><span class="p">(</span><span class="n">_</span><span class="p">:</span> <span class="n">HTTPScope</span><span class="p">,</span> <span class="n">status_code</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="c1"># Cache only 2xx responses</span>
+    <span class="k">return</span> <span class="mi">200</span> <span class="o">&lt;=</span> <span class="n">status_code</span> <span class="o">&lt;</span> <span class="mi">300</span>
+
+
+<span class="n">response_cache_config</span> <span class="o">=</span> <span class="n">ResponseCacheConfig</span><span class="p">(</span><span class="n">cache_response_filter</span><span class="o">=</span><span class="n">custom_cache_response_filter</span><span class="p">)</span>
+
+<span class="c1"># Create the app with a custom cache response filter</span>
+<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
+    <span class="n">response_cache_config</span><span class="o">=</span><span class="n">response_cache_config</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>In this example, the <cite>custom_cache_response_filter</cite> function caches only successful (2xx) responses.</p>
+</section>
 </section>
 </section>
 
@@ -1713,6 +1740,7 @@ any <a class="reference internal" href="../reference/stores/base.html#litestar.s
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#configuration">Configuration</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#changing-where-data-is-stored">Changing where data is stored</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#specifying-a-cache-key-builder">Specifying a cache key builder</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#using-the-cache-response-filter">Using the cache_response_filter</a></li>
 </ul>
 </li>
 </ul>
