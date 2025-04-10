@@ -1,3 +1,6 @@
+from hashlib import sha256
+from io import BytesIO
+
 from docs.examples.request_data.custom_request import app as custom_request_class_app
 from docs.examples.request_data.msgpack_request import app as msgpack_app
 from docs.examples.request_data.request_data_1 import app
@@ -47,28 +50,30 @@ def test_request_data_5() -> None:
     with TestClient(app=app_5) as client:
         response = client.post(
             "/",
-            content=b'--d26a9a4ed2f441fba9ab42d04b42099e\r\nContent-Disposition: form-data; name="id"\r\n\r\n1\r\n--d26a9a4ed2f441fba9ab42d04b42099e\r\nContent-Disposition: form-data; name="name"\r\n\r\nJohn\r\n--d26a9a4ed2f441fba9ab42d04b42099e--\r\n',
-            headers={
-                "Content-Length": "211",
-                "Content-Type": "multipart/form-data; boundary=d26a9a4ed2f441fba9ab42d04b42099e",
-            },
+            files={"form_input_name": ("filename", BytesIO(b"file content"))},
+            data={"id": 1, "name": "John"},
         )
-        assert response.json() == {"id": 1, "name": "John"}
         assert response.status_code == 201
+        assert response.json() == {
+            "id": 1,
+            "name": "John",
+            "filename": "filename",
+            "file_content": sha256(b"file content").hexdigest(),
+        }
 
 
 def test_request_data_6() -> None:
     with TestClient(app=app_6) as client:
         response = client.post("/", files={"upload": ("hello", b"world")})
         assert response.status_code == 201
-        assert response.text == "hello, world"
+        assert response.text == f"hello, {sha256(b'world').hexdigest()}"
 
 
 def test_request_data_7() -> None:
     with TestClient(app=app_7) as client:
         response = client.post("/", files={"upload": ("hello", b"world")})
         assert response.status_code == 201
-        assert response.text == "hello, world"
+        assert response.text == f"hello, {sha256(b'world').hexdigest()}"
 
 
 def test_request_data_8() -> None:
@@ -82,16 +87,30 @@ def test_request_data_8() -> None:
 
 def test_request_data_9() -> None:
     with TestClient(app=app_9) as client:
-        response = client.post("/", files={"hello": b"there", "i'm": "steve"})
+        response = client.post("/", files={"hello": ("filename", b"there"), "i'm": ("another_filename", "steve")})
         assert response.status_code == 201
-        assert response.json() == {"hello": "there", "i'm": "steve"}
+        assert response.json() == {
+            "filename": sha256(b"there").hexdigest(),
+            "another_filename": sha256(b"steve").hexdigest(),
+        }
 
 
 def test_request_data_10() -> None:
     with TestClient(app=app_10) as client:
         response = client.post("/", files={"foo": ("foo.txt", b"hello"), "bar": ("bar.txt", b"world")})
         assert response.status_code == 201
-        assert response.json() == {"foo.txt": "hello", "bar.txt": "world"}
+        assert response.json() == {
+            "foo.txt": [
+                "2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824",
+                "text/plain",
+                {"Content-Disposition": 'form-data; name="foo"; filename="foo.txt"', "Content-Type": "text/plain"},
+            ],
+            "bar.txt": [
+                "486ea46224d1bb4fb680f34f7c9ad96a8f24ec88be73ea8e5a6c65260e9cb8a7",
+                "text/plain",
+                {"Content-Disposition": 'form-data; name="bar"; filename="bar.txt"', "Content-Type": "text/plain"},
+            ],
+        }
 
 
 def test_msgpack_app() -> None:
