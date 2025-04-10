@@ -167,6 +167,8 @@ class ASGIStreamingResponse(ASGIResponse):
 
         async with create_task_group() as task_group:
             task_group.start_soon(partial(self._stream, send))
+            if self.ping_interval:
+                task_group.start_soon(partial(self._send_ping_event, send))
             await self._listen_for_disconnect(cancel_scope=task_group.cancel_scope, receive=receive)
 
 
