@@ -1,6 +1,7 @@
 import io
 from dataclasses import dataclass
 from hashlib import sha256
+from typing import Dict
 
 from typing_extensions import Annotated
 
@@ -21,7 +22,7 @@ class User:
 @post(path="/")
 async def create_user(
     data: Annotated[User, Body(media_type=RequestEncodingType.MULTI_PART)],
-) -> dict[str, str]:
+) -> Dict[str, str]:
     content = await data.form_input_name.read()
     filename = data.form_input_name.filename
     return {"id": data.id, "name": data.name, "filename": filename, "file_content": sha256(content).hexdigest()}

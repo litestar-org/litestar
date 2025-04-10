@@ -1,6 +1,6 @@
 import io
 from hashlib import sha256
-from typing import Any, List
+from typing import Any, Dict, List, Tuple
 
 from typing_extensions import Annotated
 
@@ -14,7 +14,7 @@ from litestar.testing import TestClient
 @post(path="/")
 async def handle_file_upload(
     data: Annotated[List[UploadFile], Body(media_type=RequestEncodingType.MULTI_PART)],
-) -> dict[str, tuple[str, str, Any]]:
+) -> Dict[str, Tuple[str, str, Any]]:
     result = {}
 
     for file in data:
