@@ -10,7 +10,7 @@ Here's the code:
 .. literalinclude:: /examples/contrib/sqlalchemy/plugins/tutorial/full_app_with_serialization_plugin.py
     :language: python
     :linenos:
-    :emphasize-lines: 11,76-77,82-83,88,90-91,98
+    :emphasize-lines: 12, 75-77, 80-83, 86-91, 98
 
 We've simply imported the plugin and added it to our app's plugins list, and now we can receive and return our
 SQLAlchemy data models directly to and from our handler.
@@ -30,14 +30,14 @@ Once more, let's compare the sets of application handlers before and after our r
         .. literalinclude:: /examples/contrib/sqlalchemy/plugins/tutorial/full_app_with_serialization_plugin.py
             :language: python
             :linenos:
-            :lines: 75-99
+            :lines: 1-13, 73-99
 
    .. tab-item:: Before
 
         .. literalinclude:: /examples/contrib/sqlalchemy/plugins/tutorial/full_app_no_plugins.py
             :language: python
             :linenos:
-            :lines: 69-100
+            :lines: 1-12, 67-100
 
 Very nice! But, we can do better.
 

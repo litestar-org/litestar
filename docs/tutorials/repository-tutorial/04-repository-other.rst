@@ -1,5 +1,6 @@
 Adding Additional Features to the Repository
 --------------------------------------------
+
 While most of the functionality you need is built into the repository, there are still
 cases where you need to add in additional functionality. Let's explore ways that we
 can add functionality on top of the repository pattern.
@@ -8,10 +9,11 @@ can add functionality on top of the repository pattern.
 
 Slug Fields
 -----------
+
 .. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_repository_extension.py
     :language: python
     :caption: ``app.py``
-    :lines: 12, 33-40, 101-106
+    :lines: 10-23, 33-34, 37-42, 101-102, 106-108
     :linenos:
 
 In this example, we are using a ``BlogPost`` model to hold blog post titles and
@@ -32,7 +34,7 @@ to have the slugified value of "follow-the-yellow-brick-road".
 .. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_repository_extension.py
     :language: python
     :caption: ``app.py``
-    :lines: 43-98
+    :lines: 1-8, 14-23, 43-44, 46-100
     :linenos:
 
 Since the ``BlogPost.title`` field is not marked as unique, this means that we'll have
@@ -42,7 +44,7 @@ a random set of digits are appended to the end of the slug to make it unique.
 .. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_repository_extension.py
     :language: python
     :caption: ``app.py``
-    :lines: 171-173
+    :lines: 1-23, 27-32, 101-102, 106-126, 170-180
     :linenos:
 
 We are all set to use this in our routes now.  First, we'll convert our incoming
@@ -64,5 +66,5 @@ Full Code
     .. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_repository_extension.py
         :language: python
         :caption: ``app.py``
-        :lines: 12, 33-40, 101-106, 43-98, 171-173
+        :emphasize-lines: 12, 37-42, 106-108, 177
         :linenos:

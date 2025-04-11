@@ -4,10 +4,10 @@ from typing import Any
 
 from sqlalchemy.orm import DeclarativeBase
 
-from litestar.contrib.sqlalchemy.base import CommonTableAttributes, UUIDPrimaryKey, create_registry
+from litestar.plugins.sqlalchemy import base, mixins
 
 
-class _Base(CommonTableAttributes, UUIDPrimaryKey, DeclarativeBase):
+class _Base(base.CommonTableAttributes, mixins.UUIDPrimaryKey, DeclarativeBase):
     """Fake base SQLAlchemy model for typing purposes."""
 
 
@@ -16,5 +16,9 @@ Base: _Base
 
 def __getattr__(name: str) -> Any:
     if name == "Base":
-        return type("Base", (CommonTableAttributes, UUIDPrimaryKey, DeclarativeBase), {"registry": create_registry()})
+        return type(
+            "Base",
+            (base.CommonTableAttributes, mixins.UUIDPrimaryKey, DeclarativeBase),
+            {"registry": base.create_registry()},
+        )
     raise AttributeError(f"module {__name__!r} has no attribute {name!r}")

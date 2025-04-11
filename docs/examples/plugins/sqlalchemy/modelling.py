@@ -1,8 +1,8 @@
 from sqlalchemy.orm import Mapped
 
-from litestar.contrib.sqlalchemy.base import UUIDBase
+from litestar.plugins.sqlalchemy import base
 
 
-class TodoItem(UUIDBase):
+class TodoItem(base.UUIDBase):
     title: Mapped[str]
     done: Mapped[bool]
