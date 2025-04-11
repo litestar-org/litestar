@@ -25,10 +25,20 @@ async def my_generator() -> AsyncGenerator[SSEData, None]:
         # here a ServerSentEventMessage object
         yield ServerSentEventMessage(event="something-with-comment", retry=1000, comment="some comment")
 
+async def my_slow_generator() -> AsyncGenerator[SSEData, None]: 
+    count = 0
+    while count < 1:
+        await sleep(1)
+        count += 1
+        yield ServerSentEventMessage(data='content', event='message')
 
 @get(path="/count", sync_to_thread=False)
 def sse_handler() -> ServerSentEvent:
     return ServerSentEvent(my_generator())
 
+@get(path='/with_ping', sync_to_thread=False)
+def sse_handler_with_ping_events() -> ServerSentEvent:
+    return ServerSentEvent(my_slow_generator(), ping_interval=0.1)
 
-app = Litestar(route_handlers=[sse_handler])
+
+app = Litestar(route_handlers=[sse_handler, sse_handler_with_ping_events])
