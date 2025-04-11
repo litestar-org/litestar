@@ -141,6 +141,38 @@ You can achieve this by adding the special ``app`` parameter to your CLI functio
     @click.command()
     def my_command(app: Litestar) -> None: ...
 
+Using the `server_lifespan` hook
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Server lifespan hooks provide a way to run code before and after the *server* starts and stops. In contrast to the regular `lifespan` hooks, they only run once, even when a server starts multiple workers, whereas `lifespan` hooks would run for each individual worker.
+
+This makes them suitable for tasks that should happen exactly once, like initializing a database.
+
+.. code-block:: python
+    :caption: Using the `server_lifespan` hook
+
+    from contextlib import contextmanager
+    from typing import Generator
+
+    from litestar import Litestar
+    from litestar.config.app import AppConfig
+    from litestar.plugins.base import CLIPlugin
+
+
+    class StartupPrintPlugin(CLIPlugin):
+
+        @contextmanager
+        def server_lifespan(self, app: Litestar) -> Generator[None, None, None]:
+            print("i_run_before_startup_plugin")  # noqa: T201
+            try:
+                yield
+            finally:
+                print("i_run_after_shutdown_plugin")  # noqa: T201
+
+    def create_app() -> Litestar:
+        return Litestar(route_handlers=[], plugins=[StartupPrintPlugin()])
+
+
 CLI Reference
 -------------
 
