@@ -51,7 +51,7 @@ class ASGIStreamingResponse(ASGIResponse):
         is_head_response: bool = False,
         media_type: MediaType | str | None = None,
         status_code: int | None = None,
-        ping_interval: int | None = None,
+        ping_interval: float | None = None,
     ) -> None:
         """A low-level ASGI streaming response.
 
@@ -190,7 +190,7 @@ class Stream(Response[StreamType[Union[str, bytes]]]):
         headers: ResponseHeaders | None = None,
         media_type: MediaType | OpenAPIMediaType | str | None = None,
         status_code: int | None = None,
-        ping_interval: int | None = None,
+        ping_interval: float | None = None,
     ) -> None:
         """Initialize the response.
 

@@ -141,7 +141,7 @@ class ServerSentEvent(Stream):
         retry_duration: int | None = None,
         comment_message: str | None = None,
         status_code: int | None = None,
-        ping_interval: int | None = None,
+        ping_interval: float | None = None,
     ) -> None:
         """Initialize the response.
 
