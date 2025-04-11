@@ -117,7 +117,7 @@ class ASGIStreamingResponse(ASGIResponse):
                 await self._listen_for_disconnect(cancel_scope=cancel_scope, receive=receive)
 
     async def _send_ping_event(self, send: Send) -> None:
-        """Send ping events via ping_interval time.
+        """Send ping events every `ping_interval` second.
 
         Args:
             send: The ASGI Send function.
