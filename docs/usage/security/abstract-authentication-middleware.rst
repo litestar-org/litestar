@@ -45,7 +45,7 @@ Creating a Custom Authentication Middleware
 Since the above is quite hard to grasp in the abstract, let us see an example.
 
 We start off by creating a user model. It can be implemented using msgspec, Pydantic, an ODM, ORM, etc.
-For the sake of the example here let us say it is a dataclass:
+For the sake of this example here let us say it is a dataclass:
 
 .. literalinclude:: /examples/security/using_abstract_authentication_middleware.py
     :lines: 19-26
