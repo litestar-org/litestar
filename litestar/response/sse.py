@@ -160,7 +160,7 @@ class ServerSentEvent(Stream):
             event_id: The event ID. This sets the event source's 'last event id'.
             retry_duration: Retry duration in milliseconds.
             comment_message: A comment message. This value is ignored by clients and is used mostly for pinging.
-            ping_interval: Interval for sending message with "ping" body.
+            ping_interval: The interval in seconds between "ping" messages.
         """
         super().__init__(
             content=_ServerSentEventIterator(

@@ -68,7 +68,7 @@ class ASGIStreamingResponse(ASGIResponse):
             iterator: An async iterator or iterable.
             media_type: The response media type.
             status_code: The response status code.
-            ping_interval: Interval for sending message with "ping" body.
+            ping_interval: The interval in seconds between "ping" messages.
         """
 
         if body:
@@ -205,7 +205,7 @@ class Stream(Response[StreamType[Union[str, bytes]]]):
             headers: A string keyed dictionary of response headers. Header keys are insensitive.
             media_type: A value for the response ``Content-Type`` header.
             status_code: An HTTP status code.
-            ping_interval: Interval for sending message with "ping" body.
+            ping_interval: The interval in seconds between "ping" messages.
         """
         super().__init__(
             background=background,
