@@ -63,7 +63,10 @@ Data can be received in the listener via the ``data`` parameter. The data passed
 will be converted / parsed according to the given type annotation and supports
 :class:`str`, :class:`bytes`, or arbitrary :class:`dict` / or :class:`list` in the
 form of JSON.
-The listeners behave exactly like regular handlers, in that they default to JSON, so if the websocket client is expected to send something else, you'll need to explicitly annotate data: str or data: bytes.
+.. important:: 
+    
+    The listeners will default to JSON unless `data` is annotated with `str` or `bytes`
+
 
 .. tab-set::
 
