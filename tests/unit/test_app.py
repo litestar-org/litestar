@@ -10,7 +10,6 @@ from typing import TYPE_CHECKING, Any, Callable
 from unittest.mock import MagicMock, Mock, PropertyMock
 
 import pytest
-from advanced_alchemy.extensions.litestar import SQLAlchemySerializationPlugin
 from click import Group
 from pytest import MonkeyPatch
 
@@ -27,6 +26,7 @@ from litestar.exceptions import (
 )
 from litestar.logging.config import LoggingConfig
 from litestar.plugins import CLIPlugin
+from litestar.plugins.sqlalchemy import SQLAlchemySerializationPlugin
 from litestar.status_codes import HTTP_200_OK, HTTP_400_BAD_REQUEST, HTTP_500_INTERNAL_SERVER_ERROR
 from litestar.testing import TestClient, create_test_client
 

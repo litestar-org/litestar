@@ -4,10 +4,10 @@ from sqlalchemy import func, select
 from sqlalchemy.orm import Mapped
 
 from litestar import Litestar, get
-from litestar.contrib.sqlalchemy.base import UUIDBase
-from litestar.contrib.sqlalchemy.plugins import SQLAlchemyAsyncConfig, SQLAlchemyInitPlugin
 from litestar.di import Provide
 from litestar.pagination import AbstractAsyncOffsetPaginator, OffsetPagination
+from litestar.plugins.sqlalchemy import SQLAlchemyAsyncConfig, SQLAlchemyInitPlugin
+from litestar.plugins.sqlalchemy.base import UUIDBase
 
 if TYPE_CHECKING:
     from sqlalchemy.engine.result import ScalarResult
