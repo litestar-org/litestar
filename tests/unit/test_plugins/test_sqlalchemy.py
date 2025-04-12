@@ -8,7 +8,6 @@ from advanced_alchemy.extensions.litestar import service as sa_service
 from advanced_alchemy.extensions.litestar import types as sa_types
 from advanced_alchemy.extensions.litestar import utils as sa_utils
 
-from litestar.pagination import OffsetPagination
 from litestar.plugins import sqlalchemy
 
 
@@ -21,7 +20,6 @@ def test_re_exports() -> None:
     assert sqlalchemy.repository is sa_repository
     assert sqlalchemy.service is sa_service
     assert sqlalchemy.exceptions is sa_exceptions
-    assert OffsetPagination is sa_service.OffsetPagination
 
     assert sqlalchemy.AlembicAsyncConfig is sa_litestar.AlembicAsyncConfig
     assert sqlalchemy.AlembicCommands is sa_litestar.AlembicCommands

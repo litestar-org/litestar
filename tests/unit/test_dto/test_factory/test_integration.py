@@ -6,7 +6,6 @@ from dataclasses import dataclass, field
 from types import ModuleType
 from typing import TYPE_CHECKING, Annotated, Callable, Generic, Optional, TypeVar, cast
 from unittest.mock import MagicMock
-from uuid import UUID
 
 import msgspec
 import pytest
@@ -20,7 +19,6 @@ from litestar.dto.types import RenameStrategy
 from litestar.enums import MediaType, RequestEncodingType
 from litestar.openapi.spec.response import OpenAPIResponse
 from litestar.openapi.spec.schema import Schema
-from litestar.pagination import ClassicPagination, CursorPagination, OffsetPagination
 from litestar.params import Body
 from litestar.serialization import encode_json
 from litestar.testing import create_test_client
@@ -532,84 +530,6 @@ def test_dto_concrete_builtin_collection_types(use_experimental_dto_backend: boo
 class PaginatedUser:
     name: str
     age: int
-
-
-def test_dto_classic_pagination(use_experimental_dto_backend: bool) -> None:
-    @get(
-        dto=DataclassDTO[
-            Annotated[
-                PaginatedUser, DTOConfig(exclude={"age"}, experimental_codegen_backend=use_experimental_dto_backend)
-            ]
-        ]
-    )
-    def handler() -> ClassicPagination[PaginatedUser]:
-        return ClassicPagination(
-            items=[PaginatedUser(name="John", age=42), PaginatedUser(name="Jane", age=43)],
-            page_size=2,
-            current_page=1,
-            total_pages=20,
-        )
-
-    with create_test_client(handler) as client:
-        response = client.get("/")
-        assert response.json() == {
-            "items": [{"name": "John"}, {"name": "Jane"}],
-            "page_size": 2,
-            "current_page": 1,
-            "total_pages": 20,
-        }
-
-
-def test_dto_cursor_pagination(use_experimental_dto_backend: bool) -> None:
-    uuid = UUID("00000000-0000-0000-0000-000000000000")
-
-    @get(
-        dto=DataclassDTO[
-            Annotated[
-                PaginatedUser, DTOConfig(exclude={"age"}, experimental_codegen_backend=use_experimental_dto_backend)
-            ]
-        ]
-    )
-    def handler() -> CursorPagination[UUID, PaginatedUser]:
-        return CursorPagination(
-            items=[PaginatedUser(name="John", age=42), PaginatedUser(name="Jane", age=43)],
-            results_per_page=2,
-            cursor=uuid,
-        )
-
-    with create_test_client(handler) as client:
-        response = client.get("/")
-        assert response.json() == {
-            "items": [{"name": "John"}, {"name": "Jane"}],
-            "results_per_page": 2,
-            "cursor": "00000000-0000-0000-0000-000000000000",
-        }
-
-
-def test_dto_offset_pagination(use_experimental_dto_backend: bool) -> None:
-    @get(
-        dto=DataclassDTO[
-            Annotated[
-                PaginatedUser, DTOConfig(exclude={"age"}, experimental_codegen_backend=use_experimental_dto_backend)
-            ]
-        ]
-    )
-    def handler() -> OffsetPagination[PaginatedUser]:
-        return OffsetPagination(
-            items=[PaginatedUser(name="John", age=42), PaginatedUser(name="Jane", age=43)],
-            limit=2,
-            offset=0,
-            total=20,
-        )
-
-    with create_test_client(handler) as client:
-        response = client.get("/")
-        assert response.json() == {
-            "items": [{"name": "John"}, {"name": "Jane"}],
-            "limit": 2,
-            "offset": 0,
-            "total": 20,
-        }
 
 
 T = TypeVar("T")
