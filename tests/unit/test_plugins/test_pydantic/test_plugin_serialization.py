@@ -254,9 +254,9 @@ def test_decode_msgpack_typed(
     model_json = _model_dump_json(model, by_alias=prefer_alias)
     assert (
         decode_msgpack(
-            encode_msgpack(model, serializer=get_serializer(PydanticInitPlugin.encoders(prefer_alias=prefer_alias))),
+            encode_msgpack(model, serializer=get_serializer(PydanticInitPlugin.encoders(prefer_alias=prefer_alias))),  # pyright: ignore
             model_type,
             type_decoders=PydanticInitPlugin.decoders(),
-        ).json()
-        == model_json
+        ).json()  # pyright: ignore
+        == model_json  # pyright: ignore
     )

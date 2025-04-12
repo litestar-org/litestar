@@ -2,7 +2,7 @@ Using the serialization plugin
 ------------------------------
 
 Our next improvement is to leverage the
-:class:`SQLAlchemySerializationPlugin <advanced_alchemy.extensions.litestar.SQLAlchemySerializationPlugin>`
+:class:`SQLAlchemySerializationPlugin <litestar.plugins.sqlalchemy.SQLAlchemySerializationPlugin>`
 so that we can receive and return our SQLAlchemy models directly to and from our handlers.
 
 Here's the code:
@@ -47,5 +47,5 @@ Next steps
 In our application, we've had to build a bit of scaffolding to integrate SQLAlchemy with our application. We've had to
 define the ``db_connection()`` lifespan context manager, and the ``provide_transaction()`` dependency provider.
 
-Next we'll look at how the :class:`SQLAlchemyInitPlugin <advanced_alchemy.extensions.litestar.SQLAlchemyInitPlugin>` can
+Next we'll look at how the :class:`SQLAlchemyInitPlugin <litestar.plugins.sqlalchemy.SQLAlchemyInitPlugin>` can
 help us.

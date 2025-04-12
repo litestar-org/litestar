@@ -161,6 +161,8 @@ include = ['docs/PYPI_README.md', '/litestar']
 [tool.hatch.metadata]
 allow-direct-references = true
 
+[tool.hatch.build.targets.wheel]
+packages = ["litestar", "litestar.plugins.sqlalchemy"]
 
 [tool.uv]
 default-groups = ["dev", "linting", "test", "docs"]

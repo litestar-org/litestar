@@ -2,13 +2,13 @@ import json
 from pathlib import Path
 from typing import Any
 
-from advanced_alchemy.base import UUIDBase
-from advanced_alchemy.repository import SQLAlchemySyncRepository
 from rich import get_console
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Mapped, Session, sessionmaker
 
-from litestar.repository.filters import LimitOffset
+from litestar.plugins.sqlalchemy.base import UUIDBase
+from litestar.plugins.sqlalchemy.filters import LimitOffset
+from litestar.plugins.sqlalchemy.repository import SQLAlchemySyncRepository
 
 here = Path(__file__).parent
 console = get_console()

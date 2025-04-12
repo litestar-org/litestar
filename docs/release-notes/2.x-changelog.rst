@@ -1196,7 +1196,7 @@
 .. changelog:: 2.3.2
     :date: 2023/11/06
 
-    .. change:: Fix recursion error when re-using the path of a route handler for static files
+    .. change:: Fix recursion error when reusing the path of a route handler for static files
         :type: bugfix
         :pr: 2630
         :issue: 2629

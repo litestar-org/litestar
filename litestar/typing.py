@@ -1,4 +1,4 @@
-from __future__ import annotations
+from __future__ import annotations  # noqa: A005
 
 import dataclasses
 import warnings
@@ -31,7 +31,7 @@ from typing_extensions import (
 
 from litestar.exceptions import ImproperlyConfiguredException, LitestarWarning
 from litestar.params import BodyKwarg, DependencyKwarg, KwargDefinition, ParameterKwarg
-from litestar.types.builtin_types import NoneType, UnionTypes
+from litestar.types.builtin_types import NoneType, UnionTypes  # pyright: ignore
 from litestar.utils.predicates import (
     is_any,
     is_class_and_subclass,
@@ -60,8 +60,8 @@ def _annotated_types_extractor(meta: Any, is_sequence_container: bool) -> dict[s
     kwargs = {}
     if isinstance(meta, annotated_types.GroupedMetadata):
         for sub_meta in meta:
-            kwargs.update(_annotated_types_extractor(sub_meta, is_sequence_container=is_sequence_container))
-        return kwargs
+            kwargs.update(_annotated_types_extractor(sub_meta, is_sequence_container=is_sequence_container))  # pyright: ignore
+        return kwargs  # pyright: ignore
     if isinstance(meta, annotated_types.Gt):
         kwargs["gt"] = meta.gt
     elif isinstance(meta, annotated_types.Ge):
@@ -91,7 +91,7 @@ def _annotated_types_extractor(meta: Any, is_sequence_container: bool) -> dict[s
             kwargs["pattern"] = "[[:ascii:]]"
         elif meta.func == str.isdigit:  # pragma: no cover  # coverage quirk: It expects a jump here for branch coverage
             kwargs["pattern"] = "[[:digit:]]"
-    return kwargs
+    return kwargs  # pyright: ignore
 
 
 @dataclass(frozen=True)
@@ -133,7 +133,7 @@ class FieldDefinition:
 
     This is to serve safely rebuilding a generic outer type with different args at runtime.
     """
-    inner_types: tuple[FieldDefinition, ...]
+    inner_types: tuple[FieldDefinition, ...]  # pyright: ignore
     """The type's generic args parsed as ``FieldDefinition``, if applicable."""
     default: Any
     """Default value of the field."""
@@ -149,12 +149,12 @@ class FieldDefinition:
             return False
 
         if self.origin:
-            return self.origin == other.origin and self.inner_types == other.inner_types
+            return self.origin == other.origin and self.inner_types == other.inner_types  # pyright: ignore
 
         return self.annotation == other.annotation  # type: ignore[no-any-return]
 
     def __hash__(self) -> int:
-        return hash((self.name, self.raw, self.annotation, self.origin, self.inner_types))
+        return hash((self.name, self.raw, self.annotation, self.origin, self.inner_types))  # pyright: ignore
 
     @property
     def has_default(self) -> bool:
@@ -455,7 +455,7 @@ class FieldDefinition:
             is_sequence_container = is_non_string_sequence(annotation)
             # extract metadata into KwargDefinition attributes
             for meta in metadata:
-                kwarg_definition_merge_args.update(
+                kwarg_definition_merge_args.update(  # pyright: ignore
                     _annotated_types_extractor(meta, is_sequence_container=is_sequence_container)
                 )
             # if we already have a KwargDefinition, merge it with the additional metadata
@@ -466,7 +466,7 @@ class FieldDefinition:
             # if not, create a new KwargDefinition
             else:
                 model = BodyKwarg if kwargs.get("name") == "data" else ParameterKwarg
-                kwargs["kwarg_definition"] = model(**kwarg_definition_merge_args)
+                kwargs["kwarg_definition"] = model(**kwarg_definition_merge_args)  # pyright: ignore
 
         kwargs.setdefault("annotation", unwrapped)
         kwargs.setdefault("args", annotation_args)

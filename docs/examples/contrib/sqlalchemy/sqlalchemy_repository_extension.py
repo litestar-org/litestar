@@ -7,9 +7,6 @@ import unicodedata
 from typing import TYPE_CHECKING, Any
 from uuid import UUID
 
-from advanced_alchemy.base import UUIDAuditBase
-from advanced_alchemy.extensions.litestar import AsyncSessionConfig, SQLAlchemyAsyncConfig, SQLAlchemyInitPlugin
-from advanced_alchemy.repository import ModelT, SQLAlchemyAsyncRepository
 from pydantic import BaseModel as _BaseModel
 from pydantic import TypeAdapter
 from sqlalchemy.orm import Mapped, declarative_mixin, mapped_column
@@ -17,6 +14,9 @@ from sqlalchemy.types import String
 
 from litestar import Litestar, get, post
 from litestar.di import Provide
+from litestar.plugins.sqlalchemy import AsyncSessionConfig, SQLAlchemyAsyncConfig, SQLAlchemyInitPlugin
+from litestar.plugins.sqlalchemy.base import UUIDAuditBase
+from litestar.plugins.sqlalchemy.repository import ModelT, SQLAlchemyAsyncRepository
 
 if TYPE_CHECKING:
     from sqlalchemy.ext.asyncio import AsyncSession
@@ -38,7 +38,7 @@ class SlugKey:
     slug: Mapped[str] = mapped_column(String(length=100), nullable=False, unique=True, sort_order=-9)
 
 
-# this class can be re-used with any model that has the `SlugKey` Mixin
+# this class can be reused with any model that has the `SlugKey` Mixin
 class SQLAlchemyAsyncSlugRepository(SQLAlchemyAsyncRepository[ModelT]):
     """Extends the repository to include slug model features.."""
 

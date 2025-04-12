@@ -17,8 +17,8 @@ from litestar.pagination import OffsetPagination
 from litestar.params import Parameter
 from litestar.plugins.sqlalchemy import SQLAlchemyInitPlugin, SQLAlchemySyncConfig
 from litestar.plugins.sqlalchemy.base import UUIDAuditBase, UUIDBase
+from litestar.plugins.sqlalchemy.filters import LimitOffset
 from litestar.plugins.sqlalchemy.repository import SQLAlchemySyncRepository
-from litestar.repository.filters import LimitOffset
 
 if TYPE_CHECKING:
     from sqlalchemy.orm import Session

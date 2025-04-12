@@ -3,7 +3,7 @@ Using the init plugin
 
 In our example application, we've seen that we need to manage the database engine within the scope of the application's
 lifespan, and the session within the scope of a request. This is a common pattern, and the
-:class:`SQLAlchemyInitPlugin <advanced_alchemy.extensions.litestar.SQLAlchemyInitPlugin>` plugin provides assistance for
+:class:`SQLAlchemyInitPlugin <litestar.plugins.sqlalchemy.SQLAlchemyInitPlugin>` plugin provides assistance for
 this.
 
 In our latest update, we leverage two features of the plugin:

@@ -1,11 +1,11 @@
 from typing import TYPE_CHECKING, cast
 
-from advanced_alchemy.base import UUIDBase
-from advanced_alchemy.extensions.litestar import SQLAlchemyAsyncConfig, SQLAlchemyInitPlugin
 from sqlalchemy import func, select
 from sqlalchemy.orm import Mapped
 
 from litestar import Litestar, get
+from litestar.contrib.sqlalchemy.base import UUIDBase
+from litestar.contrib.sqlalchemy.plugins import SQLAlchemyAsyncConfig, SQLAlchemyInitPlugin
 from litestar.di import Provide
 from litestar.pagination import AbstractAsyncOffsetPaginator, OffsetPagination
 
