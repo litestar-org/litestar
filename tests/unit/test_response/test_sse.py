@@ -99,3 +99,24 @@ async def test_various_sse_inputs(input: str, expected_events: List[HTTPXServerS
 def test_invalid_content_type_raises() -> None:
     with pytest.raises(ImproperlyConfiguredException):
         ServerSentEvent(content=object())  # type: ignore[arg-type]
+
+
+async def test_sse_ping_events() -> None:
+    @get("/test_ping")
+    async def handler() -> ServerSentEvent:
+        async def slow_generator():
+            for i in range(1):
+                await anyio.sleep(1)
+                yield i
+
+        return ServerSentEvent(content=slow_generator(), ping_interval=0.1)
+
+    async with create_async_test_client(handler) as client:
+        async with aconnect_sse(client, "GET", f"{client.base_url}/test_ping") as event_source:
+            events = [sse async for sse in event_source.aiter_sse()]
+            for i in range(9):
+                assert events[i].event == " ping"
+                assert events[i].data == ""
+
+            assert events[9].event == "message"
+            assert events[9].data == "0"
