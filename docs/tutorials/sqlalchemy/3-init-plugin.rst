@@ -16,7 +16,7 @@ We access the database session via dependency injection, using the ``db_session`
 
 Here's the updated code:
 
-.. literalinclude:: /examples/contrib/sqlalchemy/plugins/tutorial/full_app_with_init_plugin.py
+.. literalinclude:: /examples/plugins/sqlalchemy/plugins/tutorial/full_app_with_init_plugin.py
     :language: python
     :linenos:
     :emphasize-lines: 11,30,78-79,87

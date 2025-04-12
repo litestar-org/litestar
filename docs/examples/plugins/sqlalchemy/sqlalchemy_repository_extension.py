@@ -14,7 +14,7 @@ from sqlalchemy.types import String
 
 from litestar import Litestar, get, post
 from litestar.di import Provide
-from litestar.plugins.sqlalchemy import AsyncSessionConfig, SQLAlchemyAsyncConfig, SQLAlchemyInitPlugin
+from litestar.plugins.sqlalchemy import AsyncSessionConfig, SQLAlchemyAsyncConfig, SQLAlchemyPlugin
 from litestar.plugins.sqlalchemy.base import UUIDAuditBase
 from litestar.plugins.sqlalchemy.repository import ModelT, SQLAlchemyAsyncRepository
 
@@ -132,15 +132,9 @@ async def provide_blog_post_repo(db_session: AsyncSession) -> BlogPostRepository
 
 session_config = AsyncSessionConfig(expire_on_commit=False)
 sqlalchemy_config = SQLAlchemyAsyncConfig(
-    connection_string="sqlite+aiosqlite:///test.sqlite", session_config=session_config
+    connection_string="sqlite+aiosqlite:///test.sqlite", session_config=session_config, create_all=True
 )  # Create 'async_session' dependency.
-sqlalchemy_plugin = SQLAlchemyInitPlugin(config=sqlalchemy_config)
-
-
-async def on_startup() -> None:
-    """Initializes the database."""
-    async with sqlalchemy_config.get_engine().begin() as conn:
-        await conn.run_sync(UUIDAuditBase.metadata.create_all)
+sqlalchemy_plugin = SQLAlchemyPlugin(config=sqlalchemy_config)
 
 
 @get(path="/")
@@ -169,9 +163,9 @@ async def create_blog(
     data: BlogPostCreate,
 ) -> BlogPostDTO:
     """Create a new blog post."""
-    _data = data.model_dump(exclude_unset=True, by_alias=False, exclude_none=True)
-    _data["slug"] = await blog_post_repo.get_available_slug(_data["title"])
-    obj = await blog_post_repo.add(BlogPost(**_data))
+    model_data = data.model_dump(exclude_unset=True, by_alias=False, exclude_none=True)
+    model_data["slug"] = await blog_post_repo.get_available_slug(model_data["title"])
+    obj = await blog_post_repo.add(BlogPost(**model_data))
     await blog_post_repo.session.commit()
     return BlogPostDTO.model_validate(obj)
 
@@ -179,6 +173,5 @@ async def create_blog(
 app = Litestar(
     route_handlers=[create_blog, get_blogs, get_blog_details],
     dependencies={"blog_post_repo": Provide(provide_blog_post_repo, sync_to_thread=False)},
-    on_startup=[on_startup],
-    plugins=[SQLAlchemyInitPlugin(config=sqlalchemy_config)],
+    plugins=[sqlalchemy_plugin],
 )

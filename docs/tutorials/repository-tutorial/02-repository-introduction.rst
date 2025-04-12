@@ -24,7 +24,7 @@ the the synchronous and asynchronous repositories.
     +---------------------+----------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
     | ``list_and_count``  | Selecting Data | Select a list of records specified by the ``kwargs`` parameters. Optionally it can be filtered by the included ``FilterTypes`` args. Results are returned as a 2 value tuple that includes the rows selected and the total count of records.|
     +---------------------+----------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-    | ``get_or_create``   | Creating Data  | Select a single record specified by the the ``kwargs`` parameters.  If no record is found, one is created with the given values.  There's an optional attribute to filter on a subset of the supplied parameters and to merge updates.      |
+    | ``get_or_upsert``   | Creating Data  | Select a single record specified by the the ``kwargs`` parameters.  If no record is found, one is created with the given values.  If the record exists, it is updated with the given values.                                                |
     +---------------------+----------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
     | ``create``          | Creating Data  | Create a new record in the database.                                                                                                                                                                                                        |
     +---------------------+----------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
@@ -62,12 +62,12 @@ your applications.
 Model Repository
 ^^^^^^^^^^^^^^^^
 
-Here we import the
-:class:`SQLAlchemyAsyncRepository <advanced_alchemy.repository.SQLAlchemyAsyncRepository>`
-class and create an ``AuthorRepository`` repository class. This is all that's required
-to include all of the integrated repository features.
+    Here we import the
+    :class:`SQLAlchemyAsyncRepository <litestar.plugins.sqlalchemy.repository.SQLAlchemyAsyncRepository>`
+    class and create an ``AuthorRepository`` repository class. This is all that's required
+    to include all of the integrated repository features.
 
-.. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_repository_crud.py
+.. literalinclude:: /examples/plugins/sqlalchemy/sqlalchemy_repository_crud.py
     :language: python
     :caption: ``app.py``
     :lines: 14, 7-30
@@ -86,7 +86,7 @@ The ``repository_factory`` method will do the following for us:
     - Automatically commit after function call completes.
 
 
-.. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_repository_crud.py
+.. literalinclude:: /examples/plugins/sqlalchemy/sqlalchemy_repository_crud.py
     :language: python
     :caption: ``app.py``
     :lines: 39-47
@@ -101,7 +101,7 @@ various CRUD operations:
 
 Creating Data: Here's a simple insert operation to populate our new Author table:
 
-    .. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_repository_crud.py
+    .. literalinclude:: /examples/plugins/sqlalchemy/sqlalchemy_repository_crud.py
         :language: python
         :caption: ``app.py``
         :lines: 52-61
@@ -109,7 +109,7 @@ Creating Data: Here's a simple insert operation to populate our new Author table
 
 Updating Data: The ``update`` method will ensure any updates made to the model object are executed on the database:
 
-    .. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_repository_crud.py
+    .. literalinclude:: /examples/plugins/sqlalchemy/sqlalchemy_repository_crud.py
         :language: python
         :caption: ``app.py``
         :lines: 64-68
@@ -117,7 +117,7 @@ Updating Data: The ``update`` method will ensure any updates made to the model o
 
 Removing Data: The ``remove`` method accepts the primary key of the row you want to delete:
 
-    .. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_repository_crud.py
+    .. literalinclude:: /examples/plugins/sqlalchemy/sqlalchemy_repository_crud.py
         :language: python
         :caption: ``app.py``
         :lines: 71-75
@@ -143,7 +143,7 @@ We will introduce a method for loading fixture data. Fixture data is sample data
 populates your database and helps test the behavior of your application under realistic
 conditions. This pattern can be extended and adjusted to meet your needs.
 
-.. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_repository_bulk_operations.py
+.. literalinclude:: /examples/plugins/sqlalchemy/sqlalchemy_repository_bulk_operations.py
     :language: python
     :caption: ``app.py``
     :lines: 37-55
@@ -153,10 +153,10 @@ You can review the JSON source file here:
 
 .. dropdown:: US State Lookup JSON
 
-    You can download it: :download:`/examples/contrib/sqlalchemy/us_state_lookup.json`
+    You can download it: :download:`/examples/plugins/sqlalchemy/us_state_lookup.json`
     or view below:
 
-    .. literalinclude:: /examples/contrib/sqlalchemy/us_state_lookup.json
+    .. literalinclude:: /examples/plugins/sqlalchemy/us_state_lookup.json
         :language: json
         :caption: ``us_state_lookup.json``
 
@@ -168,7 +168,7 @@ We'll use our fixture data to demonstrate a bulk insert operation. This operatio
 you to add multiple records to your database in a single transaction, improving
 performance when working with larger data sets.
 
-.. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_repository_bulk_operations.py
+.. literalinclude:: /examples/plugins/sqlalchemy/sqlalchemy_repository_bulk_operations.py
     :language: python
     :caption: ``app.py``
     :lines: 66-71
@@ -182,7 +182,7 @@ is useful for handling large amounts of data by breaking the data into manageabl
 'pages' or subsets.  ``LimitOffset`` is one of several filter types you can use with the
 repository.
 
-.. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_repository_bulk_operations.py
+.. literalinclude:: /examples/plugins/sqlalchemy/sqlalchemy_repository_bulk_operations.py
     :language: python
     :caption: ``app.py``
     :lines: 73-75
@@ -195,7 +195,7 @@ Here we demonstrate how to perform a bulk delete operation. Just as with the bul
 insert, deleting multiple records with the batch record methods is more efficient than
 executing row-by-row.
 
-.. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_repository_bulk_operations.py
+.. literalinclude:: /examples/plugins/sqlalchemy/sqlalchemy_repository_bulk_operations.py
     :language: python
     :caption: ``app.py``
     :lines: 77-79
@@ -206,7 +206,7 @@ Counts
 
 Finally, we'll demonstrate how to count the number of records remaining in the database.
 
-.. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_repository_bulk_operations.py
+.. literalinclude:: /examples/plugins/sqlalchemy/sqlalchemy_repository_bulk_operations.py
     :language: python
     :caption: ``app.py``
     :lines: 81-83
@@ -223,7 +223,7 @@ Full Code
 
 .. dropdown:: Full Code (click to toggle)
 
-    .. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_repository_crud.py
+    .. literalinclude:: /examples/plugins/sqlalchemy/sqlalchemy_repository_crud.py
         :language: python
         :caption: ``app.py``
         :emphasize-lines: 14, 27-30, 37-55, 61, 64-71, 71-75, 77-79, 81-83

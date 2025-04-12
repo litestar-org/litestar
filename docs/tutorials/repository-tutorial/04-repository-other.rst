@@ -8,7 +8,7 @@ can add functionality on top of the repository pattern.
 
 Slug Fields
 -----------
-.. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_repository_extension.py
+.. literalinclude:: /examples/plugins/sqlalchemy/sqlalchemy_repository_extension.py
     :language: python
     :caption: ``app.py``
     :lines: 12, 33-40, 101-106
@@ -29,7 +29,7 @@ the data passed to the ``title`` field.  To demonstrate what we are trying to
 accomplish, we want a record that has a blog title of "Follow the Yellow Brick Road!"
 to have the slugified value of "follow-the-yellow-brick-road".
 
-.. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_repository_extension.py
+.. literalinclude:: /examples/plugins/sqlalchemy/sqlalchemy_repository_extension.py
     :language: python
     :caption: ``app.py``
     :lines: 43-98
@@ -39,7 +39,7 @@ Since the ``BlogPost.title`` field is not marked as unique, this means that we'l
 to test the slug value for uniqueness before the insert.  If the initial slug is found,
 a random set of digits are appended to the end of the slug to make it unique.
 
-.. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_repository_extension.py
+.. literalinclude:: /examples/plugins/sqlalchemy/sqlalchemy_repository_extension.py
     :language: python
     :caption: ``app.py``
     :lines: 171-173
@@ -61,7 +61,7 @@ Full Code
 
 .. dropdown:: Full Code (click to toggle)
 
-    .. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_repository_extension.py
+    .. literalinclude:: /examples/plugins/sqlalchemy/sqlalchemy_repository_extension.py
         :language: python
         :caption: ``app.py``
         :lines: 12, 33-40, 101-106, 43-98, 171-173

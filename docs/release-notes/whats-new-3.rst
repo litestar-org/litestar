@@ -332,3 +332,20 @@ parameter.
 .. attention::
     This has been intentionally made a breaking change because the new parameter has
     slightly different behaviour and defaults to ``False`` instead of ``True``.
+
+
+Removal of `sqlalchemy` module from `litestar.contrib`
+-----------------------------------------------------
+
+The `litestar.contrib.sqlalchemy` module has been removed in favour of the `litestar.plugins.sqlalchemy` module.
+
+
+Removal of `litestar.repository` module
+---------------------------------------
+
+The `litestar.repository` module has been removed in favour of the `litestar.plugins.sqlalchemy.repository` module.
+
+Removal of `litestar.pagination` module
+---------------------------------------
+
+The `litestar.pagination` module has been removed in favour of the backend specific pagination plugins such as `litestar.plugins.sqlalchemy.filters.LimitOffset`.

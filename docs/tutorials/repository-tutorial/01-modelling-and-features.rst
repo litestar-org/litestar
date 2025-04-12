@@ -15,7 +15,7 @@ We'll start by creating the ``Author`` table, utilizing the
 :class:`UUIDBase <advanced_alchemy.base.UUIDBase>` class. To keep things
 simple, our first model will encompass only three fields: ``id``, ``name``, and ``dob``.
 
-.. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_declarative_models.py
+.. literalinclude:: /examples/plugins/sqlalchemy/sqlalchemy_declarative_models.py
     :language: python
     :caption: ``app.py``
     :lines: 9, 11, 18-20
@@ -28,7 +28,7 @@ relationship. This allows each ``Author`` record to possess multiple ``Book`` re
 By configuring it this way, SQLAlchemy will automatically include the necessary foreign
 key constraints when using the ``author_id`` field in each ``Book`` record.
 
-.. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_declarative_models.py
+.. literalinclude:: /examples/plugins/sqlalchemy/sqlalchemy_declarative_models.py
     :language: python
     :caption: ``app.py``
     :lines: 9, 11, 18-22, 27-30
@@ -38,7 +38,7 @@ By using the audit model, we can automatically record the time a record was crea
 last updated.
 
 To implement this, we will define a new ``Book`` model via the
-:class:`UUIDAuditBase <advanced_alchemy.base.UUIDAuditBase>` class. Observe
+:class:`UUIDAuditBase <litestar.plugins.sqlalchemy.base.UUIDAuditBase>` class. Observe
 that the only modification here is the parent class from which we inherit. This minor
 change endows the `book` table with automatic timestamp columns
 (`created` and `updated`) upon deployment!
@@ -47,8 +47,8 @@ change endows the `book` table with automatic timestamp columns
 
     If your application requires integer-based primary keys, equivalent base model
     and base audit model implementations can be found at
-    :class:`BigIntBase <advanced_alchemy.base.BigIntAuditBase>` and
-    :class:`BigIntAuditBase <advanced_alchemy.base.UUIDAuditBase>`
+    :class:`BigIntBase <litestar.plugins.sqlalchemy.base.BigIntBase>` and
+    :class:`BigIntAuditBase <litestar.plugins.sqlalchemy.base.BigIntAuditBase>`
     respectively.
 
 .. important::
@@ -67,14 +67,14 @@ Additional features provided by the built-in base models include:
   Postgres, SQLite, MySQL, DuckDB, Oracle, and Spanner.
 - Automatic table name deduction from model name. For instance, a model named
   ``EventLog`` would correspond to the ``event_log`` database table.
-- A :class:`GUID <advanced_alchemy.types.GUID>` database type that
+- A :class:`GUID <litestar.plugins.sqlalchemy.types.GUID>` database type that
   establishes a native UUID in supported engines or a ``Binary(16)`` as a fallback.
 - A ``BigInteger`` variant
-  :class:`BigIntIdentity <advanced_alchemy.types.BigIntIdentity>` that
+  :class:`BigIntIdentity <litestar.plugins.sqlalchemy.types.BigIntIdentity>` that
   reverts to an ``Integer`` for unsupported variants.
-- A custom :class:`JsonB <advanced_alchemy.types.JsonB>` type that uses
+- A custom :class:`JsonB <litestar.plugins.sqlalchemy.types.JsonB>` type that uses
   native ``JSONB`` where possible and ``Binary`` or ``Blob`` as an alternative.
-- A custom :class:`EncryptedString <advanced_alchemy.types.EncryptedString>` encrypted string that supports multiple cryptography backends.
+- A custom :class:`EncryptedString <litestar.plugins.sqlalchemy.types.EncryptedString>` encrypted string that supports multiple cryptography backends.
 
 Let's build on this as we look at the repository classes.
 
@@ -85,7 +85,7 @@ Full Code
 
 .. dropdown:: Full Code (click to toggle)
 
-    .. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_declarative_models.py
+    .. literalinclude:: /examples/plugins/sqlalchemy/sqlalchemy_declarative_models.py
         :language: python
         :caption: ``app.py``
         :emphasize-lines: 9, 18-21, 27-30

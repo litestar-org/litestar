@@ -7,7 +7,7 @@ so that we can receive and return our SQLAlchemy models directly to and from our
 
 Here's the code:
 
-.. literalinclude:: /examples/contrib/sqlalchemy/plugins/tutorial/full_app_with_serialization_plugin.py
+.. literalinclude:: /examples/plugins/sqlalchemy/plugins/tutorial/full_app_with_serialization_plugin.py
     :language: python
     :linenos:
     :emphasize-lines: 11,76-77,82-83,88,90-91,98
@@ -27,14 +27,14 @@ Once more, let's compare the sets of application handlers before and after our r
 
    .. tab-item:: After
 
-        .. literalinclude:: /examples/contrib/sqlalchemy/plugins/tutorial/full_app_with_serialization_plugin.py
+        .. literalinclude:: /examples/plugins/sqlalchemy/plugins/tutorial/full_app_with_serialization_plugin.py
             :language: python
             :linenos:
             :lines: 75-99
 
    .. tab-item:: Before
 
-        .. literalinclude:: /examples/contrib/sqlalchemy/plugins/tutorial/full_app_no_plugins.py
+        .. literalinclude:: /examples/plugins/sqlalchemy/plugins/tutorial/full_app_no_plugins.py
             :language: python
             :linenos:
             :lines: 69-100

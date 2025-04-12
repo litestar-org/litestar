@@ -241,7 +241,7 @@ requires = ["hatchling"]
 
 [tool.codespell]
 ignore-words-list = "selectin, documen, re-use, re-used, re-using"
-skip = 'uv.lock, docs/examples/contrib/sqlalchemy/us_state_lookup.json, docs/_static/favicon.svg'
+skip = 'uv.lock, docs/examples/contrib/sqlalchemy/us_state_lookup.json, docs/examples/plugins/sqlalchemy/us_state_lookup.json, docs/_static/favicon.svg'
 
 [tool.coverage.run]
 concurrency = ["multiprocessing", "thread"]
@@ -498,9 +498,9 @@ known-first-party = ["litestar", "tests", "examples"]
 "docs/**/*.*" = ["S", "B", "DTZ", "A", "TC", "ERA", "D", "RET"]
 "docs/examples/**" = ["T201"]
 "docs/examples/application_hooks/before_send_hook.py" = ["UP006"]
-"docs/examples/contrib/sqlalchemy/plugins/**/*.*" = ["UP006"]
-"docs/examples/contrib/sqlalchemy/sqlalchemy_declarative_models.py" = ["UP006"]
 "docs/examples/data_transfer_objects**/*.*" = ["UP006"]
+"docs/examples/plugins/sqlalchemy/plugins/**/*.*" = ["UP006"]
+"docs/examples/plugins/sqlalchemy/sqlalchemy_declarative_models.py" = ["UP006"]
 "litestar/_openapi/schema_generation/schema.py" = ["C901"]
 "litestar/exceptions/*.*" = ["N818"]
 "litestar/handlers/**/*.*" = ["N801"]
