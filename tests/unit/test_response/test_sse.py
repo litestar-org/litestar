@@ -104,7 +104,7 @@ def test_invalid_content_type_raises() -> None:
 async def test_sse_ping_events() -> None:
     @get("/test_ping")
     async def handler() -> ServerSentEvent:
-        async def slow_generator():
+        async def slow_generator() -> AsyncIterator[SSEData]:
             for i in range(1):
                 await anyio.sleep(1)
                 yield i
