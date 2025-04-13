@@ -405,6 +405,41 @@ wheels = [
 ]
 
 [[package]]
+name = "blacken-docs"
+version = "1.18.0"
+source = { registry = "https://pypi.org/simple" }
+resolution-markers = [
+    "python_full_version < '3.9' and sys_platform != 'win32'",
+    "python_full_version < '3.9' and sys_platform == 'win32'",
+]
+dependencies = [
+    { name = "black", marker = "python_full_version < '3.9'" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/12/a9/99fe0283575297466df65eb54873a892f0db5fd24459abef4c2691db883a/blacken_docs-1.18.0.tar.gz", hash = "sha256:47bed628679d008a8eb55d112df950582e68d0f57615223929e366348d935444", size = 14743 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/3d/7e/532f6c8b81346c2337c54b0e16f49f2968d86b0c535d6318b3f21f3ff4cf/blacken_docs-1.18.0-py3-none-any.whl", hash = "sha256:64f592246784131e9f84dad1db397f44eeddc77fdf01726bab920a3f00a3815c", size = 8243 },
+]
+
+[[package]]
+name = "blacken-docs"
+version = "1.19.1"
+source = { registry = "https://pypi.org/simple" }
+resolution-markers = [
+    "python_full_version >= '3.9' and python_full_version < '3.13' and sys_platform != 'win32'",
+    "python_full_version >= '3.13' and sys_platform == 'linux'",
+    "python_full_version >= '3.13' and sys_platform != 'linux' and sys_platform != 'win32'",
+    "python_full_version >= '3.9' and python_full_version < '3.13' and sys_platform == 'win32'",
+    "python_full_version >= '3.13' and sys_platform == 'win32'",
+]
+dependencies = [
+    { name = "black", marker = "python_full_version >= '3.9'" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/fd/a2/772f95006335a59837b415b8b3b38a7c5f2606060d6336ee111521af563e/blacken_docs-1.19.1.tar.gz", hash = "sha256:3cf7a10f5b87886683e3ab07a0dc17de41425f3d21e2948e59f1c6079c45b328", size = 14918 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/d9/1b/166bd46537f9d7832d856ddf3b5cc2ef9761a2cb4b31c83c245dd8987c11/blacken_docs-1.19.1-py3-none-any.whl", hash = "sha256:73c3dee042a28f2d4f7df6e2c340869d6ced9704f6174d035d9b6199567f890d", size = 8280 },
+]
+
+[[package]]
 name = "brotli"
 version = "1.1.0"
 source = { registry = "https://pypi.org/simple" }
@@ -1927,6 +1962,8 @@ docs = [
 ]
 linting = [
     { name = "asyncpg-stubs" },
+    { name = "blacken-docs", version = "1.18.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.9'" },
+    { name = "blacken-docs", version = "1.19.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.9'" },
     { name = "codecov-cli" },
     { name = "mypy" },
     { name = "pre-commit" },
@@ -2040,6 +2077,7 @@ docs = [
 ]
 linting = [
     { name = "asyncpg-stubs" },
+    { name = "blacken-docs" },
     { name = "codecov-cli" },
     { name = "mypy" },
     { name = "pre-commit" },

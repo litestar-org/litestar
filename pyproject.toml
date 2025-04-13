@@ -173,6 +173,7 @@ linting = [
   "types-pyyaml",
   "types-redis",
   "types-psutil",
+  "blacken-docs",
 ]
 test = [
   "covdefaults",
