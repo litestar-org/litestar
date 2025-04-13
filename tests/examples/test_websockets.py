@@ -1,7 +1,8 @@
-from datetime import datetime
+import datetime
 
 from docs.examples.websockets.custom_websocket import app as custom_websocket_class_app
-from docs.examples.websockets.stream_and_receive_listener import app
+from docs.examples.websockets.stream_and_receive_listener import app as app_stream_and_receive_listener
+from docs.examples.websockets.stream_and_receive_raw import app as app_stream_and_receive_raw
 from time_machine import travel
 
 from litestar.testing import AsyncTestClient
@@ -20,7 +21,7 @@ def test_custom_websocket_class():
 @travel(datetime.datetime.now(datetime.UTC), tick=False)
 async def test_websocket_listener() -> None:
     """Test the websocket listener."""
-    async with AsyncTestClient(app) as client:
+    async with AsyncTestClient(app_stream_and_receive_listener) as client:
         with await client.websocket_connect("/") as ws:
             ws.send_text("Hello")
             data = ws.receive_text()
@@ -29,5 +30,16 @@ async def test_websocket_listener() -> None:
             assert data == "Hello"
 
 
+@travel(datetime.datetime.now(datetime.UTC), tick=False)
 async def test_websocket_handler():
-    pass
+    async with AsyncTestClient(app_stream_and_receive_raw, timeout=1) as client:
+        with await client.websocket_connect("/") as ws:
+            j = {"data": "I should be in response"}
+            ws.send_json(j)
+            data = ws.receive_text()
+            assert data == datetime.datetime.now(datetime.UTC).isoformat()
+            data = ws.receive_json()
+            assert data == {"handle_receive": "start"}
+            data = ws.receive_json()
+            assert data == j
+            # this should work but hangs data = ws.receive_json() assert data == {"handle_receive": "end"}
