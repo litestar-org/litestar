@@ -499,7 +499,7 @@ class SchemaCreator:
         Returns:
             A schema instance.
         """
-        kwarg_definition = cast(Union[ParameterKwarg, BodyKwarg], field.kwarg_definition)
+        kwarg_definition = cast("Union[ParameterKwarg, BodyKwarg]", field.kwarg_definition)
         if any(is_class_and_subclass(field.annotation, t) for t in (int, float, Decimal)):
             return create_numerical_constrained_field_schema(field.annotation, kwarg_definition)
         if any(is_class_and_subclass(field.annotation, t) for t in (str, bytes)):
@@ -518,7 +518,7 @@ class SchemaCreator:
             A schema instance.
         """
         schema = Schema(type=OpenAPIType.ARRAY)
-        kwarg_definition = cast(Union[ParameterKwarg, BodyKwarg], field_definition.kwarg_definition)
+        kwarg_definition = cast("Union[ParameterKwarg, BodyKwarg]", field_definition.kwarg_definition)
         if kwarg_definition.min_items:
             schema.min_items = kwarg_definition.min_items
         if kwarg_definition.max_items:
