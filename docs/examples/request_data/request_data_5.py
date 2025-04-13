@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-from hashlib import sha256
 from typing import Dict
 
 from typing_extensions import Annotated
@@ -23,7 +22,7 @@ async def create_user(
 ) -> Dict[str, str]:
     content = await data.form_input_name.read()
     filename = data.form_input_name.filename
-    return {"id": data.id, "name": data.name, "filename": filename, "file_content": sha256(content).hexdigest()}
+    return {"id": data.id, "name": data.name, "filename": filename, "size": len(content)}
 
 
 app = Litestar(route_handlers=[create_user])

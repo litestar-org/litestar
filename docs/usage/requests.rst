@@ -44,7 +44,7 @@ of the request body, and can also customize the OpenAPI documentation:
 
         .. literalinclude:: ../../tests/examples/test_request_data.py
             :language: python
-            :lines: 36-42
+            :lines: 35-41
 
 
 Content-type
@@ -73,7 +73,7 @@ i.e. ``application/x-www-form-urlencoded`` Content-Type header, use :class:`Body
 
         .. literalinclude:: ../../tests/examples/test_request_data.py
             :language: python
-            :lines: 45-49
+            :lines: 44-48
 
 .. note::
 
@@ -99,7 +99,7 @@ Content-Type header by specifying it in the :class:`Body <litestar.params.Body>`
 
         .. literalinclude:: ../../tests/examples/test_request_data.py
             :language: python
-            :lines: 52-65
+            :lines: 51-64
 
 
 File uploads
@@ -127,7 +127,7 @@ To access a single file simply type ``data`` as :class:`UploadFile <.datastructu
 
                 .. literalinclude:: ../../tests/examples/test_request_data.py
                     :language: python
-                    :lines: 68-72
+                    :lines: 67-71
 
     .. tab-item:: Sync
 
@@ -142,7 +142,7 @@ To access a single file simply type ``data`` as :class:`UploadFile <.datastructu
 
                 .. literalinclude:: ../../tests/examples/test_request_data.py
                     :language: python
-                    :lines: 75-79
+                    :lines: 74-78
 
 .. admonition:: Technical details
     :class: info
@@ -170,7 +170,7 @@ To access multiple files with known filenames, you can use a pydantic model:
 
         .. literalinclude:: ../../tests/examples/test_request_data.py
             :language: python
-            :lines: 82-88
+            :lines: 81-87
 
 
 Files as a dictionary
@@ -189,7 +189,7 @@ If you do not care about parsing and validation and only want to access the form
 
         .. literalinclude:: ../../tests/examples/test_request_data.py
             :language: python
-            :lines: 91-98
+            :lines: 90-97
 
 
 Files as a list
@@ -208,7 +208,7 @@ Finally, you can also access the files as a list without the filenames:
 
         .. literalinclude:: ../../tests/examples/test_request_data.py
             :language: python
-            :lines: 101-134
+            :lines: 100-133
 
 MessagePack data
 ----------------
@@ -227,7 +227,7 @@ for ``Body``\ , by using :class:`RequestEncodingType.MESSAGEPACK <.enums.Request
 
         .. literalinclude:: ../../tests/examples/test_request_data.py
             :language: python
-            :lines: 137-142
+            :lines: 136-141
 
 Custom Request
 --------------
@@ -250,7 +250,7 @@ The example below illustrates how to implement custom request class for the whol
 
             .. literalinclude:: ../../tests/examples/test_request_data.py
                 :language: python
-                :lines: 145-148
+                :lines: 144-147
 
 .. admonition:: Layered architecture
 

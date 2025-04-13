@@ -1,5 +1,3 @@
-from hashlib import sha256
-
 from typing_extensions import Annotated
 
 from litestar import Litestar, MediaType, post
@@ -14,7 +12,7 @@ async def handle_file_upload(
 ) -> str:
     content = await data.read()
     filename = data.filename
-    return f"{filename}, {sha256(content).hexdigest()}"
+    return f"{filename},length: {len(content)}"
 
 
 app = Litestar(route_handlers=[handle_file_upload])

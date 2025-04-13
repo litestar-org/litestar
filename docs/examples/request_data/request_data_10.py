@@ -1,4 +1,3 @@
-from hashlib import sha256
 from typing import Any, Dict, List, Tuple
 
 from typing_extensions import Annotated
@@ -17,7 +16,7 @@ async def handle_file_upload(
 
     for file in data:
         content = await file.read()
-        result[file.filename] = (sha256(content).hexdigest(), file.content_type, file.headers)
+        result[file.filename] = (len(content), file.content_type, file.headers)
 
     return result
 
