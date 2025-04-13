@@ -250,14 +250,19 @@ class RateLimitConfig:
                 from litestar.middleware.rate_limit import RateLimitConfig
 
                 # limit to 10 requests per minute, excluding the schema path
-                throttle_config = RateLimitConfig(rate_limit=("minute", 10), exclude=["/schema"])
+                throttle_config = RateLimitConfig(
+                    rate_limit=("minute", 10), exclude=["/schema"]
+                )
 
 
                 @get("/")
                 def my_handler(request: Request) -> None: ...
 
 
-                app = Litestar(route_handlers=[my_handler], middleware=[throttle_config.middleware])
+                app = Litestar(
+                    route_handlers=[my_handler],
+                    middleware=[throttle_config.middleware],
+                )
 
         Returns:
             An instance of :class:`DefineMiddleware <.middleware.base.DefineMiddleware>` including ``self`` as the

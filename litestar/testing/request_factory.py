@@ -94,25 +94,29 @@ class RequestFactory:
 
                 # Create a GET request
                 query_params = {"id": 1}
-                get_user_request = RequestFactory(app=my_app, server=my_server).get(
-                    "/person", query_params=query_params
-                )
+                get_user_request = RequestFactory(
+                    app=my_app, server=my_server
+                ).get("/person", query_params=query_params)
 
                 # Create a POST request
                 new_person = PersonFactory.build()
-                create_user_request = RequestFactory(app=my_app, server=my_server).post(
-                    "/person", data=person
-                )
+                create_user_request = RequestFactory(
+                    app=my_app, server=my_server
+                ).post("/person", data=person)
 
                 # Create a request with a special header
                 headers = {"header1": "value1"}
-                request_with_header = RequestFactory(app=my_app, server=my_server).get(
-                    "/person", query_params=query_params, headers=headers
-                )
+                request_with_header = RequestFactory(
+                    app=my_app, server=my_server
+                ).get("/person", query_params=query_params, headers=headers)
 
                 # Create a request with a media type
-                request_with_media_type = RequestFactory(app=my_app, server=my_server).post(
-                    "/person", data=person, request_media_type=RequestEncodingType.MULTI_PART
+                request_with_media_type = RequestFactory(
+                    app=my_app, server=my_server
+                ).post(
+                    "/person",
+                    data=person,
+                    request_media_type=RequestEncodingType.MULTI_PART,
                 )
 
         """

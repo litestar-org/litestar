@@ -342,7 +342,9 @@ class LoggingMiddlewareConfig:
 
                 from litestar import Litestar, Request, get
                 from litestar.logging import LoggingConfig
-                from litestar.middleware.logging import LoggingMiddlewareConfig
+                from litestar.middleware.logging import (
+                    LoggingMiddlewareConfig,
+                )
 
                 logging_config = LoggingConfig()
 

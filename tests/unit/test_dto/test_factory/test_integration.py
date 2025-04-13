@@ -17,8 +17,6 @@ from litestar.datastructures import UploadFile
 from litestar.dto import DataclassDTO, DTOConfig, DTOData, MsgspecDTO, dto_field
 from litestar.dto.types import RenameStrategy
 from litestar.enums import MediaType, RequestEncodingType
-from litestar.openapi.spec.response import OpenAPIResponse
-from litestar.openapi.spec.schema import Schema
 from litestar.params import Body
 from litestar.serialization import encode_json
 from litestar.testing import create_test_client

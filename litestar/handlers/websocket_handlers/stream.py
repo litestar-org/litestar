@@ -41,7 +41,9 @@ async def send_websocket_stream(
 
         .. code-block:: python
 
-            async def stream_current_time() -> AsyncGenerator[str, None]:
+            async def stream_current_time() -> AsyncGenerator[
+                str, None
+            ]:
                 while True:
                     yield str(time.time())
                     await asyncio.sleep(0.5)

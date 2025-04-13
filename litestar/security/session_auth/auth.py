@@ -77,13 +77,16 @@ class SessionAuth(Generic[UserType, BaseSessionBackendT], AbstractSecurityConfig
                 from litestar_session import SessionAuth
 
 
-                async def retrieve_user_from_session(session: dict[str, Any]) -> Any:
+                async def retrieve_user_from_session(
+                    session: dict[str, Any],
+                ) -> Any:
                     # implement logic here to retrieve a ``user`` datum given the session dictionary
                     ...
 
 
                 session_auth_config = SessionAuth(
-                    secret=urandom(16), retrieve_user_handler=retrieve_user_from_session
+                    secret=urandom(16),
+                    retrieve_user_handler=retrieve_user_from_session,
                 )
 
 
@@ -91,7 +94,10 @@ class SessionAuth(Generic[UserType, BaseSessionBackendT], AbstractSecurityConfig
                 def my_handler(request: Request) -> None: ...
 
 
-                app = Litestar(route_handlers=[my_handler], middleware=[session_auth_config.middleware])
+                app = Litestar(
+                    route_handlers=[my_handler],
+                    middleware=[session_auth_config.middleware],
+                )
 
 
         Returns:

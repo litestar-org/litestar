@@ -41,7 +41,12 @@ class ImmutableState(Mapping[str, Any]):
 
                 from litestar.datastructures import ImmutableState
 
-                state_dict = {"first": 1, "second": 2, "third": 3, "fourth": 4}
+                state_dict = {
+                    "first": 1,
+                    "second": 2,
+                    "third": 3,
+                    "fourth": 4,
+                }
                 state = ImmutableState(state_dict)
 
                 # state implements the Mapping type:
@@ -49,7 +54,11 @@ class ImmutableState(Mapping[str, Any]):
                 assert "first" in state
                 assert not "fourth" in state
                 assert state["first"] == 1
-                assert [(k, v) for k, v in state.items()] == [("first", 1), ("second", 2), ("third", 3)]
+                assert [(k, v) for k, v in state.items()] == [
+                    ("first", 1),
+                    ("second", 2),
+                    ("third", 3),
+                ]
 
                 # state implements __bool__
                 assert state  # state is true when it has values.
@@ -196,7 +205,12 @@ class State(ImmutableState, MutableMapping[str, Any]):
 
             from litestar.datastructures import State
 
-            state_dict = {"first": 1, "second": 2, "third": 3, "fourth": 4}
+            state_dict = {
+                "first": 1,
+                "second": 2,
+                "third": 3,
+                "fourth": 4,
+            }
             state = State(state_dict)
 
             # state can be accessed using '.' notation
@@ -208,7 +222,11 @@ class State(ImmutableState, MutableMapping[str, Any]):
             assert "first" in state
             assert not "fourth" in state
             assert state["first"] == 1
-            assert [(k, v) for k, v in state.items()] == [("first", 1), ("second", 2), ("third", 3)]
+            assert [(k, v) for k, v in state.items()] == [
+                ("first", 1),
+                ("second", 2),
+                ("third", 3),
+            ]
 
             state["fourth"] = 4
             assert "fourth" in state
