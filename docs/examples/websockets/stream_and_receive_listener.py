@@ -22,7 +22,7 @@ async def listener_lifespan(socket: WebSocket) -> AsyncGenerator[None, Any]:
 
 
 @websocket_listener("/", connection_lifespan=listener_lifespan)
-async def handler(socket: WebSocket, data: str) -> str:
+def handler(socket: WebSocket, data: str) -> str:
     return data
 
 
