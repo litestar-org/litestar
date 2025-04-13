@@ -9,7 +9,7 @@ pytestmark = pytest.mark.xdist_group("sqlalchemy_examples")
 
 
 def test_sync_app(monkeypatch: MonkeyPatch) -> None:
-    from docs.examples.plugins.sqlalchemy_init_plugin import sqlalchemy_sync
+    from docs.examples.plugins.sqlalchemy import sqlalchemy_sync
 
     monkeypatch.setattr(sqlalchemy_sync.sqlalchemy_config, "connection_string", "sqlite://")
     with TestClient(app=sqlalchemy_sync.app) as client:
@@ -19,7 +19,7 @@ def test_sync_app(monkeypatch: MonkeyPatch) -> None:
 
 
 def test_async_app(monkeypatch: MonkeyPatch) -> None:
-    from docs.examples.plugins.sqlalchemy_init_plugin import sqlalchemy_async
+    from docs.examples.plugins.sqlalchemy import sqlalchemy_async
 
     monkeypatch.setattr(sqlalchemy_async.sqlalchemy_config, "connection_string", "sqlite+aiosqlite://")
 
