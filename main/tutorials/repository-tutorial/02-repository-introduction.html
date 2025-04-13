@@ -1653,29 +1653,26 @@ class and create an <code class="docutils literal notranslate"><span class="pre"
 to include all of the integrated repository features.</p>
 <div class="literal-block-wrapper docutils container" id="id1">
 <div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">app.py</span></code></span><a class="headerlink" href="#id1" title="Permalink to this code">#</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">from</span> <span class="nn">litestar.contrib.sqlalchemy.repository</span> <span class="kn">import</span> <span class="n">SQLAlchemyAsyncRepository</span>
-<span class="linenos"> 2</span>
-<span class="linenos"> 3</span><span class="kn">from</span> <span class="nn">rich</span> <span class="kn">import</span> <span class="n">get_console</span>
-<span class="linenos"> 4</span><span class="kn">from</span> <span class="nn">sqlalchemy.orm</span> <span class="kn">import</span> <span class="n">Mapped</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">from</span> <span class="nn">rich</span> <span class="kn">import</span> <span class="n">get_console</span>
+<span class="linenos"> 2</span><span class="kn">from</span> <span class="nn">sqlalchemy.orm</span> <span class="kn">import</span> <span class="n">Mapped</span>
+<span class="linenos"> 3</span>
+<span class="linenos"> 4</span><span class="kn">from</span> <span class="nn">litestar.plugins.sqlalchemy</span> <span class="kn">import</span> <span class="n">base</span><span class="p">,</span> <span class="n">repository</span>
 <span class="linenos"> 5</span>
-<span class="linenos"> 6</span><span class="kn">from</span> <span class="nn">litestar.contrib.sqlalchemy.base</span> <span class="kn">import</span> <span class="n">UUIDBase</span>
-<span class="linenos"> 7</span><span class="kn">from</span> <span class="nn">litestar.contrib.sqlalchemy.repository</span> <span class="kn">import</span> <span class="n">SQLAlchemyAsyncRepository</span>
+<span class="linenos"> 6</span><span class="n">console</span> <span class="o">=</span> <span class="n">get_console</span><span class="p">()</span>
+<span class="linenos"> 7</span>
 <span class="linenos"> 8</span>
-<span class="linenos"> 9</span><span class="n">console</span> <span class="o">=</span> <span class="n">get_console</span><span class="p">()</span>
-<span class="linenos">10</span>
-<span class="linenos">11</span>
-<span class="linenos">12</span><span class="c1"># the SQLAlchemy base includes a declarative model for you to use in your models.</span>
-<span class="linenos">13</span><span class="c1"># The `Base` class includes a `UUID` based primary key (`id`)</span>
-<span class="linenos">14</span><span class="k">class</span> <span class="nc">Author</span><span class="p">(</span><span class="n">UUIDBase</span><span class="p">):</span>
-<span class="linenos">15</span>    <span class="n">name</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
-<span class="linenos">16</span>    <span class="n">dob</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="n">date</span><span class="p">]</span>
-<span class="linenos">17</span>    <span class="n">dod</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="n">date</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]</span>
-<span class="linenos">18</span>
+<span class="linenos"> 9</span><span class="c1"># the SQLAlchemy base includes a declarative model for you to use in your models.</span>
+<span class="linenos">10</span><span class="c1"># The `Base` class includes a `UUID` based primary key (`id`)</span>
+<span class="linenos">11</span><span class="k">class</span> <span class="nc">Author</span><span class="p">(</span><span class="n">base</span><span class="o">.</span><span class="n">UUIDBase</span><span class="p">):</span>
+<span class="linenos">12</span>    <span class="n">name</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
+<span class="linenos">13</span>    <span class="n">dob</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="n">date</span><span class="p">]</span>
+<span class="linenos">14</span>    <span class="n">dod</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="n">date</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]</span>
+<span class="linenos">15</span>
+<span class="linenos">16</span>
+<span class="linenos">17</span><span class="k">class</span> <span class="nc">AuthorRepository</span><span class="p">(</span><span class="n">repository</span><span class="o">.</span><span class="n">SQLAlchemyAsyncRepository</span><span class="p">[</span><span class="n">Author</span><span class="p">]):</span>
+<span class="linenos">18</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;Author repository.&quot;&quot;&quot;</span>
 <span class="linenos">19</span>
-<span class="linenos">20</span><span class="k">class</span> <span class="nc">AuthorRepository</span><span class="p">(</span><span class="n">SQLAlchemyAsyncRepository</span><span class="p">[</span><span class="n">Author</span><span class="p">]):</span>
-<span class="linenos">21</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;Author repository.&quot;&quot;&quot;</span>
-<span class="linenos">22</span>
-<span class="linenos">23</span>    <span class="n">model_type</span> <span class="o">=</span> <span class="n">Author</span>
+<span class="linenos">20</span>    <span class="n">model_type</span> <span class="o">=</span> <span class="n">Author</span>
 </pre></div>
 </div>
 </div>
@@ -1703,6 +1700,7 @@ of our Author repository.</p>
 <span class="linenos">6</span>            <span class="k">yield</span> <span class="n">AuthorRepository</span><span class="p">(</span><span class="n">session</span><span class="o">=</span><span class="n">db_session</span><span class="p">)</span>
 <span class="linenos">7</span>        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>  <span class="c1"># noqa: BLE001</span>
 <span class="linenos">8</span>            <span class="k">await</span> <span class="n">db_session</span><span class="o">.</span><span class="n">rollback</span><span class="p">()</span>
+<span class="linenos">9</span>        <span class="k">else</span><span class="p">:</span>
 </pre></div>
 </div>
 </div>
@@ -1715,16 +1713,15 @@ various CRUD operations:</p>
 <blockquote>
 <div><div class="literal-block-wrapper docutils container" id="id3">
 <div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">app.py</span></code></span><a class="headerlink" href="#id3" title="Permalink to this code">#</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="k">async</span> <span class="k">def</span> <span class="nf">create_author</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Author</span><span class="p">:</span>
-<span class="linenos"> 2</span>    <span class="k">async</span> <span class="k">with</span> <span class="n">repository_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">repo</span><span class="p">:</span>
-<span class="linenos"> 3</span>        <span class="n">obj</span> <span class="o">=</span> <span class="k">await</span> <span class="n">repo</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
-<span class="linenos"> 4</span>            <span class="n">Author</span><span class="p">(</span>
-<span class="linenos"> 5</span>                <span class="n">name</span><span class="o">=</span><span class="s2">&quot;F. Scott Fitzgerald&quot;</span><span class="p">,</span>
-<span class="linenos"> 6</span>                <span class="n">dob</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="s2">&quot;1896-09-24&quot;</span><span class="p">,</span> <span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">date</span><span class="p">(),</span>
-<span class="linenos"> 7</span>            <span class="p">)</span>
-<span class="linenos"> 8</span>        <span class="p">)</span>
-<span class="linenos"> 9</span>        <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Created Author record for </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> with primary key </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
-<span class="linenos">10</span>        <span class="k">return</span> <span class="n">obj</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span>    <span class="k">async</span> <span class="k">with</span> <span class="n">repository_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">repo</span><span class="p">:</span>
+<span class="linenos">2</span>        <span class="n">obj</span> <span class="o">=</span> <span class="k">await</span> <span class="n">repo</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
+<span class="linenos">3</span>            <span class="n">Author</span><span class="p">(</span>
+<span class="linenos">4</span>                <span class="n">name</span><span class="o">=</span><span class="s2">&quot;F. Scott Fitzgerald&quot;</span><span class="p">,</span>
+<span class="linenos">5</span>                <span class="n">dob</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="s2">&quot;1896-09-24&quot;</span><span class="p">,</span> <span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">date</span><span class="p">(),</span>
+<span class="linenos">6</span>            <span class="p">)</span>
+<span class="linenos">7</span>        <span class="p">)</span>
+<span class="linenos">8</span>        <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Created Author record for </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> with primary key </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+<span class="linenos">9</span>        <span class="k">return</span> <span class="n">obj</span>
 </pre></div>
 </div>
 </div>
@@ -1733,11 +1730,10 @@ various CRUD operations:</p>
 <blockquote>
 <div><div class="literal-block-wrapper docutils container" id="id4">
 <div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">app.py</span></code></span><a class="headerlink" href="#id4" title="Permalink to this code">#</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="k">async</span> <span class="k">def</span> <span class="nf">update_author</span><span class="p">(</span><span class="n">obj</span><span class="p">:</span> <span class="n">Author</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Author</span><span class="p">:</span>
-<span class="linenos">2</span>    <span class="k">async</span> <span class="k">with</span> <span class="n">repository_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">repo</span><span class="p">:</span>
-<span class="linenos">3</span>        <span class="n">obj</span> <span class="o">=</span> <span class="k">await</span> <span class="n">repo</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
-<span class="linenos">4</span>        <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Updated Author record for </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> with primary key </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
-<span class="linenos">5</span>        <span class="k">return</span> <span class="n">obj</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span>    <span class="k">async</span> <span class="k">with</span> <span class="n">repository_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">repo</span><span class="p">:</span>
+<span class="linenos">2</span>        <span class="n">obj</span> <span class="o">=</span> <span class="k">await</span> <span class="n">repo</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+<span class="linenos">3</span>        <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Updated Author record for </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> with primary key </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+<span class="linenos">4</span>        <span class="k">return</span> <span class="n">obj</span>
 </pre></div>
 </div>
 </div>
@@ -1746,11 +1742,10 @@ various CRUD operations:</p>
 <blockquote>
 <div><div class="literal-block-wrapper docutils container" id="id5">
 <div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">app.py</span></code></span><a class="headerlink" href="#id5" title="Permalink to this code">#</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="k">async</span> <span class="k">def</span> <span class="nf">remove_author</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="n">UUID</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Author</span><span class="p">:</span>
-<span class="linenos">2</span>    <span class="k">async</span> <span class="k">with</span> <span class="n">repository_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">repo</span><span class="p">:</span>
-<span class="linenos">3</span>        <span class="n">obj</span> <span class="o">=</span> <span class="k">await</span> <span class="n">repo</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span>
-<span class="linenos">4</span>        <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Deleted Author record for </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> with primary key </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
-<span class="linenos">5</span>        <span class="k">return</span> <span class="n">obj</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span>    <span class="k">async</span> <span class="k">with</span> <span class="n">repository_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">repo</span><span class="p">:</span>
+<span class="linenos">2</span>        <span class="n">obj</span> <span class="o">=</span> <span class="k">await</span> <span class="n">repo</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span>
+<span class="linenos">3</span>        <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Deleted Author record for </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> with primary key </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+<span class="linenos">4</span>        <span class="k">return</span> <span class="n">obj</span>
 </pre></div>
 </div>
 </div>
@@ -1773,25 +1768,30 @@ populates your database and helps test the behavior of your application under re
 conditions. This pattern can be extended and adjusted to meet your needs.</p>
 <div class="literal-block-wrapper docutils container" id="id6">
 <div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">app.py</span></code></span><a class="headerlink" href="#id6" title="Permalink to this code">#</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="k">def</span> <span class="nf">open_fixture</span><span class="p">(</span><span class="n">fixtures_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">fixture_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
-<span class="linenos"> 2</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;Loads JSON file with the specified fixture name</span>
-<span class="linenos"> 3</span>
-<span class="linenos"> 4</span><span class="sd">    Args:</span>
-<span class="linenos"> 5</span><span class="sd">        fixtures_path (Path): The path to look for fixtures</span>
-<span class="linenos"> 6</span><span class="sd">        fixture_name (str): The fixture name to load.</span>
-<span class="linenos"> 7</span>
-<span class="linenos"> 8</span><span class="sd">    Raises:</span>
-<span class="linenos"> 9</span><span class="sd">        FileNotFoundError: Fixtures not found.</span>
-<span class="linenos">10</span>
-<span class="linenos">11</span><span class="sd">    Returns:</span>
-<span class="linenos">12</span><span class="sd">        Any: The parsed JSON data</span>
-<span class="linenos">13</span><span class="sd">    &quot;&quot;&quot;</span>
-<span class="linenos">14</span>    <span class="n">fixture</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">fixtures_path</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">fixture_name</span><span class="si">}</span><span class="s2">.json&quot;</span><span class="p">)</span>
-<span class="linenos">15</span>    <span class="k">if</span> <span class="n">fixture</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
-<span class="linenos">16</span>        <span class="k">with</span> <span class="n">fixture</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-<span class="linenos">17</span>            <span class="n">f_data</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
-<span class="linenos">18</span>        <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">f_data</span><span class="p">)</span>
-<span class="linenos">19</span>    <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not find the </span><span class="si">{</span><span class="n">fixture_name</span><span class="si">}</span><span class="s2"> fixture&quot;</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">import</span> <span class="nn">json</span>
+<span class="linenos"> 2</span><span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="linenos"> 3</span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span>
+<span class="linenos"> 4</span>
+<span class="linenos"> 5</span>
+<span class="linenos"> 6</span><span class="k">def</span> <span class="nf">open_fixture</span><span class="p">(</span><span class="n">fixtures_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">fixture_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<span class="linenos"> 7</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;Loads JSON file with the specified fixture name</span>
+<span class="linenos"> 8</span>
+<span class="linenos"> 9</span><span class="sd">    Args:</span>
+<span class="linenos">10</span><span class="sd">        fixtures_path (Path): The path to look for fixtures</span>
+<span class="linenos">11</span><span class="sd">        fixture_name (str): The fixture name to load.</span>
+<span class="linenos">12</span>
+<span class="linenos">13</span><span class="sd">    Raises:</span>
+<span class="linenos">14</span><span class="sd">        FileNotFoundError: Fixtures not found.</span>
+<span class="linenos">15</span>
+<span class="linenos">16</span><span class="sd">    Returns:</span>
+<span class="linenos">17</span><span class="sd">        Any: The parsed JSON data</span>
+<span class="linenos">18</span><span class="sd">    &quot;&quot;&quot;</span>
+<span class="linenos">19</span>    <span class="n">fixture</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">fixtures_path</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">fixture_name</span><span class="si">}</span><span class="s2">.json&quot;</span><span class="p">)</span>
+<span class="linenos">20</span>    <span class="k">if</span> <span class="n">fixture</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+<span class="linenos">21</span>        <span class="k">with</span> <span class="n">fixture</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+<span class="linenos">22</span>            <span class="n">f_data</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+<span class="linenos">23</span>        <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">f_data</span><span class="p">)</span>
+<span class="linenos">24</span>    <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not find the </span><span class="si">{</span><span class="n">fixture_name</span><span class="si">}</span><span class="s2"> fixture&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -2037,12 +2037,48 @@ you to add multiple records to your database in a single transaction, improving
 performance when working with larger data sets.</p>
 <div class="literal-block-wrapper docutils container" id="id8">
 <div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">app.py</span></code></span><a class="headerlink" href="#id8" title="Permalink to this code">#</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span>        <span class="c1"># 1) Load the JSON data into the US States table.</span>
-<span class="linenos">2</span>        <span class="n">repo</span> <span class="o">=</span> <span class="n">USStateRepository</span><span class="p">(</span><span class="n">session</span><span class="o">=</span><span class="n">db_session</span><span class="p">)</span>
-<span class="linenos">3</span>        <span class="n">fixture</span> <span class="o">=</span> <span class="n">open_fixture</span><span class="p">(</span><span class="n">here</span><span class="p">,</span> <span class="n">USStateRepository</span><span class="o">.</span><span class="n">model_type</span><span class="o">.</span><span class="n">__tablename__</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
-<span class="linenos">4</span>        <span class="n">objs</span> <span class="o">=</span> <span class="n">repo</span><span class="o">.</span><span class="n">add_many</span><span class="p">([</span><span class="n">USStateRepository</span><span class="o">.</span><span class="n">model_type</span><span class="p">(</span><span class="o">**</span><span class="n">raw_obj</span><span class="p">)</span> <span class="k">for</span> <span class="n">raw_obj</span> <span class="ow">in</span> <span class="n">fixture</span><span class="p">])</span>
-<span class="linenos">5</span>        <span class="n">db_session</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
-<span class="linenos">6</span>        <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Created </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">objs</span><span class="p">)</span><span class="si">}</span><span class="s2"> new objects.&quot;</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">from</span> <span class="nn">rich</span> <span class="kn">import</span> <span class="n">get_console</span>
+<span class="linenos"> 2</span><span class="kn">from</span> <span class="nn">sqlalchemy</span> <span class="kn">import</span> <span class="n">create_engine</span>
+<span class="linenos"> 3</span><span class="kn">from</span> <span class="nn">sqlalchemy.orm</span> <span class="kn">import</span> <span class="n">Mapped</span><span class="p">,</span> <span class="n">Session</span><span class="p">,</span> <span class="n">sessionmaker</span>
+<span class="linenos"> 4</span>
+<span class="linenos"> 5</span><span class="kn">from</span> <span class="nn">litestar.plugins.sqlalchemy</span> <span class="kn">import</span> <span class="n">base</span><span class="p">,</span> <span class="n">repository</span>
+<span class="linenos"> 6</span>
+<span class="linenos"> 7</span><span class="n">console</span> <span class="o">=</span> <span class="n">get_console</span><span class="p">()</span>
+<span class="linenos"> 8</span>
+<span class="linenos"> 9</span>
+<span class="linenos">10</span><span class="k">class</span> <span class="nc">USState</span><span class="p">(</span><span class="n">base</span><span class="o">.</span><span class="n">UUIDBase</span><span class="p">):</span>
+<span class="linenos">11</span>    <span class="n">__tablename__</span> <span class="o">=</span> <span class="s2">&quot;us_state_lookup&quot;</span>  <span class="c1"># type: ignore[assignment]</span>
+<span class="linenos">12</span>    <span class="n">abbreviation</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
+<span class="linenos">13</span>    <span class="n">name</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
+<span class="linenos">14</span>
+<span class="linenos">15</span>
+<span class="linenos">16</span><span class="k">class</span> <span class="nc">USStateRepository</span><span class="p">(</span><span class="n">repository</span><span class="o">.</span><span class="n">SQLAlchemySyncRepository</span><span class="p">[</span><span class="n">USState</span><span class="p">]):</span>
+<span class="linenos">17</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;US State repository.&quot;&quot;&quot;</span>
+<span class="linenos">18</span>
+<span class="linenos">19</span>    <span class="n">model_type</span> <span class="o">=</span> <span class="n">USState</span>
+<span class="linenos">20</span>
+<span class="linenos">21</span>
+<span class="linenos">22</span><span class="n">engine</span> <span class="o">=</span> <span class="n">create_engine</span><span class="p">(</span>
+<span class="linenos">23</span>    <span class="s2">&quot;duckdb:///:memory:&quot;</span><span class="p">,</span>
+<span class="linenos">24</span>    <span class="n">future</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="linenos">25</span><span class="p">)</span>
+<span class="linenos">26</span><span class="n">session_factory</span><span class="p">:</span> <span class="n">sessionmaker</span><span class="p">[</span><span class="n">Session</span><span class="p">]</span> <span class="o">=</span> <span class="n">sessionmaker</span><span class="p">(</span><span class="n">engine</span><span class="p">,</span> <span class="n">expire_on_commit</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="linenos">27</span>
+<span class="linenos">28</span>
+<span class="linenos">29</span><span class="k">def</span> <span class="nf">run_script</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="linenos">30</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;Load data from a fixture.&quot;&quot;&quot;</span>
+<span class="linenos">31</span>
+<span class="linenos">32</span>    <span class="c1"># Initializes the database.</span>
+<span class="linenos">33</span>    <span class="k">with</span> <span class="n">engine</span><span class="o">.</span><span class="n">begin</span><span class="p">()</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
+<span class="linenos">34</span>        <span class="n">USState</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">create_all</span><span class="p">(</span><span class="n">conn</span><span class="p">)</span>
+<span class="linenos">35</span>
+<span class="linenos">36</span>    <span class="k">with</span> <span class="n">session_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">db_session</span><span class="p">:</span>
+<span class="linenos">37</span>        <span class="c1"># 1) Load the JSON data into the US States table.</span>
+<span class="linenos">38</span>        <span class="n">repo</span> <span class="o">=</span> <span class="n">USStateRepository</span><span class="p">(</span><span class="n">session</span><span class="o">=</span><span class="n">db_session</span><span class="p">)</span>
+<span class="linenos">39</span>        <span class="n">fixture</span> <span class="o">=</span> <span class="n">open_fixture</span><span class="p">(</span><span class="n">here</span><span class="p">,</span> <span class="n">USStateRepository</span><span class="o">.</span><span class="n">model_type</span><span class="o">.</span><span class="n">__tablename__</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
+<span class="linenos">40</span>        <span class="n">objs</span> <span class="o">=</span> <span class="n">repo</span><span class="o">.</span><span class="n">add_many</span><span class="p">([</span><span class="n">USStateRepository</span><span class="o">.</span><span class="n">model_type</span><span class="p">(</span><span class="o">**</span><span class="n">raw_obj</span><span class="p">)</span> <span class="k">for</span> <span class="n">raw_obj</span> <span class="ow">in</span> <span class="n">fixture</span><span class="p">])</span>
+<span class="linenos">41</span>        <span class="n">db_session</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+<span class="linenos">42</span>        <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Created </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">objs</span><span class="p">)</span><span class="si">}</span><span class="s2"> new objects.&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -2055,9 +2091,12 @@ is useful for handling large amounts of data by breaking the data into manageabl
 repository.</p>
 <div class="literal-block-wrapper docutils container" id="id9">
 <div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">app.py</span></code></span><a class="headerlink" href="#id9" title="Permalink to this code">#</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span>        <span class="c1"># 2) Select paginated data and total row count.</span>
-<span class="linenos">2</span>        <span class="n">created_objs</span><span class="p">,</span> <span class="n">total_objs</span> <span class="o">=</span> <span class="n">repo</span><span class="o">.</span><span class="n">list_and_count</span><span class="p">(</span><span class="n">LimitOffset</span><span class="p">(</span><span class="n">limit</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span>
-<span class="linenos">3</span>        <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Selected </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">created_objs</span><span class="p">)</span><span class="si">}</span><span class="s2"> records out of a total of </span><span class="si">{</span><span class="n">total_objs</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="kn">from</span> <span class="nn">litestar.repository.filters</span> <span class="kn">import</span> <span class="n">LimitOffset</span>
+<span class="linenos">2</span>
+<span class="linenos">3</span>
+<span class="linenos">4</span>        <span class="c1"># 2) Select paginated data and total row count.</span>
+<span class="linenos">5</span>        <span class="n">created_objs</span><span class="p">,</span> <span class="n">total_objs</span> <span class="o">=</span> <span class="n">repo</span><span class="o">.</span><span class="n">list_and_count</span><span class="p">(</span><span class="n">LimitOffset</span><span class="p">(</span><span class="n">limit</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span>
+<span class="linenos">6</span>        <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Selected </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">created_objs</span><span class="p">)</span><span class="si">}</span><span class="s2"> records out of a total of </span><span class="si">{</span><span class="n">total_objs</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -2119,107 +2158,106 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 <span class="linenos"> 10</span><span class="kn">from</span> <span class="nn">sqlalchemy.ext.asyncio</span> <span class="kn">import</span> <span class="n">async_sessionmaker</span><span class="p">,</span> <span class="n">create_async_engine</span>
 <span class="linenos"> 11</span><span class="kn">from</span> <span class="nn">sqlalchemy.orm</span> <span class="kn">import</span> <span class="n">Mapped</span>
 <span class="linenos"> 12</span>
-<span class="linenos"> 13</span><span class="kn">from</span> <span class="nn">litestar.contrib.sqlalchemy.base</span> <span class="kn">import</span> <span class="n">UUIDBase</span>
-<span class="hll"><span class="linenos"> 14</span><span class="kn">from</span> <span class="nn">litestar.contrib.sqlalchemy.repository</span> <span class="kn">import</span> <span class="n">SQLAlchemyAsyncRepository</span>
-</span><span class="linenos"> 15</span>
-<span class="linenos"> 16</span><span class="n">console</span> <span class="o">=</span> <span class="n">get_console</span><span class="p">()</span>
+<span class="linenos"> 13</span><span class="kn">from</span> <span class="nn">litestar.plugins.sqlalchemy</span> <span class="kn">import</span> <span class="n">base</span><span class="p">,</span> <span class="n">repository</span>
+<span class="hll"><span class="linenos"> 14</span>
+</span><span class="linenos"> 15</span><span class="n">console</span> <span class="o">=</span> <span class="n">get_console</span><span class="p">()</span>
+<span class="linenos"> 16</span>
 <span class="linenos"> 17</span>
-<span class="linenos"> 18</span>
-<span class="linenos"> 19</span><span class="c1"># the SQLAlchemy base includes a declarative model for you to use in your models.</span>
-<span class="linenos"> 20</span><span class="c1"># The `Base` class includes a `UUID` based primary key (`id`)</span>
-<span class="linenos"> 21</span><span class="k">class</span> <span class="nc">Author</span><span class="p">(</span><span class="n">UUIDBase</span><span class="p">):</span>
-<span class="linenos"> 22</span>    <span class="n">name</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
-<span class="linenos"> 23</span>    <span class="n">dob</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="n">date</span><span class="p">]</span>
-<span class="linenos"> 24</span>    <span class="n">dod</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="n">date</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]</span>
+<span class="linenos"> 18</span><span class="c1"># the SQLAlchemy base includes a declarative model for you to use in your models.</span>
+<span class="linenos"> 19</span><span class="c1"># The `Base` class includes a `UUID` based primary key (`id`)</span>
+<span class="linenos"> 20</span><span class="k">class</span> <span class="nc">Author</span><span class="p">(</span><span class="n">base</span><span class="o">.</span><span class="n">UUIDBase</span><span class="p">):</span>
+<span class="linenos"> 21</span>    <span class="n">name</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
+<span class="linenos"> 22</span>    <span class="n">dob</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="n">date</span><span class="p">]</span>
+<span class="linenos"> 23</span>    <span class="n">dod</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="n">date</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]</span>
+<span class="linenos"> 24</span>
 <span class="linenos"> 25</span>
-<span class="linenos"> 26</span>
-<span class="hll"><span class="linenos"> 27</span><span class="k">class</span> <span class="nc">AuthorRepository</span><span class="p">(</span><span class="n">SQLAlchemyAsyncRepository</span><span class="p">[</span><span class="n">Author</span><span class="p">]):</span>
-</span><span class="hll"><span class="linenos"> 28</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;Author repository.&quot;&quot;&quot;</span>
-</span><span class="hll"><span class="linenos"> 29</span>
-</span><span class="hll"><span class="linenos"> 30</span>    <span class="n">model_type</span> <span class="o">=</span> <span class="n">Author</span>
+<span class="linenos"> 26</span><span class="k">class</span> <span class="nc">AuthorRepository</span><span class="p">(</span><span class="n">repository</span><span class="o">.</span><span class="n">SQLAlchemyAsyncRepository</span><span class="p">[</span><span class="n">Author</span><span class="p">]):</span>
+<span class="hll"><span class="linenos"> 27</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;Author repository.&quot;&quot;&quot;</span>
+</span><span class="hll"><span class="linenos"> 28</span>
+</span><span class="hll"><span class="linenos"> 29</span>    <span class="n">model_type</span> <span class="o">=</span> <span class="n">Author</span>
+</span><span class="hll"><span class="linenos"> 30</span>
 </span><span class="linenos"> 31</span>
-<span class="linenos"> 32</span>
-<span class="linenos"> 33</span><span class="n">engine</span> <span class="o">=</span> <span class="n">create_async_engine</span><span class="p">(</span>
-<span class="linenos"> 34</span>    <span class="s2">&quot;sqlite+aiosqlite:///test.sqlite&quot;</span><span class="p">,</span>
-<span class="linenos"> 35</span>    <span class="n">future</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-<span class="linenos"> 36</span><span class="p">)</span>
-<span class="hll"><span class="linenos"> 37</span><span class="n">session_factory</span> <span class="o">=</span> <span class="n">async_sessionmaker</span><span class="p">(</span><span class="n">engine</span><span class="p">,</span> <span class="n">expire_on_commit</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="linenos"> 32</span><span class="n">engine</span> <span class="o">=</span> <span class="n">create_async_engine</span><span class="p">(</span>
+<span class="linenos"> 33</span>    <span class="s2">&quot;sqlite+aiosqlite:///test.sqlite&quot;</span><span class="p">,</span>
+<span class="linenos"> 34</span>    <span class="n">future</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="linenos"> 35</span><span class="p">)</span>
+<span class="linenos"> 36</span><span class="n">session_factory</span> <span class="o">=</span> <span class="n">async_sessionmaker</span><span class="p">(</span><span class="n">engine</span><span class="p">,</span> <span class="n">expire_on_commit</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="hll"><span class="linenos"> 37</span>
 </span><span class="hll"><span class="linenos"> 38</span>
-</span><span class="hll"><span class="linenos"> 39</span>
-</span><span class="hll"><span class="linenos"> 40</span><span class="c1"># let&#39;s make a simple context manager as an example here.</span>
-</span><span class="hll"><span class="linenos"> 41</span><span class="nd">@asynccontextmanager</span>
-</span><span class="hll"><span class="linenos"> 42</span><span class="k">async</span> <span class="k">def</span> <span class="nf">repository_factory</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">AsyncIterator</span><span class="p">[</span><span class="n">AuthorRepository</span><span class="p">]:</span>
-</span><span class="hll"><span class="linenos"> 43</span>    <span class="k">async</span> <span class="k">with</span> <span class="n">session_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">db_session</span><span class="p">:</span>
-</span><span class="hll"><span class="linenos"> 44</span>        <span class="k">try</span><span class="p">:</span>
-</span><span class="hll"><span class="linenos"> 45</span>            <span class="k">yield</span> <span class="n">AuthorRepository</span><span class="p">(</span><span class="n">session</span><span class="o">=</span><span class="n">db_session</span><span class="p">)</span>
-</span><span class="hll"><span class="linenos"> 46</span>        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>  <span class="c1"># noqa: BLE001</span>
-</span><span class="hll"><span class="linenos"> 47</span>            <span class="k">await</span> <span class="n">db_session</span><span class="o">.</span><span class="n">rollback</span><span class="p">()</span>
-</span><span class="hll"><span class="linenos"> 48</span>        <span class="k">else</span><span class="p">:</span>
-</span><span class="hll"><span class="linenos"> 49</span>            <span class="k">await</span> <span class="n">db_session</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+</span><span class="hll"><span class="linenos"> 39</span><span class="c1"># let&#39;s make a simple context manager as an example here.</span>
+</span><span class="hll"><span class="linenos"> 40</span><span class="nd">@asynccontextmanager</span>
+</span><span class="hll"><span class="linenos"> 41</span><span class="k">async</span> <span class="k">def</span> <span class="nf">repository_factory</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">AsyncIterator</span><span class="p">[</span><span class="n">AuthorRepository</span><span class="p">]:</span>
+</span><span class="hll"><span class="linenos"> 42</span>    <span class="k">async</span> <span class="k">with</span> <span class="n">session_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">db_session</span><span class="p">:</span>
+</span><span class="hll"><span class="linenos"> 43</span>        <span class="k">try</span><span class="p">:</span>
+</span><span class="hll"><span class="linenos"> 44</span>            <span class="k">yield</span> <span class="n">AuthorRepository</span><span class="p">(</span><span class="n">session</span><span class="o">=</span><span class="n">db_session</span><span class="p">)</span>
+</span><span class="hll"><span class="linenos"> 45</span>        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>  <span class="c1"># noqa: BLE001</span>
+</span><span class="hll"><span class="linenos"> 46</span>            <span class="k">await</span> <span class="n">db_session</span><span class="o">.</span><span class="n">rollback</span><span class="p">()</span>
+</span><span class="hll"><span class="linenos"> 47</span>        <span class="k">else</span><span class="p">:</span>
+</span><span class="hll"><span class="linenos"> 48</span>            <span class="k">await</span> <span class="n">db_session</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+</span><span class="hll"><span class="linenos"> 49</span>
 </span><span class="hll"><span class="linenos"> 50</span>
-</span><span class="hll"><span class="linenos"> 51</span>
-</span><span class="hll"><span class="linenos"> 52</span><span class="k">async</span> <span class="k">def</span> <span class="nf">create_author</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Author</span><span class="p">:</span>
-</span><span class="hll"><span class="linenos"> 53</span>    <span class="k">async</span> <span class="k">with</span> <span class="n">repository_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">repo</span><span class="p">:</span>
-</span><span class="hll"><span class="linenos"> 54</span>        <span class="n">obj</span> <span class="o">=</span> <span class="k">await</span> <span class="n">repo</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
-</span><span class="hll"><span class="linenos"> 55</span>            <span class="n">Author</span><span class="p">(</span>
-</span><span class="linenos"> 56</span>                <span class="n">name</span><span class="o">=</span><span class="s2">&quot;F. Scott Fitzgerald&quot;</span><span class="p">,</span>
-<span class="linenos"> 57</span>                <span class="n">dob</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="s2">&quot;1896-09-24&quot;</span><span class="p">,</span> <span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">date</span><span class="p">(),</span>
-<span class="linenos"> 58</span>            <span class="p">)</span>
-<span class="linenos"> 59</span>        <span class="p">)</span>
-<span class="linenos"> 60</span>        <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Created Author record for </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> with primary key </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
-<span class="hll"><span class="linenos"> 61</span>        <span class="k">return</span> <span class="n">obj</span>
+</span><span class="hll"><span class="linenos"> 51</span><span class="k">async</span> <span class="k">def</span> <span class="nf">create_author</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Author</span><span class="p">:</span>
+</span><span class="hll"><span class="linenos"> 52</span>    <span class="k">async</span> <span class="k">with</span> <span class="n">repository_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">repo</span><span class="p">:</span>
+</span><span class="hll"><span class="linenos"> 53</span>        <span class="n">obj</span> <span class="o">=</span> <span class="k">await</span> <span class="n">repo</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
+</span><span class="hll"><span class="linenos"> 54</span>            <span class="n">Author</span><span class="p">(</span>
+</span><span class="hll"><span class="linenos"> 55</span>                <span class="n">name</span><span class="o">=</span><span class="s2">&quot;F. Scott Fitzgerald&quot;</span><span class="p">,</span>
+</span><span class="linenos"> 56</span>                <span class="n">dob</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="s2">&quot;1896-09-24&quot;</span><span class="p">,</span> <span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">date</span><span class="p">(),</span>
+<span class="linenos"> 57</span>            <span class="p">)</span>
+<span class="linenos"> 58</span>        <span class="p">)</span>
+<span class="linenos"> 59</span>        <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Created Author record for </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> with primary key </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+<span class="linenos"> 60</span>        <span class="k">return</span> <span class="n">obj</span>
+<span class="hll"><span class="linenos"> 61</span>
 </span><span class="linenos"> 62</span>
-<span class="linenos"> 63</span>
-<span class="hll"><span class="linenos"> 64</span><span class="k">async</span> <span class="k">def</span> <span class="nf">update_author</span><span class="p">(</span><span class="n">obj</span><span class="p">:</span> <span class="n">Author</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Author</span><span class="p">:</span>
-</span><span class="hll"><span class="linenos"> 65</span>    <span class="k">async</span> <span class="k">with</span> <span class="n">repository_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">repo</span><span class="p">:</span>
-</span><span class="hll"><span class="linenos"> 66</span>        <span class="n">obj</span> <span class="o">=</span> <span class="k">await</span> <span class="n">repo</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
-</span><span class="hll"><span class="linenos"> 67</span>        <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Updated Author record for </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> with primary key </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
-</span><span class="hll"><span class="linenos"> 68</span>        <span class="k">return</span> <span class="n">obj</span>
+<span class="linenos"> 63</span><span class="k">async</span> <span class="k">def</span> <span class="nf">update_author</span><span class="p">(</span><span class="n">obj</span><span class="p">:</span> <span class="n">Author</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Author</span><span class="p">:</span>
+<span class="hll"><span class="linenos"> 64</span>    <span class="k">async</span> <span class="k">with</span> <span class="n">repository_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">repo</span><span class="p">:</span>
+</span><span class="hll"><span class="linenos"> 65</span>        <span class="n">obj</span> <span class="o">=</span> <span class="k">await</span> <span class="n">repo</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+</span><span class="hll"><span class="linenos"> 66</span>        <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Updated Author record for </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> with primary key </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+</span><span class="hll"><span class="linenos"> 67</span>        <span class="k">return</span> <span class="n">obj</span>
+</span><span class="hll"><span class="linenos"> 68</span>
 </span><span class="hll"><span class="linenos"> 69</span>
-</span><span class="hll"><span class="linenos"> 70</span>
-</span><span class="hll"><span class="linenos"> 71</span><span class="k">async</span> <span class="k">def</span> <span class="nf">remove_author</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="n">UUID</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Author</span><span class="p">:</span>
-</span><span class="hll"><span class="linenos"> 72</span>    <span class="k">async</span> <span class="k">with</span> <span class="n">repository_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">repo</span><span class="p">:</span>
-</span><span class="hll"><span class="linenos"> 73</span>        <span class="n">obj</span> <span class="o">=</span> <span class="k">await</span> <span class="n">repo</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span>
-</span><span class="hll"><span class="linenos"> 74</span>        <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Deleted Author record for </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> with primary key </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
-</span><span class="hll"><span class="linenos"> 75</span>        <span class="k">return</span> <span class="n">obj</span>
+</span><span class="hll"><span class="linenos"> 70</span><span class="k">async</span> <span class="k">def</span> <span class="nf">remove_author</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="n">UUID</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Author</span><span class="p">:</span>
+</span><span class="hll"><span class="linenos"> 71</span>    <span class="k">async</span> <span class="k">with</span> <span class="n">repository_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">repo</span><span class="p">:</span>
+</span><span class="hll"><span class="linenos"> 72</span>        <span class="n">obj</span> <span class="o">=</span> <span class="k">await</span> <span class="n">repo</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span>
+</span><span class="hll"><span class="linenos"> 73</span>        <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Deleted Author record for </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> with primary key </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+</span><span class="hll"><span class="linenos"> 74</span>        <span class="k">return</span> <span class="n">obj</span>
+</span><span class="hll"><span class="linenos"> 75</span>
 </span><span class="linenos"> 76</span>
-<span class="hll"><span class="linenos"> 77</span>
-</span><span class="hll"><span class="linenos"> 78</span><span class="k">async</span> <span class="k">def</span> <span class="nf">get_author_if_exists</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="n">UUID</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Author</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
-</span><span class="hll"><span class="linenos"> 79</span>    <span class="k">async</span> <span class="k">with</span> <span class="n">repository_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">repo</span><span class="p">:</span>
-</span><span class="linenos"> 80</span>        <span class="n">obj</span> <span class="o">=</span> <span class="k">await</span> <span class="n">repo</span><span class="o">.</span><span class="n">get_one_or_none</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="nb">id</span><span class="p">)</span>
-<span class="hll"><span class="linenos"> 81</span>        <span class="k">if</span> <span class="n">obj</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-</span><span class="hll"><span class="linenos"> 82</span>            <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Found Author record for </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> with primary key </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
-</span><span class="hll"><span class="linenos"> 83</span>        <span class="k">else</span><span class="p">:</span>
-</span><span class="linenos"> 84</span>            <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not find Author with primary key </span><span class="si">{</span><span class="nb">id</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
-<span class="linenos"> 85</span>        <span class="k">return</span> <span class="n">obj</span>
+<span class="hll"><span class="linenos"> 77</span><span class="k">async</span> <span class="k">def</span> <span class="nf">get_author_if_exists</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="n">UUID</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Author</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+</span><span class="hll"><span class="linenos"> 78</span>    <span class="k">async</span> <span class="k">with</span> <span class="n">repository_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">repo</span><span class="p">:</span>
+</span><span class="hll"><span class="linenos"> 79</span>        <span class="n">obj</span> <span class="o">=</span> <span class="k">await</span> <span class="n">repo</span><span class="o">.</span><span class="n">get_one_or_none</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="nb">id</span><span class="p">)</span>
+</span><span class="linenos"> 80</span>        <span class="k">if</span> <span class="n">obj</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+<span class="hll"><span class="linenos"> 81</span>            <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Found Author record for </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> with primary key </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+</span><span class="hll"><span class="linenos"> 82</span>        <span class="k">else</span><span class="p">:</span>
+</span><span class="hll"><span class="linenos"> 83</span>            <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not find Author with primary key </span><span class="si">{</span><span class="nb">id</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+</span><span class="linenos"> 84</span>        <span class="k">return</span> <span class="n">obj</span>
+<span class="linenos"> 85</span>
 <span class="linenos"> 86</span>
-<span class="linenos"> 87</span>
-<span class="linenos"> 88</span><span class="k">async</span> <span class="k">def</span> <span class="nf">run_script</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="linenos"> 89</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;Load data from a fixture.&quot;&quot;&quot;</span>
-<span class="linenos"> 90</span>    <span class="k">async</span> <span class="k">with</span> <span class="n">engine</span><span class="o">.</span><span class="n">begin</span><span class="p">()</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
-<span class="linenos"> 91</span>        <span class="k">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">run_sync</span><span class="p">(</span><span class="n">UUIDBase</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">create_all</span><span class="p">)</span>
-<span class="linenos"> 92</span>
-<span class="linenos"> 93</span>    <span class="c1"># 1) create a new Author record.</span>
-<span class="linenos"> 94</span>    <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s2">&quot;1) Adding a new record&quot;</span><span class="p">)</span>
-<span class="linenos"> 95</span>    <span class="n">author</span> <span class="o">=</span> <span class="k">await</span> <span class="n">create_author</span><span class="p">()</span>
-<span class="linenos"> 96</span>    <span class="n">author_id</span> <span class="o">=</span> <span class="n">author</span><span class="o">.</span><span class="n">id</span>
-<span class="linenos"> 97</span>
-<span class="linenos"> 98</span>    <span class="c1"># 2) Let&#39;s update the Author record.</span>
-<span class="linenos"> 99</span>    <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s2">&quot;2) Updating a record.&quot;</span><span class="p">)</span>
-<span class="linenos">100</span>    <span class="n">author</span><span class="o">.</span><span class="n">dod</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="s2">&quot;1940-12-21&quot;</span><span class="p">,</span> <span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">date</span><span class="p">()</span>
-<span class="linenos">101</span>    <span class="k">await</span> <span class="n">update_author</span><span class="p">(</span><span class="n">author</span><span class="p">)</span>
-<span class="linenos">102</span>
-<span class="linenos">103</span>    <span class="c1"># 3) Let&#39;s delete the record we just created.</span>
-<span class="linenos">104</span>    <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s2">&quot;3) Removing a record.&quot;</span><span class="p">)</span>
-<span class="linenos">105</span>    <span class="k">await</span> <span class="n">remove_author</span><span class="p">(</span><span class="n">author_id</span><span class="p">)</span>
-<span class="linenos">106</span>
-<span class="linenos">107</span>    <span class="c1"># 4) Let&#39;s verify the record no longer exists.</span>
-<span class="linenos">108</span>    <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s2">&quot;4) Select one or none.&quot;</span><span class="p">)</span>
-<span class="linenos">109</span>    <span class="n">_should_be_none</span> <span class="o">=</span> <span class="k">await</span> <span class="n">get_author_if_exists</span><span class="p">(</span><span class="n">author_id</span><span class="p">)</span>
+<span class="linenos"> 87</span><span class="k">async</span> <span class="k">def</span> <span class="nf">run_script</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="linenos"> 88</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;Load data from a fixture.&quot;&quot;&quot;</span>
+<span class="linenos"> 89</span>    <span class="k">async</span> <span class="k">with</span> <span class="n">engine</span><span class="o">.</span><span class="n">begin</span><span class="p">()</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
+<span class="linenos"> 90</span>        <span class="k">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">run_sync</span><span class="p">(</span><span class="n">base</span><span class="o">.</span><span class="n">UUIDBase</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">create_all</span><span class="p">)</span>
+<span class="linenos"> 91</span>
+<span class="linenos"> 92</span>    <span class="c1"># 1) create a new Author record.</span>
+<span class="linenos"> 93</span>    <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s2">&quot;1) Adding a new record&quot;</span><span class="p">)</span>
+<span class="linenos"> 94</span>    <span class="n">author</span> <span class="o">=</span> <span class="k">await</span> <span class="n">create_author</span><span class="p">()</span>
+<span class="linenos"> 95</span>    <span class="n">author_id</span> <span class="o">=</span> <span class="n">author</span><span class="o">.</span><span class="n">id</span>
+<span class="linenos"> 96</span>
+<span class="linenos"> 97</span>    <span class="c1"># 2) Let&#39;s update the Author record.</span>
+<span class="linenos"> 98</span>    <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s2">&quot;2) Updating a record.&quot;</span><span class="p">)</span>
+<span class="linenos"> 99</span>    <span class="n">author</span><span class="o">.</span><span class="n">dod</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="s2">&quot;1940-12-21&quot;</span><span class="p">,</span> <span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">date</span><span class="p">()</span>
+<span class="linenos">100</span>    <span class="k">await</span> <span class="n">update_author</span><span class="p">(</span><span class="n">author</span><span class="p">)</span>
+<span class="linenos">101</span>
+<span class="linenos">102</span>    <span class="c1"># 3) Let&#39;s delete the record we just created.</span>
+<span class="linenos">103</span>    <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s2">&quot;3) Removing a record.&quot;</span><span class="p">)</span>
+<span class="linenos">104</span>    <span class="k">await</span> <span class="n">remove_author</span><span class="p">(</span><span class="n">author_id</span><span class="p">)</span>
+<span class="linenos">105</span>
+<span class="linenos">106</span>    <span class="c1"># 4) Let&#39;s verify the record no longer exists.</span>
+<span class="linenos">107</span>    <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s2">&quot;4) Select one or none.&quot;</span><span class="p">)</span>
+<span class="linenos">108</span>    <span class="n">_should_be_none</span> <span class="o">=</span> <span class="k">await</span> <span class="n">get_author_if_exists</span><span class="p">(</span><span class="n">author_id</span><span class="p">)</span>
+<span class="linenos">109</span>
 <span class="linenos">110</span>
-<span class="linenos">111</span>
-<span class="linenos">112</span><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
-<span class="linenos">113</span>    <span class="n">anyio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">run_script</span><span class="p">)</span>
+<span class="linenos">111</span><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+<span class="linenos">112</span>    <span class="n">anyio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">run_script</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -2241,107 +2279,106 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <span class="linenos"> 10</span><span class="kn">from</span> <span class="nn">sqlalchemy.ext.asyncio</span> <span class="kn">import</span> <span class="n">async_sessionmaker</span><span class="p">,</span> <span class="n">create_async_engine</span>
 <span class="linenos"> 11</span><span class="kn">from</span> <span class="nn">sqlalchemy.orm</span> <span class="kn">import</span> <span class="n">Mapped</span>
 <span class="linenos"> 12</span>
-<span class="linenos"> 13</span><span class="kn">from</span> <span class="nn">litestar.contrib.sqlalchemy.base</span> <span class="kn">import</span> <span class="n">UUIDBase</span>
-<span class="hll"><span class="linenos"> 14</span><span class="kn">from</span> <span class="nn">litestar.contrib.sqlalchemy.repository</span> <span class="kn">import</span> <span class="n">SQLAlchemyAsyncRepository</span>
-</span><span class="linenos"> 15</span>
-<span class="linenos"> 16</span><span class="n">console</span> <span class="o">=</span> <span class="n">get_console</span><span class="p">()</span>
+<span class="linenos"> 13</span><span class="kn">from</span> <span class="nn">litestar.plugins.sqlalchemy</span> <span class="kn">import</span> <span class="n">base</span><span class="p">,</span> <span class="n">repository</span>
+<span class="hll"><span class="linenos"> 14</span>
+</span><span class="linenos"> 15</span><span class="n">console</span> <span class="o">=</span> <span class="n">get_console</span><span class="p">()</span>
+<span class="linenos"> 16</span>
 <span class="linenos"> 17</span>
-<span class="linenos"> 18</span>
-<span class="linenos"> 19</span><span class="c1"># the SQLAlchemy base includes a declarative model for you to use in your models.</span>
-<span class="linenos"> 20</span><span class="c1"># The `Base` class includes a `UUID` based primary key (`id`)</span>
-<span class="linenos"> 21</span><span class="k">class</span> <span class="nc">Author</span><span class="p">(</span><span class="n">UUIDBase</span><span class="p">):</span>
-<span class="linenos"> 22</span>    <span class="n">name</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
-<span class="linenos"> 23</span>    <span class="n">dob</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="n">date</span><span class="p">]</span>
-<span class="linenos"> 24</span>    <span class="n">dod</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="n">date</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]</span>
+<span class="linenos"> 18</span><span class="c1"># the SQLAlchemy base includes a declarative model for you to use in your models.</span>
+<span class="linenos"> 19</span><span class="c1"># The `Base` class includes a `UUID` based primary key (`id`)</span>
+<span class="linenos"> 20</span><span class="k">class</span> <span class="nc">Author</span><span class="p">(</span><span class="n">base</span><span class="o">.</span><span class="n">UUIDBase</span><span class="p">):</span>
+<span class="linenos"> 21</span>    <span class="n">name</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
+<span class="linenos"> 22</span>    <span class="n">dob</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="n">date</span><span class="p">]</span>
+<span class="linenos"> 23</span>    <span class="n">dod</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="n">date</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]</span>
+<span class="linenos"> 24</span>
 <span class="linenos"> 25</span>
-<span class="linenos"> 26</span>
-<span class="hll"><span class="linenos"> 27</span><span class="k">class</span> <span class="nc">AuthorRepository</span><span class="p">(</span><span class="n">SQLAlchemyAsyncRepository</span><span class="p">[</span><span class="n">Author</span><span class="p">]):</span>
-</span><span class="hll"><span class="linenos"> 28</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;Author repository.&quot;&quot;&quot;</span>
-</span><span class="hll"><span class="linenos"> 29</span>
-</span><span class="hll"><span class="linenos"> 30</span>    <span class="n">model_type</span> <span class="o">=</span> <span class="n">Author</span>
+<span class="linenos"> 26</span><span class="k">class</span> <span class="nc">AuthorRepository</span><span class="p">(</span><span class="n">repository</span><span class="o">.</span><span class="n">SQLAlchemyAsyncRepository</span><span class="p">[</span><span class="n">Author</span><span class="p">]):</span>
+<span class="hll"><span class="linenos"> 27</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;Author repository.&quot;&quot;&quot;</span>
+</span><span class="hll"><span class="linenos"> 28</span>
+</span><span class="hll"><span class="linenos"> 29</span>    <span class="n">model_type</span> <span class="o">=</span> <span class="n">Author</span>
+</span><span class="hll"><span class="linenos"> 30</span>
 </span><span class="linenos"> 31</span>
-<span class="linenos"> 32</span>
-<span class="linenos"> 33</span><span class="n">engine</span> <span class="o">=</span> <span class="n">create_async_engine</span><span class="p">(</span>
-<span class="linenos"> 34</span>    <span class="s2">&quot;sqlite+aiosqlite:///test.sqlite&quot;</span><span class="p">,</span>
-<span class="linenos"> 35</span>    <span class="n">future</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-<span class="linenos"> 36</span><span class="p">)</span>
-<span class="hll"><span class="linenos"> 37</span><span class="n">session_factory</span> <span class="o">=</span> <span class="n">async_sessionmaker</span><span class="p">(</span><span class="n">engine</span><span class="p">,</span> <span class="n">expire_on_commit</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="linenos"> 32</span><span class="n">engine</span> <span class="o">=</span> <span class="n">create_async_engine</span><span class="p">(</span>
+<span class="linenos"> 33</span>    <span class="s2">&quot;sqlite+aiosqlite:///test.sqlite&quot;</span><span class="p">,</span>
+<span class="linenos"> 34</span>    <span class="n">future</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="linenos"> 35</span><span class="p">)</span>
+<span class="linenos"> 36</span><span class="n">session_factory</span> <span class="o">=</span> <span class="n">async_sessionmaker</span><span class="p">(</span><span class="n">engine</span><span class="p">,</span> <span class="n">expire_on_commit</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="hll"><span class="linenos"> 37</span>
 </span><span class="hll"><span class="linenos"> 38</span>
-</span><span class="hll"><span class="linenos"> 39</span>
-</span><span class="hll"><span class="linenos"> 40</span><span class="c1"># let&#39;s make a simple context manager as an example here.</span>
-</span><span class="hll"><span class="linenos"> 41</span><span class="nd">@asynccontextmanager</span>
-</span><span class="hll"><span class="linenos"> 42</span><span class="k">async</span> <span class="k">def</span> <span class="nf">repository_factory</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">AsyncIterator</span><span class="p">[</span><span class="n">AuthorRepository</span><span class="p">]:</span>
-</span><span class="hll"><span class="linenos"> 43</span>    <span class="k">async</span> <span class="k">with</span> <span class="n">session_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">db_session</span><span class="p">:</span>
-</span><span class="hll"><span class="linenos"> 44</span>        <span class="k">try</span><span class="p">:</span>
-</span><span class="hll"><span class="linenos"> 45</span>            <span class="k">yield</span> <span class="n">AuthorRepository</span><span class="p">(</span><span class="n">session</span><span class="o">=</span><span class="n">db_session</span><span class="p">)</span>
-</span><span class="hll"><span class="linenos"> 46</span>        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>  <span class="c1"># noqa: BLE001</span>
-</span><span class="hll"><span class="linenos"> 47</span>            <span class="k">await</span> <span class="n">db_session</span><span class="o">.</span><span class="n">rollback</span><span class="p">()</span>
-</span><span class="hll"><span class="linenos"> 48</span>        <span class="k">else</span><span class="p">:</span>
-</span><span class="hll"><span class="linenos"> 49</span>            <span class="k">await</span> <span class="n">db_session</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+</span><span class="hll"><span class="linenos"> 39</span><span class="c1"># let&#39;s make a simple context manager as an example here.</span>
+</span><span class="hll"><span class="linenos"> 40</span><span class="nd">@asynccontextmanager</span>
+</span><span class="hll"><span class="linenos"> 41</span><span class="k">async</span> <span class="k">def</span> <span class="nf">repository_factory</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">AsyncIterator</span><span class="p">[</span><span class="n">AuthorRepository</span><span class="p">]:</span>
+</span><span class="hll"><span class="linenos"> 42</span>    <span class="k">async</span> <span class="k">with</span> <span class="n">session_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">db_session</span><span class="p">:</span>
+</span><span class="hll"><span class="linenos"> 43</span>        <span class="k">try</span><span class="p">:</span>
+</span><span class="hll"><span class="linenos"> 44</span>            <span class="k">yield</span> <span class="n">AuthorRepository</span><span class="p">(</span><span class="n">session</span><span class="o">=</span><span class="n">db_session</span><span class="p">)</span>
+</span><span class="hll"><span class="linenos"> 45</span>        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>  <span class="c1"># noqa: BLE001</span>
+</span><span class="hll"><span class="linenos"> 46</span>            <span class="k">await</span> <span class="n">db_session</span><span class="o">.</span><span class="n">rollback</span><span class="p">()</span>
+</span><span class="hll"><span class="linenos"> 47</span>        <span class="k">else</span><span class="p">:</span>
+</span><span class="hll"><span class="linenos"> 48</span>            <span class="k">await</span> <span class="n">db_session</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+</span><span class="hll"><span class="linenos"> 49</span>
 </span><span class="hll"><span class="linenos"> 50</span>
-</span><span class="hll"><span class="linenos"> 51</span>
-</span><span class="hll"><span class="linenos"> 52</span><span class="k">async</span> <span class="k">def</span> <span class="nf">create_author</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Author</span><span class="p">:</span>
-</span><span class="hll"><span class="linenos"> 53</span>    <span class="k">async</span> <span class="k">with</span> <span class="n">repository_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">repo</span><span class="p">:</span>
-</span><span class="hll"><span class="linenos"> 54</span>        <span class="n">obj</span> <span class="o">=</span> <span class="k">await</span> <span class="n">repo</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
-</span><span class="hll"><span class="linenos"> 55</span>            <span class="n">Author</span><span class="p">(</span>
-</span><span class="linenos"> 56</span>                <span class="n">name</span><span class="o">=</span><span class="s2">&quot;F. Scott Fitzgerald&quot;</span><span class="p">,</span>
-<span class="linenos"> 57</span>                <span class="n">dob</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="s2">&quot;1896-09-24&quot;</span><span class="p">,</span> <span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">date</span><span class="p">(),</span>
-<span class="linenos"> 58</span>            <span class="p">)</span>
-<span class="linenos"> 59</span>        <span class="p">)</span>
-<span class="linenos"> 60</span>        <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Created Author record for </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> with primary key </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
-<span class="hll"><span class="linenos"> 61</span>        <span class="k">return</span> <span class="n">obj</span>
+</span><span class="hll"><span class="linenos"> 51</span><span class="k">async</span> <span class="k">def</span> <span class="nf">create_author</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Author</span><span class="p">:</span>
+</span><span class="hll"><span class="linenos"> 52</span>    <span class="k">async</span> <span class="k">with</span> <span class="n">repository_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">repo</span><span class="p">:</span>
+</span><span class="hll"><span class="linenos"> 53</span>        <span class="n">obj</span> <span class="o">=</span> <span class="k">await</span> <span class="n">repo</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
+</span><span class="hll"><span class="linenos"> 54</span>            <span class="n">Author</span><span class="p">(</span>
+</span><span class="hll"><span class="linenos"> 55</span>                <span class="n">name</span><span class="o">=</span><span class="s2">&quot;F. Scott Fitzgerald&quot;</span><span class="p">,</span>
+</span><span class="linenos"> 56</span>                <span class="n">dob</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="s2">&quot;1896-09-24&quot;</span><span class="p">,</span> <span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">date</span><span class="p">(),</span>
+<span class="linenos"> 57</span>            <span class="p">)</span>
+<span class="linenos"> 58</span>        <span class="p">)</span>
+<span class="linenos"> 59</span>        <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Created Author record for </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> with primary key </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+<span class="linenos"> 60</span>        <span class="k">return</span> <span class="n">obj</span>
+<span class="hll"><span class="linenos"> 61</span>
 </span><span class="linenos"> 62</span>
-<span class="linenos"> 63</span>
-<span class="hll"><span class="linenos"> 64</span><span class="k">async</span> <span class="k">def</span> <span class="nf">update_author</span><span class="p">(</span><span class="n">obj</span><span class="p">:</span> <span class="n">Author</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Author</span><span class="p">:</span>
-</span><span class="hll"><span class="linenos"> 65</span>    <span class="k">async</span> <span class="k">with</span> <span class="n">repository_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">repo</span><span class="p">:</span>
-</span><span class="hll"><span class="linenos"> 66</span>        <span class="n">obj</span> <span class="o">=</span> <span class="k">await</span> <span class="n">repo</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
-</span><span class="hll"><span class="linenos"> 67</span>        <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Updated Author record for </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> with primary key </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
-</span><span class="hll"><span class="linenos"> 68</span>        <span class="k">return</span> <span class="n">obj</span>
+<span class="linenos"> 63</span><span class="k">async</span> <span class="k">def</span> <span class="nf">update_author</span><span class="p">(</span><span class="n">obj</span><span class="p">:</span> <span class="n">Author</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Author</span><span class="p">:</span>
+<span class="hll"><span class="linenos"> 64</span>    <span class="k">async</span> <span class="k">with</span> <span class="n">repository_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">repo</span><span class="p">:</span>
+</span><span class="hll"><span class="linenos"> 65</span>        <span class="n">obj</span> <span class="o">=</span> <span class="k">await</span> <span class="n">repo</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+</span><span class="hll"><span class="linenos"> 66</span>        <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Updated Author record for </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> with primary key </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+</span><span class="hll"><span class="linenos"> 67</span>        <span class="k">return</span> <span class="n">obj</span>
+</span><span class="hll"><span class="linenos"> 68</span>
 </span><span class="hll"><span class="linenos"> 69</span>
-</span><span class="hll"><span class="linenos"> 70</span>
-</span><span class="hll"><span class="linenos"> 71</span><span class="k">async</span> <span class="k">def</span> <span class="nf">remove_author</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="n">UUID</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Author</span><span class="p">:</span>
-</span><span class="hll"><span class="linenos"> 72</span>    <span class="k">async</span> <span class="k">with</span> <span class="n">repository_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">repo</span><span class="p">:</span>
-</span><span class="hll"><span class="linenos"> 73</span>        <span class="n">obj</span> <span class="o">=</span> <span class="k">await</span> <span class="n">repo</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span>
-</span><span class="hll"><span class="linenos"> 74</span>        <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Deleted Author record for </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> with primary key </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
-</span><span class="hll"><span class="linenos"> 75</span>        <span class="k">return</span> <span class="n">obj</span>
+</span><span class="hll"><span class="linenos"> 70</span><span class="k">async</span> <span class="k">def</span> <span class="nf">remove_author</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="n">UUID</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Author</span><span class="p">:</span>
+</span><span class="hll"><span class="linenos"> 71</span>    <span class="k">async</span> <span class="k">with</span> <span class="n">repository_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">repo</span><span class="p">:</span>
+</span><span class="hll"><span class="linenos"> 72</span>        <span class="n">obj</span> <span class="o">=</span> <span class="k">await</span> <span class="n">repo</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span>
+</span><span class="hll"><span class="linenos"> 73</span>        <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Deleted Author record for </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> with primary key </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+</span><span class="hll"><span class="linenos"> 74</span>        <span class="k">return</span> <span class="n">obj</span>
+</span><span class="hll"><span class="linenos"> 75</span>
 </span><span class="linenos"> 76</span>
-<span class="hll"><span class="linenos"> 77</span>
-</span><span class="hll"><span class="linenos"> 78</span><span class="k">async</span> <span class="k">def</span> <span class="nf">get_author_if_exists</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="n">UUID</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Author</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
-</span><span class="hll"><span class="linenos"> 79</span>    <span class="k">async</span> <span class="k">with</span> <span class="n">repository_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">repo</span><span class="p">:</span>
-</span><span class="linenos"> 80</span>        <span class="n">obj</span> <span class="o">=</span> <span class="k">await</span> <span class="n">repo</span><span class="o">.</span><span class="n">get_one_or_none</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="nb">id</span><span class="p">)</span>
-<span class="hll"><span class="linenos"> 81</span>        <span class="k">if</span> <span class="n">obj</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-</span><span class="hll"><span class="linenos"> 82</span>            <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Found Author record for </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> with primary key </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
-</span><span class="hll"><span class="linenos"> 83</span>        <span class="k">else</span><span class="p">:</span>
-</span><span class="linenos"> 84</span>            <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not find Author with primary key </span><span class="si">{</span><span class="nb">id</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
-<span class="linenos"> 85</span>        <span class="k">return</span> <span class="n">obj</span>
+<span class="hll"><span class="linenos"> 77</span><span class="k">async</span> <span class="k">def</span> <span class="nf">get_author_if_exists</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="n">UUID</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Author</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+</span><span class="hll"><span class="linenos"> 78</span>    <span class="k">async</span> <span class="k">with</span> <span class="n">repository_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">repo</span><span class="p">:</span>
+</span><span class="hll"><span class="linenos"> 79</span>        <span class="n">obj</span> <span class="o">=</span> <span class="k">await</span> <span class="n">repo</span><span class="o">.</span><span class="n">get_one_or_none</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="nb">id</span><span class="p">)</span>
+</span><span class="linenos"> 80</span>        <span class="k">if</span> <span class="n">obj</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+<span class="hll"><span class="linenos"> 81</span>            <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Found Author record for </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> with primary key </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+</span><span class="hll"><span class="linenos"> 82</span>        <span class="k">else</span><span class="p">:</span>
+</span><span class="hll"><span class="linenos"> 83</span>            <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not find Author with primary key </span><span class="si">{</span><span class="nb">id</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+</span><span class="linenos"> 84</span>        <span class="k">return</span> <span class="n">obj</span>
+<span class="linenos"> 85</span>
 <span class="linenos"> 86</span>
-<span class="linenos"> 87</span>
-<span class="linenos"> 88</span><span class="k">async</span> <span class="k">def</span> <span class="nf">run_script</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="linenos"> 89</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;Load data from a fixture.&quot;&quot;&quot;</span>
-<span class="linenos"> 90</span>    <span class="k">async</span> <span class="k">with</span> <span class="n">engine</span><span class="o">.</span><span class="n">begin</span><span class="p">()</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
-<span class="linenos"> 91</span>        <span class="k">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">run_sync</span><span class="p">(</span><span class="n">UUIDBase</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">create_all</span><span class="p">)</span>
-<span class="linenos"> 92</span>
-<span class="linenos"> 93</span>    <span class="c1"># 1) create a new Author record.</span>
-<span class="linenos"> 94</span>    <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s2">&quot;1) Adding a new record&quot;</span><span class="p">)</span>
-<span class="linenos"> 95</span>    <span class="n">author</span> <span class="o">=</span> <span class="k">await</span> <span class="n">create_author</span><span class="p">()</span>
-<span class="linenos"> 96</span>    <span class="n">author_id</span> <span class="o">=</span> <span class="n">author</span><span class="o">.</span><span class="n">id</span>
-<span class="linenos"> 97</span>
-<span class="linenos"> 98</span>    <span class="c1"># 2) Let&#39;s update the Author record.</span>
-<span class="linenos"> 99</span>    <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s2">&quot;2) Updating a record.&quot;</span><span class="p">)</span>
-<span class="linenos">100</span>    <span class="n">author</span><span class="o">.</span><span class="n">dod</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="s2">&quot;1940-12-21&quot;</span><span class="p">,</span> <span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">date</span><span class="p">()</span>
-<span class="linenos">101</span>    <span class="k">await</span> <span class="n">update_author</span><span class="p">(</span><span class="n">author</span><span class="p">)</span>
-<span class="linenos">102</span>
-<span class="linenos">103</span>    <span class="c1"># 3) Let&#39;s delete the record we just created.</span>
-<span class="linenos">104</span>    <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s2">&quot;3) Removing a record.&quot;</span><span class="p">)</span>
-<span class="linenos">105</span>    <span class="k">await</span> <span class="n">remove_author</span><span class="p">(</span><span class="n">author_id</span><span class="p">)</span>
-<span class="linenos">106</span>
-<span class="linenos">107</span>    <span class="c1"># 4) Let&#39;s verify the record no longer exists.</span>
-<span class="linenos">108</span>    <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s2">&quot;4) Select one or none.&quot;</span><span class="p">)</span>
-<span class="linenos">109</span>    <span class="n">_should_be_none</span> <span class="o">=</span> <span class="k">await</span> <span class="n">get_author_if_exists</span><span class="p">(</span><span class="n">author_id</span><span class="p">)</span>
+<span class="linenos"> 87</span><span class="k">async</span> <span class="k">def</span> <span class="nf">run_script</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="linenos"> 88</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;Load data from a fixture.&quot;&quot;&quot;</span>
+<span class="linenos"> 89</span>    <span class="k">async</span> <span class="k">with</span> <span class="n">engine</span><span class="o">.</span><span class="n">begin</span><span class="p">()</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
+<span class="linenos"> 90</span>        <span class="k">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">run_sync</span><span class="p">(</span><span class="n">base</span><span class="o">.</span><span class="n">UUIDBase</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">create_all</span><span class="p">)</span>
+<span class="linenos"> 91</span>
+<span class="linenos"> 92</span>    <span class="c1"># 1) create a new Author record.</span>
+<span class="linenos"> 93</span>    <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s2">&quot;1) Adding a new record&quot;</span><span class="p">)</span>
+<span class="linenos"> 94</span>    <span class="n">author</span> <span class="o">=</span> <span class="k">await</span> <span class="n">create_author</span><span class="p">()</span>
+<span class="linenos"> 95</span>    <span class="n">author_id</span> <span class="o">=</span> <span class="n">author</span><span class="o">.</span><span class="n">id</span>
+<span class="linenos"> 96</span>
+<span class="linenos"> 97</span>    <span class="c1"># 2) Let&#39;s update the Author record.</span>
+<span class="linenos"> 98</span>    <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s2">&quot;2) Updating a record.&quot;</span><span class="p">)</span>
+<span class="linenos"> 99</span>    <span class="n">author</span><span class="o">.</span><span class="n">dod</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="s2">&quot;1940-12-21&quot;</span><span class="p">,</span> <span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">date</span><span class="p">()</span>
+<span class="linenos">100</span>    <span class="k">await</span> <span class="n">update_author</span><span class="p">(</span><span class="n">author</span><span class="p">)</span>
+<span class="linenos">101</span>
+<span class="linenos">102</span>    <span class="c1"># 3) Let&#39;s delete the record we just created.</span>
+<span class="linenos">103</span>    <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s2">&quot;3) Removing a record.&quot;</span><span class="p">)</span>
+<span class="linenos">104</span>    <span class="k">await</span> <span class="n">remove_author</span><span class="p">(</span><span class="n">author_id</span><span class="p">)</span>
+<span class="linenos">105</span>
+<span class="linenos">106</span>    <span class="c1"># 4) Let&#39;s verify the record no longer exists.</span>
+<span class="linenos">107</span>    <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s2">&quot;4) Select one or none.&quot;</span><span class="p">)</span>
+<span class="linenos">108</span>    <span class="n">_should_be_none</span> <span class="o">=</span> <span class="k">await</span> <span class="n">get_author_if_exists</span><span class="p">(</span><span class="n">author_id</span><span class="p">)</span>
+<span class="linenos">109</span>
 <span class="linenos">110</span>
-<span class="linenos">111</span>
-<span class="linenos">112</span><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
-<span class="linenos">113</span>    <span class="n">anyio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">run_script</span><span class="p">)</span>
+<span class="linenos">111</span><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+<span class="linenos">112</span>    <span class="n">anyio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">run_script</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
