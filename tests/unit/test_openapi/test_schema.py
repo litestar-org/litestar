@@ -683,10 +683,12 @@ def test_type_alias_type() -> None:
 
 @pytest.mark.skipif(sys.version_info < (3, 12), reason="type keyword not available before 3.12")
 def test_type_alias_type_keyword() -> None:
-    type IntAlias = int  # type: ignore[valid-type]
+    ctx: dict[str, Any] = {}
+    exec("type IntAlias = int", ctx, None)
+    annotation = ctx["IntAlias"]
 
     @get("/")
-    def handler(query_param: Annotated[IntAlias, Parameter(description="foo")]) -> None:  # type: ignore[valid-type]
+    def handler(query_param: Annotated[annotation, Parameter(description="foo")]) -> None:  # type: ignore[valid-type]
         pass
 
     app = Litestar([handler])
