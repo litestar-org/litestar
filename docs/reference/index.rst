@@ -27,10 +27,8 @@ API reference
     logging/index
     middleware/index
     openapi/index
-    pagination
     params
     plugins/index
-    repository/index
     response/index
     router
     routes

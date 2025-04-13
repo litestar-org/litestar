@@ -109,23 +109,23 @@ Imports
 +----------------------------------------------------+------------------------------------------------------------------------+
 | **Pagination**                                                                                                              |
 +----------------------------------------------------+------------------------------------------------------------------------+
-| ``starlite.AbstractAsyncClassicPaginator``         | :class:`.pagination.AbstractAsyncClassicPaginator`                     |
+| ``starlite.AbstractAsyncClassicPaginator``         | `.pagination.AbstractAsyncClassicPaginator`                            |
 +----------------------------------------------------+------------------------------------------------------------------------+
-| ``starlite.AbstractAsyncCursorPaginator``          | :class:`.pagination.AbstractAsyncCursorPaginator`                      |
+| ``starlite.AbstractAsyncCursorPaginator``          | `.pagination.AbstractAsyncCursorPaginator`                             |
 +----------------------------------------------------+------------------------------------------------------------------------+
-| ``starlite.AbstractAsyncOffsetPaginator``          | :class:`.pagination.AbstractAsyncOffsetPaginator`                      |
+| ``starlite.AbstractAsyncOffsetPaginator``          | `.pagination.AbstractAsyncOffsetPaginator`                             |
 +----------------------------------------------------+------------------------------------------------------------------------+
-| ``starlite.AbstractSyncClassicPaginator``          | :class:`.pagination.AbstractSyncClassicPaginator`                      |
+| ``starlite.AbstractSyncClassicPaginator``          | `.pagination.AbstractSyncClassicPaginator`                             |
 +----------------------------------------------------+------------------------------------------------------------------------+
-| ``starlite.AbstractSyncCursorPaginator``           | :class:`.pagination.AbstractSyncCursorPaginator`                       |
+| ``starlite.AbstractSyncCursorPaginator``           | `.pagination.AbstractSyncCursorPaginator`                              |
 +----------------------------------------------------+------------------------------------------------------------------------+
-| ``starlite.AbstractSyncOffsetPaginator``           | :class:`.pagination.AbstractSyncOffsetPaginator`                       |
+| ``starlite.AbstractSyncOffsetPaginator``           | `.pagination.AbstractSyncOffsetPaginator`                              |
 +----------------------------------------------------+------------------------------------------------------------------------+
-| ``starlite.ClassicPagination``                     | :class:`.pagination.ClassicPagination`                                 |
+| ``starlite.ClassicPagination``                     | `.pagination.ClassicPagination`                                        |
 +----------------------------------------------------+------------------------------------------------------------------------+
-| ``starlite.CursorPagination``                      | :class:`.pagination.CursorPagination`                                  |
+| ``starlite.CursorPagination``                      | `.pagination.CursorPagination`                                         |
 +----------------------------------------------------+------------------------------------------------------------------------+
-| ``starlite.OffsetPagination``                      | :class:`.pagination.OffsetPagination`                                  |
+| ``starlite.OffsetPagination``                      | `.pagination.OffsetPagination`                                         |
 +----------------------------------------------------+------------------------------------------------------------------------+
 | **Response Containers**                                                                                                     |
 +----------------------------------------------------+------------------------------------------------------------------------+

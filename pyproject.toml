@@ -399,8 +399,6 @@ exclude-classes = """
   |(^litestar.dto.base_dto:AbstractDTO)
   |(^litestar.dto.data_structures:DTOData)
   |(^litestar.middleware.session.base:BaseSessionBackend)
-  |(^litestar.pagination:ClassicPagination)
-  |(^litestar.pagination:CursorPagination)
   |(^litestar.response.base:Response)
   |(^litestar.testing.client.base:BaseTestClient)
   |(^litestar.testing.life_span_handler:LifeSpanHandler)
@@ -410,9 +408,19 @@ exclude-classes = """
 strict-imports = false
 
 [tool.ruff]
-include = ["{litestar,tests,docs,test_apps,tools}/**/*.{py,pyi}", "pyproject.toml"]
+exclude = [".venv", "node_modules"]
+line-length = 120
+src = ["litestar", "tests", "docs", "tools", "test_apps"]
+target-version = "py39"
 
-lint.ignore = [
+[tool.ruff.format]
+docstring-code-format = true
+docstring-code-line-length = 60
+
+[tool.ruff.lint]
+extend-safe-fixes = ["TC"]
+fixable = ["ALL"]
+ignore = [
   "A003",    # flake8-builtins - class attribute {name} is shadowing a python builtin
   "B010",    # flake8-bugbear - do not call setattr with a constant attribute value
   "D100",    # pydocstyle - missing docstring in public module
@@ -434,7 +442,7 @@ lint.ignore = [
   "SIM108",  # Use ternary operator
   "A005",    # Module shadows a built-in Python standard library module
 ]
-lint.select = [
+select = [
   "A",   # flake8-builtins
   "B",   # flake8-bugbear
   "BLE", # flake8-blind-except
@@ -471,9 +479,6 @@ lint.select = [
   "YTT", # flake8-2020
 ]
 
-line-length = 120
-src = ["litestar", "tests", "docs/examples"]
-target-version = "py39"
 
 [tool.ruff.lint.pydocstyle]
 convention = "google"
@@ -539,18 +544,3 @@ known-first-party = ["litestar", "tests", "examples"]
 "tests/unit/test_typing.py" = ["UP006", "UP035"]
 "tools/**/*.*" = ["D", "ARG", "EM", "TRY", "G", "FBT"]
 "tools/prepare_release.py" = ["S603", "S607"]
-
-[tool.ruff.format]
-docstring-code-format = true
-docstring-code-line-length = 88
-
-[tool.unasyncd]
-add_editors_note = true
-ruff_fix = true
-
-[tool.unasyncd.files]
-"litestar/repository/abc/_async.py" = "litestar/repository/abc/_sync.py"
-
-[tool.unasyncd.per_file_add_replacements."litestar/repository/abc/_async.py"]
-"AbstractAsyncRepository" = "AbstractSyncRepository"
-"AsyncRepoT" = "SyncRepoT"

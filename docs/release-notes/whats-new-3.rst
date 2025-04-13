@@ -335,7 +335,7 @@ parameter.
 
 
 Removal of `sqlalchemy` module from `litestar.contrib`
------------------------------------------------------
+------------------------------------------------------
 
 The `litestar.contrib.sqlalchemy` module has been removed in favour of the `litestar.plugins.sqlalchemy` module.
 

@@ -4,7 +4,8 @@ from typing import Any
 
 from sqlalchemy.orm import DeclarativeBase
 
-from litestar.plugins.sqlalchemy.base import CommonTableAttributes, UUIDPrimaryKey, create_registry
+from litestar.plugins.sqlalchemy.base import CommonTableAttributes, create_registry
+from litestar.plugins.sqlalchemy.mixins import UUIDPrimaryKey
 
 
 class _Base(CommonTableAttributes, UUIDPrimaryKey, DeclarativeBase):
