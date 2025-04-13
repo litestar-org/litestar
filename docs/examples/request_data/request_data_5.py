@@ -1,4 +1,3 @@
-import io
 from dataclasses import dataclass
 from hashlib import sha256
 from typing import Dict
@@ -9,7 +8,6 @@ from litestar import Litestar, post
 from litestar.datastructures import UploadFile
 from litestar.enums import RequestEncodingType
 from litestar.params import Body
-from litestar.testing import TestClient
 
 
 @dataclass
@@ -29,15 +27,3 @@ async def create_user(
 
 
 app = Litestar(route_handlers=[create_user], debug=True)
-
-
-def test_create_user() -> None:
-    with TestClient(app) as client:
-        response = client.post(
-            "/", files={"form_input_name": ("filename", io.BytesIO(b"file content"))}, data={"id": 1, "name": "johndoe"}
-        )
-        assert response.status_code == 201
-        assert response.json().get("name") == "johndoe"
-        assert response.json().get("id") == 1
-        assert response.json().get("filename") == "filename"
-        assert response.json().get("file_content") == sha256(b"file content").hexdigest()

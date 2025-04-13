@@ -32,8 +32,19 @@ Validation and customization of OpenAPI documentation
 With the help of :class:`Body <litestar.params.Body>`, you have fine-grained control over the validation
 of the request body, and can also customize the OpenAPI documentation:
 
-.. literalinclude:: /examples/request_data/test_request_data_3.py
-    :language: python
+
+.. tab-set::
+
+    .. tab-item:: example
+
+        .. literalinclude:: /examples/request_data/request_data_3.py
+            :language: python
+
+    .. tab-item:: how to test
+
+        .. literalinclude:: ../../tests/examples/test_request_data.py
+            :language: python
+            :lines: 36-42
 
 
 Content-type
@@ -51,8 +62,18 @@ To access data sent as `url-encoded form data <https://developer.mozilla.org/en-
 i.e. ``application/x-www-form-urlencoded`` Content-Type header, use :class:`Body <litestar.params.Body>` and specify
 :class:`RequestEncodingType.URL_ENCODED <litestar.enums.RequestEncodingType>` as the ``media_type``:
 
-.. literalinclude:: /examples/request_data/test_request_data_4.py
-    :language: python
+.. tab-set::
+
+    .. tab-item:: example
+
+        .. literalinclude:: /examples/request_data/request_data_4.py
+            :language: python
+
+    .. tab-item:: how to test
+
+        .. literalinclude:: ../../tests/examples/test_request_data.py
+            :language: python
+            :lines: 45-49
 
 .. note::
 
@@ -67,9 +88,18 @@ You can access data uploaded using a request with a
 `multipart/form-data <https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/POST>`_
 Content-Type header by specifying it in the :class:`Body <litestar.params.Body>` function:
 
-.. literalinclude:: /examples/request_data/test_request_data_5.py
-    :language: python
+.. tab-set::
 
+    .. tab-item:: example
+
+        .. literalinclude:: /examples/request_data/request_data_5.py
+            :language: python
+
+    .. tab-item:: how to test
+
+        .. literalinclude:: ../../tests/examples/test_request_data.py
+            :language: python
+            :lines: 52-65
 
 
 File uploads
@@ -86,13 +116,33 @@ To access a single file simply type ``data`` as :class:`UploadFile <.datastructu
 
     .. tab-item:: Async
 
-        .. literalinclude:: /examples/request_data/test_request_data_6.py
-            :language: python
+        .. tab-set::
+
+            .. tab-item:: example
+
+                .. literalinclude:: /examples/request_data/request_data_6.py
+                    :language: python
+
+            .. tab-item:: how to test
+
+                .. literalinclude:: ../../tests/examples/test_request_data.py
+                    :language: python
+                    :lines: 68-72
 
     .. tab-item:: Sync
 
-        .. literalinclude:: /examples/request_data/test_request_data_7.py
-            :language: python
+        .. tab-set::
+
+            .. tab-item:: example
+
+                .. literalinclude:: /examples/request_data/request_data_7.py
+                    :language: python
+
+            .. tab-item:: how to test
+
+                .. literalinclude:: ../../tests/examples/test_request_data.py
+                    :language: python
+                    :lines: 75-79
 
 .. admonition:: Technical details
     :class: info
@@ -108,9 +158,19 @@ Multiple files
 
 To access multiple files with known filenames, you can use a pydantic model:
 
-.. literalinclude:: /examples/request_data/test_request_data_8.py
-    :language: python
 
+.. tab-set::
+
+    .. tab-item:: example
+
+        .. literalinclude:: /examples/request_data/request_data_8.py
+            :language: python
+
+    .. tab-item:: how to test
+
+        .. literalinclude:: ../../tests/examples/test_request_data.py
+            :language: python
+            :lines: 82-88
 
 
 Files as a dictionary
@@ -118,9 +178,18 @@ Files as a dictionary
 
 If you do not care about parsing and validation and only want to access the form data as a dictionary, you can use a ``dict`` instead:
 
-.. literalinclude:: /examples/request_data/test_request_data_9.py
-    :language: python
+.. tab-set::
 
+    .. tab-item:: example
+
+        .. literalinclude:: /examples/request_data/request_data_9.py
+            :language: python
+
+    .. tab-item:: how to test
+
+        .. literalinclude:: ../../tests/examples/test_request_data.py
+            :language: python
+            :lines: 91-98
 
 
 Files as a list
@@ -128,9 +197,18 @@ Files as a list
 
 Finally, you can also access the files as a list without the filenames:
 
-.. literalinclude:: /examples/request_data/test_request_data_10.py
-    :language: python
+.. tab-set::
 
+    .. tab-item:: example
+
+        .. literalinclude:: /examples/request_data/request_data_10.py
+            :language: python
+
+    .. tab-item:: how to test
+
+        .. literalinclude:: ../../tests/examples/test_request_data.py
+            :language: python
+            :lines: 101-134
 
 MessagePack data
 ----------------
@@ -138,10 +216,18 @@ MessagePack data
 To receive `MessagePack <https://msgpack.org/>`_ data, specify the appropriate ``Content-Type``
 for ``Body``\ , by using :class:`RequestEncodingType.MESSAGEPACK <.enums.RequestEncodingType>`:
 
-.. literalinclude:: /examples/request_data/msgpack_request.py
-   :caption: ``msgpack_request.py``
-   :language: python
+.. tab-set::
 
+    .. tab-item:: example
+
+        .. literalinclude:: /examples/request_data/msgpack_request.py
+            :language: python
+
+    .. tab-item:: how to test
+
+        .. literalinclude:: ../../tests/examples/test_request_data.py
+            :language: python
+            :lines: 137-142
 
 Custom Request
 --------------
@@ -153,8 +239,18 @@ The example below illustrates how to implement custom request class for the whol
 
 .. dropdown:: Example of a custom request at the application level
 
-    .. literalinclude:: /examples/request_data/custom_request.py
-        :language: python
+    .. tab-set::
+
+        .. tab-item:: example
+
+            .. literalinclude:: /examples/request_data/custom_request.py
+                :language: python
+
+        .. tab-item:: how to test
+
+            .. literalinclude:: ../../tests/examples/test_request_data.py
+                :language: python
+                :lines: 145-148
 
 .. admonition:: Layered architecture
 
