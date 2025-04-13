@@ -26,4 +26,4 @@ async def create_user(
     return {"id": data.id, "name": data.name, "filename": filename, "file_content": sha256(content).hexdigest()}
 
 
-app = Litestar(route_handlers=[create_user], debug=True)
+app = Litestar(route_handlers=[create_user])
