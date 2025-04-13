@@ -35,11 +35,11 @@ async def test_websocket_handler():
         with await client.websocket_connect("/") as ws:
             j = {"data": "I should be in response"}
             ws.send_json(j)
-            data = ws.receive_text()
-            assert datetime.datetime.fromisoformat(data) - datetime.datetime.now(datetime.UTC) < datetime.timedelta(
-                seconds=1
-            )
             data = ws.receive_json()
             assert data == {"handle_receive": "start"}
             data = ws.receive_json()
             assert data == j
+            data = ws.receive_text()
+            assert datetime.datetime.fromisoformat(data) - datetime.datetime.now(datetime.UTC) < datetime.timedelta(
+                seconds=1
+            )

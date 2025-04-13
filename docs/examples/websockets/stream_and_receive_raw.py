@@ -12,6 +12,7 @@ async def handler(socket: WebSocket) -> None:
 
     async def handle_stream() -> AsyncGenerator[str, None]:
         while True:
+            await asyncio.sleep(0.5)
             yield datetime.datetime.now(datetime.UTC).isoformat()
             await asyncio.sleep(2)
 
