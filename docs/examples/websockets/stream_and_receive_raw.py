@@ -18,11 +18,7 @@ async def handler(socket: WebSocket) -> None:
     async def handle_receive() -> Any:
         await socket.send_json({"handle_receive": "start"})
         async for event in socket.iter_json():
-            print(f"event: {event}")
             await socket.send_json(event)
-
-        print("end")
-        await socket.send_json({"handle_receive": "end"})
 
     async with asyncio.TaskGroup() as tg:
         tg.create_task(send_websocket_stream(socket=socket, stream=handle_stream()))

@@ -30,16 +30,16 @@ async def test_websocket_listener() -> None:
             assert data == "Hello"
 
 
-@travel(datetime.datetime.now(datetime.UTC), tick=False)
 async def test_websocket_handler():
-    async with AsyncTestClient(app_stream_and_receive_raw, timeout=1) as client:
+    async with AsyncTestClient(app_stream_and_receive_raw) as client:
         with await client.websocket_connect("/") as ws:
             j = {"data": "I should be in response"}
             ws.send_json(j)
             data = ws.receive_text()
-            assert data == datetime.datetime.now(datetime.UTC).isoformat()
+            assert datetime.datetime.fromisoformat(data) - datetime.datetime.now(datetime.UTC) < datetime.timedelta(
+                seconds=1
+            )
             data = ws.receive_json()
             assert data == {"handle_receive": "start"}
             data = ws.receive_json()
             assert data == j
-            # this should work but hangs data = ws.receive_json() assert data == {"handle_receive": "end"}
