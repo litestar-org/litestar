@@ -61,9 +61,7 @@ class InitPluginProtocol(Protocol):
 
 
                 class MyPlugin(InitPluginProtocol):
-                    def on_app_init(
-                        self, app_config: AppConfig
-                    ) -> AppConfig:
+                    def on_app_init(self, app_config: AppConfig) -> AppConfig:
                         app_config.dependencies["name"] = Provide(get_name)
                         app_config.route_handlers.append(my_route_handler)
                         return app_config
@@ -106,9 +104,7 @@ class InitPlugin(InitPluginProtocol):
 
 
                 class MyPlugin(InitPluginProtocol):
-                    def on_app_init(
-                        self, app_config: AppConfig
-                    ) -> AppConfig:
+                    def on_app_init(self, app_config: AppConfig) -> AppConfig:
                         app_config.dependencies["name"] = Provide(get_name)
                         app_config.route_handlers.append(my_route_handler)
                         return app_config

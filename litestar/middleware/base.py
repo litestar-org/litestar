@@ -203,18 +203,12 @@ class ASGIMiddleware(abc.ABC):
                 send: Send,
                 next_app: ASGIApp,
             ) -> None:
-                self.logger.debug(
-                    "Received request for path %s", scope["path"]
-                )
+                self.logger.debug("Received request for path %s", scope["path"])
                 await next_app(scope, receive, send)
-                self.logger.debug(
-                    "Processed request for path %s", scope["path"]
-                )
+                self.logger.debug("Processed request for path %s", scope["path"])
 
 
-        app = Litestar(
-            ..., middleware=[MyMiddleware(logger=my_logger)]
-        )
+        app = Litestar(..., middleware=[MyMiddleware(logger=my_logger)])
 
     .. versionadded:: 2.15
     """

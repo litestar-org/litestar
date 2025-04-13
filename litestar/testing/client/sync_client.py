@@ -183,9 +183,7 @@ class TestClient(Client, BaseTestClient, Generic[T]):  # type: ignore[misc]
                     middleware=[session_config.middleware],
                 )
 
-                with TestClient(
-                    app=app, session_config=session_config
-                ) as client:
+                with TestClient(app=app, session_config=session_config) as client:
                     client.set_session_data({"foo": "bar"})
                     assert client.get("/test").json() == {"foo": "bar"}
 
@@ -220,9 +218,7 @@ class TestClient(Client, BaseTestClient, Generic[T]):  # type: ignore[misc]
                     middleware=[session_config.middleware],
                 )
 
-                with TestClient(
-                    app=app, session_config=session_config
-                ) as client:
+                with TestClient(app=app, session_config=session_config) as client:
                     client.post("/test")
                     assert client.get_session_data() == {"foo": "bar"}
 

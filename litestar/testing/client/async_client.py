@@ -178,9 +178,7 @@ class AsyncTestClient(AsyncClient, BaseTestClient, Generic[T]):  # type: ignore[
                     middleware=[session_config.middleware],
                 )
 
-                async with AsyncTestClient(
-                    app=app, session_config=session_config
-                ) as client:
+                async with AsyncTestClient(app=app, session_config=session_config) as client:
                     await client.post("/test")
                     assert await client.get_session_data() == {"foo": "bar"}
 
@@ -217,13 +215,9 @@ class AsyncTestClient(AsyncClient, BaseTestClient, Generic[T]):  # type: ignore[
                     middleware=[session_config.middleware],
                 )
 
-                async with AsyncTestClient(
-                    app=app, session_config=session_config
-                ) as client:
+                async with AsyncTestClient(app=app, session_config=session_config) as client:
                     await client.set_session_data({"foo": "bar"})
-                    assert await client.get("/test").json() == {
-                        "foo": "bar"
-                    }
+                    assert await client.get("/test").json() == {"foo": "bar"}
 
         """
         return await super()._set_session_data(data)

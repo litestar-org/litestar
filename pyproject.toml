@@ -408,19 +408,9 @@ exclude-classes = """
 strict-imports = false
 
 [tool.ruff]
-exclude = [".venv", "node_modules"]
-line-length = 120
-src = ["litestar", "tests", "docs", "tools", "test_apps"]
-target-version = "py39"
+include = ["{litestar,tests,docs,test_apps,tools}/**/*.{py,pyi}", "pyproject.toml"]
 
-[tool.ruff.format]
-docstring-code-format = true
-docstring-code-line-length = 60
-
-[tool.ruff.lint]
-extend-safe-fixes = ["TC"]
-fixable = ["ALL"]
-ignore = [
+lint.ignore = [
   "A003",    # flake8-builtins - class attribute {name} is shadowing a python builtin
   "B010",    # flake8-bugbear - do not call setattr with a constant attribute value
   "D100",    # pydocstyle - missing docstring in public module
@@ -441,9 +431,8 @@ ignore = [
   "CPY001",  # ruff - copyright notice at the top of the file
   "SIM108",  # Use ternary operator
   "A005",    # Module shadows a built-in Python standard library module
-  "PLC0415", # Import should be at the top of the file
 ]
-select = [
+lint.select = [
   "A",   # flake8-builtins
   "B",   # flake8-bugbear
   "BLE", # flake8-blind-except
@@ -480,6 +469,9 @@ select = [
   "YTT", # flake8-2020
 ]
 
+line-length = 120
+src = ["litestar", "tests", "docs/examples"]
+target-version = "py39"
 
 [tool.ruff.lint.pydocstyle]
 convention = "google"
@@ -504,9 +496,9 @@ known-first-party = ["litestar", "tests", "examples"]
 "docs/**/*.*" = ["S", "B", "DTZ", "A", "TC", "ERA", "D", "RET"]
 "docs/examples/**" = ["T201"]
 "docs/examples/application_hooks/before_send_hook.py" = ["UP006"]
+"docs/examples/contrib/sqlalchemy/plugins/**/*.*" = ["UP006"]
+"docs/examples/contrib/sqlalchemy/sqlalchemy_declarative_models.py" = ["UP006"]
 "docs/examples/data_transfer_objects**/*.*" = ["UP006"]
-"docs/examples/plugins/sqlalchemy/plugins/**/*.*" = ["UP006"]
-"docs/examples/plugins/sqlalchemy/sqlalchemy_declarative_models.py" = ["UP006"]
 "litestar/_openapi/schema_generation/schema.py" = ["C901"]
 "litestar/exceptions/*.*" = ["N818"]
 "litestar/handlers/**/*.*" = ["N801"]
@@ -545,3 +537,7 @@ known-first-party = ["litestar", "tests", "examples"]
 "tests/unit/test_typing.py" = ["UP006", "UP035"]
 "tools/**/*.*" = ["D", "ARG", "EM", "TRY", "G", "FBT"]
 "tools/prepare_release.py" = ["S603", "S607"]
+
+[tool.ruff.format]
+docstring-code-format = true
+docstring-code-line-length = 88

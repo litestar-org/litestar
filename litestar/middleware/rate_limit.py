@@ -250,9 +250,7 @@ class RateLimitConfig:
                 from litestar.middleware.rate_limit import RateLimitConfig
 
                 # limit to 10 requests per minute, excluding the schema path
-                throttle_config = RateLimitConfig(
-                    rate_limit=("minute", 10), exclude=["/schema"]
-                )
+                throttle_config = RateLimitConfig(rate_limit=("minute", 10), exclude=["/schema"])
 
 
                 @get("/")

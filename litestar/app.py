@@ -802,9 +802,7 @@ class Litestar(Router):
                 path="/router-one",
                 route_handlers=[
                     handler_one,
-                    Router(
-                        path="/router-two", route_handlers=[handler_two]
-                    ),
+                    Router(path="/router-two", route_handlers=[handler_two]),
                 ],
             )
 
@@ -921,17 +919,13 @@ class Litestar(Router):
                     "/group/{group_id:int}/user/{user_id:int}",
                     name="get_membership_details",
                 )
-                def get_membership_details(
-                    group_id: int, user_id: int
-                ) -> None:
+                def get_membership_details(group_id: int, user_id: int) -> None:
                     pass
 
 
                 app = Litestar(route_handlers=[get_membership_details])
 
-                path = app.route_reverse(
-                    "get_membership_details", user_id=100, group_id=10
-                )
+                path = app.route_reverse("get_membership_details", user_id=100, group_id=10)
 
                 # /group/10/user/100
 
