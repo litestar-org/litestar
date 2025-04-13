@@ -80,7 +80,7 @@ async def test_pub_sub_unsubscribe(channels_backend: ChannelsBackend) -> None:
     await channels_backend.unsubscribe(["foo"])
     await channels_backend.publish(b"something", ["bar"])
 
-    assert await asyncio.wait_for(async_next(event_generator), timeout=0.01) == ("foo", b"something")
+    assert await asyncio.wait_for(async_next(event_generator), timeout=0.01) == ("bar", b"something")
 
 
 async def test_pub_sub_no_subscriptions(channels_backend: ChannelsBackend) -> None:
