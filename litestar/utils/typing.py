@@ -120,7 +120,7 @@ safe_generic_origin_map = {
     abc.AsyncIterable: AsyncIterable,
     abc.AsyncIterator: AsyncIterator,
     abc.Awaitable: Awaitable,
-    **{union_t: Union for union_t in UnionTypes},
+    **dict.fromkeys(UnionTypes, Union),
 }
 """
 A mapping of types to equivalent types that are safe to be used as generics across
