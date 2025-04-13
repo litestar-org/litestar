@@ -207,7 +207,7 @@ docs = [
   "psycopg[pool]; python_version >= \"3.13\" and sys_platform != 'linux'",
 ]
 linting = [
-  "ruff>=0.2.1",
+  "ruff>=0.11.5",
   "mypy",
   "pre-commit",
   "slotscheck",
