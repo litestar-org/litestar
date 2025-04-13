@@ -3,11 +3,8 @@ import datetime
 from contextlib import asynccontextmanager
 from typing import Any, AsyncGenerator
 
-from time_machine import travel
-
 from litestar import Litestar, WebSocket, websocket_listener
 from litestar.handlers import send_websocket_stream
-from litestar.testing import AsyncTestClient
 
 
 @asynccontextmanager
@@ -29,15 +26,3 @@ async def handler(socket: WebSocket, data: str) -> str:
 
 
 app = Litestar([handler])
-
-
-@travel(datetime.datetime.now(datetime.UTC), tick=False)
-async def test_websocket_listener() -> None:
-    """Test the websocket listener."""
-    async with AsyncTestClient(app) as client:
-        with await client.websocket_connect("/") as ws:
-            ws.send_text("Hello")
-            data = ws.receive_text()
-            assert data == datetime.datetime.now(datetime.UTC).isoformat()
-            data = ws.receive_text()
-            assert data == "Hello"

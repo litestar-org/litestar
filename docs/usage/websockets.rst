@@ -63,8 +63,8 @@ Data can be received in the listener via the ``data`` parameter. The data passed
 will be converted / parsed according to the given type annotation and supports
 :class:`str`, :class:`bytes`, or arbitrary :class:`dict` / or :class:`list` in the
 form of JSON.
-.. important:: 
-    
+.. important::
+
     The listeners will default to JSON unless `data` is annotated with `str` or `bytes`
 
 
@@ -369,8 +369,19 @@ To stream and receive data concurrently, the stream can be set up manually using
 
     .. tab-item:: websocket_listener
 
-        .. literalinclude:: /examples/websockets/stream_and_receive_listener.py
-            :language: python
+        .. tab-set::
+
+            .. tab-item:: example
+
+                .. literalinclude:: /examples/websockets/stream_and_receive_listener.py
+                    :language: python
+
+            .. tab-item:: how to test
+
+                .. literalinclude:: ../../tests/examples/test_websockets.py
+                    :language: python
+                    :lines: 20-29
+
 
     .. tab-item:: websocket handler
 
