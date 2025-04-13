@@ -1,4 +1,4 @@
-from .asgi_types import (  # noqa: A005
+from .asgi_types import (
     ASGIApp,
     ASGIVersion,
     BaseScope,

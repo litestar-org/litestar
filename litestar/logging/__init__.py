@@ -1,3 +1,3 @@
-from .config import BaseLoggingConfig, LoggingConfig, StructLoggingConfig  # noqa: A005
+from .config import BaseLoggingConfig, LoggingConfig, StructLoggingConfig
 
 __all__ = ("BaseLoggingConfig", "LoggingConfig", "StructLoggingConfig")
