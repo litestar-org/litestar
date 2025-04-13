@@ -255,7 +255,7 @@ def test_create_schema_for_dataclass_with_annotated_model_attribute(
     """Test that a model with an annotated attribute is correctly handled."""
     module = create_module(
         f"""
-{'from __future__ import annotations' if with_future_annotations else ''}
+{"from __future__ import annotations" if with_future_annotations else ""}
 from typing_extensions import Annotated
 from dataclasses import dataclass
 
@@ -275,7 +275,7 @@ def test_create_schema_for_typedict_with_annotated_required_and_not_required_mod
     """Test that a model with an annotated attribute is correctly handled."""
     module = create_module(
         f"""
-{'from __future__ import annotations' if with_future_annotations else ''}
+{"from __future__ import annotations" if with_future_annotations else ""}
 from typing_extensions import Annotated, Required, NotRequired
 from typing import TypedDict
 

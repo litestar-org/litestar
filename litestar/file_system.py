@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import abc
-import io
 import os
 import os.path
 import pathlib
@@ -29,6 +28,7 @@ __all__ = (
 )
 
 if TYPE_CHECKING:
+    import io
     from collections.abc import AsyncGenerator, Awaitable, Mapping
 
     from fsspec import AbstractFileSystem as FsspecFileSystem
@@ -294,7 +294,7 @@ class FsspecSyncWrapper(BaseFileSystem):
             end: Offset to stop reading at (inclusive)
         """
 
-        fh = cast(io.BytesIO, await sync_to_thread(self.wrapped_fs.open, str(path), mode="rb"))
+        fh = cast("io.BytesIO", await sync_to_thread(self.wrapped_fs.open, str(path), mode="rb"))
         try:
             if start != 0:
                 await sync_to_thread(fh.seek, start)
@@ -358,7 +358,7 @@ class FsspecAsyncWrapper(BaseFileSystem):
             end: Offset to stop reading at (inclusive)
         """
         return cast(
-            bytes,
+            "bytes",
             await self.wrapped_fs._cat_file(
                 str(path),
                 start=start or None,
@@ -425,7 +425,7 @@ def maybe_wrap_fsspec_file_system(file_system: AnyFileSystem) -> BaseFileSystem:
         from fsspec import AbstractFileSystem
         from fsspec.asyn import AsyncFileSystem
     except ImportError:
-        return cast(BaseFileSystem, file_system)
+        return cast("BaseFileSystem", file_system)
 
     if isinstance(file_system, AsyncFileSystem):
         return FsspecAsyncWrapper(file_system)
