@@ -11,6 +11,7 @@ from litestar.handlers import send_websocket_stream
 async def listener_lifespan(socket: WebSocket) -> AsyncGenerator[None, Any]:
     async def handle_stream() -> AsyncGenerator[str, None]:
         while True:
+            await asyncio.sleep(0.5)
             yield datetime.datetime.now(datetime.UTC).isoformat()
             await asyncio.sleep(0.5)
 

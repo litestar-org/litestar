@@ -23,11 +23,11 @@ async def test_websocket_listener() -> None:
         with await client.websocket_connect("/") as ws:
             ws.send_text("Hello")
             data = ws.receive_text()
+            assert data == "Hello"
+            data = ws.receive_text()
             assert datetime.datetime.fromisoformat(data) - datetime.datetime.now(datetime.UTC) < datetime.timedelta(
                 seconds=1
             )
-            data = ws.receive_text()
-            assert data == "Hello"
 
 
 async def test_websocket_handler():
