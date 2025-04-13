@@ -441,6 +441,7 @@ ignore = [
   "CPY001",  # ruff - copyright notice at the top of the file
   "SIM108",  # Use ternary operator
   "A005",    # Module shadows a built-in Python standard library module
+  "PLC0415", # Import should be at the top of the file
 ]
 select = [
   "A",   # flake8-builtins
