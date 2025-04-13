@@ -237,7 +237,7 @@ requires = ["hatchling"]
 
 [tool.codespell]
 ignore-words-list = "selectin, documen, re-use, re-used, re-using"
-skip = 'uv.lock,docs/examples/contrib/sqlalchemy/us_state_lookup.json'
+skip = 'uv.lock, docs/examples/contrib/sqlalchemy/us_state_lookup.json, docs/_static/favicon.svg'
 
 [tool.coverage.run]
 concurrency = ["multiprocessing", "thread"]
