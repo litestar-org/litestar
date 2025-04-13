@@ -5,7 +5,6 @@ from typing_extensions import Annotated
 from litestar import Litestar, post
 from litestar.enums import RequestEncodingType
 from litestar.params import Body
-from litestar.testing import TestClient
 
 
 @dataclass
@@ -22,11 +21,3 @@ async def create_user(
 
 
 app = Litestar(route_handlers=[create_user])
-
-
-def test_create_user() -> None:
-    with TestClient(app) as client:
-        response = client.post("/", data={"id": 1, "name": "johndoe"})
-        assert response.status_code == 201
-        assert response.json().get("name") == "johndoe"
-        assert response.json().get("id") == 1

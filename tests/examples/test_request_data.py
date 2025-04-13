@@ -1,3 +1,4 @@
+import io
 from hashlib import sha256
 from io import BytesIO
 
@@ -5,14 +6,14 @@ from docs.examples.request_data.custom_request import app as custom_request_clas
 from docs.examples.request_data.msgpack_request import app as msgpack_app
 from docs.examples.request_data.request_data_1 import app
 from docs.examples.request_data.request_data_2 import app as app_2
-from docs.examples.request_data.test_request_data_3 import app as app_3
-from docs.examples.request_data.test_request_data_4 import app as app_4
-from docs.examples.request_data.test_request_data_5 import app as app_5
-from docs.examples.request_data.test_request_data_6 import app as app_6
-from docs.examples.request_data.test_request_data_7 import app as app_7
-from docs.examples.request_data.test_request_data_8 import app as app_8
-from docs.examples.request_data.test_request_data_9 import app as app_9
-from docs.examples.request_data.test_request_data_10 import app as app_10
+from docs.examples.request_data.request_data_3 import app as app_3
+from docs.examples.request_data.request_data_4 import app as app_4
+from docs.examples.request_data.request_data_5 import app as app_5
+from docs.examples.request_data.request_data_6 import app as app_6
+from docs.examples.request_data.request_data_7 import app as app_7
+from docs.examples.request_data.request_data_8 import app as app_8
+from docs.examples.request_data.request_data_9 import app as app_9
+from docs.examples.request_data.request_data_10 import app as app_10
 
 from litestar.serialization import encode_msgpack
 from litestar.testing import TestClient
@@ -37,6 +38,8 @@ def test_request_data_3() -> None:
         response = client.post("/", json={"id": 1, "name": "John"})
         assert response.status_code == 201
         assert response.json() == {"id": 1, "name": "John"}
+        schema = client.get("/schema/openapi.json")
+        assert "Create a new user." in schema.json()["components"]["schemas"]["User"]["description"]
 
 
 def test_request_data_4() -> None:
@@ -97,20 +100,38 @@ def test_request_data_9() -> None:
 
 def test_request_data_10() -> None:
     with TestClient(app=app_10) as client:
-        response = client.post("/", files={"foo": ("foo.txt", b"hello"), "bar": ("bar.txt", b"world")})
+        # if you pass a dict to the `files` parameter without specifying a filename, it will default to `upload`
+        #     # file (or bytes)
+        response = client.post(
+            "/",
+            files={"will default to upload": io.BytesIO(b"hello"), "will default to upload also": io.BytesIO(b"world")},
+        )
         assert response.status_code == 201
-        assert response.json() == {
-            "foo.txt": [
-                "2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824",
-                "text/plain",
-                {"Content-Disposition": 'form-data; name="foo"; filename="foo.txt"', "Content-Type": "text/plain"},
-            ],
-            "bar.txt": [
-                "486ea46224d1bb4fb680f34f7c9ad96a8f24ec88be73ea8e5a6c65260e9cb8a7",
-                "text/plain",
-                {"Content-Disposition": 'form-data; name="bar"; filename="bar.txt"', "Content-Type": "text/plain"},
-            ],
-        }
+        assert response.json().get("upload")[0] != sha256(b"hello").hexdigest()
+        assert response.json().get("upload")[0] == sha256(b"world").hexdigest()
+
+        # if you pass the filename explicitly, it will be used as the filename
+        #     # (filename, file (or bytes))
+        response = client.post("/", files={"file": ("hello.txt", io.BytesIO(b"hello"))})
+        assert response.status_code == 201
+        assert response.json().get("hello.txt")[0] == sha256(b"hello").hexdigest()
+
+        # if you add the content type, it will be used as the content type
+        #     # (filename, file (or bytes), content_type)
+        response = client.post("/", files={"file": ("hello.txt", io.BytesIO(b"hello"), "application/x-bittorrent")})
+        assert response.status_code == 201
+        assert response.json().get("hello.txt")[0] == sha256(b"hello").hexdigest()
+        assert response.json().get("hello.txt")[1] == "application/x-bittorrent"
+
+        # finally you can specify headers like so
+        #     # (filename, file (or bytes), content_type, headers)
+        response = client.post(
+            "/", files={"file": ("hello.txt", io.BytesIO(b"hello"), "application/x-bittorrent", {"X-Foo": "bar"})}
+        )
+        assert response.status_code == 201
+        assert response.json().get("hello.txt")[0] == sha256(b"hello").hexdigest()
+        assert response.json().get("hello.txt")[1] == "application/x-bittorrent"
+        assert ("X-Foo", "bar") in response.json().get("hello.txt")[2].items()
 
 
 def test_msgpack_app() -> None:

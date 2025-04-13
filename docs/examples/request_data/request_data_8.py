@@ -7,7 +7,6 @@ from litestar import Litestar, post
 from litestar.datastructures import UploadFile
 from litestar.enums import RequestEncodingType
 from litestar.params import Body
-from litestar.testing import TestClient
 
 
 class FormData(BaseModel):
@@ -27,15 +26,3 @@ async def handle_file_upload(
 
 
 app = Litestar(route_handlers=[handle_file_upload])
-
-
-def test_file_upload() -> None:
-    with TestClient(app) as client:
-        response = client.post(
-            "/", files={"cv": ("cv.txt", b"cv content"), "diploma": ("diploma.txt", b"diploma content")}
-        )
-        assert response.status_code == 201
-        assert response.json() == {
-            "cv": "cv content",
-            "diploma": "diploma content",
-        }
