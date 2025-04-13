@@ -112,10 +112,10 @@ class FormMultiDict(ImmutableMultiDict[Any]):
         items = []
         for k, v in form_data.items():
             if not isinstance(v, list):
-                items.append((k, v))
+                items.append((k, v))  # pyright: ignore
             else:
                 for sv in v:
-                    items.append((k, sv))
+                    items.append((k, sv))  # pyright: ignore
         return cls(items)
 
     async def close(self) -> None:
