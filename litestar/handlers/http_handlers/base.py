@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import contextlib
-from collections.abc import Awaitable, Iterable, Mapping, Sequence
 from enum import Enum
 from typing import TYPE_CHECKING, AnyStr, Callable, TypedDict, cast
 
@@ -61,11 +60,11 @@ from litestar.utils.scope.state import ScopeState
 from litestar.utils.warnings import warn_implicit_sync_to_thread, warn_sync_to_thread_with_async_callable
 
 if TYPE_CHECKING:
+    from collections.abc import Awaitable, Iterable, Mapping, Sequence
     from typing import Any
 
     from litestar import Litestar, Router
     from litestar._kwargs import KwargsModel
-    from litestar._kwargs.cleanup import DependencyCleanupGroup
     from litestar.background_tasks import BackgroundTask, BackgroundTasks
     from litestar.config.response_cache import CACHE_FOREVER
     from litestar.datastructures.cookie import Cookie
@@ -581,7 +580,11 @@ class HTTPRouteHandler(BaseRouteHandler):
             raise ImproperlyConfiguredException("'data' kwarg is unsupported for 'GET' request handlers")
 
         if self.http_methods == {HttpMethod.HEAD} and not self.parsed_fn_signature.return_type.is_subclass_of(
-            (NoneType, File, ASGIFileResponse)
+            (
+                NoneType,
+                File,
+                ASGIFileResponse,
+            )
         ):
             field_definition = self.parsed_fn_signature.return_type
             if not (
@@ -780,7 +783,7 @@ class HTTPRouteHandler(BaseRouteHandler):
             data = return_dto_type(request).data_to_encodable_type(data)
 
         handler = cast(
-            Callable[..., Awaitable[ASGIApp]],
+            "Callable[..., Awaitable[ASGIApp]]",
             self._response_type_handler if isinstance(data, Response) else self._default_response_handler,
         )
 

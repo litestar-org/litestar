@@ -358,7 +358,7 @@ class _RouteTree(Tree):
             else:
                 handler_info.append("[yellow]sync[/yellow]")
 
-            handler_info.append(f'[cyan]{", ".join(sorted(handler.http_methods))}[/cyan]')
+            handler_info.append(f"[cyan]{', '.join(sorted(handler.http_methods))}[/cyan]")
 
             if len(handler.paths) > 1:
                 for path in handler.paths:

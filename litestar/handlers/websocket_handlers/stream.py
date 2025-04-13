@@ -230,7 +230,7 @@ class WebSocketStreamHandler(WebsocketRouteHandler):
         # be a reference to the unbound method. The bound method is patched in later
         # after the controller has been initialized. This is a workaround that should
         # go away with v3.0's static handlers
-        stream_fn = cast(Callable[..., AsyncGenerator[Any, Any]], self.fn)
+        stream_fn = cast("Callable[..., AsyncGenerator[Any, Any]]", self.fn)
 
         # construct a fake signature for the kwargs modelling, using the generator
         # function passed to the handler as a base, to include all the dependencies,

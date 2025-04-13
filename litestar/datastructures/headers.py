@@ -43,10 +43,10 @@ def _encode_headers(headers: Iterable[tuple[str, str]]) -> "RawHeadersList":
     return [(key.lower().encode("latin-1"), value.encode("latin-1")) for key, value in headers]
 
 
-class Headers(CIMultiDictProxy[str], MultiMixin[str]):
+class Headers(CIMultiDictProxy[str], MultiMixin[str]):  # pyright: ignore
     """An immutable, case-insensitive multi dict for HTTP headers."""
 
-    def __init__(self, headers: Optional[Union[Mapping[str, str], "RawHeaders", MultiMapping]] = None) -> None:
+    def __init__(self, headers: Optional[Union[Mapping[str, str], "RawHeaders", MultiMapping]] = None) -> None:  # pyright: ignore
         """Initialize ``Headers``.
 
         Args:
