@@ -8,7 +8,6 @@ from litestar._signature import SignatureModel
 from litestar.di import Provide
 from litestar.dto import DTOData
 from litestar.exceptions import ImproperlyConfiguredException, LitestarException
-from litestar.router import Router
 from litestar.serialization import default_deserializer, default_serializer
 from litestar.types import (
     Dependencies,
@@ -36,6 +35,7 @@ if TYPE_CHECKING:
     from litestar.app import Litestar
     from litestar.connection import ASGIConnection
     from litestar.dto import AbstractDTO
+    from litestar.router import Router
     from litestar.routes import BaseRoute
     from litestar.types import AsyncAnyCallable
     from litestar.types.callable_types import AnyCallable, AsyncGuard
@@ -207,7 +207,7 @@ class BaseRouteHandler:
             # whereas '.dto' on the handler is the fully resolved dto. The dto config on
             # the handler is stored under '._dto', so we have to do this little workaround
             if other is not self:
-                other = cast(Router, other)  # mypy cannot narrow with the 'is not self' check
+                other = cast("Router", other)  # mypy cannot narrow with the 'is not self' check
                 merge_opts["dto"] = value_or_default(merge_opts.get("dto", Empty), other.dto)
                 merge_opts["return_dto"] = value_or_default(merge_opts.get("return_dto", Empty), other.return_dto)
 

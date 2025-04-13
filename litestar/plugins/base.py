@@ -324,10 +324,10 @@ class PluginRegistry:
                     else plugin.__class__.__qualname__
                 )
                 if type_ in {_name, _qualname}:
-                    return cast(PluginT, plugin)
+                    return cast("PluginT", plugin)
             raise KeyError(f"No plugin of type {type_!r} registered")
         try:
-            return cast(PluginT, self._plugins_by_type[type_])  # type: ignore[index]
+            return cast("PluginT", self._plugins_by_type[type_])  # type: ignore[index]
         except KeyError as e:
             raise KeyError(f"No plugin of type {type_.__name__!r} registered") from e
 

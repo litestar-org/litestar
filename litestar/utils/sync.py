@@ -47,7 +47,7 @@ class AsyncCallable:
     def __init__(self, fn: Callable[P, T]) -> None:  # pyright: ignore
         self.func = fn
 
-    def __call__(self, *args: P.args, **kwargs: P.kwargs) -> Awaitable[T]:  # pyright: ignore
+    def __call__(self, *args: P.args, **kwargs: P.kwargs) -> Awaitable[T]:  # type: ignore[valid-type]
         return sync_to_thread(self.func, *args, **kwargs)  # type: ignore[arg-type]
 
 

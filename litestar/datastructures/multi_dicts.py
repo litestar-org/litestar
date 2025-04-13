@@ -42,17 +42,17 @@ class MultiMixin(Generic[T], MultiMapping[T], ABC):
                 yield key, value
 
 
-class MultiDict(BaseMultiDict[T], MultiMixin[T], Generic[T]):
+class MultiDict(BaseMultiDict[T], MultiMixin[T], Generic[T]):  # pyright: ignore
     """MultiDict, using :class:`MultiDict <multidict.MultiDictProxy>`."""
 
-    def __init__(self, args: MultiMapping | Mapping[str, T] | Iterable[tuple[str, T]] | None = None) -> None:
+    def __init__(self, args: MultiMapping | Mapping[str, T] | Iterable[tuple[str, T]] | None = None) -> None:  # pyright: ignore
         """Initialize ``MultiDict`` from a`MultiMapping``,
         :class:`Mapping <typing.Mapping>` or an iterable of tuples.
 
         Args:
             args: Mapping-like structure to create the ``MultiDict`` from
         """
-        super().__init__(args or {})
+        super().__init__(args or {})  # pyright: ignore
 
     def immutable(self) -> ImmutableMultiDict[T]:
         """Create an.
@@ -69,17 +69,17 @@ class MultiDict(BaseMultiDict[T], MultiMixin[T], Generic[T]):
         return type(self)(list(self.multi_items()))
 
 
-class ImmutableMultiDict(MultiDictProxy[T], MultiMixin[T], Generic[T]):
+class ImmutableMultiDict(MultiDictProxy[T], MultiMixin[T], Generic[T]):  # pyright: ignore
     """Immutable MultiDict, using class:`MultiDictProxy <multidict.MultiDictProxy>`."""
 
-    def __init__(self, args: MultiMapping | Mapping[str, Any] | Iterable[tuple[str, Any]] | None = None) -> None:
+    def __init__(self, args: MultiMapping | Mapping[str, Any] | Iterable[tuple[str, Any]] | None = None) -> None:  # pyright: ignore
         """Initialize ``ImmutableMultiDict`` from a `MultiMapping``,
         :class:`Mapping <typing.Mapping>` or an iterable of tuples.
 
         Args:
             args: Mapping-like structure to create the ``ImmutableMultiDict`` from
         """
-        super().__init__(BaseMultiDict(args or {}))
+        super().__init__(BaseMultiDict(args or {}))  # pyright: ignore
 
     def mutable_copy(self) -> MultiDict[T]:
         """Create a mutable copy as a :class:`MultiDict`
@@ -112,10 +112,10 @@ class FormMultiDict(ImmutableMultiDict[Any]):
         items = []
         for k, v in form_data.items():
             if not isinstance(v, list):
-                items.append((k, v))
+                items.append((k, v))  # pyright: ignore
             else:
                 for sv in v:
-                    items.append((k, sv))
+                    items.append((k, sv))  # pyright: ignore
         return cls(items)
 
     async def close(self) -> None:
