@@ -6,9 +6,10 @@ from pydantic import BaseModel, EmailStr, SecretStr
 from litestar import Litestar, Request, get, post
 from litestar.connection import ASGIConnection
 from litestar.exceptions import NotAuthorizedException
+from litestar.middleware.session import SessionMiddleware
 from litestar.middleware.session.server_side import ServerSideSessionBackend, ServerSideSessionConfig
 from litestar.openapi.config import OpenAPIConfig
-from litestar.security.session_auth import SessionAuth
+from litestar.security.session_auth import SessionAuth, SessionAuthMiddleware
 from litestar.stores.memory import MemoryStore
 
 
@@ -116,7 +117,7 @@ openapi_config = OpenAPIConfig(
     version="1.0.0",
 )
 
-session_auth = SessionAuth[User, ServerSideSessionBackend](
+session_auth = SessionAuth(
     retrieve_user_handler=retrieve_user_handler,
     # we must pass a config for a session backend.
     # all session backends are supported
@@ -130,6 +131,9 @@ session_auth = SessionAuth[User, ServerSideSessionBackend](
 # We initialize the app instance, passing to it the 'session_auth.on_app_init' and the 'openapi_config'.
 app = Litestar(
     route_handlers=[login, signup, get_user],
-    on_app_init=[session_auth.on_app_init],
     openapi_config=openapi_config,
+    middleware=[
+        SessionMiddleware(ServerSideSessionBackend(ServerSideSessionConfig())),
+        SessionAuthMiddleware(session_auth),
+    ],
 )

@@ -20,8 +20,7 @@ __all__ = (
 
 
 if TYPE_CHECKING:
-    from litestar.types import Scopes
-    from litestar.types.asgi_types import ASGIApp, Receive, Scope, Send
+    from litestar.types import ASGIApp, Method, Receive, Scope, Scopes, Send
 
 
 @runtime_checkable
@@ -216,6 +215,7 @@ class ASGIMiddleware(abc.ABC):
     )
     exclude_path_pattern: str | tuple[str, ...] | None = None
     exclude_opt_key: str | None = None
+    exclude_http_methods: tuple[Method, ...] = ()
 
     def __call__(self, app: ASGIApp) -> ASGIApp:
         """Create the actual middleware callable"""
@@ -223,6 +223,7 @@ class ASGIMiddleware(abc.ABC):
         exclude_pattern = build_exclude_path_pattern(exclude=self.exclude_path_pattern, middleware_cls=type(self))
         scopes = set(self.scopes)
         exclude_opt_key = self.exclude_opt_key
+        exclude_http_methods = set(self.exclude_http_methods)
 
         async def middleware(scope: Scope, receive: Receive, send: Send) -> None:
             if should_bypass_middleware(
@@ -230,6 +231,7 @@ class ASGIMiddleware(abc.ABC):
                 scopes=scopes,  # type: ignore[arg-type]
                 exclude_opt_key=exclude_opt_key,
                 exclude_path_pattern=exclude_pattern,
+                exclude_http_methods=exclude_http_methods,
             ):
                 await app(scope, receive, send)
             else:
