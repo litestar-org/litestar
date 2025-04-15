@@ -915,7 +915,10 @@ class Litestar(Router):
                 from litestar import Litestar, get
 
 
-                @get("/group/{group_id:int}/user/{user_id:int}", name="get_membership_details")
+                @get(
+                    "/group/{group_id:int}/user/{user_id:int}",
+                    name="get_membership_details",
+                )
                 def get_membership_details(group_id: int, user_id: int) -> None:
                     pass
 

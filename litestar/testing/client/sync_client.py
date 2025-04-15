@@ -166,7 +166,9 @@ class TestClient(Client, BaseTestClient, Generic[T]):  # type: ignore[misc]
             .. code-block:: python
 
                 from litestar import Litestar, get
-                from litestar.middleware.session.memory_backend import MemoryBackendConfig
+                from litestar.middleware.session.memory_backend import (
+                    MemoryBackendConfig,
+                )
 
                 session_config = MemoryBackendConfig()
 
@@ -177,7 +179,8 @@ class TestClient(Client, BaseTestClient, Generic[T]):  # type: ignore[misc]
 
 
                 app = Litestar(
-                    route_handlers=[get_session_data], middleware=[session_config.middleware]
+                    route_handlers=[get_session_data],
+                    middleware=[session_config.middleware],
                 )
 
                 with TestClient(app=app, session_config=session_config) as client:
@@ -198,7 +201,9 @@ class TestClient(Client, BaseTestClient, Generic[T]):  # type: ignore[misc]
             .. code-block:: python
 
                 from litestar import Litestar, post
-                from litestar.middleware.session.memory_backend import MemoryBackendConfig
+                from litestar.middleware.session.memory_backend import (
+                    MemoryBackendConfig,
+                )
 
                 session_config = MemoryBackendConfig()
 
@@ -209,7 +214,8 @@ class TestClient(Client, BaseTestClient, Generic[T]):  # type: ignore[misc]
 
 
                 app = Litestar(
-                    route_handlers=[set_session_data], middleware=[session_config.middleware]
+                    route_handlers=[set_session_data],
+                    middleware=[session_config.middleware],
                 )
 
                 with TestClient(app=app, session_config=session_config) as client:

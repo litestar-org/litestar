@@ -241,7 +241,7 @@ requires = ["hatchling"]
 
 [tool.codespell]
 ignore-words-list = "selectin, documen, re-use, re-used, re-using"
-skip = 'uv.lock, docs/examples/contrib/sqlalchemy/us_state_lookup.json, docs/_static/favicon.svg'
+skip = 'uv.lock, docs/examples/contrib/sqlalchemy/us_state_lookup.json, docs/examples/plugins/sqlalchemy/us_state_lookup.json, docs/_static/favicon.svg'
 
 [tool.coverage.run]
 concurrency = ["multiprocessing", "thread"]
@@ -347,7 +347,6 @@ module = [
 
 [[tool.mypy.overrides]]
 module = [
-  "litestar.contrib.sqlalchemy.*",
   "litestar.plugins.pydantic.*",
   "tests.unit.test_contrib.test_sqlalchemy",
   "tests.unit.test_contrib.test_pydantic.*",
@@ -400,8 +399,6 @@ exclude-classes = """
   |(^litestar.dto.base_dto:AbstractDTO)
   |(^litestar.dto.data_structures:DTOData)
   |(^litestar.middleware.session.base:BaseSessionBackend)
-  |(^litestar.pagination:ClassicPagination)
-  |(^litestar.pagination:CursorPagination)
   |(^litestar.response.base:Response)
   |(^litestar.testing.client.base:BaseTestClient)
   |(^litestar.testing.life_span_handler:LifeSpanHandler)
@@ -534,6 +531,8 @@ known-first-party = ["litestar", "tests", "examples"]
   "TC",
   "TRY",
   "E721",
+  "PLC0415",
+  "RUF029",
 ]
 "tests/unit/test_contrib/test_sqlalchemy/**/*.*" = ["UP006"]
 "tests/unit/test_openapi/test_typescript_converter/test_converter.py" = ["W293"]
@@ -544,14 +543,3 @@ known-first-party = ["litestar", "tests", "examples"]
 [tool.ruff.format]
 docstring-code-format = true
 docstring-code-line-length = 88
-
-[tool.unasyncd]
-add_editors_note = true
-ruff_fix = true
-
-[tool.unasyncd.files]
-"litestar/repository/abc/_async.py" = "litestar/repository/abc/_sync.py"
-
-[tool.unasyncd.per_file_add_replacements."litestar/repository/abc/_async.py"]
-"AbstractAsyncRepository" = "AbstractSyncRepository"
-"AsyncRepoT" = "SyncRepoT"

@@ -80,7 +80,9 @@ class BaseBackendConfig(ABC, Generic[BaseSessionBackendT]):  # pyright: ignore
                 from os import urandom
 
                 from litestar import Litestar, Request, get
-                from litestar.middleware.sessions.cookie_backend import CookieBackendConfig
+                from litestar.middleware.sessions.cookie_backend import (
+                    CookieBackendConfig,
+                )
 
                 session_config = CookieBackendConfig(secret=urandom(16))
 
@@ -89,7 +91,10 @@ class BaseBackendConfig(ABC, Generic[BaseSessionBackendT]):  # pyright: ignore
                 def my_handler(request: Request) -> None: ...
 
 
-                app = Litestar(route_handlers=[my_handler], middleware=[session_config.middleware])
+                app = Litestar(
+                    route_handlers=[my_handler],
+                    middleware=[session_config.middleware],
+                )
 
 
         Returns:

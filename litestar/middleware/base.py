@@ -197,7 +197,11 @@ class ASGIMiddleware(abc.ABC):
                 self.logger = logger
 
             async def handle(
-                self, scope: Scope, receive: Receive, send: Send, next_app: ASGIApp
+                self,
+                scope: Scope,
+                receive: Receive,
+                send: Send,
+                next_app: ASGIApp,
             ) -> None:
                 self.logger.debug("Received request for path %s", scope["path"])
                 await next_app(scope, receive, send)

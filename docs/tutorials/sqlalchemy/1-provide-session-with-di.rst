@@ -8,7 +8,7 @@ very `DRY <https://en.wikipedia.org/wiki/Don%27t_repeat_yourself>`_.
 In this section, we'll use dependency injection to centralize the session creation logic and make it available to all
 handlers.
 
-.. literalinclude:: /examples/contrib/sqlalchemy/plugins/tutorial/full_app_with_session_di.py
+.. literalinclude:: /examples/plugins/sqlalchemy/plugins/tutorial/full_app_with_session_di.py
     :language: python
     :linenos:
     :emphasize-lines: 47-57,82-83,87-89,94-95,103
@@ -19,14 +19,14 @@ dependency injection to decouple creation of the session from the route handlers
 This script introduces a new async generator function called ``provide_transaction()`` that creates a new SQLAlchemy
 session, begins a transaction, and handles any integrity errors that might raise from within the transaction.
 
-.. literalinclude:: /examples/contrib/sqlalchemy/plugins/tutorial/full_app_with_session_di.py
+.. literalinclude:: /examples/plugins/sqlalchemy/plugins/tutorial/full_app_with_session_di.py
     :language: python
     :linenos:
     :lines: 48-57
 
 That function is declared as a dependency to the Litestar application, using the name ``transaction``.
 
-.. literalinclude:: /examples/contrib/sqlalchemy/plugins/tutorial/full_app_with_session_di.py
+.. literalinclude:: /examples/plugins/sqlalchemy/plugins/tutorial/full_app_with_session_di.py
     :language: python
     :linenos:
     :lines: 101-105
@@ -36,7 +36,7 @@ In the route handlers, the database session is injected by declaring the ``trans
 This is automatically provided by Litestar's dependency injection system at runtime.
 
 
-.. literalinclude:: /examples/contrib/sqlalchemy/plugins/tutorial/full_app_with_session_di.py
+.. literalinclude:: /examples/plugins/sqlalchemy/plugins/tutorial/full_app_with_session_di.py
     :language: python
     :linenos:
     :lines: 81-84
@@ -47,7 +47,7 @@ One final improvement in this script is exception handling. In the previous vers
 raised during the insertion of the new TODO item. In our latest revision, we've been able to centralize this handling
 to occur inside the ``provide_transaction()`` function.
 
-.. literalinclude:: /examples/contrib/sqlalchemy/plugins/tutorial/full_app_with_session_di.py
+.. literalinclude:: /examples/plugins/sqlalchemy/plugins/tutorial/full_app_with_session_di.py
     :language: python
     :linenos:
     :lines: 47-57
@@ -66,14 +66,14 @@ session object:
 
    .. tab-item:: After
 
-        .. literalinclude:: /examples/contrib/sqlalchemy/plugins/tutorial/full_app_with_session_di.py
+        .. literalinclude:: /examples/plugins/sqlalchemy/plugins/tutorial/full_app_with_session_di.py
             :language: python
             :linenos:
             :lines: 81-105
 
    .. tab-item:: Before
 
-        .. literalinclude:: /examples/contrib/sqlalchemy/plugins/tutorial/full_app_no_plugins.py
+        .. literalinclude:: /examples/plugins/sqlalchemy/plugins/tutorial/full_app_no_plugins.py
             :language: python
             :linenos:
             :lines: 69-100

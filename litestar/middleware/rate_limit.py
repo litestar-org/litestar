@@ -257,7 +257,10 @@ class RateLimitConfig:
                 def my_handler(request: Request) -> None: ...
 
 
-                app = Litestar(route_handlers=[my_handler], middleware=[throttle_config.middleware])
+                app = Litestar(
+                    route_handlers=[my_handler],
+                    middleware=[throttle_config.middleware],
+                )
 
         Returns:
             An instance of :class:`DefineMiddleware <.middleware.base.DefineMiddleware>` including ``self`` as the

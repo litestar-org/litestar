@@ -65,7 +65,9 @@ def _unwrap_implicit_optional_hints(defaults: dict[str, Any], hints: dict[str, A
 
     .. code-block:: python
 
-        def foo(a: Annotated[Optional[Union[str, int]], ...] = None): ...
+        def foo(
+            a: Annotated[Optional[Union[str, int]], ...] = None,
+        ): ...
 
     ... becomes `Union[Annotated[Union[str, int, NoneType], ...], NoneType]`
 

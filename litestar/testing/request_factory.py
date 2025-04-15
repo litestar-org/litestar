@@ -112,7 +112,9 @@ class RequestFactory:
 
                 # Create a request with a media type
                 request_with_media_type = RequestFactory(app=my_app, server=my_server).post(
-                    "/person", data=person, request_media_type=RequestEncodingType.MULTI_PART
+                    "/person",
+                    data=person,
+                    request_media_type=RequestEncodingType.MULTI_PART,
                 )
 
         """

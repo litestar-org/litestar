@@ -3610,7 +3610,7 @@
         :type: feature
         :pr: 1395
 
-        A :class:`SQLAlchemyInitPlugin <litestar.contrib.sqlalchemy.plugins.SQLAlchemyInitPlugin>` was added,
+        A ``SQLAlchemyInitPlugin <`litestar.contrib.sqlalchemy.plugins.SQLAlchemyInitPlugin`` was added,
         providing support for managed synchronous and asynchronous sessions.
 
         .. seealso::

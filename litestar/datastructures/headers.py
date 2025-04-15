@@ -62,7 +62,7 @@ class Headers(CIMultiDictProxy[str], MultiMixin[str]):  # pyright: ignore
 
             super().__init__(CIMultiDict(headers_))
         else:
-            super().__init__(headers)
+            super().__init__(headers)  # pyright: ignore
         self._header_list: Optional[RawHeadersList] = None
 
     @classmethod
@@ -95,7 +95,7 @@ class Headers(CIMultiDictProxy[str], MultiMixin[str]):  # pyright: ignore
         return self._header_list
 
 
-class MutableScopeHeaders(MutableMapping):
+class MutableScopeHeaders(MutableMapping):  # pyright: ignore
     """A case-insensitive, multidict-like structure that can be used to mutate headers within a
     :class:`Scope <.types.Scope>`
     """
@@ -111,7 +111,7 @@ class MutableScopeHeaders(MutableMapping):
             if not isinstance(scope["headers"], list):
                 scope["headers"] = list(scope["headers"])
 
-            self.headers = cast("RawHeadersList", scope["headers"])
+            self.headers = cast("RawHeadersList", scope["headers"])  # pyright: ignore
         else:
             self.headers = []
 
@@ -187,9 +187,9 @@ class MutableScopeHeaders(MutableMapping):
         Returns:
             None
         """
-        existing = self.get(key)
+        existing = self.get(key)  # pyright: ignore
         if existing is not None:
-            value = ",".join([*existing.split(","), value])
+            value = ",".join([*existing.split(","), value])  # pyright: ignore
         self[key] = value
 
     def __getitem__(self, key: str) -> str:

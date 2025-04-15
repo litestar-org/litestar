@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Mapped
 
-from litestar.contrib.sqlalchemy.base import UUIDBase
+from litestar.plugins.sqlalchemy.base import UUIDBase
 
 
 class TodoItem(UUIDBase):
