@@ -2344,7 +2344,7 @@
 
 
         The ``_sentinel`` column of
-        litestar.contrib.sqlalchemy.base.UUIDPrimaryKey has been renamed to
+        ``~litestar.contrib.sqlalchemy.base.UUIDPrimaryKey`` has been renamed to
         ``sa_orm_sentinel``, to support Spanner, which does not support tables starting
         with ``_``.
 
@@ -2353,8 +2353,8 @@
         :pr: 1894
 
         A bug was fixed where
-        litestar.contrib.sqlalchemy.base.AuditColumns.created_at and
-        litestar.contrib.sqlalchemy.base.AuditColumns.updated_at would default
+        ``~litestar.contrib.sqlalchemy.base.AuditColumns.created_at`` and
+        ``~litestar.contrib.sqlalchemy.base.AuditColumns.updated_at`` would default
         to the :class:`~datetime.datetime` at initialization time, instead of the time
         of the update.
 
@@ -2612,7 +2612,7 @@
         :type: feature
         :pr: 1780
 
-        When using the ``litestar.contrib.sqlalchemy.types.JsonB`` type with an
+        When using the :class:`litestar.contrib.sqlalchemy.types.JsonB` type with an
         Oracle Database engine, a JSON check constraint will be created for that
         column.
 

@@ -257,6 +257,8 @@ nitpick_ignore_regex = [
     (PY_RE, r"advanced_alchemy\.config.common\.SessionT"),
     (PY_RE, r".*R"),
     (PY_RE, r".*ScopeT"),
+    (PY_RE, r"litestar\.contrib\.sqlalchemy\.base.*"),
+    (PY_RE, r"litestar\.contrib\.sqlalchemy\.types.*"),
     (PY_RE, r"litestar\.plugins\.sqlalchemy\.*"),
     (PY_RE, r"litestar\.plugins\.sqlalchemy\.base.*"),
     (PY_RE, r"litestar\.plugins\.sqlalchemy\.mixins.*"),
