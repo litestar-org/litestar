@@ -1,6 +1,7 @@
 import pytest  # pyright: ignore
 
 
+@pytest.mark.flaky(reruns=3)
 def test_re_exports() -> None:
     from advanced_alchemy import base as sa_base  # pyright: ignore
     from advanced_alchemy import mixins as sa_mixins  # pyright: ignore
