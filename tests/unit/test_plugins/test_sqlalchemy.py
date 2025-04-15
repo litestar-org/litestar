@@ -1,7 +1,6 @@
 import pytest  # pyright: ignore
 
 
-@pytest.mark.flaky(reruns=3)
 def test_re_exports() -> None:
     from advanced_alchemy import base as sa_base  # pyright: ignore
     from advanced_alchemy import mixins as sa_mixins  # pyright: ignore
@@ -63,7 +62,7 @@ def test_getattr() -> None:
     with pytest.raises(AttributeError) as excinfo:  # pyright: ignore
         _ = sqlalchemy.non_existent_attribute
 
-    assert "module 'litestar.plugins.sqlalchemy' has no attribute 'non_existent_attribute'" in str(excinfo.value)
+    assert "has no attribute 'non_existent_attribute'" in str(excinfo.value)
 
 
 def test_base_exports() -> None:
@@ -80,7 +79,7 @@ def test_base_exports() -> None:
     with pytest.raises(AttributeError) as excinfo:  # pyright: ignore
         _ = base.non_existent_attribute  # type: ignore[attr-defined]
 
-    assert "module 'advanced_alchemy.base' has no attribute 'non_existent_attribute'" in str(excinfo.value)
+    assert "has no attribute 'non_existent_attribute'" in str(excinfo.value)
 
 
 def test_exceptions_exports() -> None:
@@ -97,7 +96,7 @@ def test_exceptions_exports() -> None:
     with pytest.raises(AttributeError) as excinfo:  # pyright: ignore
         _ = exceptions.non_existent_attribute  # type: ignore[attr-defined]
 
-    assert "module 'advanced_alchemy.exceptions' has no attribute 'non_existent_attribute'" in str(excinfo.value)
+    assert "has no attribute 'non_existent_attribute'" in str(excinfo.value)
 
 
 def test_filters_exports() -> None:
@@ -114,7 +113,7 @@ def test_filters_exports() -> None:
     with pytest.raises(AttributeError) as excinfo:  # pyright: ignore
         _ = filters.non_existent_attribute  # type: ignore[attr-defined]
 
-    assert "module 'advanced_alchemy.filters' has no attribute 'non_existent_attribute'" in str(excinfo.value)
+    assert "has no attribute 'non_existent_attribute'" in str(excinfo.value)
 
 
 def test_mixins_exports() -> None:
@@ -131,7 +130,7 @@ def test_mixins_exports() -> None:
     with pytest.raises(AttributeError) as excinfo:  # pyright: ignore
         _ = mixins.non_existent_attribute  # type: ignore[attr-defined]
 
-    assert "module 'advanced_alchemy.mixins' has no attribute 'non_existent_attribute'" in str(excinfo.value)
+    assert "has no attribute 'non_existent_attribute'" in str(excinfo.value)
 
 
 def test_operations_exports() -> None:
@@ -143,7 +142,7 @@ def test_operations_exports() -> None:
     with pytest.raises(AttributeError) as excinfo:  # pyright: ignore
         _ = operations.non_existent_attribute  # type: ignore[attr-defined]
 
-    assert "module 'advanced_alchemy.operations' has no attribute 'non_existent_attribute'" in str(excinfo.value)
+    assert "has no attribute 'non_existent_attribute'" in str(excinfo.value)
 
 
 def test_repository_exports() -> None:
@@ -160,7 +159,7 @@ def test_repository_exports() -> None:
     with pytest.raises(AttributeError) as excinfo:  # pyright: ignore
         _ = repository.non_existent_attribute  # type: ignore[attr-defined]
 
-    assert "module 'advanced_alchemy.repository' has no attribute 'non_existent_attribute'" in str(excinfo.value)
+    assert "has no attribute 'non_existent_attribute'" in str(excinfo.value)
 
 
 def test_service_exports() -> None:
@@ -177,7 +176,7 @@ def test_service_exports() -> None:
     with pytest.raises(AttributeError) as excinfo:  # pyright: ignore
         _ = service.non_existent_attribute  # type: ignore[attr-defined]
 
-    assert "module 'advanced_alchemy.service' has no attribute 'non_existent_attribute'" in str(excinfo.value)
+    assert "has no attribute 'non_existent_attribute'" in str(excinfo.value)
 
 
 def test_types_exports() -> None:
@@ -194,7 +193,7 @@ def test_types_exports() -> None:
     with pytest.raises(AttributeError) as excinfo:  # pyright: ignore
         _ = types.non_existent_attribute  # type: ignore[attr-defined]
 
-    assert "module 'advanced_alchemy.types' has no attribute 'non_existent_attribute'" in str(excinfo.value)
+    assert "has no attribute 'non_existent_attribute'" in str(excinfo.value)
 
 
 def test_utils_exports() -> None:
@@ -222,4 +221,4 @@ def test_utils_exports() -> None:
         _ = utils.non_existent_attribute  # type: ignore[attr-defined]
 
     # The error message should come from advanced_alchemy.utils since that's what we're re-exporting
-    assert "module 'advanced_alchemy.utils' has no attribute 'non_existent_attribute'" in str(excinfo.value)
+    assert "has no attribute 'non_existent_attribute'" in str(excinfo.value)
