@@ -188,3 +188,45 @@ Python to JSON (collection)         ~5.4x
 .. seealso::
     If you are interested in technical details, check out
     https://github.com/litestar-org/litestar/pull/2388
+
+Mixed model types
+~~~~~~~~~~~~~~~~~~~
+
+It is sometimes required to parse data that cannot be handled by a single DTO factory.
+For example, a data container that is a ``dataclass`` but its inner data contains a
+``SQLAlchemy`` model. Using the ``DataclassDTO`` by itself will raise an error as it does
+not know how to handle non-native models (e.g. a ``SQLAlchemy`` model). Therefore, we configure
+the ``DataclassDTO`` to use a custom DTO factory for specific models. Here is an example:
+
+    .. code-block:: python
+
+        from sqlalchemy.orm import DeclarativeBase
+
+        from dataclasses import dataclass
+
+        from litestar.dto import DTOConfig, DataclassDTO
+        from litestar.plugins.sqlalchemy import SQLAlchemyDTO
+
+        class Base(DeclarativeBase):
+            pass
+
+        class User(Base):
+            __tablename__ = "users"
+            id: Mapped[int] = mapped_column(primary_key=True)
+            name: Mapped[str]
+
+        @dataclass
+        class Foo:
+            user: User
+            info: str
+
+
+        class FooDTO(DataclassDTO[Foo]):
+            config = DTOConfig(
+                custom_dto_factories={
+                    User: SQLAlchemyDTO[User],
+                }
+            )
+
+In the above example, whenever a ``User`` model is to be parsed, the ``SQLAlchemyDTO`` will be used
+instead of the outer ``DataclassDTO``.
