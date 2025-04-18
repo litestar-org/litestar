@@ -14,8 +14,8 @@ async def listener_lifespan(socket: WebSocket) -> AsyncGenerator[None, Any]:
 
     async def handle_stream() -> AsyncGenerator[str, None]:
         while not is_closed.is_set():
-            yield "ping"
             await anyio.sleep(0.1)
+            yield "ping"
 
     async with anyio.create_task_group() as tg:
         tg.start_soon(send_websocket_stream, socket, handle_stream())
