@@ -1789,7 +1789,7 @@ wheels = [
 
 [[package]]
 name = "litestar"
-version = "2.15.1"
+version = "2.16.0"
 source = { editable = "." }
 dependencies = [
     { name = "anyio", version = "4.5.2", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.13'" },
@@ -1798,6 +1798,7 @@ dependencies = [
     { name = "exceptiongroup", marker = "python_full_version < '3.11'" },
     { name = "httpx" },
     { name = "importlib-metadata", marker = "python_full_version < '3.10'" },
+    { name = "litestar-htmx" },
     { name = "msgspec" },
     { name = "multidict" },
     { name = "multipart" },
@@ -1990,6 +1991,7 @@ requires-dist = [
     { name = "cryptography", marker = "extra == 'jwt'" },
     { name = "email-validator", marker = "extra == 'pydantic'" },
     { name = "exceptiongroup", marker = "python_full_version < '3.11'" },
+    { name = "exceptiongroup", marker = "python_full_version < '3.11'", specifier = ">=1.2.2" },
     { name = "fast-query-parsers", marker = "extra == 'standard'", specifier = ">=1.0.2" },
     { name = "httpx", specifier = ">=0.22" },
     { name = "importlib-metadata", marker = "python_full_version < '3.10'" },
@@ -1999,6 +2001,7 @@ requires-dist = [
     { name = "jsbeautifier", marker = "extra == 'standard'" },
     { name = "litestar", extras = ["annotated-types", "attrs", "brotli", "cli", "cryptography", "jinja", "jwt", "mako", "minijinja", "opentelemetry", "piccolo", "polyfactory", "picologging", "prometheus", "pydantic", "redis", "sqlalchemy", "standard", "structlog", "valkey", "htmx", "yaml"], marker = "python_full_version < '3.13' and extra == 'full'" },
     { name = "litestar", extras = ["annotated-types", "attrs", "brotli", "cli", "cryptography", "jinja", "jwt", "mako", "minijinja", "opentelemetry", "piccolo", "polyfactory", "prometheus", "pydantic", "redis", "sqlalchemy", "standard", "structlog", "valkey", "htmx", "yaml"], marker = "python_full_version >= '3.13' and extra == 'full'" },
+    { name = "litestar-htmx", specifier = ">=0.4.0" },
     { name = "litestar-htmx", marker = "extra == 'htmx'", specifier = ">=0.4.0" },
     { name = "mako", marker = "extra == 'mako'", specifier = ">=1.2.4" },
     { name = "minijinja", marker = "extra == 'minijinja'", specifier = ">=1.0.0" },

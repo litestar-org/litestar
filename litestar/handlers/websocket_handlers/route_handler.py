@@ -158,7 +158,6 @@ class WebsocketRouteHandler(BaseRouteHandler):
         if cleanup_group:
             async with cleanup_group:
                 await self.fn(**parsed_kwargs)
-            await cleanup_group.cleanup()
         else:
             await self.fn(**parsed_kwargs)
 

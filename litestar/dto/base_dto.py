@@ -3,9 +3,9 @@ from __future__ import annotations
 import dataclasses
 import typing
 from abc import abstractmethod
+from collections.abc import Collection
 from inspect import getmodule
-from typing import TYPE_CHECKING, Generic, TypeVar, get_type_hints
-from typing import TYPE_CHECKING, Callable, Collection, Generic, TypeVar
+from typing import TYPE_CHECKING, Callable, Generic, TypeVar, get_type_hints
 
 from typing_extensions import NotRequired, TypedDict
 

@@ -3,7 +3,7 @@ from __future__ import annotations
 from inspect import getmro
 from sys import exc_info
 from traceback import format_exception
-from typing import TYPE_CHECKING, Any, Type, Union, cast
+from typing import TYPE_CHECKING, Any, Union, cast
 
 from litestar.enums import ScopeType
 from litestar.exceptions import HTTPException, LitestarException, WebSocketException

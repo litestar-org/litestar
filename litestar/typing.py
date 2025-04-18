@@ -23,11 +23,12 @@ from typing_extensions import (
     NewType,
     NotRequired,
     Required,
-    TypeAliasType  as TeTypeAliasType,
-    Self,
     get_args,
     get_origin,
     is_typeddict,
+)
+from typing_extensions import (
+    TypeAliasType as TeTypeAliasType,
 )
 
 try:

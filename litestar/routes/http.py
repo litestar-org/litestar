@@ -9,9 +9,6 @@ from litestar.types import HTTPScope
 if TYPE_CHECKING:
     from collections.abc import Iterable
 
-    from litestar._kwargs import KwargsModel
-    from litestar.connection import Request
-    from litestar.types import ASGIApp, HTTPScope, Method, Receive, Scope, Send
     from litestar.handlers.http_handlers import HTTPRouteHandler
     from litestar.types import Receive, Send
     from litestar.types.asgi_types import HttpMethodName
