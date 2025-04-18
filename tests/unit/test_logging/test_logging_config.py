@@ -6,7 +6,7 @@ from collections.abc import Generator
 from importlib.util import find_spec
 from logging.handlers import QueueHandler
 from queue import Queue
-from typing import TYPE_CHECKING, Any, Optional, Set, Type, Union, cast
+from typing import TYPE_CHECKING, Any, Optional, Union, cast
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -564,8 +564,8 @@ def test_traceback_line_limit_deprecation(traceback_line_limit: int, expected_wa
     ],
 )
 def test_disable_stack_trace(
-    disable_stack_trace: Set[Union[int, Type[Exception]]],
-    exception_to_raise: Type[Exception],
+    disable_stack_trace: set[Union[int, type[Exception]]],
+    exception_to_raise: type[Exception],
     handler_called: bool,
 ) -> None:
     mock_handler = MagicMock()

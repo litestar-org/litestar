@@ -388,6 +388,18 @@ class HTTPRouteHandler(BaseRouteHandler):
                     merge_opts.get("include_in_schema", Empty), other.include_in_schema
                 )
 
+        merge_opts["request_class"] = self._request_class or merge_opts.get("request_class")
+        merge_opts["response_class"] = self._response_class or merge_opts.get("response_class")
+        merge_opts["request_max_body_size"] = value_or_default(
+            self._request_max_body_size,
+            next((o.request_max_body_size for o in others if o.request_max_body_size is not Empty), Empty),
+        )
+        merge_opts["include_in_schema"] = value_or_default(
+            self._include_in_schema, merge_opts.get("include_in_schema", Empty)
+        )
+
+        return merge_opts
+
     def resolve_request_class(self) -> type[Request]:
         """Return the closest custom Request class in the owner graph or the default Request class.
 

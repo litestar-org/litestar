@@ -1,6 +1,4 @@
-from typing import Annotated, Any, Dict, List, Tuple
-
-from typing_extensions import Annotated
+from typing import Annotated, Any
 
 from litestar import Litestar, post
 from litestar.datastructures import UploadFile
@@ -11,7 +9,7 @@ from litestar.params import Body
 @post(path="/")
 async def handle_file_upload(
     data: Annotated[list[UploadFile], Body(media_type=RequestEncodingType.MULTI_PART)],
-) -> dict[str, Tuple[str, str, Any]]:
+) -> dict[str, tuple[str, str, Any]]:
     result = {}
     for file in data:
         content = await file.read()
