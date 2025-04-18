@@ -1,6 +1,4 @@
 from dataclasses import dataclass
-from typing import Dict
-
 from typing import Annotated
 
 from litestar import Litestar, post
@@ -19,7 +17,7 @@ class User:
 @post(path="/")
 async def create_user(
     data: Annotated[User, Body(media_type=RequestEncodingType.MULTI_PART)],
-) -> Dict[str, str]:
+) -> dict[str, str]:
     content = await data.form_input_name.read()
     filename = data.form_input_name.filename
     return {"id": data.id, "name": data.name, "filename": filename, "size": len(content)}
