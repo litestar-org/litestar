@@ -1,28 +1,35 @@
-import asyncio
-import datetime
 from contextlib import asynccontextmanager
 from typing import Any, AsyncGenerator
 
+import anyio
+
 from litestar import Litestar, WebSocket, websocket_listener
+from litestar.exceptions import WebSocketDisconnect
 from litestar.handlers import send_websocket_stream
 
 
 @asynccontextmanager
 async def listener_lifespan(socket: WebSocket) -> AsyncGenerator[None, Any]:
-    async def handle_stream() -> AsyncGenerator[str, None]:
-        while True:
-            await asyncio.sleep(0.5)
-            yield datetime.datetime.now(datetime.UTC).isoformat()
-            await asyncio.sleep(0.5)
+    is_closed = anyio.Event()
 
-    task = asyncio.create_task(send_websocket_stream(socket=socket, stream=handle_stream()))
-    yield
-    task.cancel()
-    await task
+    async def handle_stream() -> AsyncGenerator[str, None]:
+        while not is_closed.is_set():
+            yield "ping"
+            await anyio.sleep(0.1)
+
+    async with anyio.create_task_group() as tg:
+        tg.start_soon(send_websocket_stream, socket, handle_stream())
+
+        try:
+            yield
+        except WebSocketDisconnect:
+            pass
+        finally:
+            is_closed.set()
 
 
 @websocket_listener("/", connection_lifespan=listener_lifespan)
-def handler(socket: WebSocket, data: str) -> str:
+def handler(data: str) -> str:
     return data
 
 

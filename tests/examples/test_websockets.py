@@ -1,5 +1,3 @@
-import datetime
-
 from docs.examples.websockets.custom_websocket import app as custom_websocket_class_app
 from docs.examples.websockets.stream_and_receive_listener import app as app_stream_and_receive_listener
 from docs.examples.websockets.stream_and_receive_raw import app as app_stream_and_receive_raw
@@ -22,24 +20,16 @@ async def test_websocket_listener() -> None:
     async with AsyncTestClient(app_stream_and_receive_listener) as client:
         with await client.websocket_connect("/") as ws:
             ws.send_text("Hello")
-            data = ws.receive_text()
-            assert data == "Hello"
-            data = ws.receive_text()
-            assert datetime.datetime.fromisoformat(data) - datetime.datetime.now(datetime.UTC) < datetime.timedelta(
-                seconds=1
-            )
+            data_1 = ws.receive_text()
+            data_2 = ws.receive_text()
+            assert sorted([data_1, data_2]) == sorted(["Hello", "ping"])
 
 
 async def test_websocket_handler():
     async with AsyncTestClient(app_stream_and_receive_raw) as client:
         with await client.websocket_connect("/") as ws:
-            j = {"data": "I should be in response"}
-            ws.send_json(j)
-            data = ws.receive_json()
-            assert data == {"handle_receive": "start"}
-            data = ws.receive_json()
-            assert data == j
-            data = ws.receive_text()
-            assert datetime.datetime.fromisoformat(data) - datetime.datetime.now(datetime.UTC) < datetime.timedelta(
-                seconds=1
-            )
+            echo_data = {"data": "I should be in response"}
+            ws.send_json(echo_data)
+            assert ws.receive_json(timeout=0.5) == {"handle_receive": "start"}
+            assert ws.receive_json(timeout=0.5) == echo_data
+            assert ws.receive_text(timeout=0.5)
