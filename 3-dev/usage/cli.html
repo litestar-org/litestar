@@ -482,6 +482,7 @@ data-aria-dark="Switch to auto color mode">
 <li><a class="reference internal" href="#using-entry-points">Using entry points</a></li>
 <li><a class="reference internal" href="#using-a-plugin">Using a plugin</a></li>
 <li><a class="reference internal" href="#accessing-the-app-instance">Accessing the app instance</a></li>
+<li><a class="reference internal" href="#using-the-server-lifespan-hook">Using the <cite>server_lifespan</cite> hook</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#cli-reference">CLI Reference</a></li>
@@ -680,12 +681,75 @@ You can achieve this by adding the special <code class="docutils literal notrans
 </div>
 </div>
 </section>
+<section id="using-the-server-lifespan-hook">
+<h3>Using the <cite>server_lifespan</cite> hook<a class="headerlink" href="#using-the-server-lifespan-hook" title="Permalink to this heading">¶</a></h3>
+<p>Server lifespan hooks provide a way to run code before and after the <em>server</em> starts and stops. In contrast to the regular <cite>lifespan</cite> hooks, they only run once, even when a server starts multiple workers, whereas <cite>lifespan</cite> hooks would run for each individual worker.</p>
+<p>This makes them suitable for tasks that should happen exactly once, like initializing a database.</p>
+<div class="sd-tab-set docutils">
+<input id="sd-tab-item-3" name="sd-tab-set-1" type="radio">
+</input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-3">
+Python 3.8+</label><div class="sd-tab-content docutils">
+<div class="literal-block-wrapper docutils container" id="id8">
+<div class="code-block-caption"><span class="caption-text">Using the <cite>server_lifespan</cite> hook</span><a class="headerlink" href="#id8" title="Permalink to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">contextlib</span> <span class="kn">import</span> <span class="n">contextmanager</span>
+</span><span data-line="2"><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Generator</span>
+</span><span data-line="3">
+</span><span data-line="4"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span>
+</span><span data-line="5"><span class="kn">from</span> <span class="nn">litestar.plugins.base</span> <span class="kn">import</span> <span class="n">CLIPlugin</span>
+</span><span data-line="6">
+</span><span data-line="7">
+</span><span data-line="8"><span class="k">class</span> <span class="nc">StartupPrintPlugin</span><span class="p">(</span><span class="n">CLIPlugin</span><span class="p">):</span>
+</span><span data-line="9">
+</span><span data-line="10">    <span class="nd">@contextmanager</span>
+</span><span data-line="11">    <span class="k">def</span> <span class="nf">server_lifespan</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">app</span><span class="p">:</span> <span class="n">Litestar</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+</span><span data-line="12">        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;i_run_before_startup_plugin&quot;</span><span class="p">)</span>  <span class="c1"># noqa: T201</span>
+</span><span data-line="13">        <span class="k">try</span><span class="p">:</span>
+</span><span data-line="14">            <span class="k">yield</span>
+</span><span data-line="15">        <span class="k">finally</span><span class="p">:</span>
+</span><span data-line="16">            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;i_run_after_shutdown_plugin&quot;</span><span class="p">)</span>  <span class="c1"># noqa: T201</span>
+</span><span data-line="17">
+</span><span data-line="18"><span class="k">def</span> <span class="nf">create_app</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Litestar</span><span class="p">:</span>
+</span><span data-line="19">    <span class="k">return</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[],</span> <span class="n">plugins</span><span class="o">=</span><span class="p">[</span><span class="n">StartupPrintPlugin</span><span class="p">()])</span>
+</span></pre></div>
+</div>
+</div>
+</div>
+<input checked="checked" id="sd-tab-item-4" name="sd-tab-set-1" type="radio">
+</input><label class="sd-tab-label" data-sync-id="3.9" for="sd-tab-item-4">
+Python 3.9+</label><div class="sd-tab-content docutils">
+<div class="literal-block-wrapper docutils container" id="id9">
+<div class="code-block-caption"><span class="caption-text">Using the <cite>server_lifespan</cite> hook</span><a class="headerlink" href="#id9" title="Permalink to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">contextlib</span> <span class="kn">import</span> <span class="n">contextmanager</span>
+</span><span data-line="2"><span class="kn">from</span> <span class="nn">collections.abc</span> <span class="kn">import</span> <span class="n">Generator</span>
+</span><span data-line="3">
+</span><span data-line="4"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span>
+</span><span data-line="5"><span class="kn">from</span> <span class="nn">litestar.plugins.base</span> <span class="kn">import</span> <span class="n">CLIPlugin</span>
+</span><span data-line="6">
+</span><span data-line="7">
+</span><span data-line="8"><span class="k">class</span> <span class="nc">StartupPrintPlugin</span><span class="p">(</span><span class="n">CLIPlugin</span><span class="p">):</span>
+</span><span data-line="9">
+</span><span data-line="10">    <span class="nd">@contextmanager</span>
+</span><span data-line="11">    <span class="k">def</span> <span class="nf">server_lifespan</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">app</span><span class="p">:</span> <span class="n">Litestar</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+</span><span data-line="12">        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;i_run_before_startup_plugin&quot;</span><span class="p">)</span>  <span class="c1"># noqa: T201</span>
+</span><span data-line="13">        <span class="k">try</span><span class="p">:</span>
+</span><span data-line="14">            <span class="k">yield</span>
+</span><span data-line="15">        <span class="k">finally</span><span class="p">:</span>
+</span><span data-line="16">            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;i_run_after_shutdown_plugin&quot;</span><span class="p">)</span>  <span class="c1"># noqa: T201</span>
+</span><span data-line="17">
+</span><span data-line="18"><span class="k">def</span> <span class="nf">create_app</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Litestar</span><span class="p">:</span>
+</span><span data-line="19">    <span class="k">return</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[],</span> <span class="n">plugins</span><span class="o">=</span><span class="p">[</span><span class="n">StartupPrintPlugin</span><span class="p">()])</span>
+</span></pre></div>
+</div>
+</div>
+</div>
+</div>
+</section>
 </section>
 <section id="cli-reference">
 <h2>CLI Reference<a class="headerlink" href="#cli-reference" title="Permalink to this heading">¶</a></h2>
 <p>The most up-to-date reference for the Litestar CLI can be found by running:</p>
-<div class="literal-block-wrapper docutils container" id="id8">
-<div class="code-block-caption"><span class="caption-text">Display the CLI help</span><a class="headerlink" href="#id8" title="Permalink to this code">¶</a></div>
+<div class="literal-block-wrapper docutils container" id="id10">
+<div class="code-block-caption"><span class="caption-text">Display the CLI help</span><a class="headerlink" href="#id10" title="Permalink to this code">¶</a></div>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span data-line="1">litestar<span class="w"> </span>--help
 </span></pre></div>
 </div>

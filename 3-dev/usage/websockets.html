@@ -562,8 +562,10 @@ abstractions over the ASGI WebSocket interface</p></li>
 <li><p><a class="reference internal" href="../reference/handlers.html#litestar.handlers.websocket_listener" title="litestar.handlers.websocket_listener"><code class="xref py py-func docutils literal notranslate"><span class="pre">websocket_listener()</span></code></a> and <a class="reference internal" href="../reference/handlers.html#litestar.handlers.WebsocketListener" title="litestar.handlers.WebsocketListener"><code class="xref py py-class docutils literal notranslate"><span class="pre">WebsocketListener</span></code></a> :
 Reactive, event-driven WebSockets with full serialization and DTO support and support
 for a synchronous interface</p></li>
-<li><p><a class="reference internal" href="../reference/handlers.html#litestar.handlers.websocket_stream" title="litestar.handlers.websocket_stream"><code class="xref py py-func docutils literal notranslate"><span class="pre">websocket_stream()</span></code></a> and <a class="reference internal" href="../reference/handlers.html#litestar.handlers.send_websocket_stream" title="litestar.handlers.send_websocket_stream"><code class="xref py py-func docutils literal notranslate"><span class="pre">send_websocket_stream()</span></code></a>:
+<li><p><a class="reference internal" href="../reference/handlers.html#litestar.handlers.websocket_stream" title="litestar.handlers.websocket_stream"><code class="xref py py-func docutils literal notranslate"><span class="pre">websocket_stream()</span></code></a>:
 Proactive, stream oriented WebSockets with full serialization and DTO support</p></li>
+<li><p><a class="reference internal" href="../reference/handlers.html#litestar.handlers.send_websocket_stream" title="litestar.handlers.send_websocket_stream"><code class="xref py py-func docutils literal notranslate"><span class="pre">send_websocket_stream()</span></code></a>:
+Proactive, stream oriented WebSockets</p></li>
 </ol>
 <p>The main difference between the low and high level interfaces is that, dealing with low
 level interface requires, setting up a loop and listening for incoming data, handling

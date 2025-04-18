@@ -476,6 +476,7 @@ data-aria-dark="Switch to auto color mode">
       <i class="i-lucide close"></i>
     </button>
     <div class="sy-scrollbar sy-rside-inner px-6 xl:top-16 xl:sticky xl:pl-0 pt-6 pb-4"><div class="localtoc"><h3>On this page</h3><ul>
+<li><a class="reference internal" href="#controlling-exception-logging">Controlling Exception Logging</a></li>
 <li><a class="reference internal" href="#using-python-standard-library">Using Python standard library</a></li>
 <li><a class="reference internal" href="#using-picologging">Using Picologging</a></li>
 <li><a class="reference internal" href="#using-structlog">Using StructLog</a></li>
@@ -568,6 +569,25 @@ which is optimal for async applications. Make sure to use it in your own loggers
 <p>Exceptions won’t be logged by default, except in debug mode. Make sure to use <code class="docutils literal notranslate"><span class="pre">log_exceptions=&quot;always&quot;</span></code> as in the
 example above to log exceptions if you need it.</p>
 </div>
+<section id="controlling-exception-logging">
+<h2>Controlling Exception Logging<a class="headerlink" href="#controlling-exception-logging" title="Permalink to this heading">¶</a></h2>
+<p>While <code class="docutils literal notranslate"><span class="pre">log_exceptions</span></code> controls when exceptions are logged, sometimes you may want to suppress stack traces for specific
+exception types or HTTP status codes. The <code class="docutils literal notranslate"><span class="pre">disable_stack_trace</span></code> parameter allows you to specify a set of exception types
+or status codes that should not generate stack traces in logs:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span>
+</span><span data-line="2"><span class="kn">from</span> <span class="nn">litestar.logging</span> <span class="kn">import</span> <span class="n">LoggingConfig</span>
+</span><span data-line="3">
+</span><span data-line="4"><span class="c1"># Don&#39;t log stack traces for 404 errors and ValueError exceptions</span>
+</span><span data-line="5"><span class="n">logging_config</span> <span class="o">=</span> <span class="n">LoggingConfig</span><span class="p">(</span>
+</span><span data-line="6">    <span class="n">debug</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+</span><span data-line="7">    <span class="n">disable_stack_trace</span><span class="o">=</span><span class="p">{</span><span class="mi">404</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">},</span>
+</span><span data-line="8"><span class="p">)</span>
+</span><span data-line="9">
+</span><span data-line="10"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">logging_config</span><span class="o">=</span><span class="n">logging_config</span><span class="p">)</span>
+</span></pre></div>
+</div>
+<p>This is particularly useful for common exceptions that you expect in normal operation and don’t need detailed stack traces for.</p>
+</section>
 <section id="using-python-standard-library">
 <h2>Using Python standard library<a class="headerlink" href="#using-python-standard-library" title="Permalink to this heading">¶</a></h2>
 <p><a class="reference external" href="https://docs.python.org/3/howto/logging.html">logging</a> is Python’s builtin standard logging library and can be

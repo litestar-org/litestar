@@ -476,7 +476,7 @@ data-aria-dark="Switch to auto color mode">
       <i class="i-lucide close"></i>
     </button>
     <div class="sy-scrollbar sy-rside-inner px-6 xl:top-16 xl:sticky xl:pl-0 pt-6 pb-4"><div class="localtoc"><h3>On this page</h3><ul>
-<li><a class="reference internal" href="#creating-a-custom-jwt-authentication-middleware">Creating a Custom JWT Authentication Middleware</a></li>
+<li><a class="reference internal" href="#creating-a-custom-authentication-middleware">Creating a Custom Authentication Middleware</a></li>
 </ul>
 </div><a class="js-repo-stats repo-stats flex items-center" href="https://github.com/litestar-org/litestar"
   data-type="github" data-user="litestar-org" data-repo="litestar">
@@ -572,254 +572,108 @@ including <code class="docutils literal notranslate"><span class="pre">None</spa
 and <a class="reference internal" href="../../reference/connection.html#litestar.connection.ASGIConnection.auth" title="litestar.connection.ASGIConnection.auth"><code class="xref py py-attr docutils literal notranslate"><span class="pre">Request.auth</span></code></a> respectively, for HTTP route handlers, and
 <a class="reference internal" href="../../reference/connection.html#litestar.connection.ASGIConnection.user" title="litestar.connection.ASGIConnection.user"><code class="xref py py-attr docutils literal notranslate"><span class="pre">WebSocket.user</span></code></a> and
 <a class="reference internal" href="../../reference/connection.html#litestar.connection.ASGIConnection.auth" title="litestar.connection.ASGIConnection.auth"><code class="xref py py-attr docutils literal notranslate"><span class="pre">WebSocket.auth</span></code></a> for websocket route handlers.</p>
-<section id="creating-a-custom-jwt-authentication-middleware">
-<h2>Creating a Custom JWT Authentication Middleware<a class="headerlink" href="#creating-a-custom-jwt-authentication-middleware" title="Permalink to this heading">¶</a></h2>
+<section id="creating-a-custom-authentication-middleware">
+<h2>Creating a Custom Authentication Middleware<a class="headerlink" href="#creating-a-custom-authentication-middleware" title="Permalink to this heading">¶</a></h2>
 <p>Since the above is quite hard to grasp in the abstract, let us see an example.</p>
-<p>We start off by creating a user model. It can be implemented using Pydantic, an ODM, ORM, etc. For the sake of the
-example here let us say it is a <a class="reference external" href="https://docs.sqlalchemy.org/">SQLAlchemy</a> model:</p>
+<p>We start off by creating a user model. It can be implemented using msgspec, Pydantic, an ODM, ORM, etc.
+For the sake of this example here let us say it is a dataclass:</p>
 <div class="literal-block-wrapper docutils container" id="id2">
-<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">my_app/db/models.py</span></code></span><a class="headerlink" href="#id2" title="Permalink to this code">¶</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">import</span> <span class="nn">uuid</span>
-</span><span data-line="2">
-</span><span data-line="3"><span class="kn">from</span> <span class="nn">sqlalchemy.dialects.postgresql</span> <span class="kn">import</span> <span class="n">UUID</span>
-</span><span data-line="4"><span class="kn">from</span> <span class="nn">sqlalchemy.orm</span> <span class="kn">import</span> <span class="n">declarative_base</span><span class="p">,</span> <span class="n">mapped_column</span><span class="p">,</span> <span class="n">Mapped</span>
+<div class="code-block-caption"><span class="caption-text">user and token models</span><a class="headerlink" href="#id2" title="Permalink to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="nd">@dataclass</span>
+</span><span data-line="2"><span class="k">class</span> <span class="nc">MyUser</span><span class="p">:</span>
+</span><span data-line="3">    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+</span><span data-line="4">
 </span><span data-line="5">
-</span><span data-line="6"><span class="n">Base</span> <span class="o">=</span> <span class="n">declarative_base</span><span class="p">()</span>
-</span><span data-line="7">
-</span><span data-line="8">
-</span><span data-line="9"><span class="k">class</span> <span class="nc">User</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
-</span><span data-line="10">    <span class="nb">id</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="n">uuid</span><span class="o">.</span><span class="n">UUID</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="n">mapped_column</span><span class="p">(</span>
-</span><span data-line="11">        <span class="n">UUID</span><span class="p">(</span><span class="n">as_uuid</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span> <span class="n">default</span><span class="o">=</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">,</span> <span class="n">primary_key</span><span class="o">=</span><span class="kc">True</span>
-</span><span data-line="12">    <span class="p">)</span>
-</span><span data-line="13">    <span class="c1"># ... other fields follow, but we only require id for this example</span>
+</span><span data-line="6"><span class="nd">@dataclass</span>
+</span><span data-line="7"><span class="k">class</span> <span class="nc">MyToken</span><span class="p">:</span>
+</span><span data-line="8">    <span class="n">api_key</span><span class="p">:</span> <span class="nb">str</span>
 </span></pre></div>
 </div>
 </div>
-<p>We will also need some utility methods to encode and decode tokens. To this end we will use
-the <a class="reference external" href="https://pyjwt.readthedocs.io/en/stable/">pyjwt</a> library. We will also create a Pydantic model representing a
-JWT Token:</p>
-<details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
-<summary class="sd-summary-title sd-card-header">
-Click to see the JWT utility methods and Token model<div class="sd-summary-down docutils">
-<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-down" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M5.22 8.72a.75.75 0 000 1.06l6.25 6.25a.75.75 0 001.06 0l6.25-6.25a.75.75 0 00-1.06-1.06L12 14.44 6.28 8.72a.75.75 0 00-1.06 0z"></path></svg></div>
-<div class="sd-summary-up docutils">
-<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-up" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M18.78 15.28a.75.75 0 000-1.06l-6.25-6.25a.75.75 0 00-1.06 0l-6.25 6.25a.75.75 0 101.06 1.06L12 9.56l5.72 5.72a.75.75 0 001.06 0z"></path></svg></div>
-</summary><div class="sd-summary-content sd-card-body docutils">
+<p>We can now create our authentication middleware:</p>
 <div class="literal-block-wrapper docutils container" id="id3">
-<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">my_app/security/jwt.py</span></code></span><a class="headerlink" href="#id3" title="Permalink to this code">¶</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timedelta</span>
-</span><span data-line="2"><span class="kn">from</span> <span class="nn">uuid</span> <span class="kn">import</span> <span class="n">UUID</span>
-</span><span data-line="3">
-</span><span data-line="4"><span class="kn">from</span> <span class="nn">jose</span> <span class="kn">import</span> <span class="n">JWTError</span><span class="p">,</span> <span class="n">jwt</span>
-</span><span data-line="5"><span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">UUID4</span><span class="p">,</span> <span class="n">BaseModel</span>
-</span><span data-line="6">
-</span><span data-line="7"><span class="kn">from</span> <span class="nn">app.config</span> <span class="kn">import</span> <span class="n">settings</span>
-</span><span data-line="8"><span class="kn">from</span> <span class="nn">litestar.exceptions</span> <span class="kn">import</span> <span class="n">NotAuthorizedException</span>
+<div class="code-block-caption"><span class="caption-text">authentication_middleware.py</span><a class="headerlink" href="#id3" title="Permalink to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">class</span> <span class="nc">CustomAuthenticationMiddleware</span><span class="p">(</span><span class="n">AbstractAuthenticationMiddleware</span><span class="p">):</span>
+</span><span data-line="2">    <span class="k">async</span> <span class="k">def</span> <span class="nf">authenticate_request</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">connection</span><span class="p">:</span> <span class="n">ASGIConnection</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AuthenticationResult</span><span class="p">:</span>
+</span><span data-line="3"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Given a request, parse the request api key stored in the header and retrieve the user correlating to the token from the DB&quot;&quot;&quot;</span>
+</span><span data-line="4">
+</span><span data-line="5">        <span class="c1"># retrieve the auth header</span>
+</span><span data-line="6">        <span class="n">auth_header</span> <span class="o">=</span> <span class="n">connection</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">API_KEY_HEADER</span><span class="p">)</span>
+</span><span data-line="7">        <span class="k">if</span> <span class="ow">not</span> <span class="n">auth_header</span><span class="p">:</span>
+</span><span data-line="8">            <span class="k">raise</span> <span class="n">NotAuthorizedException</span><span class="p">()</span>
 </span><span data-line="9">
-</span><span data-line="10"><span class="n">DEFAULT_TIME_DELTA</span> <span class="o">=</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-</span><span data-line="11"><span class="n">ALGORITHM</span> <span class="o">=</span> <span class="s2">&quot;HS256&quot;</span>
-</span><span data-line="12">
-</span><span data-line="13">
-</span><span data-line="14"><span class="k">class</span> <span class="nc">Token</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-</span><span data-line="15">    <span class="n">exp</span><span class="p">:</span> <span class="n">datetime</span>
-</span><span data-line="16">    <span class="n">iat</span><span class="p">:</span> <span class="n">datetime</span>
-</span><span data-line="17">    <span class="n">sub</span><span class="p">:</span> <span class="n">UUID4</span>
-</span><span data-line="18">
-</span><span data-line="19">
-</span><span data-line="20"><span class="k">def</span> <span class="nf">decode_jwt_token</span><span class="p">(</span><span class="n">encoded_token</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Token</span><span class="p">:</span>
-</span><span data-line="21"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Helper function that decodes a jwt token and returns the value stored under the ``sub`` key</span>
-</span><span data-line="22">
-</span><span data-line="23"><span class="sd">    If the token is invalid or expired (i.e. the value stored under the exp key is in the past) an exception is raised</span>
-</span><span data-line="24"><span class="sd">    &quot;&quot;&quot;</span>
-</span><span data-line="25">    <span class="k">try</span><span class="p">:</span>
-</span><span data-line="26">        <span class="n">payload</span> <span class="o">=</span> <span class="n">jwt</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="n">token</span><span class="o">=</span><span class="n">encoded_token</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">JWT_SECRET</span><span class="p">,</span> <span class="n">algorithms</span><span class="o">=</span><span class="p">[</span><span class="n">ALGORITHM</span><span class="p">])</span>
-</span><span data-line="27">        <span class="k">return</span> <span class="n">Token</span><span class="p">(</span><span class="o">**</span><span class="n">payload</span><span class="p">)</span>
-</span><span data-line="28">    <span class="k">except</span> <span class="n">JWTError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-</span><span data-line="29">        <span class="k">raise</span> <span class="n">NotAuthorizedException</span><span class="p">(</span><span class="s2">&quot;Invalid token&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">e</span>
-</span><span data-line="30">
-</span><span data-line="31">
-</span><span data-line="32"><span class="k">def</span> <span class="nf">encode_jwt_token</span><span class="p">(</span><span class="n">user_id</span><span class="p">:</span> <span class="n">UUID</span><span class="p">,</span> <span class="n">expiration</span><span class="p">:</span> <span class="n">timedelta</span> <span class="o">=</span> <span class="n">DEFAULT_TIME_DELTA</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-</span><span data-line="33"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Helper function that encodes a JWT token with expiration and a given user_id&quot;&quot;&quot;</span>
-</span><span data-line="34">    <span class="n">token</span> <span class="o">=</span> <span class="n">Token</span><span class="p">(</span>
-</span><span data-line="35">        <span class="n">exp</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span> <span class="o">+</span> <span class="n">expiration</span><span class="p">,</span>
-</span><span data-line="36">        <span class="n">iat</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(),</span>
-</span><span data-line="37">        <span class="n">sub</span><span class="o">=</span><span class="n">user_id</span><span class="p">,</span>
-</span><span data-line="38">    <span class="p">)</span>
-</span><span data-line="39">    <span class="k">return</span> <span class="n">jwt</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">token</span><span class="o">.</span><span class="n">dict</span><span class="p">(),</span> <span class="n">settings</span><span class="o">.</span><span class="n">JWT_SECRET</span><span class="p">,</span> <span class="n">algorithm</span><span class="o">=</span><span class="n">ALGORITHM</span><span class="p">)</span>
+</span><span data-line="10">        <span class="c1"># this would be a database call</span>
+</span><span data-line="11">        <span class="n">token</span> <span class="o">=</span> <span class="n">MyToken</span><span class="p">(</span><span class="n">api_key</span><span class="o">=</span><span class="n">auth_header</span><span class="p">)</span>
+</span><span data-line="12">        <span class="n">user</span> <span class="o">=</span> <span class="n">MyUser</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">TOKEN_USER_DATABASE</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">token</span><span class="o">.</span><span class="n">api_key</span><span class="p">))</span>
+</span><span data-line="13">        <span class="k">if</span> <span class="ow">not</span> <span class="n">user</span><span class="o">.</span><span class="n">name</span><span class="p">:</span>
+</span><span data-line="14">            <span class="k">raise</span> <span class="n">NotAuthorizedException</span><span class="p">()</span>
+</span><span data-line="15">        <span class="k">return</span> <span class="n">AuthenticationResult</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">,</span> <span class="n">auth</span><span class="o">=</span><span class="n">token</span><span class="p">)</span>
 </span></pre></div>
 </div>
 </div>
-</div>
-</details><p>We can now create our authentication middleware:</p>
-<details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
-<summary class="sd-summary-title sd-card-header">
-Click to see <code class="docutils literal notranslate"><span class="pre">JWTAuthenticationMiddleware</span></code><div class="sd-summary-down docutils">
-<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-down" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M5.22 8.72a.75.75 0 000 1.06l6.25 6.25a.75.75 0 001.06 0l6.25-6.25a.75.75 0 00-1.06-1.06L12 14.44 6.28 8.72a.75.75 0 00-1.06 0z"></path></svg></div>
-<div class="sd-summary-up docutils">
-<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-up" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M18.78 15.28a.75.75 0 000-1.06l-6.25-6.25a.75.75 0 00-1.06 0l-6.25 6.25a.75.75 0 101.06 1.06L12 9.56l5.72 5.72a.75.75 0 001.06 0z"></path></svg></div>
-</summary><div class="sd-summary-content sd-card-body docutils">
+<p>Finally, we need to pass our middleware to the Litestar constructor:</p>
 <div class="literal-block-wrapper docutils container" id="id4">
-<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">my_app/security/authentication_middleware.py</span></code></span><a class="headerlink" href="#id4" title="Permalink to this code">¶</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">cast</span>
-</span><span data-line="2">
-</span><span data-line="3"><span class="kn">from</span> <span class="nn">sqlalchemy</span> <span class="kn">import</span> <span class="n">select</span>
-</span><span data-line="4"><span class="kn">from</span> <span class="nn">sqlalchemy.ext.asyncio</span> <span class="kn">import</span> <span class="n">AsyncSession</span>
-</span><span data-line="5">
-</span><span data-line="6"><span class="kn">from</span> <span class="nn">app.db.models</span> <span class="kn">import</span> <span class="n">User</span>
-</span><span data-line="7"><span class="kn">from</span> <span class="nn">app.security.jwt</span> <span class="kn">import</span> <span class="n">decode_jwt_token</span>
-</span><span data-line="8"><span class="kn">from</span> <span class="nn">litestar.connection</span> <span class="kn">import</span> <span class="n">ASGIConnection</span>
-</span><span data-line="9"><span class="kn">from</span> <span class="nn">litestar.exceptions</span> <span class="kn">import</span> <span class="n">NotAuthorizedException</span>
-</span><span data-line="10"><span class="kn">from</span> <span class="nn">litestar.middleware</span> <span class="kn">import</span> <span class="p">(</span>
-</span><span data-line="11">    <span class="n">AbstractAuthenticationMiddleware</span><span class="p">,</span>
-</span><span data-line="12">    <span class="n">AuthenticationResult</span><span class="p">,</span>
-</span><span data-line="13"><span class="p">)</span>
-</span><span data-line="14">
-</span><span data-line="15"><span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
-</span><span data-line="16">    <span class="kn">from</span> <span class="nn">sqlalchemy.ext.asyncio</span> <span class="kn">import</span> <span class="n">AsyncEngine</span>
-</span><span data-line="17">
-</span><span data-line="18"><span class="n">API_KEY_HEADER</span> <span class="o">=</span> <span class="s2">&quot;X-API-KEY&quot;</span>
-</span><span data-line="19">
-</span><span data-line="20">
-</span><span data-line="21"><span class="k">class</span> <span class="nc">JWTAuthenticationMiddleware</span><span class="p">(</span><span class="n">AbstractAuthenticationMiddleware</span><span class="p">):</span>
-</span><span data-line="22">    <span class="k">async</span> <span class="k">def</span> <span class="nf">authenticate_request</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">connection</span><span class="p">:</span> <span class="n">ASGIConnection</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AuthenticationResult</span><span class="p">:</span>
-</span><span data-line="23"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Given a request, parse the request api key stored in the header and retrieve the user correlating to the token from the DB&quot;&quot;&quot;</span>
-</span><span data-line="24">
-</span><span data-line="25">        <span class="c1"># retrieve the auth header</span>
-</span><span data-line="26">        <span class="n">auth_header</span> <span class="o">=</span> <span class="n">connection</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">API_KEY_HEADER</span><span class="p">)</span>
-</span><span data-line="27">        <span class="k">if</span> <span class="ow">not</span> <span class="n">auth_header</span><span class="p">:</span>
-</span><span data-line="28">            <span class="k">raise</span> <span class="n">NotAuthorizedException</span><span class="p">()</span>
-</span><span data-line="29">
-</span><span data-line="30">        <span class="c1"># decode the token, the result is a ``Token`` model instance</span>
-</span><span data-line="31">        <span class="n">token</span> <span class="o">=</span> <span class="n">decode_jwt_token</span><span class="p">(</span><span class="n">encoded_token</span><span class="o">=</span><span class="n">auth_header</span><span class="p">)</span>
-</span><span data-line="32">
-</span><span data-line="33">        <span class="n">engine</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="s2">&quot;AsyncEngine&quot;</span><span class="p">,</span> <span class="n">connection</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">postgres_connection</span><span class="p">)</span>
-</span><span data-line="34">        <span class="k">async</span> <span class="k">with</span> <span class="n">AsyncSession</span><span class="p">(</span><span class="n">engine</span><span class="p">)</span> <span class="k">as</span> <span class="n">async_session</span><span class="p">:</span>
-</span><span data-line="35">            <span class="k">async</span> <span class="k">with</span> <span class="n">async_session</span><span class="o">.</span><span class="n">begin</span><span class="p">():</span>
-</span><span data-line="36">                <span class="n">user</span> <span class="o">=</span> <span class="k">await</span> <span class="n">async_session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">select</span><span class="p">(</span><span class="n">User</span><span class="p">)</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">User</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">token</span><span class="o">.</span><span class="n">sub</span><span class="p">))</span>
-</span><span data-line="37">        <span class="k">if</span> <span class="ow">not</span> <span class="n">user</span><span class="p">:</span>
-</span><span data-line="38">            <span class="k">raise</span> <span class="n">NotAuthorizedException</span><span class="p">()</span>
-</span><span data-line="39">        <span class="k">return</span> <span class="n">AuthenticationResult</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">,</span> <span class="n">auth</span><span class="o">=</span><span class="n">token</span><span class="p">)</span>
+<div class="code-block-caption"><span class="caption-text">main.py</span><a class="headerlink" href="#id4" title="Permalink to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="c1"># you can optionally exclude certain paths from authentication.</span>
+</span><span data-line="2"><span class="c1"># the following excludes all routes mounted at or under `/schema*`</span>
+</span><span data-line="3"><span class="n">auth_mw</span> <span class="o">=</span> <span class="n">DefineMiddleware</span><span class="p">(</span><span class="n">CustomAuthenticationMiddleware</span><span class="p">,</span> <span class="n">exclude</span><span class="o">=</span><span class="s2">&quot;schema&quot;</span><span class="p">)</span>
+</span><span data-line="4">
+</span><span data-line="5"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
+</span><span data-line="6">    <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">site_index</span><span class="p">,</span> <span class="n">my_http_handler</span><span class="p">,</span> <span class="n">my_ws_handler</span><span class="p">],</span>
+</span><span data-line="7">    <span class="n">middleware</span><span class="o">=</span><span class="p">[</span><span class="n">auth_mw</span><span class="p">],</span>
+</span><span data-line="8">    <span class="n">dependencies</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;some_dependency&quot;</span><span class="p">:</span> <span class="n">Provide</span><span class="p">(</span><span class="n">my_dependency</span><span class="p">)},</span>
+</span><span data-line="9"><span class="p">)</span>
 </span></pre></div>
 </div>
 </div>
-</div>
-</details><p>Finally, we need to pass our middleware to the Litestar constructor:</p>
-<div class="literal-block-wrapper docutils container" id="id5">
-<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">my_app/main.py</span></code></span><a class="headerlink" href="#id5" title="Permalink to this code">¶</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span>
-</span><span data-line="2"><span class="kn">from</span> <span class="nn">litestar.middleware.base</span> <span class="kn">import</span> <span class="n">DefineMiddleware</span>
-</span><span data-line="3">
-</span><span data-line="4"><span class="kn">from</span> <span class="nn">my_app.security.authentication_middleware</span> <span class="kn">import</span> <span class="n">JWTAuthenticationMiddleware</span>
-</span><span data-line="5">
-</span><span data-line="6"><span class="c1"># you can optionally exclude certain paths from authentication.</span>
-</span><span data-line="7"><span class="c1"># the following excludes all routes mounted at or under `/schema*`</span>
-</span><span data-line="8"><span class="n">auth_mw</span> <span class="o">=</span> <span class="n">DefineMiddleware</span><span class="p">(</span><span class="n">JWTAuthenticationMiddleware</span><span class="p">,</span> <span class="n">exclude</span><span class="o">=</span><span class="s2">&quot;schema&quot;</span><span class="p">)</span>
-</span><span data-line="9">
-</span><span data-line="10"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="o">...</span><span class="p">],</span> <span class="n">middleware</span><span class="o">=</span><span class="p">[</span><span class="n">auth_mw</span><span class="p">])</span>
-</span></pre></div>
-</div>
-</div>
-<p>That is it. <code class="docutils literal notranslate"><span class="pre">JWTAuthenticationMiddleware</span></code> will now run for every request, and we would be able to access these in a
+<p>That is it. <code class="docutils literal notranslate"><span class="pre">CustomAuthenticationMiddleware</span></code> will now run for every request, and we would be able to access these in a
 http route handler in the following way:</p>
-<div class="literal-block-wrapper docutils container" id="id6">
-<div class="code-block-caption"><span class="caption-text">Accessing the user and auth in a route handler with <code class="docutils literal notranslate"><span class="pre">JWTAuthenticationMiddleware</span></code></span><a class="headerlink" href="#id6" title="Permalink to this code">¶</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Request</span><span class="p">,</span> <span class="n">get</span>
-</span><span data-line="2"><span class="kn">from</span> <span class="nn">litestar.datastructures</span> <span class="kn">import</span> <span class="n">State</span>
-</span><span data-line="3">
-</span><span data-line="4"><span class="kn">from</span> <span class="nn">my_app.db.models</span> <span class="kn">import</span> <span class="n">User</span>
-</span><span data-line="5"><span class="kn">from</span> <span class="nn">my_app.security.jwt</span> <span class="kn">import</span> <span class="n">Token</span>
-</span><span data-line="6">
-</span><span data-line="7">
-</span><span data-line="8"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
-</span><span data-line="9"><span class="k">def</span> <span class="nf">my_route_handler</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">[</span><span class="n">User</span><span class="p">,</span> <span class="n">Token</span><span class="p">,</span> <span class="n">State</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="10">  <span class="n">user</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">user</span>  <span class="c1"># correctly typed as User</span>
-</span><span data-line="11">  <span class="n">auth</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">auth</span>  <span class="c1"># correctly typed as Token</span>
-</span><span data-line="12">  <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">User</span><span class="p">)</span>
-</span><span data-line="13">  <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">auth</span><span class="p">,</span> <span class="n">Token</span><span class="p">)</span>
+<div class="literal-block-wrapper docutils container" id="id5">
+<div class="code-block-caption"><span class="caption-text">Accessing the user and auth in a http route handler with <code class="docutils literal notranslate"><span class="pre">CustomAuthenticationMiddleware</span></code></span><a class="headerlink" href="#id5" title="Permalink to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+</span><span data-line="2"><span class="k">def</span> <span class="nf">my_http_handler</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">[</span><span class="n">MyUser</span><span class="p">,</span> <span class="n">MyToken</span><span class="p">,</span> <span class="n">State</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="3">    <span class="n">user</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">user</span>  <span class="c1"># correctly typed as MyUser</span>
+</span><span data-line="4">    <span class="n">auth</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">auth</span>  <span class="c1"># correctly typed as MyToken</span>
+</span><span data-line="5">    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">MyUser</span><span class="p">)</span>
+</span><span data-line="6">    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">auth</span><span class="p">,</span> <span class="n">MyToken</span><span class="p">)</span>
 </span></pre></div>
 </div>
 </div>
 <p>Or for a websocket route:</p>
-<div class="literal-block-wrapper docutils container" id="id7">
-<div class="code-block-caption"><span class="caption-text">Accessing the user and auth in a websocket route handler with <code class="docutils literal notranslate"><span class="pre">JWTAuthenticationMiddleware</span></code></span><a class="headerlink" href="#id7" title="Permalink to this code">¶</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">WebSocket</span><span class="p">,</span> <span class="n">websocket</span>
-</span><span data-line="2"><span class="kn">from</span> <span class="nn">litestar.datastructures</span> <span class="kn">import</span> <span class="n">State</span>
-</span><span data-line="3">
-</span><span data-line="4"><span class="kn">from</span> <span class="nn">my_app.db.models</span> <span class="kn">import</span> <span class="n">User</span>
-</span><span data-line="5"><span class="kn">from</span> <span class="nn">my_app.security.jwt</span> <span class="kn">import</span> <span class="n">Token</span>
-</span><span data-line="6">
-</span><span data-line="7">
-</span><span data-line="8"><span class="nd">@websocket</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
-</span><span data-line="9"><span class="k">async</span> <span class="k">def</span> <span class="nf">my_route_handler</span><span class="p">(</span><span class="n">socket</span><span class="p">:</span> <span class="n">WebSocket</span><span class="p">[</span><span class="n">User</span><span class="p">,</span> <span class="n">Token</span><span class="p">,</span> <span class="n">State</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="10">   <span class="n">user</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">user</span>  <span class="c1"># correctly typed as User</span>
-</span><span data-line="11">   <span class="n">auth</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">auth</span>  <span class="c1"># correctly typed as Token</span>
-</span><span data-line="12">   <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">User</span><span class="p">)</span>
-</span><span data-line="13">   <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">auth</span><span class="p">,</span> <span class="n">Token</span><span class="p">)</span>
+<div class="literal-block-wrapper docutils container" id="id6">
+<div class="code-block-caption"><span class="caption-text">Accessing the user and auth in a websocket route handler with <code class="docutils literal notranslate"><span class="pre">CustomAuthenticationMiddleware</span></code></span><a class="headerlink" href="#id6" title="Permalink to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="nd">@websocket</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+</span><span data-line="2"><span class="k">async</span> <span class="k">def</span> <span class="nf">my_ws_handler</span><span class="p">(</span><span class="n">socket</span><span class="p">:</span> <span class="n">WebSocket</span><span class="p">[</span><span class="n">MyUser</span><span class="p">,</span> <span class="n">MyToken</span><span class="p">,</span> <span class="n">State</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="3">    <span class="n">user</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">user</span>  <span class="c1"># correctly typed as MyUser</span>
+</span><span data-line="4">    <span class="n">auth</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">auth</span>  <span class="c1"># correctly typed as MyToken</span>
+</span><span data-line="5">    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">MyUser</span><span class="p">)</span>
+</span><span data-line="6">    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">auth</span><span class="p">,</span> <span class="n">MyToken</span><span class="p">)</span>
 </span></pre></div>
 </div>
 </div>
 <p>And if you would like to exclude individual routes outside those configured:</p>
-<details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
-<summary class="sd-summary-title sd-card-header">
-Click to see how to exclude individual routes from <code class="docutils literal notranslate"><span class="pre">JWTAuthenticationMiddleware</span></code><div class="sd-summary-down docutils">
-<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-down" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M5.22 8.72a.75.75 0 000 1.06l6.25 6.25a.75.75 0 001.06 0l6.25-6.25a.75.75 0 00-1.06-1.06L12 14.44 6.28 8.72a.75.75 0 00-1.06 0z"></path></svg></div>
-<div class="sd-summary-up docutils">
-<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-up" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M18.78 15.28a.75.75 0 000-1.06l-6.25-6.25a.75.75 0 00-1.06 0l-6.25 6.25a.75.75 0 101.06 1.06L12 9.56l5.72 5.72a.75.75 0 001.06 0z"></path></svg></div>
-</summary><div class="sd-summary-content sd-card-body docutils">
-<div class="literal-block-wrapper docutils container" id="id8">
-<div class="code-block-caption"><span class="caption-text">Excluding individual routes from <code class="docutils literal notranslate"><span class="pre">JWTAuthenticationMiddleware</span></code></span><a class="headerlink" href="#id8" title="Permalink to this code">¶</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">import</span> <span class="nn">anyio</span>
-</span><span data-line="2"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">MediaType</span><span class="p">,</span> <span class="n">Response</span><span class="p">,</span> <span class="n">get</span>
-</span><span data-line="3"><span class="kn">from</span> <span class="nn">litestar.exceptions</span> <span class="kn">import</span> <span class="n">NotFoundException</span>
-</span><span data-line="4"><span class="kn">from</span> <span class="nn">litestar.middleware.base</span> <span class="kn">import</span> <span class="n">DefineMiddleware</span>
-</span><span data-line="5">
-</span><span data-line="6"><span class="kn">from</span> <span class="nn">my_app.security.authentication_middleware</span> <span class="kn">import</span> <span class="n">JWTAuthenticationMiddleware</span>
-</span><span data-line="7">
-</span><span data-line="8"><span class="c1"># you can optionally exclude certain paths from authentication.</span>
-</span><span data-line="9"><span class="c1"># the following excludes all routes mounted at or under `/schema*`</span>
-</span><span data-line="10"><span class="c1"># additionally,</span>
-</span><span data-line="11"><span class="c1"># you can modify the default exclude key of &quot;exclude_from_auth&quot;, by overriding the `exclude_from_auth_key` parameter on the Authentication Middleware</span>
-</span><span data-line="12"><span class="n">auth_mw</span> <span class="o">=</span> <span class="n">DefineMiddleware</span><span class="p">(</span><span class="n">JWTAuthenticationMiddleware</span><span class="p">,</span> <span class="n">exclude</span><span class="o">=</span><span class="s2">&quot;schema&quot;</span><span class="p">)</span>
-</span><span data-line="13">
-</span><span data-line="14">
-</span><span data-line="15"><span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">exclude_from_auth</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</span><span data-line="16"><span class="k">async</span> <span class="k">def</span> <span class="nf">site_index</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">:</span>
-</span><span data-line="17"><span class="w">   </span><span class="sd">&quot;&quot;&quot;Site index&quot;&quot;&quot;</span>
-</span><span data-line="18">   <span class="n">exists</span> <span class="o">=</span> <span class="k">await</span> <span class="n">anyio</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="s2">&quot;index.html&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span>
-</span><span data-line="19">   <span class="k">if</span> <span class="n">exists</span><span class="p">:</span>
-</span><span data-line="20">       <span class="k">async</span> <span class="k">with</span> <span class="k">await</span> <span class="n">anyio</span><span class="o">.</span><span class="n">open_file</span><span class="p">(</span><span class="n">anyio</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="s2">&quot;index.html&quot;</span><span class="p">))</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
-</span><span data-line="21">           <span class="n">content</span> <span class="o">=</span> <span class="k">await</span> <span class="n">file</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
-</span><span data-line="22">           <span class="k">return</span> <span class="n">Response</span><span class="p">(</span><span class="n">content</span><span class="o">=</span><span class="n">content</span><span class="p">,</span> <span class="n">status_code</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">media_type</span><span class="o">=</span><span class="n">MediaType</span><span class="o">.</span><span class="n">HTML</span><span class="p">)</span>
-</span><span data-line="23">   <span class="k">raise</span> <span class="n">NotFoundException</span><span class="p">(</span><span class="s2">&quot;Site index was not found&quot;</span><span class="p">)</span>
-</span><span data-line="24">
-</span><span data-line="25">
-</span><span data-line="26"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">site_index</span><span class="p">],</span> <span class="n">middleware</span><span class="o">=</span><span class="p">[</span><span class="n">auth_mw</span><span class="p">])</span>
+<div class="literal-block-wrapper docutils container" id="id7">
+<div class="code-block-caption"><span class="caption-text">Excluding individual routes from <code class="docutils literal notranslate"><span class="pre">CustomAuthenticationMiddleware</span></code></span><a class="headerlink" href="#id7" title="Permalink to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">exclude_from_auth</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span data-line="2"><span class="k">async</span> <span class="k">def</span> <span class="nf">site_index</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">:</span>
+</span><span data-line="3"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Site index&quot;&quot;&quot;</span>
+</span><span data-line="4">    <span class="n">exists</span> <span class="o">=</span> <span class="k">await</span> <span class="n">anyio</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="s2">&quot;index.html&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span>
+</span><span data-line="5">    <span class="k">if</span> <span class="n">exists</span><span class="p">:</span>
+</span><span data-line="6">        <span class="k">async</span> <span class="k">with</span> <span class="k">await</span> <span class="n">anyio</span><span class="o">.</span><span class="n">open_file</span><span class="p">(</span><span class="n">anyio</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="s2">&quot;index.html&quot;</span><span class="p">))</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+</span><span data-line="7">            <span class="n">content</span> <span class="o">=</span> <span class="k">await</span> <span class="n">file</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+</span><span data-line="8">            <span class="k">return</span> <span class="n">Response</span><span class="p">(</span><span class="n">content</span><span class="o">=</span><span class="n">content</span><span class="p">,</span> <span class="n">status_code</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">media_type</span><span class="o">=</span><span class="n">MediaType</span><span class="o">.</span><span class="n">HTML</span><span class="p">)</span>
+</span><span data-line="9">    <span class="k">raise</span> <span class="n">NotFoundException</span><span class="p">(</span><span class="s2">&quot;Site index was not found&quot;</span><span class="p">)</span>
 </span></pre></div>
 </div>
 </div>
-</div>
-</details><p>And of course use the same kind of mechanism for dependencies:</p>
-<div class="literal-block-wrapper docutils container" id="id9">
-<div class="code-block-caption"><span class="caption-text">Using <code class="docutils literal notranslate"><span class="pre">JWTAuthenticationMiddleware</span></code> in a dependency</span><a class="headerlink" href="#id9" title="Permalink to this code">¶</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span>
-</span><span data-line="2">
-</span><span data-line="3"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Request</span><span class="p">,</span> <span class="n">Provide</span><span class="p">,</span> <span class="n">Router</span>
-</span><span data-line="4"><span class="kn">from</span> <span class="nn">litestar.datastructures</span> <span class="kn">import</span> <span class="n">State</span>
-</span><span data-line="5">
-</span><span data-line="6"><span class="kn">from</span> <span class="nn">my_app.db.models</span> <span class="kn">import</span> <span class="n">User</span>
-</span><span data-line="7"><span class="kn">from</span> <span class="nn">my_app.security.jwt</span> <span class="kn">import</span> <span class="n">Token</span>
-</span><span data-line="8">
-</span><span data-line="9">
-</span><span data-line="10"><span class="k">async</span> <span class="k">def</span> <span class="nf">my_dependency</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">[</span><span class="n">User</span><span class="p">,</span> <span class="n">Token</span><span class="p">,</span> <span class="n">State</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
-</span><span data-line="11">   <span class="n">user</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">user</span>  <span class="c1"># correctly typed as User</span>
-</span><span data-line="12">   <span class="n">auth</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">auth</span>  <span class="c1"># correctly typed as Token</span>
-</span><span data-line="13">   <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">User</span><span class="p">)</span>
-</span><span data-line="14">   <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">auth</span><span class="p">,</span> <span class="n">Token</span><span class="p">)</span>
-</span><span data-line="15">
-</span><span data-line="16">
-</span><span data-line="17"><span class="n">my_router</span> <span class="o">=</span> <span class="n">Router</span><span class="p">(</span>
-</span><span data-line="18">   <span class="n">path</span><span class="o">=</span><span class="s2">&quot;sub-path/&quot;</span><span class="p">,</span> <span class="n">dependencies</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;some_dependency&quot;</span><span class="p">:</span> <span class="n">Provide</span><span class="p">(</span><span class="n">my_dependency</span><span class="p">)}</span>
-</span><span data-line="19"><span class="p">)</span>
+<p>And of course use the same kind of mechanism for dependencies:</p>
+<div class="literal-block-wrapper docutils container" id="id8">
+<div class="code-block-caption"><span class="caption-text">Using <code class="docutils literal notranslate"><span class="pre">CustomAuthenticationMiddleware</span></code> in a dependency</span><a class="headerlink" href="#id8" title="Permalink to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">async</span> <span class="k">def</span> <span class="nf">my_dependency</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">[</span><span class="n">MyUser</span><span class="p">,</span> <span class="n">MyToken</span><span class="p">,</span> <span class="n">State</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+</span><span data-line="2">    <span class="n">user</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">user</span>  <span class="c1"># correctly typed as MyUser</span>
+</span><span data-line="3">    <span class="n">auth</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">auth</span>  <span class="c1"># correctly typed as MyToken</span>
+</span><span data-line="4">    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">MyUser</span><span class="p">)</span>
+</span><span data-line="5">    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">auth</span><span class="p">,</span> <span class="n">MyToken</span><span class="p">)</span>
 </span></pre></div>
 </div>
 </div>
