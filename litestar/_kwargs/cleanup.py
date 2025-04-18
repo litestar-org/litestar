@@ -17,9 +17,8 @@ __all__ = ("DependencyCleanupGroup",)
 
 
 if TYPE_CHECKING:
-    from types import TracebackType
-
     from collections.abc import AsyncGenerator, Awaitable, Generator
+    from types import TracebackType
 
     from litestar.types import AnyGenerator
 
