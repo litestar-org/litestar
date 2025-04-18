@@ -65,7 +65,7 @@ our application.
             :caption: SQLAlchemy Async Marking Fields
             :language: python
             :linenos:
-            :emphasize-lines: 9,23,28
+            :emphasize-lines: 10,23
 
    .. tab-item:: Sync
 
@@ -73,7 +73,7 @@ our application.
             :caption: SQLAlchemy Sync Marking Fields
             :language: python
             :linenos:
-            :emphasize-lines: 9,23,28
+            :emphasize-lines: 10,23
 
 In the above example, a new attribute called ``super_secret_value`` has been added to the model, and a value set for it
 in the handler. However, due to "marking" the field as "private", when the model is serialized, the value is not present
