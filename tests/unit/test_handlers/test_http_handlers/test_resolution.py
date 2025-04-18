@@ -54,9 +54,10 @@ def test_resolve_request_max_body_size_empty_on_all_layers_raises() -> None:
     def handler_one() -> None:
         pass
 
-    Litestar([handler_one], request_max_body_size=Empty)  # type: ignore[arg-type]
     with pytest.raises(ImproperlyConfiguredException):
-        handler_one.resolve_request_max_body_size()
+        # raised implicitly when setting up the app since
+        # 'resolve_request_max_body_size' is used by 'RequestMaxBodySizeMiddleware'
+        Litestar([handler_one], request_max_body_size=Empty)  # type: ignore[arg-type]
 
     @post("/")
     def handler_two() -> None:

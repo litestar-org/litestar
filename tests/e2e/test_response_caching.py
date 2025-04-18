@@ -7,13 +7,13 @@ from uuid import uuid4
 
 import msgspec
 import pytest
+from pytest_mock import MockerFixture
 
 from litestar import Litestar, Request, Response, get, post
 from litestar.config.compression import CompressionConfig
 from litestar.config.response_cache import CACHE_FOREVER, ResponseCacheConfig
 from litestar.datastructures import State
 from litestar.enums import CompressionEncoding
-from litestar.middleware.response_cache import ResponseCacheMiddleware
 from litestar.status_codes import HTTP_200_OK, HTTP_201_CREATED, HTTP_400_BAD_REQUEST, HTTP_500_INTERNAL_SERVER_ERROR
 from litestar.stores.base import Store
 from litestar.stores.memory import MemoryStore
@@ -214,20 +214,17 @@ def test_does_not_apply_to_non_cached_routes(mock: MagicMock) -> None:
     ],
 )
 def test_middleware_not_applied_to_non_cached_routes(
-    cache: Union[bool, int, Type[CACHE_FOREVER]], expect_applied: bool
+    cache: Union[bool, int, Type[CACHE_FOREVER]],
+    expect_applied: bool,
+    mocker: MockerFixture,
 ) -> None:
+    mocked_middleware = mocker.patch("litestar.middleware.response_cache.ResponseCacheMiddleware")
+
     @get(path="/", cache=cache)
     def handler() -> None: ...
 
-    client = create_test_client(route_handlers=[handler])
-    unpacked_middleware = []
-    cur = client.app.asgi_router.root_route_map_node.children["/"].asgi_handlers["GET"][0]
-    while hasattr(cur, "app"):
-        unpacked_middleware.append(cur)
-        cur = cur.app
-    unpacked_middleware.append(cur)
-
-    assert len([m for m in unpacked_middleware if isinstance(m, ResponseCacheMiddleware)]) == int(expect_applied)
+    Litestar([handler])
+    assert mocked_middleware.called == expect_applied
 
 
 async def test_compression_applies_before_cache() -> None:

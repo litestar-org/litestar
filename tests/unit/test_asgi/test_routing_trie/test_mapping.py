@@ -16,7 +16,7 @@ def test_build_route_middleware_stack_no_middleware(monkeypatch: pytest.MonkeyPa
     # exception handling middleware. Exceptions can safely be caught by the outermost exception
     # handling middleware.
 
-    @get("/")
+    @get("/", request_max_body_size=None)
     async def handler() -> None:
         pass
 
@@ -34,7 +34,7 @@ def test_build_route_middleware_stack_with_middleware(monkeypatch: pytest.Monkey
     mock_middleware = MagicMock()
     del mock_middleware.__iter__
 
-    @get("/", middleware=[mock_middleware])
+    @get("/", middleware=[mock_middleware], request_max_body_size=None)
     async def handler() -> None:
         pass
 
@@ -65,7 +65,7 @@ def test_build_route_middleware_stack_with_starlette_middleware(monkeypatch: pyt
     mock_middleware_arg = MagicMock()
     del mock_middleware.__iter__
 
-    @get("/", middleware=[Middleware(mock_middleware, arg=mock_middleware_arg)])  # type: ignore[list-item]
+    @get("/", middleware=[Middleware(mock_middleware, arg=mock_middleware_arg)], request_max_body_size=None)  # type: ignore[list-item]
     async def handler() -> None:
         pass
 

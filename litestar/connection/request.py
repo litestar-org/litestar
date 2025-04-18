@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import math
 import warnings
 from typing import TYPE_CHECKING, Any, AsyncGenerator, Generic, cast
 
@@ -23,7 +22,6 @@ from litestar.exceptions import (
     LitestarException,
     LitestarWarning,
 )
-from litestar.exceptions.http_exceptions import RequestEntityTooLarge
 from litestar.serialization import decode_json, decode_msgpack
 from litestar.types import Empty, HTTPReceiveMessage
 
@@ -185,44 +183,10 @@ class Request(Generic[UserT, AuthT, StateT], ASGIConnection["HTTPRouteHandler", 
             if not self.is_connected:
                 raise InternalServerException("stream consumed")
 
-            announced_content_length = self.content_length
-            # setting this to 'math.inf' as a micro-optimisation; Comparing against a
-            # float is slightly faster than checking if a value is 'None' and then
-            # comparing it to an int. since we expect a limit to be set most of the
-            # time, this is a bit more efficient
-            max_content_length = self.route_handler.resolve_request_max_body_size() or math.inf
-
-            # if the 'content-length' header is set, and exceeds the limit, we can bail
-            # out early before reading anything
-            if announced_content_length is not None and announced_content_length > max_content_length:
-                raise RequestEntityTooLarge
-
-            total_bytes_streamed: int = 0
             while event := cast("HTTPReceiveMessage", await self.receive()):
                 if event["type"] == "http.request":
                     body = event["body"]
                     if body:
-                        total_bytes_streamed += len(body)
-
-                        # if a 'content-length' header was set, check if we have
-                        # received more bytes than specified. in most cases this should
-                        # be caught before it hits the application layer and an ASGI
-                        # server (e.g. uvicorn) will not allow this, but since it's not
-                        # forbidden according to the HTTP or ASGI spec, we err on the
-                        # side of caution and still perform this check.
-                        #
-                        # uvicorn documented behaviour for this case:
-                        # https://github.com/encode/uvicorn/blob/fe3910083e3990695bc19c2ef671dd447262ae18/docs/server-behavior.md?plain=1#L11
-                        if announced_content_length:
-                            if total_bytes_streamed > announced_content_length:
-                                raise ClientException("Malformed request")
-
-                        # we don't have a 'content-length' header, likely a chunked
-                        # transfer. we don't really care and simply check if we have
-                        # received more bytes than allowed
-                        elif total_bytes_streamed > max_content_length:
-                            raise RequestEntityTooLarge
-
                         yield body
 
                     if not event.get("more_body", False):

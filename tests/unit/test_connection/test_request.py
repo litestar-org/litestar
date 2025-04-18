@@ -6,6 +6,8 @@ their API.
 
 from __future__ import annotations
 
+import gzip
+import zlib
 from typing import TYPE_CHECKING, Any, Callable, Dict, Generator
 from unittest.mock import patch
 
@@ -20,17 +22,17 @@ from litestar.exceptions import (
     LitestarWarning,
     SerializationException,
 )
-from litestar.middleware import MiddlewareProtocol
+from litestar.middleware import ASGIMiddleware, MiddlewareProtocol
 from litestar.response.base import ASGIResponse
 from litestar.serialization import encode_json, encode_msgpack
 from litestar.static_files.config import StaticFilesConfig
-from litestar.status_codes import HTTP_400_BAD_REQUEST, HTTP_413_REQUEST_ENTITY_TOO_LARGE
+from litestar.status_codes import HTTP_201_CREATED, HTTP_400_BAD_REQUEST, HTTP_413_REQUEST_ENTITY_TOO_LARGE
 from litestar.testing import TestClient, create_test_client
 
 if TYPE_CHECKING:
     from pathlib import Path
 
-    from litestar.types import ASGIApp, Receive, Scope, Send
+    from litestar.types import ASGIApp, HTTPReceiveMessage, Receive, Scope, Send
 
 
 @get("/", sync_to_thread=False, request_max_body_size=None)
@@ -601,6 +603,51 @@ def test_request_body_exceeds_max_request_body_size_chunked() -> None:
 
         response = client.post("/two", content=generator())
         assert response.status_code == HTTP_413_REQUEST_ENTITY_TOO_LARGE
+
+
+def test_request_body_exceeds_max_request_body_size_pre_gzip_allowed() -> None:
+    # https://github.com/litestar-org/litestar/issues/4125
+    # ensure the request body limits don't apply to e.g. compressed bodies *after*
+    # decompression
+
+    raw_content = b"abcde" * 20
+    gzipped_content = gzip.compress(raw_content)
+    max_body_size = len(gzipped_content)
+    assert len(raw_content) > max_body_size
+
+    # note: This does not handle gzip decompression properly as it omits most edge cases
+    # and sanity checks. it's just for the purposed of this test
+    class DecompressionMiddleware(ASGIMiddleware):
+        async def handle(self, scope: Scope, receive: Receive, send: Send, next_app: ASGIApp) -> None:
+            decompressor = zlib.decompressobj(zlib.MAX_WBITS | 16)
+
+            async def wrapped_receive() -> HTTPReceiveMessage:
+                event = await receive()
+                if event["type"] == "http.request":
+                    body = event["body"]
+                    if body:
+                        return {**event, "body": decompressor.decompress(body)}
+                return event  # type: ignore[return-value]
+
+            await next_app(scope, wrapped_receive, send)
+
+    @post("/one", request_max_body_size=max_body_size)
+    async def handler_one(request: Request) -> int:
+        body = await request.body()
+        return len(body)
+
+    @post("/two", request_max_body_size=max_body_size)
+    async def handler_two(body: bytes) -> int:
+        return len(body)
+
+    with create_test_client([handler_one, handler_two], middleware=[DecompressionMiddleware()]) as client:
+        response = client.post("/one", content=gzipped_content)
+        assert response.status_code == HTTP_201_CREATED
+        assert response.text == str(len(raw_content))
+
+        response = client.post("/two", content=gzipped_content)
+        assert response.status_code == HTTP_201_CREATED
+        assert response.text == str(len(raw_content))
 
 
 def test_request_content_length() -> None:

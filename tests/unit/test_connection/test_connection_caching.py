@@ -125,8 +125,6 @@ async def test_connection_cached_properties_no_scope_or_connection_caching(
             get_mock.assert_has_calls([call(state_key), call("headers")])
         elif state_key == "form":
             get_mock.assert_has_calls([call(state_key), call("content_type")])
-        elif state_key == "body":
-            get_mock.assert_has_calls([call(state_key), call("headers")])
         else:
             get_mock.assert_called_once_with(state_key)
 
@@ -141,8 +139,6 @@ async def test_connection_cached_properties_no_scope_or_connection_caching(
         elif state_key == "form":
             set_mock.assert_has_calls([call("content_type", ANY), call(state_key, ANY)])
         elif state_key in {"accept", "cookies", "content_type"}:
-            set_mock.assert_has_calls([call("headers", ANY), call(state_key, ANY)])
-        elif state_key == "body":
             set_mock.assert_has_calls([call("headers", ANY), call(state_key, ANY)])
         else:
             set_mock.assert_called_once_with(state_key, ANY)

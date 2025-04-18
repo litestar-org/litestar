@@ -184,6 +184,8 @@ def build_route_middleware_stack(
     Returns:
         An ASGIApp that is composed of a "stack" of middlewares.
     """
+    from litestar.handlers import HTTPRouteHandler
+    from litestar.middleware._internal.http_max_body_size import RequestMaxBodySizeMiddleware
     from litestar.middleware.allowed_hosts import AllowedHostsMiddleware
     from litestar.middleware.compression import CompressionMiddleware
     from litestar.middleware.csrf import CSRFMiddleware
@@ -193,8 +195,18 @@ def build_route_middleware_stack(
     asgi_handler: ASGIApp = route.handle  # type: ignore[assignment]
     handler_middleware = route_handler.resolve_middleware()
     has_cached_route = isinstance(route, HTTPRoute) and any(r.cache for r in route.route_handlers)
+    if isinstance(route_handler, HTTPRouteHandler):
+        max_body_size = route_handler.resolve_request_max_body_size()
+    else:
+        max_body_size = None
+
     has_middleware = (
-        app.csrf_config or app.compression_config or has_cached_route or app.allowed_hosts or handler_middleware
+        app.csrf_config
+        or app.compression_config
+        or has_cached_route
+        or app.allowed_hosts
+        or handler_middleware
+        or max_body_size is not None
     )
 
     if has_middleware:
@@ -222,4 +234,11 @@ def build_route_middleware_stack(
                 asgi_handler = handler(app=asgi_handler, **kwargs)
             else:
                 asgi_handler = middleware(app=asgi_handler)  # type: ignore[call-arg]
+
+        if isinstance(route_handler, HTTPRouteHandler) and max_body_size is not None:
+            # ensure limits get checked *before* user defined middleware is applied, to
+            # prevent the case where a middleware might alter the request body size e.g.
+            # by decompressing it
+            asgi_handler = RequestMaxBodySizeMiddleware(max_content_length=max_body_size)(asgi_handler)
+
     return asgi_handler

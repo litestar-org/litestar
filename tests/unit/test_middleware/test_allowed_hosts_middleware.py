@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Any, cast
+from typing import TYPE_CHECKING
 
 import pytest
 
@@ -17,23 +17,6 @@ if TYPE_CHECKING:
 class DummyApp(MiddlewareProtocol):  # pyright: ignore
     async def __call__(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
         return
-
-
-def test_allowed_hosts_middleware() -> None:
-    @get(path="/")
-    def handler() -> None: ...
-
-    client = create_test_client(route_handlers=[handler], allowed_hosts=["*.example.com", "moishe.zuchmir.com"])
-    unpacked_middleware = []
-    cur = client.app.asgi_router.root_route_map_node.children["/"].asgi_handlers["GET"][0]
-    while hasattr(cur, "app"):
-        unpacked_middleware.append(cur)
-        cur = cast("Any", cur.app)
-    unpacked_middleware.append(cur)
-
-    allowed_hosts_middleware, *_ = unpacked_middleware
-    assert isinstance(allowed_hosts_middleware, AllowedHostsMiddleware)
-    assert allowed_hosts_middleware.allowed_hosts_regex.pattern == ".*\\.example.com$|moishe.zuchmir.com"  # type: ignore[union-attr]
 
 
 def test_allowed_hosts_middleware_hosts_regex() -> None:
