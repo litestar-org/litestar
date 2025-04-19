@@ -33,13 +33,15 @@ def __getattr__(attr_name: str) -> object:
         else:  # pragma: no cover
             raise RuntimeError(f"Unhandled module attribute: {attr_name!r}")
 
+        parent_path = ".".join(module.split('.')[:-1])
+        module_name = module.split('.')[-1]
         warn_deprecation(
             deprecated_name=f"litestar.contrib.sqlalchemy.{attr_name}",
             version="2.12",
             kind="import",
             removal_in="3.0",
             info=f"importing {attr_name} from 'litestar.contrib.sqlalchemy' is deprecated, please "
-            f"import it from '{module}' instead",
+            f"import '{module_name}' from '{parent_path}', and call as '{module_name}.{attr_name}' instead",
         )
 
         return value
