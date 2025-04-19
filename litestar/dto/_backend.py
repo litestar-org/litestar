@@ -113,7 +113,8 @@ class DTOBackend:
             rename_fields=self.dto_factory.config.rename_fields,
         )
         self.transfer_model_type = self.create_transfer_model_type(
-            model_name=model_type.__name__, field_definitions=self.parsed_field_definitions, 
+            model_name=model_type.__name__,
+            field_definitions=self.parsed_field_definitions,
         )
         self.dto_data_type: type[DTOData] | None = None
 
