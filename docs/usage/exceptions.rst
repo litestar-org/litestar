@@ -78,10 +78,8 @@ Otherwise, the responses will default to ``500 - "Internal Server Error"``.
 
 The following handler for instance will default to ``MediaType.TEXT`` so the exception will be raised as text.
 
-.. literalinclude:: ../../tests/e2e/test_exception_handlers/test_exception_handlers.py
+.. literalinclude:: /examples/exceptions/implicit_media_type.py
     :language: python
-    :caption: Example of a handler that returns a text response
-    :lines: 89-91
 
 You can customize exception handling by passing a dictionary, mapping either status codes
 or exception classes to callables. For example, if you would like to replace the default
