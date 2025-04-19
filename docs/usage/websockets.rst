@@ -380,7 +380,7 @@ To stream and receive data concurrently, the stream can be set up manually using
 
                 .. literalinclude:: ../../tests/examples/test_websockets.py
                     :language: python
-                    :lines: 20-30
+                    :lines: 18-25
 
 
     .. tab-item:: websocket handler
@@ -396,7 +396,7 @@ To stream and receive data concurrently, the stream can be set up manually using
 
                 .. literalinclude:: ../../tests/examples/test_websockets.py
                     :language: python
-                    :lines: 33-45
+                    :lines: 28-35
 
 Transport modes
 ---------------
