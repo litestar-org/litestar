@@ -83,3 +83,15 @@ def test_exception_handler_with_custom_request_class() -> None:
 
     with create_test_client([index], exception_handlers={Exception: handler}, request_class=CustomRequest) as client:
         client.get("/")
+
+
+def test_exception_handler_implicit_media_type() -> None:
+    @get(sync_to_thread=False)
+    def handler(q: int) -> str:
+        raise ValueError
+
+    with create_test_client([handler]) as client:
+        response = client.get("/", params={"q": 1})
+        assert response.status_code == 500
+        assert response.headers["content-type"] == "text/plain; charset=utf-8"
+        assert "ValueError" in response.text
