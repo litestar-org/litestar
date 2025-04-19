@@ -114,7 +114,7 @@ class DTOBackend:
             rename_fields=self.dto_factory.config.rename_fields,
         )
         self.transfer_model_type = self.create_transfer_model_type(
-            model_name=model_type.__name__, field_definitions=self.parsed_field_definitions
+            model_name=model_type.__name__, field_definitions=self.parsed_field_definitions, 
         )
         self.dto_data_type: type[DTOData] | None = None
 
@@ -208,7 +208,7 @@ class DTOBackend:
         Returns:
             A ``BackendT`` class.
         """
-        struct_name = self._create_transfer_model_name(model_name)
+        struct_name = self.dto_factory.__schema_name__ or self._create_transfer_model_name(model_name)
 
         struct = _create_struct_for_field_definitions(
             model_name=struct_name,
