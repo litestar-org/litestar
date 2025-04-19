@@ -52,6 +52,7 @@ class AbstractDTO(Generic[T]):
     """If ``annotation`` is an iterable, this is the inner type, otherwise will be the same as ``annotation``."""
 
     _dto_backends: ClassVar[dict[str, _BackendDict]] = {}
+    __schema_name__ = None
 
     def __init__(self, asgi_connection: ASGIConnection) -> None:
         """Create an AbstractDTOFactory type.
