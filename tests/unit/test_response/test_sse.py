@@ -118,5 +118,5 @@ async def test_sse_ping_events() -> None:
                 assert events[i].event == " ping"
                 assert events[i].data == ""
 
-            assert events[9].event == "message"
-            assert events[9].data == "0"
+            assert events[10].event == "message"
+            assert events[10].data == "0"
