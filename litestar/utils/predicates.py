@@ -24,12 +24,13 @@ from typing import (
     Set,
     Tuple,
     TypeVar,
+    get_origin,
 )
 
 from typing_extensions import (
+    Annotated,
     ParamSpec,
     TypeGuard,
-    _AnnotatedAlias,
     get_args,
 )
 
@@ -290,7 +291,7 @@ def is_annotated_type(annotation: Any) -> bool:
     Returns:
         A boolean.
     """
-    return isinstance(annotation, _AnnotatedAlias) and getattr(annotation, "__args__", None) is not None
+    return get_origin(annotation) is Annotated
 
 
 def is_undefined_sentinel(value: Any) -> bool:
