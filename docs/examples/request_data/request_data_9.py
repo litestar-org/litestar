@@ -15,7 +15,7 @@ async def handle_file_upload(
     file_contents = {}
     for name, file in data.items():
         content = await file.read()
-        file_contents[name] = content.decode()
+        file_contents[file.filename] = len(content)
 
     return file_contents
 
