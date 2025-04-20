@@ -120,3 +120,8 @@ async def test_sse_ping_events() -> None:
 
             assert events[10].event == "message"
             assert events[10].data == "0"
+
+
+async def test_sse_negatove_ping_interval() -> None:
+    with pytest.raises(ValueError):
+        ServerSentEvent(content="content", ping_interval=-2)
