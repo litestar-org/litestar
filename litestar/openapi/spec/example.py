@@ -8,6 +8,9 @@ from litestar.openapi.spec.base import BaseSchemaObject
 
 @dataclass
 class Example(BaseSchemaObject):
+    id: str | None = None
+    """Optional ID for the example. When provided, this will be used as the key in the OpenAPI specification."""
+
     summary: str | None = None
     """Short description for the example."""
 
