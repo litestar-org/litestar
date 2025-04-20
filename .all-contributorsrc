@@ -1973,6 +1973,15 @@
       "contributions": [
         "doc"
       ]
+    },
+    {
+      "login": "Jannchie",
+      "name": "Jianqi Pan",
+      "avatar_url": "https://avatars.githubusercontent.com/u/29743310?v=4",
+      "profile": "https://jannchie.com",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,
