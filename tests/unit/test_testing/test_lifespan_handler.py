@@ -1,4 +1,4 @@
-import asyncio
+from asyncio import get_event_loop
 
 import pytest
 
@@ -43,7 +43,7 @@ async def test_implicit_startup() -> None:
 async def test_multiple_clients_event_loop() -> None:
     @get("/")
     def return_loop_id() -> dict:
-        return {"loop_id": id(asyncio.get_event_loop())}
+        return {"loop_id": id(get_event_loop())}
 
     app = Litestar(route_handlers=[return_loop_id])
 
