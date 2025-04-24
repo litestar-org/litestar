@@ -12,7 +12,7 @@ from litestar.enums import ParamType
 from litestar.exceptions import ImproperlyConfiguredException, ValidationException
 from litestar.params import Dependency, Parameter
 from litestar.status_codes import HTTP_400_BAD_REQUEST, HTTP_500_INTERNAL_SERVER_ERROR
-from litestar.testing import RequestFactory, create_test_client
+from litestar.testing import RequestFactory, create_async_test_client, create_test_client
 from litestar.utils.signature import ParsedSignature
 
 
@@ -339,5 +339,30 @@ def test_separate_model_namespace() -> None:
     with create_test_client([get_connection, get_deserializer], raise_server_exceptions=True, debug=True) as client:
         assert client.get("/connection").text == "connection"
         res = client.get("/deserializer")
+        assert res.status_code == 500
+        assert "Expected `int`, got `str` - at `$.deserializer`" in res.text
+
+
+async def test_separate_model_namespace_async_client() -> None:
+    async def provide_connection() -> str:
+        return "connection"
+
+    @get("/connection", dependencies={"connection": provide_connection})
+    async def get_connection(connection: str) -> str:
+        return connection
+
+    async def provide_deserializer() -> str:
+        return "deserializer"
+
+    @get("/deserializer", dependencies={"deserializer": provide_deserializer})
+    async def get_deserializer(deserializer: int) -> str:
+        return deserializer  # type: ignore[return-value]
+
+    async with create_async_test_client(
+        [get_connection, get_deserializer], raise_server_exceptions=True, debug=True
+    ) as client:
+        c = await client.get("/connection")
+        assert c.text == "connection"
+        res = await client.get("/deserializer")
         assert res.status_code == 500
         assert "Expected `int`, got `str` - at `$.deserializer`" in res.text
