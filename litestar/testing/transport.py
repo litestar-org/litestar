@@ -285,7 +285,7 @@ class TestClientTransport(Generic[T]):
             "server": (host, port),
         }
 
-    def handle_async_request(self, request: Request) -> Response:
+    def handle_request(self, request: Request) -> Response:
         scope = self.parse_request(request=request)
         if scope["type"] == "websocket":
             scope.update(
