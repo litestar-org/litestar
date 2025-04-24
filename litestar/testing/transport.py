@@ -194,9 +194,6 @@ class AsyncTestClientTransport(BaseTestClientTransport):
         else:
             return self._prepare_response(request, context, raw_kwargs)
 
-    async def aclose(self) -> None:
-        """Close the transport."""
-
 
 class TestClientTransport(BaseTestClientTransport):
     def handle_request(self, request: Request) -> Response:
