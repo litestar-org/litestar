@@ -168,18 +168,16 @@ class BaseTestClientTransport(Generic[T]):
 class AsyncTestClientTransport(BaseTestClientTransport):
     async def handle_async_request(self, request: Request) -> Response:
         raw_kwargs, scope = self._prepare_request(request)
-
-        response_complete = Event()
-        context: SendReceiveContext = {
-            "response_complete": response_complete,
-            "request_complete": False,
-            "raw_kwargs": raw_kwargs,
-            "response_started": False,
-            "template": None,
-            "context": None,
-        }
-
         try:
+            response_complete = Event()
+            context: SendReceiveContext = {
+                "response_complete": response_complete,
+                "request_complete": False,
+                "raw_kwargs": raw_kwargs,
+                "response_started": False,
+                "template": None,
+                "context": None,
+            }
             await self.client.app(
                 scope,
                 self.create_receive(request=request, context=context),
