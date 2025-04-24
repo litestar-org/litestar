@@ -138,9 +138,7 @@ class BaseTestClientTransport(Generic[T]):
             "server": (host, port),
         }
 
-
-class AsyncTestClientTransport(BaseTestClientTransport):
-    async def handle_async_request(self, request: Request) -> Response:
+    def _prepare_request(self, request: Request) -> tuple[dict[str, Any], dict[str, Any]]:
         scope = self.parse_request(request=request)
         if scope["type"] == "websocket":
             scope.update(
@@ -148,10 +146,15 @@ class AsyncTestClientTransport(BaseTestClientTransport):
             )
             session = WebSocketTestSession(client=self.client, scope=cast("WebSocketScope", scope))
             raise ConnectionUpgradeExceptionError(session)
-
         scope.update(method=request.method, http_version="1.1", extensions={"http.response.template": {}})
-
         raw_kwargs: dict[str, Any] = {"stream": BytesIO()}
+        return raw_kwargs, scope
+
+
+class AsyncTestClientTransport(BaseTestClientTransport):
+    async def handle_async_request(self, request: Request) -> Response:
+        raw_kwargs, scope = self._prepare_request(request)
+
         response_complete = Event()
         context: SendReceiveContext = {
             "response_complete": response_complete,
@@ -194,17 +197,7 @@ class AsyncTestClientTransport(BaseTestClientTransport):
 
 class TestClientTransport(BaseTestClientTransport):
     def handle_request(self, request: Request) -> Response:
-        scope = self.parse_request(request=request)
-        if scope["type"] == "websocket":
-            scope.update(
-                subprotocols=[value.strip() for value in request.headers.get("sec-websocket-protocol", "").split(",")]
-            )
-            session = WebSocketTestSession(client=self.client, scope=cast("WebSocketScope", scope))
-            raise ConnectionUpgradeExceptionError(session)
-
-        scope.update(method=request.method, http_version="1.1", extensions={"http.response.template": {}})
-
-        raw_kwargs: dict[str, Any] = {"stream": BytesIO()}
+        raw_kwargs, scope = self._prepare_request(request)
 
         try:
             with self.client.portal() as portal:
