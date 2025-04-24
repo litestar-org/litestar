@@ -25,13 +25,13 @@ class PersonOffsetPaginator(AbstractAsyncOffsetPaginator[Person]):
         return cast("int", await self.async_session.scalar(select(func.count(Person.id))))
 
     async def get_items(self, limit: int, offset: int) -> list[Person]:
-        people: ScalarResult = await self.async_session.scalars(select(Person).slice(offset, limit))
+        people: ScalarResult = await self.async_session.scalars(select(Person).slice(offset, offset + limit))
         return list(people.all())
 
 
 # Create a route handler. The handler will receive two query parameters - 'limit' and 'offset', which is passed
 # to the paginator instance. Also create a dependency 'paginator' which will be injected into the handler.
-@get("/people", dependencies={"paginator": Provide(PersonOffsetPaginator)})
+@get("/people", dependencies={"paginator": Provide(PersonOffsetPaginator, sync_to_thread=False)})
 async def people_handler(paginator: PersonOffsetPaginator, limit: int, offset: int) -> OffsetPagination[Person]:
     return await paginator(limit=limit, offset=offset)
 
