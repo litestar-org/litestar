@@ -22,9 +22,9 @@
 <hr>
 
 Litestar is a powerful, flexible yet opinionated ASGI framework, focused on
-building APIs, and offers high-performance data validation and parsing,
-dependency injection, first-class ORM integration, authorization primitives, and much
-more that's needed to get applications up and running.
+building APIs. It offers high-performance data validation, dependency injection,
+first-class ORM integration, authorization primitives, a rich plugin API, middleware,
+and much more that's needed to get applications up and running.
 
 Check out the [documentation 📚](https://docs.litestar.dev/) for a detailed overview of
 its features!
@@ -58,21 +58,30 @@ can give you a good impression how a fully fledged Litestar application may look
 ```shell
 pip install litestar
 ```
+or to include the CLI and a server (uvicorn) for running your application:
+```shell
+pip install litestar[standard]
+```
 
 ## Quick Start
 
-```python
+```python title="app.py"
 from litestar import Litestar, get
-
 
 @get("/")
 async def hello_world() -> dict[str, str]:
     """Keeping the tradition alive with hello world."""
     return {"hello": "world"}
 
-
 app = Litestar(route_handlers=[hello_world])
 ```
+
+And run it with
+
+```bash
+litestar run
+```
+
 
 ## Core Features
 
@@ -83,7 +92,7 @@ app = Litestar(route_handlers=[hello_world])
 - [OpenAPI 3.1 schema generation](#openapi)
 - [Life Cycle Hooks](#request-life-cycle-hooks)
 - [Route Guards based Authorization](#route-guards)
-- Support for `dataclasses`, `TypedDict`, [pydantic version 1 and version 2](https://docs.pydantic.dev/latest/),
+- Support for `dataclasses`, `TypedDict`, [`msgspec`](https://jcristharif.com/msgspec/), [pydantic version 1 and version 2 (even within the same application)](https://docs.pydantic.dev/latest/) and [(c)attrs](https://catt.rs/en/stable/)
   [msgspec](https://github.com/jcrist/msgspec) and [attrs](https://www.attrs.org/en/stable/)
 - Layered parameter declaration
 - Support for [RFC 9457](https://datatracker.ietf.org/doc/html/rfc9457) standardized "Problem Detail" error responses
@@ -95,8 +104,7 @@ app = Litestar(route_handlers=[hello_world])
   - [Swagger-UI](https://swagger.io/tools/swagger-ui/)
 - [Trio](https://trio.readthedocs.io/en/stable/) support (built-in, via [AnyIO](https://anyio.readthedocs.io/))
 - Ultra-fast validation, serialization and deserialization using [msgspec](https://github.com/jcrist/msgspec)
-- SQLAlchemy integration
-- Piccolo ORM Support
+- [SQLAlchemy integration](https://docs.advanced-alchemy.litestar.dev/latest/)
 
 ## Example Applications
 
