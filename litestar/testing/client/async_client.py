@@ -7,7 +7,7 @@ from httpx import USE_CLIENT_DEFAULT, AsyncClient
 
 from litestar.testing.client.base import BaseTestClient
 from litestar.testing.life_span_handler import LifeSpanHandler
-from litestar.testing.transport import ConnectionUpgradeExceptionError, TestClientTransport
+from litestar.testing.transport import AsyncTestClientTransport, ConnectionUpgradeExceptionError
 from litestar.types import AnyIOBackend, ASGIApp
 
 if TYPE_CHECKING:
@@ -74,7 +74,7 @@ class AsyncTestClient(AsyncClient, BaseTestClient, Generic[T]):  # type: ignore[
             headers={"user-agent": "testclient"},
             follow_redirects=True,
             cookies=cookies,
-            transport=TestClientTransport(  # type: ignore [arg-type]
+            transport=AsyncTestClientTransport(  # type: ignore [arg-type]
                 client=self,
                 raise_server_exceptions=raise_server_exceptions,
                 root_path=root_path,
