@@ -219,13 +219,11 @@ def run_command(
     create_self_signed_cert: bool,
     ctx: click.Context,
 ) -> None:
-    """Run a Litestar app; requires ``uvicorn``.
+    """Run a Litestar app. (requires 'uvicorn' to be installed).
 
-    The app can be either passed as a module path in the form of ``<module name>.<submodule>:<app instance or factory>``
-    set as an environment variable ``LITESTAR_APP`` with the same format or automatically discovered from one of these
-    canonical paths: ``app.py``, ``asgi.py``, ``application.py`` or ``app/__init__.py``.
-    When auto-discovering application factories, functions with the name ``create_app`` are considered,
-    or functions that are annotated as returning a ``Litestar`` instance.
+    The application will be automatically discovered, or can be set as an option to the
+    main 'litestar' command. Run 'litestar --help' for more information about app
+    autodiscovery
     """
 
     if debug:
