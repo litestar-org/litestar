@@ -150,6 +150,20 @@ class BaseTestClientTransport(Generic[T]):
         raw_kwargs: dict[str, Any] = {"stream": BytesIO()}
         return raw_kwargs, scope
 
+    def _prepare_response(self, request: Request, context: SendReceiveContext, raw_kwargs: dict[str, Any]) -> Response:
+        if not context["response_started"]:  # pragma: no cover
+            if self.raise_server_exceptions:
+                assert context["response_started"], "TestClient did not receive any response."  # noqa: S101
+            return Response(
+                status_code=HTTP_500_INTERNAL_SERVER_ERROR, headers=[], stream=ByteStream(b""), request=request
+            )
+
+        stream = ByteStream(raw_kwargs.pop("stream", BytesIO()).read())
+        response = Response(**raw_kwargs, stream=stream, request=request)
+        setattr(response, "template", context["template"])
+        setattr(response, "context", context["context"])
+        return response
+
 
 class AsyncTestClientTransport(BaseTestClientTransport):
     async def handle_async_request(self, request: Request) -> Response:
@@ -178,18 +192,7 @@ class AsyncTestClientTransport(BaseTestClientTransport):
                 status_code=HTTP_500_INTERNAL_SERVER_ERROR, headers=[], stream=ByteStream(b""), request=request
             )
         else:
-            if not context["response_started"]:  # pragma: no cover
-                if self.raise_server_exceptions:
-                    assert context["response_started"], "TestClient did not receive any response."  # noqa: S101
-                return Response(
-                    status_code=HTTP_500_INTERNAL_SERVER_ERROR, headers=[], stream=ByteStream(b""), request=request
-                )
-
-            stream = ByteStream(raw_kwargs.pop("stream", BytesIO()).read())
-            response = Response(**raw_kwargs, stream=stream, request=request)
-            setattr(response, "template", context["template"])
-            setattr(response, "context", context["context"])
-            return response
+            return self._prepare_response(request, context, raw_kwargs)
 
     async def aclose(self) -> None:
         """Close the transport."""
@@ -223,15 +226,4 @@ class TestClientTransport(BaseTestClientTransport):
                 status_code=HTTP_500_INTERNAL_SERVER_ERROR, headers=[], stream=ByteStream(b""), request=request
             )
         else:
-            if not context["response_started"]:  # pragma: no cover
-                if self.raise_server_exceptions:
-                    assert context["response_started"], "TestClient did not receive any response."  # noqa: S101
-                return Response(
-                    status_code=HTTP_500_INTERNAL_SERVER_ERROR, headers=[], stream=ByteStream(b""), request=request
-                )
-
-            stream = ByteStream(raw_kwargs.pop("stream", BytesIO()).read())
-            response = Response(**raw_kwargs, stream=stream, request=request)
-            setattr(response, "template", context["template"])
-            setattr(response, "context", context["context"])
-            return response
+            return self._prepare_response(request, context, raw_kwargs)
