@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING, Any, Generic, TypedDict, TypeVar, Union, cast
 from urllib.parse import unquote
 
 from anyio import Event
-from httpx import ByteStream, Response
+from httpx import AsyncBaseTransport, BaseTransport, ByteStream, Response
 
 from litestar.status_codes import HTTP_500_INTERNAL_SERVER_ERROR
 from litestar.testing.websocket_test_session import WebSocketTestSession
@@ -165,7 +165,7 @@ class BaseTestClientTransport(Generic[T]):
         return response
 
 
-class AsyncTestClientTransport(BaseTestClientTransport):
+class AsyncTestClientTransport(AsyncBaseTransport, BaseTestClientTransport, Generic[T]):
     async def handle_async_request(self, request: Request) -> Response:
         raw_kwargs, scope = self._prepare_request(request)
         try:
@@ -193,7 +193,7 @@ class AsyncTestClientTransport(BaseTestClientTransport):
             return self._prepare_response(request, context, raw_kwargs)
 
 
-class TestClientTransport(BaseTestClientTransport):
+class TestClientTransport(BaseTransport, BaseTestClientTransport, Generic[T]):
     def handle_request(self, request: Request) -> Response:
         raw_kwargs, scope = self._prepare_request(request)
 

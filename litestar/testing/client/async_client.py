@@ -74,7 +74,7 @@ class AsyncTestClient(AsyncClient, BaseTestClient, Generic[T]):  # type: ignore[
             headers={"user-agent": "testclient"},
             follow_redirects=True,
             cookies=cookies,
-            transport=AsyncTestClientTransport(  # type: ignore [arg-type]
+            transport=AsyncTestClientTransport(
                 client=self,
                 raise_server_exceptions=raise_server_exceptions,
                 root_path=root_path,
