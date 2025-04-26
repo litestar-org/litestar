@@ -1,9 +1,12 @@
 from __future__ import annotations
 
+import sys
 from typing import AsyncGenerator, Generator
 from unittest.mock import MagicMock
 
-import exceptiongroup
+if sys.version_info < (3, 11):
+    from exceptiongroup import ExceptionGroup
+
 import pytest
 
 from litestar._kwargs.cleanup import DependencyCleanupGroup
@@ -105,7 +108,7 @@ async def test_exception_during_close(
     await async_next(gen_2)
     group = DependencyCleanupGroup([gen_1, gen_2])
 
-    with pytest.raises(exceptiongroup.ExceptionGroup) as exc:
+    with pytest.raises(ExceptionGroup) as exc:
         await group.close(exit_exception)
 
     assert exc.value.exceptions == (gen_exc,)
