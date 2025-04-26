@@ -1828,9 +1828,9 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 </div>
 <div class="tip admonition">
 <p class="admonition-title">Best Practice</p>
-<p>You should always wrap <cite>yield</cite> in a <cite>try</cite>/<cite>finally</cite> block, regardless of whether you
-want to handle exceptions, to ensure that the cleanup code is run even when exceptions
-occurred:</p>
+<p>You should always wrap <code class="docutils literal notranslate"><span class="pre">yield</span></code> in a <code class="docutils literal notranslate"><span class="pre">try</span></code>/<code class="docutils literal notranslate"><span class="pre">finally</span></code> block, regardless of
+whether you want to handle exceptions, to ensure that the cleanup code is run even
+when exceptions occurred:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">generator_dependency</span><span class="p">():</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="k">yield</span>
@@ -1844,6 +1844,14 @@ occurred:</p>
 <p>Do not re-raise exceptions within the dependency. Exceptions caught within these
 dependencies will still be handled by the regular mechanisms without an explicit
 re-raise</p>
+</div>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>Exceptions raised during the cleanup step of a dependency will be re-raised in an
+<a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ExceptionGroup" title="(in Python v3.13)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">ExceptionGroup</span></code></a> (for Python versions &lt; 3.11, the
+<a class="reference external" href="https://github.com/agronholm/exceptiongroup">exceptiongroup</a> will be used). This
+happens after all dependencies have been cleaned up, so exceptions raised during
+cleanup of one dependencies do not affect the cleanup of other dependencies.</p>
 </div>
 </section>
 </section>
