@@ -1,4 +1,8 @@
+import asyncio
+import contextlib
 from asyncio import get_event_loop
+from typing import AsyncGenerator
+from unittest.mock import MagicMock
 
 import pytest
 
@@ -51,4 +55,20 @@ async def test_multiple_clients_event_loop() -> None:
         response_1 = await client_1.get("/")
         response_2 = await client_2.get("/")
 
-    assert response_1.json() == response_2.json()  # FAILS
+    assert response_1.json() == response_2.json()
+
+
+async def test_lifespan_loop() -> None:
+    mock = MagicMock()
+
+    @contextlib.asynccontextmanager
+    async def lifespan(app: Litestar) -> AsyncGenerator[None, None]:
+        mock(asyncio.get_running_loop())
+        yield
+
+    app = Litestar(lifespan=[lifespan])
+
+    async with AsyncTestClient(app):
+        pass
+
+    mock.assert_called_once_with(asyncio.get_running_loop())

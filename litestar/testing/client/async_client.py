@@ -1,12 +1,11 @@
 from __future__ import annotations
 
-from contextlib import AsyncExitStack
 from typing import TYPE_CHECKING, Any, Generic, Mapping, Sequence, TypeVar
 
 from httpx import USE_CLIENT_DEFAULT, AsyncClient
 
 from litestar.testing.client.base import BaseTestClient
-from litestar.testing.life_span_handler import LifeSpanHandler
+from litestar.testing.life_span_handler import AsyncLifeSpanHandler
 from litestar.testing.transport import AsyncTestClientTransport, ConnectionUpgradeExceptionError
 from litestar.types import AnyIOBackend, ASGIApp
 
@@ -24,14 +23,10 @@ if TYPE_CHECKING:
     from litestar.middleware.session.base import BaseBackendConfig
     from litestar.testing.websocket_test_session import WebSocketTestSession
 
-
 T = TypeVar("T", bound=ASGIApp)
 
 
 class AsyncTestClient(AsyncClient, BaseTestClient, Generic[T]):  # type: ignore[misc]
-    lifespan_handler: LifeSpanHandler[Any]
-    exit_stack: AsyncExitStack
-
     def __init__(
         self,
         app: T,
@@ -83,24 +78,11 @@ class AsyncTestClient(AsyncClient, BaseTestClient, Generic[T]):  # type: ignore[
         )
 
     async def __aenter__(self) -> Self:
-        async with AsyncExitStack() as stack:
-            self.blocking_portal = portal = stack.enter_context(self.portal())
-            self.lifespan_handler = LifeSpanHandler(client=self)
-            stack.enter_context(self.lifespan_handler)
-
-            @stack.callback
-            def reset_portal() -> None:
-                delattr(self, "blocking_portal")
-
-            @stack.callback
-            def wait_shutdown() -> None:
-                portal.call(self.lifespan_handler.wait_shutdown)
-
-            self.exit_stack = stack.pop_all()
-        return self
+        async with AsyncLifeSpanHandler(client=self) as _:
+            return self
 
     async def __aexit__(self, *args: Any) -> None:
-        await self.exit_stack.aclose()
+        pass
 
     async def websocket_connect(
         self,
