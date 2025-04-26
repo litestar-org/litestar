@@ -163,7 +163,7 @@ class AsyncLifeSpanHandler(Generic[T]):
         self._startup_done = True
         async with anyio.create_task_group() as task_group:
             await task_group.start(self.wait_startup)
-            self.task = task_group.start_soon(self.lifespan)
+            self.task = await task_group.start(self.lifespan)
             await task_group.start(self.wait_shutdown)
 
     async def aclose(self) -> None:
@@ -189,7 +189,7 @@ class AsyncLifeSpanHandler(Generic[T]):
     async def receive(self) -> LifeSpanSendMessage:
         await self._ensure_setup()
         message = await self.stream_send.receive()
-        if message is None:
+        if message is None and self.task:
             self.task.result()
         return cast("LifeSpanSendMessage", message)
 
