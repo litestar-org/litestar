@@ -249,3 +249,33 @@ def test_exception_on_response_thrown_into_generators() -> None:
         res = client.get("/")
         assert res.status_code == 500
         assert counter == 0
+
+
+def test_exception_thrown_during_cleanup_of_exception() -> None:
+    counter = 0
+
+    async def dependency() -> AsyncGenerator[int, None]:
+        nonlocal counter
+        counter += 1
+        try:
+            yield counter
+        finally:
+            counter -= 1
+            raise ValueError()
+
+    class CustomResponse(Response[str]):
+        def to_asgi_response(
+            self,
+            *args: Any,
+            **kwargs: Any,
+        ) -> ASGIResponse:
+            raise Exception("foo")
+
+    @get("/", dependencies={"dep": dependency})
+    def handler(dep: int) -> CustomResponse:
+        return CustomResponse("")
+
+    with create_test_client(route_handlers=[handler]) as client:
+        res = client.get("/")
+        assert res.status_code == 500
+        assert counter == 0

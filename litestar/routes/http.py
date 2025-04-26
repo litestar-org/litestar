@@ -134,9 +134,9 @@ class HTTPRoute(BaseRoute):
             scope=scope, request=request, parameter_model=parameter_model, route_handler=route_handler
         )
 
-    async def _call_handler_function(
+    async def _call_handler_function(  # type: ignore[return]
         self, scope: Scope, request: Request, parameter_model: KwargsModel, route_handler: HTTPRouteHandler
-    ) -> ASGIApp:
+    ) -> ASGIApp:  # pyright: ignore[reportGeneralTypeIssues]
         """Call the before request handlers, retrieve any data required for the route handler, and call the route
         handler's ``to_response`` method.
 
@@ -152,6 +152,8 @@ class HTTPRoute(BaseRoute):
         # 'DependencyCleanupGroup' to enter and exit
         stack = contextlib.AsyncExitStack()
 
+        # mypy cannot infer that 'stack' never swallows exceptions, therefore it thinks
+        # this method is potentially missing a 'return' statement
         async with stack:
             if not response_data:
                 parsed_kwargs: dict[str, Any] = {}
@@ -179,11 +181,7 @@ class HTTPRoute(BaseRoute):
                     else await route_handler.fn(**parsed_kwargs)
                 )
 
-            response: ASGIApp = await route_handler.to_response(
-                app=scope["litestar_app"], data=response_data, request=request
-            )
-
-        return response
+            return await route_handler.to_response(app=scope["litestar_app"], data=response_data, request=request)
 
     @staticmethod
     async def _get_cached_response(request: Request, route_handler: HTTPRouteHandler) -> ASGIApp | None:

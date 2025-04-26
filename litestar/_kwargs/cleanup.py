@@ -1,11 +1,13 @@
 from __future__ import annotations
 
+import sys
 from contextlib import AbstractAsyncContextManager
-from inspect import Traceback, isasyncgen
-from types import TracebackType
+from inspect import isasyncgen
 from typing import TYPE_CHECKING, Any, AsyncGenerator, Awaitable, Callable, Generator
 
-import exceptiongroup
+if sys.version_info < (3, 11):
+    from exceptiongroup import ExceptionGroup
+
 from anyio import create_task_group
 
 from litestar.utils import ensure_async_callable
@@ -15,6 +17,8 @@ __all__ = ("DependencyCleanupGroup",)
 
 
 if TYPE_CHECKING:
+    from types import TracebackType
+
     from litestar.types import AnyGenerator
 
 
@@ -26,8 +30,6 @@ class DependencyCleanupGroup(AbstractAsyncContextManager):
     this class can be used as a contextmanager, which will automatically throw any exceptions into its generators. All
     exceptions caught in this manner will be re-raised after they have been thrown in the generators.
     """
-
-    __slots__ = ("_closed", "_generators")
 
     def __init__(self, generators: list[AnyGenerator] | None = None) -> None:
         """Initialize ``DependencyCleanupGroup``.
@@ -130,7 +132,7 @@ class DependencyCleanupGroup(AbstractAsyncContextManager):
                     exceptions.append(cleanup_exc)
 
         if exceptions:
-            raise exceptiongroup.ExceptionGroup(
+            raise ExceptionGroup(
                 "Exceptions occurred during cleanup of dependencies",
                 exceptions,
             ) from exc
