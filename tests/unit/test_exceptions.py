@@ -1,8 +1,6 @@
 import pytest
 from hypothesis import given
 from hypothesis import strategies as st
-from starlette.exceptions import HTTPException as StarletteHTTPException
-
 from litestar import get
 from litestar.enums import MediaType
 from litestar.exceptions import (
@@ -15,6 +13,7 @@ from litestar.exceptions import (
 from litestar.exceptions.responses import create_exception_response
 from litestar.status_codes import HTTP_400_BAD_REQUEST, HTTP_500_INTERNAL_SERVER_ERROR
 from litestar.testing import RequestFactory, create_test_client
+from starlette.exceptions import HTTPException as StarletteHTTPException
 
 
 class CustomLitestarException(LitestarException):
@@ -23,6 +22,11 @@ class CustomLitestarException(LitestarException):
 
 class CustomHTTPException(HTTPException):
     detail = "Custom HTTP Exception"
+
+
+class CustomHTTPExceptionWithExtra(HTTPException):
+    status_code = HTTP_400_BAD_REQUEST
+    extra = {"key": "value"}
 
 
 @given(detail=st.text())
@@ -194,3 +198,28 @@ def test_non_litestar_exception_with_detail_is_not_included() -> None:
 
     with create_test_client([handler], debug=False) as client:
         assert client.get("/", headers={"Accept": MediaType.JSON}).json().get("detail") == "Internal Server Error"
+
+
+def test_http_exception_with_class_var_extra() -> None:
+    @get("/")
+    def handler() -> None:
+        raise CustomHTTPExceptionWithExtra("hello")
+
+    with create_test_client([handler], debug=False) as client:
+        assert client.get("/").json() == {
+            "extra": {"key": "value"},
+            "status_code": 400,
+            "detail": "hello",
+        }
+
+
+def test_http_exception_with_class_var_extra_explicit_none() -> None:
+    @get("/")
+    def handler() -> None:
+        raise CustomHTTPExceptionWithExtra("hello", extra=None)
+
+    with create_test_client([handler], debug=False) as client:
+        assert client.get("/").json() == {
+            "status_code": 400,
+            "detail": "hello",
+        }
