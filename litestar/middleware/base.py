@@ -194,7 +194,7 @@ class ASGIMiddleware(abc.ABC):
             exclude_opt_key = "exclude_my_middleware"
 
             def __init__(self, my_logger: Logger) -> None:
-                self.logger = logger
+                self.logger = my_logger
 
             async def handle(
                 self, scope: Scope, receive: Receive, send: Send, next_app: ASGIApp
