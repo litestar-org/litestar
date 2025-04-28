@@ -15,6 +15,7 @@ from litestar.status_codes import (
     HTTP_500_INTERNAL_SERVER_ERROR,
     HTTP_503_SERVICE_UNAVAILABLE,
 )
+from litestar.types.empty import Empty, EmptyType
 
 __all__ = (
     "ClientException",
@@ -54,7 +55,7 @@ class HTTPException(LitestarException):
         detail: str = "",
         status_code: int | None = None,
         headers: dict[str, str] | None = None,
-        extra: dict[str, Any] | list[Any] | None = None,
+        extra: dict[str, Any] | list[Any] | None | EmptyType = Empty,
     ) -> None:
         """Initialize ``HTTPException``.
 
@@ -69,7 +70,7 @@ class HTTPException(LitestarException):
         """
         super().__init__(*args, detail=detail)
         self.status_code = status_code or self.status_code
-        self.extra = extra
+        self.extra = extra if extra is not Empty else getattr(self, "extra", None)
         self.headers = headers
         if not self.detail:
             self.detail = HTTPStatus(self.status_code).phrase
