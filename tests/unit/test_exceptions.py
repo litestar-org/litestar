@@ -83,19 +83,14 @@ def test_http_exception(ex_type: type[HTTPException], status_code: int, detail: 
         ex_type(detail=detail, status_code=status_code),
     ):
         assert isinstance(result, LitestarException)
-        assert (
-            repr(result) == f"{result.status_code} - {result.__class__.__name__} - {result.detail}"
-        )
+        assert repr(result) == f"{result.status_code} - {result.__class__.__name__} - {result.detail}"
         assert str(result) == f"{result.status_code}: {result.detail}".strip()
 
 
 @given(detail=st.text())
 def test_improperly_configured_exception(detail: str) -> None:
     result = ImproperlyConfiguredException(detail=detail)
-    assert (
-        repr(result)
-        == f"{HTTP_500_INTERNAL_SERVER_ERROR} - {result.__class__.__name__} - {result.detail}"
-    )
+    assert repr(result) == f"{HTTP_500_INTERNAL_SERVER_ERROR} - {result.__class__.__name__} - {result.detail}"
     assert isinstance(result, HTTPException)
     assert isinstance(result, ValueError)
 
@@ -109,9 +104,7 @@ def test_validation_exception() -> None:
 
 @pytest.mark.parametrize("media_type", [MediaType.JSON, MediaType.TEXT])
 def test_create_exception_response_utility_litestar_http_exception(media_type: MediaType) -> None:
-    exc = HTTPException(
-        detail="litestar http exception", status_code=HTTP_400_BAD_REQUEST, extra=["any"]
-    )
+    exc = HTTPException(detail="litestar http exception", status_code=HTTP_400_BAD_REQUEST, extra=["any"])
     request = RequestFactory(handler_kwargs={"media_type": media_type}).get()
     response = create_exception_response(request=request, exc=exc)
     assert response.status_code == HTTP_400_BAD_REQUEST
@@ -123,10 +116,7 @@ def test_create_exception_response_utility_litestar_http_exception(media_type: M
             "extra": ["any"],
         }
     else:
-        assert (
-            response.content
-            == b'{"status_code":400,"detail":"litestar http exception","extra":["any"]}'
-        )
+        assert response.content == b'{"status_code":400,"detail":"litestar http exception","extra":["any"]}'
 
 
 @pytest.mark.parametrize("media_type", [MediaType.JSON, MediaType.TEXT])
@@ -215,10 +205,7 @@ def test_non_litestar_exception_with_detail_is_not_included() -> None:
         raise MyException()
 
     with create_test_client([handler], debug=False) as client:
-        assert (
-            client.get("/", headers={"Accept": MediaType.JSON}).json().get("detail")
-            == "Internal Server Error"
-        )
+        assert client.get("/", headers={"Accept": MediaType.JSON}).json().get("detail") == "Internal Server Error"
 
 
 def test_http_exception_with_class_var_extra() -> None:
