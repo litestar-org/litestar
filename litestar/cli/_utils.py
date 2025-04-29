@@ -283,10 +283,12 @@ def _validate_app_path(app_path: str) -> tuple[ModuleType, str]:
 
     try:
         module = importlib.import_module(module_path)
-    except ImportError:
-        console.print(f"[bold red] Invalid argument passed --app {app_path!r}: Module not found")
-        sys.exit(1)
-
+    except ImportError as e:
+        if e.name == module_path:
+            console.print(f"[bold red] Invalid argument passed --app {app_path!r}: Module not found")
+            sys.exit(1)
+        else:
+            raise (e)
     return module, app_name
 
 
