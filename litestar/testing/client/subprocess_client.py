@@ -25,8 +25,18 @@ def _get_available_port() -> int:
 
 
 @contextmanager
-def run_app(workdir: pathlib.Path, app: str) -> Iterator[str]:
-    """Launch a litestar application in a subprocess with a random available port."""
+def run_app(workdir: pathlib.Path, app: str, retry_count: int = 100, retry_timeout: int = 1) -> Iterator[str]:
+    """Launch a litestar application in a subprocess with a random available port.
+
+    Args:
+        workdir: Path to working directory where run command will be executed
+        app: Path to Litestar application, e.g.: "my_app:application"
+        retry_count: Number of retries to wait for the application to start
+        retry_timeout: Timeout in seconds to wait between retries
+
+    Raises:
+        StartupError: If the application fails to start with given retry count and timeout
+    """
     port = _get_available_port()
     with subprocess.Popen(
         args=["litestar", "--app", app, "run", "--port", str(port)],
@@ -35,12 +45,20 @@ def run_app(workdir: pathlib.Path, app: str) -> Iterator[str]:
         cwd=workdir,
     ) as proc:
         url = f"http://127.0.0.1:{port}"
-        for _ in range(100):  # pragma: no cover
+        application_started = False
+
+        for _ in range(retry_count):
             try:
                 httpx.get(url, timeout=0.1)
+                application_started = True
                 break
             except httpx.TransportError:
-                time.sleep(1)
+                time.sleep(retry_timeout)
+
+        if not application_started:
+            proc.kill()
+            raise StartupError("Application failed to start")
+
         yield url
         proc.kill()
 
