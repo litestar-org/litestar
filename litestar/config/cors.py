@@ -28,7 +28,7 @@ class CORSConfig:
 
     Can use '*' in any component of the path, e.g. 'domain.*'. Sets the 'Access-Control-Allow-Origin' header.
     """
-    allow_methods: list[Literal["*"] | Method] = field(default_factory=lambda: ["*"])
+    allow_methods: Literal["*"] | list[Method] = field(default_factory=lambda: ["*"])
     """List of allowed HTTP methods.
 
     Sets the 'Access-Control-Allow-Methods' header.
