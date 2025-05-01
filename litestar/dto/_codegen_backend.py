@@ -4,7 +4,9 @@ back again, to bytes.
 
 from __future__ import annotations
 
+import linecache
 import re
+import secrets
 import textwrap
 from contextlib import contextmanager, nullcontext
 from typing import (
@@ -216,7 +218,20 @@ class TransferFunctionFactory:
         """Wrap the current body contents in a function definition and turn it into a callable object"""
         source = f"def {fn_name}({source_value_name}):\n{self._body} return {return_value_name}"
         ctx: dict[str, Any] = {**self._fn_locals}
-        exec(source, ctx)  # noqa: S102
+
+        # add the function to linecache, to get better stacktraces when an error occurs
+        # otherwise, the traceback within the generated code will just point
+        # to '<string>'
+        file_name = f"dto_transfer_function_{secrets.token_hex(6)}"
+        linecache.cache[file_name] = (
+            len(source),
+            None,  # mtime: not applicable
+            [line + "\n" for line in source.splitlines()],
+            file_name,
+        )
+        code = compile(source, file_name, "exec")
+        exec(code, ctx)  # noqa: S102
+
         return ctx["func"]  # type: ignore[no-any-return]
 
     def _add_stmt(self, stmt: str) -> None:
