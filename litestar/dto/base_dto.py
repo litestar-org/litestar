@@ -4,7 +4,7 @@ import dataclasses
 import typing
 from abc import abstractmethod
 from inspect import getmodule
-from typing import TYPE_CHECKING, Collection, Generic, TypeVar
+from typing import TYPE_CHECKING, Callable, Collection, Generic, TypeVar
 
 from typing_extensions import NotRequired, TypedDict, get_type_hints
 
@@ -50,6 +50,8 @@ class AbstractDTO(Generic[T]):
     """Config objects to define properties of the DTO."""
     model_type: type[T]
     """If ``annotation`` is an iterable, this is the inner type, otherwise will be the same as ``annotation``."""
+    attribute_accessor: Callable[[object, str], Any] = getattr
+    """:func:`getattr` like callable to access attributes on the data source"""
 
     _dto_backends: ClassVar[dict[str, _BackendDict]] = {}
 
