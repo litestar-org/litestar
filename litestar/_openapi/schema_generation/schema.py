@@ -468,14 +468,14 @@ class SchemaCreator:
 
         if field_definition.is_non_string_sequence or field_definition.is_non_string_iterable:
             # filters out ellipsis from tuple[int, ...] type annotations
-            inner_types = [f for f in field_definition.inner_types if f.annotation is not Ellipsis]
+            inner_types = tuple(f for f in field_definition.inner_types if f.annotation is not Ellipsis)
 
             # Handle tuple elements using prefixItems
-            if (
-                (field_definition.annotation is tuple or get_origin_or_inner_type(field_definition.annotation) is tuple)
-                and inner_types
-                and all(f.annotation is not Ellipsis for f in field_definition.inner_types)
-            ):
+            if (field_definition.origin is tuple) and inner_types == field_definition.inner_types:
+                return Schema(
+                    type=OpenAPIType.ARRAY,
+                    prefix_items=[self.for_field_definition(f) for f in inner_types],
+                )
                 return Schema(
                     type=OpenAPIType.ARRAY,
                     prefix_items=[self.for_field_definition(f) for f in inner_types],
