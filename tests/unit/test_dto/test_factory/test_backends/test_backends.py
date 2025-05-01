@@ -1,6 +1,7 @@
 # ruff: noqa: UP006,UP007
 from __future__ import annotations
 
+import inspect
 from dataclasses import dataclass, field
 from types import ModuleType
 from typing import TYPE_CHECKING, Callable, Dict, List, Optional
@@ -13,6 +14,7 @@ from litestar import Litestar, Request, get, post
 from litestar._openapi.schema_generation import SchemaCreator
 from litestar.dto import DataclassDTO, DTOConfig, DTOField
 from litestar.dto._backend import DTOBackend, _create_struct_field_meta_for_field_definition
+from litestar.dto._codegen_backend import DTOCodegenBackend
 from litestar.dto._types import CollectionType, SimpleType, TransferDTOFieldDefinition
 from litestar.dto.data_structures import DTOFieldDefinition
 from litestar.enums import MediaType
@@ -334,7 +336,7 @@ def test_transfer_only_touches_included_attributes(backend_cls: type[DTOBackend]
         bar: str = ""
 
     class Factory(DataclassDTO):
-        config = DTOConfig(include={"excluded"})
+        config = DTOConfig(include={"id"})
 
     backend = backend_cls(
         handler_id="test",
@@ -349,6 +351,64 @@ def test_transfer_only_touches_included_attributes(backend_cls: type[DTOBackend]
 
     backend.encode_data(Foo(id="1"))
     assert mock.call_count == 0
+
+
+def test_custom_attribute_accessor(backend_cls: type[DTOBackend]) -> None:
+    mock = MagicMock()
+
+    @dataclass()
+    class Foo:
+        id: str
+        bar: str = ""
+
+    def my_getattr(obj: object, attr: str) -> Any:
+        mock(attr)
+        return getattr(obj, attr)
+
+    class MyDataclassDTO(DataclassDTO):
+        attribute_accessor = my_getattr
+
+    class Factory(MyDataclassDTO):
+        config = DTOConfig(include={"id"})
+
+    backend = backend_cls(
+        handler_id="test",
+        dto_factory=Factory,
+        field_definition=TransferDTOFieldDefinition.from_annotation(Foo),
+        model_type=Foo,
+        wrapper_attribute_name=None,
+        is_data_field=False,
+    )
+
+    backend.encode_data(Foo(id="1"))
+    mock.assert_called_once_with("id")
+
+
+@pytest.mark.xfail()
+def test_codegen_attribute_accessor_not_used_when_default() -> None:
+    @dataclass()
+    class Foo:
+        id: str
+
+    class Factory(DataclassDTO):
+        config = DTOConfig(include={"id"})
+
+    backend = DTOCodegenBackend(
+        handler_id="test",
+        dto_factory=Factory,
+        field_definition=TransferDTOFieldDefinition.from_annotation(Foo),
+        model_type=Foo,
+        wrapper_attribute_name=None,
+        is_data_field=False,
+    )
+
+    to_model_source = inspect.getsource(backend._transfer_to_model_type)
+    encode_source = inspect.getsource(backend._encode_data)
+
+    assert ".id" in to_model_source
+    assert ".id" in encode_source
+    assert "__getattr_impl" not in to_model_source
+    assert "__getattr_impl" not in encode_source
 
 
 def test_parse_model_nested_exclude(create_module: Callable[[str], ModuleType], backend_cls: type[DTOBackend]) -> None:
