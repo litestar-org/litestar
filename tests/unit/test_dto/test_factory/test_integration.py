@@ -1009,6 +1009,46 @@ app = Litestar(route_handlers=[get_users])
     assert not_none(model_schema.properties).keys() == {"id", "name"}
 
 
+def test_openapi_schema_for_type_with_litestar_response_generic_type(
+    create_module: Callable[[str], ModuleType], use_experimental_dto_backend: bool
+) -> None:
+    module = create_module("""
+from dataclasses import dataclass
+from typing import List
+
+from litestar import Litestar, Response, get
+from litestar.dto import DataclassDTO, DTOConfig
+
+
+@dataclass
+class Item:
+    id: int
+    name: str
+    secret: str
+
+
+class ItemReadDTO(DataclassDTO[Item]):
+    config = DTOConfig(exclude=["secret"])
+
+
+@get("/get_items", return_dto=ItemReadDTO)
+async def get_items() -> Response[List[Item]]:
+    return Response(
+        headers={"X-SomeParam": "SomeValue"},
+        content=[
+            Item(id=1, name="Item 1", secret="123"),
+            Item(id=2, name="Item 2", secret="456"),
+        ],
+    )
+
+app = Litestar(route_handlers=[get_items])
+""")
+
+    openapi = module.app.openapi_schema
+    schema = openapi.components.schemas["GetItemsItemResponseBody"]
+    assert not_none(schema.properties).keys() == {"id", "name"}
+
+
 def test_openapi_schema_for_dto_includes_body_examples(create_module: Callable[[str], ModuleType]) -> None:
     module = create_module(
         """
