@@ -1044,7 +1044,7 @@ async def get_items() -> Response[List[Item]]:
 app = Litestar(route_handlers=[get_items])
 """)
 
-    openapi = module.app.openapi_schema
+    openapi = cast("Litestar", module.app).openapi_schema
     schema = openapi.components.schemas["GetItemsItemResponseBody"]
     assert not_none(schema.properties).keys() == {"id", "name"}
 
