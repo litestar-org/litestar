@@ -46,7 +46,7 @@ class HTTPException(LitestarException):
     """Exception details or message."""
     headers: dict[str, str] | None
     """Headers to attach to the response."""
-    extra: dict[str, Any] | list[Any] | None
+    extra: dict[str, Any] | list[Any] | None = None
     """An extra mapping to attach to the exception."""
 
     def __init__(
@@ -70,7 +70,7 @@ class HTTPException(LitestarException):
         """
         super().__init__(*args, detail=detail)
         self.status_code = status_code or self.status_code
-        self.extra = extra if extra is not Empty else getattr(self, "extra", None)
+        self.extra = extra if extra is not Empty else self.extra
         self.headers = headers
         if not self.detail:
             self.detail = HTTPStatus(self.status_code).phrase
