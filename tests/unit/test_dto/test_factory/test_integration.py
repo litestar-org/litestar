@@ -697,6 +697,11 @@ def test_dto_response_wrapped_scalar_return_type(use_experimental_dto_backend: b
         response = client.get("/")
         assert response.json() == {"name": "John"}
 
+        schema_response = client.get("/schema/openapi.json")
+        schemas = list(schema_response.json()["components"]["schemas"].values())
+        assert len(schemas) == 1
+        assert schemas[0]["title"] == "HandlerPaginatedUserResponseBody"
+
 
 def test_dto_response_wrapped_collection_return_type(use_experimental_dto_backend: bool) -> None:
     @get(
@@ -712,6 +717,11 @@ def test_dto_response_wrapped_collection_return_type(use_experimental_dto_backen
     with create_test_client(handler) as client:
         response = client.get("/")
         assert response.json() == [{"name": "John"}, {"name": "Jane"}]
+
+        schema_response = client.get("/schema/openapi.json")
+        schemas = list(schema_response.json()["components"]["schemas"].values())
+        assert len(schemas) == 1
+        assert schemas[0]["title"] == "HandlerPaginatedUserResponseBody"
 
 
 def test_schema_required_fields_with_msgspec_dto(use_experimental_dto_backend: bool) -> None:
