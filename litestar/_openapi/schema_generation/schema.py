@@ -476,10 +476,6 @@ class SchemaCreator:
                     type=OpenAPIType.ARRAY,
                     prefix_items=[self.for_field_definition(f) for f in inner_types],
                 )
-                return Schema(
-                    type=OpenAPIType.ARRAY,
-                    prefix_items=[self.for_field_definition(f) for f in inner_types],
-                )
 
             # Handle other sequence types normally
             items = list(map(self.for_field_definition, inner_types))
