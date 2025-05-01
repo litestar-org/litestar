@@ -384,14 +384,17 @@ def test_custom_attribute_accessor(backend_cls: type[DTOBackend]) -> None:
     mock.assert_called_once_with("id")
 
 
-@pytest.mark.xfail()
 def test_codegen_attribute_accessor_not_used_when_default() -> None:
+    # when no custom 'attribute_accessor' is used, we expect the logic to be skipped
+    # entirely, and plain 'obj.value' attribute access to be performed, as this is more
+    # performant than using the default 'getattr'
+
     @dataclass()
     class Foo:
-        id: str
+        some_field: str
 
     class Factory(DataclassDTO):
-        config = DTOConfig(include={"id"})
+        config = DTOConfig()
 
     backend = DTOCodegenBackend(
         handler_id="test",
@@ -405,8 +408,8 @@ def test_codegen_attribute_accessor_not_used_when_default() -> None:
     to_model_source = inspect.getsource(backend._transfer_to_model_type)
     encode_source = inspect.getsource(backend._encode_data)
 
-    assert ".id" in to_model_source
-    assert ".id" in encode_source
+    assert ".some_field" in to_model_source
+    assert ".some_field" in encode_source
     assert "__getattr_impl" not in to_model_source
     assert "__getattr_impl" not in encode_source
 
