@@ -78,10 +78,7 @@ def test_custom_http_exception_detail(detail: str) -> None:
 @pytest.mark.parametrize("ex_type", [HTTPException, CustomHTTPException])
 def test_http_exception(ex_type: type[HTTPException], status_code: int, detail: str) -> None:
     assert ex_type().status_code == HTTP_500_INTERNAL_SERVER_ERROR
-    for result in (
-        ex_type(detail, status_code=status_code),
-        ex_type(detail=detail, status_code=status_code),
-    ):
+    for result in ex_type(detail, status_code=status_code), ex_type(detail=detail, status_code=status_code):
         assert isinstance(result, LitestarException)
         assert repr(result) == f"{result.status_code} - {result.__class__.__name__} - {result.detail}"
         assert str(result) == f"{result.status_code}: {result.detail}".strip()
@@ -110,11 +107,7 @@ def test_create_exception_response_utility_litestar_http_exception(media_type: M
     assert response.status_code == HTTP_400_BAD_REQUEST
     assert response.media_type == media_type
     if media_type == MediaType.JSON:
-        assert response.content == {
-            "status_code": 400,
-            "detail": "litestar http exception",
-            "extra": ["any"],
-        }
+        assert response.content == {"status_code": 400, "detail": "litestar http exception", "extra": ["any"]}
     else:
         assert response.content == b'{"status_code":400,"detail":"litestar http exception","extra":["any"]}'
 
