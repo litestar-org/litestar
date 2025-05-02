@@ -2,14 +2,12 @@ from __future__ import annotations
 
 import json
 from abc import ABC, abstractmethod
-from dataclasses import asdict
 from typing import TYPE_CHECKING, Any, Sequence
 
 import msgspec
 import yaml
 
 from litestar.constants import OPENAPI_JSON_HANDLER_NAME
-from litestar.dto._backend import _camelize
 from litestar.enums import MediaType, OpenAPIMediaType
 from litestar.handlers import get
 from litestar.serialization import encode_json, get_serializer
@@ -17,7 +15,6 @@ from litestar.serialization import encode_json, get_serializer
 if TYPE_CHECKING:
     from litestar.config.csrf import CSRFConfig
     from litestar.connection import Request
-    from litestar.openapi.datastructures import ScalarConfig
     from litestar.router import Router
 
 
@@ -368,7 +365,7 @@ class ScalarRenderPlugin(OpenAPIRenderPlugin):
         js_url: str | None = None,
         css_url: str | None = None,
         path: str | Sequence[str] = "/scalar",
-        config: ScalarConfig | None = None,
+        options: dict[str, Any] | None = None,
         **kwargs: Any,
     ) -> None:
         """Initialize the Scalar OpenAPI UI render plugin.
@@ -381,13 +378,13 @@ class ScalarRenderPlugin(OpenAPIRenderPlugin):
             css_url: Download url for the Scalar CSS bundle.
                 If not provided, the Litestar-provided CSS will be used.
             path: Path to serve the OpenAPI UI at.
-            config: Scalar configuration.
+            options: Scalar configuration options.
                 If not provided the default Scalar configuration will be used.
             **kwargs: Additional arguments to pass to the base class.
         """
         self.js_url = js_url or f"https://cdn.jsdelivr.net/npm/@scalar/api-reference@{version}"
         self.css_url = css_url or self._default_css_url
-        self.config = config
+        self.options = options
         super().__init__(path=path, **kwargs)
 
     def render(self, request: Request, openapi_schema: dict[str, Any]) -> bytes:
@@ -421,7 +418,7 @@ class ScalarRenderPlugin(OpenAPIRenderPlugin):
                   id="api-reference"
                   data-url="{self.get_openapi_json_route(request)}">
                 </script>
-                {self.render_config()}
+                {self.render_options()}
                 <script src="{self.js_url}" crossorigin></script>
                 """
 
@@ -433,18 +430,13 @@ class ScalarRenderPlugin(OpenAPIRenderPlugin):
                     </html>
                 """.encode()
 
-    def render_config(self) -> str:
-        """Render Scalar configuration to JS object."""
-        if not self.config:
+    def render_options(self) -> str:
+        """Render options to Scalar configuration."""
+        if not self.options:
             return ""
-
-        dict_config = {}
-        for param, value in asdict(self.config).items():
-            dict_config[_camelize(param, False)] = value
-
         return f"""
                 <script>
-                  document.getElementById('api-reference').dataset.configuration = '{json.dumps(dict_config)}'
+                  document.getElementById('api-reference').dataset.configuration = '{json.dumps(self.options)}'
                 </script>
                 """
 

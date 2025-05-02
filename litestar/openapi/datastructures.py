@@ -27,11 +27,3 @@ class ResponseSpec:
     """Response media type."""
     examples: list[Example] | None = field(default=None)
     """A list of Example models."""
-
-
-@dataclass
-class ScalarConfig:
-    """The config for Scalar from https://github.com/scalar/scalar/blob/main/documentation/configuration.md"""
-
-    show_sidebar: bool = field(default=True)
-    """Whether the sidebar should be shown."""
