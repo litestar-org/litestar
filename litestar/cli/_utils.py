@@ -182,11 +182,6 @@ class LitestarExtensionGroup(LitestarGroup):
     This group class should not be used on any group besides the root ``litestar_group``.
     """
 
-    __slots__ = (
-        "_preparsed_app_dir",
-        "_preparsed_app_path",
-    )
-
     def __init__(
         self,
         name: str | None = None,
@@ -195,7 +190,10 @@ class LitestarExtensionGroup(LitestarGroup):
     ) -> None:
         """Init ``LitestarExtensionGroup``"""
         super().__init__(name=name, commands=commands, **attrs)
+
         self._prepare_done = False
+        self._preparsed_app_dir: str | None = None
+        self._preparsed_app_path: Path | None = None
 
         for entry_point in entry_points(group="litestar.commands"):
             command = entry_point.load()
@@ -233,7 +231,7 @@ class LitestarExtensionGroup(LitestarGroup):
         self._prepare(ctx)
         return ctx
 
-    def parse_args(self, ctx: Context, args: list[str]) -> None:
+    def parse_args(self, ctx: Context, args: list[str]) -> list[str]:
         """Preparse launch arguments and save app_path & app_dir to slots.
         This block is triggered in any case, but its results are only used if the --help command is invoked.
         """
@@ -248,7 +246,7 @@ class LitestarExtensionGroup(LitestarGroup):
 
         ctx.ignore_unknown_options = original_ignore_unknown_option
 
-        super().parse_args(ctx, args)
+        return super().parse_args(ctx, args)
 
     def list_commands(self, ctx: Context) -> list[str]:
         self._prepare(ctx)
