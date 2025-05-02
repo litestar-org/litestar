@@ -2,14 +2,18 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, Any, Sequence
+from dataclasses import asdict
 
 import msgspec
 import yaml
+import json
 
 from litestar.constants import OPENAPI_JSON_HANDLER_NAME
 from litestar.enums import MediaType, OpenAPIMediaType
 from litestar.handlers import get
+from litestar.openapi.datastructures import ScalarConfig
 from litestar.serialization import encode_json, get_serializer
+from litestar.dto._backend import _camelize
 
 if TYPE_CHECKING:
     from litestar.config.csrf import CSRFConfig
@@ -363,6 +367,7 @@ class ScalarRenderPlugin(OpenAPIRenderPlugin):
         js_url: str | None = None,
         css_url: str | None = None,
         path: str | Sequence[str] = "/scalar",
+        config: ScalarConfig | None = None,
         **kwargs: Any,
     ) -> None:
         """Initialize the Scalar OpenAPI UI render plugin.
@@ -379,6 +384,7 @@ class ScalarRenderPlugin(OpenAPIRenderPlugin):
         """
         self.js_url = js_url or f"https://cdn.jsdelivr.net/npm/@scalar/api-reference@{version}"
         self.css_url = css_url or self._default_css_url
+        self.config = config
         super().__init__(path=path, **kwargs)
 
     def render(self, request: Request, openapi_schema: dict[str, Any]) -> bytes:
@@ -412,6 +418,7 @@ class ScalarRenderPlugin(OpenAPIRenderPlugin):
                   id="api-reference"
                   data-url="{self.get_openapi_json_route(request)}">
                 </script>
+                {self.render_config()}
                 <script src="{self.js_url}" crossorigin></script>
                 """
 
@@ -422,6 +429,21 @@ class ScalarRenderPlugin(OpenAPIRenderPlugin):
                         {body}
                     </html>
                 """.encode()
+
+    def render_config(self) -> str:
+        """Render Scalar configuration to JS object."""
+        if not self.config:
+            return ""
+
+        dict_config = {}
+        for param, value in asdict(self.config).items():
+            dict_config[_camelize(param, False)] = value
+
+        return f"""
+                <script>
+                  document.getElementById('api-reference').dataset.configuration = '{json.dumps(dict_config)}'
+                </script>
+                """
 
 
 class StoplightRenderPlugin(OpenAPIRenderPlugin):
