@@ -1,24 +1,25 @@
 from __future__ import annotations
 
+import json
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING, Any, Sequence
 from dataclasses import asdict
+from typing import TYPE_CHECKING, Any, Sequence
 
 import msgspec
 import yaml
-import json
 
 from litestar.constants import OPENAPI_JSON_HANDLER_NAME
+from litestar.dto._backend import _camelize
 from litestar.enums import MediaType, OpenAPIMediaType
 from litestar.handlers import get
-from litestar.openapi.datastructures import ScalarConfig
 from litestar.serialization import encode_json, get_serializer
-from litestar.dto._backend import _camelize
 
 if TYPE_CHECKING:
     from litestar.config.csrf import CSRFConfig
     from litestar.connection import Request
+    from litestar.openapi.datastructures import ScalarConfig
     from litestar.router import Router
+
 
 __all__ = (
     "OpenAPIRenderPlugin",
@@ -380,6 +381,8 @@ class ScalarRenderPlugin(OpenAPIRenderPlugin):
             css_url: Download url for the Scalar CSS bundle.
                 If not provided, the Litestar-provided CSS will be used.
             path: Path to serve the OpenAPI UI at.
+            config: Scalar configuration.
+                If not provided the default Scalar configuration will be used.
             **kwargs: Additional arguments to pass to the base class.
         """
         self.js_url = js_url or f"https://cdn.jsdelivr.net/npm/@scalar/api-reference@{version}"
