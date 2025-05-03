@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import json
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, Any, Sequence
 
@@ -436,7 +435,7 @@ class ScalarRenderPlugin(OpenAPIRenderPlugin):
             return ""
         return f"""
                 <script>
-                  document.getElementById('api-reference').dataset.configuration = '{json.dumps(self.options)}'
+                  document.getElementById('api-reference').dataset.configuration = '{msgspec.json.encode(self.options).decode()}'
                 </script>
                 """
 
