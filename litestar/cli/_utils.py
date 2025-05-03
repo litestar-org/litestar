@@ -190,7 +190,10 @@ class LitestarExtensionGroup(LitestarGroup):
     ) -> None:
         """Init ``LitestarExtensionGroup``"""
         super().__init__(name=name, commands=commands, **attrs)
+
         self._prepare_done = False
+        self._preparsed_app_dir: str | None = None
+        self._preparsed_app_path: Path | None = None
 
         for entry_point in entry_points(group="litestar.commands"):
             command = entry_point.load()
@@ -205,7 +208,9 @@ class LitestarExtensionGroup(LitestarGroup):
             env: LitestarEnv | None = ctx.obj
         else:
             try:
-                env = ctx.obj = LitestarEnv.from_env(ctx.params.get("app_path"), ctx.params.get("app_dir"))
+                app_path = ctx.params.get("app_path", self._preparsed_app_path)
+                app_dir = ctx.params.get("app_dir", self._preparsed_app_dir)
+                env = ctx.obj = LitestarEnv.from_env(app_path, app_dir)
             except LitestarCLIException:
                 env = None
 
@@ -225,6 +230,23 @@ class LitestarExtensionGroup(LitestarGroup):
         ctx = super().make_context(info_name, args, parent, **extra)
         self._prepare(ctx)
         return ctx
+
+    def parse_args(self, ctx: Context, args: list[str]) -> list[str]:
+        """Preparse launch arguments and save app_path & app_dir to slots.
+        This block is triggered in any case, but its results are only used if the --help command is invoked.
+        """
+        parser = self.make_parser(ctx)
+
+        original_ignore_unknown_option = ctx.ignore_unknown_options
+        ctx.ignore_unknown_options = True
+
+        opts, remaining_args, order = parser.parse_args(list(args))
+        self._preparsed_app_path = opts.get("app_path", None)
+        self._preparsed_app_dir = opts.get("app_dir", None)
+
+        ctx.ignore_unknown_options = original_ignore_unknown_option
+
+        return super().parse_args(ctx, args)
 
     def list_commands(self, ctx: Context) -> list[str]:
         self._prepare(ctx)

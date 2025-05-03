@@ -461,11 +461,31 @@ def test_schema_generation_with_ellipsis() -> None:
 
 def test_schema_tuple_with_union() -> None:
     schema = get_schema_for_field_definition(FieldDefinition.from_annotation(Tuple[int, Union[int, str]]))
-    assert isinstance(schema.items, Schema)
-    assert schema.items.one_of == [
+    assert schema.prefix_items == [
         Schema(type=OpenAPIType.INTEGER),
         Schema(one_of=[Schema(type=OpenAPIType.INTEGER), Schema(type=OpenAPIType.STRING)]),
     ]
+
+
+def test_schema_tuple() -> None:
+    schema = get_schema_for_field_definition(FieldDefinition.from_annotation(Tuple[int, str]))
+    assert schema == Schema(
+        prefix_items=[Schema(type=OpenAPIType.INTEGER), Schema(type=OpenAPIType.STRING)],
+        type=OpenAPIType.ARRAY,
+    )
+
+
+def test_schema_optional_tuple() -> None:
+    schema = get_schema_for_field_definition(FieldDefinition.from_annotation(Optional[Tuple[int, str]]))
+    assert schema == Schema(
+        one_of=[
+            Schema(
+                prefix_items=[Schema(type=OpenAPIType.INTEGER), Schema(type=OpenAPIType.STRING)],
+                type=OpenAPIType.ARRAY,
+            ),
+            Schema(type=OpenAPIType.NULL),
+        ],
+    )
 
 
 def test_optional_enum() -> None:
