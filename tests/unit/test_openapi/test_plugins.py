@@ -76,7 +76,7 @@ def test_plugins_csrf_httponly() -> None:
         "document.getElementById('api-reference').dataset.configuration = '{\"showSidebar\":false}'",
     ],
 )
-def test_openapi_scalar_options(scalar_config, expected_config_render) -> None:
+def test_openapi_scalar_options(scalar_config: dict, expected_config_render: str) -> None:
     app = Litestar(
         openapi_config=OpenAPIConfig(
             title="Litestar Example",
