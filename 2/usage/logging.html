@@ -1576,6 +1576,25 @@ which is optimal for async applications. Make sure to use it in your own loggers
 <p>Exceptions won’t be logged by default, except in debug mode. Make sure to use <code class="docutils literal notranslate"><span class="pre">log_exceptions=&quot;always&quot;</span></code> as in the
 example above to log exceptions if you need it.</p>
 </div>
+<section id="controlling-exception-logging">
+<h2>Controlling Exception Logging<a class="headerlink" href="#controlling-exception-logging" title="Permalink to this heading">#</a></h2>
+<p>While <code class="docutils literal notranslate"><span class="pre">log_exceptions</span></code> controls when exceptions are logged, sometimes you may want to suppress stack traces for specific
+exception types or HTTP status codes. The <code class="docutils literal notranslate"><span class="pre">disable_stack_trace</span></code> parameter allows you to specify a set of exception types
+or status codes that should not generate stack traces in logs:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span>
+<span class="kn">from</span> <span class="nn">litestar.logging</span> <span class="kn">import</span> <span class="n">LoggingConfig</span>
+
+<span class="c1"># Don&#39;t log stack traces for 404 errors and ValueError exceptions</span>
+<span class="n">logging_config</span> <span class="o">=</span> <span class="n">LoggingConfig</span><span class="p">(</span>
+    <span class="n">debug</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">disable_stack_trace</span><span class="o">=</span><span class="p">{</span><span class="mi">404</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">},</span>
+<span class="p">)</span>
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">logging_config</span><span class="o">=</span><span class="n">logging_config</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This is particularly useful for common exceptions that you expect in normal operation and don’t need detailed stack traces for.</p>
+</section>
 <section id="using-python-standard-library">
 <h2>Using Python standard library<a class="headerlink" href="#using-python-standard-library" title="Permalink to this heading">#</a></h2>
 <p><a class="reference external" href="https://docs.python.org/3/howto/logging.html">logging</a> is Python’s builtin standard logging library and can be
@@ -1718,6 +1737,7 @@ dedicated logging plugin and config for using it:</p>
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#controlling-exception-logging">Controlling Exception Logging</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#using-python-standard-library">Using Python standard library</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#using-picologging">Using Picologging</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#using-structlog">Using StructLog</a></li>

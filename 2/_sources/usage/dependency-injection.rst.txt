@@ -153,9 +153,9 @@ and committing otherwise.
 .. admonition:: Best Practice
     :class: tip
 
-    You should always wrap `yield` in a `try`/`finally` block, regardless of whether you
-    want to handle exceptions, to ensure that the cleanup code is run even when exceptions
-    occurred:
+    You should always wrap ``yield`` in a ``try``/``finally`` block, regardless of
+    whether you want to handle exceptions, to ensure that the cleanup code is run even
+    when exceptions occurred:
 
     .. code-block:: python
 
@@ -168,9 +168,19 @@ and committing otherwise.
 
 .. attention::
 
-   Do not re-raise exceptions within the dependency. Exceptions caught within these
-   dependencies will still be handled by the regular mechanisms without an explicit
-   re-raise
+    Do not re-raise exceptions within the dependency. Exceptions caught within these
+    dependencies will still be handled by the regular mechanisms without an explicit
+    re-raise
+
+
+.. important::
+
+    Exceptions raised during the cleanup step of a dependency will be re-raised in an
+    :exc:`ExceptionGroup` (for Python versions < 3.11, the
+    `exceptiongroup <https://github.com/agronholm/exceptiongroup>`_ will be used). This
+    happens after all dependencies have been cleaned up, so exceptions raised during
+    cleanup of one dependencies do not affect the cleanup of other dependencies.
+
 
 
 Dependency keyword arguments

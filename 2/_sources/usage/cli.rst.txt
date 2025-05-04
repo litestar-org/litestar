@@ -49,6 +49,30 @@ Within these locations, Litestar CLI looks for:
 4. A :term:`callable` named ``create_app``
 5. A callable annotated to return an instance of :class:`~.app.Litestar`
 
+Specifying an application explicitly
+------------------------------------
+
+The application to be used can be specified explicitly via either the ``--app`` argument
+or the ``LITESTAR_APP`` environment variable. The format for both of them is
+``<module name>.<submodule>:<app instance or factory>``.
+
+When both ``--app`` and ``LITESTAR_APP`` are set, the CLI option takes precedence over
+the environment variable.
+
+
+.. code-block:: bash
+    :caption: Using 'litestar run' and specifying an application factory via --app
+
+    litestar --app=my_application.app:create_my_app run
+
+
+.. code-block:: bash
+    :caption: Using 'litestar run' and specifying an application factory via LITESTAR_APP
+
+    LITESTAR_APP=my_application.app:create_my_app litestar run
+
+
+
 Extending the CLI
 -----------------
 
@@ -140,6 +164,38 @@ You can achieve this by adding the special ``app`` parameter to your CLI functio
 
     @click.command()
     def my_command(app: Litestar) -> None: ...
+
+Using the `server_lifespan` hook
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Server lifespan hooks provide a way to run code before and after the *server* starts and stops. In contrast to the regular `lifespan` hooks, they only run once, even when a server starts multiple workers, whereas `lifespan` hooks would run for each individual worker.
+
+This makes them suitable for tasks that should happen exactly once, like initializing a database.
+
+.. code-block:: python
+    :caption: Using the `server_lifespan` hook
+
+    from contextlib import contextmanager
+    from typing import Generator
+
+    from litestar import Litestar
+    from litestar.config.app import AppConfig
+    from litestar.plugins.base import CLIPlugin
+
+
+    class StartupPrintPlugin(CLIPlugin):
+
+        @contextmanager
+        def server_lifespan(self, app: Litestar) -> Generator[None, None, None]:
+            print("i_run_before_startup_plugin")  # noqa: T201
+            try:
+                yield
+            finally:
+                print("i_run_after_shutdown_plugin")  # noqa: T201
+
+    def create_app() -> Litestar:
+        return Litestar(route_handlers=[], plugins=[StartupPrintPlugin()])
+
 
 CLI Reference
 -------------

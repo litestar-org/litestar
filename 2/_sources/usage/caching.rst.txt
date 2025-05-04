@@ -67,3 +67,15 @@ Litestar uses the request's path + sorted query parameters as the cache key. Thi
 .. literalinclude:: /examples/caching/key_builder_for_route_handler.py
     :language: python
     :caption: Using a custom cache key builder for a specific route handler.
+
+Using the cache_response_filter
++++++++++++++++++++++++++++++++
+
+The :attr:`~.config.response_cache.ResponseCacheConfig.cache_response_filter` can be customized to implement any caching logic based on the application's needs.
+For example, you might want to cache only successful responses, or cache responses based on certain headers or content.
+
+.. literalinclude:: /examples/caching/cache_response_filter.py
+    :language: python
+    :caption: Using the cache_response_filter to customize caching behavior.
+
+In this example, the `custom_cache_response_filter` function caches only successful (2xx) responses.

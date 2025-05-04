@@ -1582,11 +1582,18 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 </div>
 <p>The type of <code class="docutils literal notranslate"><span class="pre">data</span></code> can be any supported type, including</p>
 <ul class="simple">
-<li><p><a class="reference external" href="https://docs.python.org/3/library/dataclasses.html#dataclasses.dataclass" title="(in Python v3.13)"><code class="xref py py-func docutils literal notranslate"><span class="pre">dataclasses</span></code></a></p></li>
-<li><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.TypedDict" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypedDicts</span></code></a></p></li>
-<li><p>Pydantic models</p></li>
 <li><p>Arbitrary stdlib types</p></li>
-<li><p>Types supported via <a class="reference internal" href="plugins/index.html"><span class="doc">plugins</span></a></p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.TypedDict" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypedDicts</span></code></a></p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/library/dataclasses.html#dataclasses.dataclass" title="(in Python v3.13)"><code class="xref py py-func docutils literal notranslate"><span class="pre">dataclasses</span></code></a></p></li>
+<li><dl class="simple">
+<dt>Types supported via <a class="reference internal" href="plugins/index.html"><span class="doc">plugins</span></a> ie.</dt><dd><ul>
+<li><p><a class="reference external" href="https://jcristharif.com/msgspec/structs.html">Msgspec Struct</a></p></li>
+<li><p><a class="reference external" href="https://docs.pydantic.dev/usage/models/">Pydantic models</a></p></li>
+<li><p><a class="reference external" href="https://www.attrs.org/en/stable/">Attrs classes</a></p></li>
+</ul>
+</dd>
+</dl>
+</li>
 </ul>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
 
@@ -1613,8 +1620,12 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <p>With the help of <a class="reference internal" href="../reference/params.html#litestar.params.Body" title="litestar.params.Body"><code class="xref py py-class docutils literal notranslate"><span class="pre">Body</span></code></a>, you have fine-grained control over the validation
 of the request body, and can also customize the OpenAPI documentation:</p>
 <div class="sd-tab-set docutils">
-<input id="sd-tab-item-2" name="sd-tab-set-1" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-2">
+<input checked="checked" id="sd-tab-item-2" name="sd-tab-set-1" type="radio">
+</input><label class="sd-tab-label" for="sd-tab-item-2">
+example</label><div class="sd-tab-content docutils">
+<div class="sd-tab-set docutils">
+<input id="sd-tab-item-4" name="sd-tab-set-2" type="radio">
+</input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-4">
 Python 3.8+</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
 
@@ -1641,8 +1652,8 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 </pre></div>
 </div>
 </div>
-<input checked="checked" id="sd-tab-item-3" name="sd-tab-set-1" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.9" for="sd-tab-item-3">
+<input checked="checked" id="sd-tab-item-5" name="sd-tab-set-2" type="radio">
+</input><label class="sd-tab-label" data-sync-id="3.9" for="sd-tab-item-5">
 Python 3.9+</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
 
@@ -1666,6 +1677,21 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">create_user</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<input id="sd-tab-item-3" name="sd-tab-set-1" type="radio">
+</input><label class="sd-tab-label" for="sd-tab-item-3">
+how to test</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">test_request_data_3</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">with</span> <span class="n">TestClient</span><span class="p">(</span><span class="n">app</span><span class="o">=</span><span class="n">app_3</span><span class="p">)</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">json</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;John&quot;</span><span class="p">})</span>
+        <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">201</span>
+        <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span> <span class="o">==</span> <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;John&quot;</span><span class="p">}</span>
+        <span class="n">schema</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/schema/openapi.json&quot;</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="s2">&quot;Create a new user.&quot;</span> <span class="ow">in</span> <span class="n">schema</span><span class="o">.</span><span class="n">json</span><span class="p">()[</span><span class="s2">&quot;components&quot;</span><span class="p">][</span><span class="s2">&quot;schemas&quot;</span><span class="p">][</span><span class="s2">&quot;User&quot;</span><span class="p">][</span><span class="s2">&quot;description&quot;</span><span class="p">]</span>
 </pre></div>
 </div>
 </div>
@@ -1683,8 +1709,12 @@ help to generate the correct media-type in the OpenAPI schema.</p>
 i.e. <code class="docutils literal notranslate"><span class="pre">application/x-www-form-urlencoded</span></code> Content-Type header, use <a class="reference internal" href="../reference/params.html#litestar.params.Body" title="litestar.params.Body"><code class="xref py py-class docutils literal notranslate"><span class="pre">Body</span></code></a> and specify
 <a class="reference internal" href="../reference/enums.html#litestar.enums.RequestEncodingType" title="litestar.enums.RequestEncodingType"><code class="xref py py-class docutils literal notranslate"><span class="pre">RequestEncodingType.URL_ENCODED</span></code></a> as the <code class="docutils literal notranslate"><span class="pre">media_type</span></code>:</p>
 <div class="sd-tab-set docutils">
-<input id="sd-tab-item-4" name="sd-tab-set-2" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-4">
+<input checked="checked" id="sd-tab-item-6" name="sd-tab-set-3" type="radio">
+</input><label class="sd-tab-label" for="sd-tab-item-6">
+example</label><div class="sd-tab-content docutils">
+<div class="sd-tab-set docutils">
+<input id="sd-tab-item-8" name="sd-tab-set-4" type="radio">
+</input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-8">
 Python 3.8+</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
 
@@ -1712,8 +1742,8 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 </pre></div>
 </div>
 </div>
-<input checked="checked" id="sd-tab-item-5" name="sd-tab-set-2" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.9" for="sd-tab-item-5">
+<input checked="checked" id="sd-tab-item-9" name="sd-tab-set-4" type="radio">
+</input><label class="sd-tab-label" data-sync-id="3.9" for="sd-tab-item-9">
 Python 3.9+</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
 
@@ -1738,6 +1768,19 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">create_user</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<input id="sd-tab-item-7" name="sd-tab-set-3" type="radio">
+</input><label class="sd-tab-label" for="sd-tab-item-7">
+how to test</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">test_request_data_4</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">with</span> <span class="n">TestClient</span><span class="p">(</span><span class="n">app</span><span class="o">=</span><span class="n">app_4</span><span class="p">)</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;John&quot;</span><span class="p">})</span>
+        <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">201</span>
+        <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span> <span class="o">==</span> <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;John&quot;</span><span class="p">}</span>
 </pre></div>
 </div>
 </div>
@@ -1754,14 +1797,20 @@ dictionaries and deeply nested data. It should only be used for simple data stru
 <a class="reference external" href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/POST">multipart/form-data</a>
 Content-Type header by specifying it in the <a class="reference internal" href="../reference/params.html#litestar.params.Body" title="litestar.params.Body"><code class="xref py py-class docutils literal notranslate"><span class="pre">Body</span></code></a> function:</p>
 <div class="sd-tab-set docutils">
-<input id="sd-tab-item-6" name="sd-tab-set-3" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-6">
+<input checked="checked" id="sd-tab-item-10" name="sd-tab-set-5" type="radio">
+</input><label class="sd-tab-label" for="sd-tab-item-10">
+example</label><div class="sd-tab-content docutils">
+<div class="sd-tab-set docutils">
+<input id="sd-tab-item-12" name="sd-tab-set-6" type="radio">
+</input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-12">
 Python 3.8+</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span>
 
 <span class="kn">from</span> <span class="nn">typing_extensions</span> <span class="kn">import</span> <span class="n">Annotated</span>
 
 <span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">post</span>
+<span class="kn">from</span> <span class="nn">litestar.datastructures</span> <span class="kn">import</span> <span class="n">UploadFile</span>
 <span class="kn">from</span> <span class="nn">litestar.enums</span> <span class="kn">import</span> <span class="n">RequestEncodingType</span>
 <span class="kn">from</span> <span class="nn">litestar.params</span> <span class="kn">import</span> <span class="n">Body</span>
 
@@ -1770,27 +1819,31 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 <span class="k">class</span> <span class="nc">User</span><span class="p">:</span>
     <span class="nb">id</span><span class="p">:</span> <span class="nb">int</span>
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">form_input_name</span><span class="p">:</span> <span class="n">UploadFile</span>
 
 
 <span class="nd">@post</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span> <span class="nf">create_user</span><span class="p">(</span>
     <span class="n">data</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="n">User</span><span class="p">,</span> <span class="n">Body</span><span class="p">(</span><span class="n">media_type</span><span class="o">=</span><span class="n">RequestEncodingType</span><span class="o">.</span><span class="n">MULTI_PART</span><span class="p">)],</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">User</span><span class="p">:</span>
-    <span class="k">return</span> <span class="n">data</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+    <span class="n">content</span> <span class="o">=</span> <span class="k">await</span> <span class="n">data</span><span class="o">.</span><span class="n">form_input_name</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+    <span class="n">filename</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">form_input_name</span><span class="o">.</span><span class="n">filename</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">data</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">data</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s2">&quot;filename&quot;</span><span class="p">:</span> <span class="n">filename</span><span class="p">,</span> <span class="s2">&quot;size&quot;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">content</span><span class="p">)}</span>
 
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">create_user</span><span class="p">])</span>
 </pre></div>
 </div>
 </div>
-<input checked="checked" id="sd-tab-item-7" name="sd-tab-set-3" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.9" for="sd-tab-item-7">
+<input checked="checked" id="sd-tab-item-13" name="sd-tab-set-6" type="radio">
+</input><label class="sd-tab-label" data-sync-id="3.9" for="sd-tab-item-13">
 Python 3.9+</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
 
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Annotated</span>
 
 <span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">post</span>
+<span class="kn">from</span> <span class="nn">litestar.datastructures</span> <span class="kn">import</span> <span class="n">UploadFile</span>
 <span class="kn">from</span> <span class="nn">litestar.enums</span> <span class="kn">import</span> <span class="n">RequestEncodingType</span>
 <span class="kn">from</span> <span class="nn">litestar.params</span> <span class="kn">import</span> <span class="n">Body</span>
 
@@ -1799,16 +1852,41 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <span class="k">class</span> <span class="nc">User</span><span class="p">:</span>
     <span class="nb">id</span><span class="p">:</span> <span class="nb">int</span>
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">form_input_name</span><span class="p">:</span> <span class="n">UploadFile</span>
 
 
 <span class="nd">@post</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span> <span class="nf">create_user</span><span class="p">(</span>
     <span class="n">data</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="n">User</span><span class="p">,</span> <span class="n">Body</span><span class="p">(</span><span class="n">media_type</span><span class="o">=</span><span class="n">RequestEncodingType</span><span class="o">.</span><span class="n">MULTI_PART</span><span class="p">)],</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">User</span><span class="p">:</span>
-    <span class="k">return</span> <span class="n">data</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+    <span class="n">content</span> <span class="o">=</span> <span class="k">await</span> <span class="n">data</span><span class="o">.</span><span class="n">form_input_name</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+    <span class="n">filename</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">form_input_name</span><span class="o">.</span><span class="n">filename</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">data</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">data</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s2">&quot;filename&quot;</span><span class="p">:</span> <span class="n">filename</span><span class="p">,</span> <span class="s2">&quot;size&quot;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">content</span><span class="p">)}</span>
 
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">create_user</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<input id="sd-tab-item-11" name="sd-tab-set-5" type="radio">
+</input><label class="sd-tab-label" for="sd-tab-item-11">
+how to test</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">test_request_data_5</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">with</span> <span class="n">TestClient</span><span class="p">(</span><span class="n">app</span><span class="o">=</span><span class="n">app_5</span><span class="p">)</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
+            <span class="s2">&quot;/&quot;</span><span class="p">,</span>
+            <span class="n">files</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;form_input_name&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;filename&quot;</span><span class="p">,</span> <span class="n">BytesIO</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;file content&quot;</span><span class="p">))},</span>
+            <span class="n">data</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;John&quot;</span><span class="p">},</span>
+        <span class="p">)</span>
+        <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">201</span>
+        <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span> <span class="o">==</span> <span class="p">{</span>
+            <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;John&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;filename&quot;</span><span class="p">:</span> <span class="s2">&quot;filename&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;size&quot;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;file content&quot;</span><span class="p">),</span>
+        <span class="p">}</span>
 </pre></div>
 </div>
 </div>
@@ -1822,12 +1900,16 @@ of <a class="reference internal" href="../reference/datastructures/index.html#li
 interface for working with files. Therefore, you need to type your file uploads accordingly.</p>
 <p>To access a single file simply type <code class="docutils literal notranslate"><span class="pre">data</span></code> as <a class="reference internal" href="../reference/datastructures/index.html#litestar.datastructures.UploadFile" title="litestar.datastructures.upload_file.UploadFile"><code class="xref py py-class docutils literal notranslate"><span class="pre">UploadFile</span></code></a>:</p>
 <div class="sd-tab-set docutils">
-<input checked="checked" id="sd-tab-item-8" name="sd-tab-set-4" type="radio">
-</input><label class="sd-tab-label" for="sd-tab-item-8">
+<input checked="checked" id="sd-tab-item-14" name="sd-tab-set-7" type="radio">
+</input><label class="sd-tab-label" for="sd-tab-item-14">
 Async</label><div class="sd-tab-content docutils">
 <div class="sd-tab-set docutils">
-<input id="sd-tab-item-10" name="sd-tab-set-5" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-10">
+<input checked="checked" id="sd-tab-item-16" name="sd-tab-set-8" type="radio">
+</input><label class="sd-tab-label" for="sd-tab-item-16">
+example</label><div class="sd-tab-content docutils">
+<div class="sd-tab-set docutils">
+<input id="sd-tab-item-18" name="sd-tab-set-9" type="radio">
+</input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-18">
 Python 3.8+</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing_extensions</span> <span class="kn">import</span> <span class="n">Annotated</span>
 
@@ -1843,15 +1925,15 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
     <span class="n">content</span> <span class="o">=</span> <span class="k">await</span> <span class="n">data</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
     <span class="n">filename</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">filename</span>
-    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">content</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">,length: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">content</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
 
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">handle_file_upload</span><span class="p">])</span>
 </pre></div>
 </div>
 </div>
-<input checked="checked" id="sd-tab-item-11" name="sd-tab-set-5" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.9" for="sd-tab-item-11">
+<input checked="checked" id="sd-tab-item-19" name="sd-tab-set-9" type="radio">
+</input><label class="sd-tab-label" data-sync-id="3.9" for="sd-tab-item-19">
 Python 3.9+</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Annotated</span>
 
@@ -1867,7 +1949,7 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
     <span class="n">content</span> <span class="o">=</span> <span class="k">await</span> <span class="n">data</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
     <span class="n">filename</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">filename</span>
-    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">content</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">,length: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">content</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
 
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">handle_file_upload</span><span class="p">])</span>
@@ -1876,12 +1958,29 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 </div>
 </div>
 </div>
-<input id="sd-tab-item-9" name="sd-tab-set-4" type="radio">
-</input><label class="sd-tab-label" for="sd-tab-item-9">
+<input id="sd-tab-item-17" name="sd-tab-set-8" type="radio">
+</input><label class="sd-tab-label" for="sd-tab-item-17">
+how to test</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">test_request_data_6</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">with</span> <span class="n">TestClient</span><span class="p">(</span><span class="n">app</span><span class="o">=</span><span class="n">app_6</span><span class="p">)</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">files</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;upload&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;hello&quot;</span><span class="p">,</span> <span class="sa">b</span><span class="s2">&quot;world&quot;</span><span class="p">)})</span>
+        <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">201</span>
+        <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">text</span> <span class="o">==</span> <span class="sa">f</span><span class="s2">&quot;hello,length: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="sa">b</span><span class="s1">&#39;world&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<input id="sd-tab-item-15" name="sd-tab-set-7" type="radio">
+</input><label class="sd-tab-label" for="sd-tab-item-15">
 Sync</label><div class="sd-tab-content docutils">
 <div class="sd-tab-set docutils">
-<input id="sd-tab-item-12" name="sd-tab-set-6" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-12">
+<input checked="checked" id="sd-tab-item-20" name="sd-tab-set-10" type="radio">
+</input><label class="sd-tab-label" for="sd-tab-item-20">
+example</label><div class="sd-tab-content docutils">
+<div class="sd-tab-set docutils">
+<input id="sd-tab-item-22" name="sd-tab-set-11" type="radio">
+</input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-22">
 Python 3.8+</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing_extensions</span> <span class="kn">import</span> <span class="n">Annotated</span>
 
@@ -1897,15 +1996,15 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
     <span class="n">content</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">file</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
     <span class="n">filename</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">filename</span>
-    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">content</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">,length: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">content</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
 
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">handle_file_upload</span><span class="p">])</span>
 </pre></div>
 </div>
 </div>
-<input checked="checked" id="sd-tab-item-13" name="sd-tab-set-6" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.9" for="sd-tab-item-13">
+<input checked="checked" id="sd-tab-item-23" name="sd-tab-set-11" type="radio">
+</input><label class="sd-tab-label" data-sync-id="3.9" for="sd-tab-item-23">
 Python 3.9+</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Annotated</span>
 
@@ -1921,10 +2020,23 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
     <span class="n">content</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">file</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
     <span class="n">filename</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">filename</span>
-    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">content</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">,length: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">content</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
 
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">handle_file_upload</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<input id="sd-tab-item-21" name="sd-tab-set-10" type="radio">
+</input><label class="sd-tab-label" for="sd-tab-item-21">
+how to test</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">test_request_data_7</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">with</span> <span class="n">TestClient</span><span class="p">(</span><span class="n">app</span><span class="o">=</span><span class="n">app_7</span><span class="p">)</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">files</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;upload&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;hello&quot;</span><span class="p">,</span> <span class="sa">b</span><span class="s2">&quot;world&quot;</span><span class="p">)})</span>
+        <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">201</span>
+        <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">text</span> <span class="o">==</span> <span class="sa">f</span><span class="s2">&quot;hello,length: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="sa">b</span><span class="s1">&#39;world&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
 </pre></div>
 </div>
 </div>
@@ -1941,10 +2053,14 @@ function we don’t need this wrapper, so we can use its <a class="reference ext
 <h3>Multiple files<a class="headerlink" href="#multiple-files" title="Permalink to this heading">#</a></h3>
 <p>To access multiple files with known filenames, you can use a pydantic model:</p>
 <div class="sd-tab-set docutils">
-<input id="sd-tab-item-14" name="sd-tab-set-7" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-14">
+<input checked="checked" id="sd-tab-item-24" name="sd-tab-set-12" type="radio">
+</input><label class="sd-tab-label" for="sd-tab-item-24">
+example</label><div class="sd-tab-content docutils">
+<div class="sd-tab-set docutils">
+<input id="sd-tab-item-26" name="sd-tab-set-13" type="radio">
+</input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-26">
 Python 3.8+</label><div class="sd-tab-content docutils">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span>
 
 <span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">ConfigDict</span>
 <span class="kn">from</span> <span class="nn">typing_extensions</span> <span class="kn">import</span> <span class="n">Annotated</span>
@@ -1964,7 +2080,7 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 <span class="nd">@post</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span> <span class="nf">handle_file_upload</span><span class="p">(</span>
     <span class="n">data</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="n">FormData</span><span class="p">,</span> <span class="n">Body</span><span class="p">(</span><span class="n">media_type</span><span class="o">=</span><span class="n">RequestEncodingType</span><span class="o">.</span><span class="n">MULTI_PART</span><span class="p">)],</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
     <span class="n">cv_content</span> <span class="o">=</span> <span class="k">await</span> <span class="n">data</span><span class="o">.</span><span class="n">cv</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
     <span class="n">diploma_content</span> <span class="o">=</span> <span class="k">await</span> <span class="n">data</span><span class="o">.</span><span class="n">diploma</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
 
@@ -1975,12 +2091,10 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 </pre></div>
 </div>
 </div>
-<input checked="checked" id="sd-tab-item-15" name="sd-tab-set-7" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.9" for="sd-tab-item-15">
+<input checked="checked" id="sd-tab-item-27" name="sd-tab-set-13" type="radio">
+</input><label class="sd-tab-label" data-sync-id="3.9" for="sd-tab-item-27">
 Python 3.9+</label><div class="sd-tab-content docutils">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span>
-
-<span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">ConfigDict</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">ConfigDict</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Annotated</span>
 
 <span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">post</span>
@@ -1998,7 +2112,7 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <span class="nd">@post</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span> <span class="nf">handle_file_upload</span><span class="p">(</span>
     <span class="n">data</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="n">FormData</span><span class="p">,</span> <span class="n">Body</span><span class="p">(</span><span class="n">media_type</span><span class="o">=</span><span class="n">RequestEncodingType</span><span class="o">.</span><span class="n">MULTI_PART</span><span class="p">)],</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
     <span class="n">cv_content</span> <span class="o">=</span> <span class="k">await</span> <span class="n">data</span><span class="o">.</span><span class="n">cv</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
     <span class="n">diploma_content</span> <span class="o">=</span> <span class="k">await</span> <span class="n">data</span><span class="o">.</span><span class="n">diploma</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
 
@@ -2010,13 +2124,32 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 </div>
 </div>
 </div>
+</div>
+<input id="sd-tab-item-25" name="sd-tab-set-12" type="radio">
+</input><label class="sd-tab-label" for="sd-tab-item-25">
+how to test</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">test_request_data_8</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">with</span> <span class="n">TestClient</span><span class="p">(</span><span class="n">app</span><span class="o">=</span><span class="n">app_8</span><span class="p">)</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
+            <span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">files</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;cv&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;cv.odf&quot;</span><span class="p">,</span> <span class="sa">b</span><span class="s2">&quot;very impressive&quot;</span><span class="p">),</span> <span class="s2">&quot;diploma&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;diploma.pdf&quot;</span><span class="p">,</span> <span class="sa">b</span><span class="s2">&quot;the best&quot;</span><span class="p">)}</span>
+        <span class="p">)</span>
+        <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">201</span>
+        <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span> <span class="o">==</span> <span class="p">{</span><span class="s2">&quot;cv&quot;</span><span class="p">:</span> <span class="s2">&quot;very impressive&quot;</span><span class="p">,</span> <span class="s2">&quot;diploma&quot;</span><span class="p">:</span> <span class="s2">&quot;the best&quot;</span><span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</div>
 </section>
 <section id="files-as-a-dictionary">
 <h3>Files as a dictionary<a class="headerlink" href="#files-as-a-dictionary" title="Permalink to this heading">#</a></h3>
 <p>If you do not care about parsing and validation and only want to access the form data as a dictionary, you can use a <code class="docutils literal notranslate"><span class="pre">dict</span></code> instead:</p>
 <div class="sd-tab-set docutils">
-<input id="sd-tab-item-16" name="sd-tab-set-8" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-16">
+<input checked="checked" id="sd-tab-item-28" name="sd-tab-set-14" type="radio">
+</input><label class="sd-tab-label" for="sd-tab-item-28">
+example</label><div class="sd-tab-content docutils">
+<div class="sd-tab-set docutils">
+<input id="sd-tab-item-30" name="sd-tab-set-15" type="radio">
+</input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-30">
 Python 3.8+</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span>
 
@@ -2035,7 +2168,7 @@ Python 3.8+</label><div class="sd-tab-content docutils">
     <span class="n">file_contents</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
         <span class="n">content</span> <span class="o">=</span> <span class="k">await</span> <span class="n">file</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
-        <span class="n">file_contents</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">content</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span>
+        <span class="n">file_contents</span><span class="p">[</span><span class="n">file</span><span class="o">.</span><span class="n">filename</span><span class="p">]</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">content</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">file_contents</span>
 
@@ -2044,8 +2177,8 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 </pre></div>
 </div>
 </div>
-<input checked="checked" id="sd-tab-item-17" name="sd-tab-set-8" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.9" for="sd-tab-item-17">
+<input checked="checked" id="sd-tab-item-31" name="sd-tab-set-15" type="radio">
+</input><label class="sd-tab-label" data-sync-id="3.9" for="sd-tab-item-31">
 Python 3.9+</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Annotated</span>
 
@@ -2062,7 +2195,7 @@ Python 3.9+</label><div class="sd-tab-content docutils">
     <span class="n">file_contents</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
         <span class="n">content</span> <span class="o">=</span> <span class="k">await</span> <span class="n">file</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
-        <span class="n">file_contents</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">content</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span>
+        <span class="n">file_contents</span><span class="p">[</span><span class="n">file</span><span class="o">.</span><span class="n">filename</span><span class="p">]</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">content</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">file_contents</span>
 
@@ -2072,15 +2205,35 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 </div>
 </div>
 </div>
+</div>
+<input id="sd-tab-item-29" name="sd-tab-set-14" type="radio">
+</input><label class="sd-tab-label" for="sd-tab-item-29">
+how to test</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">test_request_data_9</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">with</span> <span class="n">TestClient</span><span class="p">(</span><span class="n">app</span><span class="o">=</span><span class="n">app_9</span><span class="p">)</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">files</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;hello&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;filename&quot;</span><span class="p">,</span> <span class="sa">b</span><span class="s2">&quot;there&quot;</span><span class="p">),</span> <span class="s2">&quot;i&#39;m&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;another_filename&quot;</span><span class="p">,</span> <span class="s2">&quot;steve&quot;</span><span class="p">)})</span>
+        <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">201</span>
+        <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span> <span class="o">==</span> <span class="p">{</span>
+            <span class="s2">&quot;filename&quot;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;there&quot;</span><span class="p">),</span>
+            <span class="s2">&quot;another_filename&quot;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;steve&quot;</span><span class="p">),</span>
+        <span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</div>
 </section>
 <section id="files-as-a-list">
 <h3>Files as a list<a class="headerlink" href="#files-as-a-list" title="Permalink to this heading">#</a></h3>
 <p>Finally, you can also access the files as a list without the filenames:</p>
 <div class="sd-tab-set docutils">
-<input id="sd-tab-item-18" name="sd-tab-set-9" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-18">
+<input checked="checked" id="sd-tab-item-32" name="sd-tab-set-16" type="radio">
+</input><label class="sd-tab-label" for="sd-tab-item-32">
+example</label><div class="sd-tab-content docutils">
+<div class="sd-tab-set docutils">
+<input id="sd-tab-item-34" name="sd-tab-set-17" type="radio">
+</input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-34">
 Python 3.8+</label><div class="sd-tab-content docutils">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Tuple</span>
 
 <span class="kn">from</span> <span class="nn">typing_extensions</span> <span class="kn">import</span> <span class="n">Annotated</span>
 
@@ -2093,23 +2246,26 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 <span class="nd">@post</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span> <span class="nf">handle_file_upload</span><span class="p">(</span>
     <span class="n">data</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">UploadFile</span><span class="p">],</span> <span class="n">Body</span><span class="p">(</span><span class="n">media_type</span><span class="o">=</span><span class="n">RequestEncodingType</span><span class="o">.</span><span class="n">MULTI_PART</span><span class="p">)],</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
-    <span class="n">file_contents</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="p">{}</span>
+
     <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
         <span class="n">content</span> <span class="o">=</span> <span class="k">await</span> <span class="n">file</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
-        <span class="n">file_contents</span><span class="p">[</span><span class="n">file</span><span class="o">.</span><span class="n">filename</span><span class="p">]</span> <span class="o">=</span> <span class="n">content</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span>
+        <span class="n">result</span><span class="p">[</span><span class="n">file</span><span class="o">.</span><span class="n">filename</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">content</span><span class="p">),</span> <span class="n">file</span><span class="o">.</span><span class="n">content_type</span><span class="p">,</span> <span class="n">file</span><span class="o">.</span><span class="n">headers</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">file_contents</span>
+    <span class="k">return</span> <span class="n">result</span>
 
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">handle_file_upload</span><span class="p">])</span>
 </pre></div>
 </div>
 </div>
-<input checked="checked" id="sd-tab-item-19" name="sd-tab-set-9" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.9" for="sd-tab-item-19">
+<input checked="checked" id="sd-tab-item-35" name="sd-tab-set-17" type="radio">
+</input><label class="sd-tab-label" data-sync-id="3.9" for="sd-tab-item-35">
 Python 3.9+</label><div class="sd-tab-content docutils">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Annotated</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span>
+
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Annotated</span>
 
 <span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">post</span>
 <span class="kn">from</span> <span class="nn">litestar.datastructures</span> <span class="kn">import</span> <span class="n">UploadFile</span>
@@ -2120,16 +2276,59 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <span class="nd">@post</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span> <span class="nf">handle_file_upload</span><span class="p">(</span>
     <span class="n">data</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">UploadFile</span><span class="p">],</span> <span class="n">Body</span><span class="p">(</span><span class="n">media_type</span><span class="o">=</span><span class="n">RequestEncodingType</span><span class="o">.</span><span class="n">MULTI_PART</span><span class="p">)],</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
-    <span class="n">file_contents</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="p">{}</span>
+
     <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
         <span class="n">content</span> <span class="o">=</span> <span class="k">await</span> <span class="n">file</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
-        <span class="n">file_contents</span><span class="p">[</span><span class="n">file</span><span class="o">.</span><span class="n">filename</span><span class="p">]</span> <span class="o">=</span> <span class="n">content</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span>
+        <span class="n">result</span><span class="p">[</span><span class="n">file</span><span class="o">.</span><span class="n">filename</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">content</span><span class="p">),</span> <span class="n">file</span><span class="o">.</span><span class="n">content_type</span><span class="p">,</span> <span class="n">file</span><span class="o">.</span><span class="n">headers</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">file_contents</span>
+    <span class="k">return</span> <span class="n">result</span>
 
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">handle_file_upload</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<input id="sd-tab-item-33" name="sd-tab-set-16" type="radio">
+</input><label class="sd-tab-label" for="sd-tab-item-33">
+how to test</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">test_request_data_10</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">with</span> <span class="n">TestClient</span><span class="p">(</span><span class="n">app</span><span class="o">=</span><span class="n">app_10</span><span class="p">)</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
+        <span class="c1"># if you pass a dict to the `files` parameter without specifying a filename, it will default to `upload</span>
+        <span class="c1"># so in this app it will be return the last one only...</span>
+        <span class="c1">#     # file (or bytes)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
+            <span class="s2">&quot;/&quot;</span><span class="p">,</span>
+            <span class="n">files</span><span class="o">=</span><span class="p">{</span>
+                <span class="s2">&quot;will default to upload&quot;</span><span class="p">:</span> <span class="n">io</span><span class="o">.</span><span class="n">BytesIO</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;hello world&quot;</span><span class="p">),</span>
+                <span class="s2">&quot;will default to upload also&quot;</span><span class="p">:</span> <span class="n">io</span><span class="o">.</span><span class="n">BytesIO</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;another&quot;</span><span class="p">),</span>
+            <span class="p">},</span>
+        <span class="p">)</span>
+        <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">201</span>
+        <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;upload&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;hello world&quot;</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;upload&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;another&quot;</span><span class="p">)</span>
+
+        <span class="c1"># if you pass the filename explicitly, it will be used as the filename</span>
+        <span class="c1">#     # (filename, file (or bytes))</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">files</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;file&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;hello.txt&quot;</span><span class="p">,</span> <span class="n">io</span><span class="o">.</span><span class="n">BytesIO</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;hello&quot;</span><span class="p">))})</span>
+        <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">201</span>
+        <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;hello.txt&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;hello&quot;</span><span class="p">)</span>
+
+        <span class="c1"># if you add the content type, it will be used as the content type</span>
+        <span class="c1">#     # (filename, file (or bytes), content_type)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">files</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;file&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;hello.txt&quot;</span><span class="p">,</span> <span class="n">io</span><span class="o">.</span><span class="n">BytesIO</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;hello&quot;</span><span class="p">),</span> <span class="s2">&quot;application/x-bittorrent&quot;</span><span class="p">)})</span>
+        <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">201</span>
+        <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;hello.txt&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;hello&quot;</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;hello.txt&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;application/x-bittorrent&quot;</span>
+
+        <span class="c1"># finally you can specify headers like so</span>
+        <span class="c1">#     # (filename, file (or bytes), content_type, headers)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
+            <span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">files</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;file&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;hello.txt&quot;</span><span class="p">,</span> <span class="n">io</span><span class="o">.</span><span class="n">BytesIO</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;hello&quot;</span><span class="p">),</span> <span class="s2">&quot;application/x-bittorrent&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;X-Foo&quot;</span><span class="p">:</span> <span class="s2">&quot;bar&quot;</span><span class="p">})}</span>
+        <span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -2141,11 +2340,13 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <p>To receive <a class="reference external" href="https://msgpack.org/">MessagePack</a> data, specify the appropriate <code class="docutils literal notranslate"><span class="pre">Content-Type</span></code>
 for <code class="docutils literal notranslate"><span class="pre">Body</span></code>, by using <a class="reference internal" href="../reference/enums.html#litestar.enums.RequestEncodingType" title="litestar.enums.RequestEncodingType"><code class="xref py py-class docutils literal notranslate"><span class="pre">RequestEncodingType.MESSAGEPACK</span></code></a>:</p>
 <div class="sd-tab-set docutils">
-<input id="sd-tab-item-20" name="sd-tab-set-10" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-20">
+<input checked="checked" id="sd-tab-item-36" name="sd-tab-set-18" type="radio">
+</input><label class="sd-tab-label" for="sd-tab-item-36">
+example</label><div class="sd-tab-content docutils">
+<div class="sd-tab-set docutils">
+<input id="sd-tab-item-38" name="sd-tab-set-19" type="radio">
+</input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-38">
 Python 3.8+</label><div class="sd-tab-content docutils">
-<div class="literal-block-wrapper docutils container" id="id3">
-<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">msgpack_request.py</span></code></span><a class="headerlink" href="#id3" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span>
 
 <span class="kn">from</span> <span class="nn">typing_extensions</span> <span class="kn">import</span> <span class="n">Annotated</span>
@@ -2168,12 +2369,9 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 </pre></div>
 </div>
 </div>
-</div>
-<input checked="checked" id="sd-tab-item-21" name="sd-tab-set-10" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.9" for="sd-tab-item-21">
+<input checked="checked" id="sd-tab-item-39" name="sd-tab-set-19" type="radio">
+</input><label class="sd-tab-label" data-sync-id="3.9" for="sd-tab-item-39">
 Python 3.9+</label><div class="sd-tab-content docutils">
-<div class="literal-block-wrapper docutils container" id="id4">
-<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">msgpack_request.py</span></code></span><a class="headerlink" href="#id4" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span>
 
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Annotated</span>
@@ -2198,6 +2396,19 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 </div>
 </div>
 </div>
+<input id="sd-tab-item-37" name="sd-tab-set-18" type="radio">
+</input><label class="sd-tab-label" for="sd-tab-item-37">
+how to test</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>        <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;hello.txt&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;application/x-bittorrent&quot;</span>
+        <span class="k">assert</span> <span class="p">(</span><span class="s2">&quot;X-Foo&quot;</span><span class="p">,</span> <span class="s2">&quot;bar&quot;</span><span class="p">)</span> <span class="ow">in</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;hello.txt&quot;</span><span class="p">)[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+
+
+<span class="k">def</span> <span class="nf">test_msgpack_app</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">test_data</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Moishe Zuchmir&quot;</span><span class="p">,</span> <span class="s2">&quot;age&quot;</span><span class="p">:</span> <span class="mi">30</span><span class="p">,</span> <span class="s2">&quot;programmer&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</div>
 </section>
 <section id="custom-request">
 <h2>Custom Request<a class="headerlink" href="#custom-request" title="Permalink to this heading">#</a></h2>
@@ -2213,6 +2424,10 @@ Example of a custom request at the application level<div class="sd-summary-down 
 <div class="sd-summary-up docutils">
 <svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-up" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M18.78 15.28a.75.75 0 000-1.06l-6.25-6.25a.75.75 0 00-1.06 0l-6.25 6.25a.75.75 0 101.06 1.06L12 9.56l5.72 5.72a.75.75 0 001.06 0z"></path></svg></div>
 </summary><div class="sd-summary-content sd-card-body docutils">
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-40" name="sd-tab-set-20" type="radio">
+</input><label class="sd-tab-label" for="sd-tab-item-40">
+example</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">Request</span><span class="p">,</span> <span class="n">get</span>
 <span class="kn">from</span> <span class="nn">litestar.connection.base</span> <span class="kn">import</span> <span class="n">empty_receive</span><span class="p">,</span> <span class="n">empty_send</span>
 <span class="kn">from</span> <span class="nn">litestar.enums</span> <span class="kn">import</span> <span class="n">HttpMethod</span>
@@ -2246,6 +2461,16 @@ Example of a custom request at the application level<div class="sd-summary-down 
     <span class="n">debug</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
 <span class="p">)</span>
 </pre></div>
+</div>
+</div>
+<input id="sd-tab-item-41" name="sd-tab-set-20" type="radio">
+</input><label class="sd-tab-label" for="sd-tab-item-41">
+how to test</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>        <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">content</span><span class="o">=</span><span class="n">encode_msgpack</span><span class="p">(</span><span class="n">test_data</span><span class="p">))</span>
+        <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span> <span class="o">==</span> <span class="n">test_data</span>
+</pre></div>
+</div>
+</div>
 </div>
 </div>
 </details><div class="admonition-layered-architecture admonition">

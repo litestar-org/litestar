@@ -19,7 +19,7 @@ Here's the updated code:
 .. literalinclude:: /examples/contrib/sqlalchemy/plugins/tutorial/full_app_with_init_plugin.py
     :language: python
     :linenos:
-    :emphasize-lines: 11,30,78-79,87
+    :emphasize-lines: 12, 28, 76-78, 85
 
 The most notable difference is that we no longer need the ``db_connection()`` lifespan context manager - the plugin
 handles this for us. It also handles the creation of the tables in our database if we supply our metadata and
