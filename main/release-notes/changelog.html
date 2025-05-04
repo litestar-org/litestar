@@ -1538,6 +1538,142 @@ document.write(`
                   
   <section id="x-changelog">
 <h1>2.x Changelog<a class="headerlink" href="#x-changelog" title="Permalink to this heading">#</a></h1>
+<section id="2.16.0">
+<h2>2.16.0<a class="headerlink" href="#2.16.0" title="Permalink to this heading">#</a></h2>
+<strong>Released: </strong>2025-05-04<section id="2.16.0-feature">
+<h3>Features<a class="headerlink" href="#2.16.0-feature" title="Permalink to this heading">#</a></h3>
+<dl>
+<dt>Logging: Selectively disable logging for status codes or exception types<a class="headerlink reference internal" href="#2.16.0-logging: selectively disable logging for status codes or exception types" id="2.16.0-logging: selectively disable logging for status codes or exception types">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Add support for disabling stack traces for specific status codes or exception
+types when in debug mode or running with <code class="docutils literal notranslate"><span class="pre">log_exceptions=&quot;always&quot;</span></code></p>
+<div class="literal-block-wrapper docutils container" id="id8">
+<div class="code-block-caption"><span class="caption-text">Disable tracebacks for ‘404 - Not Found’ exceptions</span><a class="headerlink" href="#id8" title="Permalink to this code">#</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span>
+<span class="kn">from</span> <span class="nn">litestar.logging</span> <span class="kn">import</span> <span class="n">LoggingConfig</span>
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
+    <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">index</span><span class="p">,</span> <span class="n">value_error</span><span class="p">,</span> <span class="n">name_error</span><span class="p">],</span>
+    <span class="n">logging_config</span><span class="o">=</span><span class="n">LoggingConfig</span><span class="p">(</span>
+        <span class="n">disable_stack_trace</span><span class="o">=</span><span class="p">{</span><span class="mi">404</span><span class="p">},</span>
+        <span class="n">log_exceptions</span><span class="o">=</span><span class="s2">&quot;always&quot;</span><span class="p">,</span>
+    <span class="p">),</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/4081">litestar-org/litestar#4081</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/4086">litestar-org/litestar#4086</a></span></p>
+</div>
+</dd>
+<dt>Reference route handler in error message for return value / status code mismatch<a class="headerlink reference internal" href="#2.16.0-reference route handler in error message for return value / status code mismatch" id="2.16.0-reference route handler in error message for return value / status code mismatch">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Improve error message of <a class="reference internal" href="../reference/exceptions.html#litestar.exceptions.ImproperlyConfiguredException" title="litestar.exceptions.ImproperlyConfiguredException"><code class="xref py py-exc docutils literal notranslate"><span class="pre">ImproperlyConfiguredException</span></code></a> raised when a
+route handler’s return value annotation is incompatible with its status code.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/4157">litestar-org/litestar#4157</a></span></p>
+</div>
+</dd>
+<dt>DTO: Improve inspection and tracebacks for generated functions<a class="headerlink reference internal" href="#2.16.0-dto: improve inspection and tracebacks for generated functions" id="2.16.0-dto: improve inspection and tracebacks for generated functions">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Generated transfer functions now populate <a class="reference external" href="https://docs.python.org/3/library/linecache.html#module-linecache" title="(in Python v3.13)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">linecache</span></code></a>  to improve
+tracebacks and support introspection of the generated functions e.g. via
+<a class="reference external" href="https://docs.python.org/3/library/inspect.html#inspect.getsource" title="(in Python v3.13)"><code class="xref py py-func docutils literal notranslate"><span class="pre">inspect.getsource()</span></code></a></p>
+<p><strong>Before:</strong></p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>File &quot;&lt;string&gt;&quot;, line 18, in func
+TypeError: &lt;something&#39;s wrong&gt;
+</pre></div>
+</div>
+<p><strong>After:</strong></p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>File &quot;dto_transfer_function_0971e01f653c&quot;, line 18, in func
+TypeError: &lt;something&#39;s wrong&gt;
+</pre></div>
+</div>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/4159">litestar-org/litestar#4159</a></span></p>
+</div>
+</dd>
+<dt>DTO: Add custom attribute accessor callable<a class="headerlink reference internal" href="#2.16.0-dto: add custom attribute accessor callable" id="2.16.0-dto: add custom attribute accessor callable">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Add <a class="reference internal" href="../reference/dto/base_dto.html#litestar.dto.base_dto.AbstractDTO.attribute_accessor" title="litestar.dto.base_dto.AbstractDTO.attribute_accessor"><code class="xref py py-attr docutils literal notranslate"><span class="pre">attribute_accessor</span></code></a> property to
+<code class="docutils literal notranslate"><span class="pre">AbstractDTO</span></code>, that can be set to a custom <a class="reference external" href="https://docs.python.org/3/library/functions.html#getattr" title="(in Python v3.13)"><code class="xref py py-func docutils literal notranslate"><span class="pre">getattr()</span></code></a>-like function
+which will be used every time an attribute is accessed on a source instance</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/4160">litestar-org/litestar#4160</a></span></p>
+</div>
+</dd>
+<dt>OpenAPI: Add custom example ids support<a class="headerlink reference internal" href="#2.16.0-openapi: add custom example ids support" id="2.16.0-openapi: add custom example ids support">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Add a new field <code class="docutils literal notranslate"><span class="pre">id</span></code> to <a class="reference internal" href="../reference/openapi/spec.html#litestar.openapi.spec.Example" title="litestar.openapi.spec.Example"><code class="xref py py-class docutils literal notranslate"><span class="pre">Example</span></code></a>, to set a
+custom ID for examples</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/4013">litestar-org/litestar#4013</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/4133">litestar-org/litestar#4133</a></span></p>
+</div>
+</dd>
+<dt>OpenAPI: Allow passing scalar configuration options<a class="headerlink reference internal" href="#2.16.0-openapi: allow passing scalar configuration options" id="2.16.0-openapi: allow passing scalar configuration options">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Add an <code class="docutils literal notranslate"><span class="pre">options</span></code> parameter to
+<a class="reference internal" href="../reference/openapi/plugins.html#litestar.openapi.plugins.ScalarRenderPlugin" title="litestar.openapi.plugins.ScalarRenderPlugin"><code class="xref py py-class docutils literal notranslate"><span class="pre">ScalarRenderPlugin</span></code></a>, that can be used to pass
+options directly to scalar.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span>
+<span class="kn">from</span> <span class="nn">litestar.openapi.config</span> <span class="kn">import</span> <span class="n">OpenAPIConfig</span>
+<span class="kn">from</span> <span class="nn">litestar.openapi.plugins</span> <span class="kn">import</span> <span class="n">ScalarRenderPlugin</span>
+
+<span class="n">scalar_plugin</span> <span class="o">=</span> <span class="n">ScalarRenderPlugin</span><span class="p">(</span><span class="n">version</span><span class="o">=</span><span class="s2">&quot;1.19.5&quot;</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;showSidebar&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">})</span>
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
+    <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">hello_world</span><span class="p">],</span>
+    <span class="n">openapi_config</span><span class="o">=</span><span class="n">OpenAPIConfig</span><span class="p">(</span>
+        <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Litestar Example&quot;</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Example of Litestar with Scalar OpenAPI docs&quot;</span><span class="p">,</span>
+        <span class="n">version</span><span class="o">=</span><span class="s2">&quot;0.0.1&quot;</span><span class="p">,</span>
+        <span class="n">render_plugins</span><span class="o">=</span><span class="p">[</span><span class="n">scalar_plugin</span><span class="p">],</span>
+        <span class="n">path</span><span class="o">=</span><span class="s2">&quot;/docs&quot;</span><span class="p">,</span>
+    <span class="p">),</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/3951">litestar-org/litestar#3951</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/4162">litestar-org/litestar#4162</a></span></p>
+</div>
+</dd>
+</dl>
+</section>
+<section id="2.16.0-bugfix">
+<h3>Bugfixes<a class="headerlink" href="#2.16.0-bugfix" title="Permalink to this heading">#</a></h3>
+<dl>
+<dt>Typing: remove usage of private <code class="docutils literal notranslate"><span class="pre">_AnnotatedAlias</span></code><a class="headerlink reference internal" href="#2.16.0-typing: remove usage of private" id="2.16.0-typing: remove usage of private">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Remove deprecated usage of <code class="docutils literal notranslate"><span class="pre">_AnnotatedAlias</span></code>, which is no longer needed for
+backwards compatibility.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/4126">litestar-org/litestar#4126</a></span></p>
+</div>
+</dd>
+<dt>DI: Ensure generator dependencies always handle error during clean up<a class="headerlink reference internal" href="#2.16.0-di: ensure generator dependencies always handle error during clean up" id="2.16.0-di: ensure generator dependencies always handle error during clean up">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Fix issue where dependency cleanup could be skipped during exception handling,
+if another exception happened during the cleanup itself.</p>
+<ul class="simple">
+<li><p>Ensure all dependencies are cleaned up, even if exceptions occur.</p></li>
+<li><p>Group exceptions using <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ExceptionGroup" title="(in Python v3.13)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">ExceptionGroup</span></code></a> during cleanup phase.</p></li>
+</ul>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/4148">litestar-org/litestar#4148</a></span></p>
+</div>
+</dd>
+<dt>CLI: Improve error message on <code class="docutils literal notranslate"><span class="pre">ImportError</span></code><a class="headerlink reference internal" href="#2.16.0-cli: improve error message on" id="2.16.0-cli: improve error message on">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Fix misleading error message when using <code class="docutils literal notranslate"><span class="pre">--app</span></code> CLI argument and an unrelated
+<a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ImportError" title="(in Python v3.13)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">ImportError</span></code></a> occurs. Unrelated import errors will now propagate as usual</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/4129">litestar-org/litestar#4129</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/4152">litestar-org/litestar#4152</a></span></p>
+</div>
+</dd>
+<dt>CLI: Ensure dynamically added commands / groups are always visible<a class="headerlink reference internal" href="#2.16.0-cli: ensure dynamically added commands / groups are always visible" id="2.16.0-cli: ensure dynamically added commands / groups are always visible">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Fix an issue where dynamically added commands or groups were not always visible
+during listing e.g. via <code class="docutils literal notranslate"><span class="pre">--help</span></code></p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/2783">litestar-org/litestar#2783</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/4161">litestar-org/litestar#4161</a></span></p>
+</div>
+</dd>
+<dt>Testing: Ensure subprocess client does not swallow startup failure<a class="headerlink reference internal" href="#2.16.0-testing: ensure subprocess client does not swallow startup failure" id="2.16.0-testing: ensure subprocess client does not swallow startup failure">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Ensure <code class="docutils literal notranslate"><span class="pre">StartupError</span></code> is raised by
+<a class="reference internal" href="../reference/testing.html#litestar.testing.subprocess_sync_client" title="litestar.testing.subprocess_sync_client"><code class="xref py py-func docutils literal notranslate"><span class="pre">subprocess_sync_client()</span></code></a> and
+<a class="reference internal" href="../reference/testing.html#litestar.testing.subprocess_async_client" title="litestar.testing.subprocess_async_client"><code class="xref py py-func docutils literal notranslate"><span class="pre">subprocess_async_client()</span></code></a>
+if the application failed to start within the timeout.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/4021">litestar-org/litestar#4021</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/4153">litestar-org/litestar#4153</a></span></p>
+</div>
+</dd>
+<dt>OpenAPI: Use <code class="docutils literal notranslate"><span class="pre">prefixItems</span></code> for fixed-length tuples<a class="headerlink reference internal" href="#2.16.0-openapi: use" id="2.16.0-openapi: use">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Use <code class="docutils literal notranslate"><span class="pre">prefixItems</span></code> instead of <code class="docutils literal notranslate"><span class="pre">array</span></code> syntax to render fixed-length tuples</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/4130">litestar-org/litestar#4130</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/4132">litestar-org/litestar#4132</a></span></p>
+</div>
+</dd>
+</dl>
+</section>
+</section>
 <section id="2.15.2">
 <h2>2.15.2<a class="headerlink" href="#2.15.2" title="Permalink to this heading">#</a></h2>
 <strong>Released: </strong>2025-04-06<section id="2.15.2-bugfix">
@@ -1985,8 +2121,8 @@ be reused across different types.</p>
 <p>The keys can be set with the newly introduced <code class="docutils literal notranslate"><span class="pre">schema_component_key</span></code> parameter,
 which is available on <a class="reference internal" href="../reference/params.html#litestar.params.KwargDefinition" title="litestar.params.KwargDefinition"><code class="xref py py-class docutils literal notranslate"><span class="pre">KwargDefinition</span></code></a>,
 <a class="reference internal" href="../reference/params.html#litestar.params.Body" title="litestar.params.Body"><code class="xref py py-func docutils literal notranslate"><span class="pre">Body()</span></code></a> and <a class="reference internal" href="../reference/params.html#litestar.params.Parameter" title="litestar.params.Parameter"><code class="xref py py-func docutils literal notranslate"><span class="pre">Parameter()</span></code></a>.</p>
-<div class="literal-block-wrapper docutils container" id="id8">
-<div class="code-block-caption"><span class="caption-text">Two components will be generated: <code class="docutils literal notranslate"><span class="pre">Data</span></code> and <code class="docutils literal notranslate"><span class="pre">not_data</span></code></span><a class="headerlink" href="#id8" title="Permalink to this code">#</a></div>
+<div class="literal-block-wrapper docutils container" id="id9">
+<div class="code-block-caption"><span class="caption-text">Two components will be generated: <code class="docutils literal notranslate"><span class="pre">Data</span></code> and <code class="docutils literal notranslate"><span class="pre">not_data</span></code></span><a class="headerlink" href="#id9" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@dataclass</span>
 <span class="k">class</span> <span class="nc">Data</span><span class="p">:</span>
     <span class="k">pass</span>
@@ -2084,8 +2220,8 @@ constrained string field would raise a <a class="reference internal" href="../re
 <p>Fix a bug that would lead to Pydantic computed fields to be ignored during
 schema generation when the model was using a
 <code class="xref py py-class docutils literal notranslate"><span class="pre">PydanticDTO</span></code>.</p>
-<div class="literal-block-wrapper docutils container" id="id9">
-<div class="code-block-caption"><span class="caption-text">Only the <code class="docutils literal notranslate"><span class="pre">foo</span></code> field would be included in the schema</span><a class="headerlink" href="#id9" title="Permalink to this code">#</a></div>
+<div class="literal-block-wrapper docutils container" id="id10">
+<div class="code-block-caption"><span class="caption-text">Only the <code class="docutils literal notranslate"><span class="pre">foo</span></code> field would be included in the schema</span><a class="headerlink" href="#id10" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">MyModel</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
     <span class="n">foo</span><span class="p">:</span> <span class="nb">int</span>
 
@@ -2105,8 +2241,8 @@ schema generation when the model was using a
 <dt>OpenAPI: Fix Pydantic <code class="docutils literal notranslate"><span class="pre">json_schema_extra</span></code> overrides only being merged partially<a class="headerlink reference internal" href="#2.12.0-openapi: fix pydantic" id="2.12.0-openapi: fix pydantic">#</a></dt><dd><div class="changelog-change docutils container">
 <p>Fix a bug where <code class="docutils literal notranslate"><span class="pre">json_schema_extra</span></code> were not reliably extracted from Pydantic
 models and included in the OpenAPI schema.</p>
-<div class="literal-block-wrapper docutils container" id="id10">
-<div class="code-block-caption"><span class="caption-text">Only the title set directly on the field would be used for the schema</span><a class="headerlink" href="#id10" title="Permalink to this code">#</a></div>
+<div class="literal-block-wrapper docutils container" id="id11">
+<div class="code-block-caption"><span class="caption-text">Only the title set directly on the field would be used for the schema</span><a class="headerlink" href="#id11" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Model</span><span class="p">(</span><span class="n">pydantic</span><span class="o">.</span><span class="n">BaseModel</span><span class="p">):</span>
     <span class="n">with_title</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;new_title&quot;</span><span class="p">)</span>
     <span class="n">with_extra_title</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span><span class="n">json_schema_extra</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;more_new_title&quot;</span><span class="p">})</span>
@@ -4690,16 +4826,16 @@ dedicated class method.</p>
 <p><a class="reference external" href="https://docs.advanced-alchemy.litestar.dev/latest/reference/extensions/litestar/dto.html#advanced_alchemy.extensions.litestar.dto.SQLAlchemyDTO" title="(in advanced_alchemy)"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyDTO</span> <span class="pre">(Advanced</span> <span class="pre">Alchemy)</span></code></a> can now be
 configured using a separate config object. This can be set using both
 class inheritance and <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Annotated">Annotated</a>:</p>
-<div class="literal-block-wrapper docutils container" id="id11">
-<div class="code-block-caption"><span class="caption-text"><a class="reference external" href="https://docs.advanced-alchemy.litestar.dev/latest/reference/extensions/litestar/dto.html#advanced_alchemy.extensions.litestar.dto.SQLAlchemyDTO" title="(in advanced_alchemy)"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyDTO</span> <span class="pre">(Advanced</span> <span class="pre">Alchemy)</span></code></a> can now be configured using a separate config object using <code class="docutils literal notranslate"><span class="pre">config</span></code> object.</span><a class="headerlink" href="#id11" title="Permalink to this code">#</a></div>
+<div class="literal-block-wrapper docutils container" id="id12">
+<div class="code-block-caption"><span class="caption-text"><a class="reference external" href="https://docs.advanced-alchemy.litestar.dev/latest/reference/extensions/litestar/dto.html#advanced_alchemy.extensions.litestar.dto.SQLAlchemyDTO" title="(in advanced_alchemy)"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyDTO</span> <span class="pre">(Advanced</span> <span class="pre">Alchemy)</span></code></a> can now be configured using a separate config object using <code class="docutils literal notranslate"><span class="pre">config</span></code> object.</span><a class="headerlink" href="#id12" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">MyModelDTO</span><span class="p">(</span><span class="n">SQLAlchemyDTO</span><span class="p">[</span><span class="n">MyModel</span><span class="p">]):</span>
     <span class="n">config</span> <span class="o">=</span> <span class="n">SQLAlchemyDTOConfig</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
 <p>or</p>
-<div class="literal-block-wrapper docutils container" id="id12">
-<div class="code-block-caption"><span class="caption-text"><a class="reference external" href="https://docs.advanced-alchemy.litestar.dev/latest/reference/extensions/litestar/dto.html#advanced_alchemy.extensions.litestar.dto.SQLAlchemyDTO" title="(in advanced_alchemy)"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyDTO</span> <span class="pre">(Advanced</span> <span class="pre">Alchemy)</span></code></a> can now be configured using a separate config object using <code class="docutils literal notranslate"><span class="pre">Annotated</span></code>.</span><a class="headerlink" href="#id12" title="Permalink to this code">#</a></div>
+<div class="literal-block-wrapper docutils container" id="id13">
+<div class="code-block-caption"><span class="caption-text"><a class="reference external" href="https://docs.advanced-alchemy.litestar.dev/latest/reference/extensions/litestar/dto.html#advanced_alchemy.extensions.litestar.dto.SQLAlchemyDTO" title="(in advanced_alchemy)"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyDTO</span> <span class="pre">(Advanced</span> <span class="pre">Alchemy)</span></code></a> can now be configured using a separate config object using <code class="docutils literal notranslate"><span class="pre">Annotated</span></code>.</span><a class="headerlink" href="#id13" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span> <span class="n">MyModelDTO</span> <span class="o">=</span> <span class="n">SQLAlchemyDTO</span><span class="p">[</span><span class="n">Annotated</span><span class="p">[</span><span class="n">MyModel</span><span class="p">,</span> <span class="n">SQLAlchemyDTOConfig</span><span class="p">()]]</span>
 </pre></div>
 </div>
@@ -5346,8 +5482,8 @@ available.</p>
 where the originated.</p>
 <p>An optional <code class="docutils literal notranslate"><span class="pre">source</span></code> key has been added, signifying whether the value is from
 the body, a cookie, a header, or a query param.</p>
-<div class="literal-block-wrapper docutils container" id="id13">
-<div class="code-block-caption"><span class="caption-text">before</span><a class="headerlink" href="#id13" title="Permalink to this code">#</a></div>
+<div class="literal-block-wrapper docutils container" id="id14">
+<div class="code-block-caption"><span class="caption-text">before</span><a class="headerlink" href="#id14" title="Permalink to this code">#</a></div>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
 <span class="w">  </span><span class="nt">&quot;status_code&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">400</span><span class="p">,</span>
 <span class="w">  </span><span class="nt">&quot;detail&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Validation failed for POST http://localhost:8000/some-route&quot;</span><span class="p">,</span>
@@ -5361,8 +5497,8 @@ the body, a cookie, a header, or a query param.</p>
 </pre></div>
 </div>
 </div>
-<div class="literal-block-wrapper docutils container" id="id14">
-<div class="code-block-caption"><span class="caption-text">after</span><a class="headerlink" href="#id14" title="Permalink to this code">#</a></div>
+<div class="literal-block-wrapper docutils container" id="id15">
+<div class="code-block-caption"><span class="caption-text">after</span><a class="headerlink" href="#id15" title="Permalink to this code">#</a></div>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
 <span class="w">  </span><span class="nt">&quot;status_code&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">400</span><span class="p">,</span>
 <span class="w">  </span><span class="nt">&quot;detail&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Validation failed for POST http://localhost:8000/some-route&quot;</span><span class="p">,</span>
@@ -7075,6 +7211,11 @@ the time it takes to <code class="docutils literal notranslate"><span class="pre
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#2.16.0">2.16.0</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#2.16.0-feature">Features</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#2.16.0-bugfix">Bugfixes</a></li>
+</ul>
+</li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#2.15.2">2.15.2</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#2.15.2-bugfix">Bugfixes</a></li>
 </ul>
