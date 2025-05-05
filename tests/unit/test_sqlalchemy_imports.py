@@ -1,12 +1,13 @@
 import importlib.util
 import sys
 from pathlib import Path
+from typing import List, Union
 
 import pytest
 from advanced_alchemy import repository as advanced_alchemy_repo
 
 
-def purge_module(module_names: list[str], path: str | Path) -> None:
+def purge_module(module_names: List[str], path: Union[str, Path]) -> None:
     """Remove modules from sys.modules and delete the corresponding .pyc cache file.
     
     This ensures that modules are freshly imported in tests, which is important
