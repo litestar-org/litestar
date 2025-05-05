@@ -9,10 +9,10 @@ from advanced_alchemy import repository as advanced_alchemy_repo
 
 def purge_module(module_names: List[str], path: Union[str, Path]) -> None:
     """Remove modules from sys.modules and delete the corresponding .pyc cache file.
-    
+
     This ensures that modules are freshly imported in tests, which is important
     when testing import behavior.
-    
+
     Args:
         module_names: List of module names to purge
         path: Path to the source file
@@ -38,8 +38,10 @@ def test_import_from_contrib_sqlalchemy_repository() -> None:
     purge_module(["litestar.contrib.sqlalchemy.repository"], __file__)
 
     # This should continue to work as before
-    with pytest.warns(DeprecationWarning,
-                      match="importing SQLAlchemyAsyncRepository from 'litestar.contrib.sqlalchemy.repository' is deprecated"):
+    with pytest.warns(
+        DeprecationWarning,
+        match="importing SQLAlchemyAsyncRepository from 'litestar.contrib.sqlalchemy.repository' is deprecated",
+    ):
         from litestar.contrib.sqlalchemy.repository import SQLAlchemyAsyncRepository
 
     assert SQLAlchemyAsyncRepository is advanced_alchemy_repo.SQLAlchemyAsyncRepository
@@ -54,6 +56,7 @@ def test_import_repository_module_from_plugins_sqlalchemy() -> None:
 
     assert repository.SQLAlchemyAsyncRepository is advanced_alchemy_repo.SQLAlchemyAsyncRepository
     assert repository.SQLAlchemySyncRepository is advanced_alchemy_repo.SQLAlchemySyncRepository
+
 
 def test_direct_import_from_plugins_sqlalchemy() -> None:
     """Test that SQLAlchemyAsyncRepository can be imported directly from litestar.plugins.sqlalchemy."""
