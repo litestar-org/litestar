@@ -4,11 +4,11 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from litestar.utils import warn_deprecation
-
 # Direct imports for backward compatibility
 from advanced_alchemy.exceptions import wrap_sqlalchemy_exception
 from advanced_alchemy.repository import ModelT, SQLAlchemyAsyncRepository, SQLAlchemySyncRepository
+
+from litestar.utils import warn_deprecation
 
 __all__ = (
     "AlembicAsyncConfig",
