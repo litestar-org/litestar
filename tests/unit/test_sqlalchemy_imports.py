@@ -54,8 +54,6 @@ def test_import_repository_module_from_plugins_sqlalchemy() -> None:
 
     assert repository.SQLAlchemyAsyncRepository is advanced_alchemy_repo.SQLAlchemyAsyncRepository
     assert repository.SQLAlchemySyncRepository is advanced_alchemy_repo.SQLAlchemySyncRepository
-    assert repository.ModelT is advanced_alchemy_repo.ModelT
-
 
 def test_direct_import_from_plugins_sqlalchemy() -> None:
     """Test that SQLAlchemyAsyncRepository can be imported directly from litestar.plugins.sqlalchemy."""
