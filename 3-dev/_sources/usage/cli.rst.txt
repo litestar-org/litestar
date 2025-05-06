@@ -49,6 +49,30 @@ Within these locations, Litestar CLI looks for:
 4. A :term:`callable` named ``create_app``
 5. A callable annotated to return an instance of :class:`~.app.Litestar`
 
+Specifying an application explicitly
+------------------------------------
+
+The application to be used can be specified explicitly via either the ``--app`` argument
+or the ``LITESTAR_APP`` environment variable. The format for both of them is
+``<module name>.<submodule>:<app instance or factory>``.
+
+When both ``--app`` and ``LITESTAR_APP`` are set, the CLI option takes precedence over
+the environment variable.
+
+
+.. code-block:: bash
+    :caption: Using 'litestar run' and specifying an application factory via --app
+
+    litestar --app=my_application.app:create_my_app run
+
+
+.. code-block:: bash
+    :caption: Using 'litestar run' and specifying an application factory via LITESTAR_APP
+
+    LITESTAR_APP=my_application.app:create_my_app litestar run
+
+
+
 Extending the CLI
 -----------------
 

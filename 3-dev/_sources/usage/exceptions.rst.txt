@@ -75,6 +75,12 @@ Litestar handles all errors by default by transforming them into **JSON response
 :class:`~litestar.exceptions.http_exceptions.HTTPException`, the responses will include the appropriate ``status_code``.
 Otherwise, the responses will default to ``500 - "Internal Server Error"``.
 
+
+The following handler for instance will default to ``MediaType.TEXT`` so the exception will be raised as text.
+
+.. literalinclude:: /examples/exceptions/implicit_media_type.py
+    :language: python
+
 You can customize exception handling by passing a dictionary, mapping either status codes
 or exception classes to callables. For example, if you would like to replace the default
 exception handler with a handler that returns plain-text responses you could do this:

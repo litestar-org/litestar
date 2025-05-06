@@ -587,7 +587,7 @@ requests, and - most likely - bugs.</p>
 </span><span data-line="4">    <span class="n">exclude_opt_key</span> <span class="o">=</span> <span class="s2">&quot;exclude_my_middleware&quot;</span>
 </span><span data-line="5">
 </span><span data-line="6">    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">my_logger</span><span class="p">:</span> <span class="n">Logger</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="7">        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logger</span>
+</span><span data-line="7">        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">my_logger</span>
 </span><span data-line="8">
 </span><span data-line="9">    <span class="k">async</span> <span class="k">def</span> <span class="nf">handle</span><span class="p">(</span>
 </span><span data-line="10">        <span class="bp">self</span><span class="p">,</span> <span class="n">scope</span><span class="p">:</span> <span class="n">Scope</span><span class="p">,</span> <span class="n">receive</span><span class="p">:</span> <span class="n">Receive</span><span class="p">,</span> <span class="n">send</span><span class="p">:</span> <span class="n">Send</span><span class="p">,</span> <span class="n">next_app</span><span class="p">:</span> <span class="n">ASGIApp</span>

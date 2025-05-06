@@ -476,6 +476,11 @@ data-aria-dark="Switch to auto color mode">
       <i class="i-lucide close"></i>
     </button>
     <div class="sy-scrollbar sy-rside-inner px-6 xl:top-16 xl:sticky xl:pl-0 pt-6 pb-4"><div class="localtoc"><h3>On this page</h3><ul>
+<li><a class="reference internal" href="#2.16.0">2.16.0</a><ul>
+<li><a class="reference internal" href="#2.16.0-feature">Features</a></li>
+<li><a class="reference internal" href="#2.16.0-bugfix">Bugfixes</a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#3.0.0">3.0.0</a><ul>
 <li><a class="reference internal" href="#3.0.0-feature">Features</a></li>
 </ul>
@@ -531,6 +536,142 @@ data-aria-dark="Switch to auto color mode">
         <article class="yue" role="main">
           <section id="x-changelog">
 <h1>3.x Changelog<a class="headerlink" href="#x-changelog" title="Permalink to this heading">¶</a></h1>
+<section id="2.16.0">
+<h2>2.16.0<a class="headerlink" href="#2.16.0" title="Permalink to this heading">¶</a></h2>
+<strong>Released: </strong>2025-05-04<section id="2.16.0-feature">
+<h3>Features<a class="headerlink" href="#2.16.0-feature" title="Permalink to this heading">¶</a></h3>
+<dl>
+<dt>Logging: Selectively disable logging for status codes or exception types<a class="headerlink reference internal" href="#2.16.0-logging: selectively disable logging for status codes or exception types" id="2.16.0-logging: selectively disable logging for status codes or exception types">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Add support for disabling stack traces for specific status codes or exception
+types when in debug mode or running with <code class="docutils literal notranslate"><span class="pre">log_exceptions=&quot;always&quot;</span></code></p>
+<div class="literal-block-wrapper docutils container" id="id1">
+<div class="code-block-caption"><span class="caption-text">Disable tracebacks for ‘404 - Not Found’ exceptions</span><a class="headerlink" href="#id1" title="Permalink to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span>
+</span><span data-line="2"><span class="kn">from</span> <span class="nn">litestar.logging</span> <span class="kn">import</span> <span class="n">LoggingConfig</span>
+</span><span data-line="3">
+</span><span data-line="4"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
+</span><span data-line="5">    <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">index</span><span class="p">,</span> <span class="n">value_error</span><span class="p">,</span> <span class="n">name_error</span><span class="p">],</span>
+</span><span data-line="6">    <span class="n">logging_config</span><span class="o">=</span><span class="n">LoggingConfig</span><span class="p">(</span>
+</span><span data-line="7">        <span class="n">disable_stack_trace</span><span class="o">=</span><span class="p">{</span><span class="mi">404</span><span class="p">},</span>
+</span><span data-line="8">        <span class="n">log_exceptions</span><span class="o">=</span><span class="s2">&quot;always&quot;</span><span class="p">,</span>
+</span><span data-line="9">    <span class="p">),</span>
+</span><span data-line="10"><span class="p">)</span>
+</span></pre></div>
+</div>
+</div>
+<p>References: <span><a class="reference external" href="https://github.com/litestar-org/litestar/issues/4081">https://github.com/litestar-org/litestar/issues/4081</a></span>, <span><a class="reference external" href="https://github.com/litestar-org/litestar/pull/4086">https://github.com/litestar-org/litestar/pull/4086</a></span></p>
+</div>
+</dd>
+<dt>Reference route handler in error message for return value / status code mismatch<a class="headerlink reference internal" href="#2.16.0-reference route handler in error message for return value / status code mismatch" id="2.16.0-reference route handler in error message for return value / status code mismatch">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Improve error message of <a class="reference internal" href="../reference/exceptions.html#litestar.exceptions.ImproperlyConfiguredException" title="litestar.exceptions.ImproperlyConfiguredException"><code class="xref py py-exc docutils literal notranslate"><span class="pre">ImproperlyConfiguredException</span></code></a> raised when a
+route handler’s return value annotation is incompatible with its status code.</p>
+<p>References: <span><a class="reference external" href="https://github.com/litestar-org/litestar/pull/4157">https://github.com/litestar-org/litestar/pull/4157</a></span></p>
+</div>
+</dd>
+<dt>DTO: Improve inspection and tracebacks for generated functions<a class="headerlink reference internal" href="#2.16.0-dto: improve inspection and tracebacks for generated functions" id="2.16.0-dto: improve inspection and tracebacks for generated functions">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Generated transfer functions now populate <a class="reference external" href="https://docs.python.org/3/library/linecache.html#module-linecache" title="(in Python v3.13)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">linecache</span></code></a>  to improve
+tracebacks and support introspection of the generated functions e.g. via
+<a class="reference external" href="https://docs.python.org/3/library/inspect.html#inspect.getsource" title="(in Python v3.13)"><code class="xref py py-func docutils literal notranslate"><span class="pre">inspect.getsource()</span></code></a></p>
+<p><strong>Before:</strong></p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><span data-line="1">File &quot;&lt;string&gt;&quot;, line 18, in func
+</span><span data-line="2">TypeError: &lt;something&#39;s wrong&gt;
+</span></pre></div>
+</div>
+<p><strong>After:</strong></p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><span data-line="1">File &quot;dto_transfer_function_0971e01f653c&quot;, line 18, in func
+</span><span data-line="2">TypeError: &lt;something&#39;s wrong&gt;
+</span></pre></div>
+</div>
+<p>References: <span><a class="reference external" href="https://github.com/litestar-org/litestar/pull/4159">https://github.com/litestar-org/litestar/pull/4159</a></span></p>
+</div>
+</dd>
+<dt>DTO: Add custom attribute accessor callable<a class="headerlink reference internal" href="#2.16.0-dto: add custom attribute accessor callable" id="2.16.0-dto: add custom attribute accessor callable">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Add <a class="reference internal" href="../reference/dto/base_dto.html#litestar.dto.base_dto.AbstractDTO.attribute_accessor" title="litestar.dto.base_dto.AbstractDTO.attribute_accessor"><code class="xref py py-attr docutils literal notranslate"><span class="pre">attribute_accessor</span></code></a> property to
+<code class="docutils literal notranslate"><span class="pre">AbstractDTO</span></code>, that can be set to a custom <a class="reference external" href="https://docs.python.org/3/library/functions.html#getattr" title="(in Python v3.13)"><code class="xref py py-func docutils literal notranslate"><span class="pre">getattr()</span></code></a>-like function
+which will be used every time an attribute is accessed on a source instance</p>
+<p>References: <span><a class="reference external" href="https://github.com/litestar-org/litestar/pull/4160">https://github.com/litestar-org/litestar/pull/4160</a></span></p>
+</div>
+</dd>
+<dt>OpenAPI: Add custom example ids support<a class="headerlink reference internal" href="#2.16.0-openapi: add custom example ids support" id="2.16.0-openapi: add custom example ids support">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Add a new field <code class="docutils literal notranslate"><span class="pre">id</span></code> to <a class="reference internal" href="../reference/openapi/spec.html#litestar.openapi.spec.Example" title="litestar.openapi.spec.Example"><code class="xref py py-class docutils literal notranslate"><span class="pre">Example</span></code></a>, to set a
+custom ID for examples</p>
+<p>References: <span><a class="reference external" href="https://github.com/litestar-org/litestar/issues/4013">https://github.com/litestar-org/litestar/issues/4013</a></span>, <span><a class="reference external" href="https://github.com/litestar-org/litestar/pull/4133">https://github.com/litestar-org/litestar/pull/4133</a></span></p>
+</div>
+</dd>
+<dt>OpenAPI: Allow passing scalar configuration options<a class="headerlink reference internal" href="#2.16.0-openapi: allow passing scalar configuration options" id="2.16.0-openapi: allow passing scalar configuration options">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Add an <code class="docutils literal notranslate"><span class="pre">options</span></code> parameter to
+<a class="reference internal" href="../reference/openapi/plugins.html#litestar.openapi.plugins.ScalarRenderPlugin" title="litestar.openapi.plugins.ScalarRenderPlugin"><code class="xref py py-class docutils literal notranslate"><span class="pre">ScalarRenderPlugin</span></code></a>, that can be used to pass
+options directly to scalar.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span>
+</span><span data-line="2"><span class="kn">from</span> <span class="nn">litestar.openapi.config</span> <span class="kn">import</span> <span class="n">OpenAPIConfig</span>
+</span><span data-line="3"><span class="kn">from</span> <span class="nn">litestar.openapi.plugins</span> <span class="kn">import</span> <span class="n">ScalarRenderPlugin</span>
+</span><span data-line="4">
+</span><span data-line="5"><span class="n">scalar_plugin</span> <span class="o">=</span> <span class="n">ScalarRenderPlugin</span><span class="p">(</span><span class="n">version</span><span class="o">=</span><span class="s2">&quot;1.19.5&quot;</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;showSidebar&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">})</span>
+</span><span data-line="6">
+</span><span data-line="7"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
+</span><span data-line="8">    <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">hello_world</span><span class="p">],</span>
+</span><span data-line="9">    <span class="n">openapi_config</span><span class="o">=</span><span class="n">OpenAPIConfig</span><span class="p">(</span>
+</span><span data-line="10">        <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Litestar Example&quot;</span><span class="p">,</span>
+</span><span data-line="11">        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Example of Litestar with Scalar OpenAPI docs&quot;</span><span class="p">,</span>
+</span><span data-line="12">        <span class="n">version</span><span class="o">=</span><span class="s2">&quot;0.0.1&quot;</span><span class="p">,</span>
+</span><span data-line="13">        <span class="n">render_plugins</span><span class="o">=</span><span class="p">[</span><span class="n">scalar_plugin</span><span class="p">],</span>
+</span><span data-line="14">        <span class="n">path</span><span class="o">=</span><span class="s2">&quot;/docs&quot;</span><span class="p">,</span>
+</span><span data-line="15">    <span class="p">),</span>
+</span><span data-line="16"><span class="p">)</span>
+</span></pre></div>
+</div>
+<p>References: <span><a class="reference external" href="https://github.com/litestar-org/litestar/issues/3951">https://github.com/litestar-org/litestar/issues/3951</a></span>, <span><a class="reference external" href="https://github.com/litestar-org/litestar/pull/4162">https://github.com/litestar-org/litestar/pull/4162</a></span></p>
+</div>
+</dd>
+</dl>
+</section>
+<section id="2.16.0-bugfix">
+<h3>Bugfixes<a class="headerlink" href="#2.16.0-bugfix" title="Permalink to this heading">¶</a></h3>
+<dl>
+<dt>Typing: remove usage of private <code class="docutils literal notranslate"><span class="pre">_AnnotatedAlias</span></code><a class="headerlink reference internal" href="#2.16.0-typing: remove usage of private" id="2.16.0-typing: remove usage of private">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Remove deprecated usage of <code class="docutils literal notranslate"><span class="pre">_AnnotatedAlias</span></code>, which is no longer needed for
+backwards compatibility.</p>
+<p>References: <span><a class="reference external" href="https://github.com/litestar-org/litestar/pull/4126">https://github.com/litestar-org/litestar/pull/4126</a></span></p>
+</div>
+</dd>
+<dt>DI: Ensure generator dependencies always handle error during clean up<a class="headerlink reference internal" href="#2.16.0-di: ensure generator dependencies always handle error during clean up" id="2.16.0-di: ensure generator dependencies always handle error during clean up">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Fix issue where dependency cleanup could be skipped during exception handling,
+if another exception happened during the cleanup itself.</p>
+<ul class="simple">
+<li><p>Ensure all dependencies are cleaned up, even if exceptions occur.</p></li>
+<li><p>Group exceptions using <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ExceptionGroup" title="(in Python v3.13)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">ExceptionGroup</span></code></a> during cleanup phase.</p></li>
+</ul>
+<p>References: <span><a class="reference external" href="https://github.com/litestar-org/litestar/pull/4148">https://github.com/litestar-org/litestar/pull/4148</a></span></p>
+</div>
+</dd>
+<dt>CLI: Improve error message on <code class="docutils literal notranslate"><span class="pre">ImportError</span></code><a class="headerlink reference internal" href="#2.16.0-cli: improve error message on" id="2.16.0-cli: improve error message on">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Fix misleading error message when using <code class="docutils literal notranslate"><span class="pre">--app</span></code> CLI argument and an unrelated
+<a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ImportError" title="(in Python v3.13)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">ImportError</span></code></a> occurs. Unrelated import errors will now propagate as usual</p>
+<p>References: <span><a class="reference external" href="https://github.com/litestar-org/litestar/issues/4129">https://github.com/litestar-org/litestar/issues/4129</a></span>, <span><a class="reference external" href="https://github.com/litestar-org/litestar/pull/4152">https://github.com/litestar-org/litestar/pull/4152</a></span></p>
+</div>
+</dd>
+<dt>CLI: Ensure dynamically added commands / groups are always visible<a class="headerlink reference internal" href="#2.16.0-cli: ensure dynamically added commands / groups are always visible" id="2.16.0-cli: ensure dynamically added commands / groups are always visible">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Fix an issue where dynamically added commands or groups were not always visible
+during listing e.g. via <code class="docutils literal notranslate"><span class="pre">--help</span></code></p>
+<p>References: <span><a class="reference external" href="https://github.com/litestar-org/litestar/issues/2783">https://github.com/litestar-org/litestar/issues/2783</a></span>, <span><a class="reference external" href="https://github.com/litestar-org/litestar/pull/4161">https://github.com/litestar-org/litestar/pull/4161</a></span></p>
+</div>
+</dd>
+<dt>Testing: Ensure subprocess client does not swallow startup failure<a class="headerlink reference internal" href="#2.16.0-testing: ensure subprocess client does not swallow startup failure" id="2.16.0-testing: ensure subprocess client does not swallow startup failure">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Ensure <code class="docutils literal notranslate"><span class="pre">StartupError</span></code> is raised by
+<a class="reference internal" href="../reference/testing.html#litestar.testing.subprocess_sync_client" title="litestar.testing.subprocess_sync_client"><code class="xref py py-func docutils literal notranslate"><span class="pre">subprocess_sync_client()</span></code></a> and
+<a class="reference internal" href="../reference/testing.html#litestar.testing.subprocess_async_client" title="litestar.testing.subprocess_async_client"><code class="xref py py-func docutils literal notranslate"><span class="pre">subprocess_async_client()</span></code></a>
+if the application failed to start within the timeout.</p>
+<p>References: <span><a class="reference external" href="https://github.com/litestar-org/litestar/issues/4021">https://github.com/litestar-org/litestar/issues/4021</a></span>, <span><a class="reference external" href="https://github.com/litestar-org/litestar/pull/4153">https://github.com/litestar-org/litestar/pull/4153</a></span></p>
+</div>
+</dd>
+<dt>OpenAPI: Use <code class="docutils literal notranslate"><span class="pre">prefixItems</span></code> for fixed-length tuples<a class="headerlink reference internal" href="#2.16.0-openapi: use" id="2.16.0-openapi: use">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Use <code class="docutils literal notranslate"><span class="pre">prefixItems</span></code> instead of <code class="docutils literal notranslate"><span class="pre">array</span></code> syntax to render fixed-length tuples</p>
+<p>References: <span><a class="reference external" href="https://github.com/litestar-org/litestar/issues/4130">https://github.com/litestar-org/litestar/issues/4130</a></span>, <span><a class="reference external" href="https://github.com/litestar-org/litestar/pull/4132">https://github.com/litestar-org/litestar/pull/4132</a></span></p>
+</div>
+</dd>
+</dl>
+</section>
+</section>
 <section id="3.0.0">
 <h2>3.0.0<a class="headerlink" href="#3.0.0" title="Permalink to this heading">¶</a></h2>
 <strong>Released: </strong>2024-08-30<section id="3.0.0-feature">

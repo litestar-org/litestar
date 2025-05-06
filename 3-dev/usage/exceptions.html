@@ -620,6 +620,15 @@ If this is not your intent, adjust the exception contents.</p>
 <p>Litestar handles all errors by default by transforming them into <strong>JSON responses</strong>. If the errors are <strong>instances of</strong>
 <a class="reference internal" href="../reference/exceptions.html#litestar.exceptions.HTTPException" title="litestar.exceptions.http_exceptions.HTTPException"><code class="xref py py-class docutils literal notranslate"><span class="pre">HTTPException</span></code></a>, the responses will include the appropriate <code class="docutils literal notranslate"><span class="pre">status_code</span></code>.
 Otherwise, the responses will default to <code class="docutils literal notranslate"><span class="pre">500</span> <span class="pre">-</span> <span class="pre">&quot;Internal</span> <span class="pre">Server</span> <span class="pre">Error&quot;</span></code>.</p>
+<p>The following handler for instance will default to <code class="docutils literal notranslate"><span class="pre">MediaType.TEXT</span></code> so the exception will be raised as text.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">get</span>
+</span><span data-line="2">
+</span><span data-line="3">
+</span><span data-line="4"><span class="nd">@get</span><span class="p">(</span><span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</span><span data-line="5"><span class="k">def</span> <span class="nf">handler</span><span class="p">(</span><span class="n">q</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span data-line="6">    <span class="k">raise</span> <span class="ne">ValueError</span>
+</span></pre></div>
+</div>
 <p>You can customize exception handling by passing a dictionary, mapping either status codes
 or exception classes to callables. For example, if you would like to replace the default
 exception handler with a handler that returns plain-text responses you could do this:</p>

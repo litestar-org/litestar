@@ -479,6 +479,7 @@ data-aria-dark="Switch to auto color mode">
 <li><a class="reference internal" href="#litestar.dto.base_dto.AbstractDTO"><code class="docutils literal notranslate"><span class="pre">AbstractDTO</span></code></a><ul>
 <li><a class="reference internal" href="#litestar.dto.base_dto.AbstractDTO.config"><code class="docutils literal notranslate">config</span></code></a></li>
 <li><a class="reference internal" href="#litestar.dto.base_dto.AbstractDTO.model_type"><code class="docutils literal notranslate">model_type</span></code></a></li>
+<li><a class="reference internal" href="#litestar.dto.base_dto.AbstractDTO.attribute_accessor"><code class="docutils literal notranslate">attribute_accessor()</span></code></a></li>
 <li><a class="reference internal" href="#litestar.dto.base_dto.AbstractDTO.__init__"><code class="docutils literal notranslate">__init__()</span></code></a></li>
 <li><a class="reference internal" href="#litestar.dto.base_dto.AbstractDTO.get_config_for_model_type"><code class="docutils literal notranslate">get_config_for_model_type()</span></code></a></li>
 <li><a class="reference internal" href="#litestar.dto.base_dto.AbstractDTO.decode_builtins"><code class="docutils literal notranslate">decode_builtins()</span></code></a></li>
@@ -568,6 +569,12 @@ data-aria-dark="Switch to auto color mode">
 <dt class="sig sig-object py" id="litestar.dto.base_dto.AbstractDTO.model_type">
 <span class="sig-name descname"><span class="pre">model_type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.13)"><span class="pre">type</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#litestar.dto.base_dto.AbstractDTO.model_type" title="Permalink to this definition">¶</a></dt>
 <dd><p>If <code class="docutils literal notranslate"><span class="pre">annotation</span></code> is an iterable, this is the inner type, otherwise will be the same as <code class="docutils literal notranslate"><span class="pre">annotation</span></code>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="litestar.dto.base_dto.AbstractDTO.attribute_accessor">
+<span class="sig-name descname"><span class="pre">attribute_accessor</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#litestar.dto.base_dto.AbstractDTO.attribute_accessor" title="Permalink to this definition">¶</a></dt>
+<dd><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#getattr" title="(in Python v3.13)"><code class="xref py py-func docutils literal notranslate"><span class="pre">getattr()</span></code></a> like callable to access attributes on the data source</p>
 </dd></dl>
 
 <dl class="py method">
