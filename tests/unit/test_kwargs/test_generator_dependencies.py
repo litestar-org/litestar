@@ -1,10 +1,11 @@
-from typing import AsyncGenerator, Callable, Dict, Generator
+from typing import Any, AsyncGenerator, Callable, Dict, Generator
 from unittest.mock import MagicMock
 
 import pytest
 from pytest import FixtureRequest
 
-from litestar import WebSocket, get, websocket
+from litestar import Response, WebSocket, get, websocket
+from litestar.response.base import ASGIResponse
 from litestar.testing import create_test_client
 
 
@@ -219,3 +220,62 @@ def test_generator_dependency_nested_error_during_cleanup(
         finally_mock.assert_called_once()
         exception_mock.assert_called_once()
         cleanup_mock_no_raise.assert_called_once()
+
+
+def test_exception_on_response_thrown_into_generators() -> None:
+    counter = 0
+
+    async def dependency() -> AsyncGenerator[int, None]:
+        nonlocal counter
+        counter += 1
+        try:
+            yield counter
+        finally:
+            counter -= 1
+
+    class CustomResponse(Response[str]):
+        def to_asgi_response(
+            self,
+            *args: Any,
+            **kwargs: Any,
+        ) -> ASGIResponse:
+            raise Exception("foo")
+
+    @get("/", dependencies={"dep": dependency})
+    def handler(dep: int) -> CustomResponse:
+        return CustomResponse("")
+
+    with create_test_client(route_handlers=[handler]) as client:
+        res = client.get("/")
+        assert res.status_code == 500
+        assert counter == 0
+
+
+def test_exception_thrown_during_cleanup_of_exception() -> None:
+    counter = 0
+
+    async def dependency() -> AsyncGenerator[int, None]:
+        nonlocal counter
+        counter += 1
+        try:
+            yield counter
+        finally:
+            counter -= 1
+            raise ValueError()
+
+    class CustomResponse(Response[str]):
+        def to_asgi_response(
+            self,
+            *args: Any,
+            **kwargs: Any,
+        ) -> ASGIResponse:
+            raise Exception("foo")
+
+    @get("/", dependencies={"dep": dependency})
+    def handler(dep: int) -> CustomResponse:
+        return CustomResponse("")
+
+    with create_test_client(route_handlers=[handler]) as client:
+        res = client.get("/")
+        assert res.status_code == 500
+        assert counter == 0

@@ -16,6 +16,7 @@ if TYPE_CHECKING:
     from litestar.connection import Request
     from litestar.router import Router
 
+
 __all__ = (
     "OpenAPIRenderPlugin",
     "RapidocRenderPlugin",
@@ -363,6 +364,7 @@ class ScalarRenderPlugin(OpenAPIRenderPlugin):
         js_url: str | None = None,
         css_url: str | None = None,
         path: str | Sequence[str] = "/scalar",
+        options: dict[str, Any] | None = None,
         **kwargs: Any,
     ) -> None:
         """Initialize the Scalar OpenAPI UI render plugin.
@@ -375,10 +377,13 @@ class ScalarRenderPlugin(OpenAPIRenderPlugin):
             css_url: Download url for the Scalar CSS bundle.
                 If not provided, the Litestar-provided CSS will be used.
             path: Path to serve the OpenAPI UI at.
+            options: Scalar configuration options.
+                If not provided the default Scalar configuration will be used.
             **kwargs: Additional arguments to pass to the base class.
         """
         self.js_url = js_url or f"https://cdn.jsdelivr.net/npm/@scalar/api-reference@{version}"
         self.css_url = css_url or self._default_css_url
+        self.options = options
         super().__init__(path=path, **kwargs)
 
     def render(self, request: Request, openapi_schema: dict[str, Any]) -> bytes:
@@ -412,6 +417,7 @@ class ScalarRenderPlugin(OpenAPIRenderPlugin):
                   id="api-reference"
                   data-url="{self.get_openapi_json_route(request)}">
                 </script>
+                {self.render_options()}
                 <script src="{self.js_url}" crossorigin></script>
                 """
 
@@ -422,6 +428,16 @@ class ScalarRenderPlugin(OpenAPIRenderPlugin):
                         {body}
                     </html>
                 """.encode()
+
+    def render_options(self) -> str:
+        """Render options to Scalar configuration."""
+        if not self.options:
+            return ""
+        return f"""
+                <script>
+                  document.getElementById('api-reference').dataset.configuration = '{msgspec.json.encode(self.options).decode()}'
+                </script>
+                """
 
 
 class StoplightRenderPlugin(OpenAPIRenderPlugin):

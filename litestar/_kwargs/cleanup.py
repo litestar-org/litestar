@@ -1,7 +1,12 @@
 from __future__ import annotations
 
-from inspect import Traceback, isasyncgen
+import sys
+from contextlib import AbstractAsyncContextManager
+from inspect import isasyncgen
 from typing import TYPE_CHECKING, Any, AsyncGenerator, Awaitable, Callable, Generator
+
+if sys.version_info < (3, 11):
+    from exceptiongroup import ExceptionGroup
 
 from anyio import create_task_group
 
@@ -12,10 +17,12 @@ __all__ = ("DependencyCleanupGroup",)
 
 
 if TYPE_CHECKING:
+    from types import TracebackType
+
     from litestar.types import AnyGenerator
 
 
-class DependencyCleanupGroup:
+class DependencyCleanupGroup(AbstractAsyncContextManager):
     """Wrapper for generator based dependencies.
 
     Simplify cleanup by wrapping :func:`next` / :func:`anext` calls and providing facilities to
@@ -23,8 +30,6 @@ class DependencyCleanupGroup:
     this class can be used as a contextmanager, which will automatically throw any exceptions into its generators. All
     exceptions caught in this manner will be re-raised after they have been thrown in the generators.
     """
-
-    __slots__ = ("_closed", "_generators")
 
     def __init__(self, generators: list[AnyGenerator] | None = None) -> None:
         """Initialize ``DependencyCleanupGroup``.
@@ -45,7 +50,7 @@ class DependencyCleanupGroup:
             None
         """
         if self._closed:
-            raise RuntimeError("Cannot call cleanup on a closed DependencyCleanupGroup")
+            raise RuntimeError("Cannot call .add on a closed DependencyCleanupGroup")
         self._generators.append(generator)
 
     @staticmethod
@@ -62,7 +67,18 @@ class DependencyCleanupGroup:
 
         return ensure_async_callable(wrapped)
 
-    async def cleanup(self) -> None:
+    async def close(self, exc: BaseException | None = None) -> None:
+        if self._closed:
+            raise RuntimeError("Cannot call cleanup on a closed DependencyCleanupGroup")
+
+        self._closed = True
+
+        if exc is None:
+            await self._cleanup()
+        else:
+            await self._throw(exc)
+
+    async def _cleanup(self) -> None:
         """Execute cleanup by calling :func:`next` / :func:`anext` on all generators.
 
         If there are multiple generators to be called, they will be executed in a :class:`anyio.TaskGroup`.
@@ -70,10 +86,6 @@ class DependencyCleanupGroup:
         Returns:
             None
         """
-        if self._closed:
-            raise RuntimeError("Cannot call cleanup on a closed DependencyCleanupGroup")
-
-        self._closed = True
 
         if not self._generators:
             return
@@ -95,18 +107,18 @@ class DependencyCleanupGroup:
         self,
         exc_type: type[BaseException] | None,
         exc_val: BaseException | None,
-        exc_tb: Traceback | None,
+        exc_tb: TracebackType | None,
     ) -> None:
         """If an exception was raised within the contextmanager block, throw it into all generators."""
-        if exc_val:
-            await self.throw(exc_val)
+        await self.close(exc_val)
 
-    async def throw(self, exc: BaseException) -> None:
+    async def _throw(self, exc: BaseException) -> None:
         """Throw an exception in all generators sequentially.
 
         Args:
             exc: Exception to throw
         """
+        exceptions = []
         for gen in self._generators:
             try:
                 if isasyncgen(gen):
@@ -115,3 +127,12 @@ class DependencyCleanupGroup:
                     gen.throw(exc)  # type: ignore[union-attr]
             except (StopIteration, StopAsyncIteration):
                 continue
+            except Exception as cleanup_exc:  # noqa: BLE001
+                if cleanup_exc is not exc:
+                    exceptions.append(cleanup_exc)
+
+        if exceptions:
+            raise ExceptionGroup(
+                "Exceptions occurred during cleanup of dependencies",
+                exceptions,
+            ) from exc
