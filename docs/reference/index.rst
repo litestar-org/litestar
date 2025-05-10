@@ -22,6 +22,7 @@ API reference
     enums
     events
     exceptions
+    file_system
     handlers
     logging/index
     middleware/index

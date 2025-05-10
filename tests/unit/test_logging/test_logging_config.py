@@ -2,10 +2,11 @@ import importlib
 import logging
 import sys
 import time
+from collections.abc import Generator
 from importlib.util import find_spec
 from logging.handlers import QueueHandler
 from queue import Queue
-from typing import TYPE_CHECKING, Any, Dict, Generator, Optional, Set, Type, Union, cast
+from typing import TYPE_CHECKING, Any, Optional, Union, cast
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -61,7 +62,7 @@ def test_correct_dict_config_called(
     logging_module: str,
     dict_config_callable: str,
     expected_called: bool,
-    expected_default_handlers: Dict[str, Dict[str, Any]],
+    expected_default_handlers: dict[str, dict[str, Any]],
 ) -> None:
     with patch(dict_config_callable) as dict_config_mock:
         log_config = LoggingConfig(logging_module=logging_module)
@@ -293,7 +294,7 @@ def test_connection_logger(logging_module_str: str, expected_handler_class_str: 
         expected_handler_class = importlib.import_module(expected_handler_class_str)
 
     @get("/")
-    def handler(request: Request) -> Dict[str, bool]:
+    def handler(request: Request) -> dict[str, bool]:
         return {"isinstance": isinstance(request.logger.handlers[0], expected_handler_class)}  # type: ignore[attr-defined]
 
     with create_test_client(
@@ -563,8 +564,8 @@ def test_traceback_line_limit_deprecation(traceback_line_limit: int, expected_wa
     ],
 )
 def test_disable_stack_trace(
-    disable_stack_trace: Set[Union[int, Type[Exception]]],
-    exception_to_raise: Type[Exception],
+    disable_stack_trace: set[Union[int, type[Exception]]],
+    exception_to_raise: type[Exception],
     handler_called: bool,
 ) -> None:
     mock_handler = MagicMock()

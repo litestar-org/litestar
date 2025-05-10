@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, cast
+from typing import TYPE_CHECKING, cast
 
 from litestar._asgi.routing_trie.types import (
     ASGIHandlerTuple,
@@ -49,7 +49,6 @@ def add_mount_route(
             current_node = current_node.children[component]  # type: ignore[index]
 
     current_node.is_mount = True
-    current_node.is_static = route.route_handler.is_static
 
     if route.path != "/":
         mount_routes[route.path] = root_node.children[route.path] = current_node
@@ -145,8 +144,7 @@ def configure_node(
         node.path_parameters = {}
 
     if isinstance(route, HTTPRoute):
-        for method, handler_mapping in route.route_handler_map.items():
-            handler, _ = handler_mapping
+        for method, handler in route.route_handler_map.items():
             node.asgi_handlers[method] = ASGIHandlerTuple(
                 asgi_app=build_route_middleware_stack(app=app, route=route, route_handler=handler),
                 handler=handler,
@@ -191,7 +189,7 @@ def build_route_middleware_stack(
     from litestar.routes import HTTPRoute
 
     asgi_handler: ASGIApp = route.handle  # type: ignore[assignment]
-    handler_middleware = route_handler.resolve_middleware()
+    handler_middleware = route_handler.middleware
     has_cached_route = isinstance(route, HTTPRoute) and any(r.cache for r in route.route_handlers)
     has_middleware = (
         app.csrf_config or app.compression_config or has_cached_route or app.allowed_hosts or handler_middleware
@@ -217,9 +215,5 @@ def build_route_middleware_stack(
             asgi_handler = AllowedHostsMiddleware(app=asgi_handler, config=app.allowed_hosts)
 
         for middleware in handler_middleware:
-            if hasattr(middleware, "__iter__"):
-                handler, kwargs = cast("tuple[Any, dict[str, Any]]", middleware)
-                asgi_handler = handler(app=asgi_handler, **kwargs)
-            else:
-                asgi_handler = middleware(app=asgi_handler)  # type: ignore[call-arg]
+            asgi_handler = middleware(asgi_handler)
     return asgi_handler

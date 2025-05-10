@@ -1,6 +1,6 @@
 import datetime
 import sys
-from typing import Callable, Set, Type, Union
+from typing import Callable, Union
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -194,8 +194,8 @@ def test_structlog_config_as_json(isatty: bool, pretty_print_tty: bool, expected
     ],
 )
 def test_structlog_disable_stack_trace(
-    disable_stack_trace: Set[Union[int, Type[Exception]]],
-    exception_to_raise: Type[Exception],
+    disable_stack_trace: set[Union[int, type[Exception]]],
+    exception_to_raise: type[Exception],
     handler_called: bool,
 ) -> None:
     mock_handler = MagicMock()
