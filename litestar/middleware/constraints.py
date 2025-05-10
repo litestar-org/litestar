@@ -284,7 +284,7 @@ def check_middleware_constraints(middlewares: tuple[Middleware, ...]) -> None:
         else:
             # 'middleware' might be a class or an instance of a class
             middleware_type = type(middleware) if not inspect.isclass(middleware) else middleware
-            for base in middleware_type.mro()[:-1]:
+            for base in middleware_type.mro()[:-1]:  # pyright: ignore
                 positions[base].append(i)
 
         if not (isinstance(middleware, ASGIMiddleware) and middleware.constraints):
