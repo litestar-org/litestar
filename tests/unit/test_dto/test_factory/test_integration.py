@@ -697,6 +697,11 @@ def test_dto_response_wrapped_scalar_return_type(use_experimental_dto_backend: b
         response = client.get("/")
         assert response.json() == {"name": "John"}
 
+        schema_response = client.get("/schema/openapi.json")
+        schemas = list(schema_response.json()["components"]["schemas"].values())
+        assert len(schemas) == 1
+        assert schemas[0]["title"] == "HandlerPaginatedUserResponseBody"
+
 
 def test_dto_response_wrapped_collection_return_type(use_experimental_dto_backend: bool) -> None:
     @get(
@@ -712,6 +717,11 @@ def test_dto_response_wrapped_collection_return_type(use_experimental_dto_backen
     with create_test_client(handler) as client:
         response = client.get("/")
         assert response.json() == [{"name": "John"}, {"name": "Jane"}]
+
+        schema_response = client.get("/schema/openapi.json")
+        schemas = list(schema_response.json()["components"]["schemas"].values())
+        assert len(schemas) == 1
+        assert schemas[0]["title"] == "HandlerPaginatedUserResponseBody"
 
 
 def test_schema_required_fields_with_msgspec_dto(use_experimental_dto_backend: bool) -> None:
@@ -1007,6 +1017,46 @@ app = Litestar(route_handlers=[get_users])
     assert not_none(schema.properties).keys() == {"count", "data"}
     model_schema = openapi.components.schemas["GetUsersUserResponseBody"]
     assert not_none(model_schema.properties).keys() == {"id", "name"}
+
+
+def test_openapi_schema_for_type_with_litestar_response_generic_type(
+    create_module: Callable[[str], ModuleType], use_experimental_dto_backend: bool
+) -> None:
+    module = create_module("""
+from dataclasses import dataclass
+from typing import List
+
+from litestar import Litestar, Response, get
+from litestar.dto import DataclassDTO, DTOConfig
+
+
+@dataclass
+class Item:
+    id: int
+    name: str
+    secret: str
+
+
+class ItemReadDTO(DataclassDTO[Item]):
+    config = DTOConfig(exclude=["secret"])
+
+
+@get("/get_items", return_dto=ItemReadDTO)
+async def get_items() -> Response[List[Item]]:
+    return Response(
+        headers={"X-SomeParam": "SomeValue"},
+        content=[
+            Item(id=1, name="Item 1", secret="123"),
+            Item(id=2, name="Item 2", secret="456"),
+        ],
+    )
+
+app = Litestar(route_handlers=[get_items])
+""")
+
+    openapi = cast("Litestar", module.app).openapi_schema
+    schema = openapi.components.schemas["GetItemsItemResponseBody"]
+    assert not_none(schema.properties).keys() == {"id", "name"}
 
 
 def test_openapi_schema_for_dto_includes_body_examples(create_module: Callable[[str], ModuleType]) -> None:
