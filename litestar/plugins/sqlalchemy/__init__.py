@@ -4,6 +4,10 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+# Direct imports for backward compatibility
+from advanced_alchemy.exceptions import wrap_sqlalchemy_exception
+from advanced_alchemy.repository import ModelT, SQLAlchemyAsyncRepository, SQLAlchemySyncRepository
+
 from litestar.utils import warn_deprecation
 
 __all__ = (
@@ -18,13 +22,16 @@ __all__ = (
     "BigIntPrimaryKey",
     "CommonTableAttributes",
     "EngineConfig",
+    "ModelT",  # Added for direct imports
     "SQLAlchemyAsyncConfig",
+    "SQLAlchemyAsyncRepository",  # Added for direct imports
     "SQLAlchemyDTO",
     "SQLAlchemyDTOConfig",
     "SQLAlchemyInitPlugin",
     "SQLAlchemyPlugin",
     "SQLAlchemySerializationPlugin",
     "SQLAlchemySyncConfig",
+    "SQLAlchemySyncRepository",  # Added for direct imports
     "SyncSessionConfig",
     "UUIDAuditBase",
     "UUIDBase",
@@ -47,6 +54,7 @@ __all__ = (
     "sync_default_handler_maker",
     "types",
     "utils",
+    "wrap_sqlalchemy_exception",  # Added for direct imports
 )
 
 
