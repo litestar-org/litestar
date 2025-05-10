@@ -8,6 +8,7 @@ from litestar._signature import SignatureModel
 from litestar.di import Provide
 from litestar.dto import DTOData
 from litestar.exceptions import ImproperlyConfiguredException, LitestarException
+from litestar.middleware.constraints import check_middleware_constraints
 from litestar.serialization import default_deserializer, default_serializer
 from litestar.types import (
     Dependencies,
@@ -519,6 +520,8 @@ class BaseRouteHandler:
 
         self._validate_handler_function()
         self._finalize_dependencies(app=app)
+
+        check_middleware_constraints(self.middleware)
 
     def _validate_handler_function(self) -> None:
         """Validate the route handler function once set by inspecting its return annotations."""
