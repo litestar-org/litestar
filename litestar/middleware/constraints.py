@@ -6,6 +6,7 @@ import functools
 import inspect
 from typing import TYPE_CHECKING, Any, Literal, cast
 
+from litestar.exceptions import LitestarException
 from litestar.middleware.base import ASGIMiddleware
 from litestar.utils.module_loader import import_string
 
@@ -14,12 +15,23 @@ if TYPE_CHECKING:
     from litestar.types.composite_types import MiddlewareFactory
 
 __all__ = (
+    "ConstraintViolationError",
+    "CycleError",
+    "MiddlewareConstraintError",
     "MiddlewareConstraints",
     "check_middleware_constraints",
 )
 
 
-class CycleError(ValueError):
+class MiddlewareConstraintError(LitestarException):
+    pass
+
+
+class ConstraintViolationError(MiddlewareConstraintError):
+    pass
+
+
+class CycleError(MiddlewareConstraintError):
     pass
 
 
@@ -46,16 +58,44 @@ class MiddlewareForwardRef:
 class _ResolvedMiddlewareConstraints:
     before: tuple[Middleware | MiddlewareFactory, ...]
     after: tuple[Middleware | MiddlewareFactory, ...]
+    first: bool
+    last: bool
+    unique: bool
 
     @property
     def is_empty(self) -> bool:
-        return not (self.before or self.after)
+        return not (self.before or self.after or self.first or self.last or self.unique)
 
 
 @dataclasses.dataclass(frozen=True)
 class MiddlewareConstraints:
     before: tuple[MiddlewareForwardRef | Middleware | MiddlewareFactory, ...] = ()
     after: tuple[MiddlewareForwardRef | Middleware | MiddlewareFactory, ...] = ()
+    first: bool | None = None
+    last: bool | None = None
+    unique: bool | None = None
+
+    def __post_init__(self) -> None:
+        if self.first:
+            if self.last:
+                raise MiddlewareConstraintError("Cannot set 'first=True' if 'last=True'")
+            if self.unique is False:
+                raise MiddlewareConstraintError("Cannot set 'first=True' if 'unique=False'")
+
+        if self.last:
+            if self.first:
+                raise MiddlewareConstraintError("Cannot set 'last=True' if 'first=True'")
+            if self.unique is False:
+                raise MiddlewareConstraintError("Cannot set 'last=True' if 'unique=False'")
+
+    def is_unique(self, unique: bool) -> MiddlewareConstraints:
+        return dataclasses.replace(self, unique=unique)
+
+    def apply_first(self) -> MiddlewareConstraints:
+        return dataclasses.replace(self, first=True, last=False, unique=True)
+
+    def apply_last(self) -> MiddlewareConstraints:
+        return dataclasses.replace(self, first=False, last=True, unique=True)
 
     def apply_before(
         self, other: str | Middleware | MiddlewareFactory | MiddlewareForwardRef, ignore_not_found: bool = False
@@ -94,6 +134,9 @@ class MiddlewareConstraints:
         return _ResolvedMiddlewareConstraints(
             before=self._resolve_middleware(self.before),
             after=self._resolve_middleware(self.after),
+            first=False if self.first is None else self.first,
+            last=False if self.last is None else self.last,
+            unique=False if self.unique is None else self.unique,
         )
 
 
@@ -127,44 +170,11 @@ def _detect_constraints_cycle(graph: dict[object, list[object]]) -> None:
             raise CycleError()
 
 
-def check_middleware_constraints(middlewares: tuple[Middleware, ...]) -> None:  # noqa: C901
-    # simple "graph" that tracks a middleware and its neighbors, according to the spec
-    # we're given. to keep things simple, we're converting all requirements into a form
-    # of 'node -> list[predecessor]', and remember the original constraint
-    graph: dict[object, list[object]] = collections.defaultdict(list)
-    middleware_constraints: dict[tuple[object, object], Literal["before", "after"]] = {}
-
-    # keep track of the positions of *all* instances of a middleware; there may be more
-    # than one instance of a specific type
-    positions: collections.defaultdict[object, list[int]] = collections.defaultdict(list)
-
-    for i, middleware in enumerate(middlewares):
-        middleware_type: object | type
-        if inspect.isfunction(middleware):
-            positions[middleware].append(i)
-            middleware_type = middleware
-        else:
-            middleware_type = type(middleware) if not inspect.isclass(middleware) else middleware
-            for base in middleware_type.mro()[:-1]:
-                positions[base].append(i)
-
-        if not (isinstance(middleware, ASGIMiddleware) and middleware.constraints):
-            continue
-
-        rp = middleware.constraints.resolve()
-        if rp.is_empty:
-            continue
-
-        for before in rp.before:
-            middleware_constraints[(middleware_type, before)] = "before"
-            graph[middleware_type].append(before)
-        for after in rp.after:
-            middleware_constraints[(after, middleware_type)] = "after"
-            graph[after].append(middleware_type)
-
-    # done constructing; convert defaultdict to a regular dict to avoid accidental
-    # key creation
-    graph = dict(graph)
+def _check_positional_constraints(
+    graph: dict[object, list[object]],
+    positions: dict[object, list[int]],
+    directional_constraints: dict[tuple[object, object], Literal["before", "after"]],
+) -> None:
     _detect_constraints_cycle(graph)
 
     for node_u, predecessors in graph.items():
@@ -178,7 +188,7 @@ def check_middleware_constraints(middlewares: tuple[Middleware, ...]) -> None:  
                 continue
             min_v_pos = min(v_positions)
             if max_u_pos >= min_v_pos:
-                constraint = middleware_constraints[(node_u, node_v)]
+                constraint = directional_constraints[(node_u, node_v)]
                 first = node_u
                 second = node_v
                 first_idx = max_u_pos
@@ -194,9 +204,125 @@ def check_middleware_constraints(middlewares: tuple[Middleware, ...]) -> None:  
                 second_name = _fully_qualified_name(second)
 
                 msg = (
-                    f"Middleware constraint violated: All instances of {first_name!r} "
-                    f"must come {constraint} any instance of {second_name!r}. (Found "
-                    f"instance of {first_name!r} at index {first_idx}, instance of "
-                    f"{second_name!r} at index {second_idx})"
+                    f"All instances of {first_name!r} must come {constraint} any "
+                    f"instance of {second_name!r}. (Found instance of {first_name!r} "
+                    f"at index {first_idx}, instance of {second_name!r} at index "
+                    f"{second_idx})"
                 )
-                raise ValueError(msg)
+                raise ConstraintViolationError(msg)
+
+
+def _check_first_last_constraints(
+    want_first: list[object],
+    want_last: list[object],
+    positions: dict[object, list[int]],
+    total_count: int,
+) -> None:
+    if len(want_first) > 1:
+        msg = f"Multiple middlewares define 'first=True': {', '.join(map(_fully_qualified_name, want_first))}"
+        raise MiddlewareConstraintError(msg)
+
+    if len(want_last) > 1:
+        msg = f"Multiple middlewares define 'last=True': {', '.join(map(_fully_qualified_name, want_last))}"
+        raise MiddlewareConstraintError(msg)
+
+    if want_first:
+        first = want_first[0]
+        first_positions = positions[first]
+        max_pos_first = max(first_positions)
+        if max_pos_first > 0:
+            msg = (
+                f"Middleware {_fully_qualified_name(first)} must be at the top of "
+                f"the stack. Found at index {', '.join(map(str, first_positions))}"
+            )
+            raise ConstraintViolationError(msg)
+
+    if want_last:
+        last = want_last[0]
+        last_positions = positions[last]
+        max_pos_first = min(last_positions)
+        if max_pos_first != total_count - 1:
+            msg = (
+                f"Middleware {_fully_qualified_name(last)} must be at the end of "
+                f"the stack. Found at index {', '.join(map(str, last_positions))}"
+            )
+            raise ConstraintViolationError(msg)
+
+
+def _check_unique_constraints(unique: list[object], positions: dict[object, list[int]]) -> None:
+    for middleware in unique:
+        found_positions = positions[middleware]
+        if len(found_positions) > 1:
+            msg = (
+                f"Middleware {_fully_qualified_name(middleware)!r} must be unique. "
+                f"Found {len(found_positions)} instances (index "
+                f"{', '.join(map(str, found_positions))})"
+            )
+            raise ConstraintViolationError(msg)
+
+
+def check_middleware_constraints(middlewares: tuple[Middleware, ...]) -> None:
+    want_first: list[object] = []
+    want_last: list[object] = []
+    unique: list[object] = []
+
+    # simple "graph" that tracks a middleware and its neighbors, according to the spec
+    # we're given. to keep things simple, we're converting all requirements into a form
+    # of 'node -> list[predecessor]', and remember the original constraint
+    graph: dict[object, list[object]] = collections.defaultdict(list)
+    directional_constraints: dict[tuple[object, object], Literal["before", "after"]] = {}
+
+    # keep track of the positions of *all* instances of a middleware; there may be more
+    # than one instance of a specific type
+    positions: collections.defaultdict[object, list[int]] = collections.defaultdict(list)
+
+    for i, middleware in enumerate(middlewares):
+        middleware_type: object | type
+        if inspect.isfunction(middleware):
+            positions[middleware].append(i)
+            middleware_type = middleware
+        else:
+            # 'middleware' might be a class or an instance of a class
+            middleware_type = type(middleware) if not inspect.isclass(middleware) else middleware
+            for base in middleware_type.mro()[:-1]:
+                positions[base].append(i)
+
+        if not (isinstance(middleware, ASGIMiddleware) and middleware.constraints):
+            continue
+
+        rp = middleware.constraints.resolve()
+        if rp.is_empty:
+            continue
+
+        if rp.first:
+            want_first.append(middleware_type)
+        if rp.last:
+            want_last.append(middleware_type)
+
+        if rp.unique:
+            unique.append(middleware_type)
+
+        for before in rp.before:
+            directional_constraints[(middleware_type, before)] = "before"
+            graph[middleware_type].append(before)
+        for after in rp.after:
+            directional_constraints[(after, middleware_type)] = "after"
+            graph[after].append(middleware_type)
+
+    _check_unique_constraints(
+        unique=unique,
+        positions=positions,
+    )
+
+    _check_first_last_constraints(
+        want_first=want_first,
+        want_last=want_last,
+        positions=positions,
+        total_count=len(middlewares),
+    )
+
+    _check_positional_constraints(
+        graph=dict(graph),  # convert defaultdict to a regular dict to avoid accidental key creation
+        positions=positions,
+        directional_constraints=directional_constraints,
+    )

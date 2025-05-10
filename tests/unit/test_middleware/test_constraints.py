@@ -3,7 +3,12 @@ from typing import Any
 import pytest
 
 from litestar.middleware.base import ASGIMiddleware
-from litestar.middleware.constraints import CycleError, MiddlewareConstraints, check_middleware_constraints
+from litestar.middleware.constraints import (
+    ConstraintViolationError,
+    CycleError,
+    MiddlewareConstraints,
+    check_middleware_constraints,
+)
 from litestar.types import ASGIApp, Receive, Scope, Send
 
 
@@ -60,7 +65,7 @@ def test_order_before() -> None:
         three,
     )
 
-    with pytest.raises(ValueError, match="MiddlewareTwo.*before.*MiddlewareOne"):
+    with pytest.raises(ConstraintViolationError, match="MiddlewareTwo.*before.*MiddlewareOne"):
         check_middleware_constraints(middlewares)
 
 
@@ -73,7 +78,7 @@ def test_order_after() -> None:
 
     middlewares = (two, one, three)
 
-    with pytest.raises(ValueError, match="MiddlewareTwo.*after.*MiddlewareOne"):
+    with pytest.raises(ConstraintViolationError, match="MiddlewareTwo.*after.*MiddlewareOne"):
         check_middleware_constraints(middlewares)
 
 
@@ -86,7 +91,7 @@ def test_order_string_ref() -> None:
 
     middlewares = (one, two, three)
 
-    with pytest.raises(ValueError, match="MiddlewareTwo.*before.*MiddlewareOne"):
+    with pytest.raises(ConstraintViolationError, match="MiddlewareTwo.*before.*MiddlewareOne"):
         check_middleware_constraints(middlewares)
 
 
@@ -101,7 +106,7 @@ def test_order_function_after() -> None:
         middleware_factory,
     )
 
-    with pytest.raises(ValueError, match="MiddlewareOne.*after.*middleware_factory"):
+    with pytest.raises(ConstraintViolationError, match="MiddlewareOne.*after.*middleware_factory"):
         check_middleware_constraints(given)
 
 
@@ -117,7 +122,7 @@ def test_order_function_before() -> None:
         two,
     )
 
-    with pytest.raises(ValueError, match="MiddlewareOne.*before.*middleware_factory"):
+    with pytest.raises(ConstraintViolationError, match="MiddlewareOne.*before.*middleware_factory"):
         check_middleware_constraints(given)
 
 
@@ -132,7 +137,7 @@ def test_order_function_string_ref() -> None:
 
     one.constraints = MiddlewareConstraints(before=(middleware_factory,))
 
-    with pytest.raises(ValueError, match="MiddlewareOne.*before.*middleware_factory"):
+    with pytest.raises(ConstraintViolationError, match="MiddlewareOne.*before.*middleware_factory"):
         check_middleware_constraints(given)
 
 
@@ -150,7 +155,7 @@ def test_order_multi_priority() -> None:
     )
 
     # expect the first violation (two -> one) to be reported
-    with pytest.raises(ValueError, match="MiddlewareTwo.*after.*MiddlewareOne"):
+    with pytest.raises(ConstraintViolationError, match="MiddlewareTwo.*after.*MiddlewareOne"):
         check_middleware_constraints(given)
 
 
@@ -161,7 +166,7 @@ def test_order_multiple_instances_referer(constraint: str) -> None:
     one = MiddlewareOne()
     two_one = MiddlewareTwo()
     two_two = MiddlewareTwo()
-    two_one.constraints = two_two.constraints = MiddlewareConstraints(**{constraint: (MiddlewareOne,)})
+    two_one.constraints = two_two.constraints = MiddlewareConstraints(**{constraint: (MiddlewareOne,)})  # type: ignore[arg-type]
 
     given = (
         two_one,
@@ -169,7 +174,7 @@ def test_order_multiple_instances_referer(constraint: str) -> None:
         two_two,
     )
 
-    with pytest.raises(ValueError, match=f"MiddlewareTwo.*{constraint}.*MiddlewareOne"):
+    with pytest.raises(ConstraintViolationError, match=f"MiddlewareTwo.*{constraint}.*MiddlewareOne"):
         check_middleware_constraints(given)
 
 
@@ -180,7 +185,7 @@ def test_order_multiple_instances_referee(constraint: str) -> None:
     one_one = MiddlewareOne()
     one_two = MiddlewareOne()
     two = MiddlewareTwo()
-    two.constraints = MiddlewareConstraints(**{constraint: (MiddlewareOne,)})
+    two.constraints = MiddlewareConstraints(**{constraint: (MiddlewareOne,)})  # type: ignore[arg-type]
 
     given = (
         one_one,
@@ -188,7 +193,7 @@ def test_order_multiple_instances_referee(constraint: str) -> None:
         one_two,
     )
 
-    with pytest.raises(ValueError, match=f"MiddlewareTwo.*{constraint}.*MiddlewareOne"):
+    with pytest.raises(ConstraintViolationError, match=f"MiddlewareTwo.*{constraint}.*MiddlewareOne"):
         check_middleware_constraints(given)
 
 
@@ -222,7 +227,7 @@ def test_order_subclass() -> None:
     )
 
     # expect the first constraint to be violated
-    with pytest.raises(ValueError, match="MiddlewareTwo.*before.*MiddlewareOne"):
+    with pytest.raises(ConstraintViolationError, match="MiddlewareTwo.*before.*MiddlewareOne"):
         check_middleware_constraints(given)  # type: ignore[arg-type]
 
 
@@ -243,3 +248,118 @@ def test_order_handle_self_referential() -> None:
 
     with pytest.raises(CycleError):
         check_middleware_constraints((one,))
+
+
+def test_first() -> None:
+    one = MiddlewareOne()
+    two = MiddlewareTwo()
+    one.constraints = MiddlewareConstraints(first=True)
+
+    with pytest.raises(
+        ConstraintViolationError, match="MiddlewareOne.*must be at the top of the stack. Found at index 1"
+    ):
+        check_middleware_constraints((two, one))
+
+
+def test_first_subclass() -> None:
+    MiddlewareOne.constraints = MiddlewareConstraints(first=True)
+
+    class SubOne(MiddlewareOne):
+        pass
+
+    one = SubOne()
+    two = MiddlewareTwo()
+
+    with pytest.raises(ConstraintViolationError, match="SubOne.*must be at the top of the stack. Found at index 1"):
+        check_middleware_constraints((two, one))
+
+
+def test_first_ok() -> None:
+    one = MiddlewareOne()
+    two = MiddlewareTwo()
+    one.constraints = MiddlewareConstraints(first=True)
+
+    check_middleware_constraints((one, two))
+
+
+def test_last() -> None:
+    one = MiddlewareOne()
+    two = MiddlewareTwo()
+    one.constraints = MiddlewareConstraints(last=True)
+
+    with pytest.raises(
+        ConstraintViolationError, match="MiddlewareOne.*must be at the end of the stack. Found at index 0"
+    ):
+        check_middleware_constraints((one, two))
+
+
+def test_last_subclass() -> None:
+    MiddlewareOne.constraints = MiddlewareConstraints(last=True)
+
+    class SubOne(MiddlewareOne):
+        pass
+
+    one = SubOne()
+    two = MiddlewareTwo()
+
+    with pytest.raises(ConstraintViolationError, match="SubOne.*must be at the end of the stack. Found at index 0"):
+        check_middleware_constraints((one, two))
+
+
+def test_last_ok() -> None:
+    one = MiddlewareOne()
+    two = MiddlewareTwo()
+    one.constraints = MiddlewareConstraints(last=True)
+
+    check_middleware_constraints((two, one))
+
+
+def test_unique() -> None:
+    one = MiddlewareOne()
+    one_two = MiddlewareOne()
+    two = MiddlewareTwo()
+    one.constraints = MiddlewareConstraints(unique=True)
+
+    with pytest.raises(
+        ConstraintViolationError, match=r"MiddlewareOne.*must be unique. Found 2 instances \(index 0, 2\)"
+    ):
+        check_middleware_constraints((one, two, one_two))
+
+
+def test_unique_subclass() -> None:
+    MiddlewareOne.constraints = MiddlewareConstraints(unique=True)
+
+    class SubOne(MiddlewareOne):
+        pass
+
+    one = SubOne()
+    one_two = MiddlewareOne()
+    two = MiddlewareTwo()
+
+    with pytest.raises(
+        ConstraintViolationError, match=r"MiddlewareOne.*must be unique. Found 2 instances \(index 0, 2\)"
+    ):
+        check_middleware_constraints((one, two, one_two))
+
+
+def test_unique_multi() -> None:
+    one_one = MiddlewareOne()
+    one_two = MiddlewareOne()
+    two = MiddlewareTwo()
+    three_one = MiddlewareThree()
+    three_two = MiddlewareThree()
+    one_one.constraints = one_two.constraints = MiddlewareConstraints(unique=True)
+    three_one.constraints = three_one.constraints = MiddlewareConstraints(unique=True)
+
+    with pytest.raises(
+        ConstraintViolationError, match=r"MiddlewareOne.*must be unique. Found 2 instances \(index 0, 1\)"
+    ):
+        check_middleware_constraints((one_one, one_two, two, three_one, three_two))
+
+
+def test_unique_ok() -> None:
+    one = MiddlewareOne()
+    two = MiddlewareTwo()
+    one.constraints = MiddlewareConstraints(unique=False)
+
+    check_middleware_constraints((one, two))
