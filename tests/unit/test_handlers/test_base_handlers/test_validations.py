@@ -6,7 +6,7 @@ from litestar import Litestar, get, post
 from litestar.dto import DTOData
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.middleware import ASGIMiddleware
-from litestar.middleware.constraints import MiddlewareConstraints
+from litestar.middleware.constraints import ConstraintViolationError, MiddlewareConstraints
 from litestar.types import ASGIApp, Receive, Scope, Send
 
 
@@ -41,5 +41,5 @@ def test_check_middleware_constraints() -> None:
     async def handler() -> None:
         pass
 
-    with pytest.raises(ValueError, match="MiddlewareTwo.*before.*MiddlewareOne"):
+    with pytest.raises(ConstraintViolationError, match="MiddlewareTwo.*before.*MiddlewareOne"):
         Litestar([handler], middleware=[MiddlewareTwo()])
