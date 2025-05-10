@@ -15,6 +15,7 @@ from litestar.status_codes import (
     HTTP_500_INTERNAL_SERVER_ERROR,
     HTTP_503_SERVICE_UNAVAILABLE,
 )
+from litestar.types.empty import Empty, EmptyType
 
 __all__ = (
     "ClientException",
@@ -43,9 +44,9 @@ class HTTPException(LitestarException):
     """Exception status code."""
     detail: str
     """Exception details or message."""
-    headers: dict[str, str] | None
+    headers: dict[str, str] | None = None
     """Headers to attach to the response."""
-    extra: dict[str, Any] | list[Any] | None
+    extra: dict[str, Any] | list[Any] | None = None
     """An extra mapping to attach to the exception."""
 
     def __init__(
@@ -53,8 +54,8 @@ class HTTPException(LitestarException):
         *args: Any,
         detail: str = "",
         status_code: int | None = None,
-        headers: dict[str, str] | None = None,
-        extra: dict[str, Any] | list[Any] | None = None,
+        headers: dict[str, str] | None | EmptyType = Empty,
+        extra: dict[str, Any] | list[Any] | None | EmptyType = Empty,
     ) -> None:
         """Initialize ``HTTPException``.
 
@@ -69,8 +70,8 @@ class HTTPException(LitestarException):
         """
         super().__init__(*args, detail=detail)
         self.status_code = status_code or self.status_code
-        self.extra = extra
-        self.headers = headers
+        self.extra = extra if extra is not Empty else self.extra
+        self.headers = headers if headers is not Empty else self.headers
         if not self.detail:
             self.detail = HTTPStatus(self.status_code).phrase
         self.args = (f"{self.status_code}: {self.detail}", *self.args)
