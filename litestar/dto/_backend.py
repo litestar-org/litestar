@@ -141,14 +141,15 @@ class DTOBackend:
         """
         defined_fields = []
         generic_field_definitions = list(FieldDefinition.from_annotation(model_type).generic_types or ())
-        for field_definition in self.dto_factory.generate_field_definitions(model_type):
+        dto_factory = self.dto_factory.get_dto_factory_for_type(model_type)
+        for field_definition in dto_factory.generate_field_definitions(model_type):
             if field_definition.is_type_var:
                 base_arg_field = generic_field_definitions.pop()
                 field_definition = replace(
                     field_definition, annotation=base_arg_field.annotation, raw=base_arg_field.raw
                 )
 
-            if _should_mark_private(field_definition, self.dto_factory.config.underscore_fields_private):
+            if _should_mark_private(field_definition, dto_factory.config.underscore_fields_private):
                 field_definition.dto_field.mark = Mark.PRIVATE
 
             try:
@@ -168,7 +169,7 @@ class DTOBackend:
                 field_definition=field_definition,
                 serialization_name=rename_fields.get(field_definition.name),
                 transfer_type=transfer_type,
-                is_partial=self.dto_factory.config.partial,
+                is_partial=dto_factory.config.partial,
                 is_excluded=_should_exclude_field(
                     field_definition=field_definition,
                     exclude=exclude,
@@ -415,7 +416,8 @@ class DTOBackend:
 
         transfer_model: NestedFieldInfo | None = None
 
-        if self.dto_factory.detect_nested_field(field_definition):
+        dto_factory = self.dto_factory.get_dto_factory_for_type(field_definition.annotation)
+        if dto_factory.detect_nested_field(field_definition):
             if nested_depth == self.dto_factory.config.max_nested_depth:
                 raise RecursionError
 
