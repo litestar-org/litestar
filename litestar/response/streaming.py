@@ -146,7 +146,7 @@ class ASGIStreamingResponse(ASGIResponse):
 
 
 class ASGIStreamingSSEResponse(ASGIStreamingResponse):
-    """A SSE streaming response."""
+    """A streaming response which support sending ping messages specific for SSE."""
 
     __slots__ = (
         "content_exist",
