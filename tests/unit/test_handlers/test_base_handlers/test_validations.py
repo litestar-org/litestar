@@ -32,7 +32,7 @@ def test_check_middleware_constraints() -> None:
             pass
 
     class MiddlewareTwo(ASGIMiddleware):
-        constraints = MiddlewareConstraints(before=(MiddlewareOne,))
+        constraints = MiddlewareConstraints(after=(MiddlewareOne,))
 
         async def handle(self, scope: Scope, receive: Receive, send: Send, next_app: ASGIApp) -> None:
             pass
@@ -41,5 +41,9 @@ def test_check_middleware_constraints() -> None:
     async def handler() -> None:
         pass
 
-    with pytest.raises(ConstraintViolationError, match="MiddlewareTwo.*before.*MiddlewareOne"):
+    with pytest.raises(
+        ConstraintViolationError,
+        match=r"All instances of .*MiddlewareTwo' must come after any instance of .*MiddlewareOne'. "
+        r"\(Found instance of .*MiddlewareTwo' at index 0, instance of .*MiddlewareOne' at index 1\)",
+    ):
         Litestar([handler], middleware=[MiddlewareTwo()])
