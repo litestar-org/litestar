@@ -9,7 +9,7 @@ from msgspec.msgpack import decode as _decode_msgpack_plain
 from litestar.datastructures.multi_dicts import FormMultiDict
 from litestar.enums import HttpMethod, MediaType, ScopeType
 from litestar.exceptions import ClientException, ImproperlyConfiguredException, SerializationException
-from litestar.handlers.http_handlers import HTTPRouteHandler
+from litestar.handlers.http_handlers.base import HTTPRouteHandler, _DefaultHTTPOptionsRouteHandler
 from litestar.response import Response
 from litestar.routes.base import BaseRoute
 from litestar.status_codes import HTTP_204_NO_CONTENT
@@ -48,6 +48,14 @@ class HTTPRoute(BaseRoute):
             options_handler = self.create_options_handler(path)
             options_handler.owner = route_handlers[0].owner
             route_handlers.append(options_handler)
+        else:
+            # Replace the default OPTIONS handler
+            for idx, handler in enumerate(route_handlers):
+                if isinstance(handler, _DefaultHTTPOptionsRouteHandler):
+                    new_options_handler = self.create_options_handler(path)
+                    new_options_handler.owner = handler.owner
+                    route_handlers[idx] = new_options_handler
+                    break
 
         self.route_handlers = route_handlers
         self.route_handler_map: dict[Method, tuple[HTTPRouteHandler, KwargsModel]] = {}
@@ -237,7 +245,7 @@ class HTTPRoute(BaseRoute):
                 media_type=MediaType.TEXT,
             )
 
-        return HTTPRouteHandler(
+        return _DefaultHTTPOptionsRouteHandler(
             path=path,
             http_method=[HttpMethod.OPTIONS],
             include_in_schema=False,

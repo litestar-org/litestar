@@ -634,3 +634,7 @@ class HTTPRouteHandler(BaseRouteHandler):
 
 
 route = HTTPRouteHandler
+
+
+class _DefaultHTTPOptionsRouteHandler(HTTPRouteHandler):
+    """Class used by the default OPTIONS handler."""
