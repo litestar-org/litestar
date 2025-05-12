@@ -1,6 +1,5 @@
-from collections.abc import Iterable
 from itertools import permutations
-from typing import TYPE_CHECKING, List, Mapping, Optional
+from typing import TYPE_CHECKING, Iterable, List, Mapping, Optional
 
 import pytest
 
