@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING, List, Mapping, Optional
 
 import pytest
 
-from litestar import get, route
+from litestar import get, patch, route
 from litestar.config.cors import CORSConfig
 from litestar.status_codes import HTTP_204_NO_CONTENT, HTTP_400_BAD_REQUEST
 from litestar.testing import create_test_client
@@ -26,6 +26,21 @@ def test_regular_options_request(http_methods: List["Method"]) -> None:
         response = client.options("/")
         assert response.status_code == HTTP_204_NO_CONTENT, response.text
         assert response.headers.get("Allow") == ", ".join(sorted({*http_methods, "OPTIONS"}))
+
+
+def test_multiple_method_handlers_on_same_path() -> None:
+    @get("/")
+    def get_handler() -> None:
+        return None
+
+    @patch("/")
+    def patch_handler() -> None:
+        return None
+
+    with create_test_client([get_handler, patch_handler], openapi_config=None) as client:
+        response = client.options("/")
+        assert response.status_code == HTTP_204_NO_CONTENT, response.text
+        assert response.headers.get("Allow") == ", ".join(sorted({"GET", "PATCH", "OPTIONS"}))
 
 
 def test_cors_options_request_without_origin_passes() -> None:
