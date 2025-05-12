@@ -1,9 +1,9 @@
 from itertools import permutations
-from typing import TYPE_CHECKING, List, Mapping, Optional
+from typing import TYPE_CHECKING, Iterable, List, Mapping, Optional
 
 import pytest
 
-from litestar import get, patch, route
+from litestar import get, route
 from litestar.config.cors import CORSConfig
 from litestar.status_codes import HTTP_204_NO_CONTENT, HTTP_400_BAD_REQUEST
 from litestar.testing import create_test_client
@@ -28,19 +28,24 @@ def test_regular_options_request(http_methods: List["Method"]) -> None:
         assert response.headers.get("Allow") == ", ".join(sorted({*http_methods, "OPTIONS"}))
 
 
-def test_multiple_method_handlers_on_same_path() -> None:
-    @get("/")
-    def get_handler() -> None:
-        return None
+@pytest.mark.parametrize(
+    "http_methods",
+    (permutations(["GET", "POST", "PATCH", "DELETE", "HEAD"], r=RANDOM.randrange(2, 6))),
+)
+def test_multiple_method_handlers_on_same_path(http_methods: Iterable["Method"]) -> None:
+    handlers = []
+    for http_method in http_methods:
 
-    @patch("/")
-    def patch_handler() -> None:
-        return None
+        @route("/", http_method=http_method)
+        def handler() -> None:
+            return None
 
-    with create_test_client([get_handler, patch_handler], openapi_config=None) as client:
+        handlers.append(handler)
+
+    with create_test_client(handlers, openapi_config=None) as client:
         response = client.options("/")
         assert response.status_code == HTTP_204_NO_CONTENT, response.text
-        assert response.headers.get("Allow") == ", ".join(sorted({"GET", "PATCH", "OPTIONS"}))
+        assert response.headers.get("Allow") == ", ".join(sorted({*http_methods, "OPTIONS"}))
 
 
 def test_cors_options_request_without_origin_passes() -> None:
