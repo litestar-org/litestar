@@ -244,7 +244,7 @@ def test_decode_json_raises_serialization_exception(model: ModelV1 | ModelV2, de
 def test_decode_json_typed(model: ModelV1 | ModelV2, prefer_alias: bool, model_type: type[ModelV1 | ModelV2]) -> None:
     dumped_model = _model_dump_json(model, by_alias=prefer_alias)
     decoded_model = decode_json(value=dumped_model, target_type=model_type, type_decoders=PydanticInitPlugin.decoders())
-    assert _model_dump_json(decoded_model, by_alias=prefer_alias) == dumped_model  # type: ignore[arg-type]
+    assert _model_dump_json(decoded_model, by_alias=prefer_alias) == dumped_model
 
 
 @pytest.mark.parametrize("prefer_alias", [False, True])
@@ -257,6 +257,6 @@ def test_decode_msgpack_typed(
             encode_msgpack(model, serializer=get_serializer(PydanticInitPlugin.encoders(prefer_alias=prefer_alias))),
             model_type,
             type_decoders=PydanticInitPlugin.decoders(),
-        ).json()  # type: ignore[attr-defined]
+        ).json()
         == model_json
     )

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import functools
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Mapping, Protocol, TypeVar, cast
+from typing import TYPE_CHECKING, Any, Protocol, TypeVar, cast
 
 from typing_extensions import ParamSpec
 
@@ -13,7 +13,6 @@ from litestar.template.base import (
     TemplateProtocol,
     csrf_token,
     url_for,
-    url_for_static_asset,
 )
 from litestar.utils.deprecation import warn_deprecation
 
@@ -24,6 +23,7 @@ except ImportError as e:
     raise MissingDependencyException("minijinja") from e
 
 if TYPE_CHECKING:
+    from collections.abc import Mapping
     from typing import Callable
 
     C = TypeVar("C", bound="Callable")
@@ -141,7 +141,6 @@ class MiniJinjaTemplateEngine(TemplateEngineProtocol["MiniJinjaTemplate", StateP
 
         self.register_template_callable("url_for", _transform_state(url_for))
         self.register_template_callable("csrf_token", _transform_state(csrf_token))
-        self.register_template_callable("url_for_static_asset", _transform_state(url_for_static_asset))
 
     def get_template(self, template_name: str) -> MiniJinjaTemplate:
         """Retrieve a template by matching its name (dotted path) with files in the directory or directories provided.
@@ -207,7 +206,7 @@ class MiniJinjaTemplateEngine(TemplateEngineProtocol["MiniJinjaTemplate", StateP
 @pass_state
 def _minijinja_from_state(func: Callable, state: StateProtocol, *args: Any, **kwargs: Any) -> str:  # pragma: no cover
     template_context = {"request": state.lookup("request"), "csrf_input": state.lookup("csrf_input")}
-    return cast(str, func(template_context, *args, **kwargs))
+    return cast("str", func(template_context, *args, **kwargs))
 
 
 def __getattr__(name: str) -> Any:

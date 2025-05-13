@@ -3,10 +3,11 @@ from __future__ import annotations
 import dataclasses
 import typing
 from abc import abstractmethod
+from collections.abc import Collection
 from inspect import getmodule
-from typing import TYPE_CHECKING, Callable, Collection, Generic, TypeVar
+from typing import TYPE_CHECKING, Callable, Generic, TypeVar, get_type_hints
 
-from typing_extensions import NotRequired, TypedDict, get_type_hints
+from typing_extensions import NotRequired, TypedDict
 
 from litestar.dto._backend import DTOBackend
 from litestar.dto._codegen_backend import DTOCodegenBackend
@@ -21,7 +22,8 @@ from litestar.typing import FieldDefinition
 from litestar.utils.signature import ParsedSignature
 
 if TYPE_CHECKING:
-    from typing import Any, ClassVar, Generator
+    from collections.abc import Collection, Generator
+    from typing import Any, ClassVar
 
     from typing_extensions import Self
 
