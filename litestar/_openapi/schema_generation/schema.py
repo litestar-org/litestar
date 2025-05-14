@@ -1,31 +1,18 @@
 from __future__ import annotations
 
-from collections import deque
+from collections import OrderedDict, defaultdict, deque
+from collections.abc import Hashable, Iterable, Mapping, MutableMapping, MutableSequence, Sequence
 from copy import copy
 from datetime import date, datetime, time, timedelta
 from decimal import Decimal
 from enum import Enum
 from ipaddress import IPv4Address, IPv4Interface, IPv4Network, IPv6Address, IPv6Interface, IPv6Network
 from pathlib import Path
+from re import Pattern
 from typing import (
     TYPE_CHECKING,
     Any,
-    DefaultDict,
-    Deque,
-    Dict,
-    FrozenSet,
-    Hashable,
-    Iterable,
-    List,
     Literal,
-    Mapping,
-    MutableMapping,
-    MutableSequence,
-    OrderedDict,
-    Pattern,
-    Sequence,
-    Set,
-    Tuple,
     Union,
     cast,
 )
@@ -66,7 +53,6 @@ from litestar.utils.typing import (
 if TYPE_CHECKING:
     from litestar._openapi.datastructures import OpenAPIContext
     from litestar.openapi.spec import Example, Reference
-    from litestar.plugins import OpenAPISchemaPluginProtocol
 
 KWARG_DEFINITION_ATTRIBUTE_TO_OPENAPI_PROPERTY_MAP: dict[str, str] = {
     "content_encoding": "content_encoding",
@@ -92,10 +78,10 @@ KWARG_DEFINITION_ATTRIBUTE_TO_OPENAPI_PROPERTY_MAP: dict[str, str] = {
 
 TYPE_MAP: dict[type[Any] | None | Any, Schema] = {
     Decimal: Schema(type=OpenAPIType.NUMBER),
-    DefaultDict: Schema(type=OpenAPIType.OBJECT),
-    Deque: Schema(type=OpenAPIType.ARRAY),
-    Dict: Schema(type=OpenAPIType.OBJECT),
-    FrozenSet: Schema(type=OpenAPIType.ARRAY),
+    defaultdict: Schema(type=OpenAPIType.OBJECT),
+    deque: Schema(type=OpenAPIType.ARRAY),
+    dict: Schema(type=OpenAPIType.OBJECT),
+    frozenset: Schema(type=OpenAPIType.ARRAY),
     IPv4Address: Schema(type=OpenAPIType.STRING, format=OpenAPIFormat.IPV4),
     IPv4Interface: Schema(type=OpenAPIType.STRING, format=OpenAPIFormat.IPV4),
     IPv4Network: Schema(type=OpenAPIType.STRING, format=OpenAPIFormat.IPV4),
@@ -103,7 +89,7 @@ TYPE_MAP: dict[type[Any] | None | Any, Schema] = {
     IPv6Interface: Schema(type=OpenAPIType.STRING, format=OpenAPIFormat.IPV6),
     IPv6Network: Schema(type=OpenAPIType.STRING, format=OpenAPIFormat.IPV6),
     Iterable: Schema(type=OpenAPIType.ARRAY),
-    List: Schema(type=OpenAPIType.ARRAY),
+    list: Schema(type=OpenAPIType.ARRAY),
     Mapping: Schema(type=OpenAPIType.OBJECT),
     MutableMapping: Schema(type=OpenAPIType.OBJECT),
     MutableSequence: Schema(type=OpenAPIType.ARRAY),
@@ -115,25 +101,19 @@ TYPE_MAP: dict[type[Any] | None | Any, Schema] = {
     SecretBytes: Schema(type=OpenAPIType.STRING),
     SecretString: Schema(type=OpenAPIType.STRING),
     Sequence: Schema(type=OpenAPIType.ARRAY),
-    Set: Schema(type=OpenAPIType.ARRAY),
-    Tuple: Schema(type=OpenAPIType.ARRAY),
+    set: Schema(type=OpenAPIType.ARRAY),
+    tuple: Schema(type=OpenAPIType.ARRAY),
     UUID: Schema(type=OpenAPIType.STRING, format=OpenAPIFormat.UUID),
     bool: Schema(type=OpenAPIType.BOOLEAN),
     bytearray: Schema(type=OpenAPIType.STRING),
     bytes: Schema(type=OpenAPIType.STRING),
     date: Schema(type=OpenAPIType.STRING, format=OpenAPIFormat.DATE),
     datetime: Schema(type=OpenAPIType.STRING, format=OpenAPIFormat.DATE_TIME),
-    deque: Schema(type=OpenAPIType.ARRAY),
-    dict: Schema(type=OpenAPIType.OBJECT),
     float: Schema(type=OpenAPIType.NUMBER),
-    frozenset: Schema(type=OpenAPIType.ARRAY),
     int: Schema(type=OpenAPIType.INTEGER),
-    list: Schema(type=OpenAPIType.ARRAY),
-    set: Schema(type=OpenAPIType.ARRAY),
     str: Schema(type=OpenAPIType.STRING),
     time: Schema(type=OpenAPIType.STRING, format=OpenAPIFormat.DURATION),
     timedelta: Schema(type=OpenAPIType.STRING, format=OpenAPIFormat.DURATION),
-    tuple: Schema(type=OpenAPIType.ARRAY),
 }
 
 
@@ -235,7 +215,7 @@ class SchemaCreator:
     def __init__(
         self,
         generate_examples: bool = False,
-        plugins: Iterable[OpenAPISchemaPluginProtocol] | None = None,
+        plugins: Iterable[OpenAPISchemaPlugin] | None = None,
         prefer_alias: bool = True,
         schema_registry: SchemaRegistry | None = None,
     ) -> None:
@@ -267,12 +247,12 @@ class SchemaCreator:
         return type(self)(generate_examples=False, plugins=self.plugins, prefer_alias=False)
 
     @staticmethod
-    def plugin_supports_field(plugin: OpenAPISchemaPluginProtocol, field: FieldDefinition) -> bool:
+    def plugin_supports_field(plugin: OpenAPISchemaPlugin, field: FieldDefinition) -> bool:
         if predicate := getattr(plugin, "is_plugin_supported_field", None):
             return predicate(field)  # type: ignore[no-any-return]
         return plugin.is_plugin_supported_type(field.annotation)
 
-    def get_plugin_for(self, field_definition: FieldDefinition) -> OpenAPISchemaPluginProtocol | None:
+    def get_plugin_for(self, field_definition: FieldDefinition) -> OpenAPISchemaPlugin | None:
         return next(
             (plugin for plugin in self.plugins if self.plugin_supports_field(plugin, field_definition)),
             None,
@@ -492,7 +472,7 @@ class SchemaCreator:
             f"`{field_definition.name}: ... = Dependency(...)`."
         )
 
-    def for_plugin(self, field_definition: FieldDefinition, plugin: OpenAPISchemaPluginProtocol) -> Schema | Reference:
+    def for_plugin(self, field_definition: FieldDefinition, plugin: OpenAPISchemaPlugin) -> Schema | Reference:
         """Create a schema using a plugin.
 
         Args:
@@ -528,7 +508,7 @@ class SchemaCreator:
         Returns:
             A schema instance.
         """
-        kwarg_definition = cast(Union[ParameterKwarg, BodyKwarg], field.kwarg_definition)
+        kwarg_definition = cast("Union[ParameterKwarg, BodyKwarg]", field.kwarg_definition)
         if any(is_class_and_subclass(field.annotation, t) for t in (int, float, Decimal)):
             return create_numerical_constrained_field_schema(field.annotation, kwarg_definition)
         if any(is_class_and_subclass(field.annotation, t) for t in (str, bytes)):
@@ -547,7 +527,7 @@ class SchemaCreator:
             A schema instance.
         """
         schema = Schema(type=OpenAPIType.ARRAY)
-        kwarg_definition = cast(Union[ParameterKwarg, BodyKwarg], field_definition.kwarg_definition)
+        kwarg_definition = cast("Union[ParameterKwarg, BodyKwarg]", field_definition.kwarg_definition)
         if kwarg_definition.min_items:
             schema.min_items = kwarg_definition.min_items
         if kwarg_definition.max_items:

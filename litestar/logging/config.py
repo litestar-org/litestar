@@ -244,7 +244,7 @@ class LoggingConfig(BaseLoggingConfig):
     """
     configure_root_logger: bool = field(default=True)
     """Should the root logger be configured, defaults to True for ease of configuration."""
-    log_exceptions: Literal["always", "debug", "never"] = field(default="debug")
+    log_exceptions: Literal["always", "debug", "never"] = field(default="always")
     """Should exceptions be logged, defaults to log exceptions when 'app.debug == True'"""
     disable_stack_trace: set[Union[int, type[Exception]]] = field(default_factory=set)  # noqa: UP007
     """Set of http status codes and exceptions to disable stack trace logging for."""
@@ -479,7 +479,7 @@ class StructLoggingConfig(BaseLoggingConfig):
     """Logger factory to use."""
     cache_logger_on_first_use: bool = field(default=True)
     """Whether to cache the logger configuration and reuse."""
-    log_exceptions: Literal["always", "debug", "never"] = field(default="debug")
+    log_exceptions: Literal["always", "debug", "never"] = field(default="always")
     """Should exceptions be logged, defaults to log exceptions when 'app.debug == True'"""
     disable_stack_trace: set[Union[int, type[Exception]]] = field(default_factory=set)  # noqa: UP007
     """Set of http status codes and exceptions to disable stack trace logging for."""
