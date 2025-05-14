@@ -66,7 +66,11 @@ class HTTPException(LitestarException):
             detail: Exception details or message. Will default to args[0] if not provided.
             status_code: Exception HTTP status code.
             headers: Headers to set on the response.
+                Defaults to the class's ``headers`` if not provided.
+                Set to ``None`` explicitly to unset the default.
             extra: An extra mapping to attach to the exception.
+                Defaults to the class's ``extra`` if not provided.
+                Set to ``None`` explicitly to unset the default.
         """
         super().__init__(*args, detail=detail)
         self.status_code = status_code or self.status_code
