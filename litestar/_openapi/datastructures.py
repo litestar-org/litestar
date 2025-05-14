@@ -136,8 +136,7 @@ class SchemaRegistry:
         key = _get_normalized_schema_key(field)
         if key not in self._schema_key_map:
             return None
-
-        if (existing_type := self._component_type_map[key]) != field:
+        if (existing_type := self._component_type_map[key]) != field and f"{field.raw!r}" != f"{existing_type.raw!r}":
             # TODO: This should check for strict equality, e.g. changes in type metadata
             # However, this is currently not possible to do without breaking things, as
             # we allow to define metadata on a type annotation in one place to be used
