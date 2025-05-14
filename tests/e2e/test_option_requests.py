@@ -1,10 +1,10 @@
-from collections.abc import Mapping
+from collections.abc import Iterable, Mapping
 from itertools import permutations
 from typing import TYPE_CHECKING, Optional
 
 import pytest
 
-from litestar import get, route
+from litestar import Controller, get, patch, route
 from litestar.config.cors import CORSConfig
 from litestar.status_codes import HTTP_204_NO_CONTENT, HTTP_400_BAD_REQUEST
 from litestar.testing import create_test_client
@@ -27,6 +27,80 @@ def test_regular_options_request(http_methods: list["Method"]) -> None:
         response = client.options("/")
         assert response.status_code == HTTP_204_NO_CONTENT, response.text
         assert response.headers.get("Allow") == ", ".join(sorted({*http_methods, "OPTIONS"}))
+
+
+@pytest.mark.parametrize(
+    "http_methods",
+    (permutations(["GET", "POST", "PATCH", "DELETE", "HEAD"], r=RANDOM.randrange(2, 6))),
+)
+def test_multiple_method_handlers_on_same_path(http_methods: Iterable["Method"]) -> None:
+    handlers = []
+    for http_method in http_methods:
+
+        @route("/", http_method=http_method)
+        def handler() -> None:
+            return None
+
+        handlers.append(handler)
+
+    with create_test_client(handlers, openapi_config=None) as client:
+        response = client.options("/")
+        assert response.status_code == HTTP_204_NO_CONTENT, response.text
+        assert response.headers.get("Allow") == ", ".join(sorted({*http_methods, "OPTIONS"}))
+
+
+def test_single_method_handler_sanity() -> None:
+    @get("/")
+    async def get_handler() -> None:
+        return None
+
+    with create_test_client([get_handler], openapi_config=None) as client:
+        response = client.options("/")
+        assert response.status_code == HTTP_204_NO_CONTENT, response.text
+        assert response.headers.get("Allow") == ", ".join(("GET", "OPTIONS"))
+
+
+def test_multiple_method_handlers_on_same_path_sanity() -> None:
+    @get("/")
+    async def get_handler() -> None:
+        return None
+
+    @patch("/")
+    async def patch_handler() -> None:
+        return None
+
+    with create_test_client([get_handler, patch_handler], openapi_config=None) as client:
+        response = client.options("/")
+        assert response.status_code == HTTP_204_NO_CONTENT, response.text
+        assert response.headers.get("Allow") == ", ".join(("GET", "OPTIONS", "PATCH"))
+
+
+def test_single_method_handlers_with_controller() -> None:
+    class MyController(Controller):
+        @get("/")
+        async def get_handler(self) -> None:
+            return None
+
+    with create_test_client(MyController, openapi_config=None) as client:
+        response = client.options("/")
+        assert response.status_code == HTTP_204_NO_CONTENT, response.text
+        assert response.headers.get("Allow") == ", ".join(("GET", "OPTIONS"))
+
+
+def test_multiple_method_handlers_on_same_path_with_controller() -> None:
+    class MyController(Controller):
+        @get("/")
+        async def get_handler(self) -> None:
+            return None
+
+        @patch("/")
+        async def patch_handler(self) -> None:
+            return None
+
+    with create_test_client(MyController, openapi_config=None) as client:
+        response = client.options("/")
+        assert response.status_code == HTTP_204_NO_CONTENT, response.text
+        assert response.headers.get("Allow") == ", ".join(("GET", "OPTIONS", "PATCH"))
 
 
 def test_cors_options_request_without_origin_passes() -> None:
