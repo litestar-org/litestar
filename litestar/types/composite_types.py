@@ -12,6 +12,7 @@ __all__ = (
     "Dependencies",
     "ExceptionHandlersMap",
     "Middleware",
+    "MiddlewareFactory",
     "ParametersMap",
     "PathType",
     "ResponseCookies",
@@ -40,6 +41,7 @@ if TYPE_CHECKING:
 Dependencies: TypeAlias = "Mapping[str, Union[Provide, AnyCallable]]"
 ExceptionHandlersMap: TypeAlias = "MutableMapping[Union[int, type[Exception]], ExceptionHandler]"
 Middleware: TypeAlias = Callable[..., "ASGIApp"]
+MiddlewareFactory: TypeAlias = Callable[..., Middleware]
 ParametersMap: TypeAlias = "Mapping[str, ParameterKwarg]"
 PathType: TypeAlias = "Union[Path, PathLike, str]"
 ResponseCookies: TypeAlias = "Union[Sequence[Cookie], Mapping[str, str]]"

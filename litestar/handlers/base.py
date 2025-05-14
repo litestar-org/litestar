@@ -8,6 +8,7 @@ from litestar._signature import SignatureModel
 from litestar.di import Provide
 from litestar.dto import DTOData
 from litestar.exceptions import ImproperlyConfiguredException, LitestarException
+from litestar.middleware.constraints import check_middleware_constraints
 from litestar.serialization import default_deserializer, default_serializer
 from litestar.types import (
     Dependencies,
@@ -213,15 +214,6 @@ class BaseRouteHandler:
 
         merge_opts["dto"] = value_or_default(self._dto, merge_opts.get("dto", Empty))
         merge_opts["return_dto"] = value_or_default(self._return_dto, merge_opts.get("return_dto", Empty))
-
-        # due to the way we're traversing over the app layers, the middleware stack is
-        # constructed in the wrong order (handler > application). reversing the order
-        # here is easier than handling it correctly at every intermediary step.
-        #
-        # we only call this if 'others' is non-empty, to ensure we don't change anything
-        # if no layers have been merged (happens in '._with_changes' for example)
-        if others:
-            merge_opts["middleware"] = tuple(reversed(merge_opts["middleware"]))
 
         return merge_opts
 
@@ -519,6 +511,8 @@ class BaseRouteHandler:
 
         self._validate_handler_function()
         self._finalize_dependencies(app=app)
+
+        check_middleware_constraints(self.middleware)
 
     def _validate_handler_function(self) -> None:
         """Validate the route handler function once set by inspecting its return annotations."""
