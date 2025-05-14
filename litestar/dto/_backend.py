@@ -4,16 +4,15 @@ back again, to bytes.
 
 from __future__ import annotations
 
+from collections.abc import Collection, Mapping, Set
 from dataclasses import replace
 from typing import (
     TYPE_CHECKING,
-    AbstractSet,
+    Annotated,
     Any,
     Callable,
     ClassVar,
-    Collection,
     Final,
-    Mapping,
     Protocol,
     Union,
     cast,
@@ -21,7 +20,6 @@ from typing import (
 
 import msgspec
 from msgspec import UNSET, Struct, UnsetType, convert, defstruct, field
-from typing_extensions import Annotated
 
 from litestar.dto._types import (
     CollectionType,
@@ -55,8 +53,8 @@ class CompositeTypeHandler(Protocol):
     def __call__(
         self,
         field_definition: FieldDefinition,
-        exclude: AbstractSet[str],
-        include: AbstractSet[str],
+        exclude: Set[str],
+        include: Set[str],
         rename_fields: dict[str, str],
         unique_name: str,
         nested_depth: int,
@@ -129,8 +127,8 @@ class DTOBackend:
     def parse_model(
         self,
         model_type: Any,
-        exclude: AbstractSet[str],
-        include: AbstractSet[str],
+        exclude: Set[str],
+        include: Set[str],
         rename_fields: dict[str, str],
         nested_depth: int = 0,
     ) -> tuple[TransferDTOFieldDefinition, ...]:
@@ -236,7 +234,7 @@ class DTOBackend:
         if (content_type := getattr(asgi_connection, "content_type", None)) and (media_type := content_type[0]):
             request_encoding = media_type
 
-        type_decoders = asgi_connection.route_handler.resolve_type_decoders()
+        type_decoders = asgi_connection.route_handler.type_decoders
 
         if request_encoding == RequestEncodingType.MESSAGEPACK:
             result = decode_msgpack(value=raw, target_type=self.annotation, type_decoders=type_decoders, strict=False)
@@ -392,8 +390,8 @@ class DTOBackend:
     def _create_transfer_type(
         self,
         field_definition: FieldDefinition,
-        exclude: AbstractSet[str],
-        include: AbstractSet[str],
+        exclude: Set[str],
+        include: Set[str],
         rename_fields: dict[str, str],
         field_name: str,
         unique_name: str,
@@ -439,8 +437,8 @@ class DTOBackend:
     def _create_collection_type(
         self,
         field_definition: FieldDefinition,
-        exclude: AbstractSet[str],
-        include: AbstractSet[str],
+        exclude: Set[str],
+        include: Set[str],
         rename_fields: dict[str, str],
         unique_name: str,
         nested_depth: int,
@@ -462,8 +460,8 @@ class DTOBackend:
     def _create_mapping_type(
         self,
         field_definition: FieldDefinition,
-        exclude: AbstractSet[str],
-        include: AbstractSet[str],
+        exclude: Set[str],
+        include: Set[str],
         rename_fields: dict[str, str],
         unique_name: str,
         nested_depth: int,
@@ -497,8 +495,8 @@ class DTOBackend:
     def _create_tuple_type(
         self,
         field_definition: FieldDefinition,
-        exclude: AbstractSet[str],
-        include: AbstractSet[str],
+        exclude: Set[str],
+        include: Set[str],
         rename_fields: dict[str, str],
         unique_name: str,
         nested_depth: int,
@@ -524,8 +522,8 @@ class DTOBackend:
     def _create_union_type(
         self,
         field_definition: FieldDefinition,
-        exclude: AbstractSet[str],
-        include: AbstractSet[str],
+        exclude: Set[str],
+        include: Set[str],
         rename_fields: dict[str, str],
         unique_name: str,
         nested_depth: int,
@@ -556,7 +554,7 @@ def _camelize(value: str, capitalize_first_letter: bool) -> str:
     )
 
 
-def _filter_nested_field(field_name_set: AbstractSet[str], field_name: str) -> AbstractSet[str]:
+def _filter_nested_field(field_name_set: Set[str], field_name: str) -> Set[str]:
     """Filter a nested field name."""
     return {split[1] for s in field_name_set if (split := s.split(".", 1))[0] == field_name and len(split) > 1}
 
@@ -896,7 +894,7 @@ def _should_mark_private(field_definition: DTOFieldDefinition, underscore_fields
 
 
 def _should_exclude_field(
-    field_definition: DTOFieldDefinition, exclude: AbstractSet[str], include: AbstractSet[str], is_data_field: bool
+    field_definition: DTOFieldDefinition, exclude: Set[str], include: Set[str], is_data_field: bool
 ) -> bool:
     """Returns ``True`` where a field should be excluded from data transfer.
 

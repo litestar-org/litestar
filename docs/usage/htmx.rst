@@ -8,10 +8,13 @@ HTMX is a JavaScript library that gives you access to AJAX, CSS Transitions, Web
 This section assumes that you have prior knowledge of HTMX.
 If you want to learn HTMX, we recommend consulting their `official tutorial <https://htmx.org/docs>`_.
 
+
 HTMXPlugin
 ------------
 
 a Litestar plugin ``HTMXPlugin`` is available to easily configure the default request class for all Litestar routes.
+
+It can be installed via the ``litestar[htmx]`` package extra.
 
 .. code-block:: python
 

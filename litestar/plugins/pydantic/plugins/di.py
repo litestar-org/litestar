@@ -22,5 +22,5 @@ class PydanticDIPlugin(DIPlugin):
             inspect.Parameter(name=field_name, kind=inspect.Parameter.KEYWORD_ONLY, annotation=Any)
             for field_name in model_fields
         ]
-        type_hints = {field_name: Any for field_name in model_fields}
+        type_hints = dict.fromkeys(model_fields, Any)
         return Signature(parameters), type_hints
