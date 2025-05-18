@@ -169,7 +169,7 @@ class ASGIStreamingSSEResponse(ASGIStreamingResponse):
         status_code: int | None = None,
         ping_interval: float = 0,
     ) -> None:
-        """A low-level ASGI streaming response.
+        """A SSE ASGI streaming response.
 
         Args:
             background: A background task or a list of background tasks to be executed after the response is sent.
