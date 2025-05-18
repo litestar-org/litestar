@@ -332,3 +332,15 @@ parameter.
 .. attention::
     This has been intentionally made a breaking change because the new parameter has
     slightly different behaviour and defaults to ``False`` instead of ``True``.
+
+
+Middleware configuration constraints
+-------------------------------------
+
+:class:`~litestar.middleware.ASGIMiddleware`\ s can now express constraints for how
+they are applied in the middleware stack, which are then validated on application
+startup.
+
+.. seealso::
+
+    :ref:`usage/middleware/creating-middleware:configuration-constraints

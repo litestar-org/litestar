@@ -214,6 +214,34 @@ def build_route_middleware_stack(
         if app.allowed_hosts:
             asgi_handler = AllowedHostsMiddleware(app=asgi_handler, config=app.allowed_hosts)
 
-        for middleware in handler_middleware:
+        # due to the way we're traversing over the app layers, the middleware stack is
+        # constructed in 'application > handler' order, which is the order we want the
+        # middleware to be called in.
+        #
+        # using this order however, since each middleware wraps the next callable, the
+        # *first* middleware in the stack would up being the *innermost* wrapper, i.e.
+        # the last one to receive the request and the first one to see the response.
+        #
+        # to achieve the intended call order, we perform the wrapping in reverse
+        # ('handler -> application').
+        #
+        # example:
+        #   given: an 'application' with 'middleware_1', a 'handler' with 'middleware_2'
+        #   resolved stack: [middleware_1, middleware_2]
+        #   desired call chain: middleware_1 -> middleware_2 -> handler
+        #   wrapping structure:
+        #
+        #     request -->
+        #       +--------------------+
+        #       | middleware_1       |  <-- outermost
+        #       |   +--------------+ |
+        #       |   | middleware_2 | |
+        #       |   |   +--------+ | |
+        #       |   |   | handler| | |
+        #       |   |   +--------+ | |
+        #       |   +--------------+ |
+        #       +--------------------+
+        #                          --> response
+        for middleware in reversed(handler_middleware):
             asgi_handler = middleware(asgi_handler)
     return asgi_handler
