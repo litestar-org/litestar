@@ -87,21 +87,25 @@ class MiddlewareConstraints:
     before: tuple["MiddlewareForwardRef | Middleware | MiddlewareFactory", ...] = ()
     """
     Tuple of middlewares that, if present, need to appear *before* the middleware this
-    constraint is applied to
+    constraint is applied to (i.e. closer to the application)
     """
     after: tuple["MiddlewareForwardRef | Middleware | MiddlewareFactory", ...] = ()
     """
     Tuple of middlewares that, if present, need to appear *after* the middleware this
-    constraint is applied to
+    constraint is applied to (i.e. closer to the handler)
     """
     first: Optional[bool] = None
     """
-    If ``True``, require the middleware to be the first.
+    If ``True``, require the middleware to be the first (i.e. the first middleware 
+    on the application).
+    
     Mutually exclusive with ``last=True``. Implicitly sets ``unique=True``
     """
     last: Optional[bool] = None
     """
-    If ``True``, require the middleware to be the last.
+    If ``True``, require the middleware to be the last (i.e. the last middleware on 
+    the handler).
+    
     Mutually exclusive with ``first=True``. Implicitly sets ``unique=True``
     """
     unique: Optional[bool] = None

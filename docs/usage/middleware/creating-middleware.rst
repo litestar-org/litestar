@@ -98,6 +98,40 @@ This forward reference will try to import ``SomeMiddleware`` from
 ``some_package.some_module``. With ``ignore_import_error=True``, if the import is not
 successful, the constraint will be ignored.
 
+
+Middleware order
+~~~~~~~~~~~~~~~~
+
+For order constraints (``before``, ``after``, ``first``, ``last``), it is important to
+note that the order is defined in terms of proximity to the location. In practice, this
+means that a middleware that has set ``first=True`` must be the *first* middleware on
+the *first* layer (i.e. the application), and a middleware setting ``last=True`` must
+be the *last* middleware on the *last* layer (i.e. the route handler).
+
+.. code-block:: python
+
+    @get("/", middleware=[FifthMiddleware, SixthMiddleware])
+    async def handler() -> None:
+        pass
+
+    router = Router(
+        "/",
+        [handler],
+        middleware=[
+            ThirdMiddleware(),
+            FourthMiddleware()
+        ]
+    )
+
+    app = Litestar(
+        middleware=[
+            FirstMiddleware(),
+            SecondMiddleware()
+        ]
+    )
+
+
+
 Migrating from ``MiddlewareProtocol`` / ``AbstractMiddleware``
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
