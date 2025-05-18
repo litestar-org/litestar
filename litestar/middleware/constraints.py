@@ -96,16 +96,16 @@ class MiddlewareConstraints:
     """
     first: bool = False
     """
-    If ``True``, require the middleware to be the first (i.e. the first middleware 
+    If ``True``, require the middleware to be the first (i.e. the first middleware
     on the application).
-    
+
     Mutually exclusive with ``last=True``. Implicitly sets ``unique=True``
     """
     last: bool = False
     """
-    If ``True``, require the middleware to be the last (i.e. the last middleware on 
+    If ``True``, require the middleware to be the last (i.e. the last middleware on
     the handler).
-    
+
     Mutually exclusive with ``first=True``. Implicitly sets ``unique=True``
     """
     unique: Optional[bool] = None

@@ -476,3 +476,13 @@ def test_apply_first() -> None:
 def test_apply_last() -> None:
     constraints = MiddlewareConstraints().apply_last()
     assert constraints == MiddlewareConstraints(last=True, first=False, unique=True)
+
+
+def test_apply_before() -> None:
+    constraints = MiddlewareConstraints().apply_before(MiddlewareOne)
+    assert constraints == MiddlewareConstraints(before=(MiddlewareOne,))
+
+
+def test_apply_after() -> None:
+    constraints = MiddlewareConstraints().apply_after(MiddlewareOne)
+    assert constraints == MiddlewareConstraints(after=(MiddlewareOne,))
