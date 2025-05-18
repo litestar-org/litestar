@@ -81,14 +81,16 @@ class MiddlewareConstraints:
                 raise MiddlewareConstraintError("Cannot set 'first=True' if 'last=True'")
             if self.unique is False:
                 raise MiddlewareConstraintError("Cannot set 'first=True' if 'unique=False'")
+            if self.after:
+                raise MiddlewareConstraintError("Cannot set 'first=True' if if 'after' is not empty")
 
         if self.last:
-            if self.first:
-                raise MiddlewareConstraintError("Cannot set 'last=True' if 'first=True'")
             if self.unique is False:
                 raise MiddlewareConstraintError("Cannot set 'last=True' if 'unique=False'")
+            if self.before:
+                raise MiddlewareConstraintError("Cannot set 'last=True' if 'before' is not empty")
 
-    def is_unique(self, unique: bool) -> MiddlewareConstraints:
+    def require_unique(self, unique: bool) -> MiddlewareConstraints:
         return dataclasses.replace(self, unique=unique)
 
     def apply_first(self) -> MiddlewareConstraints:
@@ -112,10 +114,6 @@ class MiddlewareConstraints:
             other = MiddlewareForwardRef(target=other, ignore_not_found=ignore_not_found)
 
         return dataclasses.replace(self, after=(*self.after, other))
-
-    @property
-    def is_empty(self) -> bool:
-        return not (self.before or self.after)
 
     @staticmethod
     def _resolve_middleware(

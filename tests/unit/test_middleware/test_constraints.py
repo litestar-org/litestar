@@ -6,6 +6,7 @@ from litestar.middleware.base import ASGIMiddleware
 from litestar.middleware.constraints import (
     ConstraintViolationError,
     CycleError,
+    MiddlewareConstraintError,
     MiddlewareConstraints,
     check_middleware_constraints,
 )
@@ -69,6 +70,31 @@ def test_order_before() -> None:
         check_middleware_constraints(middlewares)
 
 
+def test_order_before_referenced_not_used() -> None:
+    one = MiddlewareOne()
+    two = MiddlewareTwo()
+
+    two.constraints = MiddlewareConstraints(before=(MiddlewareThree,))
+
+    check_middleware_constraints((one, two))
+
+
+def test_order_befor_ok() -> None:
+    one = MiddlewareOne()
+    two = MiddlewareTwo()
+    three = MiddlewareThree()
+
+    two.constraints = MiddlewareConstraints(before=(MiddlewareOne,))
+
+    middlewares = (
+        two,
+        one,
+        three,
+    )
+
+    check_middleware_constraints(middlewares)
+
+
 def test_order_after() -> None:
     one = MiddlewareOne()
     two = MiddlewareTwo()
@@ -80,6 +106,31 @@ def test_order_after() -> None:
 
     with pytest.raises(ConstraintViolationError, match="MiddlewareTwo.*after.*MiddlewareOne"):
         check_middleware_constraints(middlewares)
+
+
+def test_order_after_referenced_not_used() -> None:
+    one = MiddlewareOne()
+    two = MiddlewareTwo()
+
+    two.constraints = MiddlewareConstraints(after=(MiddlewareThree,))
+
+    check_middleware_constraints((one, two))
+
+
+def test_order_after_ok() -> None:
+    one = MiddlewareOne()
+    two = MiddlewareTwo()
+    three = MiddlewareThree()
+
+    two.constraints = MiddlewareConstraints(after=(MiddlewareOne,))
+
+    middlewares = (
+        one,
+        two,
+        three,
+    )
+
+    check_middleware_constraints(middlewares)
 
 
 def test_order_string_ref() -> None:
@@ -282,6 +333,18 @@ def test_first_ok() -> None:
     check_middleware_constraints((one, two))
 
 
+def test_multiple_first() -> None:
+    one = MiddlewareOne()
+    two = MiddlewareTwo()
+    one.constraints = MiddlewareConstraints(first=True)
+    two.constraints = MiddlewareConstraints(first=True)
+
+    with pytest.raises(
+        MiddlewareConstraintError, match="Multiple middlewares define 'first=True':.*MiddlewareOne, .*MiddlewareTwo"
+    ):
+        check_middleware_constraints((one, two))
+
+
 def test_last() -> None:
     one = MiddlewareOne()
     two = MiddlewareTwo()
@@ -312,6 +375,18 @@ def test_last_ok() -> None:
     one.constraints = MiddlewareConstraints(last=True)
 
     check_middleware_constraints((two, one))
+
+
+def test_multiple_last() -> None:
+    one = MiddlewareOne()
+    two = MiddlewareTwo()
+    one.constraints = MiddlewareConstraints(last=True)
+    two.constraints = MiddlewareConstraints(last=True)
+
+    with pytest.raises(
+        MiddlewareConstraintError, match="Multiple middlewares define 'last=True':.*MiddlewareOne, .*MiddlewareTwo"
+    ):
+        check_middleware_constraints((one, two))
 
 
 def test_unique() -> None:
@@ -363,3 +438,33 @@ def test_unique_ok() -> None:
     one.constraints = MiddlewareConstraints(unique=False)
 
     check_middleware_constraints((one, two))
+
+
+@pytest.mark.parametrize(
+    "options,expected_exception",
+    [
+        ({"first": True, "last": True}, "Cannot set 'first=True' if 'last=True'"),
+        ({"first": True, "unique": False}, "Cannot set 'first=True' if 'unique=False'"),
+        ({"first": True, "after": ("something",)}, "Cannot set 'first=True' if if 'after' is not empty"),
+        ({"last": True, "unique": False}, "Cannot set 'last=True' if 'unique=False'"),
+        ({"last": True, "before": ("something",)}, "Cannot set 'last=True' if 'before' is not empty"),
+    ],
+)
+def test_mutually_exclusive_options(options: dict[str, bool], expected_exception: str) -> None:
+    with pytest.raises(MiddlewareConstraintError, match=expected_exception):
+        MiddlewareConstraints(**options)  # type: ignore[arg-type]
+
+
+def test_require_unique() -> None:
+    assert MiddlewareConstraints(unique=False).require_unique(True).unique is True
+    assert MiddlewareConstraints(unique=True).require_unique(False).unique is False
+
+
+def test_apply_first() -> None:
+    constraints = MiddlewareConstraints().apply_first()
+    assert constraints == MiddlewareConstraints(first=True, last=False, unique=True)
+
+
+def test_apply_last() -> None:
+    constraints = MiddlewareConstraints().apply_last()
+    assert constraints == MiddlewareConstraints(last=True, first=False, unique=True)
