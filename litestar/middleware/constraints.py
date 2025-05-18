@@ -94,14 +94,14 @@ class MiddlewareConstraints:
     Tuple of middlewares that, if present, need to appear *after* the middleware this
     constraint is applied to (i.e. closer to the handler)
     """
-    first: Optional[bool] = None
+    first: bool = False
     """
     If ``True``, require the middleware to be the first (i.e. the first middleware 
     on the application).
     
     Mutually exclusive with ``last=True``. Implicitly sets ``unique=True``
     """
-    last: Optional[bool] = None
+    last: bool = False
     """
     If ``True``, require the middleware to be the last (i.e. the last middleware on 
     the handler).
@@ -195,8 +195,8 @@ class MiddlewareConstraints:
         return _ResolvedMiddlewareConstraints(
             before=self._resolve_middleware(self.before),
             after=self._resolve_middleware(self.after),
-            first=False if self.first is None else self.first,
-            last=False if self.last is None else self.last,
+            first=self.first,
+            last=self.last,
             unique=False if self.unique is None else self.unique,
         )
 
