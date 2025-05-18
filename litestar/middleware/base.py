@@ -18,8 +18,8 @@ __all__ = (
     "MiddlewareProtocol",
 )
 
-
 if TYPE_CHECKING:
+    from litestar.middleware.constraints import MiddlewareConstraints
     from litestar.types import Scopes
     from litestar.types.asgi_types import ASGIApp, Receive, Scope, Send
 
@@ -170,9 +170,10 @@ class AbstractMiddleware:
 
 
 class ASGIMiddleware(abc.ABC):
-    """An abstract base class to easily construct ASGI middlewares, providing functionality
-    to dynamically skip the middleware based on ASGI ``scope["type"]``, handler ``opt``
-    keys or path patterns and a simple way to pass configuration to middlewares.
+    """An abstract base class to easily construct ASGI middlewares, providing
+    functionality to dynamically skip the middleware based on ASGI ``scope["type"]``,
+    handler ``opt`` keys or path patterns and a simple way to pass configuration to
+    middlewares.
 
     This base class does not implement an ``__init__`` method, so subclasses are free
     to use it to customize the middleware's configuration.
@@ -216,6 +217,7 @@ class ASGIMiddleware(abc.ABC):
     )
     exclude_path_pattern: str | tuple[str, ...] | None = None
     exclude_opt_key: str | None = None
+    constraints: MiddlewareConstraints | None = None
 
     def __call__(self, app: ASGIApp) -> ASGIApp:
         """Create the actual middleware callable"""
