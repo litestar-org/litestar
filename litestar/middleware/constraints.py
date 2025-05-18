@@ -2,7 +2,7 @@ import collections
 import dataclasses
 import functools
 import inspect
-from typing import TYPE_CHECKING, Any, Literal, Union, cast, Optional
+from typing import TYPE_CHECKING, Any, Literal, Optional, Union, cast
 
 from typing_extensions import Self
 

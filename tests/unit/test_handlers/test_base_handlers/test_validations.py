@@ -43,7 +43,7 @@ def test_check_middleware_constraints() -> None:
 
     with pytest.raises(
         ConstraintViolationError,
-        match=r"All instances of .*MiddlewareTwo' must come after any instance of .*MiddlewareOne'. "
-        r"\(Found instance of .*MiddlewareTwo' at index 0, instance of .*MiddlewareOne' at index 1\)",
+        match="All instances of .*MiddlewareTwo' must come after any instance of .*MiddlewareOne'. "
+        "Found instance of .*MiddlewareTwo' at index 0, instance of .*MiddlewareOne' at index 1",
     ):
         Litestar([handler], middleware=[MiddlewareTwo()])

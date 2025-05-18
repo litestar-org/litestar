@@ -79,7 +79,7 @@ def test_order_before_referenced_not_used() -> None:
     check_middleware_constraints((one, two))
 
 
-def test_order_befor_ok() -> None:
+def test_order_before_ok() -> None:
     one = MiddlewareOne()
     two = MiddlewareTwo()
     three = MiddlewareThree()
