@@ -5,16 +5,16 @@ from tests.unit.test_cli.conftest import CreateAppFileFixture
 
 APPLICATION_WITH_CLI_PLUGIN = """
 from litestar import Litestar
-from litestar.plugins import CLIPluginProtocol
+from litestar.plugins import CLIPlugin
 
-class CLIPlugin(CLIPluginProtocol):
+class MyCLIPlugin(CLIPlugin):
     def on_cli_init(self, cli):
         @cli.command()
         def mycommand(app: Litestar):
             \"\"\"Description of plugin command\"\"\"
             print(f"App is loaded: {app is not None}")
 
-app = Litestar(plugins=[CLIPlugin()])
+app = Litestar(plugins=[MyCLIPlugin()])
 """
 
 
