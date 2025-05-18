@@ -42,13 +42,13 @@ def middleware_factory(app: ASGIApp) -> ASGIApp:
     return wrapped_app
 
 
-def test_constraint_ignore_not_found() -> None:
+def test_constraint_ignore_import_error() -> None:
     constraints = (
         MiddlewareConstraints()
-        .apply_after("SomethingNotAvailable", ignore_not_found=True)
-        .apply_before("SomethingNotAvailable", ignore_not_found=True)
+        .apply_after("SomethingNotAvailable", ignore_import_error=True)
+        .apply_before("SomethingNotAvailable", ignore_import_error=True)
     )
-    resolved = constraints.resolve()
+    resolved = constraints._resolve()
     assert resolved.after == ()
     assert resolved.before == ()
 
@@ -307,7 +307,8 @@ def test_first() -> None:
     one.constraints = MiddlewareConstraints(first=True)
 
     with pytest.raises(
-        ConstraintViolationError, match="MiddlewareOne.*must be at the top of the stack. Found at index 1"
+        ConstraintViolationError,
+        match=r"MiddlewareOne'.* is required to be in the first position, but was found at index 1. \(Violates constraint 'first=True'\)",
     ):
         check_middleware_constraints((two, one))
 
@@ -321,7 +322,10 @@ def test_first_subclass() -> None:
     one = SubOne()
     two = MiddlewareTwo()
 
-    with pytest.raises(ConstraintViolationError, match="SubOne.*must be at the top of the stack. Found at index 1"):
+    with pytest.raises(
+        ConstraintViolationError,
+        match=r"SubOne.* is required to be in the first position, but was found at index 1. \(Violates constraint 'first=True'\)",
+    ):
         check_middleware_constraints((two, one))
 
 
@@ -351,7 +355,8 @@ def test_last() -> None:
     one.constraints = MiddlewareConstraints(last=True)
 
     with pytest.raises(
-        ConstraintViolationError, match="MiddlewareOne.*must be at the end of the stack. Found at index 0"
+        ConstraintViolationError,
+        match=r"MiddlewareOne.*is required to be in the last position \(index 1 of 1\), but was found at index 0. \(Violates constraint 'last=True'\)",
     ):
         check_middleware_constraints((one, two))
 
@@ -365,7 +370,10 @@ def test_last_subclass() -> None:
     one = SubOne()
     two = MiddlewareTwo()
 
-    with pytest.raises(ConstraintViolationError, match="SubOne.*must be at the end of the stack. Found at index 0"):
+    with pytest.raises(
+        ConstraintViolationError,
+        match=r"SubOne'.* is required to be in the last position \(index 1 of 1\), but was found at index 0. \(Violates constraint 'last=True'\)",
+    ):
         check_middleware_constraints((one, two))
 
 
@@ -396,7 +404,7 @@ def test_unique() -> None:
     one.constraints = MiddlewareConstraints(unique=True)
 
     with pytest.raises(
-        ConstraintViolationError, match=r"MiddlewareOne.*must be unique. Found 2 instances \(index 0, 2\)"
+        ConstraintViolationError, match=r"MiddlewareOne.*must be unique. Found 2 instances \(indices 0, 2\)"
     ):
         check_middleware_constraints((one, two, one_two))
 
@@ -412,7 +420,7 @@ def test_unique_subclass() -> None:
     two = MiddlewareTwo()
 
     with pytest.raises(
-        ConstraintViolationError, match=r"MiddlewareOne.*must be unique. Found 2 instances \(index 0, 2\)"
+        ConstraintViolationError, match=r"MiddlewareOne.*must be unique. Found 2 instances \(indices 0, 2\)"
     ):
         check_middleware_constraints((one, two, one_two))
 
@@ -427,7 +435,7 @@ def test_unique_multi() -> None:
     three_one.constraints = three_one.constraints = MiddlewareConstraints(unique=True)
 
     with pytest.raises(
-        ConstraintViolationError, match=r"MiddlewareOne.*must be unique. Found 2 instances \(index 0, 1\)"
+        ConstraintViolationError, match=r"MiddlewareOne.*must be unique. Found 2 instances \(indices 0, 1\)"
     ):
         check_middleware_constraints((one_one, one_two, two, three_one, three_two))
 

@@ -2,7 +2,7 @@ import collections
 import dataclasses
 import functools
 import inspect
-from typing import TYPE_CHECKING, Any, Literal, Union, cast
+from typing import TYPE_CHECKING, Any, Literal, Union, cast, Optional
 
 from typing_extensions import Self
 
@@ -12,7 +12,7 @@ from litestar.types import Middleware
 from litestar.utils.module_loader import import_string
 
 if TYPE_CHECKING:
-    pass
+    from litestar.types.composite_types import MiddlewareFactory
 
 __all__ = (
     "ConstraintViolationError",
@@ -94,17 +94,17 @@ class MiddlewareConstraints:
     Tuple of middlewares that, if present, need to appear *after* the middleware this
     constraint is applied to
     """
-    first: "bool | None" = None
+    first: Optional[bool] = None
     """
     If ``True``, require the middleware to be the first.
     Mutually exclusive with ``last=True``. Implicitly sets ``unique=True``
     """
-    last: "bool | None" = None
+    last: Optional[bool] = None
     """
     If ``True``, require the middleware to be the last.
     Mutually exclusive with ``first=True``. Implicitly sets ``unique=True``
     """
-    unique: "bool | None" = None
+    unique: Optional[bool] = None
     """
     If ``True``, require the middleware to be the only one of its type
     """
@@ -262,9 +262,9 @@ def _check_positional_constraints(
 
                 msg = (
                     f"All instances of {first_name!r} must come {constraint} any "
-                    f"instance of {second_name!r}. (Found instance of {first_name!r} "
+                    f"instance of {second_name!r}. Found instance of {first_name!r} "
                     f"at index {first_idx}, instance of {second_name!r} at index "
-                    f"{second_idx})"
+                    f"{second_idx}."
                 )
                 raise ConstraintViolationError(msg)
 
@@ -289,8 +289,9 @@ def _check_first_last_constraints(
         max_pos_first = max(first_positions)
         if max_pos_first > 0:
             msg = (
-                f"Middleware {_fully_qualified_name(first)} must be at the top of "
-                f"the stack. Found at index {', '.join(map(str, first_positions))}"
+                f"Middleware {_fully_qualified_name(first)!r} is required to be in the "
+                f"first position, but was found at index {', '.join(map(str, first_positions))}. "
+                "(Violates constraint 'first=True')"
             )
             raise ConstraintViolationError(msg)
 
@@ -298,10 +299,13 @@ def _check_first_last_constraints(
         last = want_last[0]
         last_positions = positions[last]
         max_pos_first = min(last_positions)
-        if max_pos_first != total_count - 1:
+        expected_index = total_count - 1
+        if max_pos_first != expected_index:
             msg = (
-                f"Middleware {_fully_qualified_name(last)} must be at the end of "
-                f"the stack. Found at index {', '.join(map(str, last_positions))}"
+                f"Middleware {_fully_qualified_name(last)!r} is required to be in the "
+                f"last position (index {expected_index} of {expected_index}), but was "
+                f"found at index {', '.join(map(str, last_positions))}. "
+                "(Violates constraint 'last=True')"
             )
             raise ConstraintViolationError(msg)
 
@@ -312,8 +316,9 @@ def _check_unique_constraints(unique: list[object], positions: dict[object, list
         if len(found_positions) > 1:
             msg = (
                 f"Middleware {_fully_qualified_name(middleware)!r} must be unique. "
-                f"Found {len(found_positions)} instances (index "
-                f"{', '.join(map(str, found_positions))})"
+                f"Found {len(found_positions)} instances (indices "
+                f"{', '.join(map(str, found_positions))}). "
+                "(Violates constraints 'unique=True')"
             )
             raise ConstraintViolationError(msg)
 
