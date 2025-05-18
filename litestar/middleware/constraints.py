@@ -1,24 +1,25 @@
-from __future__ import annotations
-
 import collections
 import dataclasses
 import functools
 import inspect
-from typing import TYPE_CHECKING, Any, Literal, cast
+from typing import TYPE_CHECKING, Any, Literal, Union, cast
+
+from typing_extensions import Self
 
 from litestar.exceptions import LitestarException
 from litestar.middleware.base import ASGIMiddleware
+from litestar.types import Middleware
 from litestar.utils.module_loader import import_string
 
 if TYPE_CHECKING:
-    from litestar.types import Middleware
-    from litestar.types.composite_types import MiddlewareFactory
+    pass
 
 __all__ = (
     "ConstraintViolationError",
     "CycleError",
     "MiddlewareConstraintError",
     "MiddlewareConstraints",
+    "MiddlewareForwardRef",
     "check_middleware_constraints",
 )
 
@@ -37,12 +38,19 @@ class CycleError(MiddlewareConstraintError):
 
 @dataclasses.dataclass(frozen=True)
 class MiddlewareForwardRef:
+    """Forward reference to a middleware"""
+
     target: str
-    ignore_not_found: bool
+    """Absolute path to an importable name of the middleware"""
+    ignore_import_error: bool
+    r"""
+    If 'True', ignore :exc:`ImportError`\ s will be ignored when resolving the
+    middleware
+    """
 
     @staticmethod
     @functools.cache
-    def _resolve(target: str, ignore_not_found: bool) -> Middleware | None:
+    def _resolve(target: str, ignore_not_found: bool) -> "Middleware | None":
         try:
             return cast("Middleware", import_string(target))
         except ImportError:
@@ -50,14 +58,19 @@ class MiddlewareForwardRef:
                 return None
             raise
 
-    def resolve(self) -> Middleware | None:
-        return self._resolve(self.target, self.ignore_not_found)
+    def resolve(self) -> "Middleware | None":
+        """Resolve the reference to a concrete value by importing the target path.
+
+        If ``ignore_import_error=True`` and an :exc:`ImportError` is raised, ignore the
+        error and return ``None``
+        """
+        return self._resolve(self.target, self.ignore_import_error)
 
 
 @dataclasses.dataclass
 class _ResolvedMiddlewareConstraints:
-    before: tuple[Middleware | MiddlewareFactory, ...]
-    after: tuple[Middleware | MiddlewareFactory, ...]
+    before: tuple["Middleware | MiddlewareFactory", ...]
+    after: tuple["Middleware | MiddlewareFactory", ...]
     first: bool
     last: bool
     unique: bool
@@ -69,11 +82,32 @@ class _ResolvedMiddlewareConstraints:
 
 @dataclasses.dataclass(frozen=True)
 class MiddlewareConstraints:
-    before: tuple[MiddlewareForwardRef | Middleware | MiddlewareFactory, ...] = ()
-    after: tuple[MiddlewareForwardRef | Middleware | MiddlewareFactory, ...] = ()
-    first: bool | None = None
-    last: bool | None = None
-    unique: bool | None = None
+    """Constraints for a middleware."""
+
+    before: tuple["MiddlewareForwardRef | Middleware | MiddlewareFactory", ...] = ()
+    """
+    Tuple of middlewares that, if present, need to appear *before* the middleware this
+    constraint is applied to
+    """
+    after: tuple["MiddlewareForwardRef | Middleware | MiddlewareFactory", ...] = ()
+    """
+    Tuple of middlewares that, if present, need to appear *after* the middleware this
+    constraint is applied to
+    """
+    first: "bool | None" = None
+    """
+    If ``True``, require the middleware to be the first.
+    Mutually exclusive with ``last=True``. Implicitly sets ``unique=True``
+    """
+    last: "bool | None" = None
+    """
+    If ``True``, require the middleware to be the last.
+    Mutually exclusive with ``first=True``. Implicitly sets ``unique=True``
+    """
+    unique: "bool | None" = None
+    """
+    If ``True``, require the middleware to be the only one of its type
+    """
 
     def __post_init__(self) -> None:
         if self.first:
@@ -90,35 +124,60 @@ class MiddlewareConstraints:
             if self.before:
                 raise MiddlewareConstraintError("Cannot set 'last=True' if 'before' is not empty")
 
-    def require_unique(self, unique: bool) -> MiddlewareConstraints:
+    def require_unique(self, unique: bool) -> Self:
+        """Return a new constraint with a ``unique`` value set"""
         return dataclasses.replace(self, unique=unique)
 
-    def apply_first(self) -> MiddlewareConstraints:
+    def apply_first(self) -> Self:
+        """Return a new constraint with ``first=True``. Overrides ``last=True``"""
         return dataclasses.replace(self, first=True, last=False, unique=True)
 
-    def apply_last(self) -> MiddlewareConstraints:
+    def apply_last(self) -> Self:
+        """Return a new constraint with ``first=True``. Overrides ``first=True``"""
         return dataclasses.replace(self, first=False, last=True, unique=True)
 
     def apply_before(
-        self, other: str | Middleware | MiddlewareFactory | MiddlewareForwardRef, ignore_not_found: bool = False
-    ) -> MiddlewareConstraints:
+        self,
+        other: "str | Middleware | MiddlewareFactory | MiddlewareForwardRef",
+        ignore_import_error: bool = False,
+    ) -> Self:
+        """Return new :class:`~litestar.middleware.constraints.MiddlewareConstraints` with
+        ``other`` added to existing ``before`` constraint.
+
+        :param other: Middleware this middleware needs to be applied before. If passed a string,
+            create a :class:`~litestar.middleware.constraints.MiddlewareForwardRef` that resolves
+            to the actual middleware at runtime
+        :param ignore_import_error: If ``True`` and ``other`` is a string, ignore the constraint if
+            an :exc:`ImportError` occurs when trying to import it
+        """
         if isinstance(other, str):
-            other = MiddlewareForwardRef(target=other, ignore_not_found=ignore_not_found)
+            other = MiddlewareForwardRef(target=other, ignore_import_error=ignore_import_error)
 
         return dataclasses.replace(self, before=(*self.before, other))
 
     def apply_after(
-        self, other: str | Middleware | MiddlewareFactory | MiddlewareForwardRef, ignore_not_found: bool = False
-    ) -> MiddlewareConstraints:
+        self,
+        other: "str | Middleware | MiddlewareFactory | MiddlewareForwardRef",
+        ignore_import_error: bool = False,
+    ) -> Self:
+        """Return new :class:`~litestar.middleware.constraints.MiddlewareConstraints` with
+        ``other`` added to existing ``after`` constraint.
+
+        :param other: Middleware this middleware needs to be applied before. If passed a string,
+            create a :class:`~litestar.middleware.constraints.MiddlewareForwardRef` that resolves
+            to the actual middleware at runtime
+        :param ignore_import_error: If ``True`` and ``other`` is a string, ignore the constraint if
+            an :exc:`ImportError` occurs when trying to import it
+        """
         if isinstance(other, str):
-            other = MiddlewareForwardRef(target=other, ignore_not_found=ignore_not_found)
+            other = MiddlewareForwardRef(target=other, ignore_import_error=ignore_import_error)
 
         return dataclasses.replace(self, after=(*self.after, other))
 
     @staticmethod
     def _resolve_middleware(
-        middlewares: tuple[Middleware | MiddlewareFactory | MiddlewareForwardRef, ...],
-    ) -> tuple[Middleware | MiddlewareFactory, ...]:
+        middlewares: tuple["Middleware | MiddlewareFactory | MiddlewareForwardRef", ...],
+    ) -> tuple["Middleware | MiddlewareFactory", ...]:
         resolved = []
         for middleware in middlewares:
             if isinstance(middleware, MiddlewareForwardRef):
@@ -128,7 +187,7 @@ class MiddlewareConstraints:
             resolved.append(middleware)
         return tuple(resolved)
 
-    def resolve(self) -> _ResolvedMiddlewareConstraints:
+    def _resolve(self) -> _ResolvedMiddlewareConstraints:
         return _ResolvedMiddlewareConstraints(
             before=self._resolve_middleware(self.before),
             after=self._resolve_middleware(self.after),
@@ -275,7 +334,7 @@ def check_middleware_constraints(middlewares: tuple[Middleware, ...]) -> None:
     positions: collections.defaultdict[object, list[int]] = collections.defaultdict(list)
 
     for i, middleware in enumerate(middlewares):
-        middleware_type: object | type
+        middleware_type: Union[object, type]
         if inspect.isfunction(middleware):
             positions[middleware].append(i)
             middleware_type = middleware
@@ -288,22 +347,22 @@ def check_middleware_constraints(middlewares: tuple[Middleware, ...]) -> None:
         if not (isinstance(middleware, ASGIMiddleware) and middleware.constraints):
             continue
 
-        rp = middleware.constraints.resolve()
-        if rp.is_empty:
+        constraints = middleware.constraints._resolve()
+        if constraints.is_empty:
             continue
 
-        if rp.first:
+        if constraints.first:
             want_first.append(middleware_type)
-        if rp.last:
+        if constraints.last:
             want_last.append(middleware_type)
 
-        if rp.unique:
+        if constraints.unique:
             unique.append(middleware_type)
 
-        for before in rp.before:
+        for before in constraints.before:
             directional_constraints[(middleware_type, before)] = "before"
             graph[middleware_type].append(before)
-        for after in rp.after:
+        for after in constraints.after:
             directional_constraints[(after, middleware_type)] = "after"
             graph[after].append(middleware_type)
 

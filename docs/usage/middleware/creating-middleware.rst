@@ -1,4 +1,3 @@
-
 Creating Middleware
 ===================
 
@@ -47,6 +46,57 @@ outgoing responses:
     :language: python
 
 
+Configuration constraints
+++++++++++++++++++++++++++
+
+While it's good practice to keep middlewares decoupled from another, there are times
+where implicit coupling is unavoidable due to the nature of the functionality provided
+by the middlewares.
+
+For example a caching middleware and an authentication middleware
+can produce very different results depending on the order they are applied in; Assuming
+a naive caching middleware that does not take authentication state into account, if it's
+applied *before* the authentication middleware, it might cache an authenticated response
+and serve it to the next, unauthenticated request.
+
+Especially when applications grow larger and more complex, it can become difficult to
+keep track of all these implicit couplings and dependencies, or downright impossible if
+the middleware is implemented in a separate package and has no knowledge about how it is
+being applied.
+
+To help with this, :class:`~litestar.middleware.ASGIMiddleware` allows to specify a set
+of :class:`~litestar.middleware.constraints.MiddlewareConstraints` - Once configured,
+these will be validated on application startup.
+
+Using constraints, the example given above might be solved like this:
+
+.. literalinclude:: /examples/middleware/constraints.py
+    :language: python
+
+Here, we specify that every instance of ``CachingMiddleware`` must come after any
+instance of
+:class:`~litestar.middleware.authentication.AbstractAuthenticationMiddleware`.
+
+
+.. tip::
+
+    When referencing classes, the constraints always apply to all instances and
+    subclasses of the type
+
+
+Forward references
+~~~~~~~~~~~~~~~~~~
+
+Constraints that reference other middleware can use strings as forward references, to
+handle situations like circular imports or middlewares from packages that may not be
+available:
+
+.. literalinclude:: /examples/middleware/constraints_string_ref.py
+    :language: python
+
+This forward reference will try to import ``SomeMiddleware`` from
+``some_package.some_module``. With ``ignore_import_error=True``, if the import is not
+successful, the constraint will be ignored.
 
 Migrating from ``MiddlewareProtocol`` / ``AbstractMiddleware``
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
