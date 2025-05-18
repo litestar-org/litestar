@@ -4,7 +4,7 @@ import itertools
 from functools import partial
 from typing import TYPE_CHECKING, Any, AsyncGenerator, AsyncIterable, AsyncIterator, Callable, Iterable, Iterator, Union
 
-from anyio import CancelScope, create_task_group, sleep
+from anyio import CancelScope, Event, create_task_group, sleep
 
 from litestar.enums import MediaType
 from litestar.response.base import ASGIResponse, Response
@@ -149,7 +149,7 @@ class ASGIStreamingSSEResponse(ASGIStreamingResponse):
     """A streaming response which support sending ping messages specific for SSE."""
 
     __slots__ = (
-        "content_exist",
+        "is_content_end",
         "ping_interval",
     )
 
@@ -185,6 +185,7 @@ class ASGIStreamingSSEResponse(ASGIStreamingResponse):
             media_type: The response media type.
             status_code: The response status code.
             ping_interval: The interval in seconds between "ping" messages.
+            is_content_end: Indicates the ending of content in the iterator, e.g., use to stop sending ping events.
         """
         super().__init__(
             iterator=iterator,
@@ -200,7 +201,7 @@ class ASGIStreamingSSEResponse(ASGIStreamingResponse):
             encoded_headers=encoded_headers,
         )
         self.ping_interval = ping_interval
-        self.content_exist = True
+        self.is_content_end = Event()
 
     async def _send_ping_event(self, send: Send) -> None:
         """Send ping events every `ping_interval` second.
@@ -211,14 +212,17 @@ class ASGIStreamingSSEResponse(ASGIStreamingResponse):
         Returns:
             None
         """
-        stream_event: HTTPResponseBodyEvent = {
+        if not self.ping_interval:
+            return
+
+        ping_event: HTTPResponseBodyEvent = {
             "type": "http.response.body",
             "body": b"event:  ping\r\n\r\n",
             "more_body": True,
         }
 
-        while self.content_exist:
-            await send(stream_event)
+        while not self.is_content_end.is_set():
+            await send(ping_event)
             await sleep(self.ping_interval)
 
     async def _stream(self, send: Send) -> None:
@@ -238,7 +242,7 @@ class ASGIStreamingSSEResponse(ASGIStreamingResponse):
             }
             await send(stream_event)
         terminus_event: HTTPResponseBodyEvent = {"type": "http.response.body", "body": b"", "more_body": False}
-        self.content_exist = False
+        self.is_content_end.set()
         await send(terminus_event)
 
     async def send_body(self, send: Send, receive: Receive) -> None:
@@ -254,8 +258,7 @@ class ASGIStreamingSSEResponse(ASGIStreamingResponse):
 
         async with create_task_group() as task_group:
             task_group.start_soon(partial(self._stream, send))
-            if self.ping_interval:
-                task_group.start_soon(partial(self._send_ping_event, send))
+            task_group.start_soon(partial(self._send_ping_event, send))
             await self._listen_for_disconnect(cancel_scope=task_group.cancel_scope, receive=receive)
 
 
