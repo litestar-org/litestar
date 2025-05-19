@@ -475,3 +475,33 @@ def test_query_param_only_properties() -> None:
         "allowEmptyValue": False,
         "allowReserved": False,
     }
+
+
+def test_not_included_in_schema_parameter() -> None:
+    @get("/handler")
+    async def handler(param: Annotated[str, Parameter(include_in_schema=False)]) -> None:
+        pass
+
+    with create_test_client(handler) as client:
+        response = client.get("/schema/openapi.json")
+
+        response_json = response.json()
+        handler_schema = response_json["paths"]["/handler"]["get"]
+        assert "parameters" in handler_schema
+
+
+def test_two_parameters_but_one_not_included_in_schema() -> None:
+    @get("/handler")
+    def handler(param1: str, param2: str = Parameter(include_in_schema=False)) -> None:
+        pass
+
+    with create_test_client(handler) as client:
+        response = client.get("/schema/openapi.json")
+
+        response_json = response.json()
+        handler_schema = response_json["paths"]["/handler"]["get"]
+        assert "parameters" in handler_schema
+
+        parameter_names = {param["name"] for param in handler_schema["parameters"]}
+        assert "param1" in parameter_names
+        assert "param2" not in parameter_names
