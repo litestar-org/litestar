@@ -124,7 +124,7 @@ class KwargDefinition:
     Use as the key for the reference when creating a component for this type
     .. versionadded:: 2.12.0
     """
-    include_in_schema: bool = field(default=True)
+    include_in_schema: bool = True
     """A boolean flag dictating whether this parameter should be included in the schema."""
 
     @property
