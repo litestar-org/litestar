@@ -125,7 +125,10 @@ class KwargDefinition:
     .. versionadded:: 2.12.0
     """
     include_in_schema: bool = True
-    """A boolean flag dictating whether this parameter should be included in the schema."""
+    """A boolean flag dictating whether this parameter should be included in the schema.
+    
+    .. versionadded:: 2.17.0
+    """
 
     @property
     def is_constrained(self) -> bool:
