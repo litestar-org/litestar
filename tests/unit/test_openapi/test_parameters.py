@@ -487,7 +487,7 @@ def test_not_included_in_schema_parameter() -> None:
 
         response_json = response.json()
         handler_schema = response_json["paths"]["/handler"]["get"]
-        assert "parameters" in handler_schema
+        assert "parameters" not in handler_schema
 
 
 def test_two_parameters_but_one_not_included_in_schema() -> None:
