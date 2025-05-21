@@ -17,6 +17,6 @@ async def test_sse_responses_example_with_ping_events() -> None:
         async with aconnect_sse(client, "GET", f"{client.base_url}/with_ping") as event_source:
             events = [sse async for sse in event_source.aiter_sse()]
             for i in range(9):
-                assert events[i].event == " ping"
+                assert events[i].event == "ping"
             assert events[10].event == "message"
             assert events[10].data == "content"

@@ -217,7 +217,7 @@ class ASGIStreamingSSEResponse(ASGIStreamingResponse):
 
         ping_event: HTTPResponseBodyEvent = {
             "type": "http.response.body",
-            "body": b"event:  ping\r\n\r\n",
+            "body": b"event: ping\r\n\r\n",
             "more_body": True,
         }
 
