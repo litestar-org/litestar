@@ -16,6 +16,7 @@ from litestar.dto.data_structures import DTOData
 from litestar.dto.types import RenameStrategy
 from litestar.enums import RequestEncodingType
 from litestar.exceptions.dto_exceptions import InvalidAnnotationException
+from litestar.response.base import Response
 from litestar.types.builtin_types import NoneType
 from litestar.types.composite_types import TypeEncodersMap
 from litestar.typing import FieldDefinition
@@ -231,7 +232,7 @@ class AbstractDTO(Generic[T]):
         key = "data_backend" if field_definition.name == "data" else "return_backend"
         backend = cls._dto_backends[handler_id][key]  # type: ignore[literal-required]
 
-        if backend.wrapper_attribute_name:
+        if backend.wrapper_attribute_name and not field_definition.is_subclass_of(Response):
             # The DTO has been built for a handler that has a DTO supported type wrapped in a generic type.
             #
             # The backend doesn't receive the full annotation, only the type of the attribute on the outer type that
@@ -240,7 +241,7 @@ class AbstractDTO(Generic[T]):
             # This special casing rebuilds the outer generic type annotation with the original model replaced by the DTO
             # generated transfer model type in the type arguments.
             transfer_model = backend.transfer_model_type
-            generic_args = tuple(transfer_model if a is cls.model_type else a for a in field_definition.args)
+            generic_args = tuple(transfer_model if arg is cls.model_type else arg for arg in field_definition.args)
             annotation = field_definition.safe_generic_origin[generic_args]
         else:
             annotation = backend.annotation
