@@ -194,11 +194,13 @@ class ParameterFactory:
         )
 
         for field_name, field_definition in unique_handler_fields:
-            if (
-                isinstance(field_definition.kwarg_definition, DependencyKwarg)
-                and field_name not in self.dependency_providers
-            ):
+            kwarg_definition = field_definition.kwarg_definition
+            if isinstance(kwarg_definition, DependencyKwarg) and field_name not in self.dependency_providers:
                 # never document explicit dependencies
+                continue
+
+            if isinstance(kwarg_definition, ParameterKwarg) and not kwarg_definition.include_in_schema:
+                # exclude parameters that are marked as not included in the schema
                 continue
 
             if provider := self.dependency_providers.get(field_name):
