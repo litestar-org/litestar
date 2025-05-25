@@ -330,6 +330,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l4"><a class="reference internal" href="session/server_side.html">server_side</a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="constraints.html">constraints</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../openapi/index.html">openapi</a><ul>
@@ -567,9 +568,10 @@ data-aria-dark="Switch to auto color mode">
 <dt class="sig sig-object py" id="litestar.middleware.ASGIMiddleware">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.middleware.</span></span><span class="sig-name descname"><span class="pre">ASGIMiddleware</span></span><a class="headerlink" href="#litestar.middleware.ASGIMiddleware" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/abc.html#abc.ABC" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></a></p>
-<p>An abstract base class to easily construct ASGI middlewares, providing functionality
-to dynamically skip the middleware based on ASGI <code class="docutils literal notranslate"><span class="pre">scope[&quot;type&quot;]</span></code>, handler <code class="docutils literal notranslate"><span class="pre">opt</span></code>
-keys or path patterns and a simple way to pass configuration to middlewares.</p>
+<p>An abstract base class to easily construct ASGI middlewares, providing
+functionality to dynamically skip the middleware based on ASGI <code class="docutils literal notranslate"><span class="pre">scope[&quot;type&quot;]</span></code>,
+handler <code class="docutils literal notranslate"><span class="pre">opt</span></code> keys or path patterns and a simple way to pass configuration to
+middlewares.</p>
 <p>This base class does not implement an <code class="docutils literal notranslate"><span class="pre">__init__</span></code> method, so subclasses are free
 to use it to customize the middleware’s configuration.</p>
 <div class="admonition important">
@@ -850,6 +852,7 @@ closure.</p>
 <li class="toctree-l1"><a class="reference internal" href="logging.html">logging</a></li>
 <li class="toctree-l1"><a class="reference internal" href="rate_limit.html">rate_limit</a></li>
 <li class="toctree-l1"><a class="reference internal" href="session/index.html">session</a></li>
+<li class="toctree-l1"><a class="reference internal" href="constraints.html">constraints</a></li>
 </ul>
 </div>
 </section>

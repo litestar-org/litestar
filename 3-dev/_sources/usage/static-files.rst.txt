@@ -99,7 +99,7 @@ to ``file_system``, providing integrations for FTP, SFTP, Hadoop, SMB, GitHub an
 with support for popular cloud providers available via 3rd party implementations such as
 
 - S3 via `S3FS <https://s3fs.readthedocs.io/en/latest/>`_
-- Google Cloud Storage via `GCFS <https://gcsfs.readthedocs.io/en/latest/>`_
+- Google Cloud Storage via `GCSFS <https://gcsfs.readthedocs.io/en/latest/>`_
 - Azure Blob Storage via `adlfs <https://github.com/fsspec/adlfs>`_
 
 .. literalinclude:: /examples/static_files/file_system.py

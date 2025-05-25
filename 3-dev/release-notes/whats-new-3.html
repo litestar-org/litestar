@@ -330,6 +330,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l4"><a class="reference internal" href="../reference/middleware/session/server_side.html">server_side</a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/middleware/constraints.html">constraints</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/openapi/index.html">openapi</a><ul>
@@ -504,6 +505,7 @@ data-aria-dark="Switch to auto color mode">
 <li><a class="reference internal" href="#litestar-htmx-package-removed-from-default-dependencies"><code class="docutils literal notranslate"><span class="pre">litestar-htmx</span></code> package removed from default dependencies</a></li>
 <li><a class="reference internal" href="#improved-file-system-handling-fsspec-integration">Improved file system handling / fsspec integration</a></li>
 <li><a class="reference internal" href="#removal-of-resolve-symlinks-parameter-to-create-static-files-router">Removal of <code class="docutils literal notranslate"><span class="pre">resolve_symlinks</span></code> parameter to <code class="docutils literal notranslate"><span class="pre">create_static_files_router</span></code></a></li>
+<li><a class="reference internal" href="#middleware-configuration-constraints">Middleware configuration constraints</a></li>
 </ul>
 </div><a class="js-repo-stats repo-stats flex items-center" href="https://github.com/litestar-org/litestar"
   data-type="github" data-user="litestar-org" data-repo="litestar">
@@ -828,6 +830,16 @@ parameter.</p>
 <p class="admonition-title">Attention</p>
 <p>This has been intentionally made a breaking change because the new parameter has
 slightly different behaviour and defaults to <code class="docutils literal notranslate"><span class="pre">False</span></code> instead of <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
+</div>
+</section>
+<section id="middleware-configuration-constraints">
+<h2>Middleware configuration constraints<a class="headerlink" href="#middleware-configuration-constraints" title="Permalink to this heading">¶</a></h2>
+<p><a class="reference internal" href="../reference/middleware/index.html#litestar.middleware.ASGIMiddleware" title="litestar.middleware.ASGIMiddleware"><code class="xref py py-class docutils literal notranslate"><span class="pre">ASGIMiddleware</span></code></a>s can now express constraints for how
+they are applied in the middleware stack, which are then validated on application
+startup.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="../usage/middleware/creating-middleware.html#configuration-constraints"><span class="std std-ref">Configuration constraints</span></a></p>
 </div>
 </section>
 </section>

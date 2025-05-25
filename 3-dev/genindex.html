@@ -873,6 +873,10 @@ data-aria-dark="Switch to auto color mode">
 </li>
         <li><a href="reference/middleware/compression.html#litestar.middleware.compression.CompressionMiddleware.__init__">(litestar.middleware.compression.CompressionMiddleware method)</a>
 </li>
+        <li><a href="reference/middleware/constraints.html#litestar.middleware.constraints.MiddlewareConstraints.__init__">(litestar.middleware.constraints.MiddlewareConstraints method)</a>
+</li>
+        <li><a href="reference/middleware/constraints.html#litestar.middleware.constraints.MiddlewareForwardRef.__init__">(litestar.middleware.constraints.MiddlewareForwardRef method)</a>
+</li>
         <li><a href="reference/middleware/csrf.html#litestar.middleware.csrf.CSRFMiddleware.__init__">(litestar.middleware.csrf.CSRFMiddleware method)</a>
 </li>
         <li><a href="reference/middleware/index.html#litestar.middleware.DefineMiddleware.__init__">(litestar.middleware.DefineMiddleware method)</a>
@@ -1296,8 +1300,12 @@ data-aria-dark="Switch to auto color mode">
 </li>
       <li><a href="reference/datastructures/index.html#litestar.datastructures.Address">Address (class in litestar.datastructures)</a>
 </li>
-      <li><a href="reference/plugins/htmx.html#litestar.plugins.htmx.HTMXTemplate.params.after">after (litestar.plugins.htmx.HTMXTemplate parameter)</a>
+      <li><a href="reference/middleware/constraints.html#litestar.middleware.constraints.MiddlewareConstraints.after">after (litestar.middleware.constraints.MiddlewareConstraints attribute)</a>
+
+      <ul>
+        <li><a href="reference/plugins/htmx.html#litestar.plugins.htmx.HTMXTemplate.params.after">(litestar.plugins.htmx.HTMXTemplate parameter)</a>
 </li>
+      </ul></li>
       <li><a href="reference/app.html#litestar.app.Litestar.params.after_exception">after_exception (litestar.app.Litestar parameter)</a>
 
       <ul>
@@ -1563,6 +1571,14 @@ data-aria-dark="Switch to auto color mode">
       <li><a href="reference/plugins/prometheus.html#litestar.plugins.prometheus.PrometheusConfig.app_name">app_name (litestar.plugins.prometheus.PrometheusConfig attribute)</a>
 </li>
       <li><a href="reference/config.html#litestar.config.app.AppConfig">AppConfig (class in litestar.config.app)</a>
+</li>
+      <li><a href="reference/middleware/constraints.html#litestar.middleware.constraints.MiddlewareConstraints.apply_after">apply_after() (litestar.middleware.constraints.MiddlewareConstraints method)</a>
+</li>
+      <li><a href="reference/middleware/constraints.html#litestar.middleware.constraints.MiddlewareConstraints.apply_before">apply_before() (litestar.middleware.constraints.MiddlewareConstraints method)</a>
+</li>
+      <li><a href="reference/middleware/constraints.html#litestar.middleware.constraints.MiddlewareConstraints.apply_first">apply_first() (litestar.middleware.constraints.MiddlewareConstraints method)</a>
+</li>
+      <li><a href="reference/middleware/constraints.html#litestar.middleware.constraints.MiddlewareConstraints.apply_last">apply_last() (litestar.middleware.constraints.MiddlewareConstraints method)</a>
 </li>
       <li><a href="reference/channels/plugin.html#litestar.channels.plugin.ChannelsPlugin.params.arbitrary_channels_allowed">arbitrary_channels_allowed (litestar.channels.plugin.ChannelsPlugin parameter)</a>
 </li>
@@ -1871,6 +1887,8 @@ data-aria-dark="Switch to auto color mode">
       <li><a href="reference/testing.html#litestar.testing.BaseTestClient">BaseTestClient (class in litestar.testing)</a>
 </li>
       <li><a href="reference/openapi/spec.html#litestar.openapi.spec.SecurityScheme.bearer_format">bearer_format (litestar.openapi.spec.SecurityScheme attribute)</a>
+</li>
+      <li><a href="reference/middleware/constraints.html#litestar.middleware.constraints.MiddlewareConstraints.before">before (litestar.middleware.constraints.MiddlewareConstraints attribute)</a>
 </li>
       <li><a href="reference/app.html#litestar.app.Litestar.params.before_request">before_request (litestar.app.Litestar parameter)</a>
 
@@ -2352,6 +2370,8 @@ data-aria-dark="Switch to auto color mode">
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="reference/middleware/constraints.html#litestar.middleware.constraints.ConstraintViolationError">ConstraintViolationError</a>
+</li>
       <li><a href="reference/openapi/spec.html#litestar.openapi.spec.Contact">Contact (class in litestar.openapi.spec)</a>
 </li>
       <li><a href="reference/openapi/openapi.html#litestar.openapi.OpenAPIConfig.contact">contact (litestar.openapi.OpenAPIConfig attribute)</a>
@@ -2719,6 +2739,8 @@ data-aria-dark="Switch to auto color mode">
 </li>
       </ul></li>
       <li><a href="reference/pagination.html#litestar.pagination.CursorPagination">CursorPagination (class in litestar.pagination)</a>
+</li>
+      <li><a href="reference/middleware/constraints.html#litestar.middleware.constraints.CycleError">CycleError</a>
 </li>
   </ul></td>
 </tr></table>
@@ -4144,10 +4166,12 @@ data-aria-dark="Switch to auto color mode">
       </ul></li>
       <li><a href="reference/logging/config.html#litestar.logging.config.LoggingConfig.filters">filters (litestar.logging.config.LoggingConfig attribute)</a>
 </li>
-      <li><a href="reference/plugins/flash_messages.html#litestar.plugins.flash.FlashConfig">FlashConfig (class in litestar.plugins.flash)</a>
+      <li><a href="reference/middleware/constraints.html#litestar.middleware.constraints.MiddlewareConstraints.first">first (litestar.middleware.constraints.MiddlewareConstraints attribute)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="reference/plugins/flash_messages.html#litestar.plugins.flash.FlashConfig">FlashConfig (class in litestar.plugins.flash)</a>
+</li>
       <li><a href="reference/plugins/flash_messages.html#litestar.plugins.flash.FlashPlugin">FlashPlugin (class in litestar.plugins.flash)</a>
 </li>
       <li><a href="reference/openapi/spec.html#litestar.openapi.spec.SecurityScheme.flows">flows (litestar.openapi.spec.SecurityScheme attribute)</a>
@@ -5002,6 +5026,14 @@ data-aria-dark="Switch to auto color mode">
         <li><a href="reference/security/jwt.html#litestar.security.jwt.OAuth2PasswordBearerAuth.login.params.identifier">(litestar.security.jwt.OAuth2PasswordBearerAuth.login parameter)</a>
 </li>
       </ul></li>
+      <li><a href="reference/middleware/constraints.html#litestar.middleware.constraints.MiddlewareConstraints.apply_after.params.ignore_import_error">ignore_import_error (litestar.middleware.constraints.MiddlewareConstraints.apply_after parameter)</a>
+
+      <ul>
+        <li><a href="reference/middleware/constraints.html#litestar.middleware.constraints.MiddlewareConstraints.apply_before.params.ignore_import_error">(litestar.middleware.constraints.MiddlewareConstraints.apply_before parameter)</a>
+</li>
+        <li><a href="reference/middleware/constraints.html#litestar.middleware.constraints.MiddlewareForwardRef.ignore_import_error">(litestar.middleware.constraints.MiddlewareForwardRef attribute)</a>
+</li>
+      </ul></li>
       <li><a href="reference/datastructures/index.html#litestar.datastructures.CacheControlHeader.immutable">immutable (litestar.datastructures.CacheControlHeader attribute)</a>
 </li>
       <li><a href="reference/datastructures/index.html#litestar.datastructures.MultiDict.immutable">immutable() (litestar.datastructures.MultiDict method)</a>
@@ -5470,6 +5502,8 @@ data-aria-dark="Switch to auto color mode">
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/plugins/prometheus.html#litestar.plugins.prometheus.PrometheusConfig.labels">labels (litestar.plugins.prometheus.PrometheusConfig attribute)</a>
 </li>
+      <li><a href="reference/middleware/constraints.html#litestar.middleware.constraints.MiddlewareConstraints.last">last (litestar.middleware.constraints.MiddlewareConstraints attribute)</a>
+</li>
       <li><a href="reference/params.html#litestar.params.Body.params.le">le (litestar.params.Body parameter)</a>
 
       <ul>
@@ -5934,8 +5968,6 @@ data-aria-dark="Switch to auto color mode">
         <li><a href="reference/dto/data_structures.html#module-litestar.dto.data_structures">module</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     litestar.dto.dataclass_dto
 
@@ -5943,6 +5975,8 @@ data-aria-dark="Switch to auto color mode">
         <li><a href="reference/dto/dataclass_dto.html#module-litestar.dto.dataclass_dto">module</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     litestar.dto.field
 
@@ -6053,6 +6087,13 @@ data-aria-dark="Switch to auto color mode">
 
       <ul>
         <li><a href="reference/middleware/compression.html#module-litestar.middleware.compression">module</a>
+</li>
+      </ul></li>
+      <li>
+    litestar.middleware.constraints
+
+      <ul>
+        <li><a href="reference/middleware/constraints.html#module-litestar.middleware.constraints">module</a>
 </li>
       </ul></li>
       <li>
@@ -6751,6 +6792,12 @@ data-aria-dark="Switch to auto color mode">
       </ul></li>
       <li><a href="reference/plugins/structlog.html#litestar.plugins.structlog.StructlogConfig.middleware_logging_config">middleware_logging_config (litestar.plugins.structlog.StructlogConfig attribute)</a>
 </li>
+      <li><a href="reference/middleware/constraints.html#litestar.middleware.constraints.MiddlewareConstraintError">MiddlewareConstraintError</a>
+</li>
+      <li><a href="reference/middleware/constraints.html#litestar.middleware.constraints.MiddlewareConstraints">MiddlewareConstraints (class in litestar.middleware.constraints)</a>
+</li>
+      <li><a href="reference/middleware/constraints.html#litestar.middleware.constraints.MiddlewareForwardRef">MiddlewareForwardRef (class in litestar.middleware.constraints)</a>
+</li>
       <li><a href="reference/middleware/index.html#litestar.middleware.MiddlewareProtocol">MiddlewareProtocol (class in litestar.middleware)</a>
 </li>
       <li><a href="reference/openapi/spec.html#litestar.openapi.spec.Schema.min_contains">min_contains (litestar.openapi.spec.Schema attribute)</a>
@@ -6775,10 +6822,10 @@ data-aria-dark="Switch to auto color mode">
         <li><a href="reference/params.html#litestar.params.Parameter.params.min_length">(litestar.params.Parameter parameter)</a>
 </li>
       </ul></li>
-      <li><a href="reference/openapi/spec.html#litestar.openapi.spec.Schema.min_properties">min_properties (litestar.openapi.spec.Schema attribute)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="reference/openapi/spec.html#litestar.openapi.spec.Schema.min_properties">min_properties (litestar.openapi.spec.Schema attribute)</a>
+</li>
       <li><a href="reference/openapi/spec.html#litestar.openapi.spec.Schema.minimum">minimum (litestar.openapi.spec.Schema attribute)</a>
 </li>
       <li><a href="reference/config.html#litestar.config.compression.CompressionConfig.minimum_size">minimum_size (litestar.config.compression.CompressionConfig attribute)</a>
@@ -6928,6 +6975,8 @@ data-aria-dark="Switch to auto color mode">
         <li><a href="reference/middleware/authentication.html#module-litestar.middleware.authentication">litestar.middleware.authentication</a>
 </li>
         <li><a href="reference/middleware/compression.html#module-litestar.middleware.compression">litestar.middleware.compression</a>
+</li>
+        <li><a href="reference/middleware/constraints.html#module-litestar.middleware.constraints">litestar.middleware.constraints</a>
 </li>
         <li><a href="reference/middleware/cors.html#module-litestar.middleware.cors">litestar.middleware.cors</a>
 </li>
@@ -7571,7 +7620,13 @@ data-aria-dark="Switch to auto color mode">
 </li>
       </ul></li>
       <li><a href="reference/datastructures/index.html#litestar.datastructures.Cookie.__eq__.params.other">other (litestar.datastructures.Cookie.__eq__ parameter)</a>
+
+      <ul>
+        <li><a href="reference/middleware/constraints.html#litestar.middleware.constraints.MiddlewareConstraints.apply_after.params.other">(litestar.middleware.constraints.MiddlewareConstraints.apply_after parameter)</a>
 </li>
+        <li><a href="reference/middleware/constraints.html#litestar.middleware.constraints.MiddlewareConstraints.apply_before.params.other">(litestar.middleware.constraints.MiddlewareConstraints.apply_before parameter)</a>
+</li>
+      </ul></li>
   </ul></td>
 </tr></table>
 
@@ -8528,6 +8583,8 @@ data-aria-dark="Switch to auto color mode">
         <li><a href="reference/security/jwt.html#litestar.security.jwt.Token.decode.params.require_claims">(litestar.security.jwt.Token.decode parameter)</a>
 </li>
       </ul></li>
+      <li><a href="reference/middleware/constraints.html#litestar.middleware.constraints.MiddlewareConstraints.require_unique">require_unique() (litestar.middleware.constraints.MiddlewareConstraints method)</a>
+</li>
       <li><a href="reference/datastructures/index.html#litestar.datastructures.ResponseHeader.required">required (litestar.datastructures.ResponseHeader attribute)</a>
 
       <ul>
@@ -8546,6 +8603,8 @@ data-aria-dark="Switch to auto color mode">
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="reference/middleware/constraints.html#litestar.middleware.constraints.MiddlewareForwardRef.resolve">resolve() (litestar.middleware.constraints.MiddlewareForwardRef method)</a>
+</li>
       <li><a href="reference/handlers.html#litestar.handlers.HTTPRouteHandler.resolve_after_response">resolve_after_response() (litestar.handlers.HTTPRouteHandler method)</a>
 </li>
       <li><a href="reference/handlers.html#litestar.handlers.HTTPRouteHandler.resolve_before_request">resolve_before_request() (litestar.handlers.HTTPRouteHandler method)</a>
@@ -10138,8 +10197,12 @@ data-aria-dark="Switch to auto color mode">
         <li><a href="reference/testing.html#litestar.testing.create_test_client.params.tags">(litestar.testing.create_test_client parameter)</a>
 </li>
       </ul></li>
-      <li><a href="reference/plugins/htmx.html#litestar.plugins.htmx.HTMXDetails.target">target (litestar.plugins.htmx.HTMXDetails property)</a>
+      <li><a href="reference/middleware/constraints.html#litestar.middleware.constraints.MiddlewareForwardRef.target">target (litestar.middleware.constraints.MiddlewareForwardRef attribute)</a>
+
+      <ul>
+        <li><a href="reference/plugins/htmx.html#litestar.plugins.htmx.HTMXDetails.target">(litestar.plugins.htmx.HTMXDetails property)</a>
 </li>
+      </ul></li>
       <li><a href="reference/serialization.html#litestar.serialization.decode_json.params.target_type">target_type (litestar.serialization.decode_json parameter)</a>
 
       <ul>
@@ -10612,6 +10675,8 @@ data-aria-dark="Switch to auto color mode">
 </li>
       <li><a href="reference/openapi/spec.html#litestar.openapi.spec.Schema.unevaluated_properties">unevaluated_properties (litestar.openapi.spec.Schema attribute)</a>
 </li>
+      <li><a href="reference/middleware/constraints.html#litestar.middleware.constraints.MiddlewareConstraints.unique">unique (litestar.middleware.constraints.MiddlewareConstraints attribute)</a>
+</li>
       <li><a href="reference/openapi/spec.html#litestar.openapi.spec.Schema.unique_items">unique_items (litestar.openapi.spec.Schema attribute)</a>
 </li>
       <li><a href="reference/channels/backends/asyncpg.html#litestar.channels.backends.asyncpg.AsyncPgChannelsBackend.unsubscribe">unsubscribe() (litestar.channels.backends.asyncpg.AsyncPgChannelsBackend method)</a>
@@ -10662,10 +10727,10 @@ data-aria-dark="Switch to auto color mode">
         <li><a href="reference/repository/abc.html#litestar.repository.abc.AbstractSyncRepository.upsert_many">(litestar.repository.abc.AbstractSyncRepository method)</a>
 </li>
       </ul></li>
-      <li><a href="reference/datastructures/index.html#litestar.datastructures.URL">URL (class in litestar.datastructures)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="reference/datastructures/index.html#litestar.datastructures.URL">URL (class in litestar.datastructures)</a>
+</li>
       <li><a href="reference/connection.html#litestar.connection.ASGIConnection.url">url (litestar.connection.ASGIConnection property)</a>
 
       <ul>
