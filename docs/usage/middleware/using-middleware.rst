@@ -61,15 +61,39 @@ because we declared it on the application level.
 Middleware Call Order
 ---------------------
 
-Since it's also possible to define multiple middlewares on every layer, the call order for
-middlewares will be **top to bottom** and **left to right**. This means for each layer, the
-middlewares will be called in the order they have been passed, while the layers will be
-traversed in the usual order:
+due to the way we're traversing over the app layers, the middleware stack is
+constructed in 'application > handler' order, which is the order we want the
+middleware to be called in.
+
+using this order however, since each middleware wraps the next callable, the
+*first* middleware in the stack would up being the *innermost* wrapper, i.e.
+the last one to receive the request and the first one to see the response.
+
+to achieve the intended call order, we perform the wrapping in reverse
+('handler -> application').
+
 
 .. mermaid::
 
-   flowchart LR
-       Application --> Router --> Controller --> Handler
+    graph TD
+        request --> M1
+        M1 --> M2
+        M2 --> H
+        H --> M2R
+        M2R --> M1R
+        M1R --> response
+
+        subgraph M1 [middleware_1]
+            M2
+            subgraph M2 [middleware_2]
+                H[handler]
+            end
+        end
+
+        style M1 stroke:#333,stroke-width:2px
+        style M2 stroke:#555,stroke-width:1.5px
+        style H stroke:#777,stroke-width:1px
+
 
 
 .. literalinclude:: /examples/middleware/call_order.py

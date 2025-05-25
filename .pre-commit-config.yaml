@@ -2,7 +2,7 @@ default_language_version:
   python: "3.12"
 repos:
   - repo: https://github.com/compilerla/conventional-pre-commit
-    rev: v3.6.0
+    rev: v4.0.0
     hooks:
       - id: conventional-pre-commit
         stages: [commit-msg]
@@ -24,7 +24,7 @@ repos:
       - id: unasyncd
         additional_dependencies: ["ruff"]
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: "v0.8.1"
+    rev: "v0.11.5"
     hooks:
       - id: ruff
         args: ["--fix"]
@@ -33,6 +33,7 @@ repos:
     rev: v1.30.3
     hooks:
       - id: typos
+        exclude: "docs/_static"
   - repo: https://github.com/python-formate/flake8-dunder-all
     rev: v0.4.1
     hooks:

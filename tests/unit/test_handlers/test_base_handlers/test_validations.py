@@ -2,17 +2,12 @@ from dataclasses import dataclass
 
 import pytest
 
-from litestar import Litestar, post
+from litestar import Litestar, get, post
 from litestar.dto import DTOData
 from litestar.exceptions import ImproperlyConfiguredException
-from litestar.handlers.base import BaseRouteHandler
-
-
-def test_raise_no_fn_validation() -> None:
-    handler = BaseRouteHandler(path="/")
-
-    with pytest.raises(ImproperlyConfiguredException):
-        handler.fn
+from litestar.middleware import ASGIMiddleware
+from litestar.middleware.constraints import ConstraintViolationError, MiddlewareConstraints
+from litestar.types import ASGIApp, Receive, Scope, Send
 
 
 def test_dto_data_annotation_with_no_resolved_dto() -> None:
@@ -29,3 +24,26 @@ def test_dto_data_annotation_with_no_resolved_dto() -> None:
 
     with pytest.raises(ImproperlyConfiguredException):
         Litestar(route_handlers=[async_hello_world])
+
+
+def test_check_middleware_constraints() -> None:
+    class MiddlewareOne(ASGIMiddleware):
+        async def handle(self, scope: Scope, receive: Receive, send: Send, next_app: ASGIApp) -> None:
+            pass
+
+    class MiddlewareTwo(ASGIMiddleware):
+        constraints = MiddlewareConstraints(after=(MiddlewareOne,))
+
+        async def handle(self, scope: Scope, receive: Receive, send: Send, next_app: ASGIApp) -> None:
+            pass
+
+    @get("/", middleware=[MiddlewareOne()])
+    async def handler() -> None:
+        pass
+
+    with pytest.raises(
+        ConstraintViolationError,
+        match="All instances of .*MiddlewareTwo' must come after any instance of .*MiddlewareOne'. "
+        "Found instance of .*MiddlewareTwo' at index 0, instance of .*MiddlewareOne' at index 1",
+    ):
+        Litestar([handler], middleware=[MiddlewareTwo()])
