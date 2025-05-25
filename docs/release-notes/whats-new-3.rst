@@ -343,4 +343,4 @@ startup.
 
 .. seealso::
 
-    :ref:`usage/middleware/creating-middleware:configuration-constraints
+    :ref:`usage/middleware/creating-middleware:Configuration constraints`
