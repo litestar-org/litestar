@@ -294,3 +294,42 @@ def test_optional_query_parameter_consistency_with_default_queried_with_other_pa
     assert optional_default_client.get("/optional-default", params={"param": "a"}).json() == {"key": None}
     assert optional_default_client.get("/optional-annotated-default", params={"abc": "xyz"}).json() == {"key": None}
     assert optional_default_client.get("/optional-annotated-default", params={"param": "a"}).json() == {"key": None}
+
+
+def test_not_included_in_schema_param_as_annotated() -> None:
+    @get(path="/")
+    def handler(param: Annotated[str, Parameter(include_in_schema=True)]) -> str:
+        return param
+
+    with create_test_client(handler) as client:
+        response = client.get("/")
+        assert response.status_code == HTTP_400_BAD_REQUEST
+
+        response = client.get("/?param=a")
+        assert response.status_code == HTTP_200_OK
+        assert response.text == "a"
+
+
+def test_not_included_in_schema_param_as_default() -> None:
+    @get(path="/")
+    def handler(param: str = Parameter(include_in_schema=True)) -> str:
+        return param
+
+    with create_test_client(handler) as client:
+        response = client.get("/")
+        assert response.status_code == HTTP_400_BAD_REQUEST
+
+        response = client.get("/?param=a")
+        assert response.status_code == HTTP_200_OK
+        assert response.text == "a"
+
+
+def test_not_included_in_schema_param_with_default_value() -> None:
+    @get(path="/")
+    def handler(param: str = Parameter(default="b", include_in_schema=True)) -> str:
+        return param
+
+    with create_test_client(handler) as client:
+        response = client.get("/")
+        assert response.status_code == HTTP_200_OK
+        assert response.text == "b"
