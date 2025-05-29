@@ -51,6 +51,7 @@ class Router:
     """
 
     __slots__ = (
+        "__weakref__",
         "after_request",
         "after_response",
         "before_request",
