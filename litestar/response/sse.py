@@ -268,10 +268,7 @@ class _ASGIStreamingSSEResponse(ASGIStreamingResponse):
 class _SSEStream(Stream):
     """An HTTP response that streams the response data as a series of ASGI ``http.response.body`` events."""
 
-    __slots__ = (
-        "iterator",
-        "ping_interval",
-    )
+    __slots__ = ("ping_interval",)
 
     def __init__(
         self,
