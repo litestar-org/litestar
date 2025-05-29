@@ -106,10 +106,10 @@ async def test_sse_ping_events() -> None:
     async def handler() -> ServerSentEvent:
         async def slow_generator() -> AsyncIterator[SSEData]:
             for i in range(1):
-                await anyio.sleep(1)
+                await anyio.sleep(0.1)
                 yield i
 
-        return ServerSentEvent(content=slow_generator(), ping_interval=0.1)
+        return ServerSentEvent(content=slow_generator(), ping_interval=0.01)
 
     async with create_async_test_client(handler) as client:
         async with aconnect_sse(client, "GET", f"{client.base_url}/test_ping") as event_source:
@@ -122,6 +122,6 @@ async def test_sse_ping_events() -> None:
             assert events[10].data == "0"
 
 
-async def test_sse_negatove_ping_interval() -> None:
+async def test_sse_negative_ping_interval() -> None:
     with pytest.raises(ValueError):
         ServerSentEvent(content="content", ping_interval=-2)
