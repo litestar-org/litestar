@@ -4,7 +4,7 @@ import itertools
 from functools import partial
 from typing import TYPE_CHECKING, Any, AsyncGenerator, AsyncIterable, AsyncIterator, Callable, Iterable, Iterator, Union
 
-from anyio import CancelScope, Event, create_task_group, sleep
+from anyio import CancelScope, create_task_group
 
 from litestar.enums import MediaType
 from litestar.response.base import ASGIResponse, Response
@@ -145,130 +145,10 @@ class ASGIStreamingResponse(ASGIResponse):
             await self._listen_for_disconnect(cancel_scope=task_group.cancel_scope, receive=receive)
 
 
-class ASGIStreamingSSEResponse(ASGIStreamingResponse):
-    """A streaming response which support sending ping messages specific for SSE."""
-
-    __slots__ = (
-        "is_content_end",
-        "ping_interval",
-    )
-
-    def __init__(
-        self,
-        *,
-        iterator: StreamType,
-        background: BackgroundTask | BackgroundTasks | None = None,
-        body: bytes | str = b"",
-        content_length: int | None = None,
-        cookies: Iterable[Cookie] | None = None,
-        encoded_headers: Iterable[tuple[bytes, bytes]] | None = None,
-        encoding: str = "utf-8",
-        headers: dict[str, Any] | None = None,
-        is_head_response: bool = False,
-        media_type: MediaType | str | None = None,
-        status_code: int | None = None,
-        ping_interval: float = 0,
-    ) -> None:
-        """A SSE ASGI streaming response.
-
-        Args:
-            background: A background task or a list of background tasks to be executed after the response is sent.
-            body: encoded content to send in the response body.
-                .. deprecated:: 2.16
-            content_length: The response content length.
-            cookies: The response cookies.
-            encoded_headers: The response headers.
-            encoding: The response encoding.
-            headers: The response headers.
-            is_head_response: A boolean indicating if the response is a HEAD response.
-            iterator: An async iterator or iterable.
-            media_type: The response media type.
-            status_code: The response status code.
-            ping_interval: The interval in seconds between "ping" messages.
-            is_content_end: Indicates the ending of content in the iterator, e.g., use to stop sending ping events.
-        """
-        super().__init__(
-            iterator=iterator,
-            background=background,
-            body=body,
-            content_length=content_length,
-            cookies=cookies,
-            encoding=encoding,
-            headers=headers,
-            is_head_response=is_head_response,
-            media_type=media_type,
-            status_code=status_code,
-            encoded_headers=encoded_headers,
-        )
-        self.ping_interval = ping_interval
-        self.is_content_end = Event()
-
-    async def _send_ping_event(self, send: Send) -> None:
-        """Send ping events every `ping_interval` second.
-
-        Args:
-            send: The ASGI Send function.
-
-        Returns:
-            None
-        """
-        if not self.ping_interval:
-            return
-
-        ping_event: HTTPResponseBodyEvent = {
-            "type": "http.response.body",
-            "body": b"event: ping\r\n\r\n",
-            "more_body": True,
-        }
-
-        while not self.is_content_end.is_set():
-            await send(ping_event)
-            await sleep(self.ping_interval)
-
-    async def _stream(self, send: Send) -> None:
-        """Send the chunks from the iterator as a stream of ASGI 'http.response.body' events.
-
-        Args:
-            send: The ASGI Send function.
-
-        Returns:
-            None
-        """
-        async for chunk in self.iterator:
-            stream_event: HTTPResponseBodyEvent = {
-                "type": "http.response.body",
-                "body": chunk if isinstance(chunk, bytes) else chunk.encode(self.encoding),
-                "more_body": True,
-            }
-            await send(stream_event)
-        terminus_event: HTTPResponseBodyEvent = {"type": "http.response.body", "body": b"", "more_body": False}
-        self.is_content_end.set()
-        await send(terminus_event)
-
-    async def send_body(self, send: Send, receive: Receive) -> None:
-        """Emit a stream of events correlating with the response body.
-
-        Args:
-            send: The ASGI send function.
-            receive: The ASGI receive function.
-
-        Returns:
-            None
-        """
-
-        async with create_task_group() as task_group:
-            task_group.start_soon(partial(self._stream, send))
-            task_group.start_soon(partial(self._send_ping_event, send))
-            await self._listen_for_disconnect(cancel_scope=task_group.cancel_scope, receive=receive)
-
-
 class Stream(Response[StreamType[Union[str, bytes]]]):
     """An HTTP response that streams the response data as a series of ASGI ``http.response.body`` events."""
 
-    __slots__ = (
-        "iterator",
-        "ping_interval",
-    )
+    __slots__ = ("iterator",)
 
     def __init__(
         self,
@@ -280,7 +160,6 @@ class Stream(Response[StreamType[Union[str, bytes]]]):
         headers: ResponseHeaders | None = None,
         media_type: MediaType | OpenAPIMediaType | str | None = None,
         status_code: int | None = None,
-        ping_interval: float = 0,
     ) -> None:
         """Initialize the response.
 
@@ -295,7 +174,6 @@ class Stream(Response[StreamType[Union[str, bytes]]]):
             headers: A string keyed dictionary of response headers. Header keys are insensitive.
             media_type: A value for the response ``Content-Type`` header.
             status_code: An HTTP status code.
-            ping_interval: The interval in seconds between "ping" messages.
         """
         super().__init__(
             background=background,
@@ -307,10 +185,6 @@ class Stream(Response[StreamType[Union[str, bytes]]]):
             status_code=status_code,
         )
         self.iterator = content
-
-        if ping_interval < 0:
-            raise ValueError("argument ping_interval must be not negative")
-        self.ping_interval = ping_interval
 
     def to_asgi_response(
         self,
@@ -361,7 +235,7 @@ class Stream(Response[StreamType[Union[str, bytes]]]):
         if not isinstance(iterator, (Iterable, Iterator, AsyncIterable, AsyncIterator)) and callable(iterator):
             iterator = iterator()
 
-        return ASGIStreamingSSEResponse(
+        return ASGIStreamingResponse(
             background=self.background or background,
             content_length=0,
             cookies=cookies,
@@ -372,5 +246,4 @@ class Stream(Response[StreamType[Union[str, bytes]]]):
             iterator=iterator,
             media_type=media_type,
             status_code=self.status_code or status_code,
-            ping_interval=self.ping_interval,
         )
