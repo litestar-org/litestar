@@ -148,7 +148,7 @@ class ServerSentEventMessage:
         return buffer.getvalue().encode("utf-8")
 
 
-class _ASGIStreamingSSEResponse(ASGIStreamingResponse):
+class ASGIStreamingSSEResponse(ASGIStreamingResponse):
     """A streaming response which support sending ping messages specific for SSE."""
 
     __slots__ = (
@@ -265,7 +265,7 @@ class _ASGIStreamingSSEResponse(ASGIStreamingResponse):
             await self._listen_for_disconnect(cancel_scope=task_group.cancel_scope, receive=receive)
 
 
-class _SSEStream(Stream):
+class SSEStream(Stream):
     """An HTTP response that streams the response data as a series of ASGI ``http.response.body`` events."""
 
     __slots__ = ("ping_interval",)
@@ -361,7 +361,7 @@ class _SSEStream(Stream):
         if not isinstance(iterator, (Iterable, Iterator, AsyncIterable, AsyncIterator)) and callable(iterator):
             iterator = iterator()
 
-        return _ASGIStreamingSSEResponse(
+        return ASGIStreamingSSEResponse(
             background=self.background or background,
             content_length=0,
             cookies=cookies,
@@ -376,7 +376,9 @@ class _SSEStream(Stream):
         )
 
 
-class ServerSentEvent(_SSEStream):
+class ServerSentEvent(SSEStream):
+    """docs."""
+
     def __init__(
         self,
         content: str | bytes | StreamType[SSEData],
