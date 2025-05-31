@@ -20,7 +20,7 @@ commonly used optional dependencies.
 .. code-block:: shell
     :caption: Install the standard group
 
-    pip install litestar[standard]
+    pip install 'litestar[standard]'
 
 Once you have installed ``standard``, you will have access to the ``litestar run`` command.
 

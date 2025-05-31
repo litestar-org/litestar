@@ -3800,7 +3800,7 @@ backport of <a class="reference external" href="https://docs.python.org/3/librar
 <dt>Fix misleading error message for missing dependencies provide by a package extra<a class="headerlink reference internal" href="#2.5.1-fix misleading error message for missing dependencies provide by a package extra" id="2.5.1-fix misleading error message for missing dependencies provide by a package extra">#</a></dt><dd><div class="changelog-change docutils container">
 <p>Ensure that <a class="reference internal" href="../reference/exceptions.html#litestar.exceptions.MissingDependencyException" title="litestar.exceptions.MissingDependencyException"><code class="xref py py-exc docutils literal notranslate"><span class="pre">MissingDependencyException</span></code></a> includes the correct name of the
 package to install if the package name differs from the Litestar package extra.
-(e.g. <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">litestar[jinja]</span></code> vs <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">jinja2</span></code>). Previously the
+(e.g. <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">'litestar[jinja]'</span></code> vs <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">jinja2</span></code>). Previously the
 exception assumed the same name for both the package and package-extra name.</p>
 <p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/2921">litestar-org/litestar#2921</a></span></p>
 </div>

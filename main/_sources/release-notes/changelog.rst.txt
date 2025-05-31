@@ -2507,7 +2507,7 @@
 
         Ensure that :exc:`MissingDependencyException` includes the correct name of the
         package to install if the package name differs from the Litestar package extra.
-        (e.g. ``pip install litestar[jinja]`` vs ``pip install jinja2``). Previously the
+        (e.g. ``pip install 'litestar[jinja]'`` vs ``pip install jinja2``). Previously the
         exception assumed the same name for both the package and package-extra name.
 
 
