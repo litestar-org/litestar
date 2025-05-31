@@ -116,12 +116,20 @@ entries should point to a :class:`click.Command` or :class:`click.Group`:
             [project.entry-points."litestar.commands"]
             my_command = "my_litestar_plugin.cli:main"
 
-    .. tab-item:: Poetry
+    .. tab-item:: poetry
 
         .. code-block:: toml
-            :caption: Using `Poetry <https://python-poetry.org/>`_
+            :caption: Using `poetry <https://python-poetry.org/>`_
 
             [tool.poetry.plugins."litestar.commands"]
+            my_command = "my_litestar_plugin.cli:main"
+
+    .. tab-item:: uv
+
+        .. code-block:: toml
+            :caption: Using `uv <https://docs.astral.sh/uv/>`_
+
+            [project.scripts]
             my_command = "my_litestar_plugin.cli:main"
 
 Using a plugin
