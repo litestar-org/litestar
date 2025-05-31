@@ -150,7 +150,7 @@ use in order to interact with application servers like
 `uvicorn <https://www.uvicorn.org/>`_ that actually implement the HTTP protocol and
 handle it for you.
 
-If you installed Litestar with ``pip install litestar[standard]``, this will have
+If you installed Litestar with ``pip install 'litestar[standard]'``, this will have
 included *uvicorn*, as well as the Litestar CLI. The CLI provides a convenient wrapper
 around uvicorn, allowing you to easily run applications without the need for much
 configuration.
