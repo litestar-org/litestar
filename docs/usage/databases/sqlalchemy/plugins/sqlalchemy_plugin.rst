@@ -20,7 +20,7 @@ Or, skip ahead to :doc:`/usage/databases/sqlalchemy/plugins/sqlalchemy_init_plug
 
 .. tip::
 
-    You can install SQLAlchemy alongside Litestar by running ``pip install litestar[sqlalchemy]``.
+    You can install SQLAlchemy alongside Litestar by running ``pip install 'litestar[sqlalchemy]'``.
 
 Example
 =======

@@ -136,8 +136,8 @@ def test_create_exception_response_utility_non_http_exception(media_type: MediaT
 def test_missing_dependency_exception() -> None:
     exc = MissingDependencyException("some_package")
     expected = (
-        "Package 'some_package' is not installed but required. You can install it by running 'pip install "
-        "litestar[some_package]' to install litestar with the required extra or 'pip install some_package' to install "
+        "Package 'some_package' is not installed but required. You can install it by running `pip install "
+        "'litestar[some_package]'` to install litestar with the required extra or 'pip install some_package' to install "
         "the package separately"
     )
     assert str(exc) == expected
@@ -146,8 +146,8 @@ def test_missing_dependency_exception() -> None:
 def test_missing_dependency_exception_differing_package_name() -> None:
     exc = MissingDependencyException("some_package", "install_via_this", "other-extra")
     expected = (
-        "Package 'some_package' is not installed but required. You can install it by running 'pip install "
-        "litestar[other-extra]' to install litestar with the required extra or 'pip install install_via_this' to "
+        "Package 'some_package' is not installed but required. You can install it by running `pip install "
+        "'litestar[other-extra]'` to install litestar with the required extra or 'pip install install_via_this' to "
         "install the package separately"
     )
 

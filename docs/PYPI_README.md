@@ -60,7 +60,7 @@ pip install litestar
 ```
 or to include the CLI and a server (uvicorn) for running your application:
 ```shell
-pip install litestar[standard]
+pip install 'litestar[standard]'
 ```
 
 ## Quick Start
