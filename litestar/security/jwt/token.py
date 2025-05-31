@@ -13,6 +13,7 @@ from litestar.exceptions import ImproperlyConfiguredException, NotAuthorizedExce
 if TYPE_CHECKING:
     from collections.abc import Sequence
 
+    from jwt.algorithms import AllowedPrivateKeys
     from typing_extensions import Self
 
 __all__ = (
@@ -194,12 +195,18 @@ class Token:
         ) as e:
             raise NotAuthorizedException("Invalid token") from e
 
-    def encode(self, secret: str, algorithm: str) -> str:
+    def encode(
+        self,
+        secret: AllowedPrivateKeys | str | bytes,
+        algorithm: str,
+        headers: dict[str, Any] | None = None,
+    ) -> str:
         """Encode the token instance into a string.
 
         Args:
             secret: The secret with which the JWT is encoded.
             algorithm: The algorithm used to encode the JWT.
+            headers: Optional headers to include in the JWT (e.g., {"kid": "..."}).
 
         Returns:
             An encoded token string.
@@ -212,6 +219,7 @@ class Token:
                 payload={k: v for k, v in asdict(self).items() if v is not None},
                 key=secret,
                 algorithm=algorithm,
+                headers=headers,
             )
         except (jwt.DecodeError, NotImplementedError) as e:
             raise ImproperlyConfiguredException("Failed to encode token") from e
