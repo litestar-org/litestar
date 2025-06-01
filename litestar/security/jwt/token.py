@@ -90,7 +90,7 @@ class Token:
     def decode_payload(
         cls,
         encoded_token: str,
-        secret: str,
+        secret: str | bytes,
         algorithms: list[str],
         issuer: list[str] | None = None,
         audience: str | Sequence[str] | None = None,
@@ -110,7 +110,7 @@ class Token:
     def decode(
         cls,
         encoded_token: str,
-        secret: str,
+        secret: str | bytes,
         algorithm: str,
         audience: str | Sequence[str] | None = None,
         issuer: str | Sequence[str] | None = None,
@@ -194,12 +194,18 @@ class Token:
         ) as e:
             raise NotAuthorizedException("Invalid token") from e
 
-    def encode(self, secret: str, algorithm: str) -> str:
+    def encode(
+        self,
+        secret: str | bytes,
+        algorithm: str,
+        headers: dict[str, Any] | None = None,
+    ) -> str:
         """Encode the token instance into a string.
 
         Args:
             secret: The secret with which the JWT is encoded.
             algorithm: The algorithm used to encode the JWT.
+            headers: Optional headers to include in the JWT (e.g., {"kid": "..."}).
 
         Returns:
             An encoded token string.
@@ -212,6 +218,7 @@ class Token:
                 payload={k: v for k, v in asdict(self).items() if v is not None},
                 key=secret,
                 algorithm=algorithm,
+                headers=headers,
             )
         except (jwt.DecodeError, NotImplementedError) as e:
             raise ImproperlyConfiguredException("Failed to encode token") from e
