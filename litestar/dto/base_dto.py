@@ -107,6 +107,18 @@ class AbstractDTO(Generic[T]):
         """
         return config
 
+    @classmethod
+    def get_dto_factory_for_type(cls, model_type: type[Any]) -> type[AbstractDTO]:
+        """Get the appropriate DTO factory for a given model type.
+
+        Args:
+            model_type: The model type to get the DTO factory for.
+
+        Returns:
+            The DTO factory to use for the given model type.
+        """
+        return cls.config.custom_dto_factories.get(model_type, cls)
+
     def decode_builtins(self, value: dict[str, Any]) -> Any:
         """Decode a dictionary of Python values into an the DTO's datatype."""
 
