@@ -17,7 +17,9 @@ __all__ = (
 def __getattr__(attr_name: str) -> object:
     if attr_name in __all__:
         if attr_name in ("SQLAlchemyAsyncRepository", "SQLAlchemySyncRepository", "ModelT"):
-            module = "litestar.plugins.sqlalchemy.repository"
+            # Fix: Changed from litestar.plugins.sqlalchemy.repository to advanced_alchemy.repository
+            # The original path doesn't exist because sqlalchemy.py is a file, not a package with subdirectories
+            module = "advanced_alchemy.repository"
             from advanced_alchemy.repository import (  # type: ignore[import-not-found] # pyright: ignore[reportMissingImport]
                 ModelT,
                 SQLAlchemyAsyncRepository,
@@ -25,7 +27,9 @@ def __getattr__(attr_name: str) -> object:
             )
 
         elif attr_name == "wrap_sqlalchemy_exception":
-            module = "litestar.plugins.sqlalchemy.exceptions"
+            # Fix: Changed from litestar.plugins.sqlalchemy.exceptions to advanced_alchemy.exceptions
+            # for the same reason as above
+            module = "advanced_alchemy.exceptions"
             from advanced_alchemy.exceptions import (  # type: ignore[import-not-found] # pyright: ignore[reportMissingImport]
                 wrap_sqlalchemy_exception,  # type: ignore[import-not-found] # pyright: ignore[reportMissingImport]
             )
