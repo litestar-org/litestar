@@ -7,9 +7,9 @@ The sync client works as expected.
 
 import asyncio
 from collections.abc import AsyncGenerator
-from typing import Any
 
 import pytest
+
 from litestar import Litestar, websocket_stream
 from litestar.testing import AsyncTestClient, TestClient
 
