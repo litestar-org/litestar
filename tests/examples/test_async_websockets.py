@@ -5,6 +5,8 @@ The async test client does not connect and allow testing websockets.
 The sync client works as expected.
 """
 
+from __future__ import annotations
+
 import asyncio
 from collections.abc import AsyncGenerator
 
