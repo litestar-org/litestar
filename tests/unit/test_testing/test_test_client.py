@@ -336,6 +336,7 @@ async def test_websocket_connect_async(anyio_backend: "AnyIOBackend") -> None:
         WebSocketTestSession.areceive_json,
         WebSocketTestSession.areceive_text,
         WebSocketTestSession.areceive_bytes,
+        WebSocketTestSession.areceive_msgpack,
     ],
 )
 async def test_websocket_test_session_async_receive_methods(
@@ -371,15 +372,19 @@ async def test_websocket_async_receive_methods_functionality(anyio_backend: "Any
         await socket.send_text("text_message")
         await socket.send_bytes(b"bytes_message")
         await socket.send_json({"key": "value"})
+        await socket.send_msgpack({"msgpack": "data"})
         await socket.close()
 
     async with create_async_test_client(handler, backend=anyio_backend, timeout=0.1) as client:
         async with await client.websocket_connect("/") as ws:
             text_data = await ws.areceive_text()
             assert text_data == "text_message"
-
+            
             bytes_data = await ws.areceive_bytes()
             assert bytes_data == b"bytes_message"
-
+            
             json_data = await ws.areceive_json()
             assert json_data == {"key": "value"}
+            
+            msgpack_data = await ws.areceive_msgpack()
+            assert msgpack_data == {"msgpack": "data"}
