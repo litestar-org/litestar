@@ -10,7 +10,6 @@ from collections.abc import AsyncGenerator
 from typing import Any
 
 import pytest
-
 from litestar import Litestar, websocket_stream
 from litestar.testing import AsyncTestClient, TestClient
 
@@ -27,17 +26,17 @@ app = Litestar(route_handlers=[websocket_handler])
 
 
 @pytest.fixture
-def sync_client() -> TestClient[Any]:
+def sync_client() -> TestClient:
     return TestClient(app=app)
 
 
 @pytest.fixture
-def async_client() -> AsyncTestClient[Any]:
+def async_client() -> AsyncTestClient:
     return AsyncTestClient(app=app)
 
 
 def test_websocket_with_sync_client(
-    sync_client: TestClient[Any],
+    sync_client: TestClient,
 ) -> None:
     """This test passes - sync client works with WebSockets."""
     with sync_client as client:
@@ -50,7 +49,7 @@ def test_websocket_with_sync_client(
 
 
 async def test_websocket_with_async_client(
-    async_client: AsyncTestClient[Any],
+    async_client: AsyncTestClient,
 ) -> None:
     """This test should work - async client with proper await for WebSockets."""
     async with async_client as client:
