@@ -8,7 +8,7 @@ The sync client works as expected.
 from __future__ import annotations
 
 import asyncio
-from collections.abc import AsyncGenerator
+from typing import AsyncGenerator
 
 import pytest
 
