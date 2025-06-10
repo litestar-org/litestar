@@ -5,9 +5,10 @@ from typing import TYPE_CHECKING, Any, Generic, Mapping, Sequence, TypeVar
 
 from httpx import USE_CLIENT_DEFAULT, AsyncClient
 
+from litestar.testing.async_websocket_test_session import AsyncWebSocketTestSession
 from litestar.testing.client.base import BaseTestClient
 from litestar.testing.life_span_handler import LifeSpanHandler
-from litestar.testing.transport import ConnectionUpgradeExceptionError, TestClientTransport
+from litestar.testing.transport import TestClientTransport
 from litestar.types import AnyIOBackend, ASGIApp
 
 if TYPE_CHECKING:
@@ -22,7 +23,6 @@ if TYPE_CHECKING:
     from typing_extensions import Self
 
     from litestar.middleware.session.base import BaseBackendConfig
-    from litestar.testing.websocket_test_session import WebSocketTestSession
 
 
 T = TypeVar("T", bound=ASGIApp)
@@ -102,6 +102,61 @@ class AsyncTestClient(AsyncClient, BaseTestClient, Generic[T]):  # type: ignore[
     async def __aexit__(self, *args: Any) -> None:
         await self.exit_stack.aclose()
 
+    def _prepare_ws_connect_scope(
+        self,
+        url: str,
+        subprotocols: Sequence[str] | None = None,
+        params: QueryParamTypes | None = None,
+        headers: HeaderTypes | None = None,
+        cookies: CookieTypes | None = None,
+        extensions: Mapping[str, Any] | None = None,
+    ) -> dict[str, Any]:
+        """Prepare WebSocket scope for connection."""
+        # Build the request to get proper URL and headers
+        request = self._prepare_ws_connect_request(
+            url=url,
+            subprotocols=subprotocols,
+            params=params,
+            headers=headers,
+            cookies=cookies,
+            extensions=extensions,
+        )
+
+        # Parse request to get basic scope
+        from urllib.parse import unquote
+
+        scheme = request.url.scheme
+        netloc = unquote(request.url.netloc.decode(encoding="ascii"))
+        path = request.url.path
+        raw_path = request.url.raw_path
+        query = request.url.query.decode(encoding="ascii")
+        default_port = 433 if scheme in {"https", "wss"} else 80
+
+        if ":" in netloc:
+            host, port_string = netloc.split(":", 1)
+            port = int(port_string)
+        else:
+            host = netloc
+            port = default_port
+
+        host_header = request.headers.get("host", host if port == default_port else f"{host}:{port}")
+
+        # Convert headers to ASGI format
+        headers_list = [(k.lower().encode(), v.encode()) for k, v in (("host", host_header), *request.headers.items())]
+
+        return {
+            "type": "websocket",
+            "path": unquote(path),
+            "raw_path": raw_path,
+            "root_path": "",
+            "scheme": scheme,
+            "query_string": query.encode(),
+            "headers": headers_list,
+            "client": ("testclient", 50000),
+            "server": (host, port),
+            "subprotocols": subprotocols or [],
+        }
+
     async def websocket_connect(
         self,
         url: str,
@@ -113,7 +168,7 @@ class AsyncTestClient(AsyncClient, BaseTestClient, Generic[T]):  # type: ignore[
         follow_redirects: bool | UseClientDefault = USE_CLIENT_DEFAULT,
         timeout: TimeoutTypes | UseClientDefault = USE_CLIENT_DEFAULT,
         extensions: Mapping[str, Any] | None = None,
-    ) -> WebSocketTestSession:
+    ) -> AsyncWebSocketTestSession:
         """Sends a GET request to establish a websocket connection.
 
         Args:
@@ -128,26 +183,20 @@ class AsyncTestClient(AsyncClient, BaseTestClient, Generic[T]):  # type: ignore[
             extensions: Dictionary of ASGI extensions.
 
         Returns:
-            A `WebSocketTestSession <litestar.testing.WebSocketTestSession>` instance.
+            A `AsyncWebSocketTestSession <litestar.testing.AsyncWebSocketTestSession>` instance.
         """
-        try:
-            await self.send(
-                self._prepare_ws_connect_request(
-                    url=url,
-                    subprotocols=subprotocols,
-                    params=params,
-                    headers=headers,
-                    cookies=cookies,
-                    extensions=extensions,
-                    timeout=timeout,
-                ),
-                auth=auth,
-                follow_redirects=follow_redirects,
-            )
-        except ConnectionUpgradeExceptionError as exc:
-            return exc.session
+        # Create WebSocket scope manually
+        scope = self._prepare_ws_connect_scope(
+            url=url,
+            subprotocols=subprotocols,
+            params=params,
+            headers=headers,
+            cookies=cookies,
+            extensions=extensions,
+        )
 
-        raise RuntimeError("Expected WebSocket upgrade")  # pragma: no cover
+        # Return AsyncWebSocketTestSession directly
+        return AsyncWebSocketTestSession(client=self, scope=scope)
 
     async def get_session_data(self) -> dict[str, Any]:
         """Get session data.

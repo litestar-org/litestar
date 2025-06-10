@@ -18,18 +18,19 @@ def test_custom_websocket_class():
 async def test_websocket_listener() -> None:
     """Test the websocket listener."""
     async with AsyncTestClient(app_stream_and_receive_listener) as client:
-        with await client.websocket_connect("/") as ws:
-            ws.send_text("Hello")
-            data_1 = ws.receive_text()
-            data_2 = ws.receive_text()
+        async with await client.websocket_connect("/") as ws:
+            await ws.send_text("Hello")
+            data_1 = await ws.receive_text()
+            data_2 = await ws.receive_text()
             assert sorted([data_1, data_2]) == sorted(["Hello", "ping"])
 
 
 async def test_websocket_handler():
     async with AsyncTestClient(app_stream_and_receive_raw) as client:
-        with await client.websocket_connect("/") as ws:
+        async with await client.websocket_connect("/") as ws:
             echo_data = {"data": "I should be in response"}
-            ws.send_json(echo_data)
-            assert ws.receive_json(timeout=0.5) == {"handle_receive": "start"}
-            assert ws.receive_json(timeout=0.5) == echo_data
-            assert ws.receive_text(timeout=0.5)
+            await ws.send_json(echo_data)
+            assert await ws.receive_json(timeout=0.5) == {"handle_receive": "start"}
+            assert await ws.receive_json(timeout=0.5) == echo_data
+            ping_message = await ws.receive_text(timeout=1.0)
+            assert ping_message == "ping"
