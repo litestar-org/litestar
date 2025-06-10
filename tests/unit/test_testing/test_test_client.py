@@ -377,9 +377,9 @@ async def test_websocket_async_receive_methods_functionality(anyio_backend: "Any
         async with await client.websocket_connect("/") as ws:
             text_data = await ws.areceive_text()
             assert text_data == "text_message"
-            
+
             bytes_data = await ws.areceive_bytes()
             assert bytes_data == b"bytes_message"
-            
+
             json_data = await ws.areceive_json()
             assert json_data == {"key": "value"}
