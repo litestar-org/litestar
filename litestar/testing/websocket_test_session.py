@@ -258,22 +258,27 @@ class WebSocketTestSession:
     # Async versions of receive methods
     async def areceive(self, block: bool = True, timeout: float | None = None) -> WebSocketSendMessage:
         """Async version of receive method."""
+        await sleep(0)  # Allow other coroutines to run
         return self.receive(block=block, timeout=timeout)
 
     async def areceive_text(self, block: bool = True, timeout: float | None = None) -> str:
         """Async version of receive_text method."""
+        await sleep(0)  # Allow other coroutines to run
         return self.receive_text(block=block, timeout=timeout)
 
     async def areceive_bytes(self, block: bool = True, timeout: float | None = None) -> bytes:
         """Async version of receive_bytes method."""
+        await sleep(0)  # Allow other coroutines to run
         return self.receive_bytes(block=block, timeout=timeout)
 
     async def areceive_json(
         self, mode: Literal["text", "binary"] = "text", block: bool = True, timeout: float | None = None
     ) -> Any:
         """Async version of receive_json method."""
+        await sleep(0)  # Allow other coroutines to run
         return self.receive_json(mode=mode, block=block, timeout=timeout)
 
     async def areceive_msgpack(self, block: bool = True, timeout: float | None = None) -> Any:
         """Async version of receive_msgpack method."""
+        await sleep(0)  # Allow other coroutines to run
         return self.receive_msgpack(block=block, timeout=timeout)
