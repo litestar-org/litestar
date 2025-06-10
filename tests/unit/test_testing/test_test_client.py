@@ -326,3 +326,60 @@ async def test_websocket_connect_async(anyio_backend: "AnyIOBackend") -> None:
             ws.send_json({"data": "123"})
             data = ws.receive_json()
             assert data == {"data": "123"}
+
+
+@pytest.mark.parametrize("block,timeout", [(False, None), (False, 0.001), (True, 0.001)])
+@pytest.mark.parametrize(
+    "areceive_method",
+    [
+        WebSocketTestSession.areceive,
+        WebSocketTestSession.areceive_json,
+        WebSocketTestSession.areceive_text,
+        WebSocketTestSession.areceive_bytes,
+    ],
+)
+async def test_websocket_test_session_async_receive_methods(
+    areceive_method: Callable[..., Any], block: bool, timeout: Optional[float], anyio_backend: "AnyIOBackend"
+) -> None:
+    @websocket()
+    async def handler(socket: WebSocket) -> None:
+        await socket.accept()
+
+    with pytest.raises(Empty):
+        async with create_async_test_client(handler, backend=anyio_backend) as client:
+            async with await client.websocket_connect("/") as ws:
+                await areceive_method(ws, timeout=timeout, block=block)
+
+
+async def test_websocket_async_context_manager(anyio_backend: "AnyIOBackend") -> None:
+    @websocket()
+    async def handler(socket: WebSocket) -> None:
+        await socket.accept()
+        await socket.send_text("hello")
+        await socket.close()
+
+    async with create_async_test_client(handler, backend=anyio_backend, timeout=0.1) as client:
+        async with await client.websocket_connect("/") as ws:
+            data = await ws.areceive_text()
+            assert data == "hello"
+
+
+async def test_websocket_async_receive_methods_functionality(anyio_backend: "AnyIOBackend") -> None:
+    @websocket()
+    async def handler(socket: WebSocket) -> None:
+        await socket.accept()
+        await socket.send_text("text_message")
+        await socket.send_bytes(b"bytes_message")
+        await socket.send_json({"key": "value"})
+        await socket.close()
+
+    async with create_async_test_client(handler, backend=anyio_backend, timeout=0.1) as client:
+        async with await client.websocket_connect("/") as ws:
+            text_data = await ws.areceive_text()
+            assert text_data == "text_message"
+            
+            bytes_data = await ws.areceive_bytes()
+            assert bytes_data == b"bytes_message"
+            
+            json_data = await ws.areceive_json()
+            assert json_data == {"key": "value"}
