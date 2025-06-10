@@ -25,6 +25,7 @@ if TYPE_CHECKING:
     from litestar.types import (
         WebSocketConnectEvent,
         WebSocketDisconnectEvent,
+        WebSocketReceiveEvent,
         WebSocketReceiveMessage,
         WebSocketScope,
         WebSocketSendMessage,
@@ -152,10 +153,10 @@ class AsyncWebSocketTestSession:
         """Send data to WebSocket."""
         if mode == "text":
             data = data.decode(encoding) if isinstance(data, bytes) else data
-            event: WebSocketReceiveMessage = {"type": "websocket.receive", "text": data}
+            event: WebSocketReceiveEvent = {"type": "websocket.receive", "text": data, "bytes": None}
         else:
             data = data if isinstance(data, bytes) else data.encode(encoding)
-            event = {"type": "websocket.receive", "bytes": data}
+            event = {"type": "websocket.receive", "text": None, "bytes": data}
 
         await self.receive_queue.put(event)
 
