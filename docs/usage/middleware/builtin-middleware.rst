@@ -243,6 +243,45 @@ To use the rate limit middleware, use the :class:`~litestar.middleware.rate_limi
 The only required configuration kwarg is ``rate_limit``, which expects a tuple containing a time-unit (``"second"``,
 ``"minute"``, ``"hour"``, ``"day"``\ ) and a value for the request quota (integer).
 
+Rate-Limit on Endpoints
+^^^^^^^^^^^^^^^^^^^^^^^
+
+The rate limit middleware can be applied to any layer in the application.
+
+For example, to configure rate limit on certain endpoints:
+.. literalinclude:: /examples/middleware/rate_limit_endpoint.py
+    :language: python
+
+Rate-Limit Multiple Layers
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+If the default rate limit middleware is configured on multiple layers and they have overlapping
+endpoints, request to the same endpoint may be counted multiple times.
+
+One simple way this can be mitigated is by defining a different backend store for each layer:
+.. literalinclude:: /examples/middleware/rate_limit_multilayer.py
+    :language: python
+
+Alternatively, keep it simple and choose either rate-limiting the entire application
+or rate-limiting per endpoint.
+
+Behaviour
+^^^^^^^^^
+
+The default rate limit behaviour is partitioned by the request host, and it is determined
+from the following in order of priority:
+* HTTP-Header "X-Forwarded-For"
+* HTTP-Header "X-Real-IP"
+* Request scope's "client" host
+If none of them is found, the key falls back to the string ``"annonymous"``
+
+Customizing Behaviour
+^^^^^^^^^^^^^^^^^^^^^
+
+Sometimes, we may want to configure the rate-limit partition on endpoint rather than connection
+identity. We can achieve this by passing in our own middleware to the configuration.
+.. literalinclude:: /examples/middleware/rate_limit_by_path.py
+    :language: python
 
 Logging Middleware
 ------------------
