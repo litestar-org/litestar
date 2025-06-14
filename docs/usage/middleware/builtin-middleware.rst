@@ -278,7 +278,7 @@ This identity function is generated using:
 * HTTP-Header "X-Forwarded-For"
 * HTTP-Header "X-Real-IP"
 * Request scope's "client" host
-* If none of the above is found, the key falls back to the string ``"annonymous"``
+* If none of the above is found, the key falls back to the string ``"anonymous"``
 
 Customizing Behaviour
 ^^^^^^^^^^^^^^^^^^^^^
