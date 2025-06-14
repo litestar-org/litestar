@@ -243,6 +243,51 @@ To use the rate limit middleware, use the :class:`~litestar.middleware.rate_limi
 The only required configuration kwarg is ``rate_limit``, which expects a tuple containing a time-unit (``"second"``,
 ``"minute"``, ``"hour"``, ``"day"``\ ) and a value for the request quota (integer).
 
+Rate-Limit on Endpoints
+^^^^^^^^^^^^^^^^^^^^^^^
+
+The rate limit middleware can be applied to any layer in the application.
+
+For example, to configure rate limit on certain endpoints:
+
+.. literalinclude:: /examples/middleware/rate_limit_endpoint.py
+    :language: python
+
+Rate-Limit Multiple Layers
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+If the default rate limit middleware is configured on multiple layers and they have overlapping
+endpoints, requests to the same endpoint may be counted multiple times on the way in.
+
+One simple way this can be mitigated is by defining a different backend store for each layer:
+
+.. literalinclude:: /examples/middleware/rate_limit_multilayer.py
+    :language: python
+
+Alternatively, keep it simple! Choose either rate-limiting the entire application or rate-limiting per endpoint.
+
+Default Behaviour
+^^^^^^^^^^^^^^^^^
+
+Entries for computing rate-limiting are, by default stored in memory using a key that is generated using an identity function.
+This identity function is generated using:
+
+1. The name of the middleware class (default: ``RateLimitMiddleware``)
+2. An identifier for the "source" of the request, from the following in order of priority:
+
+* HTTP-Header ``X-Forwarded-For``
+* HTTP-Header ``X-Real-IP``
+* Request scope's "client" host
+* If none of the above is found, such as when using a unix socket to host the app, the key falls back to the string ``"anonymous"``
+
+Customizing Behaviour
+^^^^^^^^^^^^^^^^^^^^^
+
+Sometimes, we may want to configure the rate-limit partition on endpoint rather than connection
+identity. We can achieve this by passing in our own middleware to the configuration.
+
+.. literalinclude:: /examples/middleware/rate_limit_by_path.py
+    :language: python
 
 Logging Middleware
 ------------------
