@@ -11,7 +11,10 @@ class EndpointRateLimitMiddleware(RateLimitMiddleware):
         return f"{type(self).__name__}::{identifier}"
 
 
-rate_limit_config = RateLimitConfig(rate_limit=("minute", 1))
+rate_limit_config = RateLimitConfig(
+    rate_limit=("minute", 1),
+    middleware_class=EndpointRateLimitMiddleware,
+)
 
 
 @get("/one", media_type=MediaType.TEXT, sync_to_thread=False)
