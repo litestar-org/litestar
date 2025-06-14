@@ -275,8 +275,8 @@ This identity function is generated using:
 1. The name of the middleware class (default: ``RateLimitMiddleware``)
 2. An identifier for the "source" of the request, from the following in order of priority:
 
-* HTTP-Header "X-Forwarded-For"
-* HTTP-Header "X-Real-IP"
+* HTTP-Header ``X-Forwarded-For``
+* HTTP-Header ``X-Real-IP``
 * Request scope's "client" host
 * If none of the above is found, such as when using a unix socket to host the app, the key falls back to the string ``"anonymous"``
 
