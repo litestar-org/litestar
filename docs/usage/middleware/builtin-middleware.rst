@@ -257,27 +257,28 @@ Rate-Limit Multiple Layers
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 If the default rate limit middleware is configured on multiple layers and they have overlapping
-endpoints, request to the same endpoint may be counted multiple times.
+endpoints, requests to the same endpoint may be counted multiple times on the way in.
 
 One simple way this can be mitigated is by defining a different backend store for each layer:
 
 .. literalinclude:: /examples/middleware/rate_limit_multilayer.py
     :language: python
 
-Alternatively, keep it simple and choose either rate-limiting the entire application
-or rate-limiting per endpoint.
+Alternatively, keep it simple! Choose either rate-limiting the entire application or rate-limiting per endpoint.
 
 Default Behaviour
 ^^^^^^^^^^^^^^^^^
 
-The default rate limit behaviour is partitioned by the request host, and it is determined
-from the following in order of priority:
+Entries for computing rate-limiting are, by default stored in memory using a key that is generated using an identity function.
+This identity function is generated using:
+
+1. The name of the middleware class (default: ``RateLimitMiddleware``)
+2. An identifier for the "source" of the request, from the following in order of priority:
 
 * HTTP-Header "X-Forwarded-For"
 * HTTP-Header "X-Real-IP"
 * Request scope's "client" host
-
-If none of them is found, the key falls back to the string ``"annonymous"``
+* If none of the above is found, the key falls back to the string ``"annonymous"``
 
 Customizing Behaviour
 ^^^^^^^^^^^^^^^^^^^^^
