@@ -183,7 +183,7 @@ access the request instance:
    @get(path="/")
    def my_route_handler(request: Request) -> dict:
        schema = request.app.openapi_schema
-       return schema.dict()
+       return schema.to_schema()
 
 
 Customizing Pydantic model schemas
