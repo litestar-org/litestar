@@ -52,7 +52,7 @@ intersphinx_mapping = {
     "sqlalchemy": ("https://docs.sqlalchemy.org/en/20/", None),
     "alembic": ("https://alembic.sqlalchemy.org/en/latest/", None),
     "click": ("https://click.palletsprojects.com/en/8.1.x/", None),
-    "redis": ("https://redis-py-doc.readthedocs.io/en/stable/", None),
+    "redis": ("https://redis.readthedocs.io/en/stable/", None),
     "picologging": ("https://microsoft.github.io/picologging", None),
     "structlog": ("https://www.structlog.org/en/stable/", None),
     "tortoise": ("https://tortoise.github.io/", None),
