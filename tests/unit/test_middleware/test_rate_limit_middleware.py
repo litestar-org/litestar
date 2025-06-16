@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from time import time
 from typing import TYPE_CHECKING, Any
 
@@ -257,3 +257,65 @@ async def test_rate_limiting_works_with_cache() -> None:
 
         response = client.get("/")
         assert response.status_code == HTTP_429_TOO_MANY_REQUESTS
+
+
+@pytest.mark.xfail(reason="Same store with same key will result in failure")
+async def test_my_rate_limiting_failure() -> None:
+    @get("/ham", middleware=[RateLimitConfig(("minute", 1000)).middleware])
+    async def can_go_ham() -> None:
+        return None
+
+    @get("/cheese", middleware=[RateLimitConfig(("hour", 1)).middleware])
+    async def dont_go_ham() -> None:
+        return None
+
+    cache_key = "RateLimitMiddleware::testclient"
+    app = Litestar(route_handlers=[can_go_ham, dont_go_ham])
+    store = app.stores.get("rate_limit")
+
+    with travel(datetime.now(tz=timezone.utc), tick=False), TestClient(app=app) as client:
+        response = client.get("/ham")
+        assert response.status_code == HTTP_200_OK
+
+        response = client.get("/cheese")
+        cached_value = await store.get(cache_key)
+        assert cached_value is not None
+        cache_object = CacheObject(**decode_json(value=cached_value))
+        assert response.status_code == HTTP_200_OK, cache_object.history  # <-- fails here
+
+
+async def test_rate_limiting_in_multiple_stores() -> None:
+    @get("/ham", middleware=[RateLimitConfig(("hour", 1000), store="rl1").middleware])
+    async def can_go_ham() -> None:
+        return None
+
+    @get("/cheese", middleware=[RateLimitConfig(("hour", 1), store="rl2").middleware])
+    async def dont_go_ham() -> None:
+        return None
+
+    cache_key = "RateLimitMiddleware::testclient"
+    app = Litestar(route_handlers=[can_go_ham, dont_go_ham])
+    store1 = app.stores.get("rl1")
+    store2 = app.stores.get("rl2")
+
+    with travel(datetime.now(tz=timezone.utc), tick=False), TestClient(app=app) as client:
+        response = client.get("/ham")
+        assert response.status_code == HTTP_200_OK
+        cached_value = await store1.get(cache_key)
+        assert cached_value is not None
+        cache_object = CacheObject(**decode_json(value=cached_value))
+        assert len(cache_object.history) == 1
+
+        response = client.get("/cheese")
+        assert response.status_code == HTTP_200_OK
+        cached_value = await store2.get(cache_key)
+        assert cached_value is not None
+        cache_object = CacheObject(**decode_json(value=cached_value))
+        assert len(cache_object.history) == 2
+
+        response = client.get("/cheese")
+        assert response.status_code == HTTP_429_TOO_MANY_REQUESTS
+        cached_value = await store2.get(cache_key)
+        assert cached_value is not None
+        cache_object = CacheObject(**decode_json(value=cached_value))
+        assert len(cache_object.history) == 2
