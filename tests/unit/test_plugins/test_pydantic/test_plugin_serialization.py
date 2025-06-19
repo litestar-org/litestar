@@ -27,6 +27,12 @@ from litestar.serialization import (
 from . import PydanticVersion
 
 TODAY = datetime.date.today()
+YESTERDAY_DATE = TODAY - datetime.timedelta(days=1)
+FUTURE_DATE = TODAY + datetime.timedelta(days=1)
+YESTERDAY_DATETIME = datetime.datetime(2023, 6, 14, 12, 0, 0)
+FUTURE_DATETIME = datetime.datetime(2030, 6, 16, 12, 0, 0)
+AWARE_DATETIME = datetime.datetime(2023, 6, 15, 12, 0, 0, tzinfo=datetime.timezone.utc)
+NAIVE_DATETIME = datetime.datetime(2023, 6, 15, 12, 0, 0).replace(tzinfo=None)
 
 
 class CustomStr(str):
@@ -122,6 +128,13 @@ class ModelV2(pydantic_v2.BaseModel):
     url: pydantic_v2.AnyUrl
     http_url: pydantic_v2.HttpUrl
 
+    paste_date: pydantic_v2.PastDate
+    future_date: pydantic_v2.FutureDate
+    paste_datetime: pydantic_v2.PastDatetime
+    future_datetime: pydantic_v2.FutureDatetime
+    aware_datetime: pydantic_v2.AwareDatetime
+    naive_datetime: pydantic_v2.NaiveDatetime
+
 
 serializer = partial(default_serializer, type_encoders=PydanticInitPlugin.encoders())
 
@@ -175,6 +188,12 @@ def model(pydantic_version: PydanticVersion) -> ModelV1 | ModelV2:
         conlist=[1],
         url="some://example.org/",  # type: ignore[arg-type]
         http_url="http://example.org/",  # type: ignore[arg-type]
+        paste_date=YESTERDAY_DATE,
+        future_date=FUTURE_DATE,
+        paste_datetime=YESTERDAY_DATETIME,
+        future_datetime=FUTURE_DATETIME,
+        aware_datetime=AWARE_DATETIME,
+        naive_datetime=NAIVE_DATETIME,
     )
 
 
@@ -198,9 +217,26 @@ def model(pydantic_version: PydanticVersion) -> ModelV1 | ModelV2:
         ("conint", 1),
         ("url", "some://example.org/"),
         ("http_url", "http://example.org/"),
+        ("paste_date", YESTERDAY_DATE.isoformat()),
+        ("future_date", FUTURE_DATE.isoformat()),
+        ("paste_datetime", YESTERDAY_DATETIME.isoformat()),
+        ("future_datetime", FUTURE_DATETIME.isoformat()),
+        ("aware_datetime", AWARE_DATETIME.isoformat()),
+        ("naive_datetime", NAIVE_DATETIME.isoformat()),
     ],
 )
 def test_default_serializer(model: ModelV1 | ModelV2, attribute_name: str, expected: Any) -> None:
+    # Skip Pydantic v2-specific date fields when testing with ModelV1
+    v2_only_fields = {
+        "paste_date",
+        "future_date",
+        "paste_datetime",
+        "future_datetime",
+        "aware_datetime",
+        "naive_datetime",
+    }
+    if isinstance(model, ModelV1) and attribute_name in v2_only_fields:
+        pytest.skip(f"Field '{attribute_name}' only exists in Pydantic v2")
     assert serializer(getattr(model, attribute_name)) == expected
 
 
