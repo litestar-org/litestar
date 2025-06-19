@@ -74,7 +74,7 @@ MSGSPEC_CONSTRAINT_FIELDS = (
     "max_length",
 )
 
-ERR_RE = re.compile(r"`\$\.(.+)`$")
+ERR_RE = re.compile(r"`\$\.?(.+)`$")
 
 DEFAULT_TYPE_DECODERS = [
     (lambda x: is_class_and_subclass(x, (Path, PurePath, ImmutableState, UUID)), lambda t, v: t(v)),
@@ -150,22 +150,43 @@ class SignatureModel(Struct):
         message: ErrorMessage = {"message": exc_msg.split(" - ")[0]}
 
         if keys:
-            message["key"] = key = ".".join(keys)
-            if keys[0].startswith("data"):
+            field_name = keys[0]
+            message["key"] = ".".join(keys)
+
+            if field_name == "data":
                 message["key"] = message["key"].replace("data.", "")
                 message["source"] = "body"
-            elif key in connection.query_params:
+            elif field_name in connection.query_params:
+                delim = "."
+                if field_name in cls._fields and cls._fields[field_name].is_non_string_sequence:
+                    delim = ""
+                message["key"] = delim.join(keys)
                 message["source"] = ParamType.QUERY
-            elif key in connection.path_params:
+            elif field_name in connection.path_params:
                 message["source"] = ParamType.PATH
 
-            elif key in cls._fields and isinstance(cls._fields[key].kwarg_definition, ParameterKwarg):
-                if cast(ParameterKwarg, cls._fields[key].kwarg_definition).cookie:
+            elif field_name in cls._fields and isinstance(cls._fields[field_name].kwarg_definition, ParameterKwarg):
+                delim = "" if cls._fields[field_name].is_non_string_sequence else "."
+                if cast(ParameterKwarg, cls._fields[field_name].kwarg_definition).cookie:
+                    message["key"] = delim.join(
+                        [str(cast(ParameterKwarg, cls._fields[field_name].kwarg_definition).cookie), *keys[1:]]
+                    )
                     message["source"] = ParamType.COOKIE
-                elif cast(ParameterKwarg, cls._fields[key].kwarg_definition).header:
+                elif cast(ParameterKwarg, cls._fields[field_name].kwarg_definition).header:
+                    message["key"] = delim.join(
+                        [str(cast(ParameterKwarg, cls._fields[field_name].kwarg_definition).header), *keys[1:]]
+                    )
                     message["source"] = ParamType.HEADER
-                else:
+                elif cast(ParameterKwarg, cls._fields[field_name].kwarg_definition).query:
+                    message["key"] = delim.join(
+                        [str(cast(ParameterKwarg, cls._fields[field_name].kwarg_definition).query), *keys[1:]]
+                    )
                     message["source"] = ParamType.QUERY
+                else:
+                    message["key"] = delim.join(keys)
+                    message["source"] = ParamType.QUERY
+            elif field_name in cls._dependency_name_set:
+                message["key"] = field_name
 
         return message
 
@@ -205,7 +226,22 @@ class SignatureModel(Struct):
             return convert(kwargs, cls, strict=False, dec_hook=deserializer, str_keys=True).to_dict()
         except ExtendedMsgSpecValidationError as e:
             for exc in e.errors:
-                keys = [str(loc) for loc in exc["loc"]]
+                keys = []
+                path = ""
+                for i, loc in enumerate(exc["loc"]):
+                    x = ""
+                    if isinstance(loc, int):
+                        x = f"[{loc}]"
+                    else:
+                        if i > 1:
+                            x += "."
+                        x += str(loc)
+                    if i == 0:
+                        keys.append(x)
+                    else:
+                        path += x
+                if path:
+                    keys.append(path)
                 message = cls._build_error_message(keys=keys, exc_msg=exc["msg"], connection=connection)
                 messages.append(message)
             raise cls._create_exception(messages=messages, connection=connection) from e
