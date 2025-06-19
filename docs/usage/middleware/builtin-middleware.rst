@@ -235,13 +235,41 @@ Rate-Limit Middleware
 Litestar includes an optional :class:`~litestar.middleware.rate_limit.RateLimitMiddleware` that follows
 the `IETF RateLimit draft specification <https://datatracker.ietf.org/doc/draft-ietf-httpapi-ratelimit-headers/>`_.
 
-To use the rate limit middleware, use the :class:`~litestar.middleware.rate_limit.RateLimitConfig`:
+The middleware can be set on the entire application, using the :class:`~litestar.middleware.rate_limit.RateLimitConfig`:
 
 .. literalinclude:: /examples/middleware/rate_limit.py
     :language: python
 
 The only required configuration kwarg is ``rate_limit``, which expects a tuple containing a time-unit (``"second"``,
 ``"minute"``, ``"hour"``, ``"day"``\ ) and a value for the request quota (integer).
+
+The middleware can also be set on individual endpoints, thanks to Litestar's layered middleware approach:
+
+.. literalinclude:: /examples/middleware/rate_limit_endpoint.py
+    :language: python
+
+
+Default Rate-Limit Strategy
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Litestar's rate limit middleware throttles based on the identity of the client.
+This identity is derived in the following order:
+
+* HTTP-Header ``X-Forwarded-For``
+* HTTP-Header ``X-Real-IP``
+* The ``host`` in the Request's ``client`` data
+* If none of the above is found, such as when using a unix socket to host the app, falls back to the string ``"anonymous"``
+
+The "history" of the client's requests is then stored in Litestar's ``MemoryStore``.
+
+.. attention::
+
+    Special care needs to be given when configuring the middleware:
+
+    * on multiple endpoints, as rate limit is shared per "identity", as described above, not per endpoint
+    * on multiple layers, as requests may be counted multiple times on the way in
+
+    Solutions may include caching in different ``stores`` for each level or for each endpoint to get the desired effect.
 
 
 Logging Middleware
