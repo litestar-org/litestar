@@ -27,12 +27,12 @@ from litestar.serialization import (
 from . import PydanticVersion
 
 TODAY = datetime.date.today()
-YESTERDAY_DATE = datetime.date.today() - datetime.timedelta(days=1)
-TOMORROW_DATE = datetime.date.today() + datetime.timedelta(days=1)
-YESTERDAY_DATETIME = datetime.datetime.now() - datetime.timedelta(days=1)
-TOMORROW_DATETIME = datetime.datetime.now() + datetime.timedelta(days=1)
-AWARE_DATETIME = datetime.datetime.now(datetime.timezone.utc)
-NAIVE_DATETIME = datetime.datetime.now().replace(tzinfo=None)
+YESTERDAY_DATE = TODAY - datetime.timedelta(days=1)
+FUTURE_DATE = TODAY + datetime.timedelta(days=1)
+YESTERDAY_DATETIME = datetime.datetime(2023, 6, 14, 12, 0, 0)
+FUTURE_DATETIME = datetime.datetime(2030, 6, 16, 12, 0, 0)
+AWARE_DATETIME = datetime.datetime(2023, 6, 15, 12, 0, 0, tzinfo=datetime.timezone.utc)
+NAIVE_DATETIME = datetime.datetime(2023, 6, 15, 12, 0, 0).replace(tzinfo=None)
 
 
 class CustomStr(str):
@@ -189,9 +189,9 @@ def model(pydantic_version: PydanticVersion) -> ModelV1 | ModelV2:
         url="some://example.org/",  # type: ignore[arg-type]
         http_url="http://example.org/",  # type: ignore[arg-type]
         paste_date=YESTERDAY_DATE,
-        future_date=TOMORROW_DATE,
+        future_date=FUTURE_DATE,
         paste_datetime=YESTERDAY_DATETIME,
-        future_datetime=TOMORROW_DATETIME,
+        future_datetime=FUTURE_DATETIME,
         aware_datetime=AWARE_DATETIME,
         naive_datetime=NAIVE_DATETIME,
     )
@@ -218,9 +218,9 @@ def model(pydantic_version: PydanticVersion) -> ModelV1 | ModelV2:
         ("url", "some://example.org/"),
         ("http_url", "http://example.org/"),
         ("paste_date", YESTERDAY_DATE.isoformat()),
-        ("future_date", TOMORROW_DATE.isoformat()),
+        ("future_date", FUTURE_DATE.isoformat()),
         ("paste_datetime", YESTERDAY_DATETIME.isoformat()),
-        ("future_datetime", TOMORROW_DATETIME.isoformat()),
+        ("future_datetime", FUTURE_DATETIME.isoformat()),
         ("aware_datetime", AWARE_DATETIME.isoformat()),
         ("naive_datetime", NAIVE_DATETIME.isoformat()),
     ],
