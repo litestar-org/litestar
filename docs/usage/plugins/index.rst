@@ -124,7 +124,7 @@ signature (their :func:`__init__` method).
 
 
 ReceiveRoutePlugin
------------------
+------------------
 
 :class:`~litestar.plugins.ReceiveRoutePlugin` allows you to receive routes as they are registered on the application.
 This can be useful for plugins that need to perform actions based on the routes being added, such as generating
