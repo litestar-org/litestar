@@ -27,6 +27,7 @@ __all__ = (
     "OpenAPISchemaPluginProtocol",
     "PluginProtocol",
     "PluginRegistry",
+    "ReceiveRoutePlugin",
     "SerializationPlugin",
     "SerializationPluginProtocol",
 )
