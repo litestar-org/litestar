@@ -24,8 +24,17 @@ __all__ = ("litestar_group",)
     type=ClickPath(dir_okay=True, file_okay=False, path_type=Path),
     show_default=False,
 )
+@click.option(
+    "--env-file",
+    help="Path to a .env file to load environment variables from. If not provided, environment variables won't be loaded from any .env file.",
+    default=None,
+    type=ClickPath(dir_okay=False, file_okay=True, path_type=Path),
+    show_default=False,
+)
 @click.pass_context
-def litestar_group(ctx: click.Context, app_path: str | None, app_dir: Path | None = None) -> None:
+def litestar_group(
+    ctx: click.Context, app_path: str | None, app_dir: Path | None = None, env_file: Path | None = None
+) -> None:
     """Litestar CLI.
 
     The application to will be automatically discovered if it's in one of these
@@ -38,8 +47,8 @@ def litestar_group(ctx: click.Context, app_path: str | None, app_dir: Path | Non
     ('litestar --app=<module name>.<submodule>:<app instance or factory>') or the
     'LITESTAR_APP' environment variable of the same name.
     """
-    if ctx.obj is None:  # env has not been loaded yet, so we can lazy load it
-        ctx.obj = lambda: LitestarEnv.from_env(app_path, app_dir=app_dir)
+    if ctx.obj is None:  # load env if env-file specified
+        ctx.obj = lambda: LitestarEnv.from_env(app_path, app_dir=app_dir, env_file=env_file)
 
 
 # add sub commands here

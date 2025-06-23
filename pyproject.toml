@@ -63,7 +63,7 @@ maintainers = [
 ]
 name = "litestar"
 readme = "README.md"
-requires-python = ">=3.8,<4.0"
+requires-python = ">=3.9,<4.0"
 version = "2.16.0"
 
 [project.urls]
@@ -178,7 +178,6 @@ linting = [
 test = [
   "covdefaults",
   "pytest",
-  "pytest-asyncio<=0.24.0; python_version < \"3.9\"",
   "pytest-asyncio>0.24.0; python_version >= \"3.9\"",
   "pytest-cov",
   "pytest-lazy-fixtures",
@@ -245,7 +244,7 @@ enable_error_code = [
 ]
 packages = ["litestar", "tests"]
 plugins = ["pydantic.mypy"]
-python_version = "3.8"
+python_version = "3.9"
 
 disallow_any_generics = false
 local_partial_types = true
@@ -334,7 +333,7 @@ exclude = [
   "tests/unit/test_contrib/test_sqlalchemy.py",
 ]
 include = ["litestar", "tests"]
-pythonVersion = "3.8"
+pythonVersion = "3.9"
 reportUnnecessaryTypeIgnoreComments = true
 
 [tool.slotscheck]

@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import contextlib
 import importlib
 import inspect
 import os
@@ -89,7 +88,7 @@ class LitestarEnv:
     is_app_factory: bool = False
 
     @classmethod
-    def from_env(cls, app_path: str | None, app_dir: Path | None = None) -> LitestarEnv:
+    def from_env(cls, app_path: str | None, app_dir: Path | None = None, env_file: Path | None = None) -> LitestarEnv:
         """Load environment variables.
 
         If ``python-dotenv`` is installed, use it to populate environment first
@@ -99,10 +98,16 @@ class LitestarEnv:
         if cwd_str_path not in sys.path:
             sys.path.append(cwd_str_path)
 
-        with contextlib.suppress(ImportError):
-            import dotenv
+        if env_file is not None and env_file.is_file():
+            try:
+                import dotenv
 
-            dotenv.load_dotenv()
+                dotenv.load_dotenv(env_file)
+            except ImportError as err:
+                raise LitestarCLIException(
+                    "Python-dotenv must be installed when using --env-file\nPlease install the `python-dotenv`"
+                ) from err
+
         app_path = app_path or getenv("LITESTAR_APP")
         app_name = getenv("LITESTAR_APP_NAME") or "Litestar"
         quiet_console = getenv("LITESTAR_QUIET_CONSOLE") or False
