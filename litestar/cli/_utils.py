@@ -88,7 +88,9 @@ class LitestarEnv:
     is_app_factory: bool = False
 
     @classmethod
-    def from_env(cls, app_path: str | None, app_dir: Path | None = None, env_file: Path | None = None) -> LitestarEnv:
+    def from_env(
+        cls, app_path: str | None, app_dir: Path | None = None, env_files: tuple[Path, ...] | None = None
+    ) -> LitestarEnv:
         """Load environment variables.
 
         If ``python-dotenv`` is installed, use it to populate environment first
@@ -98,15 +100,18 @@ class LitestarEnv:
         if cwd_str_path not in sys.path:
             sys.path.append(cwd_str_path)
 
-        if env_file is not None and env_file.is_file():
+        if env_files:
             try:
                 import dotenv
-
-                dotenv.load_dotenv(env_file)
             except ImportError as err:
                 raise LitestarCLIException(
                     "Python-dotenv must be installed when using --env-file\nPlease install the `python-dotenv`"
                 ) from err
+            for env_file in env_files:
+                if env_file.is_dir():
+                    raise LitestarCLIException(f"{env_file} is a directory.\nPlease provide a file to --env-file")
+
+                dotenv.load_dotenv(env_file)
 
         app_path = app_path or getenv("LITESTAR_APP")
         app_name = getenv("LITESTAR_APP_NAME") or "Litestar"
