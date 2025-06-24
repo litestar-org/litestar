@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import contextlib
 import importlib
 import inspect
 import os
@@ -13,6 +14,8 @@ from itertools import chain
 from os import getenv
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Callable, Generator, Iterable, Sequence, TypeVar, cast
+
+import click
 
 try:
     from rich_click import RichCommand as Command
@@ -56,6 +59,7 @@ __all__ = (
     "LitestarGroup",
     "LoadedApp",
     "show_app_info",
+    "validate_mutually_exclusive_env_options",
 )
 
 
@@ -89,7 +93,11 @@ class LitestarEnv:
 
     @classmethod
     def from_env(
-        cls, app_path: str | None, app_dir: Path | None = None, env_files: tuple[Path, ...] | None = None
+        cls,
+        app_path: str | None,
+        app_dir: Path | None = None,
+        env_files: Sequence[Path] = (Path(".env"),),
+        implicit_load: bool = True,
     ) -> LitestarEnv:
         """Load environment variables.
 
@@ -100,18 +108,21 @@ class LitestarEnv:
         if cwd_str_path not in sys.path:
             sys.path.append(cwd_str_path)
 
-        if env_files:
+        if implicit_load:
+            with contextlib.suppress(ImportError):
+                import dotenv
+
+                dotenv.load_dotenv()
+        elif env_files:
             try:
                 import dotenv
             except ImportError as err:
                 raise LitestarCLIException(
                     "Python-dotenv must be installed when using --env-file\nPlease install the `python-dotenv`"
                 ) from err
-            for env_file in env_files:
-                if env_file.is_dir():
-                    raise LitestarCLIException(f"{env_file} is a directory.\nPlease provide a file to --env-file")
-
-                dotenv.load_dotenv(env_file)
+            else:
+                for env_file in env_files:
+                    dotenv.load_dotenv(env_file)
 
         app_path = app_path or getenv("LITESTAR_APP")
         app_name = getenv("LITESTAR_APP_NAME") or "Litestar"
@@ -614,3 +625,9 @@ def isatty() -> bool:
     This is a convenience wrapper around the built in system methods.  This allows for easier testing of TTY/non-TTY modes.
     """
     return sys.stdout.isatty()
+
+
+def validate_mutually_exclusive_env_options(ctx: click.Context, param: click.Option, value: Sequence[Path]) -> Sequence[Path]:
+    if ctx.params.get("env_files") and ctx.params.get("ignore_env_files"):
+        raise click.BadParameter("The options '--env-file' and '--ignore-dotenv' are mutually exclusive.")
+    return value

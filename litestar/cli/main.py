@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 try:
     import rich_click as click
@@ -9,8 +10,11 @@ except ImportError:
 
 from click import Path as ClickPath
 
-from ._utils import LitestarEnv, LitestarExtensionGroup
+from ._utils import LitestarEnv, LitestarExtensionGroup, validate_mutually_exclusive_env_options
 from .commands import core, schema, sessions
+
+if TYPE_CHECKING:
+    from collections.abc import Sequence
 
 __all__ = ("litestar_group",)
 
@@ -32,10 +36,22 @@ __all__ = ("litestar_group",)
     type=ClickPath(dir_okay=False, file_okay=True, path_type=Path),
     show_default=False,
     multiple=True,
+    callback=validate_mutually_exclusive_env_options,
+)
+@click.option(
+    "--ignore-env-files",
+    "ignore_env_files",
+    is_flag=True,
+    default=False,
+    callback=validate_mutually_exclusive_env_options,
 )
 @click.pass_context
 def litestar_group(
-    ctx: click.Context, app_path: str | None, app_dir: Path | None = None, env_files: tuple[Path, ...] | None = None
+    ctx: click.Context,
+    app_path: str | None,
+    app_dir: Path | None = None,
+    env_files: Sequence[Path] = (Path(".env"),),
+    ignore_env_files: bool = False,
 ) -> None:
     """Litestar CLI.
 
@@ -49,8 +65,17 @@ def litestar_group(
     ('litestar --app=<module name>.<submodule>:<app instance or factory>') or the
     'LITESTAR_APP' environment variable of the same name.
     """
-    if ctx.obj is None:  # load env if env-file specified
-        ctx.obj = lambda: LitestarEnv.from_env(app_path, app_dir=app_dir, env_files=env_files)
+    if ctx.obj is None:  # env has not been loaded yet, so we can lazy load it
+        implicit_load = not env_files
+        if ignore_env_files:
+            env_files = ()
+            implicit_load = False
+        ctx.obj = lambda: LitestarEnv.from_env(
+            app_path,
+            app_dir=app_dir,
+            env_files=env_files,
+            implicit_load=implicit_load,
+        )
 
 
 # add sub commands here
