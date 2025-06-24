@@ -194,6 +194,36 @@ if pydantic_v2 is not None:  # pragma: no cover
                 type=OpenAPIType.STRING, format=OpenAPIFormat.EMAIL, description="Name and email"
             ),
             pydantic_v2.AnyUrl: Schema(type=OpenAPIType.STRING, format=OpenAPIFormat.URL),
+            pydantic_v2.PastDate: Schema(
+                type=OpenAPIType.STRING,
+                format=OpenAPIFormat.DATE,
+                description="date with the constraint that the value must be in the past",
+            ),
+            pydantic_v2.FutureDate: Schema(
+                type=OpenAPIType.STRING,
+                format=OpenAPIFormat.DATE,
+                description="date with the constraint that the value must be in the future",
+            ),
+            pydantic_v2.PastDatetime: Schema(
+                type=OpenAPIType.STRING,
+                format=OpenAPIFormat.DATE_TIME,
+                description="datetime with the constraint that the value must be in the past",
+            ),
+            pydantic_v2.FutureDatetime: Schema(
+                type=OpenAPIType.STRING,
+                format=OpenAPIFormat.DATE_TIME,
+                description="datetime with the constraint that the value must be in the future",
+            ),
+            pydantic_v2.AwareDatetime: Schema(
+                type=OpenAPIType.STRING,
+                format=OpenAPIFormat.DATE_TIME,
+                description="datetime with the constraint that the value must have timezone info",
+            ),
+            pydantic_v2.NaiveDatetime: Schema(
+                type=OpenAPIType.STRING,
+                format=OpenAPIFormat.DATE_TIME,
+                description="datetime with the constraint that the value must lack timezone info",
+            ),
         }
     )
     if int(pydantic_v2.version.version_short().split(".")[1]) >= 10:
