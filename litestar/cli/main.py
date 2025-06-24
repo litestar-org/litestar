@@ -31,7 +31,7 @@ __all__ = ("litestar_group",)
 @click.option(
     "--env-file",
     "env_files",
-    help="Path to a .env file to load environment variables from. If not provided, environment variables won't be loaded from any .env file.",
+    help="Path to a .env file to load environment variables from. Defaults to `./.env`",
     default=None,
     type=ClickPath(dir_okay=False, file_okay=True, path_type=Path),
     show_default=False,
