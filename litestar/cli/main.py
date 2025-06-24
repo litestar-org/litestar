@@ -14,7 +14,7 @@ from ._utils import LitestarEnv, LitestarExtensionGroup, validate_mutually_exclu
 from .commands import core, schema, sessions
 
 if TYPE_CHECKING:
-    from collections.abc import Sequence
+    from typing import Sequence
 
 __all__ = ("litestar_group",)
 
