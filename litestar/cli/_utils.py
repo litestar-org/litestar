@@ -627,7 +627,9 @@ def isatty() -> bool:
     return sys.stdout.isatty()
 
 
-def validate_mutually_exclusive_env_options(ctx: click.Context, param: click.Option, value: Sequence[Path]) -> Sequence[Path]:
+def validate_mutually_exclusive_env_options(
+    ctx: click.Context, param: click.Option, value: Sequence[Path]
+) -> Sequence[Path]:
     if ctx.params.get("env_files") and ctx.params.get("ignore_env_files"):
         raise click.BadParameter("The options '--env-file' and '--ignore-dotenv' are mutually exclusive.")
     return value
