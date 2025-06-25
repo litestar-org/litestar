@@ -413,7 +413,7 @@ Let's say we have an API that talks to an external service and retrieves some da
 
     from typing import Protocol, runtime_checkable
 
-    from polyfactory.factories.pydantic import BaseModel
+    from pydantic import BaseModel
     from litestar import get
 
 
@@ -460,7 +460,7 @@ We could test the ``/item`` route like so:
         ) as client:
             response = client.get("/item")
             assert response.status_code == HTTP_200_OK
-            assert response.json() == item.dict()
+            assert response.json() == item.model_dump()
 
 While we can define the test data manually, as is done in the above, this can be quite cumbersome. That's
 where `polyfactory <https://github.com/litestar-org/polyfactory>`_ library comes in. It generates mock data for
@@ -475,6 +475,7 @@ pydantic models and dataclasses based on type annotations. With it, we could rew
     import pytest
     from pydantic import BaseModel
     from polyfactory.factories.pydantic_factory import ModelFactory
+    from polyfactory.pytest_plugin import register_fixture
     from litestar.status_codes import HTTP_200_OK
     from litestar import get
     from litestar.di import Provide
@@ -495,16 +496,11 @@ pydantic models and dataclasses based on type annotations. With it, we could rew
         return service.get_one()
 
 
-    class ItemFactory(ModelFactory[Item]):
-        model = Item
+    @register_fixture(name="item")
+    class ItemFactory(ModelFactory[Item]): ...
 
 
-    @pytest.fixture()
-    def item():
-        return ItemFactory.build()
-
-
-    def test_get_item(item: Item):
+    def test_get_item(item: ItemFactory):
         class MyService(Service):
             def get_one(self) -> Item:
                 return item
@@ -513,5 +509,6 @@ pydantic models and dataclasses based on type annotations. With it, we could rew
             route_handlers=get_item, dependencies={"service": Provide(lambda: MyService())}
         ) as client:
             response = client.get("/item")
+
             assert response.status_code == HTTP_200_OK
-            assert response.json() == item.dict()
+            assert response.json() == item.build().model_dump()
