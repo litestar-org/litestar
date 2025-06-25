@@ -496,11 +496,13 @@ pydantic models and dataclasses based on type annotations. With it, we could rew
         return service.get_one()
 
 
-    @register_fixture(name="item")
+    @register_fixture(name="item_factory")
     class ItemFactory(ModelFactory[Item]): ...
 
 
-    def test_get_item(item: ItemFactory):
+    def test_get_item(item_factory: ItemFactory):
+        item = item_factory.build()
+
         class MyService(Service):
             def get_one(self) -> Item:
                 return item
@@ -511,4 +513,4 @@ pydantic models and dataclasses based on type annotations. With it, we could rew
             response = client.get("/item")
 
             assert response.status_code == HTTP_200_OK
-            assert response.json() == item.build().model_dump()
+            assert response.json() == item.model_dump()
