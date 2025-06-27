@@ -23,7 +23,7 @@ except ImportError:
 
 from typing import get_type_hints
 
-from click import ClickException, Context, pass_context
+from click import BadParameter, ClickException, Context, Option, pass_context
 from rich import get_console
 from rich.table import Table
 from typing_extensions import ParamSpec
@@ -60,6 +60,7 @@ __all__ = (
     "LitestarGroup",
     "LoadedApp",
     "show_app_info",
+    "validate_mutually_exclusive_env_options",
 )
 
 
@@ -92,7 +93,13 @@ class LitestarEnv:
     is_app_factory: bool = False
 
     @classmethod
-    def from_env(cls, app_path: str | None, app_dir: Path | None = None) -> LitestarEnv:
+    def from_env(
+        cls,
+        app_path: str | None,
+        app_dir: Path | None = None,
+        env_files: Sequence[Path] = (Path(".env"),),
+        implicit_load: bool = True,
+    ) -> LitestarEnv:
         """Load environment variables.
 
         If ``python-dotenv`` is installed, use it to populate environment first
@@ -102,10 +109,22 @@ class LitestarEnv:
         if cwd_str_path not in sys.path:
             sys.path.append(cwd_str_path)
 
-        with contextlib.suppress(ImportError):
-            import dotenv
+        if implicit_load:
+            with contextlib.suppress(ImportError):
+                import dotenv
 
-            dotenv.load_dotenv()
+                dotenv.load_dotenv()
+        elif env_files:
+            try:
+                import dotenv
+            except ImportError as err:
+                raise LitestarCLIException(
+                    "Python-dotenv must be installed when using --env-file\nPlease install the `python-dotenv`"
+                ) from err
+            else:
+                for env_file in env_files:
+                    dotenv.load_dotenv(env_file)
+
         app_path = app_path or getenv("LITESTAR_APP")
         app_name = getenv("LITESTAR_APP_NAME") or "Litestar"
         quiet_console = getenv("LITESTAR_QUIET_CONSOLE") or False
@@ -590,3 +609,9 @@ def isatty() -> bool:
     This is a convenience wrapper around the built in system methods.  This allows for easier testing of TTY/non-TTY modes.
     """
     return sys.stdout.isatty()
+
+
+def validate_mutually_exclusive_env_options(ctx: Context, param: Option, value: Sequence[Path]) -> Sequence[Path]:
+    if ctx.params.get("env_files") and ctx.params.get("ignore_env_files"):
+        raise BadParameter("The options '--env-file' and '--ignore-dotenv' are mutually exclusive.")
+    return value
