@@ -20,7 +20,7 @@ async def test_sqlalchemy_declarative_models(tmp_path: Path, monkeypatch: Monkey
         create_all=True,
         engine_instance=engine,
     )  # Create 'async_session' dependency.
-    from docs.examples.contrib.sqlalchemy import sqlalchemy_declarative_models
+    from docs.examples.plugins.sqlalchemy import sqlalchemy_declarative_models
 
     monkeypatch.setattr(sqlalchemy_declarative_models, "sqlalchemy_config", sqlalchemy_config)
     async with engine.begin() as connection:

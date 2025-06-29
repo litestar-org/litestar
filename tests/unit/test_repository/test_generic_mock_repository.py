@@ -9,7 +9,7 @@ from _pytest.fixtures import FixtureRequest
 from sqlalchemy import String
 from sqlalchemy.orm import Mapped, mapped_column
 
-from litestar.contrib.sqlalchemy import base
+from litestar.plugins.sqlalchemy import base
 from litestar.repository.exceptions import ConflictError, RepositoryError
 from litestar.repository.filters import LimitOffset
 from litestar.repository.testing.generic_mock_repository import (

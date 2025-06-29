@@ -26,7 +26,7 @@ Don't worry if there are things in this example that you don't understand. We wi
 in the following sections.
 
 .. literalinclude::
-    /examples/contrib/sqlalchemy/plugins/tutorial/full_app_no_plugins.py
+    /examples/plugins/sqlalchemy/plugins/tutorial/full_app_no_plugins.py
     :language: python
     :linenos:
 
@@ -49,7 +49,7 @@ manager called ``db_connection()`` that creates a new :class:`engine <sqlalchemy
 of it when we are done. This context manager is added to the application's ``lifespan`` argument.
 
 .. literalinclude::
-    /examples/contrib/sqlalchemy/plugins/tutorial/full_app_no_plugins.py
+    /examples/plugins/sqlalchemy/plugins/tutorial/full_app_no_plugins.py
     :language: python
     :linenos:
     :lines: 28-41,100
@@ -61,7 +61,7 @@ class. This can be done by a synchronous call to ``Base.metadata.create_all`` wh
 tables are already setup according to the model, the call does nothing.
 
 .. literalinclude::
-    /examples/contrib/sqlalchemy/plugins/tutorial/full_app_no_plugins.py
+    /examples/plugins/sqlalchemy/plugins/tutorial/full_app_no_plugins.py
     :language: python
     :linenos:
     :lines: 28-41
@@ -74,7 +74,7 @@ We see two examples of access and use of application state. The first is in the 
 where we use the ``app.state`` object to store the engine.
 
 .. literalinclude::
-    /examples/contrib/sqlalchemy/plugins/tutorial/full_app_no_plugins.py
+    /examples/plugins/sqlalchemy/plugins/tutorial/full_app_no_plugins.py
     :language: python
     :linenos:
     :lines: 28-41
@@ -84,7 +84,7 @@ The second is by using the ``state`` keyword argument in our handler functions, 
 handlers.
 
 .. literalinclude::
-    /examples/contrib/sqlalchemy/plugins/tutorial/full_app_no_plugins.py
+    /examples/plugins/sqlalchemy/plugins/tutorial/full_app_no_plugins.py
     :language: python
     :linenos:
     :lines: 69-72
@@ -100,7 +100,7 @@ introduces the ``serialize_todo()`` to help us convert our data from the ``TodoI
 serializable by Litestar.
 
 .. literalinclude::
-    /examples/contrib/sqlalchemy/plugins/tutorial/full_app_no_plugins.py
+    /examples/plugins/sqlalchemy/plugins/tutorial/full_app_no_plugins.py
     :language: python
     :linenos:
     :lines: 2-3,14-15,47-50,91-98

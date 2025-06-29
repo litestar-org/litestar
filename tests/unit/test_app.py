@@ -16,7 +16,6 @@ from pytest import MonkeyPatch
 from litestar import Litestar, MediaType, Request, Response, get
 from litestar.config.app import AppConfig, ExperimentalFeatures
 from litestar.config.response_cache import ResponseCacheConfig
-from litestar.contrib.sqlalchemy.plugins import SQLAlchemySerializationPlugin
 from litestar.datastructures import MutableScopeHeaders, State
 from litestar.events.emitter import SimpleEventEmitter
 from litestar.exceptions import (
@@ -27,6 +26,8 @@ from litestar.exceptions import (
 )
 from litestar.logging.config import LoggingConfig
 from litestar.plugins import CLIPlugin
+from litestar.plugins.sqlalchemy import SQLAlchemySerializationPlugin
+from litestar.router import Router
 from litestar.status_codes import HTTP_200_OK, HTTP_400_BAD_REQUEST, HTTP_500_INTERNAL_SERVER_ERROR
 from litestar.testing import TestClient, create_test_client
 
