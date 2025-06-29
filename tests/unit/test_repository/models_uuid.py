@@ -5,10 +5,11 @@ from __future__ import annotations
 from datetime import date, datetime
 from uuid import UUID
 
-from advanced_alchemy import base
-from advanced_alchemy.repository import SQLAlchemyAsyncRepository, SQLAlchemySyncRepository
 from sqlalchemy import Column, FetchedValue, ForeignKey, String, Table, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
+
+from litestar.plugins.sqlalchemy import base
+from litestar.plugins.sqlalchemy.repository import SQLAlchemyAsyncRepository, SQLAlchemySyncRepository
 
 
 class UUIDAuthor(base.UUIDAuditBase):

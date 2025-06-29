@@ -32,7 +32,7 @@ async def aiosqlite_engine() -> AsyncIterator[AsyncEngine]:
 def test_sqlalchemy_async_plugin_example(
     data: dict[str, Any], monkeypatch: MonkeyPatch, aiosqlite_engine: AsyncEngine
 ) -> None:
-    from docs.examples.contrib.sqlalchemy.plugins import sqlalchemy_async_plugin_example
+    from docs.examples.plugins.sqlalchemy.plugins import sqlalchemy_async_plugin_example
 
     monkeypatch.setattr(sqlalchemy_async_plugin_example.config, "engine_instance", aiosqlite_engine)
 
@@ -41,7 +41,7 @@ def test_sqlalchemy_async_plugin_example(
 
 
 def test_sqlalchemy_sync_plugin_example(data: dict[str, Any], monkeypatch: MonkeyPatch, sqlite_engine: Engine) -> None:
-    from docs.examples.contrib.sqlalchemy.plugins import sqlalchemy_sync_plugin_example
+    from docs.examples.plugins.sqlalchemy.plugins import sqlalchemy_sync_plugin_example
 
     monkeypatch.setattr(sqlalchemy_sync_plugin_example.config, "engine_instance", sqlite_engine)
 
@@ -52,7 +52,7 @@ def test_sqlalchemy_sync_plugin_example(data: dict[str, Any], monkeypatch: Monke
 def test_sqlalchemy_async_init_plugin_example(
     data: dict[str, Any], monkeypatch: MonkeyPatch, aiosqlite_engine: AsyncEngine
 ) -> None:
-    from docs.examples.contrib.sqlalchemy.plugins import sqlalchemy_async_init_plugin_example
+    from docs.examples.plugins.sqlalchemy.plugins import sqlalchemy_async_init_plugin_example
 
     monkeypatch.setattr(sqlalchemy_async_init_plugin_example.config, "engine_instance", aiosqlite_engine)
 
@@ -63,7 +63,7 @@ def test_sqlalchemy_async_init_plugin_example(
 async def test_sqlalchemy_sync_init_plugin_example(
     data: dict[str, Any], monkeypatch: MonkeyPatch, sqlite_engine: Engine
 ) -> None:
-    from docs.examples.contrib.sqlalchemy.plugins import sqlalchemy_sync_init_plugin_example
+    from docs.examples.plugins.sqlalchemy.plugins import sqlalchemy_sync_init_plugin_example
 
     monkeypatch.setattr(sqlalchemy_sync_init_plugin_example.config, "engine_instance", sqlite_engine)
 
@@ -74,7 +74,7 @@ async def test_sqlalchemy_sync_init_plugin_example(
 async def test_sqlalchemy_async_init_plugin_dependencies(
     monkeypatch: MonkeyPatch, aiosqlite_engine: AsyncEngine
 ) -> None:
-    from docs.examples.contrib.sqlalchemy.plugins import sqlalchemy_async_dependencies
+    from docs.examples.plugins.sqlalchemy.plugins import sqlalchemy_async_dependencies
 
     monkeypatch.setattr(sqlalchemy_async_dependencies.config, "engine_instance", aiosqlite_engine)
     with TestClient(sqlalchemy_async_dependencies.app) as client:
@@ -82,7 +82,7 @@ async def test_sqlalchemy_async_init_plugin_dependencies(
 
 
 def test_sqlalchemy_sync_init_plugin_dependencies(monkeypatch: MonkeyPatch) -> None:
-    from docs.examples.contrib.sqlalchemy.plugins import sqlalchemy_sync_dependencies
+    from docs.examples.plugins.sqlalchemy.plugins import sqlalchemy_sync_dependencies
 
     engine_config = EngineConfig(connect_args={"check_same_thread": False}, poolclass=StaticPool)
     monkeypatch.setattr(sqlalchemy_sync_dependencies.config, "connection_string", "sqlite://")
@@ -92,7 +92,7 @@ def test_sqlalchemy_sync_init_plugin_dependencies(monkeypatch: MonkeyPatch) -> N
 
 
 def test_sqlalchemy_async_before_send_handler() -> None:
-    from docs.examples.contrib.sqlalchemy.plugins.sqlalchemy_async_before_send_handler import app
+    from docs.examples.plugins.sqlalchemy.plugins.sqlalchemy_async_before_send_handler import app
 
     from litestar.plugins.sqlalchemy import async_autocommit_before_send_handler
 
@@ -100,7 +100,7 @@ def test_sqlalchemy_async_before_send_handler() -> None:
 
 
 def test_sqlalchemy_sync_before_send_handler() -> None:
-    from docs.examples.contrib.sqlalchemy.plugins.sqlalchemy_sync_before_send_handler import app
+    from docs.examples.plugins.sqlalchemy.plugins.sqlalchemy_sync_before_send_handler import app
 
     from litestar.plugins.sqlalchemy import sync_autocommit_before_send_handler
 
@@ -108,35 +108,35 @@ def test_sqlalchemy_sync_before_send_handler() -> None:
 
 
 def test_sqlalchemy_async_serialization_plugin(data: dict[str, Any]) -> None:
-    from docs.examples.contrib.sqlalchemy.plugins.sqlalchemy_async_serialization_plugin import app
+    from docs.examples.plugins.sqlalchemy.plugins.sqlalchemy_async_serialization_plugin import app
 
     with TestClient(app) as client:
         assert client.post("/", json=data[0]).json() == data
 
 
 def test_sqlalchemy_sync_serialization_plugin(data: dict[str, Any]) -> None:
-    from docs.examples.contrib.sqlalchemy.plugins.sqlalchemy_sync_serialization_plugin import app
+    from docs.examples.plugins.sqlalchemy.plugins.sqlalchemy_sync_serialization_plugin import app
 
     with TestClient(app) as client:
         assert client.post("/", json=data[0]).json() == data
 
 
 def test_sqlalchemy_async_serialization_dto(data: dict[str, Any]) -> None:
-    from docs.examples.contrib.sqlalchemy.plugins.sqlalchemy_async_serialization_dto import app
+    from docs.examples.plugins.sqlalchemy.plugins.sqlalchemy_async_serialization_dto import app
 
     with TestClient(app) as client:
         assert client.post("/", json=data[0]).json() == data
 
 
 def test_sqlalchemy_async_serialization_plugin_marking_fields(data: dict[str, Any]) -> None:
-    from docs.examples.contrib.sqlalchemy.plugins.sqlalchemy_async_serialization_plugin_marking_fields import app
+    from docs.examples.plugins.sqlalchemy.plugins.sqlalchemy_async_serialization_plugin_marking_fields import app
 
     with TestClient(app) as client:
         assert client.post("/", json=data[0]).json() == data
 
 
 def test_sqlalchemy_sync_serialization_plugin_marking_fields(data: dict[str, Any]) -> None:
-    from docs.examples.contrib.sqlalchemy.plugins.sqlalchemy_sync_serialization_plugin_marking_fields import app
+    from docs.examples.plugins.sqlalchemy.plugins.sqlalchemy_sync_serialization_plugin_marking_fields import app
 
     with TestClient(app) as client:
         assert client.post("/", json=data[0]).json() == data

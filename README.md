@@ -600,6 +600,7 @@ see [the contribution guide](CONTRIBUTING.rst).
       <td align="center" valign="top" width="14.28%"><a href="https://gaitenis.id.lv"><img src="https://avatars.githubusercontent.com/u/9976861?v=4?s=100" width="100px;" alt="Edgars"/><br /><sub><b>Edgars</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=eandersons" title="Documentation">📖</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://jannchie.com"><img src="https://avatars.githubusercontent.com/u/29743310?v=4?s=100" width="100px;" alt="Jianqi Pan"/><br /><sub><b>Jianqi Pan</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=Jannchie" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/PokkaKiyo"><img src="https://avatars.githubusercontent.com/u/31039465?v=4?s=100" width="100px;" alt="PokkaKiyo"/><br /><sub><b>PokkaKiyo</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=PokkaKiyo" title="Tests">⚠️</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/s-aleshin"><img src="https://avatars.githubusercontent.com/u/66841202?v=4?s=100" width="100px;" alt="Sergei Aleshin"/><br /><sub><b>Sergei Aleshin</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=s-aleshin" title="Code">💻</a></td>
     </tr>
   </tbody>
 </table>

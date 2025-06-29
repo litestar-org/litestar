@@ -125,6 +125,11 @@ class KwargDefinition:
     Use as the key for the reference when creating a component for this type
     .. versionadded:: 2.12.0
     """
+    include_in_schema: bool = True
+    """
+    A boolean flag dictating whether this parameter should be included in the schema.
+    .. versionadded:: 2.17.0
+    """
 
     @property
     def is_constrained(self) -> bool:
@@ -202,6 +207,7 @@ def Parameter(
     title: str | None = None,
     schema_extra: dict[str, Any] | None = None,
     schema_component_key: str | None = None,
+    include_in_schema: bool = True,
 ) -> Any:
     """Create an extended parameter kwarg definition.
 
@@ -248,6 +254,7 @@ def Parameter(
             .. versionadded:: 2.8.0
         schema_component_key: Use this as the key for the reference when creating a component for this type
             .. versionadded:: 2.12.0
+        include_in_schema: A boolean flag dictating whether this parameter should be included in the schema.
     """
     return ParameterKwarg(
         annotation=annotation,
@@ -274,6 +281,7 @@ def Parameter(
         pattern=pattern,
         schema_extra=schema_extra,
         schema_component_key=schema_component_key,
+        include_in_schema=include_in_schema,
     )
 
 
