@@ -27,7 +27,6 @@ from litestar.exceptions import (
 from litestar.logging.config import LoggingConfig
 from litestar.plugins import CLIPlugin
 from litestar.plugins.sqlalchemy import SQLAlchemySerializationPlugin
-from litestar.router import Router
 from litestar.status_codes import HTTP_200_OK, HTTP_400_BAD_REQUEST, HTTP_500_INTERNAL_SERVER_ERROR
 from litestar.testing import TestClient, create_test_client
 
