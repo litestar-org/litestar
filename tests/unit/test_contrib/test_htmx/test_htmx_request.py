@@ -1,8 +1,7 @@
 from typing import Any, Optional
 
 from litestar import MediaType, get
-from litestar.contrib.htmx.request import HTMXRequest
-from litestar.plugins.htmx import HTMXHeaders
+from litestar.plugins.htmx import HTMXHeaders, HTMXRequest
 from litestar.status_codes import HTTP_200_OK
 from litestar.testing import create_test_client
 

@@ -16,9 +16,9 @@ Imports
 +----------------------------------------------------+------------------------------------------------------------------------+
 | ``2.x``                                            | ``3.x``                                                                |
 +====================================================+========================================================================+
-| **SECTION**                                                                                                                 |
+| **HTMX Plugin**                                                                                                             |
 +----------------------------------------------------+------------------------------------------------------------------------+
-| Put your changes here from v2                         | Put your changes here from v3                                       |
+| ``litestar.contrib.htmx``                         | :mod:`litestar.plugins.htmx`                                           |
 +----------------------------------------------------+------------------------------------------------------------------------+
 
 
@@ -298,6 +298,22 @@ The `PyYAML <https://pyyaml.org/wiki/PyYAMLDocumentation>`_ library, used to ren
 OpenAPI schema as YAML has been moved from the default dependencies to the
 ``litestar[yaml]`` package extra.
 
+
+Removal of ``litestar.contrib.htmx`` module
+-------------------------------------------
+
+The deprecated ``litestar.contrib.htmx`` module has been removed. All HTMX functionality
+is now available in :mod:`litestar.plugins.htmx`, which provides the same interface
+via the external ``litestar-htmx`` package.
+
+.. code-block:: python
+   :caption: Migration example
+
+   # Before (v2.x)
+   from litestar.contrib.htmx import HTMXRequest, HTMXTemplate
+
+   # After (v3.x)
+   from litestar.plugins.htmx import HTMXRequest, HTMXTemplate
 
 ``litestar-htmx`` package removed from default dependencies
 -----------------------------------------------------------

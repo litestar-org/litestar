@@ -585,7 +585,7 @@ HTMX
 ----
 
 Basic support for HTMX requests and responses was added with the
-``litestar.contrib.htmx`` module.
+`litestar.contrib.htmx` module.
 
 .. seealso::
    The :doc:`/usage/htmx` usage documentation
