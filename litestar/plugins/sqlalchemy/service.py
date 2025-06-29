@@ -1,4 +1,5 @@
 # ruff: noqa: F405
+# pyright: reportWildcardImportFromLibrary=false, reportUnsupportedDunderAll=false
 """SQLAlchemy service utilities."""
 
 from __future__ import annotations

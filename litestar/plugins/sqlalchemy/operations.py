@@ -1,3 +1,4 @@
+# pyright: reportWildcardImportFromLibrary=false
 """SQLAlchemy operation utilities."""
 
 from __future__ import annotations

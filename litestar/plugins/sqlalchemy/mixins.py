@@ -1,4 +1,5 @@
 # ruff: noqa: F405
+# pyright: reportWildcardImportFromLibrary=false
 """SQLAlchemy mixin utilities."""
 
 from __future__ import annotations
