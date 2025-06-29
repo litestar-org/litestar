@@ -1,5 +1,6 @@
 # ruff: noqa: F405
 """SQLAlchemy type utilities."""
+
 from __future__ import annotations
 
 # Re-export everything from advanced_alchemy.types
@@ -14,4 +15,3 @@ __all__ = [
     "EncryptedText",
     "Identifier",
 ]
-

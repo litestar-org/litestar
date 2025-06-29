@@ -12,7 +12,7 @@ from litestar.plugins import sqlalchemy
 def test_re_exports() -> None:
     # Test static submodule re-exports - these are local modules that re-export from advanced_alchemy
     # We check that the key exports are available rather than module identity
-    from litestar.plugins.sqlalchemy import base, exceptions, repository  # noqa: PLC0415
+    from litestar.plugins.sqlalchemy import base, exceptions, repository
 
     # Verify base module exports
     assert hasattr(base, "BigIntAuditBase")

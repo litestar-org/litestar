@@ -1,5 +1,6 @@
 # ruff: noqa: F405
 """SQLAlchemy service utilities."""
+
 from __future__ import annotations
 
 # Re-export everything from advanced_alchemy.service
@@ -21,4 +22,3 @@ __all__ = [
     "SQLAlchemySyncRepositoryService",
     "make_service_callback",
 ]
-

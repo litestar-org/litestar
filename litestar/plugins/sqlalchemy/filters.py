@@ -1,5 +1,6 @@
 # ruff: noqa: F405
 """SQLAlchemy filter utilities."""
+
 from __future__ import annotations
 
 # Re-export everything from advanced_alchemy.filters
