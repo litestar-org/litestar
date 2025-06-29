@@ -208,6 +208,17 @@ nitpick_ignore = [
     (PY_CLASS, "advanced_alchemy.base.UUIDAuditBase"),
     (PY_CLASS, "advanced_alchemy.base.BigIntBase"),
     (PY_CLASS, "advanced_alchemy.base.BigIntAuditBase"),
+    (PY_CLASS, "advanced_alchemy.base.AdvancedDeclarativeBase"),
+    (PY_CLASS, "advanced_alchemy.mixins.BigIntPrimaryKey"),
+    (PY_CLASS, "advanced_alchemy.mixins.AuditColumns"),
+    (PY_CLASS, "advanced_alchemy.mixins.UUIDPrimaryKey"),
+    (PY_CLASS, "AdvancedDeclarativeBase"),
+    (PY_CLASS, "Session"),
+    ("py:exc", "ImproperConfigurationError"),
+    (PY_CLASS, "advanced_alchemy.base.BasicAttributes"),
+    (PY_CLASS, "BasicAttributes"),
+    (PY_CLASS, "advanced_alchemy.extensions.litestar.plugins._slots_base.SlotsBase"),
+    (PY_CLASS, "litestar.dto.base_dto.SQLAlchemyDTO"),
 ]
 
 nitpick_ignore_regex = [
