@@ -2612,7 +2612,7 @@
         :type: feature
         :pr: 1780
 
-        When using the :class:`litestar.contrib.sqlalchemy.types.JsonB` type with an
+        When using the ``litestar.contrib.sqlalchemy.types.JsonB`` type with an
         Oracle Database engine, a JSON check constraint will be created for that
         column.
 
@@ -3610,7 +3610,7 @@
         :type: feature
         :pr: 1395
 
-        A :class:`SQLAlchemyInitPlugin <litestar.contrib.sqlalchemy.plugins.SQLAlchemyInitPlugin>` was added,
+        A ``SQLAlchemyInitPlugin`` (``litestar.contrib.sqlalchemy.plugins.SQLAlchemyInitPlugin``) was added,
         providing support for managed synchronous and asynchronous sessions.
 
         .. seealso::

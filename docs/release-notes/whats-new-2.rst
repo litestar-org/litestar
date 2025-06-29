@@ -296,7 +296,7 @@ TODO: Migration instructions
 
 .. seealso::
     The :doc:`/usage/databases/sqlalchemy/index` usage documentation and the
-    :doc:`/reference/contrib/sqlalchemy/index` API reference
+    :doc:`/reference/plugins/sqlalchemy` API reference
 
 
 Removal of Pydantic models
