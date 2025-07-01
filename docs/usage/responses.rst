@@ -819,4 +819,3 @@ allows background tasks to run concurrently, using an `anyio.task_group <https:/
 .. note::
 
    Setting ``run_in_task_group`` to ``True`` will not preserve execution order.
-

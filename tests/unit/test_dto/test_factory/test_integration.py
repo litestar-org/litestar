@@ -6,7 +6,6 @@ from dataclasses import dataclass, field
 from types import ModuleType
 from typing import TYPE_CHECKING, Annotated, Callable, Generic, Optional, TypeVar, cast
 from unittest.mock import MagicMock
-from uuid import UUID
 
 import msgspec
 import pytest
@@ -18,8 +17,6 @@ from litestar.datastructures import UploadFile
 from litestar.dto import DataclassDTO, DTOConfig, DTOData, MsgspecDTO, dto_field
 from litestar.dto.types import RenameStrategy
 from litestar.enums import MediaType, RequestEncodingType
-from litestar.openapi.spec.response import OpenAPIResponse
-from litestar.openapi.spec.schema import Schema
 from litestar.params import Body
 from litestar.serialization import encode_json
 from litestar.testing import create_test_client
@@ -838,8 +835,6 @@ def test_msgspec_dto_dont_copy_length_constraint_for_partial_dto() -> None:
 
     with create_test_client([handler]) as client:
         assert client.post("/", json={"bar": "1", "baz": "123"}).status_code == 201
-
-
 
 
 def test_openapi_schema_for_type_with_custom_generic_type(

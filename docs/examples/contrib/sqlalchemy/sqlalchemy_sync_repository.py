@@ -126,7 +126,7 @@ class AuthorController(Controller):
         self,
         authors_repo: AuthorRepository,
         limit_offset: LimitOffset,
-) -> list[Author]:
+    ) -> list[Author]:
         """List authors."""
         results, _ = authors_repo.list_and_count(limit_offset)
         type_adapter = TypeAdapter(list[Author])

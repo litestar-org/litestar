@@ -430,8 +430,6 @@ def test_schema_generation_with_generic_classes_constrained() -> None:
     )
 
 
-
-
 def test_schema_generation_with_ellipsis() -> None:
     schema = get_schema_for_field_definition(FieldDefinition.from_annotation(tuple[int, ...]))
     assert isinstance(schema.items, Schema)
