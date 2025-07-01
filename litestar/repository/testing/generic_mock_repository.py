@@ -254,7 +254,7 @@ class GenericAsyncMockRepository(AbstractAsyncRepository[ModelT], Generic[ModelT
             **kwargs: Instance attribute value filters.
 
         Returns:
-            Count of instances in collection, ignoring pagination.
+            Count of instances in collection.
         """
         return len(await self.list(*filters, **kwargs))
 
@@ -353,7 +353,7 @@ class GenericAsyncMockRepository(AbstractAsyncRepository[ModelT], Generic[ModelT
             **kwargs: Instance attribute value filters.
 
         Returns:
-            List of instances, and count of records returned by query, ignoring pagination.
+            List of instances, and count of records returned by query.
         """
         return await self.list(*filters, **kwargs), await self.count(*filters, **kwargs)
 
@@ -632,7 +632,7 @@ class GenericSyncMockRepository(AbstractSyncRepository[ModelT], Generic[ModelT])
             **kwargs: Instance attribute value filters.
 
         Returns:
-            Count of instances in collection, ignoring pagination.
+            Count of instances in collection.
         """
         return len(self.list(*filters, **kwargs))
 
@@ -729,7 +729,7 @@ class GenericSyncMockRepository(AbstractSyncRepository[ModelT], Generic[ModelT])
             **kwargs: Instance attribute value filters.
 
         Returns:
-            List of instances, and count of records returned by query, ignoring pagination.
+            List of instances, and count of records returned by query.
         """
         return self.list(*filters, **kwargs), self.count(*filters, **kwargs)
 

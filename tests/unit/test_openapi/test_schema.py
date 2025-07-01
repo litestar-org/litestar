@@ -34,7 +34,6 @@ from litestar.openapi.spec import ExternalDocumentation, OpenAPIType, Reference
 from litestar.openapi.spec.example import Example
 from litestar.openapi.spec.parameter import Parameter as OpenAPIParameter
 from litestar.openapi.spec.schema import Schema
-from litestar.pagination import ClassicPagination, CursorPagination, OffsetPagination
 from litestar.params import KwargDefinition, Parameter, ParameterKwarg
 from litestar.testing import create_test_client
 from litestar.typing import FieldDefinition
@@ -431,24 +430,6 @@ def test_schema_generation_with_generic_classes_constrained() -> None:
     )
 
 
-@pytest.mark.parametrize(
-    "annotation",
-    (
-        ClassicPagination[DataclassGeneric[int]],
-        OffsetPagination[DataclassGeneric[int]],
-        CursorPagination[int, DataclassGeneric[int]],
-    ),
-)
-def test_schema_generation_with_pagination(annotation: Any) -> None:
-    expected_foo_schema = Schema(type=OpenAPIType.INTEGER)
-    expected_optional_foo_schema = Schema(one_of=[Schema(type=OpenAPIType.INTEGER), Schema(type=OpenAPIType.NULL)])
-
-    properties = get_schema_for_field_definition(FieldDefinition.from_annotation(annotation).inner_types[-1]).properties
-
-    assert properties
-    assert properties["foo"] == expected_foo_schema
-    assert properties["annotated_foo"] == expected_foo_schema
-    assert properties["optional_foo"] == expected_optional_foo_schema
 
 
 def test_schema_generation_with_ellipsis() -> None:

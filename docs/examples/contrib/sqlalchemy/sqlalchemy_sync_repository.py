@@ -13,7 +13,6 @@ from litestar import Litestar, get
 from litestar.controller import Controller
 from litestar.di import Provide
 from litestar.handlers.http_handlers.decorators import delete, patch, post
-from litestar.pagination import OffsetPagination
 from litestar.params import Parameter
 from litestar.plugins.sqlalchemy import (
     SQLAlchemyInitPlugin,
@@ -127,16 +126,11 @@ class AuthorController(Controller):
         self,
         authors_repo: AuthorRepository,
         limit_offset: LimitOffset,
-    ) -> OffsetPagination[Author]:
+) -> list[Author]:
         """List authors."""
-        results, total = authors_repo.list_and_count(limit_offset)
+        results, _ = authors_repo.list_and_count(limit_offset)
         type_adapter = TypeAdapter(list[Author])
-        return OffsetPagination[Author](
-            items=type_adapter.validate_python(results),
-            total=total,
-            limit=limit_offset.limit,
-            offset=limit_offset.offset,
-        )
+        return type_adapter.validate_python(results)
 
     @post(path="/authors")
     def create_author(

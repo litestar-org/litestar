@@ -13,7 +13,6 @@ from litestar import Litestar, get
 from litestar.controller import Controller
 from litestar.di import Provide
 from litestar.handlers.http_handlers.decorators import delete, patch, post
-from litestar.pagination import OffsetPagination
 from litestar.params import Parameter
 from litestar.plugins.sqlalchemy import (
     AsyncSessionConfig,
@@ -127,16 +126,11 @@ class AuthorController(Controller):
         self,
         authors_repo: AuthorRepository,
         limit_offset: filters.LimitOffset,
-    ) -> OffsetPagination[Author]:
+) -> list[Author]:
         """List authors."""
-        results, total = await authors_repo.list_and_count(limit_offset)
+        results, _ = await authors_repo.list_and_count(limit_offset)
         type_adapter = TypeAdapter(list[Author])
-        return OffsetPagination[Author](
-            items=type_adapter.validate_python(results),
-            total=total,
-            limit=limit_offset.limit,
-            offset=limit_offset.offset,
-        )
+        return type_adapter.validate_python(results)
 
     @post(path="/authors")
     async def create_author(
@@ -183,7 +177,7 @@ class AuthorController(Controller):
         raw_obj.update({"id": author_id})
         obj = await authors_repo.update(AuthorModel(**raw_obj))
         await authors_repo.session.commit()
-        return Author.from_orm(obj)
+        return Author.model_validate(obj)
 
     @delete(path="/authors/{author_id:uuid}")
     async def delete_author(
