@@ -62,7 +62,7 @@ maintainers = [
   { name = "Julien Courtes", email = "julien@litestar.dev" },
 ]
 name = "litestar"
-readme = "README.md"
+readme = "docs/PYPI_README.md"
 requires-python = ">=3.8,<4.0"
 version = "2.16.0"
 
