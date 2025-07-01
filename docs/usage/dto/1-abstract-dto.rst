@@ -364,59 +364,6 @@ Returning enveloped data is subject to the following constraints:
 #. There can be multiple type arguments to the generic wrapper type, but there must be exactly one type argument to the
    generic wrapper that is a type supported by the DTO.
 
-Working with Litestar's Pagination Types
-----------------------------------------
-
-Litestar offers paginated response wrapper types, and DTO Factory types can handle this out of the box.
-
-.. literalinclude:: /examples/data_transfer_objects/factory/paginated_return_data.py
-    :caption: Paginated Return Data
-    :language: python
-    :linenos:
-
-The DTO is defined and configured, in our example, we're excluding ``password`` and ``created_at`` fields from the final
-representation of our users.
-
-.. code-block:: python
-
-   from advanced_alchemy.dto import SQLAlchemyDTO
-   from litestar.dto import DTOConfig
-
-
-   class UserDTO(SQLAlchemyDTO[User]):
-       config = DTOConfig(exclude={"password", "created_at"})
-
-The example sets up a ``/users`` endpoint, where a paginated list of ``User`` objects is returned, wrapped in
-:class:`ClassicPagination <.pagination.ClassicPagination>`.
-
-.. code-block:: python
-
-   from litestar import get
-   from litestar.pagination import ClassicPagination
-
-
-   @get("/users", dto=UserDTO, sync_to_thread=False)
-   def get_users() -> ClassicPagination[User]:
-       return ClassicPagination(
-           page_size=10,
-           total_pages=1,
-           current_page=1,
-           items=[
-               User(
-                   id=1,
-                   name="Litestar User",
-                   password="xyz",
-                   created_at=datetime.now(),
-               ),
-           ],
-       )
-
-The :class:`ClassicPagination <.pagination.ClassicPagination>` class contains ``page_size`` (number of items per page),
-``total_pages`` (total number of pages), ``current_page`` (current page number), and ``items`` (items for the current
-page).
-
-The DTO operates on the data contained in the ``items`` attribute, and the pagination wrapper is handled automatically
-by Litestar's serialization process.
 
 Using Litestar's Response Type with DTO Factory
 -----------------------------------------------

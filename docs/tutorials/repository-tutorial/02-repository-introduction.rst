@@ -2,7 +2,7 @@ Interacting with repositories
 -----------------------------
 Now that we've covered the modelling basics, we are able to create our first repository
 class.  The repository classes include all of the standard CRUD operations as well as a
-few advanced features such as pagination, filtering and bulk operations.
+few advanced features such as filtering and bulk operations.
 
 .. tip:: The full code for this tutorial can be found below in the :ref:`Full Code <02-repo-full-code>` section.
 
@@ -174,19 +174,6 @@ performance when working with larger data sets.
     :lines: 5-11, 13, 14-16, 18-26, 27-33, 55-70
     :linenos:
 
-Paginated Data Selection
-^^^^^^^^^^^^^^^^^^^^^^^^
-
-Next, let's explore how to select multiple records with pagination. This functionality
-is useful for handling large amounts of data by breaking the data into manageable
-'pages' or subsets.  ``LimitOffset`` is one of several filter types you can use with the
-repository.
-
-.. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_repository_bulk_operations.py
-    :language: python
-    :caption: ``app.py``
-    :lines: 10, 55-56, 72-74
-    :linenos:
 
 Bulk Delete
 ^^^^^^^^^^^

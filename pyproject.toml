@@ -399,8 +399,6 @@ exclude-classes = """
   |(^litestar.dto.base_dto:AbstractDTO)
   |(^litestar.dto.data_structures:DTOData)
   |(^litestar.middleware.session.base:BaseSessionBackend)
-  |(^litestar.pagination:ClassicPagination)
-  |(^litestar.pagination:CursorPagination)
   |(^litestar.response.base:Response)
   |(^litestar.testing.client.base:BaseTestClient)
   |(^litestar.testing.life_span_handler:LifeSpanHandler)

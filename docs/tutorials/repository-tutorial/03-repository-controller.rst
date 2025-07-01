@@ -45,8 +45,6 @@ interacting with the ``Author`` model:
         :lines: 116-194
         :linenos:
 
-In our list detail endpoint, we use the pagination filter for limiting the amount of
-data returned, allowing us to retrieve large datasets in smaller, more manageable chunks.
 
 In the above examples, we've used the asynchronous repository implementation. However,
 Litestar also supports synchronous database drivers with an identical implementation.
@@ -59,7 +57,7 @@ Here's a corresponding synchronous version of the previous example:
         :caption: ``app.py``
         :linenos:
 
-The examples above enable a feature-complete CRUD service that includes pagination! In
+The examples above enable a feature-complete CRUD service! In
 the next section, we'll explore how to extend the built-in repository to add additional
 functionality to our application.
 

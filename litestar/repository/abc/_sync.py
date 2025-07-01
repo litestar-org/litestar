@@ -226,7 +226,7 @@ class AbstractSyncRepository(Generic[T], metaclass=ABCMeta):
             **kwargs: Instance attribute value filters.
 
         Returns:
-            a tuple containing The list of instances, after filtering applied, and a count of records returned by query, ignoring pagination.
+            a tuple containing The list of instances, after filtering applied, and a count of records returned by query.
         """
 
     @abstractmethod
