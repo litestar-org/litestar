@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from dataclasses import replace
 from types import NoneType
-from typing import TYPE_CHECKING, Callable, Optional, Union
+from typing import TYPE_CHECKING, Callable, List, Optional, Union
 from unittest.mock import ANY
 
 import pydantic as pydantic_v2
@@ -111,7 +111,7 @@ def expected_field_defs(int_factory: Callable[[], int]) -> list[DTOFieldDefiniti
         replace(
             DTOFieldDefinition.from_field_definition(
                 field_definition=FieldDefinition.from_kwarg(
-                    annotation=list[str],
+                    annotation=List[str],
                     name="g",
                 ),
                 model_name=ANY,
@@ -119,7 +119,7 @@ def expected_field_defs(int_factory: Callable[[], int]) -> list[DTOFieldDefiniti
                 dto_field=DTOField(),
                 passthrough_constraints=False,
             ),
-            annotation=Optional[list[str]],
+            annotation=Optional[List[str]],
             origin=Union,
             instantiable_origin=Union,
             safe_generic_origin=Union,
@@ -141,7 +141,7 @@ def test_field_definition_generation_v1(
         d: int = pydantic_v1.Field(default=1)
         e: int = pydantic_v1.Field(default_factory=int_factory)
         f: Optional[int]
-        g: list[str] = pydantic_v1.Field(default_factory=list)
+        g: List[str] = pydantic_v1.Field(default_factory=list)
 
     field_defs = list(PydanticDTO.generate_field_definitions(TestModel))
     assert field_defs[0].model_name == "TestModel"
@@ -160,7 +160,7 @@ def test_field_definition_generation_v2(
         d: int = pydantic_v2.Field(default=1)
         e: int = pydantic_v2.Field(default_factory=int_factory)
         f: Optional[int]
-        g: list[str] = pydantic_v2.Field(default_factory=list)
+        g: List[str] = pydantic_v2.Field(default_factory=list)
 
     field_defs = list(PydanticDTO.generate_field_definitions(TestModel))
     assert field_defs[0].model_name == "TestModel"
