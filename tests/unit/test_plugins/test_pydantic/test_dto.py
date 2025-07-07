@@ -57,7 +57,7 @@ def test_field_definition_implicit_optional_default(base_model: type[BaseModel])
     dto_type = PydanticDTO[Model]
     field_defs = list(dto_type.generate_field_definitions(Model))
     assert len(field_defs) == 1
-    assert field_defs[0].default is None
+    assert field_defs[0].default is Empty
 
 
 def test_detect_nested_field_pydantic_v1(monkeypatch: pytest.MonkeyPatch) -> None:
