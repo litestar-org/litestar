@@ -141,7 +141,7 @@ class PydanticDTO(AbstractDTO[T], Generic[T]):
                 if has_default_value:
                     default = field_info.default
                 elif field_definition.is_optional and has_default_value:
-                    default = None
+                    default = None  # type: ignore[unreachable]
                 else:
                     default = Empty
 
