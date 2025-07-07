@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from dataclasses import replace
-from types import NoneType
 from typing import TYPE_CHECKING, Callable, List, Optional, Union
 from unittest.mock import ANY
 
@@ -12,6 +11,7 @@ from typing_extensions import Annotated
 
 from litestar.dto import DTOField, DTOFieldDefinition, Mark, dto_field
 from litestar.plugins.pydantic import PydanticDTO
+from litestar.types.builtin_types import NoneType
 from litestar.typing import FieldDefinition
 
 from . import PydanticVersion
