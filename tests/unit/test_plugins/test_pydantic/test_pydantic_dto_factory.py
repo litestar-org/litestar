@@ -124,8 +124,8 @@ def expected_field_defs(int_factory: Callable[[], int]) -> list[DTOFieldDefiniti
             instantiable_origin=Union,
             safe_generic_origin=Union,
             inner_types=ANY,
-            args=(list[str], NoneType),
-            raw=Optional[list[str]],
+            args=(List[str], NoneType),
+            raw=Optional[List[str]],
         ),
     ]
 
