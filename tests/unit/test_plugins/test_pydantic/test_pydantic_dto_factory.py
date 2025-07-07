@@ -1,7 +1,8 @@
 from __future__ import annotations
 
 from dataclasses import replace
-from typing import TYPE_CHECKING, Callable, Optional
+from types import NoneType
+from typing import TYPE_CHECKING, Callable, Optional, Union
 from unittest.mock import ANY
 
 import pydantic as pydantic_v2
@@ -91,12 +92,40 @@ def expected_field_defs(int_factory: Callable[[], int]) -> list[DTOFieldDefiniti
                 default_factory=int_factory,
                 dto_field=DTOField(),
             ),
-            default=None,
             metadata=ANY,
             type_wrappers=ANY,
             raw=ANY,
             kwarg_definition=ANY,
             passthrough_constraints=False,
+        ),
+        DTOFieldDefinition.from_field_definition(
+            field_definition=FieldDefinition.from_kwarg(
+                annotation=Optional[int],
+                name="f",
+            ),
+            model_name=ANY,
+            default_factory=None,
+            dto_field=DTOField(),
+            passthrough_constraints=False,
+        ),
+        replace(
+            DTOFieldDefinition.from_field_definition(
+                field_definition=FieldDefinition.from_kwarg(
+                    annotation=list[str],
+                    name="g",
+                ),
+                model_name=ANY,
+                default_factory=list,
+                dto_field=DTOField(),
+                passthrough_constraints=False,
+            ),
+            annotation=Optional[list[str]],
+            origin=Union,
+            instantiable_origin=Union,
+            safe_generic_origin=Union,
+            inner_types=ANY,
+            args=(list[str], NoneType),
+            raw=Optional[list[str]],
         ),
     ]
 
@@ -111,6 +140,8 @@ def test_field_definition_generation_v1(
         c: Annotated[int, pydantic_v1.Field(gt=1)]
         d: int = pydantic_v1.Field(default=1)
         e: int = pydantic_v1.Field(default_factory=int_factory)
+        f: Optional[int]
+        g: list[str] = pydantic_v1.Field(default_factory=list)
 
     field_defs = list(PydanticDTO.generate_field_definitions(TestModel))
     assert field_defs[0].model_name == "TestModel"
@@ -128,6 +159,8 @@ def test_field_definition_generation_v2(
         c: Annotated[int, pydantic_v2.Field(gt=1)]
         d: int = pydantic_v2.Field(default=1)
         e: int = pydantic_v2.Field(default_factory=int_factory)
+        f: Optional[int]
+        g: list[str] = pydantic_v2.Field(default_factory=list)
 
     field_defs = list(PydanticDTO.generate_field_definitions(TestModel))
     assert field_defs[0].model_name == "TestModel"
