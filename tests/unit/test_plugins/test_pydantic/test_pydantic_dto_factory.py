@@ -140,8 +140,8 @@ def test_field_definition_generation_v1(
         c: Annotated[int, pydantic_v1.Field(gt=1)]
         d: int = pydantic_v1.Field(default=1)
         e: int = pydantic_v1.Field(default_factory=int_factory)
-        f: Optional[int]
-        g: List[str] = pydantic_v1.Field(default_factory=list)
+        f: Optional[int]  # noqa: UP007
+        g: List[str] = pydantic_v1.Field(default_factory=list)  # noqa: UP006
 
     field_defs = list(PydanticDTO.generate_field_definitions(TestModel))
     assert field_defs[0].model_name == "TestModel"
@@ -159,8 +159,8 @@ def test_field_definition_generation_v2(
         c: Annotated[int, pydantic_v2.Field(gt=1)]
         d: int = pydantic_v2.Field(default=1)
         e: int = pydantic_v2.Field(default_factory=int_factory)
-        f: Optional[int]
-        g: List[str] = pydantic_v2.Field(default_factory=list)
+        f: Optional[int]  # noqa: UP007
+        g: List[str] = pydantic_v2.Field(default_factory=list)  # noqa: UP006
 
     field_defs = list(PydanticDTO.generate_field_definitions(TestModel))
     assert field_defs[0].model_name == "TestModel"
