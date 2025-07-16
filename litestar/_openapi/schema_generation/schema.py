@@ -154,7 +154,9 @@ def _types_in_list(lst: list[Any]) -> list[OpenAPIType] | OpenAPIType:
             schema_types.append(schema_type)
         else:
             raise RuntimeError("Unexpected type for schema item")  # pragma: no cover
-    schema_types = list(set(schema_types))
+
+    # Ensure our schema types are sorted alphabetically for any downstream usage sensitive to order changes.
+    schema_types = sorted(set(schema_types))
     return schema_types[0] if len(schema_types) == 1 else schema_types
 
 
