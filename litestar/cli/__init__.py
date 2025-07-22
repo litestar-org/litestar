@@ -14,7 +14,7 @@ if find_spec("rich_click") is not None:  # pragma: no cover
     rich_click.rich_click.STYLE_ERRORS_SUGGESTION = "magenta italic"
     rich_click.rich_click.ERRORS_SUGGESTION = ""
     rich_click.rich_click.ERRORS_EPILOGUE = ""
-    rich_click.rich_click.MAX_WIDTH = 80
+    rich_click.rich_click.MAX_WIDTH = 120
     rich_click.rich_click.SHOW_METAVARS_COLUMN = True
     rich_click.rich_click.APPEND_METAVARS_HELP = True
 

@@ -13,7 +13,7 @@ this package, you should first install the required dependencies:
 .. code-block:: bash
     :caption: as a Litestar extra
 
-    pip install litestar[prometheus]
+    pip install 'litestar[prometheus]'
 
 Once these requirements are satisfied, you can instrument your Litestar application:
 

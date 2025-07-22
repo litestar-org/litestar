@@ -34,13 +34,27 @@ def _should_create_literal_schema(field_definition: FieldDefinition) -> bool:
     )
 
 
+def get_example_id(example: Example, name: str, index: int) -> str:
+    """Get the example ID.
+
+    Args:
+        example: The example instance.
+        name: The name of the field.
+        index: The index of the example.
+
+    Returns:
+        The example ID.
+    """
+    return example.id or f"{name}-example-{index}"
+
+
 def get_formatted_examples(field_definition: FieldDefinition, examples: Sequence[Example]) -> Mapping[str, Example]:
     """Format the examples into the OpenAPI schema format."""
 
     name = field_definition.name or get_name(field_definition.type_)
     name = name.lower()
 
-    return {f"{name}-example-{i}": example for i, example in enumerate(examples, 1)}
+    return {get_example_id(example, name, i): example for i, example in enumerate(examples, 1)}
 
 
 def get_json_schema_formatted_examples(examples: Sequence[Example]) -> list[Any]:

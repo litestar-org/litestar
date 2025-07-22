@@ -474,6 +474,40 @@ def test_additional_responses_with_custom_examples(create_factory: CreateFactory
         next(responses)
 
 
+def test_additional_responses_with_custom_example_ids(create_factory: CreateFactoryFixture) -> None:
+    """Test that custom example IDs are used when provided in the Example object."""
+
+    @get(
+        responses={
+            200: ResponseSpec(
+                DataclassPerson,
+                examples=[
+                    Example(id="custom-id-1", summary="First example", value={"string": "example1", "number": 1}),
+                    Example(id="custom-id-2", summary="Second example", value={"string": "example2", "number": 2}),
+                    Example(summary="Third example", value={"string": "example3", "number": 3}),
+                ],
+            )
+        }
+    )
+    def handler() -> DataclassPerson:
+        return DataclassPersonFactory.build()
+
+    factory = create_factory(handler)
+    responses = factory.create_additional_responses()
+    status_code, response = next(responses)
+    assert response.content
+    assert isinstance(response.content["application/json"], OpenAPIMediaType)
+    assert response.content["application/json"].examples is not None
+    assert "custom-id-1" in response.content["application/json"].examples
+    assert "custom-id-2" in response.content["application/json"].examples
+    assert "dataclassperson-example-3" in response.content["application/json"].examples
+    assert response.content["application/json"].examples["custom-id-1"].summary == "First example"
+    assert response.content["application/json"].examples["custom-id-2"].summary == "Second example"
+    assert response.content["application/json"].examples["dataclassperson-example-3"].summary == "Third example"
+    with pytest.raises(StopIteration):
+        next(responses)
+
+
 def test_create_response_for_response_subclass(create_factory: CreateFactoryFixture) -> None:
     class CustomResponse(Response[T]):
         pass

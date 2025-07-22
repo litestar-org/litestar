@@ -114,3 +114,20 @@ def test_incorrect_app_argument(
     assert result.exit_code == 1
 
     mock.assert_not_called()
+
+
+@pytest.mark.xdist_group("cli_autodiscovery")
+def test_invalid_import_in_app_argument(
+    runner: "CliRunner", create_app_file: CreateAppFileFixture, tmp_project_dir: "Path"
+) -> None:
+    app_file = "main.py"
+
+    create_app_file(
+        file=app_file,
+        content="from something import bar\n" + CREATE_APP_FILE_CONTENT,
+    )
+
+    app_dir = str(tmp_project_dir.absolute())
+
+    result = runner.invoke(cli_command, ["--app", "main:create_app", "--app-dir", app_dir, "info"])
+    assert isinstance(result.exception, ModuleNotFoundError)

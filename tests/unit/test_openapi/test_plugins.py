@@ -1,7 +1,9 @@
+import pytest
+
 from litestar import Litestar
 from litestar.config.csrf import CSRFConfig
 from litestar.openapi.config import OpenAPIConfig
-from litestar.openapi.plugins import RapidocRenderPlugin, SwaggerRenderPlugin
+from litestar.openapi.plugins import RapidocRenderPlugin, ScalarRenderPlugin, SwaggerRenderPlugin
 from litestar.testing import TestClient
 
 rapidoc_fragment = ".addEventListener('before-try',"
@@ -60,3 +62,30 @@ def test_plugins_csrf_httponly() -> None:
         resp = client.get("/schema/swagger")
         assert resp.status_code == 200
         assert swagger_fragment not in resp.text
+
+
+@pytest.mark.parametrize(
+    "scalar_config",
+    [
+        {"showSidebar": False},
+    ],
+)
+@pytest.mark.parametrize(
+    "expected_config_render",
+    [
+        "document.getElementById('api-reference').dataset.configuration = '{\"showSidebar\":false}'",
+    ],
+)
+def test_openapi_scalar_options(scalar_config: dict, expected_config_render: str) -> None:
+    app = Litestar(
+        openapi_config=OpenAPIConfig(
+            title="Litestar Example",
+            version="0.0.1",
+            render_plugins=[ScalarRenderPlugin(options=scalar_config)],
+        )
+    )
+
+    with TestClient(app=app) as client:
+        resp = client.get("/schema/scalar")
+        assert resp.status_code == 200
+        assert expected_config_render in resp.text

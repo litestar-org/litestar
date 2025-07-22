@@ -40,6 +40,27 @@ Application and request level loggers can be configured using the :class:`~lites
     Exceptions won't be logged by default, except in debug mode. Make sure to use ``log_exceptions="always"`` as in the
     example above to log exceptions if you need it.
 
+Controlling Exception Logging
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+While ``log_exceptions`` controls when exceptions are logged, sometimes you may want to suppress stack traces for specific
+exception types or HTTP status codes. The ``disable_stack_trace`` parameter allows you to specify a set of exception types
+or status codes that should not generate stack traces in logs:
+
+.. code-block:: python
+
+   from litestar import Litestar
+   from litestar.logging import LoggingConfig
+
+   # Don't log stack traces for 404 errors and ValueError exceptions
+   logging_config = LoggingConfig(
+       debug=True,
+       disable_stack_trace={404, ValueError},
+   )
+
+   app = Litestar(logging_config=logging_config)
+
+This is particularly useful for common exceptions that you expect in normal operation and don't need detailed stack traces for.
 
 Using Python standard library
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

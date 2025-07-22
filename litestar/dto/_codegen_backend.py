@@ -4,7 +4,9 @@ back again, to bytes.
 
 from __future__ import annotations
 
+import linecache
 import re
+import secrets
 import textwrap
 from contextlib import contextmanager, nullcontext
 from typing import (
@@ -44,8 +46,6 @@ __all__ = ("DTOCodegenBackend",)
 class DTOCodegenBackend(DTOBackend):
     __slots__ = (
         "_encode_data",
-        "_transfer_data_from_builtins",
-        "_transfer_data_from_builtins_with_overrides",
         "_transfer_to_dict",
         "_transfer_to_model_type",
     )
@@ -86,14 +86,6 @@ class DTOCodegenBackend(DTOBackend):
             destination_type=self.model_type,
             field_definition=self.field_definition,
         )
-        self._transfer_data_from_builtins = self._create_transfer_data_fn(
-            destination_type=self.model_type,
-            field_definition=self.field_definition,
-        )
-        self._transfer_data_from_builtins_with_overrides = self._create_transfer_data_fn(
-            destination_type=self.model_type,
-            field_definition=self.field_definition,
-        )
         self._encode_data = self._create_transfer_data_fn(
             destination_type=self.transfer_model_type,
             field_definition=self.field_definition,
@@ -125,7 +117,7 @@ class DTOCodegenBackend(DTOBackend):
         Returns:
             Instance or collection of ``model_type`` instances.
         """
-        return self._transfer_data_from_builtins(builtins)
+        return self._transfer_to_model_type(builtins)
 
     def populate_data_from_raw(self, raw: bytes, asgi_connection: ASGIConnection) -> Any:
         """Parse raw bytes into instance of `model_type`.
@@ -180,6 +172,7 @@ class DTOCodegenBackend(DTOBackend):
             field_definitions=self.parsed_field_definitions,
             is_data_field=self.is_data_field,
             field_definition=field_definition,
+            attribute_accessor=self.attribute_accessor,
         )
 
 
@@ -188,12 +181,22 @@ class FieldAccessManager(Protocol):
 
 
 class TransferFunctionFactory:
-    def __init__(self, is_data_field: bool, nested_as_dict: bool) -> None:
+    def __init__(
+        self,
+        is_data_field: bool,
+        nested_as_dict: bool,
+        attribute_accessor: Callable[[object, str], Any],
+    ) -> None:
+        self.attribute_accessor = attribute_accessor
         self.is_data_field = is_data_field
         self._fn_locals: dict[str, Any] = {
             "Mapping": Mapping,
             "UNSET": UNSET,
         }
+        if attribute_accessor is not getattr:
+            self.attribute_accessor_name: str | None = self._add_to_fn_globals("__getattr_impl", attribute_accessor)
+        else:
+            self.attribute_accessor_name = None
         self._indentation = 1
         self._body = ""
         self.names: set[str] = set()
@@ -211,12 +214,28 @@ class TransferFunctionFactory:
         return unique_name
 
     def _make_function(
-        self, source_value_name: str, return_value_name: str, fn_name: str = "func"
+        self,
+        source_value_name: str,
+        return_value_name: str,
+        fn_name: str = "func",
     ) -> Callable[[Any], Any]:
         """Wrap the current body contents in a function definition and turn it into a callable object"""
         source = f"def {fn_name}({source_value_name}):\n{self._body} return {return_value_name}"
         ctx: dict[str, Any] = {**self._fn_locals}
-        exec(source, ctx)  # noqa: S102
+
+        # add the function to linecache, to get better stacktraces when an error occurs
+        # otherwise, the traceback within the generated code will just point
+        # to '<string>'
+        file_name = f"dto_transfer_function_{secrets.token_hex(6)}"
+        linecache.cache[file_name] = (
+            len(source),
+            None,  # mtime: not applicable
+            [line + "\n" for line in source.splitlines()],
+            file_name,
+        )
+        code = compile(source, file_name, "exec")
+        exec(code, ctx)  # noqa: S102
+
         return ctx["func"]  # type: ignore[no-any-return]
 
     def _add_stmt(self, stmt: str) -> None:
@@ -272,7 +291,10 @@ class TransferFunctionFactory:
         within this context can use this expression to access the desired value.
         """
 
-        value_expr = f"{source_name}.{field_name}"
+        if self.attribute_accessor_name:
+            value_expr = f"{self.attribute_accessor_name}({source_name}, '{field_name}')"
+        else:
+            value_expr = f"{source_name}.{field_name}"
 
         # if we expect an optional attribute it's faster to check with hasattr
         if expect_optional:
@@ -290,8 +312,13 @@ class TransferFunctionFactory:
         field_definitions: tuple[TransferDTOFieldDefinition, ...],
         destination_type: type[Any],
         is_data_field: bool,
+        attribute_accessor: Callable[[object, str], Any],
     ) -> Callable[[Any], Any]:
-        factory = cls(is_data_field=is_data_field, nested_as_dict=destination_type is dict)
+        factory = cls(
+            is_data_field=is_data_field,
+            nested_as_dict=destination_type is dict,
+            attribute_accessor=attribute_accessor,
+        )
         tmp_return_type_name = factory._create_local_name("tmp_return_type")
         source_instance_name = factory._create_local_name("source_instance")
         destination_type_name = factory._add_to_fn_globals("destination_type", destination_type)
@@ -309,8 +336,13 @@ class TransferFunctionFactory:
         cls,
         transfer_type: TransferType,
         is_data_field: bool,
+        attribute_accessor: Callable[[object, str], Any],
     ) -> Callable[[Any], Any]:
-        factory = cls(is_data_field=is_data_field, nested_as_dict=False)
+        factory = cls(
+            is_data_field=is_data_field,
+            nested_as_dict=False,
+            attribute_accessor=attribute_accessor,
+        )
         tmp_return_type_name = factory._create_local_name("tmp_return_type")
         source_value_name = factory._create_local_name("source_value")
         factory._create_transfer_type_data_body(
@@ -324,15 +356,18 @@ class TransferFunctionFactory:
     @classmethod
     def create_transfer_data(
         cls,
+        *,
         destination_type: type[Any],
         field_definitions: tuple[TransferDTOFieldDefinition, ...],
         is_data_field: bool,
         field_definition: FieldDefinition | None = None,
+        attribute_accessor: Callable[[object, str], Any],
     ) -> Callable[[Any], Any]:
         if field_definition and field_definition.is_non_string_collection:
             factory = cls(
                 is_data_field=is_data_field,
                 nested_as_dict=False,
+                attribute_accessor=attribute_accessor,
             )
             source_value_name = factory._create_local_name("source_value")
             return_value_name = factory._create_local_name("tmp_return_value")
@@ -349,6 +384,7 @@ class TransferFunctionFactory:
             destination_type=destination_type,
             field_definitions=field_definitions,
             is_data_field=is_data_field,
+            attribute_accessor=attribute_accessor,
         )
 
     def _create_transfer_data_body_nested(
@@ -365,6 +401,7 @@ class TransferFunctionFactory:
             destination_type=destination_type,
             field_definition=field_definition.inner_types[0],
             field_definitions=field_definitions,
+            attribute_accessor=self.attribute_accessor,
         )
         transfer_func_name = self._add_to_fn_globals("transfer_data", transfer_func)
         if field_definition.is_mapping:
@@ -496,7 +533,9 @@ class TransferFunctionFactory:
             origin_name = self._add_to_fn_globals("origin", transfer_type.field_definition.instantiable_origin)
             if transfer_type.has_nested:
                 transfer_type_data_fn = TransferFunctionFactory.create_transfer_type_data(
-                    is_data_field=self.is_data_field, transfer_type=transfer_type.inner_type
+                    is_data_field=self.is_data_field,
+                    transfer_type=transfer_type.inner_type,
+                    attribute_accessor=self.attribute_accessor,
                 )
                 transfer_type_data_name = self._add_to_fn_globals("transfer_type_data", transfer_type_data_fn)
                 self._add_stmt(
@@ -511,7 +550,9 @@ class TransferFunctionFactory:
             origin_name = self._add_to_fn_globals("origin", transfer_type.field_definition.instantiable_origin)
             if transfer_type.has_nested:
                 transfer_type_data_fn = TransferFunctionFactory.create_transfer_type_data(
-                    is_data_field=self.is_data_field, transfer_type=transfer_type.value_type
+                    is_data_field=self.is_data_field,
+                    transfer_type=transfer_type.value_type,
+                    attribute_accessor=self.attribute_accessor,
                 )
                 transfer_type_data_name = self._add_to_fn_globals("transfer_type_data", transfer_type_data_fn)
                 self._add_stmt(

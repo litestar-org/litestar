@@ -146,7 +146,7 @@ conditions. This pattern can be extended and adjusted to meet your needs.
 .. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_repository_bulk_operations.py
     :language: python
     :caption: ``app.py``
-    :lines: 37-55
+    :lines: 1-3, 34-54
     :linenos:
 
 You can review the JSON source file here:
@@ -171,7 +171,7 @@ performance when working with larger data sets.
 .. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_repository_bulk_operations.py
     :language: python
     :caption: ``app.py``
-    :lines: 66-71
+    :lines: 5-11, 13, 14-16, 18-26, 27-33, 55-70
     :linenos:
 
 Paginated Data Selection
@@ -185,7 +185,7 @@ repository.
 .. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_repository_bulk_operations.py
     :language: python
     :caption: ``app.py``
-    :lines: 73-75
+    :lines: 10, 55-56, 72-74
     :linenos:
 
 Bulk Delete
@@ -198,7 +198,7 @@ executing row-by-row.
 .. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_repository_bulk_operations.py
     :language: python
     :caption: ``app.py``
-    :lines: 77-79
+    :lines: 76-78
     :linenos:
 
 Counts
@@ -209,7 +209,7 @@ Finally, we'll demonstrate how to count the number of records remaining in the d
 .. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_repository_bulk_operations.py
     :language: python
     :caption: ``app.py``
-    :lines: 81-83
+    :lines: 80-82
     :linenos:
 
 Now that we have demonstrated how to interact with the repository objects outside of a

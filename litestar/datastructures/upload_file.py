@@ -56,7 +56,7 @@ class UploadFile:
             data: Byte string to write.
 
         Returns:
-            None
+            Number of bytes written (int).
         """
         if self.rolled_to_disk:
             return await sync_to_thread(self.file.write, data)
@@ -82,7 +82,7 @@ class UploadFile:
             offset: start position..
 
         Returns:
-            None.
+            The new absolute file position (in bytes) after seeking.
         """
         if self.rolled_to_disk:
             return await sync_to_thread(self.file.seek, offset)

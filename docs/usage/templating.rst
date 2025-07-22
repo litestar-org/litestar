@@ -19,21 +19,21 @@ respective extra:
 
         .. code-block:: shell
 
-            pip install litestar[jinja]
+            pip install 'litestar[jinja]'
 
     .. tab-item:: Mako
         :sync: mako
 
         .. code-block:: shell
 
-            pip install litestar[mako]
+            pip install 'litestar[mako]'
 
     .. tab-item:: MiniJinja
         :sync: minijinja
 
         .. code-block:: shell
 
-            pip install litestar[minijinja]
+            pip install 'litestar[minijinja]'
 
 .. tip::
 

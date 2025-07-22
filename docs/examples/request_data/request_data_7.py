@@ -12,7 +12,7 @@ def handle_file_upload(
 ) -> str:
     content = data.file.read()
     filename = data.filename
-    return f"{filename}, {content.decode()}"
+    return f"{filename},length: {len(content)}"
 
 
 app = Litestar(route_handlers=[handle_file_upload])

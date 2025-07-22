@@ -38,7 +38,7 @@ class DataclassDTO(AbstractDTO[T], Generic[T]):
 
             default = dc_field.default if dc_field.default is not MISSING else Empty
             default_factory = dc_field.default_factory if dc_field.default_factory is not MISSING else None
-            field_defintion = replace(
+            field_definition = replace(
                 DTOFieldDefinition.from_field_definition(
                     field_definition=field_definition,
                     default_factory=default_factory,
@@ -50,9 +50,9 @@ class DataclassDTO(AbstractDTO[T], Generic[T]):
             )
 
             yield (
-                replace(field_defintion, default=Empty, kwarg_definition=default)
+                replace(field_definition, default=Empty, kwarg_definition=default)
                 if isinstance(default, (KwargDefinition, DependencyKwarg))
-                else field_defintion
+                else field_definition
             )
 
         for key, property_field in properties.items():

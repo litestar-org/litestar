@@ -13,7 +13,7 @@ this package, you should first install the required dependencies:
 .. code-block:: bash
     :caption: as a Litestar extra
 
-    pip install litestar[opentelemetry]
+    pip install 'litestar[opentelemetry]'
 
 Once these requirements are satisfied, you can instrument your Litestar application by creating an instance
 of :class:`OpenTelemetryConfig <litestar.contrib.opentelemetry.OpenTelemetryConfig>` and passing the middleware it creates to

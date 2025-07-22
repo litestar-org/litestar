@@ -25,7 +25,7 @@ from . import (
 if TYPE_CHECKING:
     from unittest.mock import MagicMock
 
-    from litestar.cli._utils import LitestarGroup
+    from litestar.cli._utils import LitestarExtensionGroup
 
 
 @pytest.fixture(autouse=True)
@@ -34,10 +34,10 @@ def reset_litestar_app_env(monkeypatch: MonkeyPatch) -> None:
 
 
 @pytest.fixture()
-def root_command() -> LitestarGroup:
+def root_command() -> LitestarExtensionGroup:
     import litestar.cli.main
 
-    return cast("LitestarGroup", importlib.reload(litestar.cli.main).litestar_group)
+    return cast("LitestarExtensionGroup", importlib.reload(litestar.cli.main).litestar_group)
 
 
 @pytest.fixture

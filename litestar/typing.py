@@ -22,12 +22,21 @@ from typing_extensions import (
     NotRequired,
     Required,
     Self,
-    TypeAliasType,
     get_args,
     get_origin,
     get_type_hints,
     is_typeddict,
 )
+from typing_extensions import (
+    TypeAliasType as TeTypeAliasType,
+)
+
+try:
+    from typing import TypeAliasType  # type: ignore[attr-defined]
+
+    TypeAliasTypes = (TypeAliasType, TeTypeAliasType)
+except ImportError:
+    TypeAliasTypes = (TeTypeAliasType,)  # type: ignore[assignment]
 
 from litestar.exceptions import ImproperlyConfiguredException, LitestarWarning
 from litestar.params import BodyKwarg, DependencyKwarg, KwargDefinition, ParameterKwarg
@@ -272,7 +281,7 @@ class FieldDefinition:
     @property
     def is_type_alias_type(self) -> bool:
         """Whether the annotation is a ``TypeAliasType``"""
-        return isinstance(self.annotation, TypeAliasType)
+        return isinstance(self.annotation, TypeAliasTypes)
 
     @property
     def is_type_var(self) -> bool:

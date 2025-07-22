@@ -21,37 +21,37 @@ Installation
     :icon: star
 
     `Pydantic <https://docs.pydantic.dev/latest/>`_
-        :code:`pip install litestar[pydantic]`
+        :code:`pip install 'litestar[pydantic]'`
 
     `Attrs <https://www.attrs.org>`_
-        :code:`pip install litestar[attrs]`
+        :code:`pip install 'litestar[attrs]'`
 
     :ref:`Brotli Compression Middleware <usage/middleware/builtin-middleware:brotli>`:
-        :code:`pip install litestar[brotli]`
+        :code:`pip install 'litestar[brotli]'`
 
     :ref:`Cookie Based Sessions <usage/middleware/builtin-middleware:client-side sessions>`
-        :code:`pip install litestar[cryptography]`
+        :code:`pip install 'litestar[cryptography]'`
 
     :doc:`JWT </usage/security/jwt>`
-        :code:`pip install litestar[jwt]`
+        :code:`pip install 'litestar[jwt]'`
 
     :doc:`RedisStore </usage/stores>`
-        :code:`pip install litestar[redis]`
+        :code:`pip install 'litestar[redis]'`
 
     :ref:`Picologging <usage/logging:using picologging>`
-        :code:`pip install litestar[picologging]`
+        :code:`pip install 'litestar[picologging]'`
 
     :ref:`StructLog <usage/logging:using structlog>`
-        :code:`pip install litestar[structlog]`
+        :code:`pip install 'litestar[structlog]'`
 
     :doc:`Prometheus Instrumentation </usage/metrics/prometheus>`
-        :code:`pip install litestar[prometheus]`
+        :code:`pip install 'litestar[prometheus]'`
 
     :doc:`Open Telemetry Instrumentation </usage/metrics/open-telemetry>`
-        :code:`pip install litestar[opentelemetry]`
+        :code:`pip install 'litestar[opentelemetry]'`
 
     :doc:`SQLAlchemy </usage/databases/sqlalchemy/index>`
-        :code:`pip install litestar[sqlalchemy]`
+        :code:`pip install 'litestar[sqlalchemy]'`
 
     :doc:`CLI </usage/cli>`
         .. deprecated:: 2.1.1
@@ -60,19 +60,19 @@ Installation
            If you need the optional CLI dependencies, install the ``standard`` group instead.
            **Will be removed in 3.0**
 
-        :code:`pip install litestar[cli]`
+        :code:`pip install 'litestar[cli]'`
 
     :doc:`Jinja Templating </usage/templating>`
-        :code:`pip install litestar[jinja]`
+        :code:`pip install 'litestar[jinja]'`
 
     :doc:`Mako Templating </usage/templating>`
-        :code:`pip install litestar[mako]`
+        :code:`pip install 'litestar[mako]'`
 
     Standard Installation (includes Uvicorn and Jinja2 templating):
-        :code:`pip install litestar[standard]`
+        :code:`pip install 'litestar[standard]'`
 
     All Extras:
-        :code:`pip install litestar[full]`
+        :code:`pip install 'litestar[full]'`
 
     .. note:: The full extras is not recommended because it will add a lot of unnecessary extras.
 
