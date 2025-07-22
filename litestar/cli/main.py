@@ -26,7 +26,18 @@ __all__ = ("litestar_group",)
 )
 @click.pass_context
 def litestar_group(ctx: click.Context, app_path: str | None, app_dir: Path | None = None) -> None:
-    """Litestar CLI."""
+    """Litestar CLI.
+
+    The application to will be automatically discovered if it's in one of these
+    canonical paths: 'app.py', 'asgi.py', 'application.py' or 'app/__init__.py'.
+    When auto-discovering application factories, functions with the name 'create_app'
+    are considered, or functions that are annotated as returning a 'Litestar'
+    instance.
+
+    Alternatively, the application can be specified explicitly via the '--app' option
+    ('litestar --app=<module name>.<submodule>:<app instance or factory>') or the
+    'LITESTAR_APP' environment variable of the same name.
+    """
     if ctx.obj is None:  # env has not been loaded yet, so we can lazy load it
         ctx.obj = lambda: LitestarEnv.from_env(app_path, app_dir=app_dir)
 

@@ -20,7 +20,7 @@ commonly used optional dependencies.
 .. code-block:: shell
     :caption: Install the standard group
 
-    pip install litestar[standard]
+    pip install 'litestar[standard]'
 
 Once you have installed ``standard``, you will have access to the ``litestar run`` command.
 
@@ -48,6 +48,30 @@ Within these locations, Litestar CLI looks for:
 3. Any object that is an instance of :class:`~.app.Litestar`
 4. A :term:`callable` named ``create_app``
 5. A callable annotated to return an instance of :class:`~.app.Litestar`
+
+Specifying an application explicitly
+------------------------------------
+
+The application to be used can be specified explicitly via either the ``--app`` argument
+or the ``LITESTAR_APP`` environment variable. The format for both of them is
+``<module name>.<submodule>:<app instance or factory>``.
+
+When both ``--app`` and ``LITESTAR_APP`` are set, the CLI option takes precedence over
+the environment variable.
+
+
+.. code-block:: bash
+    :caption: Using 'litestar run' and specifying an application factory via --app
+
+    litestar --app=my_application.app:create_my_app run
+
+
+.. code-block:: bash
+    :caption: Using 'litestar run' and specifying an application factory via LITESTAR_APP
+
+    LITESTAR_APP=my_application.app:create_my_app litestar run
+
+
 
 Extending the CLI
 -----------------
@@ -92,12 +116,20 @@ entries should point to a :class:`click.Command` or :class:`click.Group`:
             [project.entry-points."litestar.commands"]
             my_command = "my_litestar_plugin.cli:main"
 
-    .. tab-item:: Poetry
+    .. tab-item:: poetry
 
         .. code-block:: toml
-            :caption: Using `Poetry <https://python-poetry.org/>`_
+            :caption: Using `poetry <https://python-poetry.org/>`_
 
             [tool.poetry.plugins."litestar.commands"]
+            my_command = "my_litestar_plugin.cli:main"
+
+    .. tab-item:: uv
+
+        .. code-block:: toml
+            :caption: Using `uv <https://docs.astral.sh/uv/>`_
+
+            [project.scripts]
             my_command = "my_litestar_plugin.cli:main"
 
 Using a plugin
@@ -140,6 +172,38 @@ You can achieve this by adding the special ``app`` parameter to your CLI functio
 
     @click.command()
     def my_command(app: Litestar) -> None: ...
+
+Using the `server_lifespan` hook
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Server lifespan hooks provide a way to run code before and after the *server* starts and stops. In contrast to the regular `lifespan` hooks, they only run once, even when a server starts multiple workers, whereas `lifespan` hooks would run for each individual worker.
+
+This makes them suitable for tasks that should happen exactly once, like initializing a database.
+
+.. code-block:: python
+    :caption: Using the `server_lifespan` hook
+
+    from contextlib import contextmanager
+    from typing import Generator
+
+    from litestar import Litestar
+    from litestar.config.app import AppConfig
+    from litestar.plugins.base import CLIPlugin
+
+
+    class StartupPrintPlugin(CLIPlugin):
+
+        @contextmanager
+        def server_lifespan(self, app: Litestar) -> Generator[None, None, None]:
+            print("i_run_before_startup_plugin")  # noqa: T201
+            try:
+                yield
+            finally:
+                print("i_run_after_shutdown_plugin")  # noqa: T201
+
+    def create_app() -> Litestar:
+        return Litestar(route_handlers=[], plugins=[StartupPrintPlugin()])
+
 
 CLI Reference
 -------------

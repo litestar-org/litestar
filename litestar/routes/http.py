@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import contextlib
 from itertools import chain
 from typing import TYPE_CHECKING, Any
 
@@ -17,7 +18,6 @@ from litestar.utils.scope.state import ScopeState
 
 if TYPE_CHECKING:
     from litestar._kwargs import KwargsModel
-    from litestar._kwargs.cleanup import DependencyCleanupGroup
     from litestar.connection import Request
     from litestar.types import ASGIApp, HTTPScope, Method, Receive, Scope, Send
 
@@ -134,9 +134,9 @@ class HTTPRoute(BaseRoute):
             scope=scope, request=request, parameter_model=parameter_model, route_handler=route_handler
         )
 
-    async def _call_handler_function(
+    async def _call_handler_function(  # type: ignore[return]
         self, scope: Scope, request: Request, parameter_model: KwargsModel, route_handler: HTTPRouteHandler
-    ) -> ASGIApp:
+    ) -> ASGIApp:  # pyright: ignore[reportGeneralTypeIssues]
         """Call the before request handlers, retrieve any data required for the route handler, and call the route
         handler's ``to_response`` method.
 
@@ -144,62 +144,44 @@ class HTTPRoute(BaseRoute):
         it tries to pass it to an appropriate exception handler - if defined.
         """
         response_data: Any = None
-        cleanup_group: DependencyCleanupGroup | None = None
 
         if before_request_handler := route_handler.resolve_before_request():
             response_data = await before_request_handler(request)
 
-        if not response_data:
-            response_data, cleanup_group = await self._get_response_data(
-                route_handler=route_handler, parameter_model=parameter_model, request=request
-            )
+        # create and enter an AsyncExit stack as we may or may not have a
+        # 'DependencyCleanupGroup' to enter and exit
+        stack = contextlib.AsyncExitStack()
 
-        response: ASGIApp = await route_handler.to_response(
-            app=scope["litestar_app"], data=response_data, request=request
-        )
+        # mypy cannot infer that 'stack' never swallows exceptions, therefore it thinks
+        # this method is potentially missing a 'return' statement
+        async with stack:
+            if not response_data:
+                parsed_kwargs: dict[str, Any] = {}
 
-        if cleanup_group:
-            await cleanup_group.cleanup()
+                if parameter_model.has_kwargs and route_handler.signature_model:
+                    try:
+                        kwargs = await parameter_model.to_kwargs(connection=request)
+                    except SerializationException as e:
+                        raise ClientException(str(e)) from e
 
-        return response
+                    if kwargs.get("data") is Empty:
+                        del kwargs["data"]
 
-    @staticmethod
-    async def _get_response_data(
-        route_handler: HTTPRouteHandler, parameter_model: KwargsModel, request: Request
-    ) -> tuple[Any, DependencyCleanupGroup | None]:
-        """Determine what kwargs are required for the given route handler's ``fn`` and calls it."""
-        parsed_kwargs: dict[str, Any] = {}
-        cleanup_group: DependencyCleanupGroup | None = None
+                    if parameter_model.dependency_batches:
+                        cleanup_group = await parameter_model.resolve_dependencies(request, kwargs)
+                        await stack.enter_async_context(cleanup_group)
 
-        if parameter_model.has_kwargs and route_handler.signature_model:
-            try:
-                kwargs = await parameter_model.to_kwargs(connection=request)
-            except SerializationException as e:
-                raise ClientException(str(e)) from e
+                    parsed_kwargs = route_handler.signature_model.parse_values_from_connection_kwargs(
+                        connection=request, kwargs=kwargs
+                    )
 
-            if kwargs.get("data") is Empty:
-                del kwargs["data"]
-
-            if parameter_model.dependency_batches:
-                cleanup_group = await parameter_model.resolve_dependencies(request, kwargs)
-
-            parsed_kwargs = route_handler.signature_model.parse_values_from_connection_kwargs(
-                connection=request, kwargs=kwargs
-            )
-
-        if cleanup_group:
-            async with cleanup_group:
-                data = (
+                response_data = (
                     route_handler.fn(**parsed_kwargs)
                     if route_handler.has_sync_callable
                     else await route_handler.fn(**parsed_kwargs)
                 )
-        elif route_handler.has_sync_callable:
-            data = route_handler.fn(**parsed_kwargs)
-        else:
-            data = await route_handler.fn(**parsed_kwargs)
 
-        return data, cleanup_group
+            return await route_handler.to_response(app=scope["litestar_app"], data=response_data, request=request)
 
     @staticmethod
     async def _get_cached_response(request: Request, route_handler: HTTPRouteHandler) -> ASGIApp | None:

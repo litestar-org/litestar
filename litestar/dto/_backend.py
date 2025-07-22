@@ -9,6 +9,7 @@ from typing import (
     TYPE_CHECKING,
     AbstractSet,
     Any,
+    Callable,
     ClassVar,
     Collection,
     Final,
@@ -65,6 +66,7 @@ class CompositeTypeHandler(Protocol):
 class DTOBackend:
     __slots__ = (
         "annotation",
+        "attribute_accessor",
         "dto_data_type",
         "dto_factory",
         "field_definition",
@@ -105,6 +107,7 @@ class DTOBackend:
         self.handler_id: Final[str] = handler_id
         self.model_type: Final[type[Any]] = model_type
         self.wrapper_attribute_name: Final[str | None] = wrapper_attribute_name
+        self.attribute_accessor = dto_factory.attribute_accessor
 
         self.parsed_field_definitions = self.parse_model(
             model_type=model_type,
@@ -137,10 +140,10 @@ class DTOBackend:
         Fields for data transfer.
         """
         defined_fields = []
-        generic_field_definitons = list(FieldDefinition.from_annotation(model_type).generic_types or ())
+        generic_field_definitions = list(FieldDefinition.from_annotation(model_type).generic_types or ())
         for field_definition in self.dto_factory.generate_field_definitions(model_type):
             if field_definition.is_type_var:
-                base_arg_field = generic_field_definitons.pop()
+                base_arg_field = generic_field_definitions.pop()
                 field_definition = replace(
                     field_definition, annotation=base_arg_field.annotation, raw=base_arg_field.raw
                 )
@@ -279,6 +282,7 @@ class DTOBackend:
                     field_definitions=self.parsed_field_definitions,
                     field_definition=self.field_definition,
                     is_data_field=self.is_data_field,
+                    attribute_accessor=self.attribute_accessor,
                 ),
             )
         return self.transfer_data_from_builtins(self.parse_builtins(builtins, asgi_connection))
@@ -298,6 +302,7 @@ class DTOBackend:
             field_definitions=self.parsed_field_definitions,
             field_definition=self.field_definition,
             is_data_field=self.is_data_field,
+            attribute_accessor=self.attribute_accessor,
         )
 
     def populate_data_from_raw(self, raw: bytes, asgi_connection: ASGIConnection) -> Any:
@@ -319,6 +324,7 @@ class DTOBackend:
                     field_definitions=self.parsed_field_definitions,
                     field_definition=self.field_definition,
                     is_data_field=self.is_data_field,
+                    attribute_accessor=self.attribute_accessor,
                 ),
             )
         return _transfer_data(
@@ -327,6 +333,7 @@ class DTOBackend:
             field_definitions=self.parsed_field_definitions,
             field_definition=self.field_definition,
             is_data_field=self.is_data_field,
+            attribute_accessor=self.attribute_accessor,
         )
 
     def encode_data(self, data: Any) -> LitestarEncodableType:
@@ -341,10 +348,11 @@ class DTOBackend:
         if self.wrapper_attribute_name:
             wrapped_transfer = _transfer_data(
                 destination_type=self.transfer_model_type,
-                source_data=getattr(data, self.wrapper_attribute_name),
+                source_data=self.attribute_accessor(data, self.wrapper_attribute_name),
                 field_definitions=self.parsed_field_definitions,
                 field_definition=self.field_definition,
                 is_data_field=self.is_data_field,
+                attribute_accessor=self.attribute_accessor,
             )
             setattr(
                 data,
@@ -361,6 +369,7 @@ class DTOBackend:
                 field_definitions=self.parsed_field_definitions,
                 field_definition=self.field_definition,
                 is_data_field=self.is_data_field,
+                attribute_accessor=self.attribute_accessor,
             ),
         )
 
@@ -567,6 +576,7 @@ def _transfer_data(
     field_definitions: tuple[TransferDTOFieldDefinition, ...],
     field_definition: FieldDefinition,
     is_data_field: bool,
+    attribute_accessor: Callable[[object, str], Any],
 ) -> Any:
     """Create instance or iterable of instances of ``destination_type``.
 
@@ -576,6 +586,7 @@ def _transfer_data(
         field_definitions: model field definitions.
         field_definition: the parsed type that represents the handler annotation for which the DTO is being applied.
         is_data_field: whether the DTO is being applied to a ``data`` field.
+        attribute_accessor: 'getattr'-like function to access attributes on the data source
 
     Returns:
         Data parsed into ``destination_type``.
@@ -589,6 +600,7 @@ def _transfer_data(
                     field_definitions=field_definitions,
                     field_definition=field_definition.inner_types[0],
                     is_data_field=is_data_field,
+                    attribute_accessor=attribute_accessor,
                 )
                 for item in source_data
             )
@@ -601,6 +613,7 @@ def _transfer_data(
                     field_definitions=field_definitions,
                     field_definition=field_definition.inner_types[1],
                     is_data_field=is_data_field,
+                    attribute_accessor=attribute_accessor,
                 ),
             )
             for key, value in source_data.items()  # type: ignore[union-attr]
@@ -611,6 +624,7 @@ def _transfer_data(
         source_instance=source_data,
         field_definitions=field_definitions,
         is_data_field=is_data_field,
+        attribute_accessor=attribute_accessor,
     )
 
 
@@ -619,6 +633,7 @@ def _transfer_instance_data(
     source_instance: Any,
     field_definitions: tuple[TransferDTOFieldDefinition, ...],
     is_data_field: bool,
+    attribute_accessor: Callable[[object, str], Any],
 ) -> Any:
     """Create instance of ``destination_type`` with data from ``source_instance``.
 
@@ -627,6 +642,7 @@ def _transfer_instance_data(
         source_instance: primitive data that has been parsed and validated via the backend.
         field_definitions: model field definitions.
         is_data_field: whether the given field is a 'data' kwarg field.
+        attribute_accessor: 'getattr'-like function to access attributes on the data source
 
     Returns:
         Data parsed into ``model_type``.
@@ -648,7 +664,7 @@ def _transfer_instance_data(
         source_value = (
             source_instance[field_definition.name]
             if isinstance(source_instance, Mapping)
-            else getattr(source_instance, field_definition.name)
+            else attribute_accessor(source_instance, field_definition.name)
         )
 
         if field_definition.is_partial and is_data_field and source_value is UNSET:
@@ -659,6 +675,7 @@ def _transfer_instance_data(
             transfer_type=transfer_type,
             nested_as_dict=destination_type is dict,
             is_data_field=is_data_field,
+            attribute_accessor=attribute_accessor,
         )
 
     return destination_type(**unstructured_data)
@@ -669,6 +686,7 @@ def _transfer_type_data(
     transfer_type: TransferType,
     nested_as_dict: bool,
     is_data_field: bool,
+    attribute_accessor: Callable[[object, str], Any],
 ) -> Any:
     if isinstance(transfer_type, SimpleType) and transfer_type.nested_field_info:
         if nested_as_dict:
@@ -683,6 +701,7 @@ def _transfer_type_data(
             source_instance=source_value,
             field_definitions=transfer_type.nested_field_info.field_definitions,
             is_data_field=is_data_field,
+            attribute_accessor=attribute_accessor,
         )
 
     if isinstance(transfer_type, UnionType) and transfer_type.has_nested:
@@ -690,6 +709,7 @@ def _transfer_type_data(
             transfer_type=transfer_type,
             source_value=source_value,
             is_data_field=is_data_field,
+            attribute_accessor=attribute_accessor,
         )
 
     if isinstance(transfer_type, CollectionType):
@@ -700,6 +720,7 @@ def _transfer_type_data(
                     transfer_type=transfer_type.inner_type,
                     nested_as_dict=False,
                     is_data_field=is_data_field,
+                    attribute_accessor=attribute_accessor,
                 )
                 for item in source_value
             )
@@ -716,6 +737,7 @@ def _transfer_type_data(
                         transfer_type=transfer_type.value_type,
                         nested_as_dict=False,
                         is_data_field=is_data_field,
+                        attribute_accessor=attribute_accessor,
                     ),
                 )
                 for key, value in source_value.items()
@@ -730,6 +752,7 @@ def _transfer_nested_union_type_data(
     transfer_type: UnionType,
     source_value: Any,
     is_data_field: bool,
+    attribute_accessor: Callable[[object, str], Any],
 ) -> Any:
     for inner_type in transfer_type.inner_types:
         if isinstance(inner_type, CompositeType):
@@ -746,6 +769,7 @@ def _transfer_nested_union_type_data(
                 source_instance=source_value,
                 field_definitions=inner_type.nested_field_info.field_definitions,
                 is_data_field=is_data_field,
+                attribute_accessor=attribute_accessor,
             )
     return source_value
 

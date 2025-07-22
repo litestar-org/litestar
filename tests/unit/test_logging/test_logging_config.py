@@ -5,14 +5,14 @@ import time
 from importlib.util import find_spec
 from logging.handlers import QueueHandler
 from queue import Queue
-from typing import TYPE_CHECKING, Any, Dict, Generator, Optional, Union, cast
-from unittest.mock import patch
+from typing import TYPE_CHECKING, Any, Dict, Generator, Optional, Set, Type, Union, cast
+from unittest.mock import MagicMock, patch
 
 import pytest
 from _pytest.logging import LogCaptureHandler, _LiveLoggingNullHandler
 
 from litestar import Request, get
-from litestar.exceptions import ImproperlyConfiguredException
+from litestar.exceptions import HTTPException, ImproperlyConfiguredException, NotFoundException
 from litestar.logging.config import (
     LoggingConfig,
     _get_default_handlers,
@@ -543,3 +543,45 @@ def test_traceback_line_limit_deprecation(traceback_line_limit: int, expected_wa
     with patch("litestar.logging.config.warn_deprecation") as mock_warning_deprecation:
         LoggingConfig(traceback_line_limit=traceback_line_limit)
         assert mock_warning_deprecation.called is expected_warning_deprecation_called
+
+
+@pytest.mark.parametrize(
+    "disable_stack_trace, exception_to_raise, handler_called",
+    [
+        # will log the stack trace
+        [set(), HTTPException, True],
+        [set(), ValueError, True],
+        [{400}, HTTPException, True],
+        [{NameError}, ValueError, True],
+        [{400, NameError}, ValueError, True],
+        # will not log the stack trace
+        [{NotFoundException}, HTTPException, False],
+        [{404}, HTTPException, False],
+        [{ValueError}, ValueError, False],
+        [{400, ValueError}, ValueError, False],
+        [{404, NameError}, HTTPException, False],
+    ],
+)
+def test_disable_stack_trace(
+    disable_stack_trace: Set[Union[int, Type[Exception]]],
+    exception_to_raise: Type[Exception],
+    handler_called: bool,
+) -> None:
+    mock_handler = MagicMock()
+
+    logging_config = LoggingConfig(disable_stack_trace=disable_stack_trace, exception_logging_handler=mock_handler)
+
+    @get("/error")
+    async def error_route() -> None:
+        raise exception_to_raise
+
+    with create_test_client([error_route], logging_config=logging_config, debug=True) as client:
+        if exception_to_raise is HTTPException:
+            _ = client.get("/404-error")
+        else:
+            _ = client.get("/error")
+
+        if handler_called:
+            assert mock_handler.called, "Exception logging handler should have been called"
+        else:
+            assert not mock_handler.called, "Exception logging handler should not have been called"

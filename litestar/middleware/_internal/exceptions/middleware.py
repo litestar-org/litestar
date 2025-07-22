@@ -3,7 +3,7 @@ from __future__ import annotations
 from inspect import getmro
 from sys import exc_info
 from traceback import format_exception
-from typing import TYPE_CHECKING, Any, Type, cast
+from typing import TYPE_CHECKING, Any, Type, Union, cast
 
 from litestar.enums import ScopeType
 from litestar.exceptions import HTTPException, LitestarException, WebSocketException
@@ -256,8 +256,15 @@ class ExceptionHandlerMiddleware:
         Returns:
             None
         """
+        exc = exc_info()
+        exc_detail: set[Union[Exception, int]] = {exc[0], getattr(exc[0], "status_code", None)}  # type: ignore[arg-type]  # noqa: UP007
+
         if (
-            logging_config.log_exceptions == "always"
-            or (logging_config.log_exceptions == "debug" and self._get_debug_scope(scope))
-        ) and logging_config.exception_logging_handler:
-            logging_config.exception_logging_handler(logger, scope, format_exception(*exc_info()))
+            (
+                logging_config.log_exceptions == "always"
+                or (logging_config.log_exceptions == "debug" and self._get_debug_scope(scope))
+            )
+            and logging_config.exception_logging_handler
+            and exc_detail.isdisjoint(logging_config.disable_stack_trace)
+        ):
+            logging_config.exception_logging_handler(logger, scope, format_exception(*exc))

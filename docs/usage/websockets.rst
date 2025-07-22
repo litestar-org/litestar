@@ -8,8 +8,10 @@ There are three ways to handle WebSockets in Litestar:
 2. :class:`~litestar.handlers.websocket_listener` and :class:`~litestar.handlers.WebsocketListener`\  :
    Reactive, event-driven WebSockets with full serialization and DTO support and support
    for a synchronous interface
-3. :class:`~litestar.handlers.websocket_stream` and :func:`~litestar.handlers.send_websocket_stream`\ :
+3. :class:`~litestar.handlers.websocket_stream`:
    Proactive, stream oriented WebSockets with full serialization and DTO support
+4. :func:`~litestar.handlers.send_websocket_stream`:
+   Proactive, stream oriented WebSockets
 
 
 The main difference between the low and high level interfaces is that, dealing with low
@@ -59,8 +61,12 @@ Receiving data
 
 Data can be received in the listener via the ``data`` parameter. The data passed to this
 will be converted / parsed according to the given type annotation and supports
-:class:`str`, :class:`bytes`, or arbitrary :class:`dict`\ s / or :class:`list`\ s in the
+:class:`str`, :class:`bytes`, or arbitrary :class:`dict` / or :class:`list` in the
 form of JSON.
+.. important::
+
+    The listeners will default to JSON unless `data` is annotated with `str` or `bytes`
+
 
 .. tab-set::
 
@@ -363,14 +369,34 @@ To stream and receive data concurrently, the stream can be set up manually using
 
     .. tab-item:: websocket_listener
 
-        .. literalinclude:: /examples/websockets/stream_and_receive_listener.py
-            :language: python
+        .. tab-set::
+
+            .. tab-item:: example
+
+                .. literalinclude:: /examples/websockets/stream_and_receive_listener.py
+                    :language: python
+
+            .. tab-item:: how to test
+
+                .. literalinclude:: ../../tests/examples/test_websockets.py
+                    :language: python
+                    :lines: 18-25
+
 
     .. tab-item:: websocket handler
 
-        .. literalinclude:: /examples/websockets/stream_and_receive_raw.py
-            :language: python
+        .. tab-set::
 
+            .. tab-item:: example
+
+                .. literalinclude:: /examples/websockets/stream_and_receive_raw.py
+                    :language: python
+
+            .. tab-item:: how to test
+
+                .. literalinclude:: ../../tests/examples/test_websockets.py
+                    :language: python
+                    :lines: 28-35
 
 Transport modes
 ---------------

@@ -610,7 +610,7 @@ class HTTPRouteHandler(BaseRouteHandler):
         ) and not is_empty_response_annotation(return_type):
             raise ImproperlyConfiguredException(
                 "A status code 204, 304 or in the range below 200 does not support a response body. "
-                "If the function should return a value, change the route handler status code to an appropriate value.",
+                f"If {self} should return a value, change the route handler status code to an appropriate value.",
             )
 
         if not self.media_type:

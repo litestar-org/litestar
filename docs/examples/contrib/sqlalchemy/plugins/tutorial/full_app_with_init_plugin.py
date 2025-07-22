@@ -6,12 +6,12 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 from litestar import Litestar, get, post, put
-from litestar.contrib.sqlalchemy.plugins import (
+from litestar.exceptions import ClientException, NotFoundException
+from litestar.plugins.sqlalchemy import (
     SQLAlchemyAsyncConfig,
     SQLAlchemyInitPlugin,
     SQLAlchemySerializationPlugin,
 )
-from litestar.exceptions import ClientException, NotFoundException
 from litestar.status_codes import HTTP_409_CONFLICT
 
 
@@ -36,7 +36,7 @@ async def provide_transaction(db_session: AsyncSession) -> AsyncGenerator[AsyncS
         ) from exc
 
 
-async def get_todo_by_title(todo_name, session: AsyncSession) -> TodoItem:
+async def get_todo_by_title(todo_name: str, session: AsyncSession) -> TodoItem:
     query = select(TodoItem).where(TodoItem.title == todo_name)
     result = await session.execute(query)
     try:
@@ -51,7 +51,7 @@ async def get_todo_list(done: Optional[bool], session: AsyncSession) -> List[Tod
         query = query.where(TodoItem.done.is_(done))
 
     result = await session.execute(query)
-    return result.scalars().all()
+    return list(result.scalars().all())
 
 
 @get("/")

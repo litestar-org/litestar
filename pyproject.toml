@@ -46,6 +46,7 @@ dependencies = [
   "rich>=13.0.0",
   "rich-click",
   "multipart>=1.2.0",
+  "exceptiongroup>=1.2.2; python_version < \"3.11\"",
   # default litestar plugins
   "litestar-htmx>=0.4.0",
 ]
@@ -61,9 +62,9 @@ maintainers = [
   { name = "Julien Courtes", email = "julien@litestar.dev" },
 ]
 name = "litestar"
-readme = "README.md"
+readme = "docs/PYPI_README.md"
 requires-python = ">=3.8,<4.0"
-version = "2.15.1"
+version = "2.16.0"
 
 [project.urls]
 Blog = "https://blog.litestar.dev"
@@ -191,10 +192,6 @@ test = [
 [build-system]
 build-backend = "hatchling.build"
 requires = ["hatchling"]
-
-[tool.codespell]
-ignore-words-list = "selectin, documen"
-skip = 'uv.lock,docs/examples/contrib/sqlalchemy/us_state_lookup.json'
 
 [tool.coverage.run]
 concurrency = ["multiprocessing", "thread"]
@@ -401,8 +398,6 @@ lint.select = [
   "W",   # pycodestyle - warning
   "YTT", # flake8-2020
 ]
-
-line-length = 120
 lint.ignore = [
   "A003",    # flake8-builtins - class attribute {name} is shadowing a python builtin
   "B010",    # flake8-bugbear - do not call setattr with a constant attribute value
@@ -423,6 +418,8 @@ lint.ignore = [
   "ISC001",  # Ruff formatter incompatible
   "CPY001",  # ruff - copyright notice at the top of the file
 ]
+
+line-length = 120
 src = ["litestar", "tests", "docs/examples"]
 target-version = "py38"
 

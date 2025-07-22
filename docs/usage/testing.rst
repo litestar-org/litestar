@@ -184,28 +184,35 @@ across requests, then you might want to inject or inspect session data outside a
             .. code-block:: bash
                 :caption: Using pip
 
-                python3 -m pip install litestar[cryptography]
+                python3 -m pip install 'litestar[cryptography]'
 
         .. tab-item:: pipx
 
             .. code-block:: bash
                 :caption: Using `pipx <https://pypa.github.io/pipx/>`_
 
-                pipx install litestar[cryptography]
+                pipx install 'litestar[cryptography]'
 
         .. tab-item:: pdm
 
             .. code-block:: bash
                 :caption: Using `PDM <https://pdm.fming.dev/>`_
 
-                pdm add litestar[cryptography]
+                pdm add 'litestar[cryptography]'
 
-        .. tab-item:: Poetry
+        .. tab-item:: poetry
 
             .. code-block:: bash
-                :caption: Using `Poetry <https://python-poetry.org/>`_
+                :caption: Using `poetry <https://python-poetry.org/>`_
 
-                poetry add litestar[cryptography]
+                poetry add 'litestar[cryptography]'
+
+        .. tab-item:: uv
+
+            .. code-block:: bash
+                :caption: Using `uv <https://docs.astral.sh/uv/>`_
+
+                uv add 'litestar[cryptography]'
 
 .. tab-set::
 
