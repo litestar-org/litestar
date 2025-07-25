@@ -95,7 +95,7 @@ class DependencyCleanupGroup(AbstractAsyncContextManager):
             return
 
         async with create_task_group() as task_group:
-            for generator in self._generators:
+            for generator in reversed(self._generators):
                 task_group.start_soon(self._wrap_next(generator))
 
     async def __aenter__(self) -> None:
