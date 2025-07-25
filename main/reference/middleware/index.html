@@ -1563,7 +1563,7 @@ requests, and - most likely - bugs.</p>
 </div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">MyMiddleware</span><span class="p">(</span><span class="n">ASGIMiddleware</span><span class="p">):</span>
     <span class="n">scopes</span> <span class="o">=</span> <span class="p">(</span><span class="n">ScopeType</span><span class="o">.</span><span class="n">HTTP</span><span class="p">,)</span>
-    <span class="n">exclude</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;/not/this/path&quot;</span><span class="p">,)</span>
+    <span class="n">exclude_path_pattern</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;/not/this/path&quot;</span><span class="p">,)</span>
     <span class="n">exclude_opt_key</span> <span class="o">=</span> <span class="s2">&quot;exclude_my_middleware&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">my_logger</span><span class="p">:</span> <span class="n">Logger</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
