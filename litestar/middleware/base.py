@@ -190,7 +190,7 @@ class ASGIMiddleware(abc.ABC):
 
         class MyMiddleware(ASGIMiddleware):
             scopes = (ScopeType.HTTP,)
-            exclude = ("/not/this/path",)
+            exclude_path_pattern = ("/not/this/path",)
             exclude_opt_key = "exclude_my_middleware"
 
             def __init__(self, my_logger: Logger) -> None:
