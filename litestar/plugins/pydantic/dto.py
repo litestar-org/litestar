@@ -137,12 +137,7 @@ class PydanticDTO(AbstractDTO[T], Generic[T]):
                         stacklevel=2,
                     )
 
-                if not is_pydantic_undefined(field_info.default):
-                    default = field_info.default
-                elif field_definition.is_optional:
-                    default = None
-                else:
-                    default = Empty
+                default = field_info.default if not is_pydantic_undefined(field_info.default) else Empty
 
                 default_factory = (
                     field_info.default_factory
