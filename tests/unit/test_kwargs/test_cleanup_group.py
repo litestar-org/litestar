@@ -63,6 +63,43 @@ async def test_cleanup(generator: Generator[str, None, None], cleanup_mock: Magi
     assert group._closed
 
 
+async def test_cleanup_order(
+    cleanup_mock: MagicMock,
+    async_cleanup_mock: MagicMock,
+) -> None:
+    def gen_fn_1() -> Generator[None, None, None]:
+        async_cleanup_mock.assert_not_called()
+
+        try:
+            yield
+        finally:
+            cleanup_mock()
+
+        async_cleanup_mock.assert_called_once()
+
+    async def gen_fn_2() -> AsyncGenerator[None, None]:
+        cleanup_mock.assert_not_called()
+
+        try:
+            yield
+        finally:
+            async_cleanup_mock()
+
+        # the first generator must be still open
+        cleanup_mock.assert_not_called()
+
+    gen_1 = gen_fn_1()
+    gen_2 = gen_fn_2()
+    next(gen_1)
+    await async_next(gen_2)
+    group = DependencyCleanupGroup([gen_1, gen_2])
+
+    await group.close()
+
+    cleanup_mock.assert_called_once()
+    async_cleanup_mock.assert_called_once()
+
+
 async def test_cleanup_throw_multiple_exceptions(
     generator: Generator[str, None, None],
     async_generator: AsyncGenerator[str, None],
