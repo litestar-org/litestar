@@ -11,6 +11,7 @@ from litestar.serialization import decode_json, decode_msgpack, encode_json, enc
 from litestar.status_codes import WS_1000_NORMAL_CLOSURE
 
 if TYPE_CHECKING:
+    from litestar.testing.client.async_client import AsyncTestClient
     from litestar.testing.client.sync_client import TestClient
     from litestar.types import (
         WebSocketConnectEvent,
@@ -29,7 +30,7 @@ class WebSocketTestSession:
 
     def __init__(
         self,
-        client: TestClient[Any],
+        client: TestClient[Any] | AsyncTestClient[Any],
         scope: WebSocketScope,
     ) -> None:
         self.client = client

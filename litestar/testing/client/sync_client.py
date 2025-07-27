@@ -75,7 +75,7 @@ class TestClient(Client, BaseTestClient, Generic[T]):  # type: ignore[misc]
             headers={"user-agent": "testclient"},
             follow_redirects=True,
             cookies=cookies,
-            transport=TestClientTransport(  # type: ignore[arg-type]
+            transport=TestClientTransport(
                 client=self,
                 raise_server_exceptions=raise_server_exceptions,
                 root_path=root_path,
