@@ -1,11 +1,11 @@
 from pathlib import Path
 
 import pytest
+from advanced_alchemy.extensions.litestar import AsyncSessionConfig, SQLAlchemyAsyncConfig
 from pytest import MonkeyPatch
 from sqlalchemy.ext.asyncio import create_async_engine
 from sqlalchemy.pool import NullPool
 
-from litestar.plugins.sqlalchemy import AsyncSessionConfig, SQLAlchemyAsyncConfig
 from litestar.testing import TestClient
 
 pytestmark = pytest.mark.xdist_group("sqlalchemy_examples")

@@ -6,10 +6,10 @@ from uuid import uuid4
 
 import pytest
 from _pytest.fixtures import FixtureRequest
+from advanced_alchemy.extensions.litestar import base
 from sqlalchemy import String
 from sqlalchemy.orm import Mapped, mapped_column
 
-from litestar.plugins.sqlalchemy import base
 from litestar.repository.exceptions import ConflictError, RepositoryError
 from litestar.repository.filters import LimitOffset
 from litestar.repository.testing.generic_mock_repository import (

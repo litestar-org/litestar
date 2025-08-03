@@ -77,7 +77,7 @@ Example
 The following example shows the actual implementation of the ``SerializationPlugin`` for
 `SQLAlchemy <https://www.sqlalchemy.org/>`_ models that is is provided in ``advanced_alchemy``.
 
-.. literalinclude:: ../../../litestar/plugins/sqlalchemy/__init__.py
+For SQLAlchemy plugins, see the `advanced-alchemy documentation <https://docs.advanced-alchemy.litestar.dev/latest/>`_.
    :language: python
    :caption: ``SerializationPlugin`` implementation example
 

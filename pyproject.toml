@@ -244,7 +244,7 @@ requires = ["hatchling"]
 
 [tool.coverage.run]
 concurrency = ["multiprocessing", "thread"]
-omit = ["*/tests/*", "*/litestar/plugins/sqlalchemy.py", "*/litestar/_kwargs/types.py"]
+omit = ["*/tests/*", "*/litestar/_kwargs/types.py"]
 parallel = true
 plugins = ["covdefaults"]
 source = ["litestar"]
@@ -346,7 +346,6 @@ module = [
 
 [[tool.mypy.overrides]]
 module = [
-  "litestar.plugins.sqlalchemy.*",
   "litestar.plugins.pydantic.*",
   "tests.unit.test_contrib.test_sqlalchemy",
   "tests.unit.test_contrib.test_pydantic.*",

@@ -1,5 +1,6 @@
+from advanced_alchemy.extensions.litestar import SQLAlchemyInitPlugin, SQLAlchemySyncConfig
+
 from litestar import get
-from litestar.plugins.sqlalchemy import SQLAlchemyInitPlugin, SQLAlchemySyncConfig
 from litestar.repository.filters import LimitOffset
 from litestar.testing import create_test_client
 

@@ -1,7 +1,12 @@
 from __future__ import annotations
 
+from advanced_alchemy.extensions.litestar import (
+    SQLAlchemyInitPlugin,
+    SQLAlchemySyncConfig,
+    sync_autocommit_before_send_handler,
+)
+
 from litestar import Litestar
-from litestar.plugins.sqlalchemy import SQLAlchemyInitPlugin, SQLAlchemySyncConfig, sync_autocommit_before_send_handler
 
 config = SQLAlchemySyncConfig(
     connection_string="sqlite:///:memory:",

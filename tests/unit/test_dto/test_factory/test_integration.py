@@ -981,7 +981,7 @@ from typing import Generic, List, TypeVar
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 from litestar import Litestar, get
-from litestar.plugins.sqlalchemy import SQLAlchemyDTO
+from advanced_alchemy.extensions.litestar import SQLAlchemyDTO
 from litestar.dto import DTOConfig
 
 T = TypeVar("T")
