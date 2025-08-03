@@ -1991,6 +1991,15 @@
       "contributions": [
         "test"
       ]
+    },
+    {
+      "login": "s-aleshin",
+      "name": "Sergei Aleshin",
+      "avatar_url": "https://avatars.githubusercontent.com/u/66841202?v=4",
+      "profile": "https://github.com/s-aleshin",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,

@@ -6,7 +6,7 @@ import sys
 import pytest
 from _pytest.fixtures import FixtureRequest
 from _pytest.monkeypatch import MonkeyPatch
-from docs.examples.contrib.sqlalchemy.plugins.tutorial import (
+from docs.examples.plugins.sqlalchemy.plugins.tutorial import (
     full_app_no_plugins,
     full_app_with_init_plugin,
     full_app_with_plugin,

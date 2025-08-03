@@ -1,11 +1,11 @@
 from pathlib import Path
 
 import pytest
+from advanced_alchemy.extensions.litestar import AsyncSessionConfig, SQLAlchemyAsyncConfig
 from pytest import MonkeyPatch
 from sqlalchemy.ext.asyncio import create_async_engine
 from sqlalchemy.pool import NullPool
 
-from litestar.plugins.sqlalchemy import AsyncSessionConfig, SQLAlchemyAsyncConfig
 from litestar.testing import TestClient
 
 pytestmark = pytest.mark.xdist_group("sqlalchemy_examples")
@@ -20,7 +20,7 @@ async def test_sqlalchemy_declarative_models(tmp_path: Path, monkeypatch: Monkey
         create_all=True,
         engine_instance=engine,
     )  # Create 'async_session' dependency.
-    from docs.examples.contrib.sqlalchemy import sqlalchemy_declarative_models
+    from docs.examples.plugins.sqlalchemy import sqlalchemy_declarative_models
 
     monkeypatch.setattr(sqlalchemy_declarative_models, "sqlalchemy_config", sqlalchemy_config)
     async with engine.begin() as connection:

@@ -3,12 +3,12 @@ from __future__ import annotations
 from typing import Annotated
 from uuid import UUID
 
+from advanced_alchemy.extensions.litestar import SQLAlchemyDTO
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from litestar import Litestar, put
 from litestar.dto import DTOConfig
-from litestar.plugins.sqlalchemy import SQLAlchemyDTO
 
 from .my_lib import Base
 

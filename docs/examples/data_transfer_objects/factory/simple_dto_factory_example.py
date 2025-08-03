@@ -1,9 +1,9 @@
 from datetime import datetime
 
+from advanced_alchemy.extensions.litestar import SQLAlchemyDTO
 from sqlalchemy.orm import Mapped
 
 from litestar import Litestar, post
-from litestar.plugins.sqlalchemy import SQLAlchemyDTO
 
 from .my_lib import Base
 

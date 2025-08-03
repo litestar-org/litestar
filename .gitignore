@@ -48,3 +48,6 @@ __pypackages__/
 certs/
 pdm.toml
 .zed
+CLAUDE.md
+CLAUDE.*.md
+todos/

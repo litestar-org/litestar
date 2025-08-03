@@ -2,5 +2,5 @@
 sqlalchemy
 ==========
 
-.. automodule:: litestar.plugins.sqlalchemy
+.. automodule:: advanced_alchemy.extensions.litestar
     :members:
