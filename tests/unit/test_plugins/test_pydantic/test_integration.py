@@ -180,7 +180,7 @@ def test_signature_model_invalid_input(base_model: BaseModelType, pydantic_versi
             assert data["extra"] == [
                 {"key": "child.val", "message": "value is not a valid integer"},
                 {"key": "child.other_val", "message": "value is not a valid integer"},
-                {"key": "other_child.val.1", "message": "value is not a valid integer"},
+                {"key": "other_child.val[1]", "message": "value is not a valid integer"},
             ]
         else:
             assert data["extra"] == [
@@ -194,9 +194,53 @@ def test_signature_model_invalid_input(base_model: BaseModelType, pydantic_versi
                 },
                 {
                     "message": "Input should be a valid integer, unable to parse string as an integer",
-                    "key": "other_child.val.1",
+                    "key": "other_child.val[1]",
                 },
             ]
+
+
+def test_signature_model_invalid_input_nested(base_model: BaseModelType, pydantic_version: PydanticVersion) -> None:
+    class OtherChild(base_model):  # type: ignore[misc, valid-type]
+        val: List[int]
+
+    class Child(base_model):  # type: ignore[misc, valid-type]
+        other_val: OtherChild
+
+    class Parent(base_model):  # type: ignore[misc, valid-type]
+        child: Child
+
+    @post("/")
+    def test(data: Parent) -> None: ...
+
+    with create_test_client(route_handlers=[test], signature_types=[Parent]) as client:
+        response = client.post("/", json={"child": {"other_val": {"val": [1, "c"]}}})
+
+        assert response.status_code == HTTP_400_BAD_REQUEST
+
+        data = response.json()
+        assert data
+        if pydantic_version == "v1":
+            assert data["extra"] == [
+                {"key": "child.other_val.val[1]", "message": "value is not a valid integer"},
+            ]
+        else:
+            assert data["extra"] == [
+                {
+                    "message": "Input should be a valid integer, unable to parse string as an integer",
+                    "key": "child.other_val.val[1]",
+                },
+            ]
+
+        response = client.post("/", json=[])
+
+        assert response.status_code == HTTP_400_BAD_REQUEST
+
+        data = response.json()
+        assert data
+        if pydantic_version == "v1":
+            assert data["extra"] == [{"message": "field required", "key": "child"}]
+        else:
+            assert data["extra"] == [{"message": "Input should be a valid dictionary or instance of Parent"}]
 
 
 class V1ModelWithPrivateFields(pydantic_v1.BaseModel):
