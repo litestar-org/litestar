@@ -111,7 +111,7 @@ def test_create_parameters(person_controller: Type[Controller]) -> None:
             Schema(
                 type=OpenAPIType.ARRAY,
                 items=Reference(ref="#/components/schemas/tests_unit_test_openapi_utils_Gender"),
-                examples=[[Gender.MALE]],
+                examples=[[Gender.FEMALE]],
             ),
             Schema(type=OpenAPIType.NULL),
         ],
@@ -348,6 +348,7 @@ def test_parameter_schema_extra() -> None:
                 }
             ),
         ],
+        query2: Annotated[Gender, Parameter(description="gender description", schema_extra={"format": "foo"})],
     ) -> Any:
         return query1
 
@@ -364,6 +365,9 @@ def test_parameter_schema_extra() -> None:
             {"type": "string", "enum": ["denied", "values"]},
         ]
     }
+    assert schema["paths"]["/"]["get"]["parameters"][1]["schema"]["$ref"] == "#/components/schemas/Gender"
+    assert schema["paths"]["/"]["get"]["parameters"][1]["description"] == "gender description"
+    assert schema["components"]["schemas"]["Gender"]["format"] == "foo"
 
     # Attempt to pass invalid key
     app = Litestar([error_handler])

@@ -592,7 +592,7 @@ class SchemaCreator:
         schema.type = enum_type
         schema.enum = enum_values
         schema.title = get_name(field_definition.annotation)
-        schema.description = field_definition.annotation.__doc__
+        self.process_schema_result(field_definition, schema)
 
         return self.schema_registry.get_reference_for_field_definition(field_definition) or schema
 
