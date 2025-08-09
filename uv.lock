@@ -3097,8 +3097,7 @@ full = [
     { name = "pydantic-extra-types" },
     { name = "pyjwt", version = "2.9.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.9'" },
     { name = "pyjwt", version = "2.10.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.9'" },
-    { name = "redis", version = "6.1.1", source = { registry = "https://pypi.org/simple" }, extra = ["hiredis"], marker = "python_full_version < '3.9'" },
-    { name = "redis", version = "6.4.0", source = { registry = "https://pypi.org/simple" }, extra = ["hiredis"], marker = "python_full_version >= '3.9'" },
+    { name = "redis", extra = ["hiredis"] },
     { name = "structlog" },
     { name = "uvicorn", version = "0.33.0", source = { registry = "https://pypi.org/simple" }, extra = ["standard"], marker = "python_full_version < '3.9'" },
     { name = "uvicorn", version = "0.35.0", source = { registry = "https://pypi.org/simple" }, extra = ["standard"], marker = "python_full_version >= '3.9'" },
@@ -3141,8 +3140,7 @@ pydantic = [
     { name = "pydantic-extra-types" },
 ]
 redis = [
-    { name = "redis", version = "6.1.1", source = { registry = "https://pypi.org/simple" }, extra = ["hiredis"], marker = "python_full_version < '3.9'" },
-    { name = "redis", version = "6.4.0", source = { registry = "https://pypi.org/simple" }, extra = ["hiredis"], marker = "python_full_version >= '3.9'" },
+    { name = "redis", extra = ["hiredis"] },
 ]
 sqlalchemy = [
     { name = "advanced-alchemy", version = "0.30.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.9'" },
@@ -3291,7 +3289,7 @@ requires-dist = [
     { name = "pydantic-extra-types", marker = "python_full_version < '3.9' and extra == 'pydantic'", specifier = "!=2.9.0" },
     { name = "pyjwt", marker = "extra == 'jwt'", specifier = ">=2.9.0" },
     { name = "pyyaml" },
-    { name = "redis", extras = ["hiredis"], marker = "extra == 'redis'", specifier = ">=4.4.4" },
+    { name = "redis", extras = ["hiredis"], marker = "extra == 'redis'", specifier = ">=4.4.4,<5.3" },
     { name = "rich", specifier = ">=13.0.0" },
     { name = "rich-click" },
     { name = "structlog", marker = "extra == 'structlog'" },
@@ -5981,53 +5979,19 @@ wheels = [
 
 [[package]]
 name = "redis"
-version = "6.1.1"
+version = "5.2.1"
 source = { registry = "https://pypi.org/simple" }
-resolution-markers = [
-    "python_full_version >= '3.8.1' and python_full_version < '3.9' and sys_platform != 'win32'",
-    "python_full_version < '3.8.1' and sys_platform != 'win32'",
-    "python_full_version >= '3.8.1' and python_full_version < '3.9' and sys_platform == 'win32'",
-    "python_full_version < '3.8.1' and sys_platform == 'win32'",
-]
 dependencies = [
-    { name = "async-timeout", marker = "python_full_version < '3.9'" },
+    { name = "async-timeout", marker = "python_full_version < '3.11.3'" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/07/8b/14ef373ffe71c0d2fde93c204eab78472ea13c021d9aee63b0e11bd65896/redis-6.1.1.tar.gz", hash = "sha256:88c689325b5b41cedcbdbdfd4d937ea86cf6dab2222a83e86d8a466e4b3d2600", size = 4629515, upload-time = "2025-06-02T11:44:04.137Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/47/da/d283a37303a995cd36f8b92db85135153dc4f7a8e4441aa827721b442cfb/redis-5.2.1.tar.gz", hash = "sha256:16f2e22dff21d5125e8481515e386711a34cbec50f0e44413dd7d9c060a54e0f", size = 4608355, upload-time = "2024-12-06T09:50:41.956Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/c2/cd/29503c609186104c363ef1f38d6e752e7d91ef387fc90aa165e96d69f446/redis-6.1.1-py3-none-any.whl", hash = "sha256:ed44d53d065bbe04ac6d76864e331cfe5c5353f86f6deccc095f8794fd15bb2e", size = 273930, upload-time = "2025-06-02T11:44:02.705Z" },
+    { url = "https://files.pythonhosted.org/packages/3c/5f/fa26b9b2672cbe30e07d9a5bdf39cf16e3b80b42916757c5f92bca88e4ba/redis-5.2.1-py3-none-any.whl", hash = "sha256:ee7e1056b9aea0f04c6c2ed59452947f34c4940ee025f5dd83e6a6418b6989e4", size = 261502, upload-time = "2024-12-06T09:50:39.656Z" },
 ]
 
 [package.optional-dependencies]
 hiredis = [
-    { name = "hiredis", marker = "python_full_version < '3.9'" },
-]
-
-[[package]]
-name = "redis"
-version = "6.4.0"
-source = { registry = "https://pypi.org/simple" }
-resolution-markers = [
-    "python_full_version >= '3.13' and sys_platform == 'linux'",
-    "python_full_version >= '3.13' and sys_platform != 'linux' and sys_platform != 'win32'",
-    "python_full_version >= '3.13' and sys_platform == 'win32'",
-    "python_full_version >= '3.11' and python_full_version < '3.13' and sys_platform != 'win32'",
-    "python_full_version == '3.10.*' and sys_platform != 'win32'",
-    "python_full_version == '3.9.*' and sys_platform != 'win32'",
-    "python_full_version >= '3.11' and python_full_version < '3.13' and sys_platform == 'win32'",
-    "python_full_version == '3.10.*' and sys_platform == 'win32'",
-    "python_full_version == '3.9.*' and sys_platform == 'win32'",
-]
-dependencies = [
-    { name = "async-timeout", marker = "python_full_version >= '3.9' and python_full_version < '3.11.3'" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/0d/d6/e8b92798a5bd67d659d51a18170e91c16ac3b59738d91894651ee255ed49/redis-6.4.0.tar.gz", hash = "sha256:b01bc7282b8444e28ec36b261df5375183bb47a07eb9c603f284e89cbc5ef010", size = 4647399, upload-time = "2025-08-07T08:10:11.441Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/e8/02/89e2ed7e85db6c93dfa9e8f691c5087df4e3551ab39081a4d7c6d1f90e05/redis-6.4.0-py3-none-any.whl", hash = "sha256:f0544fa9604264e9464cdf4814e7d4830f74b165d52f2a330a760a88dd248b7f", size = 279847, upload-time = "2025-08-07T08:10:09.84Z" },
-]
-
-[package.optional-dependencies]
-hiredis = [
-    { name = "hiredis", marker = "python_full_version >= '3.9'" },
+    { name = "hiredis" },
 ]
 
 [[package]]

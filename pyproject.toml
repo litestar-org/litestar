@@ -103,7 +103,7 @@ pydantic = [
   "pydantic-extra-types!=2.9.0; python_version < \"3.9\"",
   "pydantic-extra-types; python_version >= \"3.9\"",
 ]
-redis = ["redis[hiredis]>=4.4.4"]
+redis = ["redis[hiredis]>=4.4.4,<5.3"]  # 5.3.0 introduced some issues with the channels plugin; need to investigate
 sqlalchemy = ["advanced-alchemy>=0.2.2"]
 standard = [
   "jinja2",
