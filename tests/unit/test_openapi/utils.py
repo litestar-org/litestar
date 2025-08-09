@@ -8,6 +8,8 @@ class PetException(HTTPException):
 
 
 class Gender(str, Enum):
+    """Docstring description"""
+
     MALE = "M"
     FEMALE = "F"
     OTHER = "O"

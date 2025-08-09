@@ -348,7 +348,11 @@ def test_parameter_schema_extra() -> None:
                 }
             ),
         ],
-        query2: Annotated[Gender, Parameter(description="gender description", schema_extra={"format": "foo"})],
+        query2: Annotated[
+            Gender,
+            Parameter(description="gender description", schema_extra={"format": "foo"}, schema_component_key="q2"),
+        ],
+        query3: Annotated[Gender, Parameter(schema_extra={"format": "bar"}, schema_component_key="q3")],
     ) -> Any:
         return query1
 
@@ -365,9 +369,12 @@ def test_parameter_schema_extra() -> None:
             {"type": "string", "enum": ["denied", "values"]},
         ]
     }
-    assert schema["paths"]["/"]["get"]["parameters"][1]["schema"]["$ref"] == "#/components/schemas/Gender"
+    assert schema["paths"]["/"]["get"]["parameters"][1]["schema"]["$ref"] == "#/components/schemas/q2"
     assert schema["paths"]["/"]["get"]["parameters"][1]["description"] == "gender description"
-    assert schema["components"]["schemas"]["Gender"]["format"] == "foo"
+    assert schema["components"]["schemas"]["q2"]["format"] == "foo"
+    assert schema["paths"]["/"]["get"]["parameters"][2]["schema"]["$ref"] == "#/components/schemas/q3"
+    assert schema["paths"]["/"]["get"]["parameters"][2]["description"] == Gender.__doc__
+    assert schema["components"]["schemas"]["q3"]["format"] == "bar"
 
     # Attempt to pass invalid key
     app = Litestar([error_handler])
