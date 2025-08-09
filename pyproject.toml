@@ -112,7 +112,7 @@ standard = [
   "uvloop>=0.18.0; sys_platform != 'win32'",
   "fast-query-parsers>=1.0.2",
 ]
-structlog = ["structlog"]
+structlog = ["structlog==24.4.0"]
 valkey = ["valkey[libvalkey]>=6.0.2"]
 
 [project.scripts]
