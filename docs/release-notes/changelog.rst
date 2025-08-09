@@ -1,7 +1,83 @@
 :orphan:
 
-2.x Changelog
-=============
+Litestar 2 Changelog
+====================
+
+.. changelog:: 2.17.0
+    :date: 2025-08-09
+
+    .. change:: Fix CRLF injection vulnerability in exception logging
+        :type: bugfix
+
+        Fix a CRLF vulnerability in the exception logging where Litestar included the
+        raw request path in the logged exception, allowing potential attackers to inject
+        newlines into the log message.
+
+    .. change:: OpenAPI: Fix empty response body when using DTO and ``Response[T]`` annotation
+        :type: bugfix
+        :pr: 4158
+        :issue: 3888
+
+        Fix a bug that result in an empty response body in the OpenAPI schema when a
+        ``return_dto`` was defined on a handler with a generic ``Response`` annotation,
+        such as
+
+        .. code-block:: python
+
+            @get("/get_items", return_dto=ItemReadDTO)
+            async def get_items() -> Response[list[Item]]:
+                return Response(
+                    content=[
+                        Item(id=1, name="Item 1", secret="123"),
+                    ],
+                )
+
+
+    .. change:: OpenAPI: Ensure deterministic order of schema types
+        :type: bugfix
+        :pr: 4239
+        :issue: 3646
+
+        Fix a bug that would result in a non-deterministic ordering of ``Literal`` /
+        Enum type unions, such as ``Literal[*] | None``
+
+    .. change:: Ensure dependency cleanup of ``yield`` dependency happens in reverse order
+        :type: bugfix
+        :pr: 4246
+
+        Fix a regression in the DI system that would cause generator dependencies to
+        be cleaned up in the order they were entered, instead of the reverse order.
+
+    .. change:: OpenAPI: Add option to exclude parameter from schema
+        :type: feature
+        :pr: 4177
+
+        Add a new ``exclude_from_schema`` parameter to
+        :func:`~litestar.params.Parameter` that allows to exclude a specific parameter
+        from the OpenAPI schema.
+
+    .. change:: OpenAPI: Extend support for Pydantic's custom date(time) types
+        :type: feature
+        :pr: 4218
+        :issue: 4217
+
+        Add full OpenAPI schema support for Pydantic's custom date(time) types:
+
+        - ``PastDate``
+        - ``FutureDate``
+        - ``PastDatetime``
+        - ``FutureDatetime``
+        - ``AwareDatetime``
+        - ``NaiveDatetime``
+
+    .. change:: Make ``ReceiveRoutePlugin`` public
+        :type: feature
+        :pr: 4220
+
+        Make the previously internally used
+        :class:`litestar.plugins.ReceiveRoutePlugin` public.
+
+
 .. changelog:: 2.16.0
     :date: 2025-05-04
 

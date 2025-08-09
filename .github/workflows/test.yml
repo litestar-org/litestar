@@ -56,7 +56,7 @@ jobs:
       - name: Install uv
         uses: astral-sh/setup-uv@v6
         with:
-          version: "0.6.12"
+          version: "0.8.8"
           enable-cache: true
 
       - name: Install dependencies
@@ -67,11 +67,11 @@ jobs:
 
       - name: Test
         if: ${{ !inputs.coverage }}
-        run: uv run pytest docs/examples tests -n auto
+        run: uv run pytest docs/examples tests -n auto -v
 
       - name: Test with coverage
         if: inputs.coverage
-        run: uv run pytest docs/examples tests -n auto --cov
+        run: uv run pytest docs/examples tests -n auto --cov -v
 
       - name: Rename coverage file
         if: inputs.coverage

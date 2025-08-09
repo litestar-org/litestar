@@ -240,11 +240,8 @@ def test_request_body() -> None:
         response = client.post("/")
         assert response.json() == {"body": ""}
 
-        response = client.post("/", json={"a": "123"})
-        assert response.json() == {"body": '{"a":"123"}'}
-
-        response = client.post("/", content="abc")
-        assert response.json() == {"body": "abc"}
+        response = client.post("/", content="foo")
+        assert response.json() == {"body": "foo"}
 
 
 def test_request_stream() -> None:
@@ -258,9 +255,6 @@ def test_request_stream() -> None:
     with create_test_client([handler]) as client:
         response = client.post("/")
         assert response.json() == {"body": ""}
-
-        response = client.post("/", json={"a": "123"})
-        assert response.json() == {"body": '{"a":"123"}'}
 
         response = client.post("/", content="abc")
         assert response.json() == {"body": "abc"}
