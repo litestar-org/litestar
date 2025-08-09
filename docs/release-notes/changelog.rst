@@ -6,10 +6,10 @@ Litestar 2 Changelog
 .. changelog:: 2.17.0
     :date: 2025-08-09
 
-    .. change:: Fix CLRF injection vulnerability in exception logging
+    .. change:: Fix CRLF injection vulnerability in exception logging
         :type: bugfix
 
-        Fix a CLRF vulnerability in the exception logging where Litestar included the
+        Fix a CRLF vulnerability in the exception logging where Litestar included the
         raw request path in the logged exception, allowing potential attackers to inject
         newlines into the log message.
 
