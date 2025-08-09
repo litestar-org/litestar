@@ -245,7 +245,7 @@ def test_exception_handler_default_logging(
         if should_log:
             assert len(caplog.records) == 1
             assert caplog.records[0].levelname == "ERROR"
-            assert caplog.records[0].message.startswith("Uncaught exception (connection_type=http, path=/test):")
+            assert caplog.records[0].message.startswith("Uncaught exception (connection_type=http, path='/test'):")
         else:
             assert not caplog.records
             assert "Uncaught exception" not in response.text
@@ -357,7 +357,7 @@ def test_get_debug_from_scope(get_logger: "GetLogger", caplog: "LogCaptureFixtur
         assert "Test debug exception" in response.text
         assert len(caplog.records) == 1
         assert caplog.records[0].levelname == "ERROR"
-        assert caplog.records[0].message.startswith("Uncaught exception (connection_type=http, path=/test):")
+        assert caplog.records[0].message.startswith("Uncaught exception (connection_type=http, path='/test'):")
 
 
 def test_get_symbol_name_where_type_doesnt_support_bool() -> None:

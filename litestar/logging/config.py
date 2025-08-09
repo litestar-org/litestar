@@ -144,7 +144,7 @@ def _default_exception_logging_handler_factory(
 
         def _default_exception_logging_handler(logger: Logger, scope: Scope, tb: list[str]) -> None:
             logger.exception(
-                "Uncaught exception (connection_type=%s, path=%s):",
+                "Uncaught exception (connection_type=%s, path=%r):",
                 scope["type"],
                 scope["path"],
             )
