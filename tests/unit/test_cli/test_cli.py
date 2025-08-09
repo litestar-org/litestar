@@ -1,23 +1,11 @@
-import importlib
-import sys
 from typing import TYPE_CHECKING
-from unittest.mock import MagicMock
 
 import pytest
 
-from tests.unit.test_cli import CREATE_APP_FILE_CONTENT
-from tests.unit.test_cli.conftest import CreateAppFileFixture
-
-try:
-    from rich_click import group
-except ImportError:
-    from click import group  # type:ignore[no-redef]
-
-import litestar.cli._utils
-import litestar.cli.main
-from litestar import Litestar
 from litestar.cli._utils import _format_is_enabled
 from litestar.cli.main import litestar_group as cli_command
+from tests.unit.test_cli import CREATE_APP_FILE_CONTENT
+from tests.unit.test_cli.conftest import CreateAppFileFixture
 
 if TYPE_CHECKING:
     from pathlib import Path
