@@ -555,7 +555,7 @@ They can be installed independently, but we recommend installing the <code class
 commonly used optional dependencies.</p>
 <div class="literal-block-wrapper docutils container" id="id2">
 <div class="code-block-caption"><span class="caption-text">Install the standard group</span><a class="headerlink" href="#id2" title="Permalink to this code">¶</a></div>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span data-line="1">pip<span class="w"> </span>install<span class="w"> </span>litestar<span class="o">[</span>standard<span class="o">]</span>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span data-line="1">pip<span class="w"> </span>install<span class="w"> </span><span class="s1">&#39;litestar[standard]&#39;</span>
 </span></pre></div>
 </div>
 </div>
@@ -651,10 +651,21 @@ pdm</label><div class="sd-tab-content docutils">
 </div>
 <input id="sd-tab-item-2" name="sd-tab-set-0" type="radio">
 </input><label class="sd-tab-label" for="sd-tab-item-2">
-Poetry</label><div class="sd-tab-content docutils">
+poetry</label><div class="sd-tab-content docutils">
 <div class="literal-block-wrapper docutils container" id="id7">
-<div class="code-block-caption"><span class="caption-text">Using <a class="reference external" href="https://python-poetry.org/">Poetry</a></span><a class="headerlink" href="#id7" title="Permalink to this code">¶</a></div>
+<div class="code-block-caption"><span class="caption-text">Using <a class="reference external" href="https://python-poetry.org/">poetry</a></span><a class="headerlink" href="#id7" title="Permalink to this code">¶</a></div>
 <div class="highlight-toml notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">[tool.poetry.plugins.</span><span class="s2">&quot;litestar.commands&quot;</span><span class="k">]</span>
+</span><span data-line="2"><span class="n">my_command</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;my_litestar_plugin.cli:main&quot;</span>
+</span></pre></div>
+</div>
+</div>
+</div>
+<input id="sd-tab-item-3" name="sd-tab-set-0" type="radio">
+</input><label class="sd-tab-label" for="sd-tab-item-3">
+uv</label><div class="sd-tab-content docutils">
+<div class="literal-block-wrapper docutils container" id="id8">
+<div class="code-block-caption"><span class="caption-text">Using <a class="reference external" href="https://docs.astral.sh/uv/">uv</a></span><a class="headerlink" href="#id8" title="Permalink to this code">¶</a></div>
+<div class="highlight-toml notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">[project.scripts]</span>
 </span><span data-line="2"><span class="n">my_command</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;my_litestar_plugin.cli:main&quot;</span>
 </span></pre></div>
 </div>
@@ -667,8 +678,8 @@ Poetry</label><div class="sd-tab-content docutils">
 <p>A plugin extending the CLI can be created using the <a class="reference internal" href="../reference/plugins/index.html#litestar.plugins.CLIPlugin" title="litestar.plugins.CLIPlugin"><code class="xref py py-class docutils literal notranslate"><span class="pre">CLIPlugin</span></code></a>.
 Its <a class="reference internal" href="../reference/plugins/index.html#litestar.plugins.CLIPlugin.on_cli_init" title="litestar.plugins.CLIPlugin.on_cli_init"><code class="xref py py-meth docutils literal notranslate"><span class="pre">on_cli_init()</span></code></a> will be called during the initialization of the CLI,
 and receive the root <a class="reference external" href="https://click.palletsprojects.com/en/stable/api/#click.Group" title="(in Click v8.2.x)"><code class="xref py py-class docutils literal notranslate"><span class="pre">click.Group</span></code></a> as its first argument, which can then be used to add or override commands:</p>
-<div class="literal-block-wrapper docutils container" id="id8">
-<div class="code-block-caption"><span class="caption-text">Creating a CLI plugin</span><a class="headerlink" href="#id8" title="Permalink to this code">¶</a></div>
+<div class="literal-block-wrapper docutils container" id="id9">
+<div class="code-block-caption"><span class="caption-text">Creating a CLI plugin</span><a class="headerlink" href="#id9" title="Permalink to this code">¶</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span>
 </span><span data-line="2"><span class="kn">from</span> <span class="nn">litestar.plugins</span> <span class="kn">import</span> <span class="n">CLIPlugin</span>
 </span><span data-line="3"><span class="kn">from</span> <span class="nn">click</span> <span class="kn">import</span> <span class="n">Group</span>
@@ -691,8 +702,8 @@ and receive the root <a class="reference external" href="https://click.palletspr
 <p>When extending the Litestar CLI, you will most likely need access to the loaded <code class="docutils literal notranslate"><span class="pre">Litestar</span></code> instance.
 You can achieve this by adding the special <code class="docutils literal notranslate"><span class="pre">app</span></code> parameter to your CLI functions. This will cause the
 <code class="docutils literal notranslate"><span class="pre">Litestar</span></code> instance to be injected into the function whenever it is called from a click-context.</p>
-<div class="literal-block-wrapper docutils container" id="id9">
-<div class="code-block-caption"><span class="caption-text">Accessing the app instance programmatically</span><a class="headerlink" href="#id9" title="Permalink to this code">¶</a></div>
+<div class="literal-block-wrapper docutils container" id="id10">
+<div class="code-block-caption"><span class="caption-text">Accessing the app instance programmatically</span><a class="headerlink" href="#id10" title="Permalink to this code">¶</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">import</span> <span class="nn">click</span>
 </span><span data-line="2"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span>
 </span><span data-line="3">
@@ -708,11 +719,11 @@ You can achieve this by adding the special <code class="docutils literal notrans
 <p>Server lifespan hooks provide a way to run code before and after the <em>server</em> starts and stops. In contrast to the regular <cite>lifespan</cite> hooks, they only run once, even when a server starts multiple workers, whereas <cite>lifespan</cite> hooks would run for each individual worker.</p>
 <p>This makes them suitable for tasks that should happen exactly once, like initializing a database.</p>
 <div class="sd-tab-set docutils">
-<input id="sd-tab-item-3" name="sd-tab-set-1" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-3">
+<input id="sd-tab-item-4" name="sd-tab-set-1" type="radio">
+</input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-4">
 Python 3.8+</label><div class="sd-tab-content docutils">
-<div class="literal-block-wrapper docutils container" id="id10">
-<div class="code-block-caption"><span class="caption-text">Using the <cite>server_lifespan</cite> hook</span><a class="headerlink" href="#id10" title="Permalink to this code">¶</a></div>
+<div class="literal-block-wrapper docutils container" id="id11">
+<div class="code-block-caption"><span class="caption-text">Using the <cite>server_lifespan</cite> hook</span><a class="headerlink" href="#id11" title="Permalink to this code">¶</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">contextlib</span> <span class="kn">import</span> <span class="n">contextmanager</span>
 </span><span data-line="2"><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Generator</span>
 </span><span data-line="3">
@@ -736,11 +747,11 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 </div>
 </div>
 </div>
-<input checked="checked" id="sd-tab-item-4" name="sd-tab-set-1" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.9" for="sd-tab-item-4">
+<input checked="checked" id="sd-tab-item-5" name="sd-tab-set-1" type="radio">
+</input><label class="sd-tab-label" data-sync-id="3.9" for="sd-tab-item-5">
 Python 3.9+</label><div class="sd-tab-content docutils">
-<div class="literal-block-wrapper docutils container" id="id11">
-<div class="code-block-caption"><span class="caption-text">Using the <cite>server_lifespan</cite> hook</span><a class="headerlink" href="#id11" title="Permalink to this code">¶</a></div>
+<div class="literal-block-wrapper docutils container" id="id12">
+<div class="code-block-caption"><span class="caption-text">Using the <cite>server_lifespan</cite> hook</span><a class="headerlink" href="#id12" title="Permalink to this code">¶</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">contextlib</span> <span class="kn">import</span> <span class="n">contextmanager</span>
 </span><span data-line="2"><span class="kn">from</span> <span class="nn">collections.abc</span> <span class="kn">import</span> <span class="n">Generator</span>
 </span><span data-line="3">
@@ -770,8 +781,8 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <section id="cli-reference">
 <h2>CLI Reference<a class="headerlink" href="#cli-reference" title="Permalink to this heading">¶</a></h2>
 <p>The most up-to-date reference for the Litestar CLI can be found by running:</p>
-<div class="literal-block-wrapper docutils container" id="id12">
-<div class="code-block-caption"><span class="caption-text">Display the CLI help</span><a class="headerlink" href="#id12" title="Permalink to this code">¶</a></div>
+<div class="literal-block-wrapper docutils container" id="id13">
+<div class="code-block-caption"><span class="caption-text">Display the CLI help</span><a class="headerlink" href="#id13" title="Permalink to this code">¶</a></div>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span data-line="1">litestar<span class="w"> </span>--help
 </span></pre></div>
 </div>

@@ -122,3 +122,31 @@ signature (their :func:`__init__` method).
 
     flash_messages
     problem_details
+
+
+ReceiveRoutePlugin
+------------------
+
+:class:`~litestar.plugins.ReceiveRoutePlugin` allows you to receive routes as they are registered on the application.
+This can be useful for plugins that need to perform actions based on the routes being added, such as generating
+documentation, validating route configurations, or tracking route statistics.
+
+Implementations of this plugin must define a single method:
+:meth:`receive_route(self, route: BaseRoute) -> None: <litestar.plugins.ReceiveRoutePlugin.receive_route>`
+
+The method receives a :class:`BaseRoute <litestar.routes.BaseRoute>` instance as routes are registered on the application.
+This happens during the application initialization process, after routes are created but before the application starts.
+
+Example
++++++++
+
+The following example shows a simple plugin that logs information about each route as it's registered:
+
+.. code-block:: python
+
+    from litestar.plugins import ReceiveRoutePlugin
+    from litestar.routes import BaseRoute
+
+    class RouteLoggerPlugin(ReceiveRoutePlugin):
+        def receive_route(self, route: BaseRoute) -> None:
+            print(f"Route registered: {route.path} [{', '.join(route.http_methods)}]")

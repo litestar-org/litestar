@@ -862,7 +862,7 @@ install the <code class="docutils literal notranslate"><span class="pre">cryptog
 pip</label><div class="sd-tab-content docutils">
 <div class="literal-block-wrapper docutils container" id="id10">
 <div class="code-block-caption"><span class="caption-text">Using pip</span><a class="headerlink" href="#id10" title="Permalink to this code">¶</a></div>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">python3<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>litestar<span class="o">[</span>cryptography<span class="o">]</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">python3<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span><span class="s1">&#39;litestar[cryptography]&#39;</span>
 </span></pre></div>
 </div>
 </div>
@@ -872,7 +872,7 @@ pip</label><div class="sd-tab-content docutils">
 pipx</label><div class="sd-tab-content docutils">
 <div class="literal-block-wrapper docutils container" id="id11">
 <div class="code-block-caption"><span class="caption-text">Using <a class="reference external" href="https://pypa.github.io/pipx/">pipx</a></span><a class="headerlink" href="#id11" title="Permalink to this code">¶</a></div>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">pipx<span class="w"> </span>install<span class="w"> </span>litestar<span class="o">[</span>cryptography<span class="o">]</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">pipx<span class="w"> </span>install<span class="w"> </span><span class="s1">&#39;litestar[cryptography]&#39;</span>
 </span></pre></div>
 </div>
 </div>
@@ -882,17 +882,27 @@ pipx</label><div class="sd-tab-content docutils">
 pdm</label><div class="sd-tab-content docutils">
 <div class="literal-block-wrapper docutils container" id="id12">
 <div class="code-block-caption"><span class="caption-text">Using <a class="reference external" href="https://pdm.fming.dev/">PDM</a></span><a class="headerlink" href="#id12" title="Permalink to this code">¶</a></div>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">pdm<span class="w"> </span>add<span class="w"> </span>litestar<span class="o">[</span>cryptography<span class="o">]</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">pdm<span class="w"> </span>add<span class="w"> </span><span class="s1">&#39;litestar[cryptography]&#39;</span>
 </span></pre></div>
 </div>
 </div>
 </div>
 <input id="sd-tab-item-13" name="sd-tab-set-5" type="radio">
 </input><label class="sd-tab-label" for="sd-tab-item-13">
-Poetry</label><div class="sd-tab-content docutils">
+poetry</label><div class="sd-tab-content docutils">
 <div class="literal-block-wrapper docutils container" id="id13">
-<div class="code-block-caption"><span class="caption-text">Using <a class="reference external" href="https://python-poetry.org/">Poetry</a></span><a class="headerlink" href="#id13" title="Permalink to this code">¶</a></div>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">poetry<span class="w"> </span>add<span class="w"> </span>litestar<span class="o">[</span>cryptography<span class="o">]</span>
+<div class="code-block-caption"><span class="caption-text">Using <a class="reference external" href="https://python-poetry.org/">poetry</a></span><a class="headerlink" href="#id13" title="Permalink to this code">¶</a></div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">poetry<span class="w"> </span>add<span class="w"> </span><span class="s1">&#39;litestar[cryptography]&#39;</span>
+</span></pre></div>
+</div>
+</div>
+</div>
+<input id="sd-tab-item-14" name="sd-tab-set-5" type="radio">
+</input><label class="sd-tab-label" for="sd-tab-item-14">
+uv</label><div class="sd-tab-content docutils">
+<div class="literal-block-wrapper docutils container" id="id14">
+<div class="code-block-caption"><span class="caption-text">Using <a class="reference external" href="https://docs.astral.sh/uv/">uv</a></span><a class="headerlink" href="#id14" title="Permalink to this code">¶</a></div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">uv<span class="w"> </span>add<span class="w"> </span><span class="s1">&#39;litestar[cryptography]&#39;</span>
 </span></pre></div>
 </div>
 </div>
@@ -900,11 +910,11 @@ Poetry</label><div class="sd-tab-content docutils">
 </div>
 </div>
 <div class="sd-tab-set docutils">
-<input checked="checked" id="sd-tab-item-14" name="sd-tab-set-6" type="radio">
-</input><label class="sd-tab-label" data-sync-id="sync" for="sd-tab-item-14">
+<input checked="checked" id="sd-tab-item-15" name="sd-tab-set-6" type="radio">
+</input><label class="sd-tab-label" data-sync-id="sync" for="sd-tab-item-15">
 Sync</label><div class="sd-tab-content docutils">
-<div class="literal-block-wrapper docutils container" id="id14">
-<div class="code-block-caption"><span class="caption-text">Setting session data</span><a class="headerlink" href="#id14" title="Permalink to this code">¶</a></div>
+<div class="literal-block-wrapper docutils container" id="id15">
+<div class="code-block-caption"><span class="caption-text">Setting session data</span><a class="headerlink" href="#id15" title="Permalink to this code">¶</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span>
 </span><span data-line="2">
 </span><span data-line="3"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">Request</span><span class="p">,</span> <span class="n">get</span>
@@ -929,8 +939,8 @@ Sync</label><div class="sd-tab-content docutils">
 </span></pre></div>
 </div>
 </div>
-<div class="literal-block-wrapper docutils container" id="id15">
-<div class="code-block-caption"><span class="caption-text">Getting session data</span><a class="headerlink" href="#id15" title="Permalink to this code">¶</a></div>
+<div class="literal-block-wrapper docutils container" id="id16">
+<div class="code-block-caption"><span class="caption-text">Getting session data</span><a class="headerlink" href="#id16" title="Permalink to this code">¶</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">Request</span><span class="p">,</span> <span class="n">post</span>
 </span><span data-line="2"><span class="kn">from</span> <span class="nn">litestar.middleware.session.server_side</span> <span class="kn">import</span> <span class="n">ServerSideSessionConfig</span>
 </span><span data-line="3"><span class="kn">from</span> <span class="nn">litestar.testing</span> <span class="kn">import</span> <span class="n">TestClient</span>
@@ -952,11 +962,11 @@ Sync</label><div class="sd-tab-content docutils">
 </div>
 </div>
 </div>
-<input id="sd-tab-item-15" name="sd-tab-set-6" type="radio">
-</input><label class="sd-tab-label" data-sync-id="async" for="sd-tab-item-15">
+<input id="sd-tab-item-16" name="sd-tab-set-6" type="radio">
+</input><label class="sd-tab-label" data-sync-id="async" for="sd-tab-item-16">
 Async</label><div class="sd-tab-content docutils">
-<div class="literal-block-wrapper docutils container" id="id16">
-<div class="code-block-caption"><span class="caption-text">Setting session data</span><a class="headerlink" href="#id16" title="Permalink to this code">¶</a></div>
+<div class="literal-block-wrapper docutils container" id="id17">
+<div class="code-block-caption"><span class="caption-text">Setting session data</span><a class="headerlink" href="#id17" title="Permalink to this code">¶</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span>
 </span><span data-line="2">
 </span><span data-line="3"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">Request</span><span class="p">,</span> <span class="n">get</span>
@@ -982,8 +992,8 @@ Async</label><div class="sd-tab-content docutils">
 </span></pre></div>
 </div>
 </div>
-<div class="literal-block-wrapper docutils container" id="id17">
-<div class="code-block-caption"><span class="caption-text">Getting session data</span><a class="headerlink" href="#id17" title="Permalink to this code">¶</a></div>
+<div class="literal-block-wrapper docutils container" id="id18">
+<div class="code-block-caption"><span class="caption-text">Getting session data</span><a class="headerlink" href="#id18" title="Permalink to this code">¶</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">Request</span><span class="p">,</span> <span class="n">post</span>
 </span><span data-line="2"><span class="kn">from</span> <span class="nn">litestar.middleware.session.server_side</span> <span class="kn">import</span> <span class="n">ServerSideSessionConfig</span>
 </span><span data-line="3"><span class="kn">from</span> <span class="nn">litestar.testing</span> <span class="kn">import</span> <span class="n">AsyncTestClient</span>
@@ -1018,8 +1028,8 @@ to execute asynchronous functions using a synchronous call. <code class="docutil
 <code class="docutils literal notranslate"><span class="pre">Litestar</span></code>’s async logic, and it allows <code class="docutils literal notranslate"><span class="pre">TestClient</span></code>’s API to remain fully synchronous.</p>
 <p>Any tests that are using an instance of <code class="docutils literal notranslate"><span class="pre">TestClient</span></code> can also make use of the blocking portal to execute asynchronous functions
 without the test itself being asynchronous.</p>
-<div class="literal-block-wrapper docutils container" id="id18">
-<div class="code-block-caption"><span class="caption-text">Using a blocking portal</span><a class="headerlink" href="#id18" title="Permalink to this code">¶</a></div>
+<div class="literal-block-wrapper docutils container" id="id19">
+<div class="code-block-caption"><span class="caption-text">Using a blocking portal</span><a class="headerlink" href="#id19" title="Permalink to this code">¶</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">concurrent.futures</span> <span class="kn">import</span> <span class="n">Future</span><span class="p">,</span> <span class="n">wait</span>
 </span><span data-line="2">
 </span><span data-line="3"><span class="kn">import</span> <span class="nn">anyio</span>
@@ -1060,8 +1070,8 @@ generic logic that is decoupled from a specific Litestar app, or when you want t
 the litestar constructor, with the <code class="docutils literal notranslate"><span class="pre">route_handlers</span></code> kwarg being <strong>required</strong>. Yet unlike the Litestar app, which
 expects <code class="docutils literal notranslate"><span class="pre">route_handlers</span></code> to be a list, here you can also pass individual values.</p>
 <p>For example, you can do this:</p>
-<div class="literal-block-wrapper docutils container" id="id19">
-<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">my_app/tests/test_health_check.py</span></code></span><a class="headerlink" href="#id19" title="Permalink to this code">¶</a></div>
+<div class="literal-block-wrapper docutils container" id="id20">
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">my_app/tests/test_health_check.py</span></code></span><a class="headerlink" href="#id20" title="Permalink to this code">¶</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">litestar.status_codes</span> <span class="kn">import</span> <span class="n">HTTP_200_OK</span>
 </span><span data-line="2"><span class="kn">from</span> <span class="nn">litestar.testing</span> <span class="kn">import</span> <span class="n">create_test_client</span>
 </span><span data-line="3">
@@ -1077,8 +1087,8 @@ expects <code class="docutils literal notranslate"><span class="pre">route_handl
 </div>
 </div>
 <p>But also this:</p>
-<div class="literal-block-wrapper docutils container" id="id20">
-<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">my_app/tests/test_health_check.py</span></code></span><a class="headerlink" href="#id20" title="Permalink to this code">¶</a></div>
+<div class="literal-block-wrapper docutils container" id="id21">
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">my_app/tests/test_health_check.py</span></code></span><a class="headerlink" href="#id21" title="Permalink to this code">¶</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">litestar.status_codes</span> <span class="kn">import</span> <span class="n">HTTP_200_OK</span>
 </span><span data-line="2"><span class="kn">from</span> <span class="nn">litestar.testing</span> <span class="kn">import</span> <span class="n">create_test_client</span>
 </span><span data-line="3">
@@ -1183,8 +1193,8 @@ with the regular test client setup:</p>
 you need to test logic that expects to receive a request object.</p>
 <p>For example, lets say we wanted to unit test a <em>guard</em> function in isolation, to which end we’ll reuse the examples
 from the <a class="reference internal" href="security/guards.html"><span class="doc">route guards</span></a> documentation:</p>
-<div class="literal-block-wrapper docutils container" id="id21">
-<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">my_app/guards.py</span></code></span><a class="headerlink" href="#id21" title="Permalink to this code">¶</a></div>
+<div class="literal-block-wrapper docutils container" id="id22">
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">my_app/guards.py</span></code></span><a class="headerlink" href="#id22" title="Permalink to this code">¶</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Request</span>
 </span><span data-line="2"><span class="kn">from</span> <span class="nn">litestar.exceptions</span> <span class="kn">import</span> <span class="n">NotAuthorizedException</span>
 </span><span data-line="3"><span class="kn">from</span> <span class="nn">litestar.handlers.base</span> <span class="kn">import</span> <span class="n">BaseRouteHandler</span>
@@ -1200,8 +1210,8 @@ from the <a class="reference internal" href="security/guards.html"><span class="
 </div>
 </div>
 <p>We already have our route handler in place:</p>
-<div class="literal-block-wrapper docutils container" id="id22">
-<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">my_app/secret.py</span></code></span><a class="headerlink" href="#id22" title="Permalink to this code">¶</a></div>
+<div class="literal-block-wrapper docutils container" id="id23">
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">my_app/secret.py</span></code></span><a class="headerlink" href="#id23" title="Permalink to this code">¶</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">os</span> <span class="kn">import</span> <span class="n">environ</span>
 </span><span data-line="2">
 </span><span data-line="3"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">get</span>
@@ -1215,8 +1225,8 @@ from the <a class="reference internal" href="security/guards.html"><span class="
 </div>
 </div>
 <p>We could thus test the guard function like so:</p>
-<div class="literal-block-wrapper docutils container" id="id23">
-<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">tests/guards/test_secret_token_guard.py</span></code></span><a class="headerlink" href="#id23" title="Permalink to this code">¶</a></div>
+<div class="literal-block-wrapper docutils container" id="id24">
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">tests/guards/test_secret_token_guard.py</span></code></span><a class="headerlink" href="#id24" title="Permalink to this code">¶</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">import</span> <span class="nn">pytest</span>
 </span><span data-line="2">
 </span><span data-line="3"><span class="kn">from</span> <span class="nn">litestar.exceptions</span> <span class="kn">import</span> <span class="n">NotAuthorizedException</span>
@@ -1248,8 +1258,8 @@ from the <a class="reference internal" href="security/guards.html"><span class="
 <p><a class="reference external" href="https://github.com/litestar-org/polyfactory">Polyfactory</a> offers an easy
 and powerful way to generate mock data from pydantic models and dataclasses.</p>
 <p>Let’s say we have an API that talks to an external service and retrieves some data:</p>
-<div class="literal-block-wrapper docutils container" id="id24">
-<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">main.py</span></code></span><a class="headerlink" href="#id24" title="Permalink to this code">¶</a></div>
+<div class="literal-block-wrapper docutils container" id="id25">
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">main.py</span></code></span><a class="headerlink" href="#id25" title="Permalink to this code">¶</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Protocol</span><span class="p">,</span> <span class="n">runtime_checkable</span>
 </span><span data-line="2">
 </span><span data-line="3"><span class="kn">from</span> <span class="nn">polyfactory.factories.pydantic</span> <span class="kn">import</span> <span class="n">BaseModel</span>
@@ -1272,8 +1282,8 @@ and powerful way to generate mock data from pydantic models and dataclasses.</p>
 </div>
 </div>
 <p>We could test the <code class="docutils literal notranslate"><span class="pre">/item</span></code> route like so:</p>
-<div class="literal-block-wrapper docutils container" id="id25">
-<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">tests/conftest.py</span></code></span><a class="headerlink" href="#id25" title="Permalink to this code">¶</a></div>
+<div class="literal-block-wrapper docutils container" id="id26">
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">tests/conftest.py</span></code></span><a class="headerlink" href="#id26" title="Permalink to this code">¶</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">import</span> <span class="nn">pytest</span>
 </span><span data-line="2">
 </span><span data-line="3"><span class="kn">from</span> <span class="nn">litestar.di</span> <span class="kn">import</span> <span class="n">Provide</span>
@@ -1305,8 +1315,8 @@ and powerful way to generate mock data from pydantic models and dataclasses.</p>
 <p>While we can define the test data manually, as is done in the above, this can be quite cumbersome. That’s
 where <a class="reference external" href="https://github.com/litestar-org/polyfactory">polyfactory</a> library comes in. It generates mock data for
 pydantic models and dataclasses based on type annotations. With it, we could rewrite the above example like so:</p>
-<div class="literal-block-wrapper docutils container" id="id26">
-<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">main.py</span></code></span><a class="headerlink" href="#id26" title="Permalink to this code">¶</a></div>
+<div class="literal-block-wrapper docutils container" id="id27">
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">main.py</span></code></span><a class="headerlink" href="#id27" title="Permalink to this code">¶</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Protocol</span><span class="p">,</span> <span class="n">runtime_checkable</span>
 </span><span data-line="2">
 </span><span data-line="3"><span class="kn">import</span> <span class="nn">pytest</span>

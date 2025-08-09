@@ -9,7 +9,7 @@ packages, or simply install Litestar with the ``jwt``
 .. code-block:: shell
     :caption: Install Litestar with JWT extra
 
-    pip install litestar[jwt]
+    pip install 'litestar[jwt]'
 
 :class:`JWT Auth <.security.jwt.JWTAuth>` Backend
 -------------------------------------------------

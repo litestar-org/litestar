@@ -503,6 +503,10 @@ data-aria-dark="Switch to auto color mode">
 <li><a class="reference internal" href="#litestar.plugins.OpenAPISchemaPlugin.is_constrained_field"><code class="docutils literal notranslate">is_constrained_field()</span></code></a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#litestar.plugins.ReceiveRoutePlugin"><code class="docutils literal notranslate"><span class="pre">ReceiveRoutePlugin</span></code></a><ul>
+<li><a class="reference internal" href="#litestar.plugins.ReceiveRoutePlugin.receive_route"><code class="docutils literal notranslate">receive_route()</span></code></a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#litestar.plugins.SerializationPlugin"><code class="docutils literal notranslate"><span class="pre">SerializationPlugin</span></code></a><ul>
 <li><a class="reference internal" href="#litestar.plugins.SerializationPlugin.supports_type"><code class="docutils literal notranslate">supports_type()</span></code></a></li>
 <li><a class="reference internal" href="#litestar.plugins.SerializationPlugin.create_dto_for_type"><code class="docutils literal notranslate">create_dto_for_type()</span></code></a></li>
@@ -791,6 +795,19 @@ determine if this value is supported by the plugin</p>
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_constrained_field</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">field_definition</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../typing.html#litestar.typing.FieldDefinition" title="litestar.typing.FieldDefinition"><span class="pre">FieldDefinition</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span></span><a class="headerlink" href="#litestar.plugins.OpenAPISchemaPlugin.is_constrained_field" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return <code class="docutils literal notranslate"><span class="pre">True</span></code> if the field should be treated as constrained. If returning
 <code class="docutils literal notranslate"><span class="pre">True</span></code>, constraints should be defined in the field’s extras</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="litestar.plugins.ReceiveRoutePlugin">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.plugins.</span></span><span class="sig-name descname"><span class="pre">ReceiveRoutePlugin</span></span><a class="headerlink" href="#litestar.plugins.ReceiveRoutePlugin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Receive routes as they are added to the application.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="litestar.plugins.ReceiveRoutePlugin.receive_route">
+<span class="sig-name descname"><span class="pre">receive_route</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">route</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../routes.html#litestar.routes.BaseRoute" title="litestar.routes.BaseRoute"><span class="pre">BaseRoute</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#litestar.plugins.ReceiveRoutePlugin.receive_route" title="Permalink to this definition">¶</a></dt>
+<dd><p>Receive routes as they are registered on an application.</p>
 </dd></dl>
 
 </dd></dl>

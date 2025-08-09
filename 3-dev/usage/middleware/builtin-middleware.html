@@ -733,7 +733,7 @@ the <code class="docutils literal notranslate"><span class="pre">backend</span><
 <section id="brotli">
 <h3>Brotli<a class="headerlink" href="#brotli" title="Permalink to this heading">¶</a></h3>
 <p>The <a class="reference external" href="https://pypi.org/project/Brotli">Brotli</a> package is required to run this middleware. It is available as an extras to litestar with the <code class="docutils literal notranslate"><span class="pre">brotli</span></code>
-extra (<code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">litestar[brotli]</span></code>).</p>
+extra (<code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">'litestar[brotli]'</span></code>).</p>
 <p>You can enable brotli compression of responses by passing an instance of
 <a class="reference internal" href="../../reference/config.html#litestar.config.compression.CompressionConfig" title="litestar.config.compression.CompressionConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">CompressionConfig</span></code></a> with the <code class="docutils literal notranslate"><span class="pre">backend</span></code> parameter set to <code class="docutils literal notranslate"><span class="pre">&quot;brotli&quot;</span></code>.</p>
 <p>You can configure the following additional brotli-specific values:</p>
@@ -916,7 +916,7 @@ which offers strong AES-CGM encryption security best practices while support coo
 <div class="admonition important">
 <p class="admonition-title">Important</p>
 <p><code class="docutils literal notranslate"><span class="pre">ClientSideSessionBackend</span></code> requires the <a class="reference external" href="https://cryptography.io/en/latest/">cryptography</a> library,
-which can be installed together with litestar as an extra using <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">litestar[cryptography]</span></code></p>
+which can be installed together with litestar as an extra using <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">'litestar[cryptography]'</span></code></p>
 </div>
 <div class="literal-block-wrapper docutils container" id="id3">
 <div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">cookie_backend.py</span></code></span><a class="headerlink" href="#id3" title="Permalink to this code">¶</a></div>
