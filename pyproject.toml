@@ -177,7 +177,7 @@ linting = [
 ]
 test = [
   "covdefaults",
-  "pytest",
+  "pytest==8.3.4",  # 8.4.1 causes some issues with asyncio for us; need to investigate
   "pytest-asyncio<=0.24.0; python_version < \"3.9\"",
   "pytest-asyncio>0.24.0; python_version >= \"3.9\"",
   "pytest-cov",
