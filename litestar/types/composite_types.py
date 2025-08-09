@@ -4,14 +4,7 @@ from typing import (
     TYPE_CHECKING,
     Any,
     Callable,
-    Dict,
-    Iterator,
     Literal,
-    Mapping,
-    MutableMapping,
-    Sequence,
-    Tuple,
-    Type,
     Union,
 )
 
@@ -19,6 +12,7 @@ __all__ = (
     "Dependencies",
     "ExceptionHandlersMap",
     "Middleware",
+    "MiddlewareFactory",
     "ParametersMap",
     "PathType",
     "ResponseCookies",
@@ -29,6 +23,7 @@ __all__ = (
 
 
 if TYPE_CHECKING:
+    from collections.abc import Mapping, MutableMapping, Sequence
     from os import PathLike
     from pathlib import Path
 
@@ -38,15 +33,15 @@ if TYPE_CHECKING:
     from litestar.datastructures.response_header import ResponseHeader
     from litestar.di import Provide
     from litestar.enums import ScopeType
-    from litestar.middleware.base import DefineMiddleware, MiddlewareProtocol
     from litestar.params import ParameterKwarg
 
     from .asgi_types import ASGIApp
     from .callable_types import AnyCallable, ExceptionHandler
 
 Dependencies: TypeAlias = "Mapping[str, Union[Provide, AnyCallable]]"
-ExceptionHandlersMap: TypeAlias = "MutableMapping[Union[int, Type[Exception]], ExceptionHandler]"
-Middleware: TypeAlias = "Union[Callable[..., ASGIApp], DefineMiddleware, Iterator[Tuple[ASGIApp, Dict[str, Any]]], Type[MiddlewareProtocol]]"
+ExceptionHandlersMap: TypeAlias = "MutableMapping[Union[int, type[Exception]], ExceptionHandler]"
+Middleware: TypeAlias = Callable[..., "ASGIApp"]
+MiddlewareFactory: TypeAlias = Callable[..., Middleware]
 ParametersMap: TypeAlias = "Mapping[str, ParameterKwarg]"
 PathType: TypeAlias = "Union[Path, PathLike, str]"
 ResponseCookies: TypeAlias = "Union[Sequence[Cookie], Mapping[str, str]]"
