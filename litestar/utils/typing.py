@@ -53,7 +53,7 @@ __all__ = (
 
 
 T = TypeVar("T")
-UnionT = TypeVar("UnionT", bound="Union")
+UnionT = TypeVar("UnionT", bound="Union")  # pyright: ignore
 
 tuple_types_regex = re.compile(
     "^"

@@ -166,7 +166,7 @@ class Router:
         self.after_request: AsyncAfterRequestHookHandler | None = (
             ensure_async_callable(after_request) if after_request else None  # type: ignore[assignment]
         )
-        self.after_response: AsyncAfterResponseHookHandler | None = (
+        self.after_response: AsyncAfterResponseHookHandler | None = (  # pyright: ignore
             ensure_async_callable(after_response) if after_response else None
         )
         self.before_request = ensure_async_callable(before_request) if before_request else None

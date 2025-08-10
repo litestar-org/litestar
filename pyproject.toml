@@ -214,7 +214,7 @@ linting = [
   "pre-commit",
   "slotscheck",
   "codecov-cli",
-  "pyright==1.1.344",
+  "pyright>=1.1.403",
   "asyncpg-stubs",
   "types-beautifulsoup4",
   "types-pyyaml",
@@ -378,6 +378,8 @@ exclude = [
   "litestar/plugins/pydantic/plugins/schema.py",
   "litestar/plugins/pydantic/dto_factory.py",
   "tests/unit/test_contrib/test_sqlalchemy.py",
+  "tests/unit/test_plugins/test_pydantic/test_openapi.py",
+  "tests/unit/test_repository/test_generic_mock_repository.py",
 ]
 include = ["litestar", "tests"]
 pythonVersion = "3.9"

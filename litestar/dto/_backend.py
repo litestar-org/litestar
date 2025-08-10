@@ -834,7 +834,7 @@ def _create_struct_for_field_definitions(
             field_type = Annotated[field_type, field_definition.kwarg_definition]
 
         struct_fields.append(
-            (
+            (  # pyright: ignore
                 field_definition.name,
                 field_type,
                 _create_msgspec_field(field_definition),

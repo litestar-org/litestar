@@ -139,7 +139,7 @@ class BaseRouteHandler:
         self._dto = dto
         self._return_dto = return_dto
         self.exception_handlers = exception_handlers or {}
-        self.guards: tuple[AsyncGuard, ...] = tuple(ensure_async_callable(guard) for guard in guards) if guards else ()
+        self.guards: tuple[AsyncGuard, ...] = tuple(ensure_async_callable(guard) for guard in guards) if guards else ()  # pyright: ignore
         self.middleware = tuple(middleware) if middleware else ()
         self.name = name
         self.opt = dict(opt or {})

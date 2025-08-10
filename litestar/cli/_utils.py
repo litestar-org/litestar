@@ -286,7 +286,7 @@ def _inject_args(func: Callable[P, T]) -> Callable[P, T]:
 def _wrap_commands(commands: Iterable[Command]) -> None:
     for command in commands:
         if hasattr(command, "commands"):
-            _wrap_commands(command.commands.values())  # pyright: ignore[reportGeneralTypeIssues]
+            _wrap_commands(command.commands.values())  # pyright: ignore
         elif command.callback:
             command.callback = _inject_args(command.callback)
 
@@ -324,7 +324,7 @@ def _load_app_from_path(app_path: str) -> LoadedApp:
     if not isinstance(app, Litestar) and callable(app):
         app = app()
         is_factory = True
-    return LoadedApp(app=app, app_path=app_path, is_factory=is_factory)
+    return LoadedApp(app=app, app_path=app_path, is_factory=is_factory)  # pyright: ignore
 
 
 def _path_to_dotted_path(path: Path) -> str:
@@ -390,7 +390,7 @@ def _autodiscover_app(cwd: Path) -> LoadedApp:
                 os.environ["LITESTAR_APP"] = app_string
                 if not quiet_console and sys.stdout.isatty():
                     console.print(f"Using {app_name} factory from [bright_blue]{app_string}")
-                return LoadedApp(app=value(), app_path=f"{app_string}", is_factory=True)
+                return LoadedApp(app=value(), app_path=f"{app_string}", is_factory=True)  # pyright: ignore
 
     raise LitestarCLIException(f"Could not find {app_name} instance or factory")
 

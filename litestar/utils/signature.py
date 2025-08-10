@@ -154,7 +154,7 @@ def get_fn_type_hints(fn: Any, namespace: dict[str, Any] | None = None) -> dict[
 
     # inspect the underlying function for methods
     if hasattr(fn_to_inspect, "__func__"):
-        fn_to_inspect = fn_to_inspect.__func__
+        fn_to_inspect = fn_to_inspect.__func__  # pyright: ignore
 
     # Order important. If a litestar name has been overridden in the function module, we want
     # to use that instead of the litestar one.

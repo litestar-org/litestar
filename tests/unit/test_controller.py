@@ -53,7 +53,7 @@ async def test_controller_http_method(
         path = test_path
 
         @decorator()
-        def test_method(self) -> return_annotation:
+        def test_method(self) -> return_annotation:  # pyright: ignore
             return return_value
 
     with create_test_client(MyController) as client:

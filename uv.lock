@@ -2223,7 +2223,7 @@ linting = [
     { name = "codecov-cli" },
     { name = "mypy" },
     { name = "pre-commit" },
-    { name = "pyright" },
+    { name = "pyright", specifier = ">=1.1.403" },
     { name = "ruff", specifier = ">=0.11.5" },
     { name = "slotscheck" },
     { name = "types-beautifulsoup4" },
@@ -3480,14 +3480,15 @@ wheels = [
 
 [[package]]
 name = "pyright"
-version = "1.1.344"
+version = "1.1.403"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "nodeenv" },
+    { name = "typing-extensions" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/40/9e/e8e54e9dd3f1e63e8573d9a3830be06e904629bc15a90ca052532b2656f4/pyright-1.1.344.tar.gz", hash = "sha256:ab7c962f00dd8141a5a0192c1060fb34b92d1f9047ad70dda45229938051922b", size = 17486, upload-time = "2023-12-30T17:34:27.898Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/fe/f6/35f885264ff08c960b23d1542038d8da86971c5d8c955cfab195a4f672d7/pyright-1.1.403.tar.gz", hash = "sha256:3ab69b9f41c67fb5bbb4d7a36243256f0d549ed3608678d381d5f51863921104", size = 3913526, upload-time = "2025-07-09T07:15:52.882Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/91/37/a118d8cc0381363c1a7f511a9f640c60df13329d35b4ee42c79dd5c87736/pyright-1.1.344-py3-none-any.whl", hash = "sha256:ab7117a911ce25fcd317f42272579f9ae53a6abc8b8a15f6aa069a11281953ee", size = 18225, upload-time = "2023-12-30T17:34:25.129Z" },
+    { url = "https://files.pythonhosted.org/packages/49/b6/b04e5c2f41a5ccad74a1a4759da41adb20b4bc9d59a5e08d29ba60084d07/pyright-1.1.403-py3-none-any.whl", hash = "sha256:c0eeca5aa76cbef3fcc271259bbd785753c7ad7bcac99a9162b4c4c7daed23b3", size = 5684504, upload-time = "2025-07-09T07:15:50.958Z" },
 ]
 
 [[package]]

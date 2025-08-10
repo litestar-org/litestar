@@ -42,9 +42,7 @@ class ClassicPagination(Generic[T]):
 # AA requires it's own `OffsetPagination` class in versions greater that 0.9.0
 # If we find it, use it.
 try:
-    from advanced_alchemy.service import (
-        OffsetPagination,  # pyright: ignore[reportMissingImports,reportGeneralTypeIssues]
-    )
+    from advanced_alchemy.service import OffsetPagination  # pyright: ignore
 except ImportError:
 
     @dataclass

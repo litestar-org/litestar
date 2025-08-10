@@ -1,4 +1,3 @@
-# pyright: reportOptionalSubscript=false, reportGeneralTypeIssues=false
 from datetime import date, timedelta
 from decimal import Decimal
 from re import Pattern

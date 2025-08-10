@@ -1,6 +1,5 @@
 # ruff: noqa: TC004, F401
-# pyright: reportUnusedImport=false
-import importlib
+import importlib.util
 import sys
 from pathlib import Path
 from typing import Union
