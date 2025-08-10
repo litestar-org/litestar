@@ -1,11 +1,11 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from time import time
 from typing import TYPE_CHECKING, Any
 
 import pytest
 from time_machine import travel
 
-from litestar import Litestar, Request, get
+from litestar import Controller, Litestar, Request, get
 from litestar.middleware.rate_limit import (
     DURATION_VALUES,
     CacheObject,
@@ -257,3 +257,74 @@ async def test_rate_limiting_works_with_cache() -> None:
 
         response = client.get("/")
         assert response.status_code == HTTP_429_TOO_MANY_REQUESTS
+
+
+async def test_rate_limiting_multiple_endpoints_multiple_stores() -> None:
+    """
+    Configuring ratelimit on each endpoint would make it look like each endpoint
+    should have its own rate limits. However, without changing the store,
+    after calling /ham once, calls to /cheese will result in HTTP 429
+    as the middleware caches on client identity.
+
+    A simple way to mitigate this would be to configure different stores per endpoint.
+    """
+
+    @get("/ham", middleware=[RateLimitConfig(("hour", 1000), store="ham_store").middleware])
+    async def can_go_ham() -> None:
+        return None
+
+    @get("/cheese", middleware=[RateLimitConfig(("hour", 1), store="cheese_store").middleware])
+    async def dont_go_ham() -> None:
+        return None
+
+    cache_key = "RateLimitMiddleware::testclient"
+    app = Litestar(route_handlers=[can_go_ham, dont_go_ham])
+    store1 = app.stores.get("ham_store")
+    store2 = app.stores.get("cheese_store")
+
+    with travel(datetime.now(tz=timezone.utc), tick=False), TestClient(app=app) as client:
+        response = client.get("/ham")
+        assert response.status_code == HTTP_200_OK
+        cached_value = await store1.get(cache_key)
+        assert cached_value is not None
+        cache_object = CacheObject(**decode_json(value=cached_value))
+        assert len(cache_object.history) == 1
+
+        response = client.get("/cheese")
+        assert response.status_code == HTTP_200_OK
+        cached_value = await store2.get(cache_key)
+        assert cached_value is not None
+        cache_object = CacheObject(**decode_json(value=cached_value))
+        assert len(cache_object.history) == 1
+
+        response = client.get("/cheese")
+        assert response.status_code == HTTP_429_TOO_MANY_REQUESTS
+        cached_value = await store2.get(cache_key)
+        assert cached_value is not None
+        cache_object = CacheObject(**decode_json(value=cached_value))
+        assert len(cache_object.history) == 1
+
+
+async def test_rate_limiting_multiple_levels_multiple_stores() -> None:
+    """
+    Configuring ratelimit on multiple levels, with just the required parameters,
+    leads to requests being counted multiple times on the way in (once per middleware).
+
+    A simple way to mitigate this would be to configure different stores per layer.
+    """
+
+    class MyController(Controller):
+        middleware = [RateLimitConfig(("hour", 2), store="rl1").middleware]
+
+        @get("/", middleware=[RateLimitConfig(("hour", 2), store="rl2").middleware])
+        async def handler(self) -> None:
+            return None
+
+    app = Litestar(
+        route_handlers=[MyController],
+        middleware=[RateLimitConfig(("hour", 2), store="rl3").middleware],
+    )
+
+    with travel(datetime.now(tz=timezone.utc), tick=False), TestClient(app=app) as client:
+        response = client.get("/")
+        assert response.status_code == HTTP_200_OK
