@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 
 
-<html lang="en" data-content_root="" >
+<html lang="en" data-content_root="./" >
 
   <head>
     <meta charset="utf-8" />
@@ -14,39 +14,42 @@
   
   <script data-cfasync="false">
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
-    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
   </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="_static/styles/theme.css?digest=5b4479735964841361fd" rel="stylesheet" />
-<link href="_static/styles/bootstrap.css?digest=5b4479735964841361fd" rel="stylesheet" />
-<link href="_static/styles/pydata-sphinx-theme.css?digest=5b4479735964841361fd" rel="stylesheet" />
+  <link href="_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
 
-  
-  <link href="_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=5b4479735964841361fd" rel="stylesheet" />
-  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
-
-    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="_static/sphinx_paramlinks.css" />
     <link rel="stylesheet" type="text/css" href="_static/style.css?v=b5051ef4" />
     <link rel="stylesheet" type="text/css" href="_static/litestar-sphinx-theme.css?v=9e3812bb" />
   
+  <!-- So that users can add custom icons -->
+  <script src="_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=5b4479735964841361fd" />
-<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=5b4479735964841361fd" />
-  <script src="_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=5b4479735964841361fd"></script>
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js?v=a5ad1038"></script>
-    <script src="_static/doctools.js?v=888ff710"></script>
-    <script src="_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="_static/documentation_options.js?v=4f3eadab"></script>
+    <script src="_static/doctools.js?v=9bcbadda"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="_static/copybutton.js?v=f281be69"></script>
     <script src="_static/litestar-theme.js?v=ab2dcc9e"></script>
-    <script src="_static/design-tabs.js?v=36754332"></script>
+    <script src="_static/design-tabs.js?v=f930bc37"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'index';</script>
     <script src="_static/versioning.js?v=68b42869"></script>
     <link rel="icon" href="_static/favicon.png"/>
@@ -55,6 +58,7 @@
     <link rel="next" title="Usage" href="usage/index.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
   </head>
   
   
@@ -62,32 +66,16 @@
 
   
   
-  <a class="skip-link" href="#main-content">Skip to main content</a>
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
   
   <div id="pst-scroll-pixel-helper"></div>
-
   
   <button type="button" class="btn rounded-pill" id="pst-back-to-top">
-    <i class="fa-solid fa-arrow-up"></i>
-    Back to top
-  </button>
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
 
   
-  <input type="checkbox"
-          class="sidebar-toggle"
-          name="__primary"
-          id="__primary"/>
-  <label class="overlay overlay-primary" for="__primary"></label>
-  
-  <input type="checkbox"
-          class="sidebar-toggle"
-          name="__secondary"
-          id="__secondary"/>
-  <label class="overlay overlay-secondary" for="__secondary"></label>
-  
-  <div class="search-button__wrapper">
-    <div class="search-button__overlay"></div>
-    <div class="search-button__search-container">
+  <dialog id="pst-search-dialog">
+    
 <form class="bd-search d-flex align-items-center"
       action="search.html"
       method="get">
@@ -95,7 +83,6 @@
   <input type="search"
          class="form-control"
          name="q"
-         id="search-input"
          placeholder="Search the docs ..."
          aria-label="Search the docs ..."
          autocomplete="off"
@@ -103,21 +90,28 @@
          autocapitalize="off"
          spellcheck="false"/>
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
-</form></div>
-  </div>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
   
-    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
 <div class="bd-header__inner bd-page-width">
-  <label class="sidebar-toggle primary-toggle" for="__primary">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
     <span class="fa-solid fa-bars"></span>
-  </label>
+  </button>
   
   
   <div class=" navbar-header-items__start">
     
       <div class="navbar-item">
 
-   
+  
+     
+  
 
 <a class="navbar-brand logo" href="https://litestar.dev">
   
@@ -131,7 +125,7 @@
     
     
     <img src="_static/logo.svg" class="logo__image only-light" alt="Litestar Framework - Home"/>
-    <script>document.write(`<img src="_static/logo.svg" class="logo__image only-dark" alt="Litestar Framework - Home"/>`);</script>
+    <img src="_static/logo.svg" class="logo__image only-dark pst-js-only" alt="Litestar Framework - Home"/>
   
   
 </a></div>
@@ -593,31 +587,23 @@
         <div class="navbar-item navbar-persistent--container">
           
 
-<script>
-document.write(`
-  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <i class="fa-solid fa-magnifying-glass fa-lg"></i>
-  </button>
-`);
-</script>
+</button>
         </div>
       
         <div class="navbar-item navbar-persistent--container">
           
 
-<script>
-document.write(`
-  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
-    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
-    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
-  </button>
-`);
-</script>
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button>
         </div>
       
       
-        <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+        <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
         <li class="nav-item">
           
@@ -628,7 +614,7 @@ document.write(`
           
           
           
-          <a href="https://github.com/litestar-org/litestar" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i></span>
+          <a href="https://github.com/litestar-org/litestar" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
             <span class="sr-only">GitHub</span></a>
         </li>
         <li class="nav-item">
@@ -640,7 +626,7 @@ document.write(`
           
           
           
-          <a href="https://discord.gg/litestar" title="Discord" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-discord fa-lg" aria-hidden="true"></i></span>
+          <a href="https://discord.gg/litestar" title="Discord" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-discord fa-lg" aria-hidden="true"></i>
             <span class="sr-only">Discord</span></a>
         </li>
 </ul></div>
@@ -652,42 +638,40 @@ document.write(`
   
     <div class="navbar-persistent--mobile">
 
-<script>
-document.write(`
-  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <i class="fa-solid fa-magnifying-glass fa-lg"></i>
-  </button>
-`);
-</script>
+</button>
     </div>
   
     <div class="navbar-persistent--mobile">
 
-<script>
-document.write(`
-  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
-    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
-    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
-  </button>
-`);
-</script>
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button>
     </div>
   
 
   
-    <label class="sidebar-toggle secondary-toggle" for="__secondary" tabindex="0">
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
       <span class="fa-solid fa-outdent"></span>
-    </label>
+    </button>
   
 </div>
 
-    </nav>
+    </header>
   
+
   <div class="bd-container">
     <div class="bd-container__inner bd-page-width">
       
-      <div class="bd-sidebar-primary bd-sidebar">
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
         
 
   
@@ -696,7 +680,9 @@ document.write(`
     
       <div class="sidebar-header-items__center">
         
-          <div class="navbar-item">
+          
+          
+            <div class="navbar-item">
 
 
 
@@ -1138,6 +1124,7 @@ document.write(`
 
     </nav>
 </div>
+          
         
       </div>
     
@@ -1145,7 +1132,7 @@ document.write(`
     
       <div class="sidebar-header-items__end">
         
-          <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+          <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
         <li class="nav-item">
           
@@ -1156,7 +1143,7 @@ document.write(`
           
           
           
-          <a href="https://github.com/litestar-org/litestar" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i></span>
+          <a href="https://github.com/litestar-org/litestar" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
             <span class="sr-only">GitHub</span></a>
         </li>
         <li class="nav-item">
@@ -1168,7 +1155,7 @@ document.write(`
           
           
           
-          <a href="https://discord.gg/litestar" title="Discord" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-discord fa-lg" aria-hidden="true"></i></span>
+          <a href="https://discord.gg/litestar" title="Discord" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-discord fa-lg" aria-hidden="true"></i>
             <span class="sr-only">Discord</span></a>
         </li>
 </ul></div>
@@ -1177,349 +1164,43 @@ document.write(`
     
   </div>
   
-    <div class="sidebar-primary-items__start sidebar-primary__section">
-        <div class="sidebar-primary-item">
-<nav class="bd-docs-nav bd-links"
-     aria-label="Section Navigation">
-  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
-  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Documentation</span></p>
-<ul class="nav bd-sidenav">
-<li class="toctree-l1 has-children"><a class="reference internal" href="usage/index.html">Usage</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="usage/applications.html">Applications</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="usage/routing/index.html">Routing</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="usage/routing/overview.html">Overview</a></li>
-<li class="toctree-l3"><a class="reference internal" href="usage/routing/handlers.html">Route handlers</a></li>
-<li class="toctree-l3"><a class="reference internal" href="usage/routing/parameters.html">Parameters</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="usage/requests.html">Requests</a></li>
-<li class="toctree-l2"><a class="reference internal" href="usage/caching.html">Caching</a></li>
-<li class="toctree-l2"><a class="reference internal" href="usage/channels.html">Channels</a></li>
-<li class="toctree-l2"><a class="reference internal" href="usage/cli.html">CLI</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="usage/databases/index.html">Databases</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-3"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3 has-children"><a class="reference internal" href="usage/databases/sqlalchemy/index.html">SQLAlchemy</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-4"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l4"><a class="reference internal" href="usage/databases/sqlalchemy/models_and_repository.html">SQLAlchemy Models &amp; Repository</a></li>
-<li class="toctree-l4"><a class="reference internal" href="usage/databases/sqlalchemy/plugins/index.html">Plugins</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="usage/databases/piccolo.html">Piccolo ORM</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="usage/debugging.html">Debugging</a></li>
-<li class="toctree-l2"><a class="reference internal" href="usage/dependency-injection.html">Dependency Injection</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="usage/dto/index.html">Data Transfer Object (DTO)</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-5"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="usage/dto/0-basic-use.html">Basic Use</a></li>
-<li class="toctree-l3"><a class="reference internal" href="usage/dto/1-abstract-dto.html">AbstractDTO</a></li>
-<li class="toctree-l3"><a class="reference internal" href="usage/dto/2-creating-custom-dto-classes.html">Implementing Custom DTO Classes</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="usage/events.html">Events</a></li>
-<li class="toctree-l2"><a class="reference internal" href="usage/exceptions.html">Exceptions and exception handling</a></li>
-<li class="toctree-l2"><a class="reference internal" href="usage/htmx.html">HTMX</a></li>
-<li class="toctree-l2"><a class="reference internal" href="usage/lifecycle-hooks.html">Life Cycle Hooks</a></li>
-<li class="toctree-l2"><a class="reference internal" href="usage/logging.html">Logging</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="usage/metrics/index.html">Metrics</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-6"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="usage/metrics/open-telemetry.html">OpenTelemetry</a></li>
-<li class="toctree-l3"><a class="reference internal" href="usage/metrics/prometheus.html">Prometheus</a></li>
-</ul>
-</li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="usage/middleware/index.html">Middleware</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-7"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="usage/middleware/using-middleware.html">Using Middleware</a></li>
-<li class="toctree-l3"><a class="reference internal" href="usage/middleware/builtin-middleware.html">Built-in middleware</a></li>
-<li class="toctree-l3"><a class="reference internal" href="usage/middleware/creating-middleware.html">Creating Middleware</a></li>
-</ul>
-</li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="usage/openapi/index.html">OpenAPI</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-8"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="usage/openapi/schema_generation.html">Configuring schema generation</a></li>
-
-
-
-
-<li class="toctree-l3"><a class="reference internal" href="usage/openapi/ui_plugins.html">OpenAPI UI Plugins</a></li>
-
-
-
-
-
-
-
-
-
-</ul>
-</li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="usage/plugins/index.html">Plugins</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-9"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="usage/plugins/flash_messages.html">Flash Messages</a></li>
-<li class="toctree-l3"><a class="reference internal" href="usage/plugins/problem_details.html">Problem Details</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="usage/responses.html">Responses</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="usage/security/index.html">Security</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-10"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="usage/security/abstract-authentication-middleware.html">Implementing Custom Authentication</a></li>
-<li class="toctree-l3"><a class="reference internal" href="usage/security/security-backends.html">Security Backends</a></li>
-<li class="toctree-l3"><a class="reference internal" href="usage/security/guards.html">Guards</a></li>
-<li class="toctree-l3"><a class="reference internal" href="usage/security/excluding-and-including-endpoints.html">Excluding and including endpoints</a></li>
-<li class="toctree-l3"><a class="reference internal" href="usage/security/jwt.html">JWT Security Backends</a></li>
-<li class="toctree-l3"><a class="reference internal" href="usage/security/secret-datastructures.html">Handling Secrets</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="usage/static-files.html">Static files</a></li>
-<li class="toctree-l2"><a class="reference internal" href="usage/custom-types.html">Custom types</a></li>
-<li class="toctree-l2"><a class="reference internal" href="usage/stores.html">Stores</a></li>
-<li class="toctree-l2"><a class="reference internal" href="usage/templating.html">Templating</a></li>
-<li class="toctree-l2"><a class="reference internal" href="usage/testing.html">Testing</a></li>
-<li class="toctree-l2"><a class="reference internal" href="usage/websockets.html">WebSockets</a></li>
-</ul>
-</li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="reference/index.html">API reference</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-11"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="reference/app.html">app</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference/background_tasks.html">background_tasks</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="reference/channels/index.html">channels</a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-12"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="reference/channels/plugin.html">plugin</a></li>
-<li class="toctree-l3"><a class="reference internal" href="reference/channels/subscriber.html">subscriber</a></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="reference/channels/backends/index.html">backends</a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-13"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l4"><a class="reference internal" href="reference/channels/backends/base.html">base</a></li>
-<li class="toctree-l4"><a class="reference internal" href="reference/channels/backends/memory.html">memory</a></li>
-<li class="toctree-l4"><a class="reference internal" href="reference/channels/backends/redis.html">redis</a></li>
-<li class="toctree-l4"><a class="reference internal" href="reference/channels/backends/psycopg.html">psycopg</a></li>
-<li class="toctree-l4"><a class="reference internal" href="reference/channels/backends/asyncpg.html">asyncpg</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="reference/cli.html">cli</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference/config.html">config</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference/connection.html">connection</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="reference/contrib/index.html">contrib</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-14"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="reference/contrib/htmx.html">HTMX</a></li>
-<li class="toctree-l3"><a class="reference internal" href="reference/contrib/jinja.html">jinja</a></li>
-<li class="toctree-l3"><a class="reference internal" href="reference/contrib/jwt.html">jwt</a></li>
-<li class="toctree-l3"><a class="reference internal" href="reference/contrib/mako.html">mako</a></li>
-<li class="toctree-l3"><a class="reference internal" href="reference/contrib/opentelemetry.html">opentelemetry</a></li>
-<li class="toctree-l3"><a class="reference internal" href="reference/contrib/piccolo.html">piccolo_orm</a></li>
-<li class="toctree-l3"><a class="reference internal" href="reference/contrib/pydantic.html">pydantic</a></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="reference/contrib/sqlalchemy/index.html">sqlalchemy</a><input class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-15"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l4"><a class="reference internal" href="reference/contrib/sqlalchemy/plugins.html">plugins</a></li>
-<li class="toctree-l4"><a class="reference internal" href="reference/contrib/sqlalchemy/repository.html">repository</a></li>
-<li class="toctree-l4"><a class="reference internal" href="reference/contrib/sqlalchemy/types.html">types</a></li>
-<li class="toctree-l4"><a class="reference internal" href="reference/contrib/sqlalchemy/base.html">base</a></li>
-<li class="toctree-l4"><a class="reference internal" href="reference/contrib/sqlalchemy/dto.html">DTO</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="reference/controller.html">controller</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference/concurrency.html">concurrency</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference/data_extractors.html">data_extractors</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="reference/datastructures/index.html">datastructures</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-16"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="reference/datastructures/secret_values.html">secret_values</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="reference/di.html">di</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="reference/dto/index.html">dto</a><input class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-17"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="reference/dto/config.html">config</a></li>
-<li class="toctree-l3"><a class="reference internal" href="reference/dto/data_structures.html">data_structures</a></li>
-<li class="toctree-l3"><a class="reference internal" href="reference/dto/field.html">field</a></li>
-<li class="toctree-l3"><a class="reference internal" href="reference/dto/types.html">types</a></li>
-<li class="toctree-l3"><a class="reference internal" href="reference/dto/base_dto.html">base_dto</a></li>
-<li class="toctree-l3"><a class="reference internal" href="reference/dto/msgspec_dto.html">msgspec_dto</a></li>
-<li class="toctree-l3"><a class="reference internal" href="reference/dto/dataclass_dto.html">dataclass_dto</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="reference/enums.html">enums</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference/events.html">events</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference/exceptions.html">exceptions</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference/handlers.html">handlers</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="reference/logging/index.html">logging</a><input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-18"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="reference/logging/config.html">config</a></li>
-<li class="toctree-l3"><a class="reference internal" href="reference/logging/picologging.html">picologging</a></li>
-<li class="toctree-l3"><a class="reference internal" href="reference/logging/standard.html">standard</a></li>
-</ul>
-</li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="reference/middleware/index.html">middleware</a><input class="toctree-checkbox" id="toctree-checkbox-19" name="toctree-checkbox-19" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-19"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="reference/middleware/allowed_hosts.html">allowed_hosts</a></li>
-<li class="toctree-l3"><a class="reference internal" href="reference/middleware/authentication.html">authentication</a></li>
-<li class="toctree-l3"><a class="reference internal" href="reference/middleware/compression.html">compression</a></li>
-<li class="toctree-l3"><a class="reference internal" href="reference/middleware/cors.html">cors</a></li>
-<li class="toctree-l3"><a class="reference internal" href="reference/middleware/csrf.html">csrf</a></li>
-<li class="toctree-l3"><a class="reference internal" href="reference/middleware/logging.html">logging</a></li>
-<li class="toctree-l3"><a class="reference internal" href="reference/middleware/rate_limit.html">rate_limit</a></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="reference/middleware/session/index.html">session</a><input class="toctree-checkbox" id="toctree-checkbox-20" name="toctree-checkbox-20" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-20"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l4"><a class="reference internal" href="reference/middleware/session/base.html">base</a></li>
-<li class="toctree-l4"><a class="reference internal" href="reference/middleware/session/client_side.html">client_side</a></li>
-<li class="toctree-l4"><a class="reference internal" href="reference/middleware/session/server_side.html">server_side</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="reference/openapi/index.html">openapi</a><input class="toctree-checkbox" id="toctree-checkbox-21" name="toctree-checkbox-21" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-21"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="reference/openapi/openapi.html">openapi</a></li>
-<li class="toctree-l3"><a class="reference internal" href="reference/openapi/plugins.html">plugins</a></li>
-<li class="toctree-l3"><a class="reference internal" href="reference/openapi/spec.html">spec</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="reference/pagination.html">pagination</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference/params.html">params</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="reference/plugins/index.html">plugins</a><input class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-22"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="reference/plugins/attrs.html">attrs</a></li>
-<li class="toctree-l3"><a class="reference internal" href="reference/plugins/flash_messages.html">flash</a></li>
-<li class="toctree-l3"><a class="reference internal" href="reference/plugins/htmx.html">htmx</a></li>
-<li class="toctree-l3"><a class="reference internal" href="reference/plugins/problem_details.html">problem details</a></li>
-<li class="toctree-l3"><a class="reference internal" href="reference/plugins/prometheus.html">prometheus</a></li>
-<li class="toctree-l3"><a class="reference internal" href="reference/plugins/pydantic.html">pydantic</a></li>
-<li class="toctree-l3"><a class="reference internal" href="reference/plugins/structlog.html">structlog</a></li>
-<li class="toctree-l3"><a class="reference internal" href="reference/plugins/sqlalchemy.html">sqlalchemy</a></li>
-</ul>
-</li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="reference/repository/index.html">repository</a><input class="toctree-checkbox" id="toctree-checkbox-23" name="toctree-checkbox-23" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-23"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="reference/repository/abc.html">abc</a></li>
-<li class="toctree-l3"><a class="reference internal" href="reference/repository/filters.html">filters</a></li>
-<li class="toctree-l3"><a class="reference internal" href="reference/repository/exceptions.html">exceptions</a></li>
-<li class="toctree-l3"><a class="reference internal" href="reference/repository/testing.html">testing</a></li>
-<li class="toctree-l3"><a class="reference internal" href="reference/repository/handlers.html">handlers</a></li>
-</ul>
-</li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="reference/response/index.html">response</a><input class="toctree-checkbox" id="toctree-checkbox-24" name="toctree-checkbox-24" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-24"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="reference/response/base.html">base</a></li>
-<li class="toctree-l3"><a class="reference internal" href="reference/response/file.html">file</a></li>
-<li class="toctree-l3"><a class="reference internal" href="reference/response/redirect.html">redirect</a></li>
-<li class="toctree-l3"><a class="reference internal" href="reference/response/streaming.html">streaming</a></li>
-<li class="toctree-l3"><a class="reference internal" href="reference/response/sse.html">SSE (Server Sent Events)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="reference/response/template.html">template</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="reference/router.html">router</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference/routes.html">routes</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="reference/security/index.html">security</a><input class="toctree-checkbox" id="toctree-checkbox-25" name="toctree-checkbox-25" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-25"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="reference/security/jwt.html">jwt</a></li>
-<li class="toctree-l3"><a class="reference internal" href="reference/security/session_auth.html">session_auth</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="reference/serialization.html">serialization</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference/static_files.html">static_files</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference/status_codes.html">status_code</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="reference/stores/index.html">stores</a><input class="toctree-checkbox" id="toctree-checkbox-26" name="toctree-checkbox-26" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-26"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="reference/stores/base.html">base</a></li>
-<li class="toctree-l3"><a class="reference internal" href="reference/stores/file.html">file</a></li>
-<li class="toctree-l3"><a class="reference internal" href="reference/stores/memory.html">memory</a></li>
-<li class="toctree-l3"><a class="reference internal" href="reference/stores/redis.html">redis</a></li>
-<li class="toctree-l3"><a class="reference internal" href="reference/stores/registry.html">registry</a></li>
-<li class="toctree-l3"><a class="reference internal" href="reference/stores/valkey.html">valkey</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="reference/template.html">template</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference/testing.html">testing</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference/types.html">types</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference/typing.html">typing</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="benchmarks.html">Benchmarks</a></li>
-</ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Guides</span></p>
-<ul class="nav bd-sidenav">
-<li class="toctree-l1 has-children"><a class="reference internal" href="migration/index.html">Migrating to Litestar</a><input class="toctree-checkbox" id="toctree-checkbox-27" name="toctree-checkbox-27" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-27"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="migration/flask.html">From Flask</a></li>
-<li class="toctree-l2"><a class="reference internal" href="migration/fastapi.html">From Starlette / FastAPI</a></li>
-</ul>
-</li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="topics/index.html">Topics</a><input class="toctree-checkbox" id="toctree-checkbox-28" name="toctree-checkbox-28" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-28"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="topics/sync-vs-async.html">Sync vs. Async</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="topics/deployment/index.html">Deployment</a><input class="toctree-checkbox" id="toctree-checkbox-29" name="toctree-checkbox-29" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-29"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="topics/deployment/nginx-unit.html">NGINX Unit</a></li>
-<li class="toctree-l3"><a class="reference internal" href="topics/deployment/manually-with-asgi-server.html">Manually with ASGI server</a></li>
-<li class="toctree-l3"><a class="reference internal" href="topics/deployment/docker.html">Docker</a></li>
-<li class="toctree-l3"><a class="reference internal" href="topics/deployment/supervisor.html">Supervisor (Linux)</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="tutorials/index.html">Tutorials</a><input class="toctree-checkbox" id="toctree-checkbox-30" name="toctree-checkbox-30" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-30"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l2 has-children"><a class="reference internal" href="tutorials/todo-app/index.html">Developing a basic TODO application</a><input class="toctree-checkbox" id="toctree-checkbox-31" name="toctree-checkbox-31" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-31"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="tutorials/todo-app/0-application-basics.html">Application basics</a></li>
-<li class="toctree-l3"><a class="reference internal" href="tutorials/todo-app/1-accessing-the-list.html">Accessing the list</a></li>
-<li class="toctree-l3"><a class="reference internal" href="tutorials/todo-app/2-interacting-with-the-list.html">Making the list interactive</a></li>
-<li class="toctree-l3"><a class="reference internal" href="tutorials/todo-app/3-assembling-the-app.html">Recap and assembling the final application</a></li>
-</ul>
-</li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="tutorials/sqlalchemy/index.html">Improving the TODO app with SQLAlchemy</a><input class="toctree-checkbox" id="toctree-checkbox-32" name="toctree-checkbox-32" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-32"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="tutorials/sqlalchemy/0-introduction.html">Introduction</a></li>
-<li class="toctree-l3"><a class="reference internal" href="tutorials/sqlalchemy/1-provide-session-with-di.html">Providing the session with DI</a></li>
-<li class="toctree-l3"><a class="reference internal" href="tutorials/sqlalchemy/2-serialization-plugin.html">Using the serialization plugin</a></li>
-<li class="toctree-l3"><a class="reference internal" href="tutorials/sqlalchemy/3-init-plugin.html">Using the init plugin</a></li>
-<li class="toctree-l3"><a class="reference internal" href="tutorials/sqlalchemy/4-final-touches-and-recap.html">Final touches and recap</a></li>
-</ul>
-</li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="tutorials/dto-tutorial/index.html">Data Transfer Object Tutorial</a><input class="toctree-checkbox" id="toctree-checkbox-33" name="toctree-checkbox-33" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-33"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="tutorials/dto-tutorial/01-simple-dto-exclude.html">Our first DTO</a></li>
-<li class="toctree-l3"><a class="reference internal" href="tutorials/dto-tutorial/02-nested-exclude.html">Excluding from nested models</a></li>
-<li class="toctree-l3"><a class="reference internal" href="tutorials/dto-tutorial/03-nested-collection-exclude.html">Excluding from collections of nested models</a></li>
-<li class="toctree-l3"><a class="reference internal" href="tutorials/dto-tutorial/04-max-nested-depth.html">Max nested depth</a></li>
-<li class="toctree-l3"><a class="reference internal" href="tutorials/dto-tutorial/05-renaming-fields.html">Renaming fields</a></li>
-<li class="toctree-l3"><a class="reference internal" href="tutorials/dto-tutorial/06-receiving-data.html">Receiving data</a></li>
-<li class="toctree-l3"><a class="reference internal" href="tutorials/dto-tutorial/07-read-only-fields.html">Read only fields</a></li>
-<li class="toctree-l3"><a class="reference internal" href="tutorials/dto-tutorial/08-dto-data.html">Accessing the data</a></li>
-<li class="toctree-l3"><a class="reference internal" href="tutorials/dto-tutorial/09-updating.html">Updating instances</a></li>
-<li class="toctree-l3"><a class="reference internal" href="tutorials/dto-tutorial/10-layered-dto-declarations.html">Declaring DTOs on app layers</a></li>
-</ul>
-</li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="tutorials/repository-tutorial/index.html">SQLAlchemy Repository Tutorial</a><input class="toctree-checkbox" id="toctree-checkbox-34" name="toctree-checkbox-34" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-34"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="tutorials/repository-tutorial/01-modelling-and-features.html">Introduction to Database Modelling and Repository Features</a></li>
-
-
-<li class="toctree-l3"><a class="reference internal" href="tutorials/repository-tutorial/02-repository-introduction.html">Interacting with repositories</a></li>
-
-
-<li class="toctree-l3"><a class="reference internal" href="tutorials/repository-tutorial/03-repository-controller.html">Working with Controllers and Repositories</a></li>
-
-<li class="toctree-l3"><a class="reference internal" href="tutorials/repository-tutorial/04-repository-other.html">Adding Additional Features to the Repository</a></li>
-
-
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Contributing</span></p>
-<ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="contribution-guide.html">Contribution Guide</a></li>
-<li class="toctree-l1"><a class="reference external" href="https://github.com/search?q=user%3Alitestar-org+state%3Aopen+label%3A%22good+first+issue%22+++no%3Aassignee+&amp;type=issues">Available Issues</a></li>
-
-</ul>
-</div>
-</nav></div>
-    </div>
-  
   
   <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
   </div>
-  
-  <div id="rtd-footer-container"></div>
 
 
       </div>
       
-      <main id="main-content" class="bd-main">
+      <main id="main-content" class="bd-main" role="main">
         
         
           <div class="bd-content">
             <div class="bd-article-container">
               
-              <div class="bd-header-article"></div>
+              <div class="bd-header-article d-print-none"></div>
               
               
               
                 
 <div id="searchbox"></div>
-                <article class="bd-article" role="main">
+                <article class="bd-article">
                   
   <section id="litestar-library-documentation">
-<h1>Litestar library documentation<a class="headerlink" href="#litestar-library-documentation" title="Permalink to this heading">#</a></h1>
+<h1>Litestar library documentation<a class="headerlink" href="#litestar-library-documentation" title="Link to this heading">#</a></h1>
 <p>Litestar is a powerful, flexible, highly performant, and opinionated ASGI framework.</p>
 <p>The Litestar framework supports <a class="reference internal" href="usage/plugins/index.html"><span class="doc">Plugins</span></a>, ships
 with <a class="reference internal" href="usage/dependency-injection.html"><span class="doc">dependency injection</span></a>, <a class="reference internal" href="usage/security/index.html"><span class="doc">security primitives</span></a>,
 <a class="reference internal" href="usage/openapi/index.html"><span class="doc">OpenAPI schema generation</span></a>, <a class="reference external" href="https://msgpack.org/">MessagePack</a>,
 <a class="reference internal" href="usage/middleware/index.html"><span class="doc">middlewares</span></a>, a great <a class="reference internal" href="usage/cli.html"><span class="doc">CLI</span></a> experience, and much more.</p>
 <section id="installation">
-<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this heading">#</a></h2>
+<h2>Installation<a class="headerlink" href="#installation" title="Link to this heading">#</a></h2>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>litestar
 </pre></div>
 </div>
@@ -1529,33 +1210,29 @@ with <a class="reference internal" href="usage/dependency-injection.html"><span 
 </div>
 <details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
 <summary class="sd-summary-title sd-card-header">
-<span class="sd-summary-icon"><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-star" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M8 .25a.75.75 0 01.673.418l1.882 3.815 4.21.612a.75.75 0 01.416 1.279l-3.046 2.97.719 4.192a.75.75 0 01-1.088.791L8 12.347l-3.766 1.98a.75.75 0 01-1.088-.79l.72-4.194L.818 6.374a.75.75 0 01.416-1.28l4.21-.611L7.327.668A.75.75 0 018 .25zm0 2.445L6.615 5.5a.75.75 0 01-.564.41l-3.097.45 2.24 2.184a.75.75 0 01.216.664l-.528 3.084 2.769-1.456a.75.75 0 01.698 0l2.77 1.456-.53-3.084a.75.75 0 01.216-.664l2.24-2.183-3.096-.45a.75.75 0 01-.564-.41L8 2.694v.001z"></path></svg></span>Extras<div class="sd-summary-down docutils">
-<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-down" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M5.22 8.72a.75.75 0 000 1.06l6.25 6.25a.75.75 0 001.06 0l6.25-6.25a.75.75 0 00-1.06-1.06L12 14.44 6.28 8.72a.75.75 0 00-1.06 0z"></path></svg></div>
-<div class="sd-summary-up docutils">
-<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-up" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M18.78 15.28a.75.75 0 000-1.06l-6.25-6.25a.75.75 0 00-1.06 0l-6.25 6.25a.75.75 0 101.06 1.06L12 9.56l5.72 5.72a.75.75 0 001.06 0z"></path></svg></div>
-</summary><div class="sd-summary-content sd-card-body docutils">
+<span class="sd-summary-icon"><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-star" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 .25a.75.75 0 0 1 .673.418l1.882 3.815 4.21.612a.75.75 0 0 1 .416 1.279l-3.046 2.97.719 4.192a.751.751 0 0 1-1.088.791L8 12.347l-3.766 1.98a.75.75 0 0 1-1.088-.79l.72-4.194L.818 6.374a.75.75 0 0 1 .416-1.28l4.21-.611L7.327.668A.75.75 0 0 1 8 .25Zm0 2.445L6.615 5.5a.75.75 0 0 1-.564.41l-3.097.45 2.24 2.184a.75.75 0 0 1 .216.664l-.528 3.084 2.769-1.456a.75.75 0 0 1 .698 0l2.77 1.456-.53-3.084a.75.75 0 0 1 .216-.664l2.24-2.183-3.096-.45a.75.75 0 0 1-.564-.41L8 2.694Z"></path></svg></span><span class="sd-summary-text">Extras</span><span class="sd-summary-state-marker sd-summary-chevron-right"><svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-right" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.72 18.78a.75.75 0 0 1 0-1.06L14.44 12 8.72 6.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018l6.25 6.25a.75.75 0 0 1 0 1.06l-6.25 6.25a.75.75 0 0 1-1.06 0Z"></path></svg></span></summary><div class="sd-summary-content sd-card-body docutils">
 <dl>
-<dt><a class="reference external" href="https://docs.pydantic.dev/latest/">Pydantic</a></dt><dd><p class="sd-card-text"><code class="code docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">litestar[pydantic]</span></code></p>
+<dt><a class="reference external" href="https://docs.pydantic.dev/latest/">Pydantic</a></dt><dd><p class="sd-card-text"><code class="code docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">'litestar[pydantic]'</span></code></p>
 </dd>
-<dt><a class="reference external" href="https://www.attrs.org">Attrs</a></dt><dd><p class="sd-card-text"><code class="code docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">litestar[attrs]</span></code></p>
+<dt><a class="reference external" href="https://www.attrs.org">Attrs</a></dt><dd><p class="sd-card-text"><code class="code docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">'litestar[attrs]'</span></code></p>
 </dd>
-<dt><a class="reference internal" href="usage/middleware/builtin-middleware.html#brotli"><span class="std std-ref">Brotli Compression Middleware</span></a>:</dt><dd><p class="sd-card-text"><code class="code docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">litestar[brotli]</span></code></p>
+<dt><a class="reference internal" href="usage/middleware/builtin-middleware.html#brotli"><span class="std std-ref">Brotli Compression Middleware</span></a>:</dt><dd><p class="sd-card-text"><code class="code docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">'litestar[brotli]'</span></code></p>
 </dd>
-<dt><a class="reference internal" href="usage/middleware/builtin-middleware.html#client-side-sessions"><span class="std std-ref">Cookie Based Sessions</span></a></dt><dd><p class="sd-card-text"><code class="code docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">litestar[cryptography]</span></code></p>
+<dt><a class="reference internal" href="usage/middleware/builtin-middleware.html#client-side-sessions"><span class="std std-ref">Cookie Based Sessions</span></a></dt><dd><p class="sd-card-text"><code class="code docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">'litestar[cryptography]'</span></code></p>
 </dd>
-<dt><a class="reference internal" href="usage/security/jwt.html"><span class="doc">JWT</span></a></dt><dd><p class="sd-card-text"><code class="code docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">litestar[jwt]</span></code></p>
+<dt><a class="reference internal" href="usage/security/jwt.html"><span class="doc">JWT</span></a></dt><dd><p class="sd-card-text"><code class="code docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">'litestar[jwt]'</span></code></p>
 </dd>
-<dt><a class="reference internal" href="usage/stores.html"><span class="doc">RedisStore</span></a></dt><dd><p class="sd-card-text"><code class="code docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">litestar[redis]</span></code></p>
+<dt><a class="reference internal" href="usage/stores.html"><span class="doc">RedisStore</span></a></dt><dd><p class="sd-card-text"><code class="code docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">'litestar[redis]'</span></code></p>
 </dd>
-<dt><a class="reference internal" href="usage/logging.html#using-picologging"><span class="std std-ref">Picologging</span></a></dt><dd><p class="sd-card-text"><code class="code docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">litestar[picologging]</span></code></p>
+<dt><a class="reference internal" href="usage/logging.html#using-picologging"><span class="std std-ref">Picologging</span></a></dt><dd><p class="sd-card-text"><code class="code docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">'litestar[picologging]'</span></code></p>
 </dd>
-<dt><a class="reference internal" href="usage/logging.html#using-structlog"><span class="std std-ref">StructLog</span></a></dt><dd><p class="sd-card-text"><code class="code docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">litestar[structlog]</span></code></p>
+<dt><a class="reference internal" href="usage/logging.html#using-structlog"><span class="std std-ref">StructLog</span></a></dt><dd><p class="sd-card-text"><code class="code docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">'litestar[structlog]'</span></code></p>
 </dd>
-<dt><a class="reference internal" href="usage/metrics/prometheus.html"><span class="doc">Prometheus Instrumentation</span></a></dt><dd><p class="sd-card-text"><code class="code docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">litestar[prometheus]</span></code></p>
+<dt><a class="reference internal" href="usage/metrics/prometheus.html"><span class="doc">Prometheus Instrumentation</span></a></dt><dd><p class="sd-card-text"><code class="code docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">'litestar[prometheus]'</span></code></p>
 </dd>
-<dt><a class="reference internal" href="usage/metrics/open-telemetry.html"><span class="doc">Open Telemetry Instrumentation</span></a></dt><dd><p class="sd-card-text"><code class="code docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">litestar[opentelemetry]</span></code></p>
+<dt><a class="reference internal" href="usage/metrics/open-telemetry.html"><span class="doc">Open Telemetry Instrumentation</span></a></dt><dd><p class="sd-card-text"><code class="code docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">'litestar[opentelemetry]'</span></code></p>
 </dd>
-<dt><a class="reference internal" href="usage/databases/sqlalchemy/index.html"><span class="doc">SQLAlchemy</span></a></dt><dd><p class="sd-card-text"><code class="code docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">litestar[sqlalchemy]</span></code></p>
+<dt><a class="reference internal" href="usage/databases/sqlalchemy/index.html"><span class="doc">SQLAlchemy</span></a></dt><dd><p class="sd-card-text"><code class="code docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">'litestar[sqlalchemy]'</span></code></p>
 </dd>
 <dt><a class="reference internal" href="usage/cli.html"><span class="doc">CLI</span></a></dt><dd><div class="deprecated">
 <p class="sd-card-text"><span class="versionmodified deprecated">Deprecated since version 2.1.1: </span>The <code class="docutils literal notranslate"><span class="pre">litestar</span></code> base installation now includes the CLI dependencies and this group is no longer required
@@ -1563,15 +1240,15 @@ to use the CLI.
 If you need the optional CLI dependencies, install the <code class="docutils literal notranslate"><span class="pre">standard</span></code> group instead.
 <strong>Will be removed in 3.0</strong></p>
 </div>
-<p class="sd-card-text"><code class="code docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">litestar[cli]</span></code></p>
+<p class="sd-card-text"><code class="code docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">'litestar[cli]'</span></code></p>
 </dd>
-<dt><a class="reference internal" href="usage/templating.html"><span class="doc">Jinja Templating</span></a></dt><dd><p class="sd-card-text"><code class="code docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">litestar[jinja]</span></code></p>
+<dt><a class="reference internal" href="usage/templating.html"><span class="doc">Jinja Templating</span></a></dt><dd><p class="sd-card-text"><code class="code docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">'litestar[jinja]'</span></code></p>
 </dd>
-<dt><a class="reference internal" href="usage/templating.html"><span class="doc">Mako Templating</span></a></dt><dd><p class="sd-card-text"><code class="code docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">litestar[mako]</span></code></p>
+<dt><a class="reference internal" href="usage/templating.html"><span class="doc">Mako Templating</span></a></dt><dd><p class="sd-card-text"><code class="code docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">'litestar[mako]'</span></code></p>
 </dd>
-<dt>Standard Installation (includes Uvicorn and Jinja2 templating):</dt><dd><p class="sd-card-text"><code class="code docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">litestar[standard]</span></code></p>
+<dt>Standard Installation (includes Uvicorn and Jinja2 templating):</dt><dd><p class="sd-card-text"><code class="code docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">'litestar[standard]'</span></code></p>
 </dd>
-<dt>All Extras:</dt><dd><p class="sd-card-text"><code class="code docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">litestar[full]</span></code></p>
+<dt>All Extras:</dt><dd><p class="sd-card-text"><code class="code docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">'litestar[full]'</span></code></p>
 </dd>
 </dl>
 <div class="admonition note">
@@ -1581,19 +1258,19 @@ If you need the optional CLI dependencies, install the <code class="docutils lit
 </div>
 </details></section>
 <section id="minimal-example">
-<span id="id1"></span><h2>Minimal Example<a class="headerlink" href="#minimal-example" title="Permalink to this heading">#</a></h2>
+<span id="id1"></span><h2>Minimal Example<a class="headerlink" href="#minimal-example" title="Link to this heading">#</a></h2>
 <p>At a minimum, make sure you have installed <code class="docutils literal notranslate"><span class="pre">litestar[standard]</span></code>, which includes uvicorn.</p>
 <p>First, create a file named <code class="docutils literal notranslate"><span class="pre">app.py</span></code> with the following contents:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
 
 
 <span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
-<span class="k">async</span> <span class="k">def</span> <span class="nf">index</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">index</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
     <span class="k">return</span> <span class="s2">&quot;Hello, world!&quot;</span>
 
 
 <span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/books/{book_id:int}&quot;</span><span class="p">)</span>
-<span class="k">async</span> <span class="k">def</span> <span class="nf">get_book</span><span class="p">(</span><span class="n">book_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_book</span><span class="p">(</span><span class="n">book_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
     <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;book_id&quot;</span><span class="p">:</span> <span class="n">book_id</span><span class="p">}</span>
 
 
@@ -1628,7 +1305,7 @@ you should see the responses of your two endpoints:</p>
 <p>You can check out a more in-depth tutorial in the <a class="reference internal" href="tutorials/todo-app/index.html"><span class="doc">Developing a basic TODO application</span></a> section!</p>
 </section>
 <section id="sponsors">
-<h2>Sponsors<a class="headerlink" href="#sponsors" title="Permalink to this heading">#</a></h2>
+<h2>Sponsors<a class="headerlink" href="#sponsors" title="Link to this heading">#</a></h2>
 <p>Litestar is a community-driven open-source initiative that thrives on the generous contributions of our sponsors,
 enabling us to pursue innovative developments.</p>
 <p>A huge thank you to our current sponsors:</p>
@@ -1651,12 +1328,12 @@ and <a class="reference external" href="https://opencollective.com/litestar">Ope
 <p>Also, exclusively with <a class="reference external" href="https://polar.sh/litestar-org">Polar</a>, you can engage in pledge-based sponsorships.</p>
 </section>
 <section id="expanded-example">
-<h2>Expanded Example<a class="headerlink" href="#expanded-example" title="Permalink to this heading">#</a></h2>
+<h2>Expanded Example<a class="headerlink" href="#expanded-example" title="Link to this heading">#</a></h2>
 <p><strong>Define your data model</strong> using pydantic or any library based on it (for example ormar, beanie, SQLModel):</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">UUID4</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">UUID4</span>
 
 
-<span class="k">class</span> <span class="nc">User</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">User</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
     <span class="n">first_name</span><span class="p">:</span> <span class="nb">str</span>
     <span class="n">last_name</span><span class="p">:</span> <span class="nb">str</span>
     <span class="nb">id</span><span class="p">:</span> <span class="n">UUID4</span>
@@ -1664,103 +1341,103 @@ and <a class="reference external" href="https://opencollective.com/litestar">Ope
 </div>
 <p>You can also use dataclasses (standard library and Pydantic),
 <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.TypedDict" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">typing.TypedDict</span></code></a>, or <a class="reference external" href="https://jcristharif.com/msgspec/api.html#msgspec.Struct" title="(in msgspec)"><code class="xref py py-class docutils literal notranslate"><span class="pre">msgspec.Struct</span></code></a>.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">uuid</span> <span class="kn">import</span> <span class="n">UUID</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">uuid</span><span class="w"> </span><span class="kn">import</span> <span class="n">UUID</span>
 
-<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
-<span class="kn">from</span> <span class="nn">litestar.dto</span> <span class="kn">import</span> <span class="n">DTOConfig</span><span class="p">,</span> <span class="n">DataclassDTO</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">litestar.dto</span><span class="w"> </span><span class="kn">import</span> <span class="n">DTOConfig</span><span class="p">,</span> <span class="n">DataclassDTO</span>
 
 
 <span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">User</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">User</span><span class="p">:</span>
     <span class="n">first_name</span><span class="p">:</span> <span class="nb">str</span>
     <span class="n">last_name</span><span class="p">:</span> <span class="nb">str</span>
     <span class="nb">id</span><span class="p">:</span> <span class="n">UUID</span>
 
 
-<span class="k">class</span> <span class="nc">PartialUserDTO</span><span class="p">(</span><span class="n">DataclassDTO</span><span class="p">[</span><span class="n">User</span><span class="p">]):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">PartialUserDTO</span><span class="p">(</span><span class="n">DataclassDTO</span><span class="p">[</span><span class="n">User</span><span class="p">]):</span>
     <span class="n">config</span> <span class="o">=</span> <span class="n">DTOConfig</span><span class="p">(</span><span class="n">exclude</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">},</span> <span class="n">partial</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 <p><strong>Define a Controller for your data model:</strong></p>
 <div class="sd-tab-set docutils">
 <input id="sd-tab-item-0" name="sd-tab-set-0" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-0">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="3.8" for="sd-tab-item-0">
 Python 3.8+</label><div class="sd-tab-content docutils">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span>
 
-<span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Controller</span><span class="p">,</span> <span class="n">get</span><span class="p">,</span> <span class="n">post</span><span class="p">,</span> <span class="n">put</span><span class="p">,</span> <span class="n">patch</span><span class="p">,</span> <span class="n">delete</span>
-<span class="kn">from</span> <span class="nn">litestar.dto</span> <span class="kn">import</span> <span class="n">DTOData</span>
-<span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">UUID4</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Controller</span><span class="p">,</span> <span class="n">get</span><span class="p">,</span> <span class="n">post</span><span class="p">,</span> <span class="n">put</span><span class="p">,</span> <span class="n">patch</span><span class="p">,</span> <span class="n">delete</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">litestar.dto</span><span class="w"> </span><span class="kn">import</span> <span class="n">DTOData</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">UUID4</span>
 
-<span class="kn">from</span> <span class="nn">my_app.models</span> <span class="kn">import</span> <span class="n">User</span><span class="p">,</span> <span class="n">PartialUserDTO</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">my_app.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">User</span><span class="p">,</span> <span class="n">PartialUserDTO</span>
 
 
-<span class="k">class</span> <span class="nc">UserController</span><span class="p">(</span><span class="n">Controller</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">UserController</span><span class="p">(</span><span class="n">Controller</span><span class="p">):</span>
     <span class="n">path</span> <span class="o">=</span> <span class="s2">&quot;/users&quot;</span>
 
     <span class="nd">@post</span><span class="p">()</span>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">create_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">User</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">User</span><span class="p">:</span> <span class="o">...</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">create_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">User</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">User</span><span class="p">:</span> <span class="o">...</span>
 
     <span class="nd">@get</span><span class="p">()</span>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">list_users</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">User</span><span class="p">]:</span> <span class="o">...</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">list_users</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">User</span><span class="p">]:</span> <span class="o">...</span>
 
     <span class="nd">@patch</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/{user_id:uuid}&quot;</span><span class="p">,</span> <span class="n">dto</span><span class="o">=</span><span class="n">PartialUserDTO</span><span class="p">)</span>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">partial_update_user</span><span class="p">(</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">partial_update_user</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">user_id</span><span class="p">:</span> <span class="n">UUID4</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">DTOData</span><span class="p">[</span><span class="n">User</span><span class="p">]</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">User</span><span class="p">:</span> <span class="o">...</span>
 
     <span class="nd">@put</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/{user_id:uuid}&quot;</span><span class="p">)</span>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">update_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_id</span><span class="p">:</span> <span class="n">UUID4</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">User</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">User</span><span class="p">:</span> <span class="o">...</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">update_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_id</span><span class="p">:</span> <span class="n">UUID4</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">User</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">User</span><span class="p">:</span> <span class="o">...</span>
 
     <span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/{user_id:uuid}&quot;</span><span class="p">)</span>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_id</span><span class="p">:</span> <span class="n">UUID4</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">User</span><span class="p">:</span> <span class="o">...</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_id</span><span class="p">:</span> <span class="n">UUID4</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">User</span><span class="p">:</span> <span class="o">...</span>
 
     <span class="nd">@delete</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/{user_id:uuid}&quot;</span><span class="p">)</span>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">delete_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_id</span><span class="p">:</span> <span class="n">UUID4</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">delete_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_id</span><span class="p">:</span> <span class="n">UUID4</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
 </pre></div>
 </div>
 </div>
 <input checked="checked" id="sd-tab-item-1" name="sd-tab-set-0" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.9" for="sd-tab-item-1">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="3.9" for="sd-tab-item-1">
 Python 3.9+</label><div class="sd-tab-content docutils">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Controller</span><span class="p">,</span> <span class="n">get</span><span class="p">,</span> <span class="n">post</span><span class="p">,</span> <span class="n">put</span><span class="p">,</span> <span class="n">patch</span><span class="p">,</span> <span class="n">delete</span>
-<span class="kn">from</span> <span class="nn">litestar.dto</span> <span class="kn">import</span> <span class="n">DTOData</span>
-<span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">UUID4</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Controller</span><span class="p">,</span> <span class="n">get</span><span class="p">,</span> <span class="n">post</span><span class="p">,</span> <span class="n">put</span><span class="p">,</span> <span class="n">patch</span><span class="p">,</span> <span class="n">delete</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">litestar.dto</span><span class="w"> </span><span class="kn">import</span> <span class="n">DTOData</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">UUID4</span>
 
-<span class="kn">from</span> <span class="nn">my_app.models</span> <span class="kn">import</span> <span class="n">User</span><span class="p">,</span> <span class="n">PartialUserDTO</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">my_app.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">User</span><span class="p">,</span> <span class="n">PartialUserDTO</span>
 
 
-<span class="k">class</span> <span class="nc">UserController</span><span class="p">(</span><span class="n">Controller</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">UserController</span><span class="p">(</span><span class="n">Controller</span><span class="p">):</span>
     <span class="n">path</span> <span class="o">=</span> <span class="s2">&quot;/users&quot;</span>
 
     <span class="nd">@post</span><span class="p">()</span>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">create_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">User</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">User</span><span class="p">:</span> <span class="o">...</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">create_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">User</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">User</span><span class="p">:</span> <span class="o">...</span>
 
     <span class="nd">@get</span><span class="p">()</span>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">list_users</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">User</span><span class="p">]:</span> <span class="o">...</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">list_users</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">User</span><span class="p">]:</span> <span class="o">...</span>
 
     <span class="nd">@patch</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/{user_id:uuid}&quot;</span><span class="p">,</span> <span class="n">dto</span><span class="o">=</span><span class="n">PartialUserDTO</span><span class="p">)</span>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">partial_update_user</span><span class="p">(</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">partial_update_user</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">user_id</span><span class="p">:</span> <span class="n">UUID4</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">DTOData</span><span class="p">[</span><span class="n">User</span><span class="p">]</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">User</span><span class="p">:</span> <span class="o">...</span>
 
     <span class="nd">@put</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/{user_id:uuid}&quot;</span><span class="p">)</span>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">update_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_id</span><span class="p">:</span> <span class="n">UUID4</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">User</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">User</span><span class="p">:</span> <span class="o">...</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">update_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_id</span><span class="p">:</span> <span class="n">UUID4</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">User</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">User</span><span class="p">:</span> <span class="o">...</span>
 
     <span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/{user_id:uuid}&quot;</span><span class="p">)</span>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_id</span><span class="p">:</span> <span class="n">UUID4</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">User</span><span class="p">:</span> <span class="o">...</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_id</span><span class="p">:</span> <span class="n">UUID4</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">User</span><span class="p">:</span> <span class="o">...</span>
 
     <span class="nd">@delete</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/{user_id:uuid}&quot;</span><span class="p">)</span>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">delete_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_id</span><span class="p">:</span> <span class="n">UUID4</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">delete_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_id</span><span class="p">:</span> <span class="n">UUID4</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
 </pre></div>
 </div>
 </div>
 </div>
 <p>When instantiating your app, import your <em>controller</em> into your application’s
 entry-point and pass it to Litestar:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span>
 
-<span class="kn">from</span> <span class="nn">my_app.controllers.user</span> <span class="kn">import</span> <span class="n">UserController</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">my_app.controllers.user</span><span class="w"> </span><span class="kn">import</span> <span class="n">UserController</span>
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">UserController</span><span class="p">])</span>
 </pre></div>
@@ -1771,7 +1448,7 @@ entry-point and pass it to Litestar:</p>
 </div>
 </section>
 <section id="philosophy">
-<h2>Philosophy<a class="headerlink" href="#philosophy" title="Permalink to this heading">#</a></h2>
+<h2>Philosophy<a class="headerlink" href="#philosophy" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p>Litestar is a community-driven project. This means not a single author,
 but rather a core team of maintainers is leading the project, supported by a community
@@ -1787,8 +1464,8 @@ Django” (for example, it will never feature its own ORM), but its scope is not
 </ul>
 </section>
 <section id="feature-comparison-with-similar-frameworks">
-<h2>Feature comparison with similar frameworks<a class="headerlink" href="#feature-comparison-with-similar-frameworks" title="Permalink to this heading">#</a></h2>
-<table class="table">
+<h2>Feature comparison with similar frameworks<a class="headerlink" href="#feature-comparison-with-similar-frameworks" title="Link to this heading">#</a></h2>
+<div class="pst-scrollable-table-container"><table class="table">
 <thead>
 <tr class="row-odd"><th class="head"></th>
 <th class="head"><p>Litestar</p></th>
@@ -1800,45 +1477,45 @@ Django” (for example, it will never feature its own ORM), but its scope is not
 </thead>
 <tbody>
 <tr class="row-even"><td><p>OpenAPI</p></td>
-<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-check" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M13.78 4.22a.75.75 0 010 1.06l-7.25 7.25a.75.75 0 01-1.06 0L2.22 9.28a.75.75 0 011.06-1.06L6 10.94l6.72-6.72a.75.75 0 011.06 0z"></path></svg></p></td>
-<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-check" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M13.78 4.22a.75.75 0 010 1.06l-7.25 7.25a.75.75 0 01-1.06 0L2.22 9.28a.75.75 0 011.06-1.06L6 10.94l6.72-6.72a.75.75 0 011.06 0z"></path></svg></p></td>
-<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-dash" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M2 7.75A.75.75 0 012.75 7h10a.75.75 0 010 1.5h-10A.75.75 0 012 7.75z"></path></svg></p></td>
-<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-dash" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M2 7.75A.75.75 0 012.75 7h10a.75.75 0 010 1.5h-10A.75.75 0 012 7.75z"></path></svg></p></td>
-<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-dash" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M2 7.75A.75.75 0 012.75 7h10a.75.75 0 010 1.5h-10A.75.75 0 012 7.75z"></path></svg></p></td>
+<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-check" viewBox="0 0 16 16" aria-hidden="true"><path d="M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z"></path></svg></p></td>
+<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-check" viewBox="0 0 16 16" aria-hidden="true"><path d="M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z"></path></svg></p></td>
+<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-dash" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 7.75A.75.75 0 0 1 2.75 7h10a.75.75 0 0 1 0 1.5h-10A.75.75 0 0 1 2 7.75Z"></path></svg></p></td>
+<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-dash" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 7.75A.75.75 0 0 1 2.75 7h10a.75.75 0 0 1 0 1.5h-10A.75.75 0 0 1 2 7.75Z"></path></svg></p></td>
+<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-dash" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 7.75A.75.75 0 0 1 2.75 7h10a.75.75 0 0 1 0 1.5h-10A.75.75 0 0 1 2 7.75Z"></path></svg></p></td>
 </tr>
 <tr class="row-odd"><td><p>Automatic API documentation</p></td>
 <td><p>Swagger, ReDoc, Stoplight Elements</p></td>
 <td><p>Swagger, ReDoc</p></td>
-<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-dash" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M2 7.75A.75.75 0 012.75 7h10a.75.75 0 010 1.5h-10A.75.75 0 012 7.75z"></path></svg></p></td>
-<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-dash" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M2 7.75A.75.75 0 012.75 7h10a.75.75 0 010 1.5h-10A.75.75 0 012 7.75z"></path></svg></p></td>
-<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-dash" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M2 7.75A.75.75 0 012.75 7h10a.75.75 0 010 1.5h-10A.75.75 0 012 7.75z"></path></svg></p></td>
+<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-dash" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 7.75A.75.75 0 0 1 2.75 7h10a.75.75 0 0 1 0 1.5h-10A.75.75 0 0 1 2 7.75Z"></path></svg></p></td>
+<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-dash" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 7.75A.75.75 0 0 1 2.75 7h10a.75.75 0 0 1 0 1.5h-10A.75.75 0 0 1 2 7.75Z"></path></svg></p></td>
+<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-dash" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 7.75A.75.75 0 0 1 2.75 7h10a.75.75 0 0 1 0 1.5h-10A.75.75 0 0 1 2 7.75Z"></path></svg></p></td>
 </tr>
 <tr class="row-even"><td><p>Data validation</p></td>
-<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-check" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M13.78 4.22a.75.75 0 010 1.06l-7.25 7.25a.75.75 0 01-1.06 0L2.22 9.28a.75.75 0 011.06-1.06L6 10.94l6.72-6.72a.75.75 0 011.06 0z"></path></svg></p></td>
-<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-check" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M13.78 4.22a.75.75 0 010 1.06l-7.25 7.25a.75.75 0 01-1.06 0L2.22 9.28a.75.75 0 011.06-1.06L6 10.94l6.72-6.72a.75.75 0 011.06 0z"></path></svg></p></td>
-<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-dash" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M2 7.75A.75.75 0 012.75 7h10a.75.75 0 010 1.5h-10A.75.75 0 012 7.75z"></path></svg></p></td>
-<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-dash" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M2 7.75A.75.75 0 012.75 7h10a.75.75 0 010 1.5h-10A.75.75 0 012 7.75z"></path></svg></p></td>
-<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-dash" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M2 7.75A.75.75 0 012.75 7h10a.75.75 0 010 1.5h-10A.75.75 0 012 7.75z"></path></svg></p></td>
+<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-check" viewBox="0 0 16 16" aria-hidden="true"><path d="M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z"></path></svg></p></td>
+<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-check" viewBox="0 0 16 16" aria-hidden="true"><path d="M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z"></path></svg></p></td>
+<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-dash" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 7.75A.75.75 0 0 1 2.75 7h10a.75.75 0 0 1 0 1.5h-10A.75.75 0 0 1 2 7.75Z"></path></svg></p></td>
+<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-dash" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 7.75A.75.75 0 0 1 2.75 7h10a.75.75 0 0 1 0 1.5h-10A.75.75 0 0 1 2 7.75Z"></path></svg></p></td>
+<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-dash" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 7.75A.75.75 0 0 1 2.75 7h10a.75.75 0 0 1 0 1.5h-10A.75.75 0 0 1 2 7.75Z"></path></svg></p></td>
 </tr>
 <tr class="row-odd"><td><p>Dependency Injection</p></td>
-<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-check" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M13.78 4.22a.75.75 0 010 1.06l-7.25 7.25a.75.75 0 01-1.06 0L2.22 9.28a.75.75 0 011.06-1.06L6 10.94l6.72-6.72a.75.75 0 011.06 0z"></path></svg></p></td>
-<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-check" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M13.78 4.22a.75.75 0 010 1.06l-7.25 7.25a.75.75 0 01-1.06 0L2.22 9.28a.75.75 0 011.06-1.06L6 10.94l6.72-6.72a.75.75 0 011.06 0z"></path></svg></p></td>
-<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-dash" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M2 7.75A.75.75 0 012.75 7h10a.75.75 0 010 1.5h-10A.75.75 0 012 7.75z"></path></svg></p></td>
-<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-check" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M13.78 4.22a.75.75 0 010 1.06l-7.25 7.25a.75.75 0 01-1.06 0L2.22 9.28a.75.75 0 011.06-1.06L6 10.94l6.72-6.72a.75.75 0 011.06 0z"></path></svg></p></td>
-<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-dash" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M2 7.75A.75.75 0 012.75 7h10a.75.75 0 010 1.5h-10A.75.75 0 012 7.75z"></path></svg></p></td>
+<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-check" viewBox="0 0 16 16" aria-hidden="true"><path d="M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z"></path></svg></p></td>
+<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-check" viewBox="0 0 16 16" aria-hidden="true"><path d="M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z"></path></svg></p></td>
+<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-dash" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 7.75A.75.75 0 0 1 2.75 7h10a.75.75 0 0 1 0 1.5h-10A.75.75 0 0 1 2 7.75Z"></path></svg></p></td>
+<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-check" viewBox="0 0 16 16" aria-hidden="true"><path d="M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z"></path></svg></p></td>
+<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-dash" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 7.75A.75.75 0 0 1 2.75 7h10a.75.75 0 0 1 0 1.5h-10A.75.75 0 0 1 2 7.75Z"></path></svg></p></td>
 </tr>
 <tr class="row-even"><td><p>Class based routing</p></td>
-<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-check" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M13.78 4.22a.75.75 0 010 1.06l-7.25 7.25a.75.75 0 01-1.06 0L2.22 9.28a.75.75 0 011.06-1.06L6 10.94l6.72-6.72a.75.75 0 011.06 0z"></path></svg></p></td>
+<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-check" viewBox="0 0 16 16" aria-hidden="true"><path d="M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z"></path></svg></p></td>
 <td><p>(Through extension)</p></td>
-<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-check" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M13.78 4.22a.75.75 0 010 1.06l-7.25 7.25a.75.75 0 01-1.06 0L2.22 9.28a.75.75 0 011.06-1.06L6 10.94l6.72-6.72a.75.75 0 011.06 0z"></path></svg></p></td>
-<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-check" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M13.78 4.22a.75.75 0 010 1.06l-7.25 7.25a.75.75 0 01-1.06 0L2.22 9.28a.75.75 0 011.06-1.06L6 10.94l6.72-6.72a.75.75 0 011.06 0z"></path></svg></p></td>
-<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-check" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M13.78 4.22a.75.75 0 010 1.06l-7.25 7.25a.75.75 0 01-1.06 0L2.22 9.28a.75.75 0 011.06-1.06L6 10.94l6.72-6.72a.75.75 0 011.06 0z"></path></svg></p></td>
+<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-check" viewBox="0 0 16 16" aria-hidden="true"><path d="M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z"></path></svg></p></td>
+<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-check" viewBox="0 0 16 16" aria-hidden="true"><path d="M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z"></path></svg></p></td>
+<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-check" viewBox="0 0 16 16" aria-hidden="true"><path d="M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z"></path></svg></p></td>
 </tr>
 <tr class="row-odd"><td><p>ORM integration</p></td>
 <td><p>SQLAlchemy, Tortoise, Piccolo</p></td>
-<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-dash" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M2 7.75A.75.75 0 012.75 7h10a.75.75 0 010 1.5h-10A.75.75 0 012 7.75z"></path></svg></p></td>
-<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-dash" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M2 7.75A.75.75 0 012.75 7h10a.75.75 0 010 1.5h-10A.75.75 0 012 7.75z"></path></svg></p></td>
-<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-dash" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M2 7.75A.75.75 0 012.75 7h10a.75.75 0 010 1.5h-10A.75.75 0 012 7.75z"></path></svg></p></td>
+<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-dash" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 7.75A.75.75 0 0 1 2.75 7h10a.75.75 0 0 1 0 1.5h-10A.75.75 0 0 1 2 7.75Z"></path></svg></p></td>
+<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-dash" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 7.75A.75.75 0 0 1 2.75 7h10a.75.75 0 0 1 0 1.5h-10A.75.75 0 0 1 2 7.75Z"></path></svg></p></td>
+<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-dash" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 7.75A.75.75 0 0 1 2.75 7h10a.75.75 0 0 1 0 1.5h-10A.75.75 0 0 1 2 7.75Z"></path></svg></p></td>
 <td><p>(Through extension)</p></td>
 </tr>
 <tr class="row-even"><td><p>Templating</p></td>
@@ -1849,66 +1526,67 @@ Django” (for example, it will never feature its own ORM), but its scope is not
 <td><p>Jinja</p></td>
 </tr>
 <tr class="row-odd"><td><p>MessagePack</p></td>
-<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-check" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M13.78 4.22a.75.75 0 010 1.06l-7.25 7.25a.75.75 0 01-1.06 0L2.22 9.28a.75.75 0 011.06-1.06L6 10.94l6.72-6.72a.75.75 0 011.06 0z"></path></svg></p></td>
-<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-dash" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M2 7.75A.75.75 0 012.75 7h10a.75.75 0 010 1.5h-10A.75.75 0 012 7.75z"></path></svg></p></td>
-<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-dash" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M2 7.75A.75.75 0 012.75 7h10a.75.75 0 010 1.5h-10A.75.75 0 012 7.75z"></path></svg></p></td>
-<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-dash" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M2 7.75A.75.75 0 012.75 7h10a.75.75 0 010 1.5h-10A.75.75 0 012 7.75z"></path></svg></p></td>
-<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-dash" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M2 7.75A.75.75 0 012.75 7h10a.75.75 0 010 1.5h-10A.75.75 0 012 7.75z"></path></svg></p></td>
+<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-check" viewBox="0 0 16 16" aria-hidden="true"><path d="M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z"></path></svg></p></td>
+<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-dash" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 7.75A.75.75 0 0 1 2.75 7h10a.75.75 0 0 1 0 1.5h-10A.75.75 0 0 1 2 7.75Z"></path></svg></p></td>
+<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-dash" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 7.75A.75.75 0 0 1 2.75 7h10a.75.75 0 0 1 0 1.5h-10A.75.75 0 0 1 2 7.75Z"></path></svg></p></td>
+<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-dash" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 7.75A.75.75 0 0 1 2.75 7h10a.75.75 0 0 1 0 1.5h-10A.75.75 0 0 1 2 7.75Z"></path></svg></p></td>
+<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-dash" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 7.75A.75.75 0 0 1 2.75 7h10a.75.75 0 0 1 0 1.5h-10A.75.75 0 0 1 2 7.75Z"></path></svg></p></td>
 </tr>
 <tr class="row-even"><td><p>CORS</p></td>
-<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-check" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M13.78 4.22a.75.75 0 010 1.06l-7.25 7.25a.75.75 0 01-1.06 0L2.22 9.28a.75.75 0 011.06-1.06L6 10.94l6.72-6.72a.75.75 0 011.06 0z"></path></svg></p></td>
-<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-check" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M13.78 4.22a.75.75 0 010 1.06l-7.25 7.25a.75.75 0 01-1.06 0L2.22 9.28a.75.75 0 011.06-1.06L6 10.94l6.72-6.72a.75.75 0 011.06 0z"></path></svg></p></td>
-<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-check" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M13.78 4.22a.75.75 0 010 1.06l-7.25 7.25a.75.75 0 01-1.06 0L2.22 9.28a.75.75 0 011.06-1.06L6 10.94l6.72-6.72a.75.75 0 011.06 0z"></path></svg></p></td>
-<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-check" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M13.78 4.22a.75.75 0 010 1.06l-7.25 7.25a.75.75 0 01-1.06 0L2.22 9.28a.75.75 0 011.06-1.06L6 10.94l6.72-6.72a.75.75 0 011.06 0z"></path></svg></p></td>
+<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-check" viewBox="0 0 16 16" aria-hidden="true"><path d="M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z"></path></svg></p></td>
+<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-check" viewBox="0 0 16 16" aria-hidden="true"><path d="M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z"></path></svg></p></td>
+<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-check" viewBox="0 0 16 16" aria-hidden="true"><path d="M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z"></path></svg></p></td>
+<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-check" viewBox="0 0 16 16" aria-hidden="true"><path d="M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z"></path></svg></p></td>
 <td><p>(Through extension)</p></td>
 </tr>
 <tr class="row-odd"><td><p>CSRF</p></td>
-<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-check" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M13.78 4.22a.75.75 0 010 1.06l-7.25 7.25a.75.75 0 01-1.06 0L2.22 9.28a.75.75 0 011.06-1.06L6 10.94l6.72-6.72a.75.75 0 011.06 0z"></path></svg></p></td>
-<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-dash" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M2 7.75A.75.75 0 012.75 7h10a.75.75 0 010 1.5h-10A.75.75 0 012 7.75z"></path></svg></p></td>
-<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-dash" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M2 7.75A.75.75 0 012.75 7h10a.75.75 0 010 1.5h-10A.75.75 0 012 7.75z"></path></svg></p></td>
-<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-dash" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M2 7.75A.75.75 0 012.75 7h10a.75.75 0 010 1.5h-10A.75.75 0 012 7.75z"></path></svg></p></td>
-<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-dash" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M2 7.75A.75.75 0 012.75 7h10a.75.75 0 010 1.5h-10A.75.75 0 012 7.75z"></path></svg></p></td>
+<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-check" viewBox="0 0 16 16" aria-hidden="true"><path d="M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z"></path></svg></p></td>
+<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-dash" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 7.75A.75.75 0 0 1 2.75 7h10a.75.75 0 0 1 0 1.5h-10A.75.75 0 0 1 2 7.75Z"></path></svg></p></td>
+<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-dash" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 7.75A.75.75 0 0 1 2.75 7h10a.75.75 0 0 1 0 1.5h-10A.75.75 0 0 1 2 7.75Z"></path></svg></p></td>
+<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-dash" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 7.75A.75.75 0 0 1 2.75 7h10a.75.75 0 0 1 0 1.5h-10A.75.75 0 0 1 2 7.75Z"></path></svg></p></td>
+<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-dash" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 7.75A.75.75 0 0 1 2.75 7h10a.75.75 0 0 1 0 1.5h-10A.75.75 0 0 1 2 7.75Z"></path></svg></p></td>
 </tr>
 <tr class="row-even"><td><p>Rate-limiting</p></td>
-<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-check" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M13.78 4.22a.75.75 0 010 1.06l-7.25 7.25a.75.75 0 01-1.06 0L2.22 9.28a.75.75 0 011.06-1.06L6 10.94l6.72-6.72a.75.75 0 011.06 0z"></path></svg></p></td>
-<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-dash" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M2 7.75A.75.75 0 012.75 7h10a.75.75 0 010 1.5h-10A.75.75 0 012 7.75z"></path></svg></p></td>
-<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-dash" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M2 7.75A.75.75 0 012.75 7h10a.75.75 0 010 1.5h-10A.75.75 0 012 7.75z"></path></svg></p></td>
+<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-check" viewBox="0 0 16 16" aria-hidden="true"><path d="M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z"></path></svg></p></td>
+<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-dash" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 7.75A.75.75 0 0 1 2.75 7h10a.75.75 0 0 1 0 1.5h-10A.75.75 0 0 1 2 7.75Z"></path></svg></p></td>
+<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-dash" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 7.75A.75.75 0 0 1 2.75 7h10a.75.75 0 0 1 0 1.5h-10A.75.75 0 0 1 2 7.75Z"></path></svg></p></td>
 <td><p>(Through extension)</p></td>
-<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-dash" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M2 7.75A.75.75 0 012.75 7h10a.75.75 0 010 1.5h-10A.75.75 0 012 7.75z"></path></svg></p></td>
+<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-dash" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 7.75A.75.75 0 0 1 2.75 7h10a.75.75 0 0 1 0 1.5h-10A.75.75 0 0 1 2 7.75Z"></path></svg></p></td>
 </tr>
 <tr class="row-odd"><td><p>JWT</p></td>
-<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-check" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M13.78 4.22a.75.75 0 010 1.06l-7.25 7.25a.75.75 0 01-1.06 0L2.22 9.28a.75.75 0 011.06-1.06L6 10.94l6.72-6.72a.75.75 0 011.06 0z"></path></svg></p></td>
-<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-dash" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M2 7.75A.75.75 0 012.75 7h10a.75.75 0 010 1.5h-10A.75.75 0 012 7.75z"></path></svg></p></td>
-<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-dash" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M2 7.75A.75.75 0 012.75 7h10a.75.75 0 010 1.5h-10A.75.75 0 012 7.75z"></path></svg></p></td>
-<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-dash" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M2 7.75A.75.75 0 012.75 7h10a.75.75 0 010 1.5h-10A.75.75 0 012 7.75z"></path></svg></p></td>
-<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-dash" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M2 7.75A.75.75 0 012.75 7h10a.75.75 0 010 1.5h-10A.75.75 0 012 7.75z"></path></svg></p></td>
+<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-check" viewBox="0 0 16 16" aria-hidden="true"><path d="M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z"></path></svg></p></td>
+<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-dash" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 7.75A.75.75 0 0 1 2.75 7h10a.75.75 0 0 1 0 1.5h-10A.75.75 0 0 1 2 7.75Z"></path></svg></p></td>
+<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-dash" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 7.75A.75.75 0 0 1 2.75 7h10a.75.75 0 0 1 0 1.5h-10A.75.75 0 0 1 2 7.75Z"></path></svg></p></td>
+<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-dash" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 7.75A.75.75 0 0 1 2.75 7h10a.75.75 0 0 1 0 1.5h-10A.75.75 0 0 1 2 7.75Z"></path></svg></p></td>
+<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-dash" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 7.75A.75.75 0 0 1 2.75 7h10a.75.75 0 0 1 0 1.5h-10A.75.75 0 0 1 2 7.75Z"></path></svg></p></td>
 </tr>
 <tr class="row-even"><td><p>Sessions</p></td>
-<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-check" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M13.78 4.22a.75.75 0 010 1.06l-7.25 7.25a.75.75 0 01-1.06 0L2.22 9.28a.75.75 0 011.06-1.06L6 10.94l6.72-6.72a.75.75 0 011.06 0z"></path></svg></p></td>
+<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-check" viewBox="0 0 16 16" aria-hidden="true"><path d="M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z"></path></svg></p></td>
 <td><p>Client-side</p></td>
 <td><p>Client-side</p></td>
-<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-dash" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M2 7.75A.75.75 0 012.75 7h10a.75.75 0 010 1.5h-10A.75.75 0 012 7.75z"></path></svg></p></td>
+<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-dash" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 7.75A.75.75 0 0 1 2.75 7h10a.75.75 0 0 1 0 1.5h-10A.75.75 0 0 1 2 7.75Z"></path></svg></p></td>
 <td><p>Client-side</p></td>
 </tr>
 <tr class="row-odd"><td><p>Authentication</p></td>
 <td><p>JWT / Session based</p></td>
-<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-dash" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M2 7.75A.75.75 0 012.75 7h10a.75.75 0 010 1.5h-10A.75.75 0 012 7.75z"></path></svg></p></td>
-<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-dash" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M2 7.75A.75.75 0 012.75 7h10a.75.75 0 010 1.5h-10A.75.75 0 012 7.75z"></path></svg></p></td>
-<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-dash" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M2 7.75A.75.75 0 012.75 7h10a.75.75 0 010 1.5h-10A.75.75 0 012 7.75z"></path></svg></p></td>
-<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-dash" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M2 7.75A.75.75 0 012.75 7h10a.75.75 0 010 1.5h-10A.75.75 0 012 7.75z"></path></svg></p></td>
+<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-dash" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 7.75A.75.75 0 0 1 2.75 7h10a.75.75 0 0 1 0 1.5h-10A.75.75 0 0 1 2 7.75Z"></path></svg></p></td>
+<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-dash" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 7.75A.75.75 0 0 1 2.75 7h10a.75.75 0 0 1 0 1.5h-10A.75.75 0 0 1 2 7.75Z"></path></svg></p></td>
+<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-dash" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 7.75A.75.75 0 0 1 2.75 7h10a.75.75 0 0 1 0 1.5h-10A.75.75 0 0 1 2 7.75Z"></path></svg></p></td>
+<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-dash" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 7.75A.75.75 0 0 1 2.75 7h10a.75.75 0 0 1 0 1.5h-10A.75.75 0 0 1 2 7.75Z"></path></svg></p></td>
 </tr>
 <tr class="row-even"><td><p>Caching</p></td>
-<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-check" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M13.78 4.22a.75.75 0 010 1.06l-7.25 7.25a.75.75 0 01-1.06 0L2.22 9.28a.75.75 0 011.06-1.06L6 10.94l6.72-6.72a.75.75 0 011.06 0z"></path></svg></p></td>
-<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-dash" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M2 7.75A.75.75 0 012.75 7h10a.75.75 0 010 1.5h-10A.75.75 0 012 7.75z"></path></svg></p></td>
-<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-dash" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M2 7.75A.75.75 0 012.75 7h10a.75.75 0 010 1.5h-10A.75.75 0 012 7.75z"></path></svg></p></td>
-<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-dash" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M2 7.75A.75.75 0 012.75 7h10a.75.75 0 010 1.5h-10A.75.75 0 012 7.75z"></path></svg></p></td>
-<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-dash" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M2 7.75A.75.75 0 012.75 7h10a.75.75 0 010 1.5h-10A.75.75 0 012 7.75z"></path></svg></p></td>
+<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-check" viewBox="0 0 16 16" aria-hidden="true"><path d="M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z"></path></svg></p></td>
+<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-dash" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 7.75A.75.75 0 0 1 2.75 7h10a.75.75 0 0 1 0 1.5h-10A.75.75 0 0 1 2 7.75Z"></path></svg></p></td>
+<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-dash" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 7.75A.75.75 0 0 1 2.75 7h10a.75.75 0 0 1 0 1.5h-10A.75.75 0 0 1 2 7.75Z"></path></svg></p></td>
+<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-dash" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 7.75A.75.75 0 0 1 2.75 7h10a.75.75 0 0 1 0 1.5h-10A.75.75 0 0 1 2 7.75Z"></path></svg></p></td>
+<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-dash" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 7.75A.75.75 0 0 1 2.75 7h10a.75.75 0 0 1 0 1.5h-10A.75.75 0 0 1 2 7.75Z"></path></svg></p></td>
 </tr>
 </tbody>
 </table>
+</div>
 </section>
 <section id="example-applications">
-<h2>Example Applications<a class="headerlink" href="#example-applications" title="Permalink to this heading">#</a></h2>
+<h2>Example Applications<a class="headerlink" href="#example-applications" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p><a class="reference external" href="https://github.com/litestar-org/litestar-fullstack">litestar-fullstack</a> : A fully-capable, production-ready fullstack
 Litestar web application configured with best practices. It includes SQLAlchemy 2.0, VueJS, <a class="reference external" href="https://vitejs.dev/">Vite</a>,
@@ -1936,7 +1614,7 @@ Great for testing and POC work.</p></li>
               
               
               
-                <footer class="prev-next-footer">
+                <footer class="prev-next-footer d-print-none">
                   
 <div class="prev-next-area">
     <a class="right-next"
@@ -1955,14 +1633,17 @@ Great for testing and POC work.</p></li>
             
             
               
-                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
 
   <div class="sidebar-secondary-item">
-
-  <div class="page-toc tocsection onthispage">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
     <i class="fa-solid fa-list"></i> On this page
   </div>
-  <nav class="bd-toc-nav page-toc">
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#installation">Installation</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#minimal-example">Minimal Example</a></li>
@@ -1989,8 +1670,8 @@ Great for testing and POC work.</p></li>
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="_static/scripts/bootstrap.js?digest=5b4479735964841361fd"></script>
-<script src="_static/scripts/pydata-sphinx-theme.js?digest=5b4479735964841361fd"></script>
+  <script defer src="_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -2010,7 +1691,7 @@ Great for testing and POC work.</p></li>
         <div class="footer-item">
 
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.1.2.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
     <br/>
   </p>
 </div>
@@ -2023,7 +1704,8 @@ Great for testing and POC work.</p></li>
       
         <div class="footer-item">
 <p class="theme-version">
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.14.4.
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
 </p></div>
       
     </div>

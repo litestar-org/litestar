@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 
 
-<html lang="en" data-content_root="" >
+<html lang="en" data-content_root="../../" >
 
   <head>
     <meta charset="utf-8" />
@@ -14,39 +14,42 @@
   
   <script data-cfasync="false">
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
-    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
   </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../_static/styles/theme.css?digest=5b4479735964841361fd" rel="stylesheet" />
-<link href="../../_static/styles/bootstrap.css?digest=5b4479735964841361fd" rel="stylesheet" />
-<link href="../../_static/styles/pydata-sphinx-theme.css?digest=5b4479735964841361fd" rel="stylesheet" />
+  <link href="../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
 
-  
-  <link href="../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=5b4479735964841361fd" rel="stylesheet" />
-  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
-
-    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../_static/sphinx_paramlinks.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/style.css?v=b5051ef4" />
     <link rel="stylesheet" type="text/css" href="../../_static/litestar-sphinx-theme.css?v=9e3812bb" />
   
+  <!-- So that users can add custom icons -->
+  <script src="../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=5b4479735964841361fd" />
-<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=5b4479735964841361fd" />
-  <script src="../../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=5b4479735964841361fd"></script>
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=a5ad1038"></script>
-    <script src="../../_static/doctools.js?v=888ff710"></script>
-    <script src="../../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../../_static/documentation_options.js?v=4f3eadab"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../_static/copybutton.js?v=f281be69"></script>
     <script src="../../_static/litestar-theme.js?v=ab2dcc9e"></script>
-    <script src="../../_static/design-tabs.js?v=36754332"></script>
+    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'usage/security/abstract-authentication-middleware';</script>
     <script src="../../_static/versioning.js?v=68b42869"></script>
     <link rel="icon" href="../../_static/favicon.png"/>
@@ -56,6 +59,7 @@
     <link rel="prev" title="Security" href="index.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
   </head>
   
   
@@ -63,32 +67,16 @@
 
   
   
-  <a class="skip-link" href="#main-content">Skip to main content</a>
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
   
   <div id="pst-scroll-pixel-helper"></div>
-
   
   <button type="button" class="btn rounded-pill" id="pst-back-to-top">
-    <i class="fa-solid fa-arrow-up"></i>
-    Back to top
-  </button>
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
 
   
-  <input type="checkbox"
-          class="sidebar-toggle"
-          name="__primary"
-          id="__primary"/>
-  <label class="overlay overlay-primary" for="__primary"></label>
-  
-  <input type="checkbox"
-          class="sidebar-toggle"
-          name="__secondary"
-          id="__secondary"/>
-  <label class="overlay overlay-secondary" for="__secondary"></label>
-  
-  <div class="search-button__wrapper">
-    <div class="search-button__overlay"></div>
-    <div class="search-button__search-container">
+  <dialog id="pst-search-dialog">
+    
 <form class="bd-search d-flex align-items-center"
       action="../../search.html"
       method="get">
@@ -96,7 +84,6 @@
   <input type="search"
          class="form-control"
          name="q"
-         id="search-input"
          placeholder="Search the docs ..."
          aria-label="Search the docs ..."
          autocomplete="off"
@@ -104,21 +91,28 @@
          autocapitalize="off"
          spellcheck="false"/>
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
-</form></div>
-  </div>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
   
-    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
 <div class="bd-header__inner bd-page-width">
-  <label class="sidebar-toggle primary-toggle" for="__primary">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
     <span class="fa-solid fa-bars"></span>
-  </label>
+  </button>
   
   
   <div class=" navbar-header-items__start">
     
       <div class="navbar-item">
 
-   
+  
+     
+  
 
 <a class="navbar-brand logo" href="https://litestar.dev">
   
@@ -132,7 +126,7 @@
     
     
     <img src="../../_static/logo.svg" class="logo__image only-light" alt="Litestar Framework - Home"/>
-    <script>document.write(`<img src="../../_static/logo.svg" class="logo__image only-dark" alt="Litestar Framework - Home"/>`);</script>
+    <img src="../../_static/logo.svg" class="logo__image only-dark pst-js-only" alt="Litestar Framework - Home"/>
   
   
 </a></div>
@@ -594,31 +588,23 @@
         <div class="navbar-item navbar-persistent--container">
           
 
-<script>
-document.write(`
-  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <i class="fa-solid fa-magnifying-glass fa-lg"></i>
-  </button>
-`);
-</script>
+</button>
         </div>
       
         <div class="navbar-item navbar-persistent--container">
           
 
-<script>
-document.write(`
-  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
-    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
-    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
-  </button>
-`);
-</script>
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button>
         </div>
       
       
-        <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+        <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
         <li class="nav-item">
           
@@ -629,7 +615,7 @@ document.write(`
           
           
           
-          <a href="https://github.com/litestar-org/litestar" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i></span>
+          <a href="https://github.com/litestar-org/litestar" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
             <span class="sr-only">GitHub</span></a>
         </li>
         <li class="nav-item">
@@ -641,7 +627,7 @@ document.write(`
           
           
           
-          <a href="https://discord.gg/litestar" title="Discord" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-discord fa-lg" aria-hidden="true"></i></span>
+          <a href="https://discord.gg/litestar" title="Discord" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-discord fa-lg" aria-hidden="true"></i>
             <span class="sr-only">Discord</span></a>
         </li>
 </ul></div>
@@ -653,42 +639,38 @@ document.write(`
   
     <div class="navbar-persistent--mobile">
 
-<script>
-document.write(`
-  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <i class="fa-solid fa-magnifying-glass fa-lg"></i>
-  </button>
-`);
-</script>
+</button>
     </div>
   
     <div class="navbar-persistent--mobile">
 
-<script>
-document.write(`
-  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
-    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
-    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
-  </button>
-`);
-</script>
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button>
     </div>
   
 
   
-    <label class="sidebar-toggle secondary-toggle" for="__secondary" tabindex="0">
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
       <span class="fa-solid fa-outdent"></span>
-    </label>
+    </button>
   
 </div>
 
-    </nav>
+    </header>
   
+
   <div class="bd-container">
     <div class="bd-container__inner bd-page-width">
       
-      <div class="bd-sidebar-primary bd-sidebar">
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
         
 
   
@@ -697,7 +679,9 @@ document.write(`
     
       <div class="sidebar-header-items__center">
         
-          <div class="navbar-item">
+          
+          
+            <div class="navbar-item">
 
 
 
@@ -1139,6 +1123,7 @@ document.write(`
 
     </nav>
 </div>
+          
         
       </div>
     
@@ -1146,7 +1131,7 @@ document.write(`
     
       <div class="sidebar-header-items__end">
         
-          <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+          <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
         <li class="nav-item">
           
@@ -1157,7 +1142,7 @@ document.write(`
           
           
           
-          <a href="https://github.com/litestar-org/litestar" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i></span>
+          <a href="https://github.com/litestar-org/litestar" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
             <span class="sr-only">GitHub</span></a>
         </li>
         <li class="nav-item">
@@ -1169,7 +1154,7 @@ document.write(`
           
           
           
-          <a href="https://discord.gg/litestar" title="Discord" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-discord fa-lg" aria-hidden="true"></i></span>
+          <a href="https://discord.gg/litestar" title="Discord" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-discord fa-lg" aria-hidden="true"></i>
             <span class="sr-only">Discord</span></a>
         </li>
 </ul></div>
@@ -1185,52 +1170,52 @@ document.write(`
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
   <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Documentation</span></p>
 <ul class="current nav bd-sidenav">
-<li class="toctree-l1 current active has-children"><a class="reference internal" href="../index.html">Usage</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="../index.html">Usage</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="../applications.html">Applications</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../routing/index.html">Routing</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../routing/index.html">Routing</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="../routing/overview.html">Overview</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../routing/handlers.html">Route handlers</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../routing/parameters.html">Parameters</a></li>
 </ul>
-</li>
+</details></li>
 <li class="toctree-l2"><a class="reference internal" href="../requests.html">Requests</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../caching.html">Caching</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../channels.html">Channels</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../cli.html">CLI</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../databases/index.html">Databases</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-3"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../databases/sqlalchemy/index.html">SQLAlchemy</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-4"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../databases/index.html">Databases</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../databases/sqlalchemy/index.html">SQLAlchemy</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l4"><a class="reference internal" href="../databases/sqlalchemy/models_and_repository.html">SQLAlchemy Models &amp; Repository</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../databases/sqlalchemy/plugins/index.html">Plugins</a></li>
 </ul>
-</li>
+</details></li>
 <li class="toctree-l3"><a class="reference internal" href="../databases/piccolo.html">Piccolo ORM</a></li>
 </ul>
-</li>
+</details></li>
 <li class="toctree-l2"><a class="reference internal" href="../debugging.html">Debugging</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../dependency-injection.html">Dependency Injection</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../dto/index.html">Data Transfer Object (DTO)</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-5"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../dto/index.html">Data Transfer Object (DTO)</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="../dto/0-basic-use.html">Basic Use</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../dto/1-abstract-dto.html">AbstractDTO</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../dto/2-creating-custom-dto-classes.html">Implementing Custom DTO Classes</a></li>
 </ul>
-</li>
+</details></li>
 <li class="toctree-l2"><a class="reference internal" href="../events.html">Events</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../exceptions.html">Exceptions and exception handling</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../htmx.html">HTMX</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../lifecycle-hooks.html">Life Cycle Hooks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../logging.html">Logging</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../metrics/index.html">Metrics</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-6"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../metrics/index.html">Metrics</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="../metrics/open-telemetry.html">OpenTelemetry</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../metrics/prometheus.html">Prometheus</a></li>
 </ul>
-</li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../middleware/index.html">Middleware</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-7"><i class="fa-solid fa-chevron-down"></i></label><ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../middleware/index.html">Middleware</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="../middleware/using-middleware.html">Using Middleware</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../middleware/builtin-middleware.html">Built-in middleware</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../middleware/creating-middleware.html">Creating Middleware</a></li>
 </ul>
-</li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../openapi/index.html">OpenAPI</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-8"><i class="fa-solid fa-chevron-down"></i></label><ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../openapi/index.html">OpenAPI</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="../openapi/schema_generation.html">Configuring schema generation</a></li>
 
 
@@ -1247,14 +1232,14 @@ document.write(`
 
 
 </ul>
-</li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../plugins/index.html">Plugins</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-9"><i class="fa-solid fa-chevron-down"></i></label><ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../plugins/index.html">Plugins</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="../plugins/flash_messages.html">Flash Messages</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../plugins/problem_details.html">Problem Details</a></li>
 </ul>
-</li>
+</details></li>
 <li class="toctree-l2"><a class="reference internal" href="../responses.html">Responses</a></li>
-<li class="toctree-l2 current active has-children"><a class="reference internal" href="index.html">Security</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-10"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
+<li class="toctree-l2 current active has-children"><a class="reference internal" href="index.html">Security</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
 <li class="toctree-l3 current active"><a class="current reference internal" href="#">Implementing Custom Authentication</a></li>
 <li class="toctree-l3"><a class="reference internal" href="security-backends.html">Security Backends</a></li>
 <li class="toctree-l3"><a class="reference internal" href="guards.html">Guards</a></li>
@@ -1262,7 +1247,7 @@ document.write(`
 <li class="toctree-l3"><a class="reference internal" href="jwt.html">JWT Security Backends</a></li>
 <li class="toctree-l3"><a class="reference internal" href="secret-datastructures.html">Handling Secrets</a></li>
 </ul>
-</li>
+</details></li>
 <li class="toctree-l2"><a class="reference internal" href="../static-files.html">Static files</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../custom-types.html">Custom types</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../stores.html">Stores</a></li>
@@ -1270,27 +1255,27 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../testing.html">Testing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../websockets.html">WebSockets</a></li>
 </ul>
-</li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../reference/index.html">API reference</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-11"><i class="fa-solid fa-chevron-down"></i></label><ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../reference/index.html">API reference</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/app.html">app</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/background_tasks.html">background_tasks</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../reference/channels/index.html">channels</a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-12"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../reference/channels/index.html">channels</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/channels/plugin.html">plugin</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/channels/subscriber.html">subscriber</a></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../reference/channels/backends/index.html">backends</a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-13"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../reference/channels/backends/index.html">backends</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../reference/channels/backends/base.html">base</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../reference/channels/backends/memory.html">memory</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../reference/channels/backends/redis.html">redis</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../reference/channels/backends/psycopg.html">psycopg</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../reference/channels/backends/asyncpg.html">asyncpg</a></li>
 </ul>
-</li>
+</details></li>
 </ul>
-</li>
+</details></li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/cli.html">cli</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/config.html">config</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/connection.html">connection</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../reference/contrib/index.html">contrib</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-14"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../reference/contrib/index.html">contrib</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/contrib/htmx.html">HTMX</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/contrib/jinja.html">jinja</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/contrib/jwt.html">jwt</a></li>
@@ -1298,25 +1283,25 @@ document.write(`
 <li class="toctree-l3"><a class="reference internal" href="../../reference/contrib/opentelemetry.html">opentelemetry</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/contrib/piccolo.html">piccolo_orm</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/contrib/pydantic.html">pydantic</a></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../reference/contrib/sqlalchemy/index.html">sqlalchemy</a><input class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-15"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../reference/contrib/sqlalchemy/index.html">sqlalchemy</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../reference/contrib/sqlalchemy/plugins.html">plugins</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../reference/contrib/sqlalchemy/repository.html">repository</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../reference/contrib/sqlalchemy/types.html">types</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../reference/contrib/sqlalchemy/base.html">base</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../reference/contrib/sqlalchemy/dto.html">DTO</a></li>
 </ul>
-</li>
+</details></li>
 </ul>
-</li>
+</details></li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/controller.html">controller</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/concurrency.html">concurrency</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/data_extractors.html">data_extractors</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../reference/datastructures/index.html">datastructures</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-16"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../reference/datastructures/index.html">datastructures</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/datastructures/secret_values.html">secret_values</a></li>
 </ul>
-</li>
+</details></li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/di.html">di</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../reference/dto/index.html">dto</a><input class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-17"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../reference/dto/index.html">dto</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/dto/config.html">config</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/dto/data_structures.html">data_structures</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/dto/field.html">field</a></li>
@@ -1325,18 +1310,18 @@ document.write(`
 <li class="toctree-l3"><a class="reference internal" href="../../reference/dto/msgspec_dto.html">msgspec_dto</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/dto/dataclass_dto.html">dataclass_dto</a></li>
 </ul>
-</li>
+</details></li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/enums.html">enums</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/events.html">events</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/exceptions.html">exceptions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/handlers.html">handlers</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../reference/logging/index.html">logging</a><input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-18"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../reference/logging/index.html">logging</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/logging/config.html">config</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/logging/picologging.html">picologging</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/logging/standard.html">standard</a></li>
 </ul>
-</li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../reference/middleware/index.html">middleware</a><input class="toctree-checkbox" id="toctree-checkbox-19" name="toctree-checkbox-19" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-19"><i class="fa-solid fa-chevron-down"></i></label><ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../reference/middleware/index.html">middleware</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/middleware/allowed_hosts.html">allowed_hosts</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/middleware/authentication.html">authentication</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/middleware/compression.html">compression</a></li>
@@ -1344,23 +1329,23 @@ document.write(`
 <li class="toctree-l3"><a class="reference internal" href="../../reference/middleware/csrf.html">csrf</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/middleware/logging.html">logging</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/middleware/rate_limit.html">rate_limit</a></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../reference/middleware/session/index.html">session</a><input class="toctree-checkbox" id="toctree-checkbox-20" name="toctree-checkbox-20" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-20"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../reference/middleware/session/index.html">session</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../reference/middleware/session/base.html">base</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../reference/middleware/session/client_side.html">client_side</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../reference/middleware/session/server_side.html">server_side</a></li>
 </ul>
-</li>
+</details></li>
 </ul>
-</li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../reference/openapi/index.html">openapi</a><input class="toctree-checkbox" id="toctree-checkbox-21" name="toctree-checkbox-21" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-21"><i class="fa-solid fa-chevron-down"></i></label><ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../reference/openapi/index.html">openapi</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/openapi/openapi.html">openapi</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/openapi/plugins.html">plugins</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/openapi/spec.html">spec</a></li>
 </ul>
-</li>
+</details></li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/pagination.html">pagination</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/params.html">params</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../reference/plugins/index.html">plugins</a><input class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-22"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../reference/plugins/index.html">plugins</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/attrs.html">attrs</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/flash_messages.html">flash</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/htmx.html">htmx</a></li>
@@ -1370,16 +1355,16 @@ document.write(`
 <li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/structlog.html">structlog</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/sqlalchemy.html">sqlalchemy</a></li>
 </ul>
-</li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../reference/repository/index.html">repository</a><input class="toctree-checkbox" id="toctree-checkbox-23" name="toctree-checkbox-23" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-23"><i class="fa-solid fa-chevron-down"></i></label><ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../reference/repository/index.html">repository</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/repository/abc.html">abc</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/repository/filters.html">filters</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/repository/exceptions.html">exceptions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/repository/testing.html">testing</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/repository/handlers.html">handlers</a></li>
 </ul>
-</li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../reference/response/index.html">response</a><input class="toctree-checkbox" id="toctree-checkbox-24" name="toctree-checkbox-24" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-24"><i class="fa-solid fa-chevron-down"></i></label><ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../reference/response/index.html">response</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/response/base.html">base</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/response/file.html">file</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/response/redirect.html">redirect</a></li>
@@ -1387,18 +1372,18 @@ document.write(`
 <li class="toctree-l3"><a class="reference internal" href="../../reference/response/sse.html">SSE (Server Sent Events)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/response/template.html">template</a></li>
 </ul>
-</li>
+</details></li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/router.html">router</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/routes.html">routes</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../reference/security/index.html">security</a><input class="toctree-checkbox" id="toctree-checkbox-25" name="toctree-checkbox-25" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-25"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../reference/security/index.html">security</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/security/jwt.html">jwt</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/security/session_auth.html">session_auth</a></li>
 </ul>
-</li>
+</details></li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/serialization.html">serialization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/static_files.html">static_files</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/status_codes.html">status_code</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../reference/stores/index.html">stores</a><input class="toctree-checkbox" id="toctree-checkbox-26" name="toctree-checkbox-26" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-26"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../reference/stores/index.html">stores</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/stores/base.html">base</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/stores/file.html">file</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/stores/memory.html">memory</a></li>
@@ -1406,50 +1391,50 @@ document.write(`
 <li class="toctree-l3"><a class="reference internal" href="../../reference/stores/registry.html">registry</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/stores/valkey.html">valkey</a></li>
 </ul>
-</li>
+</details></li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/template.html">template</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/testing.html">testing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/types.html">types</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/typing.html">typing</a></li>
 </ul>
-</li>
+</details></li>
 <li class="toctree-l1"><a class="reference internal" href="../../benchmarks.html">Benchmarks</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Guides</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../migration/index.html">Migrating to Litestar</a><input class="toctree-checkbox" id="toctree-checkbox-27" name="toctree-checkbox-27" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-27"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../migration/index.html">Migrating to Litestar</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../migration/flask.html">From Flask</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../migration/fastapi.html">From Starlette / FastAPI</a></li>
 </ul>
-</li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../topics/index.html">Topics</a><input class="toctree-checkbox" id="toctree-checkbox-28" name="toctree-checkbox-28" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-28"><i class="fa-solid fa-chevron-down"></i></label><ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../topics/index.html">Topics</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../topics/sync-vs-async.html">Sync vs. Async</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../topics/deployment/index.html">Deployment</a><input class="toctree-checkbox" id="toctree-checkbox-29" name="toctree-checkbox-29" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-29"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../topics/deployment/index.html">Deployment</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../topics/deployment/nginx-unit.html">NGINX Unit</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../topics/deployment/manually-with-asgi-server.html">Manually with ASGI server</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../topics/deployment/docker.html">Docker</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../topics/deployment/supervisor.html">Supervisor (Linux)</a></li>
 </ul>
-</li>
+</details></li>
 </ul>
-</li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../tutorials/index.html">Tutorials</a><input class="toctree-checkbox" id="toctree-checkbox-30" name="toctree-checkbox-30" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-30"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../tutorials/todo-app/index.html">Developing a basic TODO application</a><input class="toctree-checkbox" id="toctree-checkbox-31" name="toctree-checkbox-31" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-31"><i class="fa-solid fa-chevron-down"></i></label><ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../tutorials/index.html">Tutorials</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../tutorials/todo-app/index.html">Developing a basic TODO application</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../tutorials/todo-app/0-application-basics.html">Application basics</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../tutorials/todo-app/1-accessing-the-list.html">Accessing the list</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../tutorials/todo-app/2-interacting-with-the-list.html">Making the list interactive</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../tutorials/todo-app/3-assembling-the-app.html">Recap and assembling the final application</a></li>
 </ul>
-</li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../tutorials/sqlalchemy/index.html">Improving the TODO app with SQLAlchemy</a><input class="toctree-checkbox" id="toctree-checkbox-32" name="toctree-checkbox-32" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-32"><i class="fa-solid fa-chevron-down"></i></label><ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../tutorials/sqlalchemy/index.html">Improving the TODO app with SQLAlchemy</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../tutorials/sqlalchemy/0-introduction.html">Introduction</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../tutorials/sqlalchemy/1-provide-session-with-di.html">Providing the session with DI</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../tutorials/sqlalchemy/2-serialization-plugin.html">Using the serialization plugin</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../tutorials/sqlalchemy/3-init-plugin.html">Using the init plugin</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../tutorials/sqlalchemy/4-final-touches-and-recap.html">Final touches and recap</a></li>
 </ul>
-</li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../tutorials/dto-tutorial/index.html">Data Transfer Object Tutorial</a><input class="toctree-checkbox" id="toctree-checkbox-33" name="toctree-checkbox-33" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-33"><i class="fa-solid fa-chevron-down"></i></label><ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../tutorials/dto-tutorial/index.html">Data Transfer Object Tutorial</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../tutorials/dto-tutorial/01-simple-dto-exclude.html">Our first DTO</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../tutorials/dto-tutorial/02-nested-exclude.html">Excluding from nested models</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../tutorials/dto-tutorial/03-nested-collection-exclude.html">Excluding from collections of nested models</a></li>
@@ -1461,8 +1446,8 @@ document.write(`
 <li class="toctree-l3"><a class="reference internal" href="../../tutorials/dto-tutorial/09-updating.html">Updating instances</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../tutorials/dto-tutorial/10-layered-dto-declarations.html">Declaring DTOs on app layers</a></li>
 </ul>
-</li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../tutorials/repository-tutorial/index.html">SQLAlchemy Repository Tutorial</a><input class="toctree-checkbox" id="toctree-checkbox-34" name="toctree-checkbox-34" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-34"><i class="fa-solid fa-chevron-down"></i></label><ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../tutorials/repository-tutorial/index.html">SQLAlchemy Repository Tutorial</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../tutorials/repository-tutorial/01-modelling-and-features.html">Introduction to Database Modelling and Repository Features</a></li>
 
 
@@ -1475,9 +1460,9 @@ document.write(`
 
 
 </ul>
-</li>
+</details></li>
 </ul>
-</li>
+</details></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Contributing</span></p>
 <ul class="nav bd-sidenav">
@@ -1491,29 +1476,32 @@ document.write(`
   
   
   <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
   </div>
-  
-  <div id="rtd-footer-container"></div>
 
 
       </div>
       
-      <main id="main-content" class="bd-main">
+      <main id="main-content" class="bd-main" role="main">
         
         
           <div class="bd-content">
             <div class="bd-article-container">
               
-              <div class="bd-header-article">
+              <div class="bd-header-article d-print-none">
 <div class="header-article-items header-article__inner">
   
     <div class="header-article-items__start">
       
         <div class="header-article-item">
 
-
-
-<nav aria-label="Breadcrumb">
+<nav aria-label="Breadcrumb" class="d-print-none">
   <ul class="bd-breadcrumbs">
     
     <li class="breadcrumb-item breadcrumb-home">
@@ -1527,7 +1515,7 @@ document.write(`
     
     <li class="breadcrumb-item"><a href="index.html" class="nav-link">Security</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page">Implementing...</li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Implementing Custom Authentication</span></li>
   </ul>
 </nav>
 </div>
@@ -1542,26 +1530,26 @@ document.write(`
               
                 
 <div id="searchbox"></div>
-                <article class="bd-article" role="main">
+                <article class="bd-article">
                   
   <section id="implementing-custom-authentication">
-<h1>Implementing Custom Authentication<a class="headerlink" href="#implementing-custom-authentication" title="Permalink to this heading">#</a></h1>
+<h1>Implementing Custom Authentication<a class="headerlink" href="#implementing-custom-authentication" title="Link to this heading">#</a></h1>
 <p>Litestar exports <a class="reference internal" href="../../reference/middleware/authentication.html#litestar.middleware.authentication.AbstractAuthenticationMiddleware" title="litestar.middleware.authentication.AbstractAuthenticationMiddleware"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractAuthenticationMiddleware</span></code></a>, which is an
 <a class="reference external" href="https://docs.python.org/3/glossary.html#term-abstract-base-class" title="(in Python v3.13)"><span class="xref std std-term">abstract base class</span></a> (ABC) that implements the <a class="reference internal" href="../../reference/middleware/index.html#litestar.middleware.MiddlewareProtocol" title="litestar.middleware.base.MiddlewareProtocol"><code class="xref py py-class docutils literal notranslate"><span class="pre">MiddlewareProtocol</span></code></a>.
 To add authentication to your app using this class as a basis, subclass it and implement the abstract method
 <a class="reference internal" href="../../reference/middleware/authentication.html#litestar.middleware.authentication.AbstractAuthenticationMiddleware.authenticate_request" title="litestar.middleware.authentication.AbstractAuthenticationMiddleware.authenticate_request"><code class="xref py py-meth docutils literal notranslate"><span class="pre">authenticate_request()</span></code></a>:</p>
 <div class="literal-block-wrapper docutils container" id="id1">
 <div class="code-block-caption"><span class="caption-text">Adding authentication to your app by subclassing
-<a class="reference internal" href="../../reference/middleware/authentication.html#litestar.middleware.authentication.AbstractAuthenticationMiddleware" title="litestar.middleware.authentication.AbstractAuthenticationMiddleware"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractAuthenticationMiddleware</span></code></a></span><a class="headerlink" href="#id1" title="Permalink to this code">#</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar.middleware</span> <span class="kn">import</span> <span class="p">(</span>
+<a class="reference internal" href="../../reference/middleware/authentication.html#litestar.middleware.authentication.AbstractAuthenticationMiddleware" title="litestar.middleware.authentication.AbstractAuthenticationMiddleware"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractAuthenticationMiddleware</span></code></a></span><a class="headerlink" href="#id1" title="Link to this code">#</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.middleware</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
    <span class="n">AbstractAuthenticationMiddleware</span><span class="p">,</span>
    <span class="n">AuthenticationResult</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">litestar.connection</span> <span class="kn">import</span> <span class="n">ASGIConnection</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">litestar.connection</span><span class="w"> </span><span class="kn">import</span> <span class="n">ASGIConnection</span>
 
 
-<span class="k">class</span> <span class="nc">MyAuthenticationMiddleware</span><span class="p">(</span><span class="n">AbstractAuthenticationMiddleware</span><span class="p">):</span>
-   <span class="k">async</span> <span class="k">def</span> <span class="nf">authenticate_request</span><span class="p">(</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">MyAuthenticationMiddleware</span><span class="p">(</span><span class="n">AbstractAuthenticationMiddleware</span><span class="p">):</span>
+   <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">authenticate_request</span><span class="p">(</span>
        <span class="bp">self</span><span class="p">,</span> <span class="n">connection</span><span class="p">:</span> <span class="n">ASGIConnection</span>
    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AuthenticationResult</span><span class="p">:</span>
        <span class="c1"># do something here.</span>
@@ -1583,28 +1571,28 @@ and <a class="reference internal" href="../../reference/connection.html#litestar
 <a class="reference internal" href="../../reference/connection.html#litestar.connection.ASGIConnection.user" title="litestar.connection.ASGIConnection.user"><code class="xref py py-attr docutils literal notranslate"><span class="pre">WebSocket.user</span></code></a> and
 <a class="reference internal" href="../../reference/connection.html#litestar.connection.ASGIConnection.auth" title="litestar.connection.ASGIConnection.auth"><code class="xref py py-attr docutils literal notranslate"><span class="pre">WebSocket.auth</span></code></a> for websocket route handlers.</p>
 <section id="creating-a-custom-authentication-middleware">
-<h2>Creating a Custom Authentication Middleware<a class="headerlink" href="#creating-a-custom-authentication-middleware" title="Permalink to this heading">#</a></h2>
+<h2>Creating a Custom Authentication Middleware<a class="headerlink" href="#creating-a-custom-authentication-middleware" title="Link to this heading">#</a></h2>
 <p>Since the above is quite hard to grasp in the abstract, let us see an example.</p>
 <p>We start off by creating a user model. It can be implemented using msgspec, Pydantic, an ODM, ORM, etc.
 For the sake of this example here let us say it is a dataclass:</p>
 <div class="literal-block-wrapper docutils container" id="id2">
-<div class="code-block-caption"><span class="caption-text">user and token models</span><a class="headerlink" href="#id2" title="Permalink to this code">#</a></div>
+<div class="code-block-caption"><span class="caption-text">user and token models</span><a class="headerlink" href="#id2" title="Link to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">MyUser</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">MyUser</span><span class="p">:</span>
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
 
 
 <span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">MyToken</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">MyToken</span><span class="p">:</span>
     <span class="n">api_key</span><span class="p">:</span> <span class="nb">str</span>
 </pre></div>
 </div>
 </div>
 <p>We can now create our authentication middleware:</p>
 <div class="literal-block-wrapper docutils container" id="id3">
-<div class="code-block-caption"><span class="caption-text">authentication_middleware.py</span><a class="headerlink" href="#id3" title="Permalink to this code">#</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">CustomAuthenticationMiddleware</span><span class="p">(</span><span class="n">AbstractAuthenticationMiddleware</span><span class="p">):</span>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">authenticate_request</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">connection</span><span class="p">:</span> <span class="n">ASGIConnection</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AuthenticationResult</span><span class="p">:</span>
+<div class="code-block-caption"><span class="caption-text">authentication_middleware.py</span><a class="headerlink" href="#id3" title="Link to this code">#</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">CustomAuthenticationMiddleware</span><span class="p">(</span><span class="n">AbstractAuthenticationMiddleware</span><span class="p">):</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">authenticate_request</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">connection</span><span class="p">:</span> <span class="n">ASGIConnection</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AuthenticationResult</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Given a request, parse the request api key stored in the header and retrieve the user correlating to the token from the DB&quot;&quot;&quot;</span>
 
         <span class="c1"># retrieve the auth header</span>
@@ -1623,7 +1611,7 @@ For the sake of this example here let us say it is a dataclass:</p>
 </div>
 <p>Finally, we need to pass our middleware to the Litestar constructor:</p>
 <div class="literal-block-wrapper docutils container" id="id4">
-<div class="code-block-caption"><span class="caption-text">main.py</span><a class="headerlink" href="#id4" title="Permalink to this code">#</a></div>
+<div class="code-block-caption"><span class="caption-text">main.py</span><a class="headerlink" href="#id4" title="Link to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># you can optionally exclude certain paths from authentication.</span>
 <span class="c1"># the following excludes all routes mounted at or under `/schema*`</span>
 <span class="n">auth_mw</span> <span class="o">=</span> <span class="n">DefineMiddleware</span><span class="p">(</span><span class="n">CustomAuthenticationMiddleware</span><span class="p">,</span> <span class="n">exclude</span><span class="o">=</span><span class="s2">&quot;schema&quot;</span><span class="p">)</span>
@@ -1639,9 +1627,9 @@ For the sake of this example here let us say it is a dataclass:</p>
 <p>That is it. <code class="docutils literal notranslate"><span class="pre">CustomAuthenticationMiddleware</span></code> will now run for every request, and we would be able to access these in a
 http route handler in the following way:</p>
 <div class="literal-block-wrapper docutils container" id="id5">
-<div class="code-block-caption"><span class="caption-text">Accessing the user and auth in a http route handler with <code class="docutils literal notranslate"><span class="pre">CustomAuthenticationMiddleware</span></code></span><a class="headerlink" href="#id5" title="Permalink to this code">#</a></div>
+<div class="code-block-caption"><span class="caption-text">Accessing the user and auth in a http route handler with <code class="docutils literal notranslate"><span class="pre">CustomAuthenticationMiddleware</span></code></span><a class="headerlink" href="#id5" title="Link to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">my_http_handler</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">[</span><span class="n">MyUser</span><span class="p">,</span> <span class="n">MyToken</span><span class="p">,</span> <span class="n">State</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">my_http_handler</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">[</span><span class="n">MyUser</span><span class="p">,</span> <span class="n">MyToken</span><span class="p">,</span> <span class="n">State</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="n">user</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">user</span>  <span class="c1"># correctly typed as MyUser</span>
     <span class="n">auth</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">auth</span>  <span class="c1"># correctly typed as MyToken</span>
     <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">MyUser</span><span class="p">)</span>
@@ -1651,9 +1639,9 @@ http route handler in the following way:</p>
 </div>
 <p>Or for a websocket route:</p>
 <div class="literal-block-wrapper docutils container" id="id6">
-<div class="code-block-caption"><span class="caption-text">Accessing the user and auth in a websocket route handler with <code class="docutils literal notranslate"><span class="pre">CustomAuthenticationMiddleware</span></code></span><a class="headerlink" href="#id6" title="Permalink to this code">#</a></div>
+<div class="code-block-caption"><span class="caption-text">Accessing the user and auth in a websocket route handler with <code class="docutils literal notranslate"><span class="pre">CustomAuthenticationMiddleware</span></code></span><a class="headerlink" href="#id6" title="Link to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@websocket</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
-<span class="k">async</span> <span class="k">def</span> <span class="nf">my_ws_handler</span><span class="p">(</span><span class="n">socket</span><span class="p">:</span> <span class="n">WebSocket</span><span class="p">[</span><span class="n">MyUser</span><span class="p">,</span> <span class="n">MyToken</span><span class="p">,</span> <span class="n">State</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">my_ws_handler</span><span class="p">(</span><span class="n">socket</span><span class="p">:</span> <span class="n">WebSocket</span><span class="p">[</span><span class="n">MyUser</span><span class="p">,</span> <span class="n">MyToken</span><span class="p">,</span> <span class="n">State</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="n">user</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">user</span>  <span class="c1"># correctly typed as MyUser</span>
     <span class="n">auth</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">auth</span>  <span class="c1"># correctly typed as MyToken</span>
     <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">MyUser</span><span class="p">)</span>
@@ -1663,9 +1651,9 @@ http route handler in the following way:</p>
 </div>
 <p>And if you would like to exclude individual routes outside those configured:</p>
 <div class="literal-block-wrapper docutils container" id="id7">
-<div class="code-block-caption"><span class="caption-text">Excluding individual routes from <code class="docutils literal notranslate"><span class="pre">CustomAuthenticationMiddleware</span></code></span><a class="headerlink" href="#id7" title="Permalink to this code">#</a></div>
+<div class="code-block-caption"><span class="caption-text">Excluding individual routes from <code class="docutils literal notranslate"><span class="pre">CustomAuthenticationMiddleware</span></code></span><a class="headerlink" href="#id7" title="Link to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">exclude_from_auth</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="k">async</span> <span class="k">def</span> <span class="nf">site_index</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">:</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">site_index</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Site index&quot;&quot;&quot;</span>
     <span class="n">exists</span> <span class="o">=</span> <span class="k">await</span> <span class="n">anyio</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="s2">&quot;index.html&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span>
     <span class="k">if</span> <span class="n">exists</span><span class="p">:</span>
@@ -1678,8 +1666,8 @@ http route handler in the following way:</p>
 </div>
 <p>And of course use the same kind of mechanism for dependencies:</p>
 <div class="literal-block-wrapper docutils container" id="id8">
-<div class="code-block-caption"><span class="caption-text">Using <code class="docutils literal notranslate"><span class="pre">CustomAuthenticationMiddleware</span></code> in a dependency</span><a class="headerlink" href="#id8" title="Permalink to this code">#</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">async</span> <span class="k">def</span> <span class="nf">my_dependency</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">[</span><span class="n">MyUser</span><span class="p">,</span> <span class="n">MyToken</span><span class="p">,</span> <span class="n">State</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<div class="code-block-caption"><span class="caption-text">Using <code class="docutils literal notranslate"><span class="pre">CustomAuthenticationMiddleware</span></code> in a dependency</span><a class="headerlink" href="#id8" title="Link to this code">#</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">my_dependency</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">[</span><span class="n">MyUser</span><span class="p">,</span> <span class="n">MyToken</span><span class="p">,</span> <span class="n">State</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
     <span class="n">user</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">user</span>  <span class="c1"># correctly typed as MyUser</span>
     <span class="n">auth</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">auth</span>  <span class="c1"># correctly typed as MyToken</span>
     <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">MyUser</span><span class="p">)</span>
@@ -1697,7 +1685,7 @@ http route handler in the following way:</p>
               
               
               
-                <footer class="prev-next-footer">
+                <footer class="prev-next-footer d-print-none">
                   
 <div class="prev-next-area">
     <a class="left-prev"
@@ -1725,14 +1713,17 @@ http route handler in the following way:</p>
             
             
               
-                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
 
   <div class="sidebar-secondary-item">
-
-  <div class="page-toc tocsection onthispage">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
     <i class="fa-solid fa-list"></i> On this page
   </div>
-  <nav class="bd-toc-nav page-toc">
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#creating-a-custom-authentication-middleware">Creating a Custom Authentication Middleware</a></li>
 </ul>
@@ -1751,8 +1742,8 @@ http route handler in the following way:</p>
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../../_static/scripts/bootstrap.js?digest=5b4479735964841361fd"></script>
-<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=5b4479735964841361fd"></script>
+  <script defer src="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -1772,7 +1763,7 @@ http route handler in the following way:</p>
         <div class="footer-item">
 
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.1.2.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
     <br/>
   </p>
 </div>
@@ -1785,7 +1776,8 @@ http route handler in the following way:</p>
       
         <div class="footer-item">
 <p class="theme-version">
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.14.4.
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
 </p></div>
       
     </div>

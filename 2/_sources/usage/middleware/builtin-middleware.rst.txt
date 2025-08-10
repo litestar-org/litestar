@@ -200,7 +200,7 @@ Brotli
 ^^^^^^
 
 The `Brotli <https://pypi.org/project/Brotli>`_ package is required to run this middleware. It is available as an extras to litestar with the ``brotli``
-extra (``pip install litestar[brotli]``).
+extra (``pip install 'litestar[brotli]'``).
 
 You can enable brotli compression of responses by passing an instance of
 :class:`~litestar.config.compression.CompressionConfig` with the ``backend`` parameter set to ``"brotli"``.
@@ -326,7 +326,7 @@ which offers strong AES-CGM encryption security best practices while support coo
 .. important::
 
     ``ClientSideSessionBackend`` requires the `cryptography <https://cryptography.io/en/latest/>`_ library,
-    which can be installed together with litestar as an extra using ``pip install litestar[cryptography]``
+    which can be installed together with litestar as an extra using ``pip install 'litestar[cryptography]'``
 
 .. literalinclude:: /examples/middleware/session/cookie_backend.py
     :caption: ``cookie_backend.py``
