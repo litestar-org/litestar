@@ -1,11 +1,16 @@
 [project]
 authors = [
-  { name = "Cody Fincher", email = "cody@litestar.dev" },
-  { name = "Jacob Coffee", email = "jacob@litestar.dev" },
-  { name = "Janek Nouvertné", email = "janek@litestar.dev" },
-  { name = "Na'aman Hirschfeld", email = "nhirschfeld@gmail.com" },
-  { name = "Peter Schutt", email = "peter@litestar.dev" },
+  { name = "The Litestar Project", email = "hello@litestar.dev" },
 ]
+description = "Litestar - A production-ready, highly performant, extensible ASGI API Framework"
+keywords = ["api", "rest", "asgi", "litestar", "starlite"]
+license = { text = "MIT" }
+name = "litestar"
+readme = "docs/PYPI_README.md"
+requires-python = ">=3.9,<4.0"
+version = "3.0.0b0"
+
+
 classifiers = [
   "Development Status :: 5 - Production/Stable",
   "Environment :: Web Environment",
@@ -46,34 +51,6 @@ dependencies = [
   # default litestar plugins
   "litestar-htmx>=0.4.0",
 ]
-description = "Litestar - A production-ready, highly performant, extensible ASGI API Framework"
-keywords = ["api", "rest", "asgi", "litestar", "starlite"]
-license = { text = "MIT" }
-maintainers = [
-  { name = "Litestar Developers", email = "hello@litestar.dev" },
-  { name = "Cody Fincher", email = "cody@litestar.dev" },
-  { name = "Jacob Coffee", email = "jacob@litestar.dev" },
-  { name = "Janek Nouvertné", email = "janek@litestar.dev" },
-  { name = "Visakh Unnikrishnan", email = "guacs@litestar.dev" },
-  { name = "Julien Courtes", email = "julien@litestar.dev" },
-]
-name = "litestar"
-readme = "docs/PYPI_README.md"
-requires-python = ">=3.9,<4.0"
-version = "2.17.0"
-
-[project.urls]
-Blog = "https://blog.litestar.dev"
-Changelog = "https://github.com/litestar-org/litestar/releases/"
-Discord = "https://discord.gg/litestar"
-Discussions = "https://github.com/litestar-org/litestar/discussions"
-Documentation = "https://docs.litestar.dev/"
-Funding = "https://github.com/sponsors/litestar-org"
-Homepage = "https://litestar.dev/"
-"Issue Tracker" = "https://github.com/litestar-org/litestar/issues?q=is%3Aissue+is%3Aopen+sort%3Aupdated-desc"
-Reddit = "https://www.reddit.com/r/LitestarAPI"
-Repository = "https://github.com/litestar-org/litestar"
-Twitter = "https://twitter.com/LitestarAPI"
 
 [project.optional-dependencies]
 annotated-types = ["annotated-types"]
@@ -156,6 +133,19 @@ yaml = ["pyyaml"]
 
 [project.scripts]
 litestar = "litestar.__main__:run_cli"
+
+[project.urls]
+Blog = "https://blog.litestar.dev"
+Changelog = "https://github.com/litestar-org/litestar/releases/"
+Discord = "https://discord.gg/litestar"
+Discussions = "https://github.com/litestar-org/litestar/discussions"
+Documentation = "https://docs.litestar.dev/"
+Funding = "https://github.com/sponsors/litestar-org"
+Homepage = "https://litestar.dev/"
+"Issue Tracker" = "https://github.com/litestar-org/litestar/issues?q=is%3Aissue+is%3Aopen+sort%3Aupdated-desc"
+Reddit = "https://www.reddit.com/r/LitestarAPI"
+Repository = "https://github.com/litestar-org/litestar"
+Twitter = "https://twitter.com/LitestarAPI"
 
 
 [tool.hatch.build.targets.sdist]

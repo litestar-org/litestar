@@ -1938,7 +1938,7 @@ wheels = [
 
 [[package]]
 name = "litestar"
-version = "2.17.0"
+version = "3.0.0b0"
 source = { editable = "." }
 dependencies = [
     { name = "anyio" },
