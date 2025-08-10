@@ -1,4 +1,3 @@
-# ruff: noqa: UP006,UP007
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
@@ -74,7 +73,7 @@ class CursorPagination(Generic[C, T]):
     """List of data being sent as part of the response."""
     results_per_page: int
     """Maximal number of items to send."""
-    cursor: Optional[C]
+    cursor: Optional[C]  # noqa: UP045
     """Unique ID, designating the last identifier in the given data set.
 
     This value can be used to request the "next" batch of records.

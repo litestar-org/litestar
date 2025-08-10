@@ -3,7 +3,7 @@ from __future__ import annotations
 import dataclasses
 from dataclasses import asdict, dataclass, field
 from datetime import datetime, timezone
-from typing import TYPE_CHECKING, Any, Optional, TypedDict
+from typing import TYPE_CHECKING, Any, TypedDict
 
 import jwt
 import msgspec
@@ -57,11 +57,11 @@ class Token:
     """Subject - usually a unique identifier of the user or equivalent entity."""
     iat: datetime = field(default_factory=lambda: _normalize_datetime(datetime.now(timezone.utc)))
     """Issued at - should always be current now."""
-    iss: Optional[str] = field(default=None)  # noqa: UP007
+    iss: str | None = field(default=None)
     """Issuer - optional unique identifier for the issuer."""
-    aud: Optional[str] = field(default=None)  # noqa: UP007
+    aud: str | None = field(default=None)
     """Audience - intended audience."""
-    jti: Optional[str] = field(default=None)  # noqa: UP007
+    jti: str | None = field(default=None)
     """JWT ID - a unique identifier of the JWT between different issuers."""
     extras: dict[str, Any] = field(default_factory=dict)
     """Extra fields that were found on the JWT token."""

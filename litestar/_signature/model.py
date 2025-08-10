@@ -1,4 +1,3 @@
-# ruff: noqa: UP006, UP007
 from __future__ import annotations
 
 import re
@@ -102,7 +101,7 @@ def _deserializer(target_type: Any, value: Any, default_deserializer: Callable[[
 class SignatureModel(Struct):
     """Model that represents a function signature that uses a msgspec specific type or types."""
 
-    _data_dto: ClassVar[Optional[type[AbstractDTO]]]
+    _data_dto: ClassVar[type[AbstractDTO] | None]
     _dependency_name_set: ClassVar[set[str]]
     _fields: ClassVar[dict[str, FieldDefinition]]
     _return_annotation: ClassVar[Any]

@@ -277,8 +277,8 @@ class WebsocketListenerRouteHandler(WebsocketRouteHandler):
     async def default_connection_lifespan(
         self,
         socket: WebSocket,
-        on_accept_dependencies: Optional[dict[str, Any]] = None,  # noqa: UP007
-        on_disconnect_dependencies: Optional[dict[str, Any]] = None,  # noqa: UP007
+        on_accept_dependencies: Optional[dict[str, Any]] = None,  # noqa: UP045
+        on_disconnect_dependencies: Optional[dict[str, Any]] = None,  # noqa: UP045
     ) -> AsyncGenerator[None, None]:
         """Handle the connection lifespan of a :class:`WebSocket <.connection.WebSocket>`.
 

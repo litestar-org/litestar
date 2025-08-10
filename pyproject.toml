@@ -431,6 +431,8 @@ lint.ignore = [
   "CPY001",  # ruff - copyright notice at the top of the file
   "SIM108",  # Use ternary operator
   "A005",    # Module shadows a built-in Python standard library module
+  "PLC0415", # `import` should be at the top-level of a file
+  "PLW1641", # Object does not implement `__hash__` method
 ]
 lint.select = [
   "A",   # flake8-builtins
@@ -537,6 +539,7 @@ known-first-party = ["litestar", "tests", "examples"]
 "tests/unit/test_typing.py" = ["UP006", "UP035"]
 "tools/**/*.*" = ["D", "ARG", "EM", "TRY", "G", "FBT"]
 "tools/prepare_release.py" = ["S603", "S607"]
+"tests/*" = ["PLC0415", "UP045"]
 
 [tool.ruff.format]
 docstring-code-format = true

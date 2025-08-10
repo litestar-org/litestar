@@ -15,7 +15,7 @@ from typing import (
 )
 
 import msgspec
-from multidict import CIMultiDict, CIMultiDictProxy, MultiMapping, MultiDict
+from multidict import CIMultiDict, CIMultiDictProxy, MultiDict
 
 from litestar._multipart import parse_content_header
 from litestar.datastructures.multi_dicts import MultiMixin

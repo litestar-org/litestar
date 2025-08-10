@@ -1,4 +1,3 @@
-# ruff: noqa: UP007, UP006
 from __future__ import annotations
 
 from collections.abc import Sequence

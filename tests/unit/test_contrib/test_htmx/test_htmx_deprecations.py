@@ -1,4 +1,4 @@
-# ruff: noqa: TC004, F401
+# ruff: noqa: F401
 import importlib.util
 import sys
 from pathlib import Path

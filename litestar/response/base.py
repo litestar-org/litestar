@@ -217,7 +217,7 @@ class Response(Generic[T]):
     )
 
     content: T
-    type_encoders: Optional[TypeEncodersMap] = None  # noqa: UP007
+    type_encoders: Optional[TypeEncodersMap] = None  # noqa: UP045
 
     def __init__(
         self,

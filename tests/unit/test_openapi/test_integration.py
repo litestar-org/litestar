@@ -199,7 +199,7 @@ def test_struct_field_default() -> None:
 
 def test_schema_for_optional_path_parameter() -> None:
     @get(path=["/", "/{test_message:str}"], media_type=MediaType.TEXT, sync_to_thread=False)
-    def handler(test_message: Optional[str]) -> str:  # noqa: UP007
+    def handler(test_message: Optional[str]) -> str:
         return test_message or "no message"
 
     with create_test_client(
@@ -299,8 +299,8 @@ def test_allow_multiple_parameters_with_same_name_but_different_location() -> No
 
     @post("/test")
     async def route(
-        name: Annotated[Optional[str], Parameter(cookie="name")] = None,  # noqa: UP007
-        name_header: Annotated[Optional[str], Parameter(header="name")] = None,  # noqa: UP007
+        name: Annotated[Optional[str], Parameter(cookie="name")] = None,
+        name_header: Annotated[Optional[str], Parameter(header="name")] = None,
     ) -> str:
         return name or name_header or ""
 

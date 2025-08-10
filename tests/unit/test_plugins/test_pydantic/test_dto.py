@@ -52,7 +52,7 @@ def test_schema_required_fields_with_pydantic_dto(
 
 def test_field_definition_implicit_optional_default(base_model: type[BaseModel]) -> None:
     class Model(base_model):  # type: ignore[misc, valid-type]
-        a: Optional[str]  # noqa: UP007
+        a: Optional[str]
 
     dto_type = PydanticDTO[Model]
     field_defs = list(dto_type.generate_field_definitions(Model))

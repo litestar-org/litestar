@@ -1,4 +1,3 @@
-# ruff: noqa: UP006,UP007
 from __future__ import annotations
 
 import inspect
