@@ -3184,9 +3184,8 @@ dev = [
     { name = "opentelemetry-sdk", version = "1.33.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.9'" },
     { name = "opentelemetry-sdk", version = "1.36.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.9'" },
     { name = "psutil" },
-    { name = "psycopg", version = "3.1.20", source = { registry = "https://pypi.org/simple" }, extra = ["binary", "pool"], marker = "python_full_version < '3.13'" },
-    { name = "psycopg", version = "3.2.9", source = { registry = "https://pypi.org/simple" }, extra = ["c"], marker = "python_full_version >= '3.13' and sys_platform == 'linux'" },
-    { name = "psycopg", version = "3.2.9", source = { registry = "https://pypi.org/simple" }, extra = ["pool"], marker = "python_full_version >= '3.13'" },
+    { name = "psycopg", extra = ["binary"], marker = "python_full_version < '3.13'" },
+    { name = "psycopg", extra = ["pool"] },
     { name = "psycopg2-binary" },
     { name = "python-dotenv", version = "1.0.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.9'" },
     { name = "python-dotenv", version = "1.1.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.9'" },
@@ -3317,9 +3316,8 @@ dev = [
     { name = "litestar", extras = ["full"] },
     { name = "opentelemetry-sdk" },
     { name = "psutil", specifier = ">=5.9.8" },
-    { name = "psycopg", extras = ["pool"], marker = "python_full_version >= '3.13' and sys_platform != 'linux'" },
+    { name = "psycopg", extras = ["pool"], marker = "python_full_version >= '3.13'", specifier = "<3.2.4" },
     { name = "psycopg", extras = ["pool", "binary"], marker = "python_full_version < '3.13'", specifier = ">=3.1.10,<3.2" },
-    { name = "psycopg", extras = ["pool", "c"], marker = "python_full_version >= '3.13' and sys_platform == 'linux'" },
     { name = "psycopg2-binary" },
     { name = "python-dotenv" },
     { name = "starlette" },
@@ -4808,23 +4806,11 @@ wheels = [
 name = "psycopg"
 version = "3.1.20"
 source = { registry = "https://pypi.org/simple" }
-resolution-markers = [
-    "python_full_version >= '3.11' and python_full_version < '3.13' and sys_platform != 'win32'",
-    "python_full_version == '3.10.*' and sys_platform != 'win32'",
-    "python_full_version == '3.9.*' and sys_platform != 'win32'",
-    "python_full_version >= '3.11' and python_full_version < '3.13' and sys_platform == 'win32'",
-    "python_full_version == '3.10.*' and sys_platform == 'win32'",
-    "python_full_version == '3.9.*' and sys_platform == 'win32'",
-    "python_full_version >= '3.8.1' and python_full_version < '3.9' and sys_platform != 'win32'",
-    "python_full_version < '3.8.1' and sys_platform != 'win32'",
-    "python_full_version >= '3.8.1' and python_full_version < '3.9' and sys_platform == 'win32'",
-    "python_full_version < '3.8.1' and sys_platform == 'win32'",
-]
 dependencies = [
     { name = "backports-zoneinfo", marker = "python_full_version < '3.9'" },
     { name = "typing-extensions", version = "4.13.2", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.9'" },
-    { name = "typing-extensions", version = "4.14.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.9' and python_full_version < '3.13'" },
-    { name = "tzdata", marker = "python_full_version < '3.13' and sys_platform == 'win32'" },
+    { name = "typing-extensions", version = "4.14.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.9'" },
+    { name = "tzdata", marker = "sys_platform == 'win32'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/5c/6d/0939210f3ba089b360cf0d3741494719152567bc81303cca2c0f1e67c78a/psycopg-3.1.20.tar.gz", hash = "sha256:32f5862ab79f238496236f97fe374a7ab55b4b4bb839a74802026544735f9a07", size = 147567, upload-time = "2024-06-30T17:03:55.421Z" }
 wheels = [
@@ -4836,32 +4822,7 @@ binary = [
     { name = "psycopg-binary", marker = "python_full_version < '3.13' and implementation_name != 'pypy'" },
 ]
 pool = [
-    { name = "psycopg-pool", marker = "python_full_version < '3.13'" },
-]
-
-[[package]]
-name = "psycopg"
-version = "3.2.9"
-source = { registry = "https://pypi.org/simple" }
-resolution-markers = [
-    "python_full_version >= '3.13' and sys_platform == 'linux'",
-    "python_full_version >= '3.13' and sys_platform != 'linux' and sys_platform != 'win32'",
-    "python_full_version >= '3.13' and sys_platform == 'win32'",
-]
-dependencies = [
-    { name = "tzdata", marker = "python_full_version >= '3.13' and sys_platform == 'win32'" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/27/4a/93a6ab570a8d1a4ad171a1f4256e205ce48d828781312c0bbaff36380ecb/psycopg-3.2.9.tar.gz", hash = "sha256:2fbb46fcd17bc81f993f28c47f1ebea38d66ae97cc2dbc3cad73b37cefbff700", size = 158122, upload-time = "2025-05-13T16:11:15.533Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/44/b0/a73c195a56eb6b92e937a5ca58521a5c3346fb233345adc80fd3e2f542e2/psycopg-3.2.9-py3-none-any.whl", hash = "sha256:01a8dadccdaac2123c916208c96e06631641c0566b22005493f09663c7a8d3b6", size = 202705, upload-time = "2025-05-13T16:06:26.584Z" },
-]
-
-[package.optional-dependencies]
-c = [
-    { name = "psycopg-c", marker = "python_full_version >= '3.13' and implementation_name != 'pypy' and sys_platform == 'linux'" },
-]
-pool = [
-    { name = "psycopg-pool", marker = "python_full_version >= '3.13'" },
+    { name = "psycopg-pool" },
 ]
 
 [[package]]
@@ -4923,12 +4884,6 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/42/ff/2f06d75396431a459d0fa8debdb66a7f04070e51b04eae0046e76966ebb0/psycopg_binary-3.1.20-cp39-cp39-musllinux_1_2_x86_64.whl", hash = "sha256:8a92fc898af4080e3cf562c02e3a8a9cb897dc70976c91e05fd064bff76928ea", size = 3223204, upload-time = "2024-06-30T17:03:45.429Z" },
     { url = "https://files.pythonhosted.org/packages/01/10/01ec61e06f6bb2305ab66f05f0501431ce5edbb61700e1cd5fa73cf05884/psycopg_binary-3.1.20-cp39-cp39-win_amd64.whl", hash = "sha256:47dd369cb4b263d29aed12ee23b37c03e58bfe656843692d109896c258c554b0", size = 2896197, upload-time = "2024-06-30T17:03:53.295Z" },
 ]
-
-[[package]]
-name = "psycopg-c"
-version = "3.2.9"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/83/7f/6147cb842081b0b32692bf5a0fdf58e9ac95418ebac1184d4431ec44b85f/psycopg_c-3.2.9.tar.gz", hash = "sha256:8c9f654f20c6c56bddc4543a3caab236741ee94b6732ab7090b95605502210e2", size = 609538, upload-time = "2025-05-13T16:11:19.856Z" }
 
 [[package]]
 name = "psycopg-pool"

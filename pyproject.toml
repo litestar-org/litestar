@@ -140,8 +140,7 @@ dev = [
   "aiosqlite",
   "asyncpg>=0.29.0",
   "psycopg[pool,binary]>=3.1.10,<3.2; python_version < \"3.13\"",
-  "psycopg[pool,c]; python_version >= \"3.13\" and sys_platform == 'linux'",
-  "psycopg[pool]; python_version >= \"3.13\" and sys_platform != 'linux'",
+  "psycopg[pool]<3.2.4; python_version >= \"3.13\"",  # Bug in 3.2.4: https://github.com/psycopg/psycopg/issues/1128
   "psycopg2-binary",
   "psutil>=5.9.8",
   "hypercorn>=0.16.0",
