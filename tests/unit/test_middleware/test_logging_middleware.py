@@ -67,7 +67,7 @@ def test_logging_middleware_regular_logger(
     ):
         # Set cookies on the client to avoid warnings about per-request cookies.
         client.app.get_logger = get_logger
-        client.cookies = {"request-cookie": "abc"}  # type: ignore[assignment]
+        client.cookies = {"request-cookie": "abc"}
         response = client.get("/", headers={"request-header": "1"})
         assert response.status_code == HTTP_200_OK
         assert len(caplog.messages) == 2
@@ -91,7 +91,7 @@ def test_logging_middleware_struct_logger(handler: HTTPRouteHandler) -> None:
         capture_logs() as cap_logs,
     ):
         # Set cookies on the client to avoid warnings about per-request cookies.
-        client.cookies = {"request-cookie": "abc"}  # type: ignore[assignment]
+        client.cookies = {"request-cookie": "abc"}
         response = client.get("/", headers={"request-header": "1"})
         assert response.status_code == HTTP_200_OK
         assert len(cap_logs) == 2
@@ -138,7 +138,7 @@ def test_logging_middleware_exclude_pattern(
         caplog.at_level(INFO),
     ):
         # Set cookies on the client to avoid warnings about per-request cookies.
-        client.cookies = {"request-cookie": "abc"}  # type: ignore[assignment]
+        client.cookies = {"request-cookie": "abc"}
         client.app.get_logger = get_logger
 
         response = client.get("/exclude")
@@ -163,7 +163,7 @@ def test_logging_middleware_exclude_opt_key(
         caplog.at_level(INFO),
     ):
         # Set cookies on the client to avoid warnings about per-request cookies.
-        client.cookies = {"request-cookie": "abc"}  # type: ignore[assignment]
+        client.cookies = {"request-cookie": "abc"}
         client.app.get_logger = get_logger
 
         response = client.get("/exclude")
@@ -188,7 +188,7 @@ def test_logging_middleware_compressed_response_body(
         caplog.at_level(INFO),
     ):
         # Set cookies on the client to avoid warnings about per-request cookies.
-        client.cookies = {"request-cookie": "abc"}  # type: ignore[assignment]
+        client.cookies = {"request-cookie": "abc"}
         client.app.get_logger = get_logger
         response = client.get("/", headers={"request-header": "1"})
         assert response.status_code == HTTP_200_OK
@@ -271,7 +271,7 @@ def test_logging_middleware_log_fields(
     ):
         # Set cookies on the client to avoid warnings about per-request cookies.
         client.app.get_logger = get_logger
-        client.cookies = {"request-cookie": "abc"}  # type: ignore[assignment]
+        client.cookies = {"request-cookie": "abc"}
         response = client.get("/", headers={"request-header": "1"})
         assert response.status_code == HTTP_200_OK
         assert len(caplog.messages) == 2

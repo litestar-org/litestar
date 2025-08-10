@@ -100,7 +100,7 @@ def test_before_request_handler_resolution(
     class MyController(Controller):
         path = "/hello"
 
-        before_request = controller_before_request_handler
+        before_request = controller_before_request_handler  # type: ignore[assignment]
 
         @get(before_request=method_before_request_handler)
         def hello(self) -> dict[str, str]:

@@ -111,7 +111,7 @@ def test_streaming_response() -> None:
     client = TestClient(app)
     response = client.get("/")
     assert response.text == "1, 2, 3, 4, 5"
-    assert filled_by_bg_task == "6, 7, 8, 9"
+    assert filled_by_bg_task == "6, 7, 8, 9"  # type: ignore[comparison-overlap]
 
 
 def test_streaming_response_custom_iterator() -> None:

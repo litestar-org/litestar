@@ -705,7 +705,7 @@ class HTTPRouteHandler(BaseRouteHandler):
 
         return await self._call_handler_function(request=request)
 
-    async def _call_handler_function(  # type: ignore[return]
+    async def _call_handler_function(
         self,
         request: Request,
     ) -> ASGIApp:  # pyright: ignore[reportGeneralTypeIssues]
@@ -725,8 +725,6 @@ class HTTPRouteHandler(BaseRouteHandler):
         # 'DependencyCleanupGroup' to enter and exit
         stack = contextlib.AsyncExitStack()
 
-        # mypy cannot infer that 'stack' never swallows exceptions, therefore it thinks
-        # this method is potentially missing a 'return' statement
         async with stack:
             if not response_data:
                 parsed_kwargs: dict[str, Any] = {}

@@ -325,11 +325,7 @@ strict_equality = false
 
 [[tool.mypy.overrides]]
 disable_error_code = "index, union-attr"
-module = ["tests.unit.test_plugins.test_pydantic.test_openapi", "litestar._asgi.routing_trie.traversal"]
-
-[[tool.mypy.overrides]]
-disable_error_code = "arg-type, comparison-overlap, unreachable"
-module = ["tests.unit.test_channels.test_subscriber", "tests.unit.test_response.test_streaming_response"]
+module = ["tests.unit.test_plugins.test_pydantic.test_openapi"]
 
 [[tool.mypy.overrides]]
 ignore_missing_imports = true

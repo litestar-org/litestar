@@ -49,7 +49,7 @@ def test_layered_parameters_injected_correctly() -> None:
         },
     ) as client:
         # Set cookies on the client to avoid warnings about per-request cookies.
-        client.cookies = {"app4": "jeronimo"}  # type: ignore[assignment]
+        client.cookies = {"app4": "jeronimo"}
 
         query = {"controller1": "99", "controller3": "tuna", "router1": "albatross", "app2": ["x", "y"]}
         headers = {"router3": "10"}
@@ -108,7 +108,7 @@ def test_layered_parameters_validation(parameter: str, param_type: str) -> None:
             query.pop(parameter)
 
         # Set cookies on the client to avoid warnings about per-request cookies.
-        client.cookies = cookies  # type: ignore[assignment]
+        client.cookies = cookies
 
         response = client.get("/router/controller/1", params=query, headers=headers)
 

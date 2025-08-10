@@ -15,7 +15,7 @@ from typing import (
 )
 
 import msgspec
-from multidict import CIMultiDict, CIMultiDictProxy, MultiMapping
+from multidict import CIMultiDict, CIMultiDictProxy, MultiMapping, MultiDict
 
 from litestar._multipart import parse_content_header
 from litestar.datastructures.multi_dicts import MultiMixin
@@ -46,13 +46,13 @@ def _encode_headers(headers: Iterable[tuple[str, str]]) -> "RawHeadersList":
 class Headers(CIMultiDictProxy[str], MultiMixin[str]):  # pyright: ignore
     """An immutable, case-insensitive multi dict for HTTP headers."""
 
-    def __init__(self, headers: Optional[Union[Mapping[str, str], "RawHeaders", MultiMapping]] = None) -> None:  # pyright: ignore
+    def __init__(self, headers: Optional[Union[Mapping[str, str], "RawHeaders", MultiDict[str]]] = None) -> None:  # pyright: ignore
         """Initialize ``Headers``.
 
         Args:
             headers: Initial value.
         """
-        if not isinstance(headers, MultiMapping):
+        if not isinstance(headers, MultiDict):
             headers_: Union[Mapping[str, str], list[tuple[str, str]]] = {}
             if headers:
                 if isinstance(headers, Mapping):

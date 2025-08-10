@@ -458,7 +458,7 @@ def get_model_info(
     else:
         # pydantic v1 requires some workarounds here
         model_annotations = {
-            k: f.outer_type_ if f.required or f.default else Optional[f.outer_type_]
+            k: f.outer_type_ if f.required or f.default else Optional[f.outer_type_]  # type: ignore[union-attr]
             for k, f in model.__fields__.items()  # type: ignore[union-attr]
         }
 
@@ -487,7 +487,7 @@ def get_model_info(
     }
 
     computed_field_definitions = create_field_definitions_for_computed_fields(
-        model,
+        model,  # type: ignore[arg-type]
         prefer_alias=prefer_alias,
     )
     property_fields.update(computed_field_definitions)
