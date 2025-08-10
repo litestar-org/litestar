@@ -64,7 +64,7 @@ maintainers = [
 name = "litestar"
 readme = "docs/PYPI_README.md"
 requires-python = ">=3.8,<4.0"
-version = "2.16.0"
+version = "2.17.0"
 
 [project.urls]
 Blog = "https://blog.litestar.dev"
@@ -103,7 +103,7 @@ pydantic = [
   "pydantic-extra-types!=2.9.0; python_version < \"3.9\"",
   "pydantic-extra-types; python_version >= \"3.9\"",
 ]
-redis = ["redis[hiredis]>=4.4.4"]
+redis = ["redis[hiredis]>=4.4.4,<5.3"]  # 5.3.0 introduced some issues with the channels plugin; need to investigate
 sqlalchemy = ["advanced-alchemy>=0.2.2"]
 standard = [
   "jinja2",
@@ -140,8 +140,7 @@ dev = [
   "aiosqlite",
   "asyncpg>=0.29.0",
   "psycopg[pool,binary]>=3.1.10,<3.2; python_version < \"3.13\"",
-  "psycopg[pool,c]; python_version >= \"3.13\" and sys_platform == 'linux'",
-  "psycopg[pool]; python_version >= \"3.13\" and sys_platform != 'linux'",
+  "psycopg[pool]<3.2.4; python_version >= \"3.13\"",  # Bug in 3.2.4: https://github.com/psycopg/psycopg/issues/1128
   "psycopg2-binary",
   "psutil>=5.9.8",
   "hypercorn>=0.16.0",
@@ -177,7 +176,7 @@ linting = [
 ]
 test = [
   "covdefaults",
-  "pytest",
+  "pytest==8.3.4",  # 8.4.1 causes some issues with asyncio for us; need to investigate
   "pytest-asyncio<=0.24.0; python_version < \"3.9\"",
   "pytest-asyncio>0.24.0; python_version >= \"3.9\"",
   "pytest-cov",
@@ -226,6 +225,7 @@ filterwarnings = [
   "ignore: Dropping max_length:litestar.exceptions.LitestarWarning:litestar.contrib.piccolo",
   "ignore: Python Debugger on exception enabled:litestar.exceptions.LitestarWarning:",
   "ignore: datetime.datetime.utcnow:DeprecationWarning:time_machine",
+  "ignore:Use of deprecated default '__check_model__':DeprecationWarning:polyfactory:",
 ]
 markers = [
   "sqlalchemy_integration: SQLAlchemy integration tests",
