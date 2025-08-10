@@ -1,15 +1,15 @@
 <!DOCTYPE html>
-<html lang="en" data-accent-color="amber" data-content_root="">
+<html lang="en" data-accent-color="amber" data-content_root="../">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>2.x Changelog - Litestar Framework</title><link rel="shortcut icon" href="../_static/favicon.svg"/><link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><script>
     function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
     setColorMode(localStorage._theme||"auto");
   </script><link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=397bb51e" />
-    <link rel="stylesheet" type="text/css" href="../_static/shibuya.css?v=83eaa723" />
+    <link rel="stylesheet" type="text/css" href="../_static/shibuya.css?v=76b6f612" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
-    <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx_paramlinks.css" />
     <link media="print" rel="stylesheet" type="text/css" href="../_static/print.css?v=20ff2c19" />
     <link rel="stylesheet" type="text/css" href="../_static/style.css?v=50ea2f63" />
@@ -42,13 +42,13 @@
       <img class="dark-logo" src="../_static/logo-dark.png" alt="Litestar" height="28" loading="lazy" />
       <strong>Litestar</strong>
     </a>
-    <div class="sy-head-nav" id="HeadNav">
+    <div class="sy-head-nav" id="head-nav">
       <nav class="sy-head-links"><ul><li class="link"><a href="../index.html">Home</a></li>
-      <li class="link"><button type="button">
+      <li class="link"><button class="js-menu" type="button" id="nav-trigger-2" aria-controls="nav-children-2">
             <span>Community</span>
             <i class="i-lucide chevron-down"></i>
           </button>
-        <ul><li><a href="../contribution-guide.html">
+        <ul id="nav-children-2" aria-labelledby="nav-trigger-2"><li><a href="../contribution-guide.html">
                 <span>Contributing</span>
                 <small>Learn how to contribute to the Litestar project</small>
               </a></li><li><a href="https://github.com/litestar-org/.github?tab=coc-ov-file">
@@ -59,11 +59,11 @@
                 <small>Overview of Litestar's security protocols</small>
               </a></li></ul>
       </li>
-      <li class="link"><button type="button">
+      <li class="link"><button class="js-menu" type="button" id="nav-trigger-3" aria-controls="nav-children-3">
             <span>About</span>
             <i class="i-lucide chevron-down"></i>
           </button>
-        <ul><li><a href="https://litestar.dev/about/organization">
+        <ul id="nav-children-3" aria-labelledby="nav-trigger-3"><li><a href="https://litestar.dev/about/organization">
                 <span>Litestar Organization</span>
                 <small>Details about the Litestar organization</small>
               </a></li><li><a href="https://litestar.dev/about/litestar-releases">
@@ -71,11 +71,11 @@
                 <small>Explore the release process, versioning, and deprecation policy for Litestar</small>
               </a></li></ul>
       </li>
-      <li class="link"><button type="button">
+      <li class="link"><button class="js-menu" type="button" id="nav-trigger-4" aria-controls="nav-children-4">
             <span>Release notes</span>
             <i class="i-lucide chevron-down"></i>
           </button>
-        <ul><li><a href="whats-new-3.html">
+        <ul id="nav-children-4" aria-labelledby="nav-trigger-4"><li><a href="whats-new-3.html">
                 <span>What's new in 3.0</span>
                 <small>Explore the new features in Litestar 3.0</small>
               </a></li><li><a href="changelog.html">
@@ -86,11 +86,11 @@
                 <small>All changes in the 2.x series</small>
               </a></li></ul>
       </li>
-      <li class="link"><button type="button">
+      <li class="link"><button class="js-menu" type="button" id="nav-trigger-5" aria-controls="nav-children-5">
             <span>Help</span>
             <i class="i-lucide chevron-down"></i>
           </button>
-        <ul><li><a href="https://discord.gg/litestar">
+        <ul id="nav-children-5" aria-labelledby="nav-trigger-5"><li><a href="https://discord.gg/litestar">
                 <span>Discord Help Forum</span>
                 <small>Dedicated Discord help forum</small>
               </a></li><li><a href="https://github.com/orgs/litestar-org/discussions">
@@ -127,7 +127,7 @@ data-aria-auto="Switch to light color mode"
 data-aria-light="Switch to dark color mode"
 data-aria-dark="Switch to auto color mode">
 <i class="i-lucide theme-icon"></i>
-</button><button class="md:hidden flex items-center js-menu" aria-label="Menu" type="button" aria-controls="HeadNav" aria-expanded="false">
+</button><button class="md:hidden flex items-center js-menu" aria-label="Menu" type="button" aria-controls="head-nav" aria-expanded="false">
         <div class="hamburger">
           <span class="hamburger_1"></span>
           <span class="hamburger_2 -translate-x-2"></span>
@@ -173,12 +173,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2"><a class="reference internal" href="../usage/databases/index.html">Databases</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../usage/databases/sqlalchemy/index.html">SQLAlchemy</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../usage/databases/sqlalchemy/models_and_repository.html">SQLAlchemy Models &amp; Repository</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../usage/databases/sqlalchemy/plugins/index.html">Plugins</a><ul>
-<li class="toctree-l5"><a class="reference internal" href="../usage/databases/sqlalchemy/plugins/sqlalchemy_plugin.html">SQLAlchemy Plugin</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../usage/databases/sqlalchemy/plugins/sqlalchemy_init_plugin.html">SQLAlchemy Init Plugin</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../usage/databases/sqlalchemy/plugins/sqlalchemy_serialization_plugin.html">SQLAlchemy Serialization Plugin</a></li>
-</ul>
-</li>
+<li class="toctree-l4"><a class="reference internal" href="../usage/databases/sqlalchemy/plugins/index.html">Plugins</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../usage/databases/piccolo.html">Piccolo ORM</a></li>
@@ -671,11 +666,12 @@ data-aria-dark="Switch to auto color mode">
     </span>
   </span>
 </a><div class="edit-this-page">
-  <a href="https://github.com/litestar-org/litestar/blob/master/docs/release-notes/2.x-changelog.rst">Edit this page</a>
+  <a href="https://github.com/litestar-org/litestar/blob/main/docs/release-notes/2.x-changelog.rst">Edit this page</a>
 </div><div id="ethical-ad-placement" data-ea-publisher="readthedocs"></div></div>
   </aside>
   <div class="rside-overlay js-menu" role="button" aria-label="Close Table of Contents" aria-controls="rside" aria-expanded="false"></div>
-  <main class="sy-main w-full max-sm:max-w-full print:pt-6"><div class="sy-breadcrumbs" role="navigation">
+  <main class="sy-main w-full max-sm:max-w-full print:pt-6">
+<div class="sy-breadcrumbs" role="navigation">
   <div class="sy-breadcrumbs-inner flex items-center">
     <div class="md:hidden mr-3">
       <button class="js-menu" aria-label="Menu" type="button" aria-controls="lside" aria-expanded="false">
@@ -701,11 +697,11 @@ data-aria-dark="Switch to auto color mode">
       <div class="min-w-0 max-w-6xl px-6 pb-6 pt-8 xl:px-12">
         <article class="yue" role="main">
           <section id="x-changelog">
-<h1>2.x Changelog<a class="headerlink" href="#x-changelog" title="Permalink to this heading">¶</a></h1>
+<h1>2.x Changelog<a class="headerlink" href="#x-changelog" title="Link to this heading">¶</a></h1>
 <section id="2.7.1">
-<h2>2.7.1<a class="headerlink" href="#2.7.1" title="Permalink to this heading">¶</a></h2>
+<h2>2.7.1<a class="headerlink" href="#2.7.1" title="Link to this heading">¶</a></h2>
 <strong>Released: </strong>2024-03-22<section id="2.7.1-bugfix">
-<h3>Bugfixes<a class="headerlink" href="#2.7.1-bugfix" title="Permalink to this heading">¶</a></h3>
+<h3>Bugfixes<a class="headerlink" href="#2.7.1-bugfix" title="Link to this heading">¶</a></h3>
 <dl>
 <dt>add default encoders for <cite>Enums</cite> and <cite>EnumMeta</cite><a class="headerlink reference internal" href="#2.7.1-add default encoders for" id="2.7.1-add default encoders for">#</a></dt><dd><div class="changelog-change docutils container">
 <p>This addresses an issue when serializing <code class="docutils literal notranslate"><span class="pre">Enums</span></code> that was reported in discord.</p>
@@ -801,9 +797,9 @@ oth <cite>KwargDefinition</cite> and <cite>Meta</cite>.</p>
 </section>
 </section>
 <section id="2.7.0">
-<h2>2.7.0<a class="headerlink" href="#2.7.0" title="Permalink to this heading">¶</a></h2>
+<h2>2.7.0<a class="headerlink" href="#2.7.0" title="Link to this heading">¶</a></h2>
 <strong>Released: </strong>2024-03-10<section id="2.7.0-feature">
-<h3>Features<a class="headerlink" href="#2.7.0-feature" title="Permalink to this heading">¶</a></h3>
+<h3>Features<a class="headerlink" href="#2.7.0-feature" title="Link to this heading">¶</a></h3>
 <dl>
 <dt>Support <code class="docutils literal notranslate"><span class="pre">ResponseSpec(...,</span> <span class="pre">examples=[...])</span></code><a class="headerlink reference internal" href="#2.7.0-support" id="2.7.0-support">#</a></dt><dd><div class="changelog-change docutils container">
 <p>Allow defining custom examples for the responses via <code class="docutils literal notranslate"><span class="pre">ResponseSpec</span></code>.
@@ -891,7 +887,7 @@ This is related to <a class="reference external" href="https://github.com/litest
 </dl>
 </section>
 <section id="2.7.0-bugfix">
-<h3>Bugfixes<a class="headerlink" href="#2.7.0-bugfix" title="Permalink to this heading">¶</a></h3>
+<h3>Bugfixes<a class="headerlink" href="#2.7.0-bugfix" title="Link to this heading">¶</a></h3>
 <dl>
 <dt>missing cors headers in response<a class="headerlink reference internal" href="#2.7.0-missing cors headers in response" id="2.7.0-missing cors headers in response">#</a></dt><dd><div class="changelog-change docutils container">
 <p>Set CORS Middleware headers as per spec.
@@ -912,9 +908,9 @@ explicitly sending it, this change fixes it by defaulting to the empty-string</p
 </section>
 </section>
 <section id="2.6.3">
-<h2>2.6.3<a class="headerlink" href="#2.6.3" title="Permalink to this heading">¶</a></h2>
+<h2>2.6.3<a class="headerlink" href="#2.6.3" title="Link to this heading">¶</a></h2>
 <strong>Released: </strong>2024-03-04<section id="2.6.3-bugfix">
-<h3>Bugfixes<a class="headerlink" href="#2.6.3-bugfix" title="Permalink to this heading">¶</a></h3>
+<h3>Bugfixes<a class="headerlink" href="#2.6.3-bugfix" title="Link to this heading">¶</a></h3>
 <dl>
 <dt>Pydantic V1 schema generation for PrivateAttr in GenericModel<a class="headerlink reference internal" href="#2.6.3-pydantic v1 schema generation for privateattr in genericmodel" id="2.6.3-pydantic v1 schema generation for privateattr in genericmodel">#</a></dt><dd><div class="changelog-change docutils container">
 <p>Fixes a bug that caused a <code class="docutils literal notranslate"><span class="pre">NameError</span></code> when a Pydantic V1 <code class="docutils literal notranslate"><span class="pre">GenericModel</span></code> has a private attribute of which the type annotation cannot be resolved at the time of schema generation.</p>
@@ -925,26 +921,26 @@ explicitly sending it, this change fixes it by defaulting to the empty-string</p
 </section>
 </section>
 <section id="2.6.2">
-<h2>2.6.2<a class="headerlink" href="#2.6.2" title="Permalink to this heading">¶</a></h2>
+<h2>2.6.2<a class="headerlink" href="#2.6.2" title="Link to this heading">¶</a></h2>
 <strong>Released: </strong>2024/03/02<section id="2.6.2-bugfix">
-<h3>Bugfixes<a class="headerlink" href="#2.6.2-bugfix" title="Permalink to this heading">¶</a></h3>
+<h3>Bugfixes<a class="headerlink" href="#2.6.2-bugfix" title="Link to this heading">¶</a></h3>
 <dl>
 <dt>DTO msgspec meta constraints not being included in transfer model<a class="headerlink reference internal" href="#2.6.2-dto msgspec meta constraints not being included in transfer model" id="2.6.2-dto msgspec meta constraints not being included in transfer model">#</a></dt><dd><div class="changelog-change docutils container">
 <p>Fix an issue where msgspec constraints set in <code class="docutils literal notranslate"><span class="pre">msgspec.Meta</span></code> would not be
 honoured by the DTO.</p>
 <p>In the given example, the <code class="docutils literal notranslate"><span class="pre">min_length=3</span></code> constraint would be ignored by the
 model generated by <code class="docutils literal notranslate"><span class="pre">MsgspecDTO</span></code>.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Annotated</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Annotated</span>
 </span><span data-line="2">
-</span><span data-line="3"><span class="kn">import</span> <span class="nn">msgspec</span>
-</span><span data-line="4"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">post</span>
-</span><span data-line="5"><span class="kn">from</span> <span class="nn">litestar.dto</span> <span class="kn">import</span> <span class="n">MsgspecDTO</span>
+</span><span data-line="3"><span class="kn">import</span><span class="w"> </span><span class="nn">msgspec</span>
+</span><span data-line="4"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">post</span>
+</span><span data-line="5"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.dto</span><span class="w"> </span><span class="kn">import</span> <span class="n">MsgspecDTO</span>
 </span><span data-line="6">
-</span><span data-line="7"><span class="k">class</span> <span class="nc">Request</span><span class="p">(</span><span class="n">msgspec</span><span class="o">.</span><span class="n">Struct</span><span class="p">):</span>
+</span><span data-line="7"><span class="k">class</span><span class="w"> </span><span class="nc">Request</span><span class="p">(</span><span class="n">msgspec</span><span class="o">.</span><span class="n">Struct</span><span class="p">):</span>
 </span><span data-line="8">    <span class="n">foo</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">msgspec</span><span class="o">.</span><span class="n">Meta</span><span class="p">(</span><span class="n">min_length</span><span class="o">=</span><span class="mi">3</span><span class="p">)]</span>
 </span><span data-line="9">
 </span><span data-line="10"><span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/example/&quot;</span><span class="p">,</span> <span class="n">dto</span><span class="o">=</span><span class="n">MsgspecDTO</span><span class="p">[</span><span class="n">Request</span><span class="p">])</span>
-</span><span data-line="11"><span class="k">async</span> <span class="k">def</span> <span class="nf">example</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">Request</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Request</span><span class="p">:</span>
+</span><span data-line="11"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">example</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">Request</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Request</span><span class="p">:</span>
 </span><span data-line="12">    <span class="k">return</span> <span class="n">data</span>
 </span></pre></div>
 </div>
@@ -1002,9 +998,9 @@ client wasn’t closed explicitly</p>
 </section>
 </section>
 <section id="2.6.1">
-<h2>2.6.1<a class="headerlink" href="#2.6.1" title="Permalink to this heading">¶</a></h2>
+<h2>2.6.1<a class="headerlink" href="#2.6.1" title="Link to this heading">¶</a></h2>
 <strong>Released: </strong>2024/02/14<section id="2.6.1-bugfix">
-<h3>Bugfixes<a class="headerlink" href="#2.6.1-bugfix" title="Permalink to this heading">¶</a></h3>
+<h3>Bugfixes<a class="headerlink" href="#2.6.1-bugfix" title="Link to this heading">¶</a></h3>
 <dl>
 <dt>SQLAlchemy: Use <cite>IntegrityError</cite> instead of deprecated <cite>ConflictError</cite><a class="headerlink reference internal" href="#2.6.1-sqlalchemy: use" id="2.6.1-sqlalchemy: use">#</a></dt><dd><div class="changelog-change docutils container">
 <p>Updated the repository to return <code class="docutils literal notranslate"><span class="pre">IntegrityError</span></code> instead of the now
@@ -1055,9 +1051,9 @@ added to the exception response.</p>
 </section>
 </section>
 <section id="2.6.0">
-<h2>2.6.0<a class="headerlink" href="#2.6.0" title="Permalink to this heading">¶</a></h2>
+<h2>2.6.0<a class="headerlink" href="#2.6.0" title="Link to this heading">¶</a></h2>
 <strong>Released: </strong>2024/02/06<section id="2.6.0-feature">
-<h3>Features<a class="headerlink" href="#2.6.0-feature" title="Permalink to this heading">¶</a></h3>
+<h3>Features<a class="headerlink" href="#2.6.0-feature" title="Link to this heading">¶</a></h3>
 <dl>
 <dt>Enable disabling configuring <code class="docutils literal notranslate"><span class="pre">root</span></code> logger within <code class="docutils literal notranslate"><span class="pre">LoggingConfig</span></code><a class="headerlink reference internal" href="#2.6.0-enable disabling configuring" id="2.6.0-enable disabling configuring">#</a></dt><dd><div class="changelog-change docutils container">
 <p>The option <a class="reference internal" href="../reference/logging/config.html#litestar.logging.config.LoggingConfig.configure_root_logger" title="litestar.logging.config.LoggingConfig.configure_root_logger"><code class="xref py py-attr docutils literal notranslate"><span class="pre">configure_root_logger</span></code></a> was
@@ -1161,9 +1157,9 @@ watcher.</p>
 </section>
 </section>
 <section id="2.5.5">
-<h2>2.5.5<a class="headerlink" href="#2.5.5" title="Permalink to this heading">¶</a></h2>
+<h2>2.5.5<a class="headerlink" href="#2.5.5" title="Link to this heading">¶</a></h2>
 <strong>Released: </strong>2024/02/04<section id="2.5.5-bugfix">
-<h3>Bugfixes<a class="headerlink" href="#2.5.5-bugfix" title="Permalink to this heading">¶</a></h3>
+<h3>Bugfixes<a class="headerlink" href="#2.5.5-bugfix" title="Link to this heading">¶</a></h3>
 <dl>
 <dt>Fix scope <code class="docutils literal notranslate"><span class="pre">state</span></code> key handling<a class="headerlink reference internal" href="#2.5.5-fix scope" id="2.5.5-fix scope">#</a></dt><dd><div class="changelog-change docutils container">
 <p>Fix a regression introduced in #2751 that would wrongfully assume the <code class="docutils literal notranslate"><span class="pre">state</span></code>
@@ -1178,9 +1174,9 @@ some servers, such as hypercorn, do not provide it.</p>
 </section>
 </section>
 <section id="2.5.4">
-<h2>2.5.4<a class="headerlink" href="#2.5.4" title="Permalink to this heading">¶</a></h2>
+<h2>2.5.4<a class="headerlink" href="#2.5.4" title="Link to this heading">¶</a></h2>
 <strong>Released: </strong>2024/01/31<section id="2.5.4-bugfix">
-<h3>Bugfixes<a class="headerlink" href="#2.5.4-bugfix" title="Permalink to this heading">¶</a></h3>
+<h3>Bugfixes<a class="headerlink" href="#2.5.4-bugfix" title="Link to this heading">¶</a></h3>
 <dl>
 <dt>Handle <code class="docutils literal notranslate"><span class="pre">KeyError</span></code> when <cite>root_path</cite> is not present in ASGI scope<a class="headerlink reference internal" href="#2.5.4-handle" id="2.5.4-handle">#</a></dt><dd><div class="changelog-change docutils container">
 <p>Nginx Unit ASGI server does not set “root_path” in the ASGI scope, which is
@@ -1206,9 +1202,9 @@ the key is always present and instead tries to optionally retrieve it.</p>
 </section>
 </section>
 <section id="2.5.3">
-<h2>2.5.3<a class="headerlink" href="#2.5.3" title="Permalink to this heading">¶</a></h2>
+<h2>2.5.3<a class="headerlink" href="#2.5.3" title="Link to this heading">¶</a></h2>
 <strong>Released: </strong>2024/01/29<section id="2.5.3-bugfix">
-<h3>Bugfixes<a class="headerlink" href="#2.5.3-bugfix" title="Permalink to this heading">¶</a></h3>
+<h3>Bugfixes<a class="headerlink" href="#2.5.3-bugfix" title="Link to this heading">¶</a></h3>
 <dl>
 <dt>Handle diverging ASGI <code class="docutils literal notranslate"><span class="pre">root_path</span></code> behaviour<a class="headerlink reference internal" href="#2.5.3-handle diverging asgi" id="2.5.3-handle diverging asgi">#</a></dt><dd><div class="changelog-change docutils container">
 <p>Uvicorn <a class="reference external" href="https://github.com/encode/uvicorn/releases/tag/0.26.0">0.26.0</a>
@@ -1224,9 +1220,9 @@ consistent behaviour of applications in any case.</p>
 </section>
 </section>
 <section id="2.5.2">
-<h2>2.5.2<a class="headerlink" href="#2.5.2" title="Permalink to this heading">¶</a></h2>
+<h2>2.5.2<a class="headerlink" href="#2.5.2" title="Link to this heading">¶</a></h2>
 <strong>Released: </strong>2024/01/27<section id="2.5.2-bugfix">
-<h3>Bugfixes<a class="headerlink" href="#2.5.2-bugfix" title="Permalink to this heading">¶</a></h3>
+<h3>Bugfixes<a class="headerlink" href="#2.5.2-bugfix" title="Link to this heading">¶</a></h3>
 <dl>
 <dt>Ensure <code class="docutils literal notranslate"><span class="pre">MultiDict</span></code> and <code class="docutils literal notranslate"><span class="pre">ImmutableMultiDict</span></code> copy methods return the instance’s type<a class="headerlink reference internal" href="#2.5.2-ensure" id="2.5.2-ensure">#</a></dt><dd><div class="changelog-change docutils container">
 <p>Ensure <a class="reference internal" href="../reference/datastructures/index.html#litestar.datastructures.MultiDict" title="litestar.datastructures.MultiDict"><code class="xref py py-class docutils literal notranslate"><span class="pre">MultiDict</span></code></a> and
@@ -1247,27 +1243,27 @@ backport of <a class="reference external" href="https://docs.python.org/3/librar
 </section>
 </section>
 <section id="2.5.1">
-<h2>2.5.1<a class="headerlink" href="#2.5.1" title="Permalink to this heading">¶</a></h2>
+<h2>2.5.1<a class="headerlink" href="#2.5.1" title="Link to this heading">¶</a></h2>
 <strong>Released: </strong>2024/01/18<section id="2.5.1-bugfix">
-<h3>Bugfixes<a class="headerlink" href="#2.5.1-bugfix" title="Permalink to this heading">¶</a></h3>
+<h3>Bugfixes<a class="headerlink" href="#2.5.1-bugfix" title="Link to this heading">¶</a></h3>
 <dl>
 <dt>Fix OpenAPI schema generation for Union of multiple <code class="docutils literal notranslate"><span class="pre">msgspec.Struct</span></code>s and <code class="docutils literal notranslate"><span class="pre">None</span></code><a class="headerlink reference internal" href="#2.5.1-fix openapi schema generation for union of multiple" id="2.5.1-fix openapi schema generation for union of multiple">#</a></dt><dd><div class="changelog-change docutils container">
 <p>The following code would raise a <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.13)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">TypeError</span></code></a></p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">import</span> <span class="nn">msgspec</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">import</span><span class="w"> </span><span class="nn">msgspec</span>
 </span><span data-line="2">
-</span><span data-line="3"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">get</span>
+</span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">get</span>
 </span><span data-line="4">
 </span><span data-line="5">
-</span><span data-line="6"><span class="k">class</span> <span class="nc">StructA</span><span class="p">(</span><span class="n">msgspec</span><span class="o">.</span><span class="n">Struct</span><span class="p">):</span>
+</span><span data-line="6"><span class="k">class</span><span class="w"> </span><span class="nc">StructA</span><span class="p">(</span><span class="n">msgspec</span><span class="o">.</span><span class="n">Struct</span><span class="p">):</span>
 </span><span data-line="7">    <span class="k">pass</span>
 </span><span data-line="8">
 </span><span data-line="9">
-</span><span data-line="10"><span class="k">class</span> <span class="nc">StructB</span><span class="p">(</span><span class="n">msgspec</span><span class="o">.</span><span class="n">Struct</span><span class="p">):</span>
+</span><span data-line="10"><span class="k">class</span><span class="w"> </span><span class="nc">StructB</span><span class="p">(</span><span class="n">msgspec</span><span class="o">.</span><span class="n">Struct</span><span class="p">):</span>
 </span><span data-line="11">    <span class="k">pass</span>
 </span><span data-line="12">
 </span><span data-line="13">
 </span><span data-line="14"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
-</span><span data-line="15"><span class="k">async</span> <span class="k">def</span> <span class="nf">handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">StructA</span> <span class="o">|</span> <span class="n">StructB</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="15"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">StructA</span> <span class="o">|</span> <span class="n">StructB</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
 </span><span data-line="16">    <span class="k">return</span> <span class="n">StructA</span><span class="p">()</span>
 </span></pre></div>
 </div>
@@ -1296,9 +1292,9 @@ of type <code class="docutils literal notranslate"><span class="pre">array</span
 </section>
 </section>
 <section id="2.5.0">
-<h2>2.5.0<a class="headerlink" href="#2.5.0" title="Permalink to this heading">¶</a></h2>
+<h2>2.5.0<a class="headerlink" href="#2.5.0" title="Link to this heading">¶</a></h2>
 <strong>Released: </strong>2024/01/06<section id="2.5.0-feature">
-<h3>Features<a class="headerlink" href="#2.5.0-feature" title="Permalink to this heading">¶</a></h3>
+<h3>Features<a class="headerlink" href="#2.5.0-feature" title="Link to this heading">¶</a></h3>
 <dl>
 <dt>Postgres channels backends<a class="headerlink reference internal" href="#2.5.0-postgres channels backends" id="2.5.0-postgres channels backends">#</a></dt><dd><div class="changelog-change docutils container">
 <p>Two new channel backends were added to bring Postgres support:</p>
@@ -1325,18 +1321,18 @@ of type <code class="docutils literal notranslate"><span class="pre">array</span
 </dl>
 </section>
 <section id="2.5.0-bugfix">
-<h3>Bugfixes<a class="headerlink" href="#2.5.0-bugfix" title="Permalink to this heading">¶</a></h3>
+<h3>Bugfixes<a class="headerlink" href="#2.5.0-bugfix" title="Link to this heading">¶</a></h3>
 <dl>
 <dt>Fix serialization of custom types in exception responses<a class="headerlink reference internal" href="#2.5.0-fix serialization of custom types in exception responses" id="2.5.0-fix serialization of custom types in exception responses">#</a></dt><dd><div class="changelog-change docutils container">
 <p>Fix a bug that would lead to a <a class="reference internal" href="../reference/exceptions.html#litestar.exceptions.SerializationException" title="litestar.exceptions.SerializationException"><code class="xref py py-exc docutils literal notranslate"><span class="pre">SerializationException</span></code></a> when custom types
 were present in an exception response handled by the built-in exception
 handlers.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">class</span> <span class="nc">Foo</span><span class="p">:</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">class</span><span class="w"> </span><span class="nc">Foo</span><span class="p">:</span>
 </span><span data-line="2">    <span class="k">pass</span>
 </span><span data-line="3">
 </span><span data-line="4">
 </span><span data-line="5"><span class="nd">@get</span><span class="p">()</span>
-</span><span data-line="6"><span class="k">def</span> <span class="nf">handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="6"><span class="k">def</span><span class="w"> </span><span class="nf">handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 </span><span data-line="7">    <span class="k">raise</span> <span class="n">ValidationException</span><span class="p">(</span><span class="n">extra</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;foo&quot;</span><span class="p">:</span> <span class="n">Foo</span><span class="p">(</span><span class="s2">&quot;bar&quot;</span><span class="p">)})</span>
 </span><span data-line="8">
 </span><span data-line="9">
@@ -1353,8 +1349,8 @@ causing the serializer to throw an exception for an unknown type.</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">event_type</span></code> set within an SSE returned from a handler would revert back
 to a default after the first message sent:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/stream&quot;</span><span class="p">)</span>
-</span><span data-line="2"><span class="k">async</span> <span class="k">def</span> <span class="nf">stream</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ServerSentEvent</span><span class="p">:</span>
-</span><span data-line="3">    <span class="k">async</span> <span class="k">def</span> <span class="nf">gen</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">AsyncGenerator</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+</span><span data-line="2"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">stream</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ServerSentEvent</span><span class="p">:</span>
+</span><span data-line="3">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">gen</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">AsyncGenerator</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
 </span><span data-line="4">        <span class="n">c</span> <span class="o">=</span> <span class="mi">0</span>
 </span><span data-line="5">        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
 </span><span data-line="6">            <span class="k">yield</span> <span class="sa">f</span><span class="s2">&quot;&lt;div&gt;</span><span class="si">{</span><span class="n">c</span><span class="si">}</span><span class="s2">&lt;/div&gt;</span><span class="se">\n</span><span class="s2">&quot;</span>
@@ -1372,12 +1368,12 @@ fixed and will now continue sending the set event type for all messages.</p>
 <dt>Correctly handle single file upload validation when multiple files are specified<a class="headerlink reference internal" href="#2.5.0-correctly handle single file upload validation when multiple files are specified" id="2.5.0-correctly handle single file upload validation when multiple files are specified">#</a></dt><dd><div class="changelog-change docutils container">
 <p>Uploading a single file when the validation target allowed multiple would cause
 a <a class="reference internal" href="../reference/exceptions.html#litestar.exceptions.ValidationException" title="litestar.exceptions.ValidationException"><code class="xref py py-exc docutils literal notranslate"><span class="pre">ValidationException</span></code></a>:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">class</span> <span class="nc">FileUpload</span><span class="p">(</span><span class="n">Struct</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">class</span><span class="w"> </span><span class="nc">FileUpload</span><span class="p">(</span><span class="n">Struct</span><span class="p">):</span>
 </span><span data-line="2">    <span class="n">files</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">UploadFile</span><span class="p">]</span>
 </span><span data-line="3">
 </span><span data-line="4">
 </span><span data-line="5"><span class="nd">@post</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
-</span><span data-line="6"><span class="k">async</span> <span class="k">def</span> <span class="nf">upload_files_object</span><span class="p">(</span>
+</span><span data-line="6"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">upload_files_object</span><span class="p">(</span>
 </span><span data-line="7">    <span class="n">data</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="n">FileUpload</span><span class="p">,</span> <span class="n">Body</span><span class="p">(</span><span class="n">media_type</span><span class="o">=</span><span class="n">RequestEncodingType</span><span class="o">.</span><span class="n">MULTI_PART</span><span class="p">)]</span>
 </span><span data-line="8"><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
 </span><span data-line="9">    <span class="k">pass</span>
@@ -1417,7 +1413,7 @@ stream and psycopg backends were not affected.</p>
 </dl>
 </section>
 <section id="2.5.0-misc">
-<h3>Other changes<a class="headerlink" href="#2.5.0-misc" title="Permalink to this heading">¶</a></h3>
+<h3>Other changes<a class="headerlink" href="#2.5.0-misc" title="Link to this heading">¶</a></h3>
 <dl>
 <dt>Improve performance of threaded synchronous execution<a class="headerlink reference internal" href="#2.5.0-improve performance of threaded synchronous execution" id="2.5.0-improve performance of threaded synchronous execution">#</a></dt><dd><div class="changelog-change docutils container">
 <p>Performance of threaded synchronous code was improved by using the async
@@ -1442,14 +1438,14 @@ temporary file has been rolled to disk</p></li>
 </section>
 </section>
 <section id="2.4.5">
-<h2>2.4.5<a class="headerlink" href="#2.4.5" title="Permalink to this heading">¶</a></h2>
+<h2>2.4.5<a class="headerlink" href="#2.4.5" title="Link to this heading">¶</a></h2>
 <strong>Released: </strong>2023/12/23<section id="2.4.5-bugfix">
-<h3>Bugfixes<a class="headerlink" href="#2.4.5-bugfix" title="Permalink to this heading">¶</a></h3>
+<h3>Bugfixes<a class="headerlink" href="#2.4.5-bugfix" title="Link to this heading">¶</a></h3>
 <dl>
 <dt>Fix validation of  empty payload data with default values<a class="headerlink reference internal" href="#2.4.5-fix validation of empty payload data with default values" id="2.4.5-fix validation of empty payload data with default values">#</a></dt><dd><div class="changelog-change docutils container">
 <p>Prior to this fix, a handler like:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="nd">@post</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-</span><span data-line="2"><span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;abc&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+</span><span data-line="2"><span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;abc&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 </span><span data-line="3">    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;foo&quot;</span><span class="p">:</span> <span class="n">data</span><span class="p">}</span>
 </span></pre></div>
 </div>
@@ -1481,9 +1477,9 @@ now raised instead.</p>
 </section>
 </section>
 <section id="2.4.4">
-<h2>2.4.4<a class="headerlink" href="#2.4.4" title="Permalink to this heading">¶</a></h2>
+<h2>2.4.4<a class="headerlink" href="#2.4.4" title="Link to this heading">¶</a></h2>
 <strong>Released: </strong>2023/12/13<section id="2.4.4-bugfix">
-<h3>Bugfixes<a class="headerlink" href="#2.4.4-bugfix" title="Permalink to this heading">¶</a></h3>
+<h3>Bugfixes<a class="headerlink" href="#2.4.4-bugfix" title="Link to this heading">¶</a></h3>
 <dl>
 <dt>Support non-valid identifier as serialization target name<a class="headerlink reference internal" href="#2.4.4-support non-valid identifier as serialization target name" id="2.4.4-support non-valid identifier as serialization target name">#</a></dt><dd><div class="changelog-change docutils container">
 <p>Fix a bug where DTOs would raise a <code class="docutils literal notranslate"><span class="pre">TypeError:</span> <span class="pre">__slots__</span> <span class="pre">must</span> <span class="pre">be</span> <span class="pre">identifiers</span></code>
@@ -1526,9 +1522,9 @@ models in the OpenAPI schema.</p>
 </section>
 </section>
 <section id="2.4.3">
-<h2>2.4.3<a class="headerlink" href="#2.4.3" title="Permalink to this heading">¶</a></h2>
+<h2>2.4.3<a class="headerlink" href="#2.4.3" title="Link to this heading">¶</a></h2>
 <strong>Released: </strong>2023/12/07<section id="2.4.3-bugfix">
-<h3>Bugfixes<a class="headerlink" href="#2.4.3-bugfix" title="Permalink to this heading">¶</a></h3>
+<h3>Bugfixes<a class="headerlink" href="#2.4.3-bugfix" title="Link to this heading">¶</a></h3>
 <dl>
 <dt>Fix OpenAPI schema for <code class="docutils literal notranslate"><span class="pre">Literal</span> <span class="pre">|</span> <span class="pre">None</span></code> unions<a class="headerlink reference internal" href="#2.4.3-fix openapi schema for" id="2.4.3-fix openapi schema for">#</a></dt><dd><div class="changelog-change docutils container">
 <p>Fix a bug where an incorrect OpenAPI schema was generated generated when any
@@ -1561,9 +1557,9 @@ introduced in Advanced-Alchemy version 0.6.0.</p>
 </section>
 </section>
 <section id="2.4.2">
-<h2>2.4.2<a class="headerlink" href="#2.4.2" title="Permalink to this heading">¶</a></h2>
+<h2>2.4.2<a class="headerlink" href="#2.4.2" title="Link to this heading">¶</a></h2>
 <strong>Released: </strong>2023/12/02<section id="2.4.2-bugfix">
-<h3>Bugfixes<a class="headerlink" href="#2.4.2-bugfix" title="Permalink to this heading">¶</a></h3>
+<h3>Bugfixes<a class="headerlink" href="#2.4.2-bugfix" title="Link to this heading">¶</a></h3>
 <dl>
 <dt>Fix OpenAPI handling of parameters with duplicated names<a class="headerlink reference internal" href="#2.4.2-fix openapi handling of parameters with duplicated names" id="2.4.2-fix openapi handling of parameters with duplicated names">#</a></dt><dd><div class="changelog-change docutils container">
 <p>Fix a bug where schema generation would consider two parameters with the same
@@ -1603,9 +1599,9 @@ models.</p>
 </section>
 </section>
 <section id="2.4.1">
-<h2>2.4.1<a class="headerlink" href="#2.4.1" title="Permalink to this heading">¶</a></h2>
+<h2>2.4.1<a class="headerlink" href="#2.4.1" title="Link to this heading">¶</a></h2>
 <strong>Released: </strong>2023/11/28<section id="2.4.1-bugfix">
-<h3>Bugfixes<a class="headerlink" href="#2.4.1-bugfix" title="Permalink to this heading">¶</a></h3>
+<h3>Bugfixes<a class="headerlink" href="#2.4.1-bugfix" title="Link to this heading">¶</a></h3>
 <dl>
 <dt>Fix circular import when importing from <code class="docutils literal notranslate"><span class="pre">litestar.security.jwt</span></code><a class="headerlink reference internal" href="#2.4.1-fix circular import when importing from" id="2.4.1-fix circular import when importing from">#</a></dt><dd><div class="changelog-change docutils container">
 <p>An <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ImportError" title="(in Python v3.13)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">ImportError</span></code></a> was raised when trying to import from <code class="docutils literal notranslate"><span class="pre">litestar.security.jwt</span></code>. This was fixed
@@ -1624,9 +1620,9 @@ error during application startup.</p>
 </section>
 </section>
 <section id="2.4.0">
-<h2>2.4.0<a class="headerlink" href="#2.4.0" title="Permalink to this heading">¶</a></h2>
+<h2>2.4.0<a class="headerlink" href="#2.4.0" title="Link to this heading">¶</a></h2>
 <strong>Released: </strong>2023/11/27<section id="2.4.0-feature">
-<h3>Features<a class="headerlink" href="#2.4.0-feature" title="Permalink to this heading">¶</a></h3>
+<h3>Features<a class="headerlink" href="#2.4.0-feature" title="Link to this heading">¶</a></h3>
 <dl>
 <dt>Add <code class="docutils literal notranslate"><span class="pre">server_lifespan</span></code> hook<a class="headerlink reference internal" href="#2.4.0-add" id="2.4.0-add">#</a></dt><dd><div class="changelog-change docutils container">
 <p>A new <code class="docutils literal notranslate"><span class="pre">server_lifespan</span></code> hook is now available on <a class="reference internal" href="../reference/app.html#litestar.app.Litestar" title="litestar.app.Litestar"><code class="xref py py-class docutils literal notranslate"><span class="pre">Litestar</span></code></a>.
@@ -1650,16 +1646,16 @@ allowing to render templates directly from strings.</p>
 <dt>Support nested DTO field renaming<a class="headerlink reference internal" href="#2.4.0-support nested dto field renaming" id="2.4.0-support nested dto field renaming">#</a></dt><dd><div class="changelog-change docutils container">
 <p>Using similar semantics as for exclusion/inclusion, nested DTO fields can now
 also be renamed:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
 </span><span data-line="2">
 </span><span data-line="3">
 </span><span data-line="4"><span class="nd">@dataclass</span>
-</span><span data-line="5"><span class="k">class</span> <span class="nc">Bar</span><span class="p">:</span>
+</span><span data-line="5"><span class="k">class</span><span class="w"> </span><span class="nc">Bar</span><span class="p">:</span>
 </span><span data-line="6">    <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span>
 </span><span data-line="7">
 </span><span data-line="8">
 </span><span data-line="9"><span class="nd">@dataclass</span>
-</span><span data-line="10"><span class="k">class</span> <span class="nc">Foo</span><span class="p">:</span>
+</span><span data-line="10"><span class="k">class</span><span class="w"> </span><span class="nc">Foo</span><span class="p">:</span>
 </span><span data-line="11">    <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span>
 </span><span data-line="12">    <span class="n">bars</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Bar</span><span class="p">]</span>
 </span><span data-line="13">
@@ -1673,7 +1669,7 @@ also be renamed:</p>
 </dl>
 </section>
 <section id="2.4.0-bugfix">
-<h3>Bugfixes<a class="headerlink" href="#2.4.0-bugfix" title="Permalink to this heading">¶</a></h3>
+<h3>Bugfixes<a class="headerlink" href="#2.4.0-bugfix" title="Link to this heading">¶</a></h3>
 <dl>
 <dt>Fix <code class="docutils literal notranslate"><span class="pre">HTTPException</span></code> handling during concurrent dependency resolving<a class="headerlink reference internal" href="#2.4.0-fix" id="2.4.0-fix">#</a></dt><dd><div class="changelog-change docutils container">
 <p>An issue was fixed that would lead to <code class="xref py py-exc docutils literal notranslate"><span class="pre">HTTPExceptions</span></code> not being re-raised
@@ -1686,7 +1682,7 @@ the request lifecycle.</p>
 <p>Fix the OpenAPI examples format by removing the wrapping object.</p>
 <p>Before the change, for a given model</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="nd">@dataclass</span>
-</span><span data-line="2"><span class="k">class</span> <span class="nc">Foo</span><span class="p">:</span>
+</span><span data-line="2"><span class="k">class</span><span class="w"> </span><span class="nc">Foo</span><span class="p">:</span>
 </span><span data-line="3">    <span class="n">foo</span><span class="p">:</span> <span class="nb">int</span>
 </span></pre></div>
 </div>
@@ -1745,16 +1741,16 @@ and OpenAPI support was missing for v2.</p>
 with a given name to be renamed in a nested structure.</p>
 <p>In the below example, both <code class="docutils literal notranslate"><span class="pre">Foo.id</span></code> and <code class="docutils literal notranslate"><span class="pre">Bar.id</span></code> would have been renamed to
 <code class="docutils literal notranslate"><span class="pre">foo_id</span></code></p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
 </span><span data-line="2">
 </span><span data-line="3">
 </span><span data-line="4"><span class="nd">@dataclass</span>
-</span><span data-line="5"><span class="k">class</span> <span class="nc">Bar</span><span class="p">:</span>
+</span><span data-line="5"><span class="k">class</span><span class="w"> </span><span class="nc">Bar</span><span class="p">:</span>
 </span><span data-line="6">    <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span>
 </span><span data-line="7">
 </span><span data-line="8">
 </span><span data-line="9"><span class="nd">@dataclass</span>
-</span><span data-line="10"><span class="k">class</span> <span class="nc">Foo</span><span class="p">:</span>
+</span><span data-line="10"><span class="k">class</span><span class="w"> </span><span class="nc">Foo</span><span class="p">:</span>
 </span><span data-line="11">    <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span>
 </span><span data-line="12">    <span class="n">bar</span><span class="p">:</span> <span class="n">Bar</span>
 </span><span data-line="13">
@@ -1789,20 +1785,20 @@ exception being raised upon the closing of a WebSocket connection.</p>
 </section>
 </section>
 <section id="2.3.2">
-<h2>2.3.2<a class="headerlink" href="#2.3.2" title="Permalink to this heading">¶</a></h2>
+<h2>2.3.2<a class="headerlink" href="#2.3.2" title="Link to this heading">¶</a></h2>
 <strong>Released: </strong>2023/11/06<section id="2.3.2-bugfix">
-<h3>Bugfixes<a class="headerlink" href="#2.3.2-bugfix" title="Permalink to this heading">¶</a></h3>
+<h3>Bugfixes<a class="headerlink" href="#2.3.2-bugfix" title="Link to this heading">¶</a></h3>
 <dl>
 <dt>Fix recursion error when re-using the path of a route handler for static files<a class="headerlink reference internal" href="#2.3.2-fix recursion error when re-using the path of a route handler for static files" id="2.3.2-fix recursion error when re-using the path of a route handler for static files">#</a></dt><dd><div class="changelog-change docutils container">
 <p>A regression was fixed that would cause a recursion error when the path of a
 static files host was reused for a route handler with a different HTTP method.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span>
-</span><span data-line="2"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">post</span>
-</span><span data-line="3"><span class="kn">from</span> <span class="nn">litestar.static_files</span> <span class="kn">import</span> <span class="n">StaticFilesConfig</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">post</span>
+</span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.static_files</span><span class="w"> </span><span class="kn">import</span> <span class="n">StaticFilesConfig</span>
 </span><span data-line="4">
 </span><span data-line="5">
 </span><span data-line="6"><span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/uploads&quot;</span><span class="p">)</span>
-</span><span data-line="7"><span class="k">async</span> <span class="k">def</span> <span class="nf">handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="7"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 </span><span data-line="8">    <span class="k">pass</span>
 </span><span data-line="9">
 </span><span data-line="10">
@@ -1821,9 +1817,9 @@ static files host was reused for a route handler with a different HTTP method.</
 </section>
 </section>
 <section id="2.3.1">
-<h2>2.3.1<a class="headerlink" href="#2.3.1" title="Permalink to this heading">¶</a></h2>
+<h2>2.3.1<a class="headerlink" href="#2.3.1" title="Link to this heading">¶</a></h2>
 <strong>Released: </strong>2023/11/04<section id="2.3.1-bugfix">
-<h3>Bugfixes<a class="headerlink" href="#2.3.1-bugfix" title="Permalink to this heading">¶</a></h3>
+<h3>Bugfixes<a class="headerlink" href="#2.3.1-bugfix" title="Link to this heading">¶</a></h3>
 <dl>
 <dt>CLI: Fix not providing SSL certfiles breaks uvicorn command when using reload or multiple workers<a class="headerlink reference internal" href="#2.3.1-cli: fix not providing ssl certfiles breaks uvicorn command when using reload or multiple workers" id="2.3.1-cli: fix not providing ssl certfiles breaks uvicorn command when using reload or multiple workers">#</a></dt><dd><div class="changelog-change docutils container">
 <p>Fix an issue where not providing the <code class="docutils literal notranslate"><span class="pre">--ssl-certfile</span></code> and <code class="docutils literal notranslate"><span class="pre">--ssl-keyfile</span></code>
@@ -1837,9 +1833,9 @@ options.</p>
 </section>
 </section>
 <section id="2.3.0">
-<h2>2.3.0<a class="headerlink" href="#2.3.0" title="Permalink to this heading">¶</a></h2>
+<h2>2.3.0<a class="headerlink" href="#2.3.0" title="Link to this heading">¶</a></h2>
 <strong>Released: </strong>2023/11/02<section id="2.3.0-feature">
-<h3>Features<a class="headerlink" href="#2.3.0-feature" title="Permalink to this heading">¶</a></h3>
+<h3>Features<a class="headerlink" href="#2.3.0-feature" title="Link to this heading">¶</a></h3>
 <dl>
 <dt>Python 3.12 support<a class="headerlink reference internal" href="#2.3.0-python 3.12 support" id="2.3.0-python 3.12 support">#</a></dt><dd><div class="changelog-change docutils container">
 <p>Python 3.12 is now fully supported and tested.</p>
@@ -1868,26 +1864,26 @@ OpenAPI schema visualisation.</p>
 <dt>Support Pydantic 1 &amp; 2 within the same application<a class="headerlink reference internal" href="#2.3.0-support pydantic 1 &amp; 2 within the same application" id="2.3.0-support pydantic 1 &amp; 2 within the same application">#</a></dt><dd><div class="changelog-change docutils container">
 <p>Added support for Pydantic 1 &amp; 2 within the same application by integrating with
 Pydantic’s backwards compatibility layer:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">get</span>
-</span><span data-line="2"><span class="kn">from</span> <span class="nn">pydantic.v1</span> <span class="kn">import</span> <span class="n">BaseModel</span> <span class="k">as</span> <span class="n">BaseModelV1</span>
-</span><span data-line="3"><span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseModel</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">get</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">pydantic.v1</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseModel</span> <span class="k">as</span> <span class="n">BaseModelV1</span>
+</span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseModel</span>
 </span><span data-line="4">
 </span><span data-line="5">
-</span><span data-line="6"><span class="k">class</span> <span class="nc">V1Foo</span><span class="p">(</span><span class="n">BaseModelV1</span><span class="p">):</span>
+</span><span data-line="6"><span class="k">class</span><span class="w"> </span><span class="nc">V1Foo</span><span class="p">(</span><span class="n">BaseModelV1</span><span class="p">):</span>
 </span><span data-line="7">    <span class="n">bar</span><span class="p">:</span> <span class="nb">str</span>
 </span><span data-line="8">
 </span><span data-line="9">
-</span><span data-line="10"><span class="k">class</span> <span class="nc">V2Foo</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+</span><span data-line="10"><span class="k">class</span><span class="w"> </span><span class="nc">V2Foo</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
 </span><span data-line="11">    <span class="n">bar</span><span class="p">:</span> <span class="nb">str</span>
 </span><span data-line="12">
 </span><span data-line="13">
 </span><span data-line="14"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/1&quot;</span><span class="p">)</span>
-</span><span data-line="15"><span class="k">def</span> <span class="nf">foo_v1</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">V1Foo</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">V1Foo</span><span class="p">:</span>
+</span><span data-line="15"><span class="k">def</span><span class="w"> </span><span class="nf">foo_v1</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">V1Foo</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">V1Foo</span><span class="p">:</span>
 </span><span data-line="16">    <span class="k">return</span> <span class="n">data</span>
 </span><span data-line="17">
 </span><span data-line="18">
 </span><span data-line="19"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/2&quot;</span><span class="p">)</span>
-</span><span data-line="20"><span class="k">def</span> <span class="nf">foo_v2</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">V2Foo</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">V2Foo</span><span class="p">:</span>
+</span><span data-line="20"><span class="k">def</span><span class="w"> </span><span class="nf">foo_v2</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">V2Foo</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">V2Foo</span><span class="p">:</span>
 </span><span data-line="21">    <span class="k">return</span> <span class="n">data</span>
 </span></pre></div>
 </div>
@@ -1930,7 +1926,7 @@ logic is used:</p>
 </dl>
 </section>
 <section id="2.3.0-bugfix">
-<h3>Bugfixes<a class="headerlink" href="#2.3.0-bugfix" title="Permalink to this heading">¶</a></h3>
+<h3>Bugfixes<a class="headerlink" href="#2.3.0-bugfix" title="Link to this heading">¶</a></h3>
 <dl>
 <dt>Use custom request class when given during exception handling<a class="headerlink reference internal" href="#2.3.0-use custom request class when given during exception handling" id="2.3.0-use custom request class when given during exception handling">#</a></dt><dd><div class="changelog-change docutils container">
 <p>When a custom <code class="docutils literal notranslate"><span class="pre">request_class</span></code> is provided, it will now be used while returning
@@ -1943,45 +1939,68 @@ an error response</p>
 contains a generic type such as</p>
 <div class="sd-tab-set docutils">
 <input id="sd-tab-item-0" name="sd-tab-set-0" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-0">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="3.8" for="sd-tab-item-0">
 Python 3.8+</label><div class="sd-tab-content docutils">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">msgspec</span> <span class="kn">import</span> <span class="n">Struct</span>
-</span><span data-line="2"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">get</span><span class="p">,</span> <span class="n">Response</span>
-</span><span data-line="3"><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TypeVar</span><span class="p">,</span> <span class="n">Generic</span><span class="p">,</span> <span class="n">Optional</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">msgspec</span><span class="w"> </span><span class="kn">import</span> <span class="n">Struct</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">get</span><span class="p">,</span> <span class="n">Response</span>
+</span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TypeVar</span><span class="p">,</span> <span class="n">Generic</span><span class="p">,</span> <span class="n">Optional</span>
 </span><span data-line="4">
 </span><span data-line="5"><span class="n">T</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;T&quot;</span><span class="p">)</span>
 </span><span data-line="6">
 </span><span data-line="7">
-</span><span data-line="8"><span class="k">class</span> <span class="nc">ResponseStruct</span><span class="p">(</span><span class="n">Struct</span><span class="p">,</span> <span class="n">Generic</span><span class="p">[</span><span class="n">T</span><span class="p">]):</span>
+</span><span data-line="8"><span class="k">class</span><span class="w"> </span><span class="nc">ResponseStruct</span><span class="p">(</span><span class="n">Struct</span><span class="p">,</span> <span class="n">Generic</span><span class="p">[</span><span class="n">T</span><span class="p">]):</span>
 </span><span data-line="9">    <span class="n">code</span><span class="p">:</span> <span class="nb">int</span>
 </span><span data-line="10">    <span class="n">data</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">T</span><span class="p">]</span>
 </span><span data-line="11">
 </span><span data-line="12">
 </span><span data-line="13"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
-</span><span data-line="14"><span class="k">def</span> <span class="nf">test_handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">[</span><span class="n">ResponseStruct</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
+</span><span data-line="14"><span class="k">def</span><span class="w"> </span><span class="nf">test_handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">[</span><span class="n">ResponseStruct</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
 </span><span data-line="15">    <span class="k">return</span> <span class="n">Response</span><span class="p">(</span>
 </span><span data-line="16">        <span class="n">ResponseStruct</span><span class="p">(</span><span class="n">code</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="s2">&quot;Hello World&quot;</span><span class="p">),</span>
 </span><span data-line="17">    <span class="p">)</span>
 </span></pre></div>
 </div>
 </div>
-<input checked="checked" id="sd-tab-item-1" name="sd-tab-set-0" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.10" for="sd-tab-item-1">
+<input id="sd-tab-item-1" name="sd-tab-set-0" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="3.10" for="sd-tab-item-1">
 Python 3.10+</label><div class="sd-tab-content docutils">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">msgspec</span> <span class="kn">import</span> <span class="n">Struct</span>
-</span><span data-line="2"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">get</span><span class="p">,</span> <span class="n">Response</span>
-</span><span data-line="3"><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TypeVar</span><span class="p">,</span> <span class="n">Generic</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">msgspec</span><span class="w"> </span><span class="kn">import</span> <span class="n">Struct</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">get</span><span class="p">,</span> <span class="n">Response</span>
+</span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TypeVar</span><span class="p">,</span> <span class="n">Generic</span>
 </span><span data-line="4">
 </span><span data-line="5"><span class="n">T</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;T&quot;</span><span class="p">)</span>
 </span><span data-line="6">
 </span><span data-line="7">
-</span><span data-line="8"><span class="k">class</span> <span class="nc">ResponseStruct</span><span class="p">(</span><span class="n">Struct</span><span class="p">,</span> <span class="n">Generic</span><span class="p">[</span><span class="n">T</span><span class="p">]):</span>
+</span><span data-line="8"><span class="k">class</span><span class="w"> </span><span class="nc">ResponseStruct</span><span class="p">(</span><span class="n">Struct</span><span class="p">,</span> <span class="n">Generic</span><span class="p">[</span><span class="n">T</span><span class="p">]):</span>
 </span><span data-line="9">    <span class="n">code</span><span class="p">:</span> <span class="nb">int</span>
 </span><span data-line="10">    <span class="n">data</span><span class="p">:</span> <span class="n">T</span> <span class="o">|</span> <span class="kc">None</span>
 </span><span data-line="11">
 </span><span data-line="12">
 </span><span data-line="13"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
-</span><span data-line="14"><span class="k">def</span> <span class="nf">test_handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">[</span><span class="n">ResponseStruct</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
+</span><span data-line="14"><span class="k">def</span><span class="w"> </span><span class="nf">test_handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">[</span><span class="n">ResponseStruct</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
+</span><span data-line="15">    <span class="k">return</span> <span class="n">Response</span><span class="p">(</span>
+</span><span data-line="16">        <span class="n">ResponseStruct</span><span class="p">(</span><span class="n">code</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="s2">&quot;Hello World&quot;</span><span class="p">),</span>
+</span><span data-line="17">    <span class="p">)</span>
+</span></pre></div>
+</div>
+</div>
+<input checked="checked" id="sd-tab-item-2" name="sd-tab-set-0" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="3.12" for="sd-tab-item-2">
+Python 3.12+</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">msgspec</span><span class="w"> </span><span class="kn">import</span> <span class="n">Struct</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">get</span><span class="p">,</span> <span class="n">Response</span>
+</span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TypeVar</span>
+</span><span data-line="4">
+</span><span data-line="5"><span class="n">T</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;T&quot;</span><span class="p">)</span>
+</span><span data-line="6">
+</span><span data-line="7">
+</span><span data-line="8"><span class="k">class</span><span class="w"> </span><span class="nc">ResponseStruct</span><span class="p">[</span><span class="n">T</span><span class="p">](</span><span class="n">Struct</span><span class="p">):</span>
+</span><span data-line="9">    <span class="n">code</span><span class="p">:</span> <span class="nb">int</span>
+</span><span data-line="10">    <span class="n">data</span><span class="p">:</span> <span class="n">T</span> <span class="o">|</span> <span class="kc">None</span>
+</span><span data-line="11">
+</span><span data-line="12">
+</span><span data-line="13"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+</span><span data-line="14"><span class="k">def</span><span class="w"> </span><span class="nf">test_handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">[</span><span class="n">ResponseStruct</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
 </span><span data-line="15">    <span class="k">return</span> <span class="n">Response</span><span class="p">(</span>
 </span><span data-line="16">        <span class="n">ResponseStruct</span><span class="p">(</span><span class="n">code</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="s2">&quot;Hello World&quot;</span><span class="p">),</span>
 </span><span data-line="17">    <span class="p">)</span>
@@ -2043,13 +2062,13 @@ that it is valid UTF-8. This was fixed by decoding the bytes with
 <dt>Fix <code class="docutils literal notranslate"><span class="pre">ExceptionHandler</span></code> typing to properly support <code class="docutils literal notranslate"><span class="pre">Exception</span></code> subclasses<a class="headerlink reference internal" href="#2.3.0-fix" id="2.3.0-fix">#</a></dt><dd><div class="changelog-change docutils container">
 <p>Fix the typing for <code class="docutils literal notranslate"><span class="pre">ExceptionHandler</span></code> to support subclasses of <code class="docutils literal notranslate"><span class="pre">Exception</span></code>,
 such that code like this will type check properly:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Request</span><span class="p">,</span> <span class="n">Response</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Request</span><span class="p">,</span> <span class="n">Response</span>
 </span><span data-line="2">
 </span><span data-line="3">
-</span><span data-line="4"><span class="k">class</span> <span class="nc">CustomException</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span> <span class="o">...</span>
+</span><span data-line="4"><span class="k">class</span><span class="w"> </span><span class="nc">CustomException</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span> <span class="o">...</span>
 </span><span data-line="5">
 </span><span data-line="6">
-</span><span data-line="7"><span class="k">def</span> <span class="nf">handle_exc</span><span class="p">(</span><span class="n">req</span><span class="p">:</span> <span class="n">Request</span><span class="p">,</span> <span class="n">exc</span><span class="p">:</span> <span class="n">CustomException</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">:</span> <span class="o">...</span>
+</span><span data-line="7"><span class="k">def</span><span class="w"> </span><span class="nf">handle_exc</span><span class="p">(</span><span class="n">req</span><span class="p">:</span> <span class="n">Request</span><span class="p">,</span> <span class="n">exc</span><span class="p">:</span> <span class="n">CustomException</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">:</span> <span class="o">...</span>
 </span></pre></div>
 </div>
 <p>References: <span><a class="reference external" href="https://github.com/litestar-org/litestar/issues/2520">https://github.com/litestar-org/litestar/issues/2520</a></span>, <span><a class="reference external" href="https://github.com/litestar-org/litestar/pull/2533">https://github.com/litestar-org/litestar/pull/2533</a></span></p>
@@ -2100,9 +2119,9 @@ route handler on that same route with a different HTTP method.</p>
 </section>
 </section>
 <section id="2.2.0">
-<h2>2.2.0<a class="headerlink" href="#2.2.0" title="Permalink to this heading">¶</a></h2>
+<h2>2.2.0<a class="headerlink" href="#2.2.0" title="Link to this heading">¶</a></h2>
 <strong>Released: </strong>2023/10/12<section id="2.2.0-feature">
-<h3>Features<a class="headerlink" href="#2.2.0-feature" title="Permalink to this heading">¶</a></h3>
+<h3>Features<a class="headerlink" href="#2.2.0-feature" title="Link to this heading">¶</a></h3>
 <dl>
 <dt>CLI enabled by default<a class="headerlink reference internal" href="#2.2.0-cli enabled by default" id="2.2.0-cli enabled by default">#</a></dt><dd><div class="changelog-change docutils container">
 <p>The CLI and all its dependencies are now included by default, to enable a better
@@ -2133,8 +2152,8 @@ backend is between 2.5 and 5 times faster depending on the operation and data
 provided.</p>
 <p>The new backend can be enabled globally for all DTOs by passing the appropriate
 feature flag to the Litestar application:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span>
-</span><span data-line="2"><span class="kn">from</span> <span class="nn">litestar.config.app</span> <span class="kn">import</span> <span class="n">ExperimentalFeatures</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.config.app</span><span class="w"> </span><span class="kn">import</span> <span class="n">ExperimentalFeatures</span>
 </span><span data-line="3">
 </span><span data-line="4"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">experimental_features</span><span class="o">=</span><span class="p">[</span><span class="n">ExperimentalFeatures</span><span class="o">.</span><span class="n">DTO_CODEGEN</span><span class="p">])</span>
 </span></pre></div>
@@ -2170,7 +2189,7 @@ of the expected parameter:</p>
 </dl>
 </section>
 <section id="2.2.0-bugfix">
-<h3>Bugfixes<a class="headerlink" href="#2.2.0-bugfix" title="Permalink to this heading">¶</a></h3>
+<h3>Bugfixes<a class="headerlink" href="#2.2.0-bugfix" title="Link to this heading">¶</a></h3>
 <dl>
 <dt>Fix implicit conversion of objects to <code class="docutils literal notranslate"><span class="pre">bool</span></code> in debug response<a class="headerlink reference internal" href="#2.2.0-fix implicit conversion of objects to" id="2.2.0-fix implicit conversion of objects to">#</a></dt><dd><div class="changelog-change docutils container">
 <p>The exception handler middleware would, when in debug mode, implicitly call an
@@ -2236,9 +2255,9 @@ fragile.</p>
 </section>
 </section>
 <section id="2.1.1">
-<h2>2.1.1<a class="headerlink" href="#2.1.1" title="Permalink to this heading">¶</a></h2>
+<h2>2.1.1<a class="headerlink" href="#2.1.1" title="Link to this heading">¶</a></h2>
 <strong>Released: </strong>2023/09/24<section id="2.1.1-bugfix">
-<h3>Bugfixes<a class="headerlink" href="#2.1.1-bugfix" title="Permalink to this heading">¶</a></h3>
+<h3>Bugfixes<a class="headerlink" href="#2.1.1-bugfix" title="Link to this heading">¶</a></h3>
 <dl>
 <dt>Fix <code class="docutils literal notranslate"><span class="pre">DeprecationWarning</span></code> raised by <code class="docutils literal notranslate"><span class="pre">Response.to_asgi_response</span></code><a class="headerlink reference internal" href="#2.1.1-fix" id="2.1.1-fix">#</a></dt><dd><div class="changelog-change docutils container">
 <p><a class="reference internal" href="../reference/response/index.html#litestar.response.Response.to_asgi_response" title="litestar.response.Response.to_asgi_response"><code class="xref py py-meth docutils literal notranslate"><span class="pre">to_asgi_response()</span></code></a> was passing a
@@ -2252,10 +2271,10 @@ This was fixed by leaving the default value as <a class="reference external" hre
 </section>
 </section>
 <section id="2.1.0">
-<h2>2.1.0<a class="headerlink" href="#2.1.0" title="Permalink to this heading">¶</a></h2>
+<h2>2.1.0<a class="headerlink" href="#2.1.0" title="Link to this heading">¶</a></h2>
 <strong>Released: </strong>2023/09/23<p><a class="reference external" href="https://github.com/litestar-org/litestar/compare/v2.0.0...v2.1.0x">View the full changelog</a></p>
 <section id="2.1.0-feature">
-<h3>Features<a class="headerlink" href="#2.1.0-feature" title="Permalink to this heading">¶</a></h3>
+<h3>Features<a class="headerlink" href="#2.1.0-feature" title="Link to this heading">¶</a></h3>
 <dl>
 <dt>Make <code class="docutils literal notranslate"><span class="pre">302</span></code> the default <code class="docutils literal notranslate"><span class="pre">status_code</span></code> for redirect responses<a class="headerlink reference internal" href="#2.1.0-make" id="2.1.0-make">#</a></dt><dd><div class="changelog-change docutils container">
 <p>Make <code class="docutils literal notranslate"><span class="pre">302</span></code> the default <code class="docutils literal notranslate"><span class="pre">status_code</span></code> for redirect responses</p>
@@ -2300,15 +2319,15 @@ dedicated class method.</p>
 configured using a separate config object. This can be set using both
 class inheritance and <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Annotated">Annotated</a>:</p>
 <div class="literal-block-wrapper docutils container" id="id7">
-<div class="code-block-caption"><span class="caption-text"><a class="reference external" href="https://docs.advanced-alchemy.litestar.dev/latest/reference/extensions/litestar/dto.html#advanced_alchemy.extensions.litestar.dto.SQLAlchemyDTO" title="(in advanced_alchemy)"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyDTO</span> <span class="pre">(Advanced</span> <span class="pre">Alchemy)</span></code></a> can now be configured using a separate config object using <code class="docutils literal notranslate"><span class="pre">config</span></code> object.</span><a class="headerlink" href="#id7" title="Permalink to this code">¶</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">class</span> <span class="nc">MyModelDTO</span><span class="p">(</span><span class="n">SQLAlchemyDTO</span><span class="p">[</span><span class="n">MyModel</span><span class="p">]):</span>
+<div class="code-block-caption"><span class="caption-text"><a class="reference external" href="https://docs.advanced-alchemy.litestar.dev/latest/reference/extensions/litestar/dto.html#advanced_alchemy.extensions.litestar.dto.SQLAlchemyDTO" title="(in advanced_alchemy)"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyDTO</span> <span class="pre">(Advanced</span> <span class="pre">Alchemy)</span></code></a> can now be configured using a separate config object using <code class="docutils literal notranslate"><span class="pre">config</span></code> object.</span><a class="headerlink" href="#id7" title="Link to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">class</span><span class="w"> </span><span class="nc">MyModelDTO</span><span class="p">(</span><span class="n">SQLAlchemyDTO</span><span class="p">[</span><span class="n">MyModel</span><span class="p">]):</span>
 </span><span data-line="2">    <span class="n">config</span> <span class="o">=</span> <span class="n">SQLAlchemyDTOConfig</span><span class="p">()</span>
 </span></pre></div>
 </div>
 </div>
 <p>or</p>
 <div class="literal-block-wrapper docutils container" id="id8">
-<div class="code-block-caption"><span class="caption-text"><a class="reference external" href="https://docs.advanced-alchemy.litestar.dev/latest/reference/extensions/litestar/dto.html#advanced_alchemy.extensions.litestar.dto.SQLAlchemyDTO" title="(in advanced_alchemy)"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyDTO</span> <span class="pre">(Advanced</span> <span class="pre">Alchemy)</span></code></a> can now be configured using a separate config object using <code class="docutils literal notranslate"><span class="pre">Annotated</span></code>.</span><a class="headerlink" href="#id8" title="Permalink to this code">¶</a></div>
+<div class="code-block-caption"><span class="caption-text"><a class="reference external" href="https://docs.advanced-alchemy.litestar.dev/latest/reference/extensions/litestar/dto.html#advanced_alchemy.extensions.litestar.dto.SQLAlchemyDTO" title="(in advanced_alchemy)"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyDTO</span> <span class="pre">(Advanced</span> <span class="pre">Alchemy)</span></code></a> can now be configured using a separate config object using <code class="docutils literal notranslate"><span class="pre">Annotated</span></code>.</span><a class="headerlink" href="#id8" title="Link to this code">¶</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"> <span class="n">MyModelDTO</span> <span class="o">=</span> <span class="n">SQLAlchemyDTO</span><span class="p">[</span><span class="n">Annotated</span><span class="p">[</span><span class="n">MyModel</span><span class="p">,</span> <span class="n">SQLAlchemyDTOConfig</span><span class="p">()]]</span>
 </span></pre></div>
 </div>
@@ -2359,7 +2378,7 @@ instead of the normal <code class="docutils literal notranslate"><span class="pr
 </dl>
 </section>
 <section id="2.1.0-bugfix">
-<h3>Bugfixes<a class="headerlink" href="#2.1.0-bugfix" title="Permalink to this heading">¶</a></h3>
+<h3>Bugfixes<a class="headerlink" href="#2.1.0-bugfix" title="Link to this heading">¶</a></h3>
 <dl>
 <dt>Remove usages of deprecated <code class="docutils literal notranslate"><span class="pre">ExceptionHandlerMiddleware</span></code> <code class="docutils literal notranslate"><span class="pre">debug</span></code> parameter<a class="headerlink reference internal" href="#2.1.0-remove usages of deprecated" id="2.1.0-remove usages of deprecated">#</a></dt><dd><div class="changelog-change docutils container">
 <p>Removes leftover usages of deprecated <code class="docutils literal notranslate"><span class="pre">ExceptionHandlerMiddleware</span></code> debug parameter.</p>
@@ -2463,9 +2482,9 @@ inheritance that was previously used. This makes using the <code class="docutils
 </section>
 </section>
 <section id="2.0.0">
-<h2>2.0.0<a class="headerlink" href="#2.0.0" title="Permalink to this heading">¶</a></h2>
+<h2>2.0.0<a class="headerlink" href="#2.0.0" title="Link to this heading">¶</a></h2>
 <strong>Released: </strong>2023/08/19<section id="2.0.0-bugfix">
-<h3>Bugfixes<a class="headerlink" href="#2.0.0-bugfix" title="Permalink to this heading">¶</a></h3>
+<h3>Bugfixes<a class="headerlink" href="#2.0.0-bugfix" title="Link to this heading">¶</a></h3>
 <dl>
 <dt>Regression | Missing <code class="docutils literal notranslate"><span class="pre">media_type</span></code> information to error responses<a class="headerlink reference internal" href="#2.0.0-regression | missing" id="2.0.0-regression | missing">#</a></dt><dd><div class="changelog-change docutils container">
 <p>Fixed a regression that caused error responses to be sent using a mismatched
@@ -2552,14 +2571,14 @@ that does not support JSON with the SQLAlchemy repositories.</p>
 </section>
 </section>
 <section id="2.0.0rc1">
-<h2>2.0.0rc1<a class="headerlink" href="#2.0.0rc1" title="Permalink to this heading">¶</a></h2>
+<h2>2.0.0rc1<a class="headerlink" href="#2.0.0rc1" title="Link to this heading">¶</a></h2>
 <strong>Released: </strong>2023/08/05<section id="2.0.0rc1-feature">
-<h3>Features<a class="headerlink" href="#2.0.0rc1-feature" title="Permalink to this heading">¶</a></h3>
+<h3>Features<a class="headerlink" href="#2.0.0rc1-feature" title="Link to this heading">¶</a></h3>
 <dl>
 <dt>Support for server-sent-events<a class="headerlink reference internal" href="#2.0.0rc1-support for server-sent-events" id="2.0.0rc1-support for server-sent-events">#</a></dt><dd><div class="changelog-change docutils container">
 <p>Support for <cite>Server-sent events &lt;https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events&gt;</cite> has been
 added with the <a class="reference internal" href="../reference/response/index.html#litestar.response.ServerSentEvent" title="litestar.response.ServerSentEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">ServerSentEvent</span></code></a>:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">async</span> <span class="k">def</span> <span class="nf">my_generator</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">AsyncGenerator</span><span class="p">[</span><span class="nb">bytes</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">my_generator</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">AsyncGenerator</span><span class="p">[</span><span class="nb">bytes</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
 </span><span data-line="2">    <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span>
 </span><span data-line="3">    <span class="k">while</span> <span class="n">count</span> <span class="o">&lt;</span> <span class="mi">10</span><span class="p">:</span>
 </span><span data-line="4">        <span class="k">await</span> <span class="n">sleep</span><span class="p">(</span><span class="mf">0.01</span><span class="p">)</span>
@@ -2568,7 +2587,7 @@ added with the <a class="reference internal" href="../reference/response/index.h
 </span><span data-line="7">
 </span><span data-line="8">
 </span><span data-line="9"><span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/count&quot;</span><span class="p">)</span>
-</span><span data-line="10"><span class="k">def</span> <span class="nf">sse_handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">ServerSentEvent</span><span class="p">:</span>
+</span><span data-line="10"><span class="k">def</span><span class="w"> </span><span class="nf">sse_handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">ServerSentEvent</span><span class="p">:</span>
 </span><span data-line="11">    <span class="k">return</span> <span class="n">ServerSentEvent</span><span class="p">(</span><span class="n">my_generator</span><span class="p">())</span>
 </span></pre></div>
 </div>
@@ -2671,7 +2690,7 @@ extend the Litestar CLI.</p>
 </dl>
 </section>
 <section id="2.0.0rc1-bugfix">
-<h3>Bugfixes<a class="headerlink" href="#2.0.0rc1-bugfix" title="Permalink to this heading">¶</a></h3>
+<h3>Bugfixes<a class="headerlink" href="#2.0.0rc1-bugfix" title="Link to this heading">¶</a></h3>
 <dl>
 <dt>DTO: Support renamed fields in <code class="docutils literal notranslate"><span class="pre">DTOData</span></code> and <code class="docutils literal notranslate"><span class="pre">create_instance</span></code><a class="headerlink reference internal" href="#2.0.0rc1-dto: support renamed fields in" id="2.0.0rc1-dto: support renamed fields in">#</a></dt><dd><div class="changelog-change docutils container">
 <p>A bug was fixed that would cause field renaming to be skipped within
@@ -2694,7 +2713,7 @@ strings during multipart form decoding.</p>
 </dl>
 </section>
 <section id="2.0.0rc1-misc">
-<h3>Other changes<a class="headerlink" href="#2.0.0rc1-misc" title="Permalink to this heading">¶</a></h3>
+<h3>Other changes<a class="headerlink" href="#2.0.0rc1-misc" title="Link to this heading">¶</a></h3>
 <dl>
 <dt>Use debug mode by default in test clients<a class="headerlink reference internal" href="#2.0.0rc1-use debug mode by default in test clients" id="2.0.0rc1-use debug mode by default in test clients">#</a></dt><dd><div class="changelog-change docutils container">
 <p>The test clients will now default to <code class="docutils literal notranslate"><span class="pre">debug=True</span></code> instead of <code class="docutils literal notranslate"><span class="pre">debug=None</span></code>.</p>
@@ -2722,9 +2741,9 @@ DTOs, making use of the <a class="reference internal" href="../reference/dto/con
 </section>
 </section>
 <section id="2.0.0beta4">
-<h2>2.0.0beta4<a class="headerlink" href="#2.0.0beta4" title="Permalink to this heading">¶</a></h2>
+<h2>2.0.0beta4<a class="headerlink" href="#2.0.0beta4" title="Link to this heading">¶</a></h2>
 <strong>Released: </strong>2023/07/21<section id="2.0.0beta4-bugfix">
-<h3>Bugfixes<a class="headerlink" href="#2.0.0beta4-bugfix" title="Permalink to this heading">¶</a></h3>
+<h3>Bugfixes<a class="headerlink" href="#2.0.0beta4-bugfix" title="Link to this heading">¶</a></h3>
 <dl>
 <dt>Fix extra package dependencies<a class="headerlink reference internal" href="#2.0.0beta4-fix extra package dependencies" id="2.0.0beta4-fix extra package dependencies">#</a></dt><dd><div class="changelog-change docutils container">
 <p>A workaround for a
@@ -2738,9 +2757,9 @@ has been added.</p>
 </section>
 </section>
 <section id="2.0.0beta3">
-<h2>2.0.0beta3<a class="headerlink" href="#2.0.0beta3" title="Permalink to this heading">¶</a></h2>
+<h2>2.0.0beta3<a class="headerlink" href="#2.0.0beta3" title="Link to this heading">¶</a></h2>
 <strong>Released: </strong>2023/07/20<section id="2.0.0beta3-feature">
-<h3>Features<a class="headerlink" href="#2.0.0beta3-feature" title="Permalink to this heading">¶</a></h3>
+<h3>Features<a class="headerlink" href="#2.0.0beta3-feature" title="Link to this heading">¶</a></h3>
 <dl>
 <dt><a class="reference external" href="https://docs.advanced-alchemy.litestar.dev/latest/reference/extensions/litestar/dto.html#advanced_alchemy.extensions.litestar.dto.SQLAlchemyDTO" title="(in advanced_alchemy)"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyDTO</span> <span class="pre">(Advanced</span> <span class="pre">Alchemy)</span></code></a>: column/relationship type inference<a class="headerlink reference internal" href="#2.0.0beta3-sqlalchemydto (advanced alchemy)" id="2.0.0beta3-sqlalchemydto (advanced alchemy)">#</a></dt><dd><div class="changelog-change docutils container">
 <p>If type annotations aren’t available for a given column/relationship, they may
@@ -2853,7 +2872,7 @@ included.</p>
 </dl>
 </section>
 <section id="2.0.0beta3-bugfix">
-<h3>Bugfixes<a class="headerlink" href="#2.0.0beta3-bugfix" title="Permalink to this heading">¶</a></h3>
+<h3>Bugfixes<a class="headerlink" href="#2.0.0beta3-bugfix" title="Link to this heading">¶</a></h3>
 <dl>
 <dt>SQLAlchemy repository: Fix audit columns defaulting to app startup time<a class="headerlink reference internal" href="#2.0.0beta3-sqlalchemy repository: fix audit columns defaulting to app startup time" id="2.0.0beta3-sqlalchemy repository: fix audit columns defaulting to app startup time">#</a></dt><dd><div class="changelog-change docutils container">
 <p>A bug was fixed where
@@ -2891,7 +2910,7 @@ DTOs.</p>
 </dl>
 </section>
 <section id="2.0.0beta3-misc">
-<h3>Other changes<a class="headerlink" href="#2.0.0beta3-misc" title="Permalink to this heading">¶</a></h3>
+<h3>Other changes<a class="headerlink" href="#2.0.0beta3-misc" title="Link to this heading">¶</a></h3>
 <dl>
 <dt><code class="docutils literal notranslate"><span class="pre">AbstractDTOFactory</span></code> moved to <code class="docutils literal notranslate"><span class="pre">dto.factory.base</span></code><a class="headerlink reference internal" href="#2.0.0beta3-abstractdtofactory" id="2.0.0beta3-abstractdtofactory">#</a><span class="breaking-change">breaking</span></dt><dd><div class="changelog-change docutils container">
 <p><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractDTOFactory</span></code> has moved from
@@ -2939,9 +2958,9 @@ to DTOs, making use of the <a class="reference internal" href="../reference/dto/
 </section>
 </section>
 <section id="2.0.0beta2">
-<h2>2.0.0beta2<a class="headerlink" href="#2.0.0beta2" title="Permalink to this heading">¶</a></h2>
+<h2>2.0.0beta2<a class="headerlink" href="#2.0.0beta2" title="Link to this heading">¶</a></h2>
 <strong>Released: </strong>2023/06/24<section id="2.0.0beta2-feature">
-<h3>Features<a class="headerlink" href="#2.0.0beta2-feature" title="Permalink to this heading">¶</a></h3>
+<h3>Features<a class="headerlink" href="#2.0.0beta2-feature" title="Link to this heading">¶</a></h3>
 <dl>
 <dt>Support <code class="docutils literal notranslate"><span class="pre">annotated-types</span></code><a class="headerlink reference internal" href="#2.0.0beta2-support" id="2.0.0beta2-support">#</a></dt><dd><div class="changelog-change docutils container">
 <p>Extended support for the
@@ -2956,7 +2975,7 @@ where the originated.</p>
 <p>An optional <code class="docutils literal notranslate"><span class="pre">source</span></code> key has been added, signifying whether the value is from
 the body, a cookie, a header, or a query param.</p>
 <div class="literal-block-wrapper docutils container" id="id9">
-<div class="code-block-caption"><span class="caption-text">before</span><a class="headerlink" href="#id9" title="Permalink to this code">¶</a></div>
+<div class="code-block-caption"><span class="caption-text">before</span><a class="headerlink" href="#id9" title="Link to this code">¶</a></div>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="p">{</span>
 </span><span data-line="2"><span class="w">  </span><span class="nt">&quot;status_code&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">400</span><span class="p">,</span>
 </span><span data-line="3"><span class="w">  </span><span class="nt">&quot;detail&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Validation failed for POST http://localhost:8000/some-route&quot;</span><span class="p">,</span>
@@ -2971,7 +2990,7 @@ the body, a cookie, a header, or a query param.</p>
 </div>
 </div>
 <div class="literal-block-wrapper docutils container" id="id10">
-<div class="code-block-caption"><span class="caption-text">after</span><a class="headerlink" href="#id10" title="Permalink to this code">¶</a></div>
+<div class="code-block-caption"><span class="caption-text">after</span><a class="headerlink" href="#id10" title="Link to this code">¶</a></div>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="p">{</span>
 </span><span data-line="2"><span class="w">  </span><span class="nt">&quot;status_code&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">400</span><span class="p">,</span>
 </span><span data-line="3"><span class="w">  </span><span class="nt">&quot;detail&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Validation failed for POST http://localhost:8000/some-route&quot;</span><span class="p">,</span>
@@ -3012,7 +3031,7 @@ message, pointing at the potential cause.</p>
 </dl>
 </section>
 <section id="2.0.0beta2-bugfix">
-<h3>Bugfixes<a class="headerlink" href="#2.0.0beta2-bugfix" title="Permalink to this heading">¶</a></h3>
+<h3>Bugfixes<a class="headerlink" href="#2.0.0beta2-bugfix" title="Link to this heading">¶</a></h3>
 <dl>
 <dt>Remove exception details from Internal Server Error responses<a class="headerlink reference internal" href="#2.0.0beta2-remove exception details from internal server error responses" id="2.0.0beta2-remove exception details from internal server error responses">#</a></dt><dd><div class="changelog-change docutils container">
 <p>Error responses with a <code class="docutils literal notranslate"><span class="pre">500</span></code> status code will now always use
@@ -3031,9 +3050,9 @@ caused by the renaming of <code class="docutils literal notranslate"><span class
 </section>
 </section>
 <section id="2.0.0beta1">
-<h2>2.0.0beta1<a class="headerlink" href="#2.0.0beta1" title="Permalink to this heading">¶</a></h2>
+<h2>2.0.0beta1<a class="headerlink" href="#2.0.0beta1" title="Link to this heading">¶</a></h2>
 <strong>Released: </strong>2023/06/16<section id="2.0.0beta1-feature">
-<h3>Features<a class="headerlink" href="#2.0.0beta1-feature" title="Permalink to this heading">¶</a></h3>
+<h3>Features<a class="headerlink" href="#2.0.0beta1-feature" title="Link to this heading">¶</a></h3>
 <dl>
 <dt>Expose <code class="docutils literal notranslate"><span class="pre">ParsedType</span></code> as public API<a class="headerlink reference internal" href="#2.0.0beta1-expose" id="2.0.0beta1-expose">#</a></dt><dd><div class="changelog-change docutils container">
 <p>Expose the previously private <code class="xref py py-class docutils literal notranslate"><span class="pre">litestar.typing.ParsedType</span></code>. This is
@@ -3196,7 +3215,7 @@ value, which defaults to <code class="docutils literal notranslate"><span class=
 </dl>
 </section>
 <section id="2.0.0beta1-bugfix">
-<h3>Bugfixes<a class="headerlink" href="#2.0.0beta1-bugfix" title="Permalink to this heading">¶</a></h3>
+<h3>Bugfixes<a class="headerlink" href="#2.0.0beta1-bugfix" title="Link to this heading">¶</a></h3>
 <dl>
 <dt>Store and reuse state <cite>deep_copy</cite> directive when copying state<a class="headerlink reference internal" href="#2.0.0beta1-store and reuse state" id="2.0.0beta1-store and reuse state">#</a></dt><dd><div class="changelog-change docutils container">
 <p>App state can be created using <code class="docutils literal notranslate"><span class="pre">deep_copy=False</span></code>, however state would still be
@@ -3288,7 +3307,7 @@ the type’s signature.</p>
 </dl>
 </section>
 <section id="2.0.0beta1-misc">
-<h3>Other changes<a class="headerlink" href="#2.0.0beta1-misc" title="Permalink to this heading">¶</a></h3>
+<h3>Other changes<a class="headerlink" href="#2.0.0beta1-misc" title="Link to this heading">¶</a></h3>
 <dl>
 <dt>DTOs: Arbitrary generic wrappers<a class="headerlink reference internal" href="#2.0.0beta1-dtos: arbitrary generic wrappers" id="2.0.0beta1-dtos: arbitrary generic wrappers">#</a></dt><dd><div class="changelog-change docutils container">
 <p>When a handler returns a type that is not supported by the DTO, but:</p>
@@ -3307,21 +3326,21 @@ natively encode</p></li>
 can otherwise manage</p></li>
 </ul>
 <div class="sd-tab-set docutils">
-<input id="sd-tab-item-2" name="sd-tab-set-1" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-2">
+<input id="sd-tab-item-3" name="sd-tab-set-1" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="3.8" for="sd-tab-item-3">
 Python 3.8+</label><div class="sd-tab-content docutils">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
-</span><span data-line="2"><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Generic</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">TypeVar</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Generic</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">TypeVar</span>
 </span><span data-line="3">
-</span><span data-line="4"><span class="kn">from</span> <span class="nn">typing_extensions</span> <span class="kn">import</span> <span class="n">Annotated</span>
+</span><span data-line="4"><span class="kn">from</span><span class="w"> </span><span class="nn">typing_extensions</span><span class="w"> </span><span class="kn">import</span> <span class="n">Annotated</span>
 </span><span data-line="5">
-</span><span data-line="6"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
-</span><span data-line="7"><span class="kn">from</span> <span class="nn">litestar.dto</span> <span class="kn">import</span> <span class="n">DTOConfig</span>
-</span><span data-line="8"><span class="kn">from</span> <span class="nn">litestar.dto.factory.dataclass_factory</span> <span class="kn">import</span> <span class="n">DataclassDTO</span>
+</span><span data-line="6"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
+</span><span data-line="7"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.dto</span><span class="w"> </span><span class="kn">import</span> <span class="n">DTOConfig</span>
+</span><span data-line="8"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.dto.factory.dataclass_factory</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataclassDTO</span>
 </span><span data-line="9">
 </span><span data-line="10">
 </span><span data-line="11"><span class="nd">@dataclass</span>
-</span><span data-line="12"><span class="k">class</span> <span class="nc">User</span><span class="p">:</span>
+</span><span data-line="12"><span class="k">class</span><span class="w"> </span><span class="nc">User</span><span class="p">:</span>
 </span><span data-line="13">    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
 </span><span data-line="14">    <span class="n">age</span><span class="p">:</span> <span class="nb">int</span>
 </span><span data-line="15">
@@ -3331,13 +3350,13 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 </span><span data-line="19">
 </span><span data-line="20">
 </span><span data-line="21"><span class="nd">@dataclass</span>
-</span><span data-line="22"><span class="k">class</span> <span class="nc">Wrapped</span><span class="p">(</span><span class="n">Generic</span><span class="p">[</span><span class="n">T</span><span class="p">,</span> <span class="n">V</span><span class="p">]):</span>
+</span><span data-line="22"><span class="k">class</span><span class="w"> </span><span class="nc">Wrapped</span><span class="p">(</span><span class="n">Generic</span><span class="p">[</span><span class="n">T</span><span class="p">,</span> <span class="n">V</span><span class="p">]):</span>
 </span><span data-line="23">    <span class="n">data</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">T</span><span class="p">]</span>
 </span><span data-line="24">    <span class="n">other</span><span class="p">:</span> <span class="n">V</span>
 </span><span data-line="25">
 </span><span data-line="26">
 </span><span data-line="27"><span class="nd">@get</span><span class="p">(</span><span class="n">dto</span><span class="o">=</span><span class="n">DataclassDTO</span><span class="p">[</span><span class="n">Annotated</span><span class="p">[</span><span class="n">User</span><span class="p">,</span> <span class="n">DTOConfig</span><span class="p">(</span><span class="n">exclude</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;age&quot;</span><span class="p">})]])</span>
-</span><span data-line="28"><span class="k">def</span> <span class="nf">handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Wrapped</span><span class="p">[</span><span class="n">User</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
+</span><span data-line="28"><span class="k">def</span><span class="w"> </span><span class="nf">handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Wrapped</span><span class="p">[</span><span class="n">User</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
 </span><span data-line="29">    <span class="k">return</span> <span class="n">Wrapped</span><span class="p">(</span>
 </span><span data-line="30">        <span class="n">data</span><span class="o">=</span><span class="p">[</span><span class="n">User</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;John&quot;</span><span class="p">,</span> <span class="n">age</span><span class="o">=</span><span class="mi">42</span><span class="p">),</span> <span class="n">User</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Jane&quot;</span><span class="p">,</span> <span class="n">age</span><span class="o">=</span><span class="mi">43</span><span class="p">)],</span>
 </span><span data-line="31">        <span class="n">other</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
@@ -3350,21 +3369,21 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 </span></pre></div>
 </div>
 </div>
-<input checked="checked" id="sd-tab-item-3" name="sd-tab-set-1" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.9" for="sd-tab-item-3">
+<input id="sd-tab-item-4" name="sd-tab-set-1" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="3.9" for="sd-tab-item-4">
 Python 3.9+</label><div class="sd-tab-content docutils">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
-</span><span data-line="2"><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Generic</span><span class="p">,</span> <span class="n">TypeVar</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Generic</span><span class="p">,</span> <span class="n">TypeVar</span>
 </span><span data-line="3">
-</span><span data-line="4"><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Annotated</span>
+</span><span data-line="4"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Annotated</span>
 </span><span data-line="5">
-</span><span data-line="6"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
-</span><span data-line="7"><span class="kn">from</span> <span class="nn">litestar.dto</span> <span class="kn">import</span> <span class="n">DTOConfig</span>
-</span><span data-line="8"><span class="kn">from</span> <span class="nn">litestar.dto.factory.dataclass_factory</span> <span class="kn">import</span> <span class="n">DataclassDTO</span>
+</span><span data-line="6"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
+</span><span data-line="7"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.dto</span><span class="w"> </span><span class="kn">import</span> <span class="n">DTOConfig</span>
+</span><span data-line="8"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.dto.factory.dataclass_factory</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataclassDTO</span>
 </span><span data-line="9">
 </span><span data-line="10">
 </span><span data-line="11"><span class="nd">@dataclass</span>
-</span><span data-line="12"><span class="k">class</span> <span class="nc">User</span><span class="p">:</span>
+</span><span data-line="12"><span class="k">class</span><span class="w"> </span><span class="nc">User</span><span class="p">:</span>
 </span><span data-line="13">    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
 </span><span data-line="14">    <span class="n">age</span><span class="p">:</span> <span class="nb">int</span>
 </span><span data-line="15">
@@ -3374,13 +3393,56 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 </span><span data-line="19">
 </span><span data-line="20">
 </span><span data-line="21"><span class="nd">@dataclass</span>
-</span><span data-line="22"><span class="k">class</span> <span class="nc">Wrapped</span><span class="p">(</span><span class="n">Generic</span><span class="p">[</span><span class="n">T</span><span class="p">,</span> <span class="n">V</span><span class="p">]):</span>
+</span><span data-line="22"><span class="k">class</span><span class="w"> </span><span class="nc">Wrapped</span><span class="p">(</span><span class="n">Generic</span><span class="p">[</span><span class="n">T</span><span class="p">,</span> <span class="n">V</span><span class="p">]):</span>
 </span><span data-line="23">    <span class="n">data</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">T</span><span class="p">]</span>
 </span><span data-line="24">    <span class="n">other</span><span class="p">:</span> <span class="n">V</span>
 </span><span data-line="25">
 </span><span data-line="26">
 </span><span data-line="27"><span class="nd">@get</span><span class="p">(</span><span class="n">dto</span><span class="o">=</span><span class="n">DataclassDTO</span><span class="p">[</span><span class="n">Annotated</span><span class="p">[</span><span class="n">User</span><span class="p">,</span> <span class="n">DTOConfig</span><span class="p">(</span><span class="n">exclude</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;age&quot;</span><span class="p">})]])</span>
-</span><span data-line="28"><span class="k">def</span> <span class="nf">handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Wrapped</span><span class="p">[</span><span class="n">User</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
+</span><span data-line="28"><span class="k">def</span><span class="w"> </span><span class="nf">handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Wrapped</span><span class="p">[</span><span class="n">User</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
+</span><span data-line="29">    <span class="k">return</span> <span class="n">Wrapped</span><span class="p">(</span>
+</span><span data-line="30">        <span class="n">data</span><span class="o">=</span><span class="p">[</span><span class="n">User</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;John&quot;</span><span class="p">,</span> <span class="n">age</span><span class="o">=</span><span class="mi">42</span><span class="p">),</span> <span class="n">User</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Jane&quot;</span><span class="p">,</span> <span class="n">age</span><span class="o">=</span><span class="mi">43</span><span class="p">)],</span>
+</span><span data-line="31">        <span class="n">other</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+</span><span data-line="32">    <span class="p">)</span>
+</span><span data-line="33">
+</span><span data-line="34">
+</span><span data-line="35"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">handler</span><span class="p">])</span>
+</span><span data-line="36">
+</span><span data-line="37"><span class="c1"># GET &quot;/&quot;: {&quot;data&quot;: [{&quot;name&quot;: &quot;John&quot;}, {&quot;name&quot;: &quot;Jane&quot;}], &quot;other&quot;: 2}</span>
+</span></pre></div>
+</div>
+</div>
+<input checked="checked" id="sd-tab-item-5" name="sd-tab-set-1" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="3.12" for="sd-tab-item-5">
+Python 3.12+</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TypeVar</span>
+</span><span data-line="3">
+</span><span data-line="4"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Annotated</span>
+</span><span data-line="5">
+</span><span data-line="6"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
+</span><span data-line="7"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.dto</span><span class="w"> </span><span class="kn">import</span> <span class="n">DTOConfig</span>
+</span><span data-line="8"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.dto.factory.dataclass_factory</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataclassDTO</span>
+</span><span data-line="9">
+</span><span data-line="10">
+</span><span data-line="11"><span class="nd">@dataclass</span>
+</span><span data-line="12"><span class="k">class</span><span class="w"> </span><span class="nc">User</span><span class="p">:</span>
+</span><span data-line="13">    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+</span><span data-line="14">    <span class="n">age</span><span class="p">:</span> <span class="nb">int</span>
+</span><span data-line="15">
+</span><span data-line="16">
+</span><span data-line="17"><span class="n">T</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;T&quot;</span><span class="p">)</span>
+</span><span data-line="18"><span class="n">V</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;V&quot;</span><span class="p">)</span>
+</span><span data-line="19">
+</span><span data-line="20">
+</span><span data-line="21"><span class="nd">@dataclass</span>
+</span><span data-line="22"><span class="k">class</span><span class="w"> </span><span class="nc">Wrapped</span><span class="p">[</span><span class="n">T</span><span class="p">,</span> <span class="n">V</span><span class="p">]:</span>
+</span><span data-line="23">    <span class="n">data</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">T</span><span class="p">]</span>
+</span><span data-line="24">    <span class="n">other</span><span class="p">:</span> <span class="n">V</span>
+</span><span data-line="25">
+</span><span data-line="26">
+</span><span data-line="27"><span class="nd">@get</span><span class="p">(</span><span class="n">dto</span><span class="o">=</span><span class="n">DataclassDTO</span><span class="p">[</span><span class="n">Annotated</span><span class="p">[</span><span class="n">User</span><span class="p">,</span> <span class="n">DTOConfig</span><span class="p">(</span><span class="n">exclude</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;age&quot;</span><span class="p">})]])</span>
+</span><span data-line="28"><span class="k">def</span><span class="w"> </span><span class="nf">handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Wrapped</span><span class="p">[</span><span class="n">User</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
 </span><span data-line="29">    <span class="k">return</span> <span class="n">Wrapped</span><span class="p">(</span>
 </span><span data-line="30">        <span class="n">data</span><span class="o">=</span><span class="p">[</span><span class="n">User</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;John&quot;</span><span class="p">,</span> <span class="n">age</span><span class="o">=</span><span class="mi">42</span><span class="p">),</span> <span class="n">User</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Jane&quot;</span><span class="p">,</span> <span class="n">age</span><span class="o">=</span><span class="mi">43</span><span class="p">)],</span>
 </span><span data-line="31">        <span class="n">other</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
@@ -3401,32 +3463,32 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <p>Remove the <code class="docutils literal notranslate"><span class="pre">state</span></code> parameter from <code class="docutils literal notranslate"><span class="pre">AfterExceptionHookHandler</span></code> and
 <code class="docutils literal notranslate"><span class="pre">BeforeMessageSendHookHandler</span></code>.</p>
 <p><code class="docutils literal notranslate"><span class="pre">AfterExceptionHookHandler</span></code>s will have to be updated from</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">async</span> <span class="k">def</span> <span class="nf">after_exception_handler</span><span class="p">(</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">after_exception_handler</span><span class="p">(</span>
 </span><span data-line="2">    <span class="n">exc</span><span class="p">:</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">scope</span><span class="p">:</span> <span class="n">Scope</span><span class="p">,</span> <span class="n">state</span><span class="p">:</span> <span class="n">State</span>
 </span><span data-line="3"><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
 </span></pre></div>
 </div>
 <p>to</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">async</span> <span class="k">def</span> <span class="nf">after_exception_handler</span><span class="p">(</span><span class="n">exc</span><span class="p">:</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">scope</span><span class="p">:</span> <span class="n">Scope</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">after_exception_handler</span><span class="p">(</span><span class="n">exc</span><span class="p">:</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">scope</span><span class="p">:</span> <span class="n">Scope</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
 </span></pre></div>
 </div>
 <p>The state can still be accessed like so:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">async</span> <span class="k">def</span> <span class="nf">after_exception_handler</span><span class="p">(</span><span class="n">exc</span><span class="p">:</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">scope</span><span class="p">:</span> <span class="n">Scope</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">after_exception_handler</span><span class="p">(</span><span class="n">exc</span><span class="p">:</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">scope</span><span class="p">:</span> <span class="n">Scope</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 </span><span data-line="2">    <span class="n">state</span> <span class="o">=</span> <span class="n">scope</span><span class="p">[</span><span class="s2">&quot;app&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">state</span>
 </span></pre></div>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">BeforeMessageSendHookHandler</span></code>s will have to be updated from</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">async</span> <span class="k">def</span> <span class="nf">before_send_hook_handler</span><span class="p">(</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">before_send_hook_handler</span><span class="p">(</span>
 </span><span data-line="2">    <span class="n">message</span><span class="p">:</span> <span class="n">Message</span><span class="p">,</span> <span class="n">state</span><span class="p">:</span> <span class="n">State</span><span class="p">,</span> <span class="n">scope</span><span class="p">:</span> <span class="n">Scope</span>
 </span><span data-line="3"><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
 </span></pre></div>
 </div>
 <p>to</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">async</span> <span class="k">def</span> <span class="nf">before_send_hook_handler</span><span class="p">(</span><span class="n">message</span><span class="p">:</span> <span class="n">Message</span><span class="p">,</span> <span class="n">scope</span><span class="p">:</span> <span class="n">Scope</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">before_send_hook_handler</span><span class="p">(</span><span class="n">message</span><span class="p">:</span> <span class="n">Message</span><span class="p">,</span> <span class="n">scope</span><span class="p">:</span> <span class="n">Scope</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
 </span></pre></div>
 </div>
 <p>where state can be accessed in the same manner:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">async</span> <span class="k">def</span> <span class="nf">before_send_hook_handler</span><span class="p">(</span><span class="n">message</span><span class="p">:</span> <span class="n">Message</span><span class="p">,</span> <span class="n">scope</span><span class="p">:</span> <span class="n">Scope</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">before_send_hook_handler</span><span class="p">(</span><span class="n">message</span><span class="p">:</span> <span class="n">Message</span><span class="p">,</span> <span class="n">scope</span><span class="p">:</span> <span class="n">Scope</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 </span><span data-line="2">    <span class="n">state</span> <span class="o">=</span> <span class="n">scope</span><span class="p">[</span><span class="s2">&quot;app&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">state</span>
 </span></pre></div>
 </div>
@@ -3512,9 +3574,9 @@ they are low-level, and lack the utility of the higher-level response types.</p>
 </section>
 </section>
 <section id="2.0.0alpha7">
-<h2>2.0.0alpha7<a class="headerlink" href="#2.0.0alpha7" title="Permalink to this heading">¶</a></h2>
+<h2>2.0.0alpha7<a class="headerlink" href="#2.0.0alpha7" title="Link to this heading">¶</a></h2>
 <strong>Released: </strong>2023/05/14<section id="2.0.0alpha7-feature">
-<h3>Features<a class="headerlink" href="#2.0.0alpha7-feature" title="Permalink to this heading">¶</a></h3>
+<h3>Features<a class="headerlink" href="#2.0.0alpha7-feature" title="Link to this heading">¶</a></h3>
 <dl>
 <dt>Warn about sync callables in route handlers and dependencies without an explicit <code class="docutils literal notranslate"><span class="pre">sync_to_thread</span></code> value<a class="headerlink reference internal" href="#2.0.0alpha7-warn about sync callables in route handlers and dependencies without an explicit" id="2.0.0alpha7-warn about sync callables in route handlers and dependencies without an explicit">#</a></dt><dd><div class="changelog-change docutils container">
 <p>A warning will now be raised when a synchronous callable is being used in an
@@ -3633,7 +3695,7 @@ support for OpenAPI schema generation.</p>
 </dl>
 </section>
 <section id="2.0.0alpha7-bugfix">
-<h3>Bugfixes<a class="headerlink" href="#2.0.0alpha7-bugfix" title="Permalink to this heading">¶</a></h3>
+<h3>Bugfixes<a class="headerlink" href="#2.0.0alpha7-bugfix" title="Link to this heading">¶</a></h3>
 <dl>
 <dt>OpenAPI: Fix name collision in DTO models<a class="headerlink reference internal" href="#2.0.0alpha7-openapi: fix name collision in dto models" id="2.0.0alpha7-openapi: fix name collision in dto models">#</a></dt><dd><div class="changelog-change docutils container">
 <p>A bug was fixed that would lead to name collisions in the OpenAPI schema when
@@ -3658,9 +3720,9 @@ return annotation, an <a class="reference internal" href="../reference/exception
 </section>
 </section>
 <section id="2.0.0alpha6">
-<h2>2.0.0alpha6<a class="headerlink" href="#2.0.0alpha6" title="Permalink to this heading">¶</a></h2>
+<h2>2.0.0alpha6<a class="headerlink" href="#2.0.0alpha6" title="Link to this heading">¶</a></h2>
 <strong>Released: </strong>2023/05/09<section id="2.0.0alpha6-feature">
-<h3>Features<a class="headerlink" href="#2.0.0alpha6-feature" title="Permalink to this heading">¶</a></h3>
+<h3>Features<a class="headerlink" href="#2.0.0alpha6-feature" title="Link to this heading">¶</a></h3>
 <dl>
 <dt>Add <code class="docutils literal notranslate"><span class="pre">connection_accept_handler</span></code> to <code class="docutils literal notranslate"><span class="pre">websocket_listener</span></code><a class="headerlink reference internal" href="#2.0.0alpha6-add" id="2.0.0alpha6-add">#</a></dt><dd><div class="changelog-change docutils container">
 <p>Add a new <code class="docutils literal notranslate"><span class="pre">connection_accept_handler</span></code> parameter to
@@ -3757,7 +3819,7 @@ via WebSockets.</p>
 </dl>
 </section>
 <section id="2.0.0alpha6-bugfix">
-<h3>Bugfixes<a class="headerlink" href="#2.0.0alpha6-bugfix" title="Permalink to this heading">¶</a></h3>
+<h3>Bugfixes<a class="headerlink" href="#2.0.0alpha6-bugfix" title="Link to this heading">¶</a></h3>
 <dl>
 <dt>Relax typing of <code class="docutils literal notranslate"><span class="pre">**kwargs</span></code> in <code class="docutils literal notranslate"><span class="pre">ASGIConnection.url_for</span></code><a class="headerlink reference internal" href="#2.0.0alpha6-relax typing of" id="2.0.0alpha6-relax typing of">#</a></dt><dd><div class="changelog-change docutils container">
 <p>Change the typing of the <code class="docutils literal notranslate"><span class="pre">**kwargs</span></code> in
@@ -3776,7 +3838,7 @@ in a <code class="docutils literal notranslate"><span class="pre">Controller</sp
 </dl>
 </section>
 <section id="2.0.0alpha6-misc">
-<h3>Other changes<a class="headerlink" href="#2.0.0alpha6-misc" title="Permalink to this heading">¶</a></h3>
+<h3>Other changes<a class="headerlink" href="#2.0.0alpha6-misc" title="Link to this heading">¶</a></h3>
 <dl>
 <dt>DTO: Undocumented <code class="docutils literal notranslate"><span class="pre">dto.factory.backends</span></code> has been made private<a class="headerlink reference internal" href="#2.0.0alpha6-dto: undocumented" id="2.0.0alpha6-dto: undocumented">#</a><span class="breaking-change">breaking</span></dt><dd><div class="changelog-change docutils container">
 <p>The undocumented <code class="docutils literal notranslate"><span class="pre">dto.factory.backends</span></code> module has been made private</p>
@@ -3787,9 +3849,9 @@ in a <code class="docutils literal notranslate"><span class="pre">Controller</sp
 </section>
 </section>
 <section id="2.0.0alpha5">
-<h2>2.0.0alpha5<a class="headerlink" href="#2.0.0alpha5" title="Permalink to this heading">¶</a></h2>
+<h2>2.0.0alpha5<a class="headerlink" href="#2.0.0alpha5" title="Link to this heading">¶</a></h2>
 <section id="2.0.0alpha5-feature">
-<h3>Features<a class="headerlink" href="#2.0.0alpha5-feature" title="Permalink to this heading">¶</a></h3>
+<h3>Features<a class="headerlink" href="#2.0.0alpha5-feature" title="Link to this heading">¶</a></h3>
 <dl>
 <dt>Pass template context to HTMX template response<a class="headerlink reference internal" href="#2.0.0alpha5-pass template context to htmx template response" id="2.0.0alpha5-pass template context to htmx template response">#</a></dt><dd><div class="changelog-change docutils container">
 <p>Pass the template context to the <code class="xref py py-class docutils literal notranslate"><span class="pre">Template</span></code> returned by
@@ -3868,7 +3930,7 @@ up to the 2.0 release.</p>
 </dl>
 </section>
 <section id="2.0.0alpha5-bugfix">
-<h3>Bugfixes<a class="headerlink" href="#2.0.0alpha5-bugfix" title="Permalink to this heading">¶</a></h3>
+<h3>Bugfixes<a class="headerlink" href="#2.0.0alpha5-bugfix" title="Link to this heading">¶</a></h3>
 <dl>
 <dt>Fix inconsistent parsing of unix timestamp between pydantic and cattrs<a class="headerlink reference internal" href="#2.0.0alpha5-fix inconsistent parsing of unix timestamp between pydantic and cattrs" id="2.0.0alpha5-fix inconsistent parsing of unix timestamp between pydantic and cattrs">#</a></dt><dd><div class="changelog-change docutils container">
 <p>Timestamps parsed as <a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.date" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">date</span></code></a> with pydantic return a UTC date, while cattrs implementation
@@ -3914,7 +3976,7 @@ or brotli to miss the appropriate <code class="docutils literal notranslate"><sp
 </dl>
 </section>
 <section id="2.0.0alpha5-misc">
-<h3>Other changes<a class="headerlink" href="#2.0.0alpha5-misc" title="Permalink to this heading">¶</a></h3>
+<h3>Other changes<a class="headerlink" href="#2.0.0alpha5-misc" title="Link to this heading">¶</a></h3>
 <dl>
 <dt>SQLAlchemy repository: Rename <code class="docutils literal notranslate"><span class="pre">SQLAlchemyRepository</span></code> &gt; <code class="docutils literal notranslate"><span class="pre">SQLAlchemyAsyncRepository</span></code><a class="headerlink reference internal" href="#2.0.0alpha5-sqlalchemy repository: rename" id="2.0.0alpha5-sqlalchemy repository: rename">#</a><span class="breaking-change">breaking</span></dt><dd><div class="changelog-change docutils container">
 <p><code class="docutils literal notranslate"><span class="pre">SQLAlchemyRepository</span></code> has been renamed to
@@ -3984,9 +4046,9 @@ them into a value for a model field. See</p></li>
 </section>
 </section>
 <section id="2.0.0alpha4">
-<h2>2.0.0alpha4<a class="headerlink" href="#2.0.0alpha4" title="Permalink to this heading">¶</a></h2>
+<h2>2.0.0alpha4<a class="headerlink" href="#2.0.0alpha4" title="Link to this heading">¶</a></h2>
 <section id="2.0.0alpha4-feature">
-<h3>Features<a class="headerlink" href="#2.0.0alpha4-feature" title="Permalink to this heading">¶</a></h3>
+<h3>Features<a class="headerlink" href="#2.0.0alpha4-feature" title="Link to this heading">¶</a></h3>
 <dl>
 <dt><code class="docutils literal notranslate"><span class="pre">attrs</span></code> and <code class="docutils literal notranslate"><span class="pre">msgspec</span></code> support in <code class="xref py py-class docutils literal notranslate"><span class="pre">Partial</span></code><a class="headerlink reference internal" href="#2.0.0alpha4-attrs" id="2.0.0alpha4-attrs">#</a></dt><dd><div class="changelog-change docutils container">
 <p><code class="xref py py-class docutils literal notranslate"><span class="pre">Partial</span></code> now supports constructing partial models for attrs and msgspec</p>
@@ -3997,11 +4059,11 @@ them into a value for a model field. See</p></li>
 <p><code class="xref py py-class docutils literal notranslate"><span class="pre">Annotated</span></code> can now be used in route handler and dependencies to specify additional
 information about the fields.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
-</span><span data-line="2"><span class="k">def</span> <span class="nf">index</span><span class="p">(</span><span class="n">param</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span><span class="n">gt</span><span class="o">=</span><span class="mi">5</span><span class="p">))</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span> <span class="o">...</span>
+</span><span data-line="2"><span class="k">def</span><span class="w"> </span><span class="nf">index</span><span class="p">(</span><span class="n">param</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span><span class="n">gt</span><span class="o">=</span><span class="mi">5</span><span class="p">))</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span> <span class="o">...</span>
 </span></pre></div>
 </div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
-</span><span data-line="2"><span class="k">def</span> <span class="nf">index</span><span class="p">(</span><span class="n">param</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Parameter</span><span class="p">(</span><span class="n">gt</span><span class="o">=</span><span class="mi">5</span><span class="p">)])</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span> <span class="o">...</span>
+</span><span data-line="2"><span class="k">def</span><span class="w"> </span><span class="nf">index</span><span class="p">(</span><span class="n">param</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Parameter</span><span class="p">(</span><span class="n">gt</span><span class="o">=</span><span class="mi">5</span><span class="p">)])</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span> <span class="o">...</span>
 </span></pre></div>
 </div>
 <p>References: <span><a class="reference external" href="https://github.com/litestar-org/litestar/pull/1462">https://github.com/litestar-org/litestar/pull/1462</a></span></p>
@@ -4010,7 +4072,7 @@ information about the fields.</p>
 </dl>
 </section>
 <section id="2.0.0alpha4-bugfix">
-<h3>Bugfixes<a class="headerlink" href="#2.0.0alpha4-bugfix" title="Permalink to this heading">¶</a></h3>
+<h3>Bugfixes<a class="headerlink" href="#2.0.0alpha4-bugfix" title="Link to this heading">¶</a></h3>
 <dl>
 <dt>Support <code class="docutils literal notranslate"><span class="pre">text/html</span></code> Media-Type in <code class="docutils literal notranslate"><span class="pre">Redirect</span></code> response container<a class="headerlink reference internal" href="#2.0.0alpha4-support" id="2.0.0alpha4-support">#</a></dt><dd><div class="changelog-change docutils container">
 <p>The media type in <code class="xref py py-class docutils literal notranslate"><span class="pre">Redirect</span></code> won’t be forced to <code class="docutils literal notranslate"><span class="pre">text/plain</span></code> anymore and
@@ -4041,9 +4103,9 @@ desired affect, as loggers would still be on the <code class="docutils literal n
 </section>
 </section>
 <section id="2.0.0alpha3">
-<h2>2.0.0alpha3<a class="headerlink" href="#2.0.0alpha3" title="Permalink to this heading">¶</a></h2>
+<h2>2.0.0alpha3<a class="headerlink" href="#2.0.0alpha3" title="Link to this heading">¶</a></h2>
 <section id="2.0.0alpha3-feature">
-<h3>Features<a class="headerlink" href="#2.0.0alpha3-feature" title="Permalink to this heading">¶</a></h3>
+<h3>Features<a class="headerlink" href="#2.0.0alpha3-feature" title="Link to this heading">¶</a></h3>
 <dl>
 <dt>SQLAlchemy 2.0 Plugin<a class="headerlink reference internal" href="#2.0.0alpha3-sqlalchemy 2.0 plugin" id="2.0.0alpha3-sqlalchemy 2.0 plugin">#</a></dt><dd><div class="changelog-change docutils container">
 <p>A <code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyInitPlugin</span></code> was added,
@@ -4103,7 +4165,7 @@ of incoming and outgoing data analogous to route handlers and OOP based event di
 </dl>
 </section>
 <section id="2.0.0alpha3-bugfix">
-<h3>Bugfixes<a class="headerlink" href="#2.0.0alpha3-bugfix" title="Permalink to this heading">¶</a></h3>
+<h3>Bugfixes<a class="headerlink" href="#2.0.0alpha3-bugfix" title="Link to this heading">¶</a></h3>
 <dl>
 <dt>SQLAlchemy 1 plugin mutates app state destructively<a class="headerlink reference internal" href="#2.0.0alpha3-sqlalchemy 1 plugin mutates app state destructively" id="2.0.0alpha3-sqlalchemy 1 plugin mutates app state destructively">#</a></dt><dd><div class="changelog-change docutils container">
 <p>When using the SQLAlchemy 1 plugin, repeatedly running through the application lifecycle (as done when testing
@@ -4116,7 +4178,7 @@ application’s state on application shutdown, but only adding it on application
 </dd>
 <dt>Fix SQLAlchemy 1 Plugin - <code class="docutils literal notranslate"><span class="pre">'Request'</span> <span class="pre">object</span> <span class="pre">has</span> <span class="pre">no</span> <span class="pre">attribute</span> <span class="pre">'dict'</span></code><a class="headerlink reference internal" href="#2.0.0alpha3-fix sqlalchemy 1 plugin -" id="2.0.0alpha3-fix sqlalchemy 1 plugin -">#</a></dt><dd><div class="changelog-change docutils container">
 <p>An annotation such as</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">async</span> <span class="k">def</span> <span class="nf">provide_user</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">[</span><span class="n">User</span><span class="p">,</span> <span class="n">Token</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">User</span><span class="p">:</span> <span class="o">...</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">provide_user</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">[</span><span class="n">User</span><span class="p">,</span> <span class="n">Token</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">User</span><span class="p">:</span> <span class="o">...</span>
 </span></pre></div>
 </div>
 <p>would result in the error <code class="docutils literal notranslate"><span class="pre">'Request'</span> <span class="pre">object</span> <span class="pre">has</span> <span class="pre">no</span> <span class="pre">attribute</span> <span class="pre">'dict'</span></code>.</p>
@@ -4126,13 +4188,13 @@ application’s state on application shutdown, but only adding it on application
 </dd>
 <dt>Support OpenAPI schema generation with stringized return annotation<a class="headerlink reference internal" href="#2.0.0alpha3-support openapi schema generation with stringized return annotation" id="2.0.0alpha3-support openapi schema generation with stringized return annotation">#</a></dt><dd><div class="changelog-change docutils container">
 <p>The following code would result in non-specific and incorrect information being generated for the OpenAPI schema:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 </span><span data-line="2">
-</span><span data-line="3"><span class="kn">from</span> <span class="nn">starlite</span> <span class="kn">import</span> <span class="n">get</span>
+</span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">starlite</span><span class="w"> </span><span class="kn">import</span> <span class="n">get</span>
 </span><span data-line="4">
 </span><span data-line="5">
 </span><span data-line="6"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
-</span><span data-line="7"><span class="k">def</span> <span class="nf">hello_world</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+</span><span data-line="7"><span class="k">def</span><span class="w"> </span><span class="nf">hello_world</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
 </span><span data-line="8">    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;hello&quot;</span><span class="p">:</span> <span class="s2">&quot;world&quot;</span><span class="p">}</span>
 </span></pre></div>
 </div>
@@ -4157,7 +4219,7 @@ is now fully supported.</p>
 </dl>
 </section>
 <section id="2.0.0alpha3-misc">
-<h3>Other changes<a class="headerlink" href="#2.0.0alpha3-misc" title="Permalink to this heading">¶</a></h3>
+<h3>Other changes<a class="headerlink" href="#2.0.0alpha3-misc" title="Link to this heading">¶</a></h3>
 <dl>
 <dt><code class="docutils literal notranslate"><span class="pre">create_test_client</span></code> and <code class="docutils literal notranslate"><span class="pre">crate_async_test_client</span></code> signatures and docstrings to to match <code class="docutils literal notranslate"><span class="pre">Litestar</span></code><a class="headerlink reference internal" href="#2.0.0alpha3-create_test_client" id="2.0.0alpha3-create_test_client">#</a></dt><dd><div class="changelog-change docutils container">
 <p>Add missing parameters to <a class="reference internal" href="../reference/testing.html#litestar.testing.create_test_client" title="litestar.testing.create_test_client"><code class="xref py py-func docutils literal notranslate"><span class="pre">create_test_client</span></code></a> and
@@ -4182,9 +4244,9 @@ is now fully supported.</p>
 </section>
 </section>
 <section id="2.0.0alpha2">
-<h2>2.0.0alpha2<a class="headerlink" href="#2.0.0alpha2" title="Permalink to this heading">¶</a></h2>
+<h2>2.0.0alpha2<a class="headerlink" href="#2.0.0alpha2" title="Link to this heading">¶</a></h2>
 <section id="2.0.0alpha2-feature">
-<h3>Features<a class="headerlink" href="#2.0.0alpha2-feature" title="Permalink to this heading">¶</a></h3>
+<h3>Features<a class="headerlink" href="#2.0.0alpha2-feature" title="Link to this heading">¶</a></h3>
 <dl>
 <dt>Repository contrib &amp; SQLAlchemy repository<a class="headerlink reference internal" href="#2.0.0alpha2-repository contrib &amp; sqlalchemy repository" id="2.0.0alpha2-repository contrib &amp; sqlalchemy repository">#</a></dt><dd><div class="changelog-change docutils container">
 <p>Add a a <code class="docutils literal notranslate"><span class="pre">repository</span></code> module to <code class="docutils literal notranslate"><span class="pre">contrib</span></code>, providing abstract base classes
@@ -4286,7 +4348,7 @@ list, and should handle logging</p>
 </dl>
 </section>
 <section id="2.0.0alpha2-bugfix">
-<h3>Bugfixes<a class="headerlink" href="#2.0.0alpha2-bugfix" title="Permalink to this heading">¶</a></h3>
+<h3>Bugfixes<a class="headerlink" href="#2.0.0alpha2-bugfix" title="Link to this heading">¶</a></h3>
 <dl>
 <dt>Allow overwriting default OpenAPI response descriptions<a class="headerlink reference internal" href="#2.0.0alpha2-allow overwriting default openapi response descriptions" id="2.0.0alpha2-allow overwriting default openapi response descriptions">#</a></dt><dd><div class="changelog-change docutils container">
 <p>Fix <a class="reference external" href="https://github.com/litestar-org/litestar/issues/1292">https://github.com/litestar-org/litestar/issues/1292</a> by allowing to overwrite
@@ -4336,7 +4398,7 @@ to throw an error. This was fixed by removing the call to <code class="docutils 
 </dl>
 </section>
 <section id="2.0.0alpha2-misc">
-<h3>Other changes<a class="headerlink" href="#2.0.0alpha2-misc" title="Permalink to this heading">¶</a></h3>
+<h3>Other changes<a class="headerlink" href="#2.0.0alpha2-misc" title="Link to this heading">¶</a></h3>
 <dl>
 <dt>Update <code class="docutils literal notranslate"><span class="pre">SimpleEventEmitter</span></code> to use worker pattern<a class="headerlink reference internal" href="#2.0.0alpha2-update" id="2.0.0alpha2-update">#</a></dt><dd><div class="changelog-change docutils container">
 <p><code class="docutils literal notranslate"><span class="pre">starlite.events.emitter.SimpleEventEmitter</span></code> was updated to using an async worker, pulling
@@ -4372,14 +4434,14 @@ If you have been previously relying on this, you need to change <code class="doc
 <p>The <code class="docutils literal notranslate"><span class="pre">initial_state</span></code> argument to <code class="docutils literal notranslate"><span class="pre">starlite.app.Starlite</span></code> has been replaced with a <code class="docutils literal notranslate"><span class="pre">state</span></code> keyword
 argument, accepting an optional <code class="docutils literal notranslate"><span class="pre">starlite.datastructures.state.State</span></code> instance.</p>
 <p>Existing code using this keyword argument will need to be changed from</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">starlite</span> <span class="kn">import</span> <span class="n">Starlite</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">starlite</span><span class="w"> </span><span class="kn">import</span> <span class="n">Starlite</span>
 </span><span data-line="2">
 </span><span data-line="3"><span class="n">app</span> <span class="o">=</span> <span class="n">Starlite</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">initial_state</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;some&quot;</span><span class="p">:</span> <span class="s2">&quot;key&quot;</span><span class="p">})</span>
 </span></pre></div>
 </div>
 <p>to</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">starlite</span> <span class="kn">import</span> <span class="n">Starlite</span>
-</span><span data-line="2"><span class="kn">from</span> <span class="nn">starlite.datastructures.state</span> <span class="kn">import</span> <span class="n">State</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">starlite</span><span class="w"> </span><span class="kn">import</span> <span class="n">Starlite</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">starlite.datastructures.state</span><span class="w"> </span><span class="kn">import</span> <span class="n">State</span>
 </span><span data-line="3">
 </span><span data-line="4"><span class="n">app</span> <span class="o">=</span> <span class="n">Starlite</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">state</span><span class="o">=</span><span class="n">State</span><span class="p">({</span><span class="s2">&quot;some&quot;</span><span class="p">:</span> <span class="s2">&quot;key&quot;</span><span class="p">}))</span>
 </span></pre></div>
@@ -4436,9 +4498,9 @@ this release.</p>
 </section>
 </section>
 <section id="2.0.0alpha1">
-<h2>2.0.0alpha1<a class="headerlink" href="#2.0.0alpha1" title="Permalink to this heading">¶</a></h2>
+<h2>2.0.0alpha1<a class="headerlink" href="#2.0.0alpha1" title="Link to this heading">¶</a></h2>
 <section id="2.0.0alpha1-feature">
-<h3>Features<a class="headerlink" href="#2.0.0alpha1-feature" title="Permalink to this heading">¶</a></h3>
+<h3>Features<a class="headerlink" href="#2.0.0alpha1-feature" title="Link to this heading">¶</a></h3>
 <dl>
 <dt>Validation of controller route handler methods<a class="headerlink reference internal" href="#2.0.0alpha1-validation of controller route handler methods" id="2.0.0alpha1-validation of controller route handler methods">#</a></dt><dd><div class="changelog-change docutils container">
 <p>Starlite will now validate that no duplicate handlers (that is, they have the same
@@ -4504,7 +4566,7 @@ by memory, the file system or redis.</p>
 </dl>
 </section>
 <section id="2.0.0alpha1-bugfix">
-<h3>Bugfixes<a class="headerlink" href="#2.0.0alpha1-bugfix" title="Permalink to this heading">¶</a></h3>
+<h3>Bugfixes<a class="headerlink" href="#2.0.0alpha1-bugfix" title="Link to this heading">¶</a></h3>
 <dl>
 <dt>Fix resolving of relative paths in <code class="docutils literal notranslate"><span class="pre">StaticFilesConfig</span></code><a class="headerlink reference internal" href="#2.0.0alpha1-fix resolving of relative paths in" id="2.0.0alpha1-fix resolving of relative paths in">#</a></dt><dd><div class="changelog-change docutils container">
 <p>Using a relative <a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">pathlib.Path</span></code></a> did not resolve correctly and result in a <code class="docutils literal notranslate"><span class="pre">NotFoundException</span></code></p>
@@ -4554,7 +4616,7 @@ using <code class="docutils literal notranslate"><span class="pre">StaticFilesCo
 </dl>
 </section>
 <section id="2.0.0alpha1-misc">
-<h3>Other changes<a class="headerlink" href="#2.0.0alpha1-misc" title="Permalink to this heading">¶</a></h3>
+<h3>Other changes<a class="headerlink" href="#2.0.0alpha1-misc" title="Link to this heading">¶</a></h3>
 <dl>
 <dt>Relaxed type annotations<a class="headerlink reference internal" href="#2.0.0alpha1-relaxed type annotations" id="2.0.0alpha1-relaxed type annotations">#</a></dt><dd><div class="changelog-change docutils container">
 <p>Type annotations across the library have been relaxed to more generic forms, for example
@@ -4693,9 +4755,9 @@ the time it takes to <code class="docutils literal notranslate"><span class="pre
     </div>
   </div>
 </footer>
-      <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=c19e757c"></script>
-      <script src="../_static/doctools.js?v=888ff710"></script>
-      <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
+      <script src="../_static/documentation_options.js?v=b95e84ca"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
       <script src="../_static/copybutton.js?v=f281be69"></script>
       <script src="../_static/litestar-theme.js?v=ab2dcc9e"></script>
@@ -4703,8 +4765,8 @@ the time it takes to <code class="docutils literal notranslate"><span class="pre
       <script>let toggleHintHide = 'Click to hide';</script>
       <script>let toggleOpenOnPrint = 'true';</script>
       <script src="../_static/togglebutton.js?v=4a39c7ea"></script>
-      <script src="../_static/design-tabs.js?v=36754332"></script>
+      <script src="../_static/design-tabs.js?v=f930bc37"></script>
       <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
-      <script src="../_static/shibuya.js?v=e2e99575"></script>
+      <script src="../_static/shibuya.js?v=c477d091"></script>
       <script src="../_static/versioning.js?v=bc681eff"></script></body>
 </html>

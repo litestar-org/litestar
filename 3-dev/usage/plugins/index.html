@@ -1,15 +1,15 @@
 <!DOCTYPE html>
-<html lang="en" data-accent-color="amber" data-content_root="">
+<html lang="en" data-accent-color="amber" data-content_root="../../">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Plugins - Litestar Framework</title><link rel="shortcut icon" href="../../_static/favicon.svg"/><link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="Flash Messages" href="flash_messages.html" /><link rel="prev" title="OpenAPI UI Plugins" href="../openapi/ui_plugins.html" /><script>
     function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
     setColorMode(localStorage._theme||"auto");
   </script><link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=397bb51e" />
-    <link rel="stylesheet" type="text/css" href="../../_static/shibuya.css?v=83eaa723" />
+    <link rel="stylesheet" type="text/css" href="../../_static/shibuya.css?v=76b6f612" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css?v=13237357" />
-    <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../_static/sphinx_paramlinks.css" />
     <link media="print" rel="stylesheet" type="text/css" href="../../_static/print.css?v=20ff2c19" />
     <link rel="stylesheet" type="text/css" href="../../_static/style.css?v=50ea2f63" />
@@ -42,13 +42,13 @@
       <img class="dark-logo" src="../../_static/logo-dark.png" alt="Litestar" height="28" loading="lazy" />
       <strong>Litestar</strong>
     </a>
-    <div class="sy-head-nav" id="HeadNav">
+    <div class="sy-head-nav" id="head-nav">
       <nav class="sy-head-links"><ul><li class="link"><a href="../../index.html">Home</a></li>
-      <li class="link"><button type="button">
+      <li class="link"><button class="js-menu" type="button" id="nav-trigger-2" aria-controls="nav-children-2">
             <span>Community</span>
             <i class="i-lucide chevron-down"></i>
           </button>
-        <ul><li><a href="../../contribution-guide.html">
+        <ul id="nav-children-2" aria-labelledby="nav-trigger-2"><li><a href="../../contribution-guide.html">
                 <span>Contributing</span>
                 <small>Learn how to contribute to the Litestar project</small>
               </a></li><li><a href="https://github.com/litestar-org/.github?tab=coc-ov-file">
@@ -59,11 +59,11 @@
                 <small>Overview of Litestar's security protocols</small>
               </a></li></ul>
       </li>
-      <li class="link"><button type="button">
+      <li class="link"><button class="js-menu" type="button" id="nav-trigger-3" aria-controls="nav-children-3">
             <span>About</span>
             <i class="i-lucide chevron-down"></i>
           </button>
-        <ul><li><a href="https://litestar.dev/about/organization">
+        <ul id="nav-children-3" aria-labelledby="nav-trigger-3"><li><a href="https://litestar.dev/about/organization">
                 <span>Litestar Organization</span>
                 <small>Details about the Litestar organization</small>
               </a></li><li><a href="https://litestar.dev/about/litestar-releases">
@@ -71,11 +71,11 @@
                 <small>Explore the release process, versioning, and deprecation policy for Litestar</small>
               </a></li></ul>
       </li>
-      <li class="link"><button type="button">
+      <li class="link"><button class="js-menu" type="button" id="nav-trigger-4" aria-controls="nav-children-4">
             <span>Release notes</span>
             <i class="i-lucide chevron-down"></i>
           </button>
-        <ul><li><a href="../../release-notes/whats-new-3.html">
+        <ul id="nav-children-4" aria-labelledby="nav-trigger-4"><li><a href="../../release-notes/whats-new-3.html">
                 <span>What's new in 3.0</span>
                 <small>Explore the new features in Litestar 3.0</small>
               </a></li><li><a href="../../release-notes/changelog.html">
@@ -86,11 +86,11 @@
                 <small>All changes in the 2.x series</small>
               </a></li></ul>
       </li>
-      <li class="link"><button type="button">
+      <li class="link"><button class="js-menu" type="button" id="nav-trigger-5" aria-controls="nav-children-5">
             <span>Help</span>
             <i class="i-lucide chevron-down"></i>
           </button>
-        <ul><li><a href="https://discord.gg/litestar">
+        <ul id="nav-children-5" aria-labelledby="nav-trigger-5"><li><a href="https://discord.gg/litestar">
                 <span>Discord Help Forum</span>
                 <small>Dedicated Discord help forum</small>
               </a></li><li><a href="https://github.com/orgs/litestar-org/discussions">
@@ -127,7 +127,7 @@ data-aria-auto="Switch to light color mode"
 data-aria-light="Switch to dark color mode"
 data-aria-dark="Switch to auto color mode">
 <i class="i-lucide theme-icon"></i>
-</button><button class="md:hidden flex items-center js-menu" aria-label="Menu" type="button" aria-controls="HeadNav" aria-expanded="false">
+</button><button class="md:hidden flex items-center js-menu" aria-label="Menu" type="button" aria-controls="head-nav" aria-expanded="false">
         <div class="hamburger">
           <span class="hamburger_1"></span>
           <span class="hamburger_2 -translate-x-2"></span>
@@ -173,12 +173,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2"><a class="reference internal" href="../databases/index.html">Databases</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../databases/sqlalchemy/index.html">SQLAlchemy</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../databases/sqlalchemy/models_and_repository.html">SQLAlchemy Models &amp; Repository</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../databases/sqlalchemy/plugins/index.html">Plugins</a><ul>
-<li class="toctree-l5"><a class="reference internal" href="../databases/sqlalchemy/plugins/sqlalchemy_plugin.html">SQLAlchemy Plugin</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../databases/sqlalchemy/plugins/sqlalchemy_init_plugin.html">SQLAlchemy Init Plugin</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../databases/sqlalchemy/plugins/sqlalchemy_serialization_plugin.html">SQLAlchemy Serialization Plugin</a></li>
-</ul>
-</li>
+<li class="toctree-l4"><a class="reference internal" href="../databases/sqlalchemy/plugins/index.html">Plugins</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../databases/piccolo.html">Piccolo ORM</a></li>
@@ -510,11 +505,12 @@ data-aria-dark="Switch to auto color mode">
     </span>
   </span>
 </a><div class="edit-this-page">
-  <a href="https://github.com/litestar-org/litestar/blob/master/docs/usage/plugins/index.rst">Edit this page</a>
+  <a href="https://github.com/litestar-org/litestar/blob/main/docs/usage/plugins/index.rst">Edit this page</a>
 </div><div id="ethical-ad-placement" data-ea-publisher="readthedocs"></div></div>
   </aside>
   <div class="rside-overlay js-menu" role="button" aria-label="Close Table of Contents" aria-controls="rside" aria-expanded="false"></div>
-  <main class="sy-main w-full max-sm:max-w-full print:pt-6"><div class="sy-breadcrumbs" role="navigation">
+  <main class="sy-main w-full max-sm:max-w-full print:pt-6">
+<div class="sy-breadcrumbs" role="navigation">
   <div class="sy-breadcrumbs-inner flex items-center">
     <div class="md:hidden mr-3">
       <button class="js-menu" aria-label="Menu" type="button" aria-controls="lside" aria-expanded="false">
@@ -544,7 +540,7 @@ data-aria-dark="Switch to auto color mode">
       <div class="min-w-0 max-w-6xl px-6 pb-6 pt-8 xl:px-12">
         <article class="yue" role="main">
           <section id="plugins">
-<span id="id1"></span><h1>Plugins<a class="headerlink" href="#plugins" title="Permalink to this heading">¶</a></h1>
+<span id="id1"></span><h1>Plugins<a class="headerlink" href="#plugins" title="Link to this heading">¶</a></h1>
 <p>Litestar supports a plugin system that allows you to extend the functionality of the framework.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
@@ -555,7 +551,7 @@ data-aria-dark="Switch to auto color mode">
 <p>Plugins are defined by protocols, and any type that satisfies a protocol can be included in the <code class="docutils literal notranslate"><span class="pre">plugins</span></code> argument of
 the <a class="reference internal" href="../../reference/app.html#litestar.app.Litestar" title="litestar.app.Litestar"><code class="xref py py-class docutils literal notranslate"><span class="pre">app</span></code></a>.</p>
 <section id="initplugin">
-<h2>InitPlugin<a class="headerlink" href="#initplugin" title="Permalink to this heading">¶</a></h2>
+<h2>InitPlugin<a class="headerlink" href="#initplugin" title="Link to this heading">¶</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">InitPlugin</span></code> defines an interface that allows for customization of the application’s initialization process.
 Init plugins can define dependencies, add route handlers, configure middleware, and much more!</p>
 <p>Implementations of these plugins must define a single method:
@@ -566,27 +562,27 @@ and is later used to instantiate the application.</p>
 they are provided in the <code class="docutils literal notranslate"><span class="pre">plugins</span></code> argument of the <a class="reference internal" href="../../reference/app.html#litestar.app.Litestar" title="litestar.app.Litestar"><code class="xref py py-class docutils literal notranslate"><span class="pre">app</span></code></a>. Because of this, plugin
 authors should make it clear in their documentation if their plugin should be invoked before or after other plugins.</p>
 <section id="example">
-<h3>Example<a class="headerlink" href="#example" title="Permalink to this heading">¶</a></h3>
+<h3>Example<a class="headerlink" href="#example" title="Link to this heading">¶</a></h3>
 <p>The following example shows a simple plugin that adds a route handler, and a dependency to the application.</p>
 <div class="literal-block-wrapper docutils container" id="id4">
-<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">InitPlugin</span></code> implementation example</span><a class="headerlink" href="#id4" title="Permalink to this code">¶</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
-</span><span data-line="2"><span class="kn">from</span> <span class="nn">litestar.config.app</span> <span class="kn">import</span> <span class="n">AppConfig</span>
-</span><span data-line="3"><span class="kn">from</span> <span class="nn">litestar.di</span> <span class="kn">import</span> <span class="n">Provide</span>
-</span><span data-line="4"><span class="kn">from</span> <span class="nn">litestar.plugins</span> <span class="kn">import</span> <span class="n">InitPlugin</span>
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">InitPlugin</span></code> implementation example</span><a class="headerlink" href="#id4" title="Link to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.config.app</span><span class="w"> </span><span class="kn">import</span> <span class="n">AppConfig</span>
+</span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.di</span><span class="w"> </span><span class="kn">import</span> <span class="n">Provide</span>
+</span><span data-line="4"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.plugins</span><span class="w"> </span><span class="kn">import</span> <span class="n">InitPlugin</span>
 </span><span data-line="5">
 </span><span data-line="6">
 </span><span data-line="7"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-</span><span data-line="8"><span class="k">def</span> <span class="nf">route_handler</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+</span><span data-line="8"><span class="k">def</span><span class="w"> </span><span class="nf">route_handler</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
 </span><span data-line="9">    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;hello&quot;</span><span class="p">:</span> <span class="n">name</span><span class="p">}</span>
 </span><span data-line="10">
 </span><span data-line="11">
-</span><span data-line="12"><span class="k">def</span> <span class="nf">get_name</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span data-line="12"><span class="k">def</span><span class="w"> </span><span class="nf">get_name</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 </span><span data-line="13">    <span class="k">return</span> <span class="s2">&quot;world&quot;</span>
 </span><span data-line="14">
 </span><span data-line="15">
-</span><span data-line="16"><span class="k">class</span> <span class="nc">MyPlugin</span><span class="p">(</span><span class="n">InitPlugin</span><span class="p">):</span>
-</span><span data-line="17">    <span class="k">def</span> <span class="nf">on_app_init</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">app_config</span><span class="p">:</span> <span class="n">AppConfig</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AppConfig</span><span class="p">:</span>
+</span><span data-line="16"><span class="k">class</span><span class="w"> </span><span class="nc">MyPlugin</span><span class="p">(</span><span class="n">InitPlugin</span><span class="p">):</span>
+</span><span data-line="17">    <span class="k">def</span><span class="w"> </span><span class="nf">on_app_init</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">app_config</span><span class="p">:</span> <span class="n">AppConfig</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AppConfig</span><span class="p">:</span>
 </span><span data-line="18">        <span class="n">app_config</span><span class="o">.</span><span class="n">dependencies</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Provide</span><span class="p">(</span><span class="n">get_name</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </span><span data-line="19">        <span class="n">app_config</span><span class="o">.</span><span class="n">route_handlers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">route_handler</span><span class="p">)</span>
 </span><span data-line="20">        <span class="k">return</span> <span class="n">app_config</span>
@@ -612,7 +608,7 @@ function. The modified <a class="reference internal" href="../../reference/confi
 </section>
 </section>
 <section id="serializationplugin">
-<h2>SerializationPlugin<a class="headerlink" href="#serializationplugin" title="Permalink to this heading">¶</a></h2>
+<h2>SerializationPlugin<a class="headerlink" href="#serializationplugin" title="Link to this heading">¶</a></h2>
 <p>The <a class="reference internal" href="../../reference/plugins/index.html#litestar.plugins.SerializationPlugin" title="litestar.plugins.SerializationPlugin"><code class="xref py py-class docutils literal notranslate"><span class="pre">SerializationPlugin</span></code></a> defines a contract for plugins that
 provide serialization functionality for data types that are otherwise unsupported by the
 framework.</p>
@@ -632,22 +628,22 @@ the type.</p>
 the plugin, and doesn’t otherwise have a <code class="docutils literal notranslate"><span class="pre">dto</span></code> or <code class="docutils literal notranslate"><span class="pre">return_dto</span></code> defined, the plugin is used to create a DTO type for
 that annotation.</p>
 <section id="id2">
-<h3>Example<a class="headerlink" href="#id2" title="Permalink to this heading">¶</a></h3>
+<h3>Example<a class="headerlink" href="#id2" title="Link to this heading">¶</a></h3>
 <p>The following example shows the actual implementation of the <code class="docutils literal notranslate"><span class="pre">SerializationPlugin</span></code> for
 <a class="reference external" href="https://www.sqlalchemy.org/">SQLAlchemy</a> models that is is provided in <code class="docutils literal notranslate"><span class="pre">advanced_alchemy</span></code>.</p>
 <div class="literal-block-wrapper docutils container" id="id5">
-<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">SerializationPlugin</span></code> implementation example</span><a class="headerlink" href="#id5" title="Permalink to this code">¶</a></div>
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">SerializationPlugin</span></code> implementation example</span><a class="headerlink" href="#id5" title="Link to this code">¶</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="c1"># ruff: noqa: TC004</span>
-</span><span data-line="2"><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 </span><span data-line="3">
-</span><span data-line="4"><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
+</span><span data-line="4"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
 </span><span data-line="5">
-</span><span data-line="6"><span class="kn">from</span> <span class="nn">litestar.utils</span> <span class="kn">import</span> <span class="n">warn_deprecation</span>
+</span><span data-line="6"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">warn_deprecation</span>
 </span><span data-line="7">
 </span><span data-line="8"><span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;SQLAlchemySerializationPlugin&quot;</span><span class="p">,)</span>
 </span><span data-line="9">
 </span><span data-line="10">
-</span><span data-line="11"><span class="k">def</span> <span class="fm">__getattr__</span><span class="p">(</span><span class="n">attr_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">object</span><span class="p">:</span>
+</span><span data-line="11"><span class="k">def</span><span class="w"> </span><span class="fm">__getattr__</span><span class="p">(</span><span class="n">attr_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">object</span><span class="p">:</span>
 </span><span data-line="12">    <span class="k">if</span> <span class="n">attr_name</span> <span class="ow">in</span> <span class="n">__all__</span><span class="p">:</span>
 </span><span data-line="13">        <span class="n">warn_deprecation</span><span class="p">(</span>
 </span><span data-line="14">            <span class="n">deprecated_name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;litestar.contrib.sqlalchemy.plugins.serialization.</span><span class="si">{</span><span class="n">attr_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
@@ -657,7 +653,7 @@ that annotation.</p>
 </span><span data-line="18">            <span class="n">info</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;importing </span><span class="si">{</span><span class="n">attr_name</span><span class="si">}</span><span class="s2"> from &#39;litestar.contrib.sqlalchemy.plugins.serialization&#39; is deprecated, please &quot;</span>
 </span><span data-line="19">            <span class="s2">&quot;import it from &#39;litestar.plugins.sqlalchemy&#39; instead&quot;</span><span class="p">,</span>
 </span><span data-line="20">        <span class="p">)</span>
-</span><span data-line="21">        <span class="kn">from</span> <span class="nn">advanced_alchemy.extensions.litestar</span> <span class="kn">import</span> <span class="n">SQLAlchemySerializationPlugin</span>
+</span><span data-line="21">        <span class="kn">from</span><span class="w"> </span><span class="nn">advanced_alchemy.extensions.litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">SQLAlchemySerializationPlugin</span>
 </span><span data-line="22">
 </span><span data-line="23">        <span class="n">value</span> <span class="o">=</span> <span class="nb">globals</span><span class="p">()[</span><span class="n">attr_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">SQLAlchemySerializationPlugin</span>
 </span><span data-line="24">        <span class="k">return</span> <span class="n">value</span>
@@ -666,7 +662,7 @@ that annotation.</p>
 </span><span data-line="27">
 </span><span data-line="28">
 </span><span data-line="29"><span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
-</span><span data-line="30">    <span class="kn">from</span> <span class="nn">advanced_alchemy.extensions.litestar</span> <span class="kn">import</span> <span class="n">SQLAlchemySerializationPlugin</span>
+</span><span data-line="30">    <span class="kn">from</span><span class="w"> </span><span class="nn">advanced_alchemy.extensions.litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">SQLAlchemySerializationPlugin</span>
 </span></pre></div>
 </div>
 </div>
@@ -687,7 +683,7 @@ adds it to the <code class="docutils literal notranslate"><span class="pre">_typ
 </section>
 </section>
 <section id="diplugin">
-<h2>DIPlugin<a class="headerlink" href="#diplugin" title="Permalink to this heading">¶</a></h2>
+<h2>DIPlugin<a class="headerlink" href="#diplugin" title="Link to this heading">¶</a></h2>
 <p><a class="reference internal" href="../../reference/plugins/index.html#litestar.plugins.DIPlugin" title="litestar.plugins.DIPlugin"><code class="xref py py-class docutils literal notranslate"><span class="pre">DIPlugin</span></code></a> can be used to extend Litestar’s dependency
 injection by providing information about injectable types.</p>
 <p>Its main purpose it to facilitate the injection of callables with unknown signatures,
@@ -695,32 +691,32 @@ for example Pydantic’s <code class="docutils literal notranslate"><span class=
 while they are callables, their type information is not contained within their callable
 signature (their <a class="reference internal" href="../../reference/contrib/jinja.html#litestar.contrib.jinja.JinjaTemplateEngine.__init__" title="litestar.contrib.jinja.JinjaTemplateEngine.__init__"><code class="xref py py-func docutils literal notranslate"><span class="pre">__init__()</span></code></a> method).</p>
 <div class="literal-block-wrapper docutils container" id="id6">
-<div class="code-block-caption"><span class="caption-text">Dynamically generating signature information for a custom type</span><a class="headerlink" href="#id6" title="Permalink to this code">¶</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">inspect</span> <span class="kn">import</span> <span class="n">Parameter</span><span class="p">,</span> <span class="n">Signature</span>
-</span><span data-line="2"><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span>
+<div class="code-block-caption"><span class="caption-text">Dynamically generating signature information for a custom type</span><a class="headerlink" href="#id6" title="Link to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">inspect</span><span class="w"> </span><span class="kn">import</span> <span class="n">Parameter</span><span class="p">,</span> <span class="n">Signature</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
 </span><span data-line="3">
-</span><span data-line="4"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
-</span><span data-line="5"><span class="kn">from</span> <span class="nn">litestar.di</span> <span class="kn">import</span> <span class="n">Provide</span>
-</span><span data-line="6"><span class="kn">from</span> <span class="nn">litestar.plugins</span> <span class="kn">import</span> <span class="n">DIPlugin</span>
+</span><span data-line="4"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
+</span><span data-line="5"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.di</span><span class="w"> </span><span class="kn">import</span> <span class="n">Provide</span>
+</span><span data-line="6"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.plugins</span><span class="w"> </span><span class="kn">import</span> <span class="n">DIPlugin</span>
 </span><span data-line="7">
 </span><span data-line="8">
-</span><span data-line="9"><span class="k">class</span> <span class="nc">MyBaseType</span><span class="p">:</span>
-</span><span data-line="10">    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">param</span><span class="p">):</span>
+</span><span data-line="9"><span class="k">class</span><span class="w"> </span><span class="nc">MyBaseType</span><span class="p">:</span>
+</span><span data-line="10">    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">param</span><span class="p">):</span>
 </span><span data-line="11">        <span class="bp">self</span><span class="o">.</span><span class="n">param</span> <span class="o">=</span> <span class="n">param</span>
 </span><span data-line="12">
 </span><span data-line="13">
-</span><span data-line="14"><span class="k">class</span> <span class="nc">MyDIPlugin</span><span class="p">(</span><span class="n">DIPlugin</span><span class="p">):</span>
-</span><span data-line="15">    <span class="k">def</span> <span class="nf">has_typed_init</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">type_</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+</span><span data-line="14"><span class="k">class</span><span class="w"> </span><span class="nc">MyDIPlugin</span><span class="p">(</span><span class="n">DIPlugin</span><span class="p">):</span>
+</span><span data-line="15">    <span class="k">def</span><span class="w"> </span><span class="nf">has_typed_init</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">type_</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 </span><span data-line="16">        <span class="k">return</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">type_</span><span class="p">,</span> <span class="n">MyBaseType</span><span class="p">)</span>
 </span><span data-line="17">
-</span><span data-line="18">    <span class="k">def</span> <span class="nf">get_typed_init</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">type_</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">Signature</span><span class="p">,</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
+</span><span data-line="18">    <span class="k">def</span><span class="w"> </span><span class="nf">get_typed_init</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">type_</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">Signature</span><span class="p">,</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
 </span><span data-line="19">        <span class="n">signature</span> <span class="o">=</span> <span class="n">Signature</span><span class="p">([</span><span class="n">Parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;param&quot;</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="n">Parameter</span><span class="o">.</span><span class="n">POSITIONAL_OR_KEYWORD</span><span class="p">)])</span>
 </span><span data-line="20">        <span class="n">annotations</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;param&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">}</span>
 </span><span data-line="21">        <span class="k">return</span> <span class="n">signature</span><span class="p">,</span> <span class="n">annotations</span>
 </span><span data-line="22">
 </span><span data-line="23">
 </span><span data-line="24"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">dependencies</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;injected&quot;</span><span class="p">:</span> <span class="n">Provide</span><span class="p">(</span><span class="n">MyBaseType</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)})</span>
-</span><span data-line="25"><span class="k">async</span> <span class="k">def</span> <span class="nf">handler</span><span class="p">(</span><span class="n">injected</span><span class="p">:</span> <span class="n">MyBaseType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span data-line="25"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">handler</span><span class="p">(</span><span class="n">injected</span><span class="p">:</span> <span class="n">MyBaseType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 </span><span data-line="26">    <span class="k">return</span> <span class="n">injected</span><span class="o">.</span><span class="n">param</span>
 </span><span data-line="27">
 </span><span data-line="28">
@@ -743,7 +739,7 @@ signature (their <a class="reference internal" href="../../reference/contrib/jin
 </div>
 </section>
 <section id="receiverouteplugin">
-<h2>ReceiveRoutePlugin<a class="headerlink" href="#receiverouteplugin" title="Permalink to this heading">¶</a></h2>
+<h2>ReceiveRoutePlugin<a class="headerlink" href="#receiverouteplugin" title="Link to this heading">¶</a></h2>
 <p><a class="reference internal" href="../../reference/plugins/index.html#litestar.plugins.ReceiveRoutePlugin" title="litestar.plugins.ReceiveRoutePlugin"><code class="xref py py-class docutils literal notranslate"><span class="pre">ReceiveRoutePlugin</span></code></a> allows you to receive routes as they are registered on the application.
 This can be useful for plugins that need to perform actions based on the routes being added, such as generating
 documentation, validating route configurations, or tracking route statistics.</p>
@@ -752,13 +748,13 @@ documentation, validating route configurations, or tracking route statistics.</p
 <p>The method receives a <a class="reference internal" href="../../reference/routes.html#litestar.routes.BaseRoute" title="litestar.routes.BaseRoute"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseRoute</span></code></a> instance as routes are registered on the application.
 This happens during the application initialization process, after routes are created but before the application starts.</p>
 <section id="id3">
-<h3>Example<a class="headerlink" href="#id3" title="Permalink to this heading">¶</a></h3>
+<h3>Example<a class="headerlink" href="#id3" title="Link to this heading">¶</a></h3>
 <p>The following example shows a simple plugin that logs information about each route as it’s registered:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">litestar.plugins</span> <span class="kn">import</span> <span class="n">ReceiveRoutePlugin</span>
-</span><span data-line="2"><span class="kn">from</span> <span class="nn">litestar.routes</span> <span class="kn">import</span> <span class="n">BaseRoute</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.plugins</span><span class="w"> </span><span class="kn">import</span> <span class="n">ReceiveRoutePlugin</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.routes</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseRoute</span>
 </span><span data-line="3">
-</span><span data-line="4"><span class="k">class</span> <span class="nc">RouteLoggerPlugin</span><span class="p">(</span><span class="n">ReceiveRoutePlugin</span><span class="p">):</span>
-</span><span data-line="5">    <span class="k">def</span> <span class="nf">receive_route</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">route</span><span class="p">:</span> <span class="n">BaseRoute</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="4"><span class="k">class</span><span class="w"> </span><span class="nc">RouteLoggerPlugin</span><span class="p">(</span><span class="n">ReceiveRoutePlugin</span><span class="p">):</span>
+</span><span data-line="5">    <span class="k">def</span><span class="w"> </span><span class="nf">receive_route</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">route</span><span class="p">:</span> <span class="n">BaseRoute</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 </span><span data-line="6">        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Route registered: </span><span class="si">{</span><span class="n">route</span><span class="o">.</span><span class="n">path</span><span class="si">}</span><span class="s2"> [</span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">route</span><span class="o">.</span><span class="n">http_methods</span><span class="p">)</span><span class="si">}</span><span class="s2">]&quot;</span><span class="p">)</span>
 </span></pre></div>
 </div>
@@ -815,9 +811,9 @@ This happens during the application initialization process, after routes are cre
     </div>
   </div>
 </footer>
-      <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=c19e757c"></script>
-      <script src="../../_static/doctools.js?v=888ff710"></script>
-      <script src="../../_static/sphinx_highlight.js?v=4825356b"></script>
+      <script src="../../_static/documentation_options.js?v=b95e84ca"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
       <script src="../../_static/copybutton.js?v=f281be69"></script>
       <script src="../../_static/litestar-theme.js?v=ab2dcc9e"></script>
@@ -825,8 +821,8 @@ This happens during the application initialization process, after routes are cre
       <script>let toggleHintHide = 'Click to hide';</script>
       <script>let toggleOpenOnPrint = 'true';</script>
       <script src="../../_static/togglebutton.js?v=4a39c7ea"></script>
-      <script src="../../_static/design-tabs.js?v=36754332"></script>
+      <script src="../../_static/design-tabs.js?v=f930bc37"></script>
       <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
-      <script src="../../_static/shibuya.js?v=e2e99575"></script>
+      <script src="../../_static/shibuya.js?v=c477d091"></script>
       <script src="../../_static/versioning.js?v=bc681eff"></script></body>
 </html>

@@ -1,15 +1,15 @@
 <!DOCTYPE html>
-<html lang="en" data-accent-color="amber" data-content_root="">
+<html lang="en" data-accent-color="amber" data-content_root="../../">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Application basics - Litestar Framework</title><link rel="shortcut icon" href="../../_static/favicon.svg"/><link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="Accessing the list" href="1-accessing-the-list.html" /><link rel="prev" title="Developing a basic TODO application" href="index.html" /><script>
     function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
     setColorMode(localStorage._theme||"auto");
   </script><link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=397bb51e" />
-    <link rel="stylesheet" type="text/css" href="../../_static/shibuya.css?v=83eaa723" />
+    <link rel="stylesheet" type="text/css" href="../../_static/shibuya.css?v=76b6f612" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css?v=13237357" />
-    <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../_static/sphinx_paramlinks.css" />
     <link media="print" rel="stylesheet" type="text/css" href="../../_static/print.css?v=20ff2c19" />
     <link rel="stylesheet" type="text/css" href="../../_static/style.css?v=50ea2f63" />
@@ -42,13 +42,13 @@
       <img class="dark-logo" src="../../_static/logo-dark.png" alt="Litestar" height="28" loading="lazy" />
       <strong>Litestar</strong>
     </a>
-    <div class="sy-head-nav" id="HeadNav">
+    <div class="sy-head-nav" id="head-nav">
       <nav class="sy-head-links"><ul><li class="link"><a href="../../index.html">Home</a></li>
-      <li class="link"><button type="button">
+      <li class="link"><button class="js-menu" type="button" id="nav-trigger-2" aria-controls="nav-children-2">
             <span>Community</span>
             <i class="i-lucide chevron-down"></i>
           </button>
-        <ul><li><a href="../../contribution-guide.html">
+        <ul id="nav-children-2" aria-labelledby="nav-trigger-2"><li><a href="../../contribution-guide.html">
                 <span>Contributing</span>
                 <small>Learn how to contribute to the Litestar project</small>
               </a></li><li><a href="https://github.com/litestar-org/.github?tab=coc-ov-file">
@@ -59,11 +59,11 @@
                 <small>Overview of Litestar's security protocols</small>
               </a></li></ul>
       </li>
-      <li class="link"><button type="button">
+      <li class="link"><button class="js-menu" type="button" id="nav-trigger-3" aria-controls="nav-children-3">
             <span>About</span>
             <i class="i-lucide chevron-down"></i>
           </button>
-        <ul><li><a href="https://litestar.dev/about/organization">
+        <ul id="nav-children-3" aria-labelledby="nav-trigger-3"><li><a href="https://litestar.dev/about/organization">
                 <span>Litestar Organization</span>
                 <small>Details about the Litestar organization</small>
               </a></li><li><a href="https://litestar.dev/about/litestar-releases">
@@ -71,11 +71,11 @@
                 <small>Explore the release process, versioning, and deprecation policy for Litestar</small>
               </a></li></ul>
       </li>
-      <li class="link"><button type="button">
+      <li class="link"><button class="js-menu" type="button" id="nav-trigger-4" aria-controls="nav-children-4">
             <span>Release notes</span>
             <i class="i-lucide chevron-down"></i>
           </button>
-        <ul><li><a href="../../release-notes/whats-new-3.html">
+        <ul id="nav-children-4" aria-labelledby="nav-trigger-4"><li><a href="../../release-notes/whats-new-3.html">
                 <span>What's new in 3.0</span>
                 <small>Explore the new features in Litestar 3.0</small>
               </a></li><li><a href="../../release-notes/changelog.html">
@@ -86,11 +86,11 @@
                 <small>All changes in the 2.x series</small>
               </a></li></ul>
       </li>
-      <li class="link"><button type="button">
+      <li class="link"><button class="js-menu" type="button" id="nav-trigger-5" aria-controls="nav-children-5">
             <span>Help</span>
             <i class="i-lucide chevron-down"></i>
           </button>
-        <ul><li><a href="https://discord.gg/litestar">
+        <ul id="nav-children-5" aria-labelledby="nav-trigger-5"><li><a href="https://discord.gg/litestar">
                 <span>Discord Help Forum</span>
                 <small>Dedicated Discord help forum</small>
               </a></li><li><a href="https://github.com/orgs/litestar-org/discussions">
@@ -127,7 +127,7 @@ data-aria-auto="Switch to light color mode"
 data-aria-light="Switch to dark color mode"
 data-aria-dark="Switch to auto color mode">
 <i class="i-lucide theme-icon"></i>
-</button><button class="md:hidden flex items-center js-menu" aria-label="Menu" type="button" aria-controls="HeadNav" aria-expanded="false">
+</button><button class="md:hidden flex items-center js-menu" aria-label="Menu" type="button" aria-controls="head-nav" aria-expanded="false">
         <div class="hamburger">
           <span class="hamburger_1"></span>
           <span class="hamburger_2 -translate-x-2"></span>
@@ -173,12 +173,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2"><a class="reference internal" href="../../usage/databases/index.html">Databases</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../usage/databases/sqlalchemy/index.html">SQLAlchemy</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../usage/databases/sqlalchemy/models_and_repository.html">SQLAlchemy Models &amp; Repository</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../usage/databases/sqlalchemy/plugins/index.html">Plugins</a><ul>
-<li class="toctree-l5"><a class="reference internal" href="../../usage/databases/sqlalchemy/plugins/sqlalchemy_plugin.html">SQLAlchemy Plugin</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../../usage/databases/sqlalchemy/plugins/sqlalchemy_init_plugin.html">SQLAlchemy Init Plugin</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../../usage/databases/sqlalchemy/plugins/sqlalchemy_serialization_plugin.html">SQLAlchemy Serialization Plugin</a></li>
-</ul>
-</li>
+<li class="toctree-l4"><a class="reference internal" href="../../usage/databases/sqlalchemy/plugins/index.html">Plugins</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../../usage/databases/piccolo.html">Piccolo ORM</a></li>
@@ -506,11 +501,12 @@ data-aria-dark="Switch to auto color mode">
     </span>
   </span>
 </a><div class="edit-this-page">
-  <a href="https://github.com/litestar-org/litestar/blob/master/docs/tutorials/todo-app/0-application-basics.rst">Edit this page</a>
+  <a href="https://github.com/litestar-org/litestar/blob/main/docs/tutorials/todo-app/0-application-basics.rst">Edit this page</a>
 </div><div id="ethical-ad-placement" data-ea-publisher="readthedocs"></div></div>
   </aside>
   <div class="rside-overlay js-menu" role="button" aria-label="Close Table of Contents" aria-controls="rside" aria-expanded="false"></div>
-  <main class="sy-main w-full max-sm:max-w-full print:pt-6"><div class="sy-breadcrumbs" role="navigation">
+  <main class="sy-main w-full max-sm:max-w-full print:pt-6">
+<div class="sy-breadcrumbs" role="navigation">
   <div class="sy-breadcrumbs-inner flex items-center">
     <div class="md:hidden mr-3">
       <button class="js-menu" aria-label="Menu" type="button" aria-controls="lside" aria-expanded="false">
@@ -544,12 +540,12 @@ data-aria-dark="Switch to auto color mode">
       <div class="min-w-0 max-w-6xl px-6 pb-6 pt-8 xl:px-12">
         <article class="yue" role="main">
           <section id="application-basics">
-<h1>Application basics<a class="headerlink" href="#application-basics" title="Permalink to this heading">¶</a></h1>
+<h1>Application basics<a class="headerlink" href="#application-basics" title="Link to this heading">¶</a></h1>
 <section id="first-steps">
-<h2>First steps<a class="headerlink" href="#first-steps" title="Permalink to this heading">¶</a></h2>
+<h2>First steps<a class="headerlink" href="#first-steps" title="Link to this heading">¶</a></h2>
 <p>Before we start building our TODO application, let us start with the basics.</p>
 <section id="install-litestar">
-<h3>Install Litestar<a class="headerlink" href="#install-litestar" title="Permalink to this heading">¶</a></h3>
+<h3>Install Litestar<a class="headerlink" href="#install-litestar" title="Link to this heading">¶</a></h3>
 <p>To install Litestar, run <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">'litestar[standard]'</span></code>. This will install Litestar
 as well as <a class="reference external" href="https://www.uvicorn.org/">uvicorn</a> -  a web server to serve your application.</p>
 <div class="admonition note">
@@ -559,16 +555,16 @@ recommends - Uvicorn.</p>
 </div>
 </section>
 <section id="hello-world">
-<h3>Hello, world!<a class="headerlink" href="#hello-world" title="Permalink to this heading">¶</a></h3>
+<h3>Hello, world!<a class="headerlink" href="#hello-world" title="Link to this heading">¶</a></h3>
 <p>The most basic application you can implement - and a classic one at that - is of course
 one that prints <code class="docutils literal notranslate"><span class="pre">&quot;Hello,</span> <span class="pre">world!&quot;</span></code>:</p>
 <div class="literal-block-wrapper docutils container" id="id2">
-<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">app.py</span></code></span><a class="headerlink" href="#id2" title="Permalink to this code">¶</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">app.py</span></code></span><a class="headerlink" href="#id2" title="Link to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
 </span><span data-line="2">
 </span><span data-line="3">
 </span><span data-line="4"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
-</span><span data-line="5"><span class="k">async</span> <span class="k">def</span> <span class="nf">hello_world</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span data-line="5"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">hello_world</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 </span><span data-line="6">    <span class="k">return</span> <span class="s2">&quot;Hello, world!&quot;</span>
 </span><span data-line="7">
 </span><span data-line="8">
@@ -584,7 +580,7 @@ machine. Now visit <a class="reference external" href="http://127.0.0.1:8000/">h
 </section>
 </section>
 <section id="route-handlers">
-<h2>Route handlers<a class="headerlink" href="#route-handlers" title="Permalink to this heading">¶</a></h2>
+<h2>Route handlers<a class="headerlink" href="#route-handlers" title="Link to this heading">¶</a></h2>
 <p>Route handlers tell your Litestar application what to do when it gets a request.
 They are named this way because they typically handle a single URL path (or <em>route</em>),
 which is the part of the URL that’s specific to your application. In our current
@@ -601,11 +597,11 @@ set to <code class="docutils literal notranslate"><span class="pre">/</span></co
 is being made to the <code class="docutils literal notranslate"><span class="pre">/</span></code> path of your application. The name of the handler decorator
 - <code class="docutils literal notranslate"><span class="pre">get</span></code> - refers to the HTTP method to which you want to respond. Using <code class="docutils literal notranslate"><span class="pre">get</span></code> tells
 Litestar that you only want to use this function when a <code class="docutils literal notranslate"><span class="pre">GET</span></code> request is being made.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="linenos">1</span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="linenos">1</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
 </span><span data-line="2"><span class="linenos">2</span>
 </span><span data-line="3"><span class="linenos">3</span>
 </span><span data-line="4"><span class="hll"><span class="linenos">4</span><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
-</span></span><span data-line="5"><span class="linenos">5</span><span class="k">async</span> <span class="k">def</span> <span class="nf">hello_world</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span></span><span data-line="5"><span class="linenos">5</span><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">hello_world</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 </span><span data-line="6"><span class="linenos">6</span>    <span class="k">return</span> <span class="s2">&quot;Hello, world!&quot;</span>
 </span><span data-line="7"><span class="linenos">7</span>
 </span><span data-line="8"><span class="linenos">8</span>
@@ -618,7 +614,7 @@ Litestar that you only want to use this function when a <code class="docutils li
 a function that takes another function as its argument (in this case <code class="docutils literal notranslate"><span class="pre">hello_world</span></code>)
 and replaces it with the return value of the decorator function.
 Without the decorator, the example would look like this:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">async</span> <span class="k">def</span> <span class="nf">hello_world</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">hello_world</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 </span><span data-line="2">    <span class="k">return</span> <span class="s2">&quot;Hello, world!&quot;</span>
 </span><span data-line="3">
 </span><span data-line="4">
@@ -636,14 +632,14 @@ article: <a class="reference external" href="https://realpython.com/primer-on-py
 </div>
 </section>
 <section id="type-annotations">
-<h2>Type annotations<a class="headerlink" href="#type-annotations" title="Permalink to this heading">¶</a></h2>
+<h2>Type annotations<a class="headerlink" href="#type-annotations" title="Link to this heading">¶</a></h2>
 <p>Type annotations play an important role in a Litestar application. They tell Litestar
 how you want your data to behave, and what you intend to do with it.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="linenos">1</span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="linenos">1</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
 </span><span data-line="2"><span class="linenos">2</span>
 </span><span data-line="3"><span class="linenos">3</span>
 </span><span data-line="4"><span class="linenos">4</span><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
-</span><span data-line="5"><span class="hll"><span class="linenos">5</span><span class="k">async</span> <span class="k">def</span> <span class="nf">hello_world</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span data-line="5"><span class="hll"><span class="linenos">5</span><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">hello_world</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 </span></span><span data-line="6"><span class="linenos">6</span>    <span class="k">return</span> <span class="s2">&quot;Hello, world!&quot;</span>
 </span><span data-line="7"><span class="linenos">7</span>
 </span><span data-line="8"><span class="linenos">8</span>
@@ -664,17 +660,17 @@ making your applications easy to check and more type-safe.</p>
 </div>
 </section>
 <section id="applications">
-<h2>Applications<a class="headerlink" href="#applications" title="Permalink to this heading">¶</a></h2>
+<h2>Applications<a class="headerlink" href="#applications" title="Link to this heading">¶</a></h2>
 <p>After a route handler has been defined, it needs to be registered with an application
 in order to start serving requests. The application is an instance of the
 <a class="reference internal" href="../../reference/app.html#litestar.app.Litestar" title="litestar.app.Litestar"><code class="xref py py-class docutils literal notranslate"><span class="pre">Litestar</span></code></a> class. This is the entry point for everything,
 and can be used to register previously defined route handlers by passing a list of them
 as the first argument:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="linenos">1</span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="linenos">1</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
 </span><span data-line="2"><span class="linenos">2</span>
 </span><span data-line="3"><span class="linenos">3</span>
 </span><span data-line="4"><span class="linenos">4</span><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
-</span><span data-line="5"><span class="linenos">5</span><span class="k">async</span> <span class="k">def</span> <span class="nf">hello_world</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span data-line="5"><span class="linenos">5</span><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">hello_world</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 </span><span data-line="6"><span class="linenos">6</span>    <span class="k">return</span> <span class="s2">&quot;Hello, world!&quot;</span>
 </span><span data-line="7"><span class="linenos">7</span>
 </span><span data-line="8"><span class="linenos">8</span>
@@ -689,7 +685,7 @@ as the first argument:</p>
 </div>
 </section>
 <section id="running-the-application">
-<h2>Running the application<a class="headerlink" href="#running-the-application" title="Permalink to this heading">¶</a></h2>
+<h2>Running the application<a class="headerlink" href="#running-the-application" title="Link to this heading">¶</a></h2>
 <p>The last step is to actually run the application. Litestar does not include its own HTTP
 server, but instead makes use of the
 <a class="reference external" href="https://asgi.readthedocs.io">ASGI protocol</a>, which is a protocol Python objects can
@@ -766,9 +762,9 @@ flag as a command line argument: <code class="docutils literal notranslate"><spa
     </div>
   </div>
 </footer>
-      <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=c19e757c"></script>
-      <script src="../../_static/doctools.js?v=888ff710"></script>
-      <script src="../../_static/sphinx_highlight.js?v=4825356b"></script>
+      <script src="../../_static/documentation_options.js?v=b95e84ca"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
       <script src="../../_static/copybutton.js?v=f281be69"></script>
       <script src="../../_static/litestar-theme.js?v=ab2dcc9e"></script>
@@ -776,8 +772,8 @@ flag as a command line argument: <code class="docutils literal notranslate"><spa
       <script>let toggleHintHide = 'Click to hide';</script>
       <script>let toggleOpenOnPrint = 'true';</script>
       <script src="../../_static/togglebutton.js?v=4a39c7ea"></script>
-      <script src="../../_static/design-tabs.js?v=36754332"></script>
+      <script src="../../_static/design-tabs.js?v=f930bc37"></script>
       <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
-      <script src="../../_static/shibuya.js?v=e2e99575"></script>
+      <script src="../../_static/shibuya.js?v=c477d091"></script>
       <script src="../../_static/versioning.js?v=bc681eff"></script></body>
 </html>

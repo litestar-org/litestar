@@ -1,15 +1,15 @@
 <!DOCTYPE html>
-<html lang="en" data-accent-color="amber" data-content_root="">
+<html lang="en" data-accent-color="amber" data-content_root="../../">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>constraints - Litestar Framework</title><link rel="shortcut icon" href="../../_static/favicon.svg"/><link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="openapi" href="../openapi/index.html" /><link rel="prev" title="server_side" href="session/server_side.html" /><script>
     function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
     setColorMode(localStorage._theme||"auto");
   </script><link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=397bb51e" />
-    <link rel="stylesheet" type="text/css" href="../../_static/shibuya.css?v=83eaa723" />
+    <link rel="stylesheet" type="text/css" href="../../_static/shibuya.css?v=76b6f612" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css?v=13237357" />
-    <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../_static/sphinx_paramlinks.css" />
     <link media="print" rel="stylesheet" type="text/css" href="../../_static/print.css?v=20ff2c19" />
     <link rel="stylesheet" type="text/css" href="../../_static/style.css?v=50ea2f63" />
@@ -42,13 +42,13 @@
       <img class="dark-logo" src="../../_static/logo-dark.png" alt="Litestar" height="28" loading="lazy" />
       <strong>Litestar</strong>
     </a>
-    <div class="sy-head-nav" id="HeadNav">
+    <div class="sy-head-nav" id="head-nav">
       <nav class="sy-head-links"><ul><li class="link"><a href="../../index.html">Home</a></li>
-      <li class="link"><button type="button">
+      <li class="link"><button class="js-menu" type="button" id="nav-trigger-2" aria-controls="nav-children-2">
             <span>Community</span>
             <i class="i-lucide chevron-down"></i>
           </button>
-        <ul><li><a href="../../contribution-guide.html">
+        <ul id="nav-children-2" aria-labelledby="nav-trigger-2"><li><a href="../../contribution-guide.html">
                 <span>Contributing</span>
                 <small>Learn how to contribute to the Litestar project</small>
               </a></li><li><a href="https://github.com/litestar-org/.github?tab=coc-ov-file">
@@ -59,11 +59,11 @@
                 <small>Overview of Litestar's security protocols</small>
               </a></li></ul>
       </li>
-      <li class="link"><button type="button">
+      <li class="link"><button class="js-menu" type="button" id="nav-trigger-3" aria-controls="nav-children-3">
             <span>About</span>
             <i class="i-lucide chevron-down"></i>
           </button>
-        <ul><li><a href="https://litestar.dev/about/organization">
+        <ul id="nav-children-3" aria-labelledby="nav-trigger-3"><li><a href="https://litestar.dev/about/organization">
                 <span>Litestar Organization</span>
                 <small>Details about the Litestar organization</small>
               </a></li><li><a href="https://litestar.dev/about/litestar-releases">
@@ -71,11 +71,11 @@
                 <small>Explore the release process, versioning, and deprecation policy for Litestar</small>
               </a></li></ul>
       </li>
-      <li class="link"><button type="button">
+      <li class="link"><button class="js-menu" type="button" id="nav-trigger-4" aria-controls="nav-children-4">
             <span>Release notes</span>
             <i class="i-lucide chevron-down"></i>
           </button>
-        <ul><li><a href="../../release-notes/whats-new-3.html">
+        <ul id="nav-children-4" aria-labelledby="nav-trigger-4"><li><a href="../../release-notes/whats-new-3.html">
                 <span>What's new in 3.0</span>
                 <small>Explore the new features in Litestar 3.0</small>
               </a></li><li><a href="../../release-notes/changelog.html">
@@ -86,11 +86,11 @@
                 <small>All changes in the 2.x series</small>
               </a></li></ul>
       </li>
-      <li class="link"><button type="button">
+      <li class="link"><button class="js-menu" type="button" id="nav-trigger-5" aria-controls="nav-children-5">
             <span>Help</span>
             <i class="i-lucide chevron-down"></i>
           </button>
-        <ul><li><a href="https://discord.gg/litestar">
+        <ul id="nav-children-5" aria-labelledby="nav-trigger-5"><li><a href="https://discord.gg/litestar">
                 <span>Discord Help Forum</span>
                 <small>Dedicated Discord help forum</small>
               </a></li><li><a href="https://github.com/orgs/litestar-org/discussions">
@@ -127,7 +127,7 @@ data-aria-auto="Switch to light color mode"
 data-aria-light="Switch to dark color mode"
 data-aria-dark="Switch to auto color mode">
 <i class="i-lucide theme-icon"></i>
-</button><button class="md:hidden flex items-center js-menu" aria-label="Menu" type="button" aria-controls="HeadNav" aria-expanded="false">
+</button><button class="md:hidden flex items-center js-menu" aria-label="Menu" type="button" aria-controls="head-nav" aria-expanded="false">
         <div class="hamburger">
           <span class="hamburger_1"></span>
           <span class="hamburger_2 -translate-x-2"></span>
@@ -173,12 +173,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2"><a class="reference internal" href="../../usage/databases/index.html">Databases</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../usage/databases/sqlalchemy/index.html">SQLAlchemy</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../usage/databases/sqlalchemy/models_and_repository.html">SQLAlchemy Models &amp; Repository</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../usage/databases/sqlalchemy/plugins/index.html">Plugins</a><ul>
-<li class="toctree-l5"><a class="reference internal" href="../../usage/databases/sqlalchemy/plugins/sqlalchemy_plugin.html">SQLAlchemy Plugin</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../../usage/databases/sqlalchemy/plugins/sqlalchemy_init_plugin.html">SQLAlchemy Init Plugin</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../../usage/databases/sqlalchemy/plugins/sqlalchemy_serialization_plugin.html">SQLAlchemy Serialization Plugin</a></li>
-</ul>
-</li>
+<li class="toctree-l4"><a class="reference internal" href="../../usage/databases/sqlalchemy/plugins/index.html">Plugins</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../../usage/databases/piccolo.html">Piccolo ORM</a></li>
@@ -521,11 +516,12 @@ data-aria-dark="Switch to auto color mode">
     </span>
   </span>
 </a><div class="edit-this-page">
-  <a href="https://github.com/litestar-org/litestar/blob/master/docs/reference/middleware/constraints.rst">Edit this page</a>
+  <a href="https://github.com/litestar-org/litestar/blob/main/docs/reference/middleware/constraints.rst">Edit this page</a>
 </div><div id="ethical-ad-placement" data-ea-publisher="readthedocs"></div></div>
   </aside>
   <div class="rside-overlay js-menu" role="button" aria-label="Close Table of Contents" aria-controls="rside" aria-expanded="false"></div>
-  <main class="sy-main w-full max-sm:max-w-full print:pt-6"><div class="sy-breadcrumbs" role="navigation">
+  <main class="sy-main w-full max-sm:max-w-full print:pt-6">
+<div class="sy-breadcrumbs" role="navigation">
   <div class="sy-breadcrumbs-inner flex items-center">
     <div class="md:hidden mr-3">
       <button class="js-menu" aria-label="Menu" type="button" aria-controls="lside" aria-expanded="false">
@@ -559,47 +555,47 @@ data-aria-dark="Switch to auto color mode">
       <div class="min-w-0 max-w-6xl px-6 pb-6 pt-8 xl:px-12">
         <article class="yue" role="main">
           <section id="module-litestar.middleware.constraints">
-<span id="constraints"></span><h1>constraints<a class="headerlink" href="#module-litestar.middleware.constraints" title="Permalink to this heading">¶</a></h1>
+<span id="constraints"></span><h1>constraints<a class="headerlink" href="#module-litestar.middleware.constraints" title="Link to this heading">¶</a></h1>
 <dl class="py exception">
 <dt class="sig sig-object py" id="litestar.middleware.constraints.ConstraintViolationError">
-<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.middleware.constraints.</span></span><span class="sig-name descname"><span class="pre">ConstraintViolationError</span></span><a class="headerlink" href="#litestar.middleware.constraints.ConstraintViolationError" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.middleware.constraints.</span></span><span class="sig-name descname"><span class="pre">ConstraintViolationError</span></span><a class="headerlink" href="#litestar.middleware.constraints.ConstraintViolationError" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#litestar.middleware.constraints.MiddlewareConstraintError" title="litestar.middleware.constraints.MiddlewareConstraintError"><code class="xref py py-class docutils literal notranslate"><span class="pre">MiddlewareConstraintError</span></code></a></p>
 </dd></dl>
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="litestar.middleware.constraints.CycleError">
-<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.middleware.constraints.</span></span><span class="sig-name descname"><span class="pre">CycleError</span></span><a class="headerlink" href="#litestar.middleware.constraints.CycleError" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.middleware.constraints.</span></span><span class="sig-name descname"><span class="pre">CycleError</span></span><a class="headerlink" href="#litestar.middleware.constraints.CycleError" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#litestar.middleware.constraints.MiddlewareConstraintError" title="litestar.middleware.constraints.MiddlewareConstraintError"><code class="xref py py-class docutils literal notranslate"><span class="pre">MiddlewareConstraintError</span></code></a></p>
 </dd></dl>
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="litestar.middleware.constraints.MiddlewareConstraintError">
-<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.middleware.constraints.</span></span><span class="sig-name descname"><span class="pre">MiddlewareConstraintError</span></span><a class="headerlink" href="#litestar.middleware.constraints.MiddlewareConstraintError" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.middleware.constraints.</span></span><span class="sig-name descname"><span class="pre">MiddlewareConstraintError</span></span><a class="headerlink" href="#litestar.middleware.constraints.MiddlewareConstraintError" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="../exceptions.html#litestar.exceptions.LitestarException" title="litestar.exceptions.base_exceptions.LitestarException"><code class="xref py py-class docutils literal notranslate"><span class="pre">LitestarException</span></code></a></p>
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="litestar.middleware.constraints.MiddlewareConstraints">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.middleware.constraints.</span></span><span class="sig-name descname"><span class="pre">MiddlewareConstraints</span></span><a class="headerlink" href="#litestar.middleware.constraints.MiddlewareConstraints" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.middleware.constraints.</span></span><span class="sig-name descname"><span class="pre">MiddlewareConstraints</span></span><a class="headerlink" href="#litestar.middleware.constraints.MiddlewareConstraints" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>Constraints for a middleware.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="litestar.middleware.constraints.MiddlewareConstraints.before">
-<span class="sig-name descname"><span class="pre">before</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'MiddlewareForwardRef</span> <span class="pre">|</span> <span class="pre">Middleware</span> <span class="pre">|</span> <span class="pre">MiddlewareFactory'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">()</span></em><a class="headerlink" href="#litestar.middleware.constraints.MiddlewareConstraints.before" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">before</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#litestar.middleware.constraints.MiddlewareForwardRef" title="litestar.middleware.constraints.MiddlewareForwardRef"><span class="pre">MiddlewareForwardRef</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../types.html#litestar.types.Middleware" title="litestar.types.Middleware"><span class="pre">Middleware</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">MiddlewareFactory</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">()</span></em><a class="headerlink" href="#litestar.middleware.constraints.MiddlewareConstraints.before" title="Link to this definition">¶</a></dt>
 <dd><p>Tuple of middlewares that, if present, need to appear <em>before</em> the middleware this
 constraint is applied to (i.e. closer to the application)</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="litestar.middleware.constraints.MiddlewareConstraints.after">
-<span class="sig-name descname"><span class="pre">after</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'MiddlewareForwardRef</span> <span class="pre">|</span> <span class="pre">Middleware</span> <span class="pre">|</span> <span class="pre">MiddlewareFactory'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">()</span></em><a class="headerlink" href="#litestar.middleware.constraints.MiddlewareConstraints.after" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">after</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#litestar.middleware.constraints.MiddlewareForwardRef" title="litestar.middleware.constraints.MiddlewareForwardRef"><span class="pre">MiddlewareForwardRef</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../types.html#litestar.types.Middleware" title="litestar.types.Middleware"><span class="pre">Middleware</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">MiddlewareFactory</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">()</span></em><a class="headerlink" href="#litestar.middleware.constraints.MiddlewareConstraints.after" title="Link to this definition">¶</a></dt>
 <dd><p>Tuple of middlewares that, if present, need to appear <em>after</em> the middleware this
 constraint is applied to (i.e. closer to the handler)</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="litestar.middleware.constraints.MiddlewareConstraints.first">
-<span class="sig-name descname"><span class="pre">first</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#litestar.middleware.constraints.MiddlewareConstraints.first" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">first</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#litestar.middleware.constraints.MiddlewareConstraints.first" title="Link to this definition">¶</a></dt>
 <dd><p>If <code class="docutils literal notranslate"><span class="pre">True</span></code>, require the middleware to be the first (i.e. the first middleware
 on the application).</p>
 <p>Mutually exclusive with <code class="docutils literal notranslate"><span class="pre">last=True</span></code>. Implicitly sets <code class="docutils literal notranslate"><span class="pre">unique=True</span></code></p>
@@ -607,7 +603,7 @@ on the application).</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="litestar.middleware.constraints.MiddlewareConstraints.last">
-<span class="sig-name descname"><span class="pre">last</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#litestar.middleware.constraints.MiddlewareConstraints.last" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">last</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#litestar.middleware.constraints.MiddlewareConstraints.last" title="Link to this definition">¶</a></dt>
 <dd><p>If <code class="docutils literal notranslate"><span class="pre">True</span></code>, require the middleware to be the last (i.e. the last middleware on
 the handler).</p>
 <p>Mutually exclusive with <code class="docutils literal notranslate"><span class="pre">first=True</span></code>. Implicitly sets <code class="docutils literal notranslate"><span class="pre">unique=True</span></code></p>
@@ -615,31 +611,31 @@ the handler).</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="litestar.middleware.constraints.MiddlewareConstraints.unique">
-<span class="sig-name descname"><span class="pre">unique</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#litestar.middleware.constraints.MiddlewareConstraints.unique" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">unique</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#litestar.middleware.constraints.MiddlewareConstraints.unique" title="Link to this definition">¶</a></dt>
 <dd><p>If <code class="docutils literal notranslate"><span class="pre">True</span></code>, require the middleware to be the only one of its type</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="litestar.middleware.constraints.MiddlewareConstraints.require_unique">
-<span class="sig-name descname"><span class="pre">require_unique</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">unique</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Self" title="(in Python v3.13)"><span class="pre">Self</span></a></span></span><a class="headerlink" href="#litestar.middleware.constraints.MiddlewareConstraints.require_unique" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">require_unique</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">unique</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Self" title="(in Python v3.13)"><span class="pre">Self</span></a></span></span><a class="headerlink" href="#litestar.middleware.constraints.MiddlewareConstraints.require_unique" title="Link to this definition">¶</a></dt>
 <dd><p>Return a new constraint with a <code class="docutils literal notranslate"><span class="pre">unique</span></code> value set</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="litestar.middleware.constraints.MiddlewareConstraints.apply_first">
-<span class="sig-name descname"><span class="pre">apply_first</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Self" title="(in Python v3.13)"><span class="pre">Self</span></a></span></span><a class="headerlink" href="#litestar.middleware.constraints.MiddlewareConstraints.apply_first" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">apply_first</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Self" title="(in Python v3.13)"><span class="pre">Self</span></a></span></span><a class="headerlink" href="#litestar.middleware.constraints.MiddlewareConstraints.apply_first" title="Link to this definition">¶</a></dt>
 <dd><p>Return a new constraint with <code class="docutils literal notranslate"><span class="pre">first=True</span></code>. Overrides <code class="docutils literal notranslate"><span class="pre">last=True</span></code></p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="litestar.middleware.constraints.MiddlewareConstraints.apply_last">
-<span class="sig-name descname"><span class="pre">apply_last</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Self" title="(in Python v3.13)"><span class="pre">Self</span></a></span></span><a class="headerlink" href="#litestar.middleware.constraints.MiddlewareConstraints.apply_last" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">apply_last</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Self" title="(in Python v3.13)"><span class="pre">Self</span></a></span></span><a class="headerlink" href="#litestar.middleware.constraints.MiddlewareConstraints.apply_last" title="Link to this definition">¶</a></dt>
 <dd><p>Return a new constraint with <code class="docutils literal notranslate"><span class="pre">first=True</span></code>. Overrides <code class="docutils literal notranslate"><span class="pre">first=True</span></code></p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="litestar.middleware.constraints.MiddlewareConstraints.apply_before">
-<span class="sig-name descname"><span class="pre">apply_before</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../types.html#litestar.types.Middleware" title="litestar.types.Middleware"><span class="pre">Middleware</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">MiddlewareFactory</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#litestar.middleware.constraints.MiddlewareForwardRef" title="litestar.middleware.constraints.MiddlewareForwardRef"><span class="pre">MiddlewareForwardRef</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">ignore_import_error</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Self" title="(in Python v3.13)"><span class="pre">Self</span></a></span></span><a class="headerlink" href="#litestar.middleware.constraints.MiddlewareConstraints.apply_before" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">apply_before</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../types.html#litestar.types.Middleware" title="litestar.types.Middleware"><span class="pre">Middleware</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">MiddlewareFactory</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#litestar.middleware.constraints.MiddlewareForwardRef" title="litestar.middleware.constraints.MiddlewareForwardRef"><span class="pre">MiddlewareForwardRef</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">ignore_import_error</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Self" title="(in Python v3.13)"><span class="pre">Self</span></a></span></span><a class="headerlink" href="#litestar.middleware.constraints.MiddlewareConstraints.apply_before" title="Link to this definition">¶</a></dt>
 <dd><p>Return new <a class="reference internal" href="#litestar.middleware.constraints.MiddlewareConstraints" title="litestar.middleware.constraints.MiddlewareConstraints"><code class="xref py py-class docutils literal notranslate"><span class="pre">MiddlewareConstraints</span></code></a> with
 <code class="docutils literal notranslate"><span class="pre">other</span></code> added to existing <code class="docutils literal notranslate"><span class="pre">before</span></code> constraint.</p>
 <dl class="field-list simple">
@@ -657,7 +653,7 @@ an <a class="reference external" href="https://docs.python.org/3/library/excepti
 
 <dl class="py method">
 <dt class="sig sig-object py" id="litestar.middleware.constraints.MiddlewareConstraints.apply_after">
-<span class="sig-name descname"><span class="pre">apply_after</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../types.html#litestar.types.Middleware" title="litestar.types.Middleware"><span class="pre">Middleware</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">MiddlewareFactory</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#litestar.middleware.constraints.MiddlewareForwardRef" title="litestar.middleware.constraints.MiddlewareForwardRef"><span class="pre">MiddlewareForwardRef</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">ignore_import_error</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Self" title="(in Python v3.13)"><span class="pre">Self</span></a></span></span><a class="headerlink" href="#litestar.middleware.constraints.MiddlewareConstraints.apply_after" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">apply_after</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../types.html#litestar.types.Middleware" title="litestar.types.Middleware"><span class="pre">Middleware</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">MiddlewareFactory</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#litestar.middleware.constraints.MiddlewareForwardRef" title="litestar.middleware.constraints.MiddlewareForwardRef"><span class="pre">MiddlewareForwardRef</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">ignore_import_error</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Self" title="(in Python v3.13)"><span class="pre">Self</span></a></span></span><a class="headerlink" href="#litestar.middleware.constraints.MiddlewareConstraints.apply_after" title="Link to this definition">¶</a></dt>
 <dd><p>Return new <a class="reference internal" href="#litestar.middleware.constraints.MiddlewareConstraints" title="litestar.middleware.constraints.MiddlewareConstraints"><code class="xref py py-class docutils literal notranslate"><span class="pre">MiddlewareConstraints</span></code></a> with
 <code class="docutils literal notranslate"><span class="pre">other</span></code> added to existing <code class="docutils literal notranslate"><span class="pre">after</span></code> constraint.</p>
 <dl class="field-list simple">
@@ -675,32 +671,32 @@ an <a class="reference external" href="https://docs.python.org/3/library/excepti
 
 <dl class="py method">
 <dt class="sig sig-object py" id="litestar.middleware.constraints.MiddlewareConstraints.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">before</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'MiddlewareForwardRef</span> <span class="pre">|</span> <span class="pre">Middleware</span> <span class="pre">|</span> <span class="pre">MiddlewareFactory'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">()</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">after</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'MiddlewareForwardRef</span> <span class="pre">|</span> <span class="pre">Middleware</span> <span class="pre">|</span> <span class="pre">MiddlewareFactory'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">()</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">first</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">last</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unique</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#litestar.middleware.constraints.MiddlewareConstraints.__init__" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">before</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#litestar.middleware.constraints.MiddlewareForwardRef" title="litestar.middleware.constraints.MiddlewareForwardRef"><span class="pre">MiddlewareForwardRef</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../types.html#litestar.types.Middleware" title="litestar.types.Middleware"><span class="pre">Middleware</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">MiddlewareFactory</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">()</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">after</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#litestar.middleware.constraints.MiddlewareForwardRef" title="litestar.middleware.constraints.MiddlewareForwardRef"><span class="pre">MiddlewareForwardRef</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../types.html#litestar.types.Middleware" title="litestar.types.Middleware"><span class="pre">Middleware</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">MiddlewareFactory</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">()</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">first</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">last</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unique</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#litestar.middleware.constraints.MiddlewareConstraints.__init__" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="litestar.middleware.constraints.MiddlewareForwardRef">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.middleware.constraints.</span></span><span class="sig-name descname"><span class="pre">MiddlewareForwardRef</span></span><a class="headerlink" href="#litestar.middleware.constraints.MiddlewareForwardRef" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.middleware.constraints.</span></span><span class="sig-name descname"><span class="pre">MiddlewareForwardRef</span></span><a class="headerlink" href="#litestar.middleware.constraints.MiddlewareForwardRef" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>Forward reference to a middleware</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="litestar.middleware.constraints.MiddlewareForwardRef.target">
-<span class="sig-name descname"><span class="pre">target</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><a class="headerlink" href="#litestar.middleware.constraints.MiddlewareForwardRef.target" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">target</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><a class="headerlink" href="#litestar.middleware.constraints.MiddlewareForwardRef.target" title="Link to this definition">¶</a></dt>
 <dd><p>Absolute path to an importable name of the middleware</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="litestar.middleware.constraints.MiddlewareForwardRef.ignore_import_error">
-<span class="sig-name descname"><span class="pre">ignore_import_error</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></em><a class="headerlink" href="#litestar.middleware.constraints.MiddlewareForwardRef.ignore_import_error" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">ignore_import_error</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></em><a class="headerlink" href="#litestar.middleware.constraints.MiddlewareForwardRef.ignore_import_error" title="Link to this definition">¶</a></dt>
 <dd><p>If ‘True’, ignore <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ImportError" title="(in Python v3.13)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">ImportError</span></code></a>s will be ignored when resolving the
 middleware</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="litestar.middleware.constraints.MiddlewareForwardRef.resolve">
-<span class="sig-name descname"><span class="pre">resolve</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../types.html#litestar.types.Middleware" title="litestar.types.Middleware"><span class="pre">Middleware</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#litestar.middleware.constraints.MiddlewareForwardRef.resolve" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">resolve</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../types.html#litestar.types.Middleware" title="litestar.types.Middleware"><span class="pre">Middleware</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#litestar.middleware.constraints.MiddlewareForwardRef.resolve" title="Link to this definition">¶</a></dt>
 <dd><p>Resolve the reference to a concrete value by importing the target path.</p>
 <p>If <code class="docutils literal notranslate"><span class="pre">ignore_import_error=True</span></code> and an <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ImportError" title="(in Python v3.13)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">ImportError</span></code></a> is raised, ignore the
 error and return <code class="docutils literal notranslate"><span class="pre">None</span></code></p>
@@ -708,7 +704,7 @@ error and return <code class="docutils literal notranslate"><span class="pre">No
 
 <dl class="py method">
 <dt class="sig sig-object py" id="litestar.middleware.constraints.MiddlewareForwardRef.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">ignore_import_error</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#litestar.middleware.constraints.MiddlewareForwardRef.__init__" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">ignore_import_error</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#litestar.middleware.constraints.MiddlewareForwardRef.__init__" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -764,9 +760,9 @@ error and return <code class="docutils literal notranslate"><span class="pre">No
     </div>
   </div>
 </footer>
-      <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=c19e757c"></script>
-      <script src="../../_static/doctools.js?v=888ff710"></script>
-      <script src="../../_static/sphinx_highlight.js?v=4825356b"></script>
+      <script src="../../_static/documentation_options.js?v=b95e84ca"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
       <script src="../../_static/copybutton.js?v=f281be69"></script>
       <script src="../../_static/litestar-theme.js?v=ab2dcc9e"></script>
@@ -774,8 +770,8 @@ error and return <code class="docutils literal notranslate"><span class="pre">No
       <script>let toggleHintHide = 'Click to hide';</script>
       <script>let toggleOpenOnPrint = 'true';</script>
       <script src="../../_static/togglebutton.js?v=4a39c7ea"></script>
-      <script src="../../_static/design-tabs.js?v=36754332"></script>
+      <script src="../../_static/design-tabs.js?v=f930bc37"></script>
       <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
-      <script src="../../_static/shibuya.js?v=e2e99575"></script>
+      <script src="../../_static/shibuya.js?v=c477d091"></script>
       <script src="../../_static/versioning.js?v=bc681eff"></script></body>
 </html>

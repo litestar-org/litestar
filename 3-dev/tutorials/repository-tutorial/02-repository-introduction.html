@@ -1,15 +1,15 @@
 <!DOCTYPE html>
-<html lang="en" data-accent-color="amber" data-content_root="">
+<html lang="en" data-accent-color="amber" data-content_root="../../">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Interacting with repositories - Litestar Framework</title><link rel="shortcut icon" href="../../_static/favicon.svg"/><link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="Working with Controllers and Repositories" href="03-repository-controller.html" /><link rel="prev" title="Introduction to Database Modelling and Repository Features" href="01-modelling-and-features.html" /><script>
     function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
     setColorMode(localStorage._theme||"auto");
   </script><link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=397bb51e" />
-    <link rel="stylesheet" type="text/css" href="../../_static/shibuya.css?v=83eaa723" />
+    <link rel="stylesheet" type="text/css" href="../../_static/shibuya.css?v=76b6f612" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css?v=13237357" />
-    <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../_static/sphinx_paramlinks.css" />
     <link media="print" rel="stylesheet" type="text/css" href="../../_static/print.css?v=20ff2c19" />
     <link rel="stylesheet" type="text/css" href="../../_static/style.css?v=50ea2f63" />
@@ -42,13 +42,13 @@
       <img class="dark-logo" src="../../_static/logo-dark.png" alt="Litestar" height="28" loading="lazy" />
       <strong>Litestar</strong>
     </a>
-    <div class="sy-head-nav" id="HeadNav">
+    <div class="sy-head-nav" id="head-nav">
       <nav class="sy-head-links"><ul><li class="link"><a href="../../index.html">Home</a></li>
-      <li class="link"><button type="button">
+      <li class="link"><button class="js-menu" type="button" id="nav-trigger-2" aria-controls="nav-children-2">
             <span>Community</span>
             <i class="i-lucide chevron-down"></i>
           </button>
-        <ul><li><a href="../../contribution-guide.html">
+        <ul id="nav-children-2" aria-labelledby="nav-trigger-2"><li><a href="../../contribution-guide.html">
                 <span>Contributing</span>
                 <small>Learn how to contribute to the Litestar project</small>
               </a></li><li><a href="https://github.com/litestar-org/.github?tab=coc-ov-file">
@@ -59,11 +59,11 @@
                 <small>Overview of Litestar's security protocols</small>
               </a></li></ul>
       </li>
-      <li class="link"><button type="button">
+      <li class="link"><button class="js-menu" type="button" id="nav-trigger-3" aria-controls="nav-children-3">
             <span>About</span>
             <i class="i-lucide chevron-down"></i>
           </button>
-        <ul><li><a href="https://litestar.dev/about/organization">
+        <ul id="nav-children-3" aria-labelledby="nav-trigger-3"><li><a href="https://litestar.dev/about/organization">
                 <span>Litestar Organization</span>
                 <small>Details about the Litestar organization</small>
               </a></li><li><a href="https://litestar.dev/about/litestar-releases">
@@ -71,11 +71,11 @@
                 <small>Explore the release process, versioning, and deprecation policy for Litestar</small>
               </a></li></ul>
       </li>
-      <li class="link"><button type="button">
+      <li class="link"><button class="js-menu" type="button" id="nav-trigger-4" aria-controls="nav-children-4">
             <span>Release notes</span>
             <i class="i-lucide chevron-down"></i>
           </button>
-        <ul><li><a href="../../release-notes/whats-new-3.html">
+        <ul id="nav-children-4" aria-labelledby="nav-trigger-4"><li><a href="../../release-notes/whats-new-3.html">
                 <span>What's new in 3.0</span>
                 <small>Explore the new features in Litestar 3.0</small>
               </a></li><li><a href="../../release-notes/changelog.html">
@@ -86,11 +86,11 @@
                 <small>All changes in the 2.x series</small>
               </a></li></ul>
       </li>
-      <li class="link"><button type="button">
+      <li class="link"><button class="js-menu" type="button" id="nav-trigger-5" aria-controls="nav-children-5">
             <span>Help</span>
             <i class="i-lucide chevron-down"></i>
           </button>
-        <ul><li><a href="https://discord.gg/litestar">
+        <ul id="nav-children-5" aria-labelledby="nav-trigger-5"><li><a href="https://discord.gg/litestar">
                 <span>Discord Help Forum</span>
                 <small>Dedicated Discord help forum</small>
               </a></li><li><a href="https://github.com/orgs/litestar-org/discussions">
@@ -127,7 +127,7 @@ data-aria-auto="Switch to light color mode"
 data-aria-light="Switch to dark color mode"
 data-aria-dark="Switch to auto color mode">
 <i class="i-lucide theme-icon"></i>
-</button><button class="md:hidden flex items-center js-menu" aria-label="Menu" type="button" aria-controls="HeadNav" aria-expanded="false">
+</button><button class="md:hidden flex items-center js-menu" aria-label="Menu" type="button" aria-controls="head-nav" aria-expanded="false">
         <div class="hamburger">
           <span class="hamburger_1"></span>
           <span class="hamburger_2 -translate-x-2"></span>
@@ -173,12 +173,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2"><a class="reference internal" href="../../usage/databases/index.html">Databases</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../usage/databases/sqlalchemy/index.html">SQLAlchemy</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../usage/databases/sqlalchemy/models_and_repository.html">SQLAlchemy Models &amp; Repository</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../usage/databases/sqlalchemy/plugins/index.html">Plugins</a><ul>
-<li class="toctree-l5"><a class="reference internal" href="../../usage/databases/sqlalchemy/plugins/sqlalchemy_plugin.html">SQLAlchemy Plugin</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../../usage/databases/sqlalchemy/plugins/sqlalchemy_init_plugin.html">SQLAlchemy Init Plugin</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../../usage/databases/sqlalchemy/plugins/sqlalchemy_serialization_plugin.html">SQLAlchemy Serialization Plugin</a></li>
-</ul>
-</li>
+<li class="toctree-l4"><a class="reference internal" href="../../usage/databases/sqlalchemy/plugins/index.html">Plugins</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../../usage/databases/piccolo.html">Piccolo ORM</a></li>
@@ -512,11 +507,12 @@ data-aria-dark="Switch to auto color mode">
     </span>
   </span>
 </a><div class="edit-this-page">
-  <a href="https://github.com/litestar-org/litestar/blob/master/docs/tutorials/repository-tutorial/02-repository-introduction.rst">Edit this page</a>
+  <a href="https://github.com/litestar-org/litestar/blob/main/docs/tutorials/repository-tutorial/02-repository-introduction.rst">Edit this page</a>
 </div><div id="ethical-ad-placement" data-ea-publisher="readthedocs"></div></div>
   </aside>
   <div class="rside-overlay js-menu" role="button" aria-label="Close Table of Contents" aria-controls="rside" aria-expanded="false"></div>
-  <main class="sy-main w-full max-sm:max-w-full print:pt-6"><div class="sy-breadcrumbs" role="navigation">
+  <main class="sy-main w-full max-sm:max-w-full print:pt-6">
+<div class="sy-breadcrumbs" role="navigation">
   <div class="sy-breadcrumbs-inner flex items-center">
     <div class="md:hidden mr-3">
       <button class="js-menu" aria-label="Menu" type="button" aria-controls="lside" aria-expanded="false">
@@ -550,7 +546,7 @@ data-aria-dark="Switch to auto color mode">
       <div class="min-w-0 max-w-6xl px-6 pb-6 pt-8 xl:px-12">
         <article class="yue" role="main">
           <section id="interacting-with-repositories">
-<h1>Interacting with repositories<a class="headerlink" href="#interacting-with-repositories" title="Permalink to this heading">¶</a></h1>
+<h1>Interacting with repositories<a class="headerlink" href="#interacting-with-repositories" title="Link to this heading">¶</a></h1>
 <p>Now that we’ve covered the modelling basics, we are able to create our first repository
 class.  The repository classes include all of the standard CRUD operations as well as a
 few advanced features such as pagination, filtering and bulk operations.</p>
@@ -562,11 +558,7 @@ few advanced features such as pagination, filtering and bulk operations.</p>
 the the synchronous and asynchronous repositories.</p>
 <details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
 <summary class="sd-summary-title sd-card-header">
-Available Functions in the Repositories<div class="sd-summary-down docutils">
-<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-down" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M5.22 8.72a.75.75 0 000 1.06l6.25 6.25a.75.75 0 001.06 0l6.25-6.25a.75.75 0 00-1.06-1.06L12 14.44 6.28 8.72a.75.75 0 00-1.06 0z"></path></svg></div>
-<div class="sd-summary-up docutils">
-<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-up" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M18.78 15.28a.75.75 0 000-1.06l-6.25-6.25a.75.75 0 00-1.06 0l-6.25 6.25a.75.75 0 101.06 1.06L12 9.56l5.72 5.72a.75.75 0 001.06 0z"></path></svg></div>
-</summary><div class="sd-summary-content sd-card-body docutils">
+<span class="sd-summary-text">Available Functions in the Repositories</span><span class="sd-summary-state-marker sd-summary-chevron-right"><svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-right" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.72 18.78a.75.75 0 0 1 0-1.06L14.44 12 8.72 6.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018l6.25 6.25a.75.75 0 0 1 0 1.06l-6.25 6.25a.75.75 0 0 1-1.06 0Z"></path></svg></span></summary><div class="sd-summary-content sd-card-body docutils">
 <div class="table-wrapper docutils container">
 <table class="docutils align-default">
 <thead>
@@ -653,30 +645,30 @@ return. You do not need to account for this in your own code.</p></li>
 <p>In the following examples, we’ll cover a few ways that you can use the repository within
 your applications.</p>
 <section id="model-repository">
-<h2>Model Repository<a class="headerlink" href="#model-repository" title="Permalink to this heading">¶</a></h2>
+<h2>Model Repository<a class="headerlink" href="#model-repository" title="Link to this heading">¶</a></h2>
 <p>Here we import the
 <a class="reference external" href="https://docs.advanced-alchemy.litestar.dev/latest/reference/repository.html#advanced_alchemy.repository.SQLAlchemyAsyncRepository" title="(in advanced_alchemy)"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyAsyncRepository</span></code></a>
 class and create an <code class="docutils literal notranslate"><span class="pre">AuthorRepository</span></code> repository class. This is all that’s required
 to include all of the integrated repository features.</p>
 <div class="literal-block-wrapper docutils container" id="id1">
-<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">app.py</span></code></span><a class="headerlink" href="#id1" title="Permalink to this code">¶</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="linenos"> 1</span><span class="kn">from</span> <span class="nn">rich</span> <span class="kn">import</span> <span class="n">get_console</span>
-</span><span data-line="2"><span class="linenos"> 2</span><span class="kn">from</span> <span class="nn">sqlalchemy.orm</span> <span class="kn">import</span> <span class="n">Mapped</span>
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">app.py</span></code></span><a class="headerlink" href="#id1" title="Link to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="linenos"> 1</span><span class="kn">from</span><span class="w"> </span><span class="nn">rich</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_console</span>
+</span><span data-line="2"><span class="linenos"> 2</span><span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy.orm</span><span class="w"> </span><span class="kn">import</span> <span class="n">Mapped</span>
 </span><span data-line="3"><span class="linenos"> 3</span>
-</span><span data-line="4"><span class="linenos"> 4</span><span class="kn">from</span> <span class="nn">litestar.plugins.sqlalchemy</span> <span class="kn">import</span> <span class="n">base</span><span class="p">,</span> <span class="n">repository</span>
+</span><span data-line="4"><span class="linenos"> 4</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.plugins.sqlalchemy</span><span class="w"> </span><span class="kn">import</span> <span class="n">base</span><span class="p">,</span> <span class="n">repository</span>
 </span><span data-line="5"><span class="linenos"> 5</span>
 </span><span data-line="6"><span class="linenos"> 6</span><span class="n">console</span> <span class="o">=</span> <span class="n">get_console</span><span class="p">()</span>
 </span><span data-line="7"><span class="linenos"> 7</span>
 </span><span data-line="8"><span class="linenos"> 8</span>
 </span><span data-line="9"><span class="linenos"> 9</span><span class="c1"># the SQLAlchemy base includes a declarative model for you to use in your models.</span>
 </span><span data-line="10"><span class="linenos">10</span><span class="c1"># The `Base` class includes a `UUID` based primary key (`id`)</span>
-</span><span data-line="11"><span class="linenos">11</span><span class="k">class</span> <span class="nc">Author</span><span class="p">(</span><span class="n">base</span><span class="o">.</span><span class="n">UUIDBase</span><span class="p">):</span>
+</span><span data-line="11"><span class="linenos">11</span><span class="k">class</span><span class="w"> </span><span class="nc">Author</span><span class="p">(</span><span class="n">base</span><span class="o">.</span><span class="n">UUIDBase</span><span class="p">):</span>
 </span><span data-line="12"><span class="linenos">12</span>    <span class="n">name</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
 </span><span data-line="13"><span class="linenos">13</span>    <span class="n">dob</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="n">date</span><span class="p">]</span>
 </span><span data-line="14"><span class="linenos">14</span>    <span class="n">dod</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="n">date</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]</span>
 </span><span data-line="15"><span class="linenos">15</span>
 </span><span data-line="16"><span class="linenos">16</span>
-</span><span data-line="17"><span class="linenos">17</span><span class="k">class</span> <span class="nc">AuthorRepository</span><span class="p">(</span><span class="n">repository</span><span class="o">.</span><span class="n">SQLAlchemyAsyncRepository</span><span class="p">[</span><span class="n">Author</span><span class="p">]):</span>
+</span><span data-line="17"><span class="linenos">17</span><span class="k">class</span><span class="w"> </span><span class="nc">AuthorRepository</span><span class="p">(</span><span class="n">repository</span><span class="o">.</span><span class="n">SQLAlchemyAsyncRepository</span><span class="p">[</span><span class="n">Author</span><span class="p">]):</span>
 </span><span data-line="18"><span class="linenos">18</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;Author repository.&quot;&quot;&quot;</span>
 </span><span data-line="19"><span class="linenos">19</span>
 </span><span data-line="20"><span class="linenos">20</span>    <span class="n">model_type</span> <span class="o">=</span> <span class="n">Author</span>
@@ -685,7 +677,7 @@ to include all of the integrated repository features.</p>
 </div>
 </section>
 <section id="repository-context-manager">
-<h2>Repository Context Manager<a class="headerlink" href="#repository-context-manager" title="Permalink to this heading">¶</a></h2>
+<h2>Repository Context Manager<a class="headerlink" href="#repository-context-manager" title="Link to this heading">¶</a></h2>
 <p>Since we’ll be using the repository outside of a Litestar application in this script,
 we’ll make a simple context manager to automatically handle the creation (and cleanup)
 of our Author repository.</p>
@@ -698,10 +690,10 @@ of our Author repository.</p>
 </dd>
 </dl>
 <div class="literal-block-wrapper docutils container" id="id2">
-<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">app.py</span></code></span><a class="headerlink" href="#id2" title="Permalink to this code">¶</a></div>
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">app.py</span></code></span><a class="headerlink" href="#id2" title="Link to this code">¶</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="linenos">1</span><span class="c1"># let&#39;s make a simple context manager as an example here.</span>
 </span><span data-line="2"><span class="linenos">2</span><span class="nd">@asynccontextmanager</span>
-</span><span data-line="3"><span class="linenos">3</span><span class="k">async</span> <span class="k">def</span> <span class="nf">repository_factory</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">AsyncIterator</span><span class="p">[</span><span class="n">AuthorRepository</span><span class="p">]:</span>
+</span><span data-line="3"><span class="linenos">3</span><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">repository_factory</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">AsyncIterator</span><span class="p">[</span><span class="n">AuthorRepository</span><span class="p">]:</span>
 </span><span data-line="4"><span class="linenos">4</span>    <span class="k">async</span> <span class="k">with</span> <span class="n">session_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">db_session</span><span class="p">:</span>
 </span><span data-line="5"><span class="linenos">5</span>        <span class="k">try</span><span class="p">:</span>
 </span><span data-line="6"><span class="linenos">6</span>            <span class="k">yield</span> <span class="n">AuthorRepository</span><span class="p">(</span><span class="n">session</span><span class="o">=</span><span class="n">db_session</span><span class="p">)</span>
@@ -713,13 +705,13 @@ of our Author repository.</p>
 </div>
 </section>
 <section id="creating-updating-and-removing-data">
-<h2>Creating, Updating and Removing Data<a class="headerlink" href="#creating-updating-and-removing-data" title="Permalink to this heading">¶</a></h2>
+<h2>Creating, Updating and Removing Data<a class="headerlink" href="#creating-updating-and-removing-data" title="Link to this heading">¶</a></h2>
 <p>To illustrate a few ways you can manipulate data in your database, we’ll go through the
 various CRUD operations:</p>
 <p>Creating Data: Here’s a simple insert operation to populate our new Author table:</p>
 <blockquote>
 <div><div class="literal-block-wrapper docutils container" id="id3">
-<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">app.py</span></code></span><a class="headerlink" href="#id3" title="Permalink to this code">¶</a></div>
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">app.py</span></code></span><a class="headerlink" href="#id3" title="Link to this code">¶</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="linenos">1</span>    <span class="k">async</span> <span class="k">with</span> <span class="n">repository_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">repo</span><span class="p">:</span>
 </span><span data-line="2"><span class="linenos">2</span>        <span class="n">obj</span> <span class="o">=</span> <span class="k">await</span> <span class="n">repo</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
 </span><span data-line="3"><span class="linenos">3</span>            <span class="n">Author</span><span class="p">(</span>
@@ -736,7 +728,7 @@ various CRUD operations:</p>
 <p>Updating Data: The <code class="docutils literal notranslate"><span class="pre">update</span></code> method will ensure any updates made to the model object are executed on the database:</p>
 <blockquote>
 <div><div class="literal-block-wrapper docutils container" id="id4">
-<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">app.py</span></code></span><a class="headerlink" href="#id4" title="Permalink to this code">¶</a></div>
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">app.py</span></code></span><a class="headerlink" href="#id4" title="Link to this code">¶</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="linenos">1</span>    <span class="k">async</span> <span class="k">with</span> <span class="n">repository_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">repo</span><span class="p">:</span>
 </span><span data-line="2"><span class="linenos">2</span>        <span class="n">obj</span> <span class="o">=</span> <span class="k">await</span> <span class="n">repo</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
 </span><span data-line="3"><span class="linenos">3</span>        <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Updated Author record for </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> with primary key </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
@@ -748,7 +740,7 @@ various CRUD operations:</p>
 <p>Removing Data: The <code class="docutils literal notranslate"><span class="pre">remove</span></code> method accepts the primary key of the row you want to delete:</p>
 <blockquote>
 <div><div class="literal-block-wrapper docutils container" id="id5">
-<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">app.py</span></code></span><a class="headerlink" href="#id5" title="Permalink to this code">¶</a></div>
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">app.py</span></code></span><a class="headerlink" href="#id5" title="Link to this code">¶</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="linenos">1</span>    <span class="k">async</span> <span class="k">with</span> <span class="n">repository_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">repo</span><span class="p">:</span>
 </span><span data-line="2"><span class="linenos">2</span>        <span class="n">obj</span> <span class="o">=</span> <span class="k">await</span> <span class="n">repo</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span>
 </span><span data-line="3"><span class="linenos">3</span>        <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Deleted Author record for </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> with primary key </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
@@ -762,25 +754,25 @@ can use.</p>
 </section>
 </section>
 <section id="working-with-bulk-data-operations">
-<h1>Working with Bulk Data Operations<a class="headerlink" href="#working-with-bulk-data-operations" title="Permalink to this heading">¶</a></h1>
+<h1>Working with Bulk Data Operations<a class="headerlink" href="#working-with-bulk-data-operations" title="Link to this heading">¶</a></h1>
 <p>In this section, we delve into the powerful capabilities of the repository classes for
 handling bulk data operations. Our example illustrates how we can efficiently manage
 data in our database. Specifically, we’ll use a JSON file containing information about
 US states and their abbreviations.</p>
 <p>Here’s what we’re going to cover:</p>
 <section id="fixture-data-loading">
-<h2>Fixture Data Loading<a class="headerlink" href="#fixture-data-loading" title="Permalink to this heading">¶</a></h2>
+<h2>Fixture Data Loading<a class="headerlink" href="#fixture-data-loading" title="Link to this heading">¶</a></h2>
 <p>We will introduce a method for loading fixture data. Fixture data is sample data that
 populates your database and helps test the behavior of your application under realistic
 conditions. This pattern can be extended and adjusted to meet your needs.</p>
 <div class="literal-block-wrapper docutils container" id="id6">
-<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">app.py</span></code></span><a class="headerlink" href="#id6" title="Permalink to this code">¶</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="linenos"> 1</span><span class="kn">import</span> <span class="nn">json</span>
-</span><span data-line="2"><span class="linenos"> 2</span><span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
-</span><span data-line="3"><span class="linenos"> 3</span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span>
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">app.py</span></code></span><a class="headerlink" href="#id6" title="Link to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="linenos"> 1</span><span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+</span><span data-line="2"><span class="linenos"> 2</span><span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+</span><span data-line="3"><span class="linenos"> 3</span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
 </span><span data-line="4"><span class="linenos"> 4</span>
 </span><span data-line="5"><span class="linenos"> 5</span>
-</span><span data-line="6"><span class="linenos"> 6</span><span class="k">def</span> <span class="nf">open_fixture</span><span class="p">(</span><span class="n">fixtures_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">fixture_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+</span><span data-line="6"><span class="linenos"> 6</span><span class="k">def</span><span class="w"> </span><span class="nf">open_fixture</span><span class="p">(</span><span class="n">fixtures_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">fixture_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
 </span><span data-line="7"><span class="linenos"> 7</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;Loads JSON file with the specified fixture name</span>
 </span><span data-line="8"><span class="linenos"> 8</span>
 </span><span data-line="9"><span class="linenos"> 9</span><span class="sd">    Args:</span>
@@ -805,15 +797,11 @@ conditions. This pattern can be extended and adjusted to meet your needs.</p>
 <p>You can review the JSON source file here:</p>
 <details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
 <summary class="sd-summary-title sd-card-header">
-US State Lookup JSON<div class="sd-summary-down docutils">
-<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-down" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M5.22 8.72a.75.75 0 000 1.06l6.25 6.25a.75.75 0 001.06 0l6.25-6.25a.75.75 0 00-1.06-1.06L12 14.44 6.28 8.72a.75.75 0 00-1.06 0z"></path></svg></div>
-<div class="sd-summary-up docutils">
-<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-up" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M18.78 15.28a.75.75 0 000-1.06l-6.25-6.25a.75.75 0 00-1.06 0l-6.25 6.25a.75.75 0 101.06 1.06L12 9.56l5.72 5.72a.75.75 0 001.06 0z"></path></svg></div>
-</summary><div class="sd-summary-content sd-card-body docutils">
+<span class="sd-summary-text">US State Lookup JSON</span><span class="sd-summary-state-marker sd-summary-chevron-right"><svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-right" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.72 18.78a.75.75 0 0 1 0-1.06L14.44 12 8.72 6.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018l6.25 6.25a.75.75 0 0 1 0 1.06l-6.25 6.25a.75.75 0 0 1-1.06 0Z"></path></svg></span></summary><div class="sd-summary-content sd-card-body docutils">
 <p class="sd-card-text">You can download it: <a class="reference download internal" download="" href="../../_downloads/52dc67503af9349c016af0f44cbbfc1d/us_state_lookup.json"><code class="xref download docutils literal notranslate"><span class="pre">/examples/contrib/sqlalchemy/us_state_lookup.json</span></code></a>
 or view below:</p>
 <div class="literal-block-wrapper docutils container" id="id7">
-<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">us_state_lookup.json</span></code></span><a class="headerlink" href="#id7" title="Permalink to this code">¶</a></div>
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">us_state_lookup.json</span></code></span><a class="headerlink" href="#id7" title="Link to this code">¶</a></div>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="p">[</span>
 </span><span data-line="2"><span class="w">  </span><span class="p">{</span>
 </span><span data-line="3"><span class="w">    </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Alabama&quot;</span><span class="p">,</span>
@@ -1038,28 +1026,28 @@ or view below:</p>
 </div>
 </details></section>
 <section id="bulk-insert">
-<h2>Bulk Insert<a class="headerlink" href="#bulk-insert" title="Permalink to this heading">¶</a></h2>
+<h2>Bulk Insert<a class="headerlink" href="#bulk-insert" title="Link to this heading">¶</a></h2>
 <p>We’ll use our fixture data to demonstrate a bulk insert operation. This operation allows
 you to add multiple records to your database in a single transaction, improving
 performance when working with larger data sets.</p>
 <div class="literal-block-wrapper docutils container" id="id8">
-<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">app.py</span></code></span><a class="headerlink" href="#id8" title="Permalink to this code">¶</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="linenos"> 1</span><span class="kn">from</span> <span class="nn">rich</span> <span class="kn">import</span> <span class="n">get_console</span>
-</span><span data-line="2"><span class="linenos"> 2</span><span class="kn">from</span> <span class="nn">sqlalchemy</span> <span class="kn">import</span> <span class="n">create_engine</span>
-</span><span data-line="3"><span class="linenos"> 3</span><span class="kn">from</span> <span class="nn">sqlalchemy.orm</span> <span class="kn">import</span> <span class="n">Mapped</span><span class="p">,</span> <span class="n">Session</span><span class="p">,</span> <span class="n">sessionmaker</span>
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">app.py</span></code></span><a class="headerlink" href="#id8" title="Link to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="linenos"> 1</span><span class="kn">from</span><span class="w"> </span><span class="nn">rich</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_console</span>
+</span><span data-line="2"><span class="linenos"> 2</span><span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_engine</span>
+</span><span data-line="3"><span class="linenos"> 3</span><span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy.orm</span><span class="w"> </span><span class="kn">import</span> <span class="n">Mapped</span><span class="p">,</span> <span class="n">Session</span><span class="p">,</span> <span class="n">sessionmaker</span>
 </span><span data-line="4"><span class="linenos"> 4</span>
-</span><span data-line="5"><span class="linenos"> 5</span><span class="kn">from</span> <span class="nn">litestar.plugins.sqlalchemy</span> <span class="kn">import</span> <span class="n">base</span><span class="p">,</span> <span class="n">repository</span>
+</span><span data-line="5"><span class="linenos"> 5</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.plugins.sqlalchemy</span><span class="w"> </span><span class="kn">import</span> <span class="n">base</span><span class="p">,</span> <span class="n">repository</span>
 </span><span data-line="6"><span class="linenos"> 6</span>
 </span><span data-line="7"><span class="linenos"> 7</span><span class="n">console</span> <span class="o">=</span> <span class="n">get_console</span><span class="p">()</span>
 </span><span data-line="8"><span class="linenos"> 8</span>
 </span><span data-line="9"><span class="linenos"> 9</span>
-</span><span data-line="10"><span class="linenos">10</span><span class="k">class</span> <span class="nc">USState</span><span class="p">(</span><span class="n">base</span><span class="o">.</span><span class="n">UUIDBase</span><span class="p">):</span>
+</span><span data-line="10"><span class="linenos">10</span><span class="k">class</span><span class="w"> </span><span class="nc">USState</span><span class="p">(</span><span class="n">base</span><span class="o">.</span><span class="n">UUIDBase</span><span class="p">):</span>
 </span><span data-line="11"><span class="linenos">11</span>    <span class="n">__tablename__</span> <span class="o">=</span> <span class="s2">&quot;us_state_lookup&quot;</span>  <span class="c1"># type: ignore[assignment]</span>
 </span><span data-line="12"><span class="linenos">12</span>    <span class="n">abbreviation</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
 </span><span data-line="13"><span class="linenos">13</span>    <span class="n">name</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
 </span><span data-line="14"><span class="linenos">14</span>
 </span><span data-line="15"><span class="linenos">15</span>
-</span><span data-line="16"><span class="linenos">16</span><span class="k">class</span> <span class="nc">USStateRepository</span><span class="p">(</span><span class="n">repository</span><span class="o">.</span><span class="n">SQLAlchemySyncRepository</span><span class="p">[</span><span class="n">USState</span><span class="p">]):</span>
+</span><span data-line="16"><span class="linenos">16</span><span class="k">class</span><span class="w"> </span><span class="nc">USStateRepository</span><span class="p">(</span><span class="n">repository</span><span class="o">.</span><span class="n">SQLAlchemySyncRepository</span><span class="p">[</span><span class="n">USState</span><span class="p">]):</span>
 </span><span data-line="17"><span class="linenos">17</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;US State repository.&quot;&quot;&quot;</span>
 </span><span data-line="18"><span class="linenos">18</span>
 </span><span data-line="19"><span class="linenos">19</span>    <span class="n">model_type</span> <span class="o">=</span> <span class="n">USState</span>
@@ -1072,7 +1060,7 @@ performance when working with larger data sets.</p>
 </span><span data-line="26"><span class="linenos">26</span><span class="n">session_factory</span><span class="p">:</span> <span class="n">sessionmaker</span><span class="p">[</span><span class="n">Session</span><span class="p">]</span> <span class="o">=</span> <span class="n">sessionmaker</span><span class="p">(</span><span class="n">engine</span><span class="p">,</span> <span class="n">expire_on_commit</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </span><span data-line="27"><span class="linenos">27</span>
 </span><span data-line="28"><span class="linenos">28</span>
-</span><span data-line="29"><span class="linenos">29</span><span class="k">def</span> <span class="nf">run_script</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="29"><span class="linenos">29</span><span class="k">def</span><span class="w"> </span><span class="nf">run_script</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 </span><span data-line="30"><span class="linenos">30</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;Load data from a fixture.&quot;&quot;&quot;</span>
 </span><span data-line="31"><span class="linenos">31</span>
 </span><span data-line="32"><span class="linenos">32</span>    <span class="c1"># Initializes the database.</span>
@@ -1091,14 +1079,14 @@ performance when working with larger data sets.</p>
 </div>
 </section>
 <section id="paginated-data-selection">
-<h2>Paginated Data Selection<a class="headerlink" href="#paginated-data-selection" title="Permalink to this heading">¶</a></h2>
+<h2>Paginated Data Selection<a class="headerlink" href="#paginated-data-selection" title="Link to this heading">¶</a></h2>
 <p>Next, let’s explore how to select multiple records with pagination. This functionality
 is useful for handling large amounts of data by breaking the data into manageable
 ‘pages’ or subsets.  <code class="docutils literal notranslate"><span class="pre">LimitOffset</span></code> is one of several filter types you can use with the
 repository.</p>
 <div class="literal-block-wrapper docutils container" id="id9">
-<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">app.py</span></code></span><a class="headerlink" href="#id9" title="Permalink to this code">¶</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="linenos">1</span><span class="kn">from</span> <span class="nn">litestar.repository.filters</span> <span class="kn">import</span> <span class="n">LimitOffset</span>
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">app.py</span></code></span><a class="headerlink" href="#id9" title="Link to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="linenos">1</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.repository.filters</span><span class="w"> </span><span class="kn">import</span> <span class="n">LimitOffset</span>
 </span><span data-line="2"><span class="linenos">2</span>
 </span><span data-line="3"><span class="linenos">3</span>
 </span><span data-line="4"><span class="linenos">4</span>        <span class="c1"># 2) Select paginated data and total row count.</span>
@@ -1109,12 +1097,12 @@ repository.</p>
 </div>
 </section>
 <section id="bulk-delete">
-<h2>Bulk Delete<a class="headerlink" href="#bulk-delete" title="Permalink to this heading">¶</a></h2>
+<h2>Bulk Delete<a class="headerlink" href="#bulk-delete" title="Link to this heading">¶</a></h2>
 <p>Here we demonstrate how to perform a bulk delete operation. Just as with the bulk
 insert, deleting multiple records with the batch record methods is more efficient than
 executing row-by-row.</p>
 <div class="literal-block-wrapper docutils container" id="id10">
-<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">app.py</span></code></span><a class="headerlink" href="#id10" title="Permalink to this code">¶</a></div>
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">app.py</span></code></span><a class="headerlink" href="#id10" title="Link to this code">¶</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="linenos">1</span>        <span class="c1"># 3) Let&#39;s remove the batch of records selected.</span>
 </span><span data-line="2"><span class="linenos">2</span>        <span class="n">deleted_objs</span> <span class="o">=</span> <span class="n">repo</span><span class="o">.</span><span class="n">delete_many</span><span class="p">([</span><span class="n">new_obj</span><span class="o">.</span><span class="n">id</span> <span class="k">for</span> <span class="n">new_obj</span> <span class="ow">in</span> <span class="n">created_objs</span><span class="p">])</span>
 </span><span data-line="3"><span class="linenos">3</span>        <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Removed </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">deleted_objs</span><span class="p">)</span><span class="si">}</span><span class="s2"> records out of a total of </span><span class="si">{</span><span class="n">total_objs</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
@@ -1123,10 +1111,10 @@ executing row-by-row.</p>
 </div>
 </section>
 <section id="counts">
-<h2>Counts<a class="headerlink" href="#counts" title="Permalink to this heading">¶</a></h2>
+<h2>Counts<a class="headerlink" href="#counts" title="Link to this heading">¶</a></h2>
 <p>Finally, we’ll demonstrate how to count the number of records remaining in the database.</p>
 <div class="literal-block-wrapper docutils container" id="id11">
-<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">app.py</span></code></span><a class="headerlink" href="#id11" title="Permalink to this code">¶</a></div>
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">app.py</span></code></span><a class="headerlink" href="#id11" title="Link to this code">¶</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="linenos">1</span>        <span class="c1"># 4) Let&#39;s count the remaining rows</span>
 </span><span data-line="2"><span class="linenos">2</span>        <span class="n">remaining_count</span> <span class="o">=</span> <span class="n">repo</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
 </span><span data-line="3"><span class="linenos">3</span>        <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Found </span><span class="si">{</span><span class="n">remaining_count</span><span class="si">}</span><span class="s2"> remaining records after delete.&quot;</span><span class="p">)</span>
@@ -1139,42 +1127,38 @@ functionality to a <a class="reference internal" href="../../reference/controlle
 </section>
 </section>
 <section id="full-code">
-<span id="repo-full-code"></span><h1>Full Code<a class="headerlink" href="#full-code" title="Permalink to this heading">¶</a></h1>
+<span id="repo-full-code"></span><h1>Full Code<a class="headerlink" href="#full-code" title="Link to this heading">¶</a></h1>
 <details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
 <summary class="sd-summary-title sd-card-header">
-Full Code (click to toggle)<div class="sd-summary-down docutils">
-<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-down" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M5.22 8.72a.75.75 0 000 1.06l6.25 6.25a.75.75 0 001.06 0l6.25-6.25a.75.75 0 00-1.06-1.06L12 14.44 6.28 8.72a.75.75 0 00-1.06 0z"></path></svg></div>
-<div class="sd-summary-up docutils">
-<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-up" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M18.78 15.28a.75.75 0 000-1.06l-6.25-6.25a.75.75 0 00-1.06 0l-6.25 6.25a.75.75 0 101.06 1.06L12 9.56l5.72 5.72a.75.75 0 001.06 0z"></path></svg></div>
-</summary><div class="sd-summary-content sd-card-body docutils">
+<span class="sd-summary-text">Full Code (click to toggle)</span><span class="sd-summary-state-marker sd-summary-chevron-right"><svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-right" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.72 18.78a.75.75 0 0 1 0-1.06L14.44 12 8.72 6.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018l6.25 6.25a.75.75 0 0 1 0 1.06l-6.25 6.25a.75.75 0 0 1-1.06 0Z"></path></svg></span></summary><div class="sd-summary-content sd-card-body docutils">
 <div class="literal-block-wrapper docutils container" id="id12">
-<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">app.py</span></code></span><a class="headerlink" href="#id12" title="Permalink to this code">¶</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="linenos">  1</span><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">app.py</span></code></span><a class="headerlink" href="#id12" title="Link to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="linenos">  1</span><span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 </span><span data-line="2"><span class="linenos">  2</span>
-</span><span data-line="3"><span class="linenos">  3</span><span class="kn">from</span> <span class="nn">collections.abc</span> <span class="kn">import</span> <span class="n">AsyncIterator</span>
-</span><span data-line="4"><span class="linenos">  4</span><span class="kn">from</span> <span class="nn">contextlib</span> <span class="kn">import</span> <span class="n">asynccontextmanager</span>
-</span><span data-line="5"><span class="linenos">  5</span><span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">date</span><span class="p">,</span> <span class="n">datetime</span>
-</span><span data-line="6"><span class="linenos">  6</span><span class="kn">from</span> <span class="nn">uuid</span> <span class="kn">import</span> <span class="n">UUID</span>
+</span><span data-line="3"><span class="linenos">  3</span><span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">AsyncIterator</span>
+</span><span data-line="4"><span class="linenos">  4</span><span class="kn">from</span><span class="w"> </span><span class="nn">contextlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">asynccontextmanager</span>
+</span><span data-line="5"><span class="linenos">  5</span><span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">date</span><span class="p">,</span> <span class="n">datetime</span>
+</span><span data-line="6"><span class="linenos">  6</span><span class="kn">from</span><span class="w"> </span><span class="nn">uuid</span><span class="w"> </span><span class="kn">import</span> <span class="n">UUID</span>
 </span><span data-line="7"><span class="linenos">  7</span>
-</span><span data-line="8"><span class="linenos">  8</span><span class="kn">import</span> <span class="nn">anyio</span>
-</span><span data-line="9"><span class="linenos">  9</span><span class="kn">from</span> <span class="nn">rich</span> <span class="kn">import</span> <span class="n">get_console</span>
-</span><span data-line="10"><span class="linenos"> 10</span><span class="kn">from</span> <span class="nn">sqlalchemy.ext.asyncio</span> <span class="kn">import</span> <span class="n">async_sessionmaker</span><span class="p">,</span> <span class="n">create_async_engine</span>
-</span><span data-line="11"><span class="linenos"> 11</span><span class="kn">from</span> <span class="nn">sqlalchemy.orm</span> <span class="kn">import</span> <span class="n">Mapped</span>
+</span><span data-line="8"><span class="linenos">  8</span><span class="kn">import</span><span class="w"> </span><span class="nn">anyio</span>
+</span><span data-line="9"><span class="linenos">  9</span><span class="kn">from</span><span class="w"> </span><span class="nn">rich</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_console</span>
+</span><span data-line="10"><span class="linenos"> 10</span><span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy.ext.asyncio</span><span class="w"> </span><span class="kn">import</span> <span class="n">async_sessionmaker</span><span class="p">,</span> <span class="n">create_async_engine</span>
+</span><span data-line="11"><span class="linenos"> 11</span><span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy.orm</span><span class="w"> </span><span class="kn">import</span> <span class="n">Mapped</span>
 </span><span data-line="12"><span class="linenos"> 12</span>
-</span><span data-line="13"><span class="linenos"> 13</span><span class="kn">from</span> <span class="nn">litestar.plugins.sqlalchemy</span> <span class="kn">import</span> <span class="n">base</span><span class="p">,</span> <span class="n">repository</span>
+</span><span data-line="13"><span class="linenos"> 13</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.plugins.sqlalchemy</span><span class="w"> </span><span class="kn">import</span> <span class="n">base</span><span class="p">,</span> <span class="n">repository</span>
 </span><span data-line="14"><span class="hll"><span class="linenos"> 14</span>
 </span></span><span data-line="15"><span class="linenos"> 15</span><span class="n">console</span> <span class="o">=</span> <span class="n">get_console</span><span class="p">()</span>
 </span><span data-line="16"><span class="linenos"> 16</span>
 </span><span data-line="17"><span class="linenos"> 17</span>
 </span><span data-line="18"><span class="linenos"> 18</span><span class="c1"># the SQLAlchemy base includes a declarative model for you to use in your models.</span>
 </span><span data-line="19"><span class="linenos"> 19</span><span class="c1"># The `Base` class includes a `UUID` based primary key (`id`)</span>
-</span><span data-line="20"><span class="linenos"> 20</span><span class="k">class</span> <span class="nc">Author</span><span class="p">(</span><span class="n">base</span><span class="o">.</span><span class="n">UUIDBase</span><span class="p">):</span>
+</span><span data-line="20"><span class="linenos"> 20</span><span class="k">class</span><span class="w"> </span><span class="nc">Author</span><span class="p">(</span><span class="n">base</span><span class="o">.</span><span class="n">UUIDBase</span><span class="p">):</span>
 </span><span data-line="21"><span class="linenos"> 21</span>    <span class="n">name</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
 </span><span data-line="22"><span class="linenos"> 22</span>    <span class="n">dob</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="n">date</span><span class="p">]</span>
 </span><span data-line="23"><span class="linenos"> 23</span>    <span class="n">dod</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="n">date</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]</span>
 </span><span data-line="24"><span class="linenos"> 24</span>
 </span><span data-line="25"><span class="linenos"> 25</span>
-</span><span data-line="26"><span class="linenos"> 26</span><span class="k">class</span> <span class="nc">AuthorRepository</span><span class="p">(</span><span class="n">repository</span><span class="o">.</span><span class="n">SQLAlchemyAsyncRepository</span><span class="p">[</span><span class="n">Author</span><span class="p">]):</span>
+</span><span data-line="26"><span class="linenos"> 26</span><span class="k">class</span><span class="w"> </span><span class="nc">AuthorRepository</span><span class="p">(</span><span class="n">repository</span><span class="o">.</span><span class="n">SQLAlchemyAsyncRepository</span><span class="p">[</span><span class="n">Author</span><span class="p">]):</span>
 </span><span data-line="27"><span class="hll"><span class="linenos"> 27</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;Author repository.&quot;&quot;&quot;</span>
 </span></span><span data-line="28"><span class="hll"><span class="linenos"> 28</span>
 </span></span><span data-line="29"><span class="hll"><span class="linenos"> 29</span>    <span class="n">model_type</span> <span class="o">=</span> <span class="n">Author</span>
@@ -1189,7 +1173,7 @@ Full Code (click to toggle)<div class="sd-summary-down docutils">
 </span></span><span data-line="38"><span class="hll"><span class="linenos"> 38</span>
 </span></span><span data-line="39"><span class="hll"><span class="linenos"> 39</span><span class="c1"># let&#39;s make a simple context manager as an example here.</span>
 </span></span><span data-line="40"><span class="hll"><span class="linenos"> 40</span><span class="nd">@asynccontextmanager</span>
-</span></span><span data-line="41"><span class="hll"><span class="linenos"> 41</span><span class="k">async</span> <span class="k">def</span> <span class="nf">repository_factory</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">AsyncIterator</span><span class="p">[</span><span class="n">AuthorRepository</span><span class="p">]:</span>
+</span></span><span data-line="41"><span class="hll"><span class="linenos"> 41</span><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">repository_factory</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">AsyncIterator</span><span class="p">[</span><span class="n">AuthorRepository</span><span class="p">]:</span>
 </span></span><span data-line="42"><span class="hll"><span class="linenos"> 42</span>    <span class="k">async</span> <span class="k">with</span> <span class="n">session_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">db_session</span><span class="p">:</span>
 </span></span><span data-line="43"><span class="hll"><span class="linenos"> 43</span>        <span class="k">try</span><span class="p">:</span>
 </span></span><span data-line="44"><span class="hll"><span class="linenos"> 44</span>            <span class="k">yield</span> <span class="n">AuthorRepository</span><span class="p">(</span><span class="n">session</span><span class="o">=</span><span class="n">db_session</span><span class="p">)</span>
@@ -1199,7 +1183,7 @@ Full Code (click to toggle)<div class="sd-summary-down docutils">
 </span></span><span data-line="48"><span class="hll"><span class="linenos"> 48</span>            <span class="k">await</span> <span class="n">db_session</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
 </span></span><span data-line="49"><span class="hll"><span class="linenos"> 49</span>
 </span></span><span data-line="50"><span class="hll"><span class="linenos"> 50</span>
-</span></span><span data-line="51"><span class="hll"><span class="linenos"> 51</span><span class="k">async</span> <span class="k">def</span> <span class="nf">create_author</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Author</span><span class="p">:</span>
+</span></span><span data-line="51"><span class="hll"><span class="linenos"> 51</span><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">create_author</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Author</span><span class="p">:</span>
 </span></span><span data-line="52"><span class="hll"><span class="linenos"> 52</span>    <span class="k">async</span> <span class="k">with</span> <span class="n">repository_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">repo</span><span class="p">:</span>
 </span></span><span data-line="53"><span class="hll"><span class="linenos"> 53</span>        <span class="n">obj</span> <span class="o">=</span> <span class="k">await</span> <span class="n">repo</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
 </span></span><span data-line="54"><span class="hll"><span class="linenos"> 54</span>            <span class="n">Author</span><span class="p">(</span>
@@ -1211,21 +1195,21 @@ Full Code (click to toggle)<div class="sd-summary-down docutils">
 </span><span data-line="60"><span class="linenos"> 60</span>        <span class="k">return</span> <span class="n">obj</span>
 </span><span data-line="61"><span class="hll"><span class="linenos"> 61</span>
 </span></span><span data-line="62"><span class="linenos"> 62</span>
-</span><span data-line="63"><span class="linenos"> 63</span><span class="k">async</span> <span class="k">def</span> <span class="nf">update_author</span><span class="p">(</span><span class="n">obj</span><span class="p">:</span> <span class="n">Author</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Author</span><span class="p">:</span>
+</span><span data-line="63"><span class="linenos"> 63</span><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">update_author</span><span class="p">(</span><span class="n">obj</span><span class="p">:</span> <span class="n">Author</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Author</span><span class="p">:</span>
 </span><span data-line="64"><span class="hll"><span class="linenos"> 64</span>    <span class="k">async</span> <span class="k">with</span> <span class="n">repository_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">repo</span><span class="p">:</span>
 </span></span><span data-line="65"><span class="hll"><span class="linenos"> 65</span>        <span class="n">obj</span> <span class="o">=</span> <span class="k">await</span> <span class="n">repo</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
 </span></span><span data-line="66"><span class="hll"><span class="linenos"> 66</span>        <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Updated Author record for </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> with primary key </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
 </span></span><span data-line="67"><span class="hll"><span class="linenos"> 67</span>        <span class="k">return</span> <span class="n">obj</span>
 </span></span><span data-line="68"><span class="hll"><span class="linenos"> 68</span>
 </span></span><span data-line="69"><span class="hll"><span class="linenos"> 69</span>
-</span></span><span data-line="70"><span class="hll"><span class="linenos"> 70</span><span class="k">async</span> <span class="k">def</span> <span class="nf">remove_author</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="n">UUID</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Author</span><span class="p">:</span>
+</span></span><span data-line="70"><span class="hll"><span class="linenos"> 70</span><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">remove_author</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="n">UUID</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Author</span><span class="p">:</span>
 </span></span><span data-line="71"><span class="hll"><span class="linenos"> 71</span>    <span class="k">async</span> <span class="k">with</span> <span class="n">repository_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">repo</span><span class="p">:</span>
 </span></span><span data-line="72"><span class="hll"><span class="linenos"> 72</span>        <span class="n">obj</span> <span class="o">=</span> <span class="k">await</span> <span class="n">repo</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span>
 </span></span><span data-line="73"><span class="hll"><span class="linenos"> 73</span>        <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Deleted Author record for </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> with primary key </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
 </span></span><span data-line="74"><span class="hll"><span class="linenos"> 74</span>        <span class="k">return</span> <span class="n">obj</span>
 </span></span><span data-line="75"><span class="hll"><span class="linenos"> 75</span>
 </span></span><span data-line="76"><span class="linenos"> 76</span>
-</span><span data-line="77"><span class="hll"><span class="linenos"> 77</span><span class="k">async</span> <span class="k">def</span> <span class="nf">get_author_if_exists</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="n">UUID</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Author</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="77"><span class="hll"><span class="linenos"> 77</span><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_author_if_exists</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="n">UUID</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Author</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
 </span></span><span data-line="78"><span class="hll"><span class="linenos"> 78</span>    <span class="k">async</span> <span class="k">with</span> <span class="n">repository_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">repo</span><span class="p">:</span>
 </span></span><span data-line="79"><span class="hll"><span class="linenos"> 79</span>        <span class="n">obj</span> <span class="o">=</span> <span class="k">await</span> <span class="n">repo</span><span class="o">.</span><span class="n">get_one_or_none</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="nb">id</span><span class="p">)</span>
 </span></span><span data-line="80"><span class="linenos"> 80</span>        <span class="k">if</span> <span class="n">obj</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -1235,7 +1219,7 @@ Full Code (click to toggle)<div class="sd-summary-down docutils">
 </span></span><span data-line="84"><span class="linenos"> 84</span>        <span class="k">return</span> <span class="n">obj</span>
 </span><span data-line="85"><span class="linenos"> 85</span>
 </span><span data-line="86"><span class="linenos"> 86</span>
-</span><span data-line="87"><span class="linenos"> 87</span><span class="k">async</span> <span class="k">def</span> <span class="nf">run_script</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="87"><span class="linenos"> 87</span><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">run_script</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 </span><span data-line="88"><span class="linenos"> 88</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;Load data from a fixture.&quot;&quot;&quot;</span>
 </span><span data-line="89"><span class="linenos"> 89</span>    <span class="k">async</span> <span class="k">with</span> <span class="n">engine</span><span class="o">.</span><span class="n">begin</span><span class="p">()</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
 </span><span data-line="90"><span class="linenos"> 90</span>        <span class="k">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">run_sync</span><span class="p">(</span><span class="n">base</span><span class="o">.</span><span class="n">UUIDBase</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">create_all</span><span class="p">)</span>
@@ -1316,9 +1300,9 @@ Full Code (click to toggle)<div class="sd-summary-down docutils">
     </div>
   </div>
 </footer>
-      <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=c19e757c"></script>
-      <script src="../../_static/doctools.js?v=888ff710"></script>
-      <script src="../../_static/sphinx_highlight.js?v=4825356b"></script>
+      <script src="../../_static/documentation_options.js?v=b95e84ca"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
       <script src="../../_static/copybutton.js?v=f281be69"></script>
       <script src="../../_static/litestar-theme.js?v=ab2dcc9e"></script>
@@ -1326,8 +1310,8 @@ Full Code (click to toggle)<div class="sd-summary-down docutils">
       <script>let toggleHintHide = 'Click to hide';</script>
       <script>let toggleOpenOnPrint = 'true';</script>
       <script src="../../_static/togglebutton.js?v=4a39c7ea"></script>
-      <script src="../../_static/design-tabs.js?v=36754332"></script>
+      <script src="../../_static/design-tabs.js?v=f930bc37"></script>
       <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
-      <script src="../../_static/shibuya.js?v=e2e99575"></script>
+      <script src="../../_static/shibuya.js?v=c477d091"></script>
       <script src="../../_static/versioning.js?v=bc681eff"></script></body>
 </html>

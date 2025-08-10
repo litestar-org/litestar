@@ -1,15 +1,15 @@
 <!DOCTYPE html>
-<html lang="en" data-accent-color="amber" data-content_root="">
+<html lang="en" data-accent-color="amber" data-content_root="../../">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Basic Use - Litestar Framework</title><link rel="shortcut icon" href="../../_static/favicon.svg"/><link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="AbstractDTO" href="1-abstract-dto.html" /><link rel="prev" title="Data Transfer Object (DTO)" href="index.html" /><script>
     function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
     setColorMode(localStorage._theme||"auto");
   </script><link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=397bb51e" />
-    <link rel="stylesheet" type="text/css" href="../../_static/shibuya.css?v=83eaa723" />
+    <link rel="stylesheet" type="text/css" href="../../_static/shibuya.css?v=76b6f612" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css?v=13237357" />
-    <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../_static/sphinx_paramlinks.css" />
     <link media="print" rel="stylesheet" type="text/css" href="../../_static/print.css?v=20ff2c19" />
     <link rel="stylesheet" type="text/css" href="../../_static/style.css?v=50ea2f63" />
@@ -42,13 +42,13 @@
       <img class="dark-logo" src="../../_static/logo-dark.png" alt="Litestar" height="28" loading="lazy" />
       <strong>Litestar</strong>
     </a>
-    <div class="sy-head-nav" id="HeadNav">
+    <div class="sy-head-nav" id="head-nav">
       <nav class="sy-head-links"><ul><li class="link"><a href="../../index.html">Home</a></li>
-      <li class="link"><button type="button">
+      <li class="link"><button class="js-menu" type="button" id="nav-trigger-2" aria-controls="nav-children-2">
             <span>Community</span>
             <i class="i-lucide chevron-down"></i>
           </button>
-        <ul><li><a href="../../contribution-guide.html">
+        <ul id="nav-children-2" aria-labelledby="nav-trigger-2"><li><a href="../../contribution-guide.html">
                 <span>Contributing</span>
                 <small>Learn how to contribute to the Litestar project</small>
               </a></li><li><a href="https://github.com/litestar-org/.github?tab=coc-ov-file">
@@ -59,11 +59,11 @@
                 <small>Overview of Litestar's security protocols</small>
               </a></li></ul>
       </li>
-      <li class="link"><button type="button">
+      <li class="link"><button class="js-menu" type="button" id="nav-trigger-3" aria-controls="nav-children-3">
             <span>About</span>
             <i class="i-lucide chevron-down"></i>
           </button>
-        <ul><li><a href="https://litestar.dev/about/organization">
+        <ul id="nav-children-3" aria-labelledby="nav-trigger-3"><li><a href="https://litestar.dev/about/organization">
                 <span>Litestar Organization</span>
                 <small>Details about the Litestar organization</small>
               </a></li><li><a href="https://litestar.dev/about/litestar-releases">
@@ -71,11 +71,11 @@
                 <small>Explore the release process, versioning, and deprecation policy for Litestar</small>
               </a></li></ul>
       </li>
-      <li class="link"><button type="button">
+      <li class="link"><button class="js-menu" type="button" id="nav-trigger-4" aria-controls="nav-children-4">
             <span>Release notes</span>
             <i class="i-lucide chevron-down"></i>
           </button>
-        <ul><li><a href="../../release-notes/whats-new-3.html">
+        <ul id="nav-children-4" aria-labelledby="nav-trigger-4"><li><a href="../../release-notes/whats-new-3.html">
                 <span>What's new in 3.0</span>
                 <small>Explore the new features in Litestar 3.0</small>
               </a></li><li><a href="../../release-notes/changelog.html">
@@ -86,11 +86,11 @@
                 <small>All changes in the 2.x series</small>
               </a></li></ul>
       </li>
-      <li class="link"><button type="button">
+      <li class="link"><button class="js-menu" type="button" id="nav-trigger-5" aria-controls="nav-children-5">
             <span>Help</span>
             <i class="i-lucide chevron-down"></i>
           </button>
-        <ul><li><a href="https://discord.gg/litestar">
+        <ul id="nav-children-5" aria-labelledby="nav-trigger-5"><li><a href="https://discord.gg/litestar">
                 <span>Discord Help Forum</span>
                 <small>Dedicated Discord help forum</small>
               </a></li><li><a href="https://github.com/orgs/litestar-org/discussions">
@@ -127,7 +127,7 @@ data-aria-auto="Switch to light color mode"
 data-aria-light="Switch to dark color mode"
 data-aria-dark="Switch to auto color mode">
 <i class="i-lucide theme-icon"></i>
-</button><button class="md:hidden flex items-center js-menu" aria-label="Menu" type="button" aria-controls="HeadNav" aria-expanded="false">
+</button><button class="md:hidden flex items-center js-menu" aria-label="Menu" type="button" aria-controls="head-nav" aria-expanded="false">
         <div class="hamburger">
           <span class="hamburger_1"></span>
           <span class="hamburger_2 -translate-x-2"></span>
@@ -173,12 +173,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2"><a class="reference internal" href="../databases/index.html">Databases</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../databases/sqlalchemy/index.html">SQLAlchemy</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../databases/sqlalchemy/models_and_repository.html">SQLAlchemy Models &amp; Repository</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../databases/sqlalchemy/plugins/index.html">Plugins</a><ul>
-<li class="toctree-l5"><a class="reference internal" href="../databases/sqlalchemy/plugins/sqlalchemy_plugin.html">SQLAlchemy Plugin</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../databases/sqlalchemy/plugins/sqlalchemy_init_plugin.html">SQLAlchemy Init Plugin</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../databases/sqlalchemy/plugins/sqlalchemy_serialization_plugin.html">SQLAlchemy Serialization Plugin</a></li>
-</ul>
-</li>
+<li class="toctree-l4"><a class="reference internal" href="../databases/sqlalchemy/plugins/index.html">Plugins</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../databases/piccolo.html">Piccolo ORM</a></li>
@@ -511,11 +506,12 @@ data-aria-dark="Switch to auto color mode">
     </span>
   </span>
 </a><div class="edit-this-page">
-  <a href="https://github.com/litestar-org/litestar/blob/master/docs/usage/dto/0-basic-use.rst">Edit this page</a>
+  <a href="https://github.com/litestar-org/litestar/blob/main/docs/usage/dto/0-basic-use.rst">Edit this page</a>
 </div><div id="ethical-ad-placement" data-ea-publisher="readthedocs"></div></div>
   </aside>
   <div class="rside-overlay js-menu" role="button" aria-label="Close Table of Contents" aria-controls="rside" aria-expanded="false"></div>
-  <main class="sy-main w-full max-sm:max-w-full print:pt-6"><div class="sy-breadcrumbs" role="navigation">
+  <main class="sy-main w-full max-sm:max-w-full print:pt-6">
+<div class="sy-breadcrumbs" role="navigation">
   <div class="sy-breadcrumbs-inner flex items-center">
     <div class="md:hidden mr-3">
       <button class="js-menu" aria-label="Menu" type="button" aria-controls="lside" aria-expanded="false">
@@ -549,12 +545,12 @@ data-aria-dark="Switch to auto color mode">
       <div class="min-w-0 max-w-6xl px-6 pb-6 pt-8 xl:px-12">
         <article class="yue" role="main">
           <section id="basic-use">
-<h1>Basic Use<a class="headerlink" href="#basic-use" title="Permalink to this heading">¶</a></h1>
+<h1>Basic Use<a class="headerlink" href="#basic-use" title="Link to this heading">¶</a></h1>
 <p>Here we demonstrate how to declare DTO types to your route handlers. For demonstration purposes, we assume that we
 are working with a data model <code class="docutils literal notranslate"><span class="pre">User</span></code>, and already have two DTO types created in our application, <code class="docutils literal notranslate"><span class="pre">UserDTO</span></code>, and
 <code class="docutils literal notranslate"><span class="pre">UserReturnDTO</span></code>.</p>
 <section id="dto-layer-parameters">
-<h2>DTO layer parameters<a class="headerlink" href="#dto-layer-parameters" title="Permalink to this heading">¶</a></h2>
+<h2>DTO layer parameters<a class="headerlink" href="#dto-layer-parameters" title="Link to this heading">¶</a></h2>
 <p>On every <a class="reference internal" href="../applications.html#layered-architecture"><span class="std std-ref">Layer</span></a> of the Litestar application there are two parameters that control the DTOs
 that will take responsibility for the data received and returned from handlers:</p>
 <ul class="simple">
@@ -568,18 +564,18 @@ provided, the DTO described by the <code class="docutils literal notranslate"><s
 <a class="reference internal" href="../../reference/dto/base_dto.html#litestar.dto.base_dto.AbstractDTO" title="litestar.dto.base_dto.AbstractDTO"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractDTO</span></code></a> protocol.</p>
 </section>
 <section id="defining-dtos-on-handlers">
-<h2>Defining DTOs on handlers<a class="headerlink" href="#defining-dtos-on-handlers" title="Permalink to this heading">¶</a></h2>
+<h2>Defining DTOs on handlers<a class="headerlink" href="#defining-dtos-on-handlers" title="Link to this heading">¶</a></h2>
 <section id="the-dto-parameter">
-<h3>The <code class="docutils literal notranslate"><span class="pre">dto</span></code> parameter<a class="headerlink" href="#the-dto-parameter" title="Permalink to this heading">¶</a></h3>
+<h3>The <code class="docutils literal notranslate"><span class="pre">dto</span></code> parameter<a class="headerlink" href="#the-dto-parameter" title="Link to this heading">¶</a></h3>
 <div class="literal-block-wrapper docutils container" id="id1">
-<div class="code-block-caption"><span class="caption-text">Using the <code class="docutils literal notranslate"><span class="pre">dto</span></code> Parameter</span><a class="headerlink" href="#id1" title="Permalink to this code">¶</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">post</span>
+<div class="code-block-caption"><span class="caption-text">Using the <code class="docutils literal notranslate"><span class="pre">dto</span></code> Parameter</span><a class="headerlink" href="#id1" title="Link to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">post</span>
 </span><span data-line="2">
-</span><span data-line="3"><span class="kn">from</span> <span class="nn">.models</span> <span class="kn">import</span> <span class="n">User</span><span class="p">,</span> <span class="n">UserDTO</span>
+</span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">User</span><span class="p">,</span> <span class="n">UserDTO</span>
 </span><span data-line="4">
 </span><span data-line="5">
 </span><span data-line="6"><span class="nd">@post</span><span class="p">(</span><span class="n">dto</span><span class="o">=</span><span class="n">UserDTO</span><span class="p">)</span>
-</span><span data-line="7"><span class="k">def</span> <span class="nf">create_user</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">User</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">User</span><span class="p">:</span>
+</span><span data-line="7"><span class="k">def</span><span class="w"> </span><span class="nf">create_user</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">User</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">User</span><span class="p">:</span>
 </span><span data-line="8">    <span class="k">return</span> <span class="n">data</span>
 </span></pre></div>
 </div>
@@ -588,16 +584,16 @@ provided, the DTO described by the <code class="docutils literal notranslate"><s
 <code class="docutils literal notranslate"><span class="pre">User</span></code> instance into a type that Litestar can encode into bytes.</p>
 </section>
 <section id="the-return-dto-parameter">
-<h3>The <code class="docutils literal notranslate"><span class="pre">return_dto</span></code> parameter<a class="headerlink" href="#the-return-dto-parameter" title="Permalink to this heading">¶</a></h3>
+<h3>The <code class="docutils literal notranslate"><span class="pre">return_dto</span></code> parameter<a class="headerlink" href="#the-return-dto-parameter" title="Link to this heading">¶</a></h3>
 <div class="literal-block-wrapper docutils container" id="id2">
-<div class="code-block-caption"><span class="caption-text">Using the <code class="docutils literal notranslate"><span class="pre">return_dto</span></code> Parameter</span><a class="headerlink" href="#id2" title="Permalink to this code">¶</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">post</span>
+<div class="code-block-caption"><span class="caption-text">Using the <code class="docutils literal notranslate"><span class="pre">return_dto</span></code> Parameter</span><a class="headerlink" href="#id2" title="Link to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">post</span>
 </span><span data-line="2">
-</span><span data-line="3"><span class="kn">from</span> <span class="nn">.models</span> <span class="kn">import</span> <span class="n">User</span><span class="p">,</span> <span class="n">UserDTO</span><span class="p">,</span> <span class="n">UserReturnDTO</span>
+</span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">User</span><span class="p">,</span> <span class="n">UserDTO</span><span class="p">,</span> <span class="n">UserReturnDTO</span>
 </span><span data-line="4">
 </span><span data-line="5">
 </span><span data-line="6"><span class="nd">@post</span><span class="p">(</span><span class="n">dto</span><span class="o">=</span><span class="n">UserDTO</span><span class="p">,</span> <span class="n">return_dto</span><span class="o">=</span><span class="n">UserReturnDTO</span><span class="p">)</span>
-</span><span data-line="7"><span class="k">def</span> <span class="nf">create_user</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">User</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">User</span><span class="p">:</span>
+</span><span data-line="7"><span class="k">def</span><span class="w"> </span><span class="nf">create_user</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">User</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">User</span><span class="p">:</span>
 </span><span data-line="8">    <span class="k">return</span> <span class="n">data</span>
 </span></pre></div>
 </div>
@@ -606,21 +602,21 @@ provided, the DTO described by the <code class="docutils literal notranslate"><s
 responsible for converting the <code class="docutils literal notranslate"><span class="pre">User</span></code> instance into a type that Litestar can encode into bytes.</p>
 </section>
 <section id="overriding-implicit-return-dto">
-<h3>Overriding implicit <code class="docutils literal notranslate"><span class="pre">return_dto</span></code><a class="headerlink" href="#overriding-implicit-return-dto" title="Permalink to this heading">¶</a></h3>
+<h3>Overriding implicit <code class="docutils literal notranslate"><span class="pre">return_dto</span></code><a class="headerlink" href="#overriding-implicit-return-dto" title="Link to this heading">¶</a></h3>
 <p>If a <code class="docutils literal notranslate"><span class="pre">return_dto</span></code> type is not declared for a handler, the type declared for the <code class="docutils literal notranslate"><span class="pre">dto</span></code> parameter is used for both
 decoding and encoding request and response data. If this behavior is undesirable, it can be disabled by explicitly
 setting the <code class="docutils literal notranslate"><span class="pre">return_dto</span></code> to <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
 <div class="literal-block-wrapper docutils container" id="id3">
-<div class="code-block-caption"><span class="caption-text">Disable implicit <code class="docutils literal notranslate"><span class="pre">return_dto</span></code> behavior</span><a class="headerlink" href="#id3" title="Permalink to this code">¶</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
-</span><span data-line="2"><span class="kn">from</span> <span class="nn">uuid</span> <span class="kn">import</span> <span class="n">UUID</span><span class="p">,</span> <span class="n">uuid4</span>
+<div class="code-block-caption"><span class="caption-text">Disable implicit <code class="docutils literal notranslate"><span class="pre">return_dto</span></code> behavior</span><a class="headerlink" href="#id3" title="Link to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">uuid</span><span class="w"> </span><span class="kn">import</span> <span class="n">UUID</span><span class="p">,</span> <span class="n">uuid4</span>
 </span><span data-line="3">
-</span><span data-line="4"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">post</span>
-</span><span data-line="5"><span class="kn">from</span> <span class="nn">litestar.dto</span> <span class="kn">import</span> <span class="n">DataclassDTO</span>
+</span><span data-line="4"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">post</span>
+</span><span data-line="5"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.dto</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataclassDTO</span>
 </span><span data-line="6">
 </span><span data-line="7">
 </span><span data-line="8"><span class="nd">@dataclass</span>
-</span><span data-line="9"><span class="k">class</span> <span class="nc">User</span><span class="p">:</span>
+</span><span data-line="9"><span class="k">class</span><span class="w"> </span><span class="nc">User</span><span class="p">:</span>
 </span><span data-line="10">    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
 </span><span data-line="11">    <span class="n">email</span><span class="p">:</span> <span class="nb">str</span>
 </span><span data-line="12">    <span class="n">age</span><span class="p">:</span> <span class="nb">int</span>
@@ -631,7 +627,7 @@ setting the <code class="docutils literal notranslate"><span class="pre">return_
 </span><span data-line="17">
 </span><span data-line="18">
 </span><span data-line="19"><span class="nd">@post</span><span class="p">(</span><span class="n">dto</span><span class="o">=</span><span class="n">UserDTO</span><span class="p">,</span> <span class="n">return_dto</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-</span><span data-line="20"><span class="k">def</span> <span class="nf">create_user</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">User</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
+</span><span data-line="20"><span class="k">def</span><span class="w"> </span><span class="nf">create_user</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">User</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
 </span><span data-line="21">    <span class="k">return</span> <span class="n">data</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
 </span><span data-line="22">
 </span><span data-line="23">
@@ -644,59 +640,59 @@ encoding the response data ourselves, and so we explicitly declare the <code cla
 </section>
 </section>
 <section id="defining-dtos-on-layers">
-<h2>Defining DTOs on layers<a class="headerlink" href="#defining-dtos-on-layers" title="Permalink to this heading">¶</a></h2>
+<h2>Defining DTOs on layers<a class="headerlink" href="#defining-dtos-on-layers" title="Link to this heading">¶</a></h2>
 <p>DTOs can be defined on any <a class="reference internal" href="../applications.html#layered-architecture"><span class="std std-ref">Layer</span></a> of the application. The DTO type applied is the one
 defined in the ownership chain, closest to the handler in question.</p>
 <div class="literal-block-wrapper docutils container" id="id4">
-<div class="code-block-caption"><span class="caption-text">Controller defined DTOs</span><a class="headerlink" href="#id4" title="Permalink to this code">¶</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+<div class="code-block-caption"><span class="caption-text">Controller defined DTOs</span><a class="headerlink" href="#id4" title="Link to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 </span><span data-line="2">
-</span><span data-line="3"><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
-</span><span data-line="4"><span class="kn">from</span> <span class="nn">uuid</span> <span class="kn">import</span> <span class="n">UUID</span><span class="p">,</span> <span class="n">uuid4</span>
+</span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
+</span><span data-line="4"><span class="kn">from</span><span class="w"> </span><span class="nn">uuid</span><span class="w"> </span><span class="kn">import</span> <span class="n">UUID</span><span class="p">,</span> <span class="n">uuid4</span>
 </span><span data-line="5">
-</span><span data-line="6"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Controller</span><span class="p">,</span> <span class="n">delete</span><span class="p">,</span> <span class="n">get</span><span class="p">,</span> <span class="n">post</span><span class="p">,</span> <span class="n">put</span>
-</span><span data-line="7"><span class="kn">from</span> <span class="nn">litestar.app</span> <span class="kn">import</span> <span class="n">Litestar</span>
-</span><span data-line="8"><span class="kn">from</span> <span class="nn">litestar.dto</span> <span class="kn">import</span> <span class="n">DataclassDTO</span>
-</span><span data-line="9"><span class="kn">from</span> <span class="nn">litestar.dto.config</span> <span class="kn">import</span> <span class="n">DTOConfig</span>
+</span><span data-line="6"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Controller</span><span class="p">,</span> <span class="n">delete</span><span class="p">,</span> <span class="n">get</span><span class="p">,</span> <span class="n">post</span><span class="p">,</span> <span class="n">put</span>
+</span><span data-line="7"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.app</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span>
+</span><span data-line="8"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.dto</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataclassDTO</span>
+</span><span data-line="9"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.dto.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">DTOConfig</span>
 </span><span data-line="10">
 </span><span data-line="11">
 </span><span data-line="12"><span class="nd">@dataclass</span>
-</span><span data-line="13"><span class="k">class</span> <span class="nc">User</span><span class="p">:</span>
+</span><span data-line="13"><span class="k">class</span><span class="w"> </span><span class="nc">User</span><span class="p">:</span>
 </span><span data-line="14">    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
 </span><span data-line="15">    <span class="n">email</span><span class="p">:</span> <span class="nb">str</span>
 </span><span data-line="16">    <span class="n">age</span><span class="p">:</span> <span class="nb">int</span>
 </span><span data-line="17">    <span class="nb">id</span><span class="p">:</span> <span class="n">UUID</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="n">uuid4</span><span class="p">)</span>
 </span><span data-line="18">
 </span><span data-line="19">
-</span><span data-line="20"><span class="k">class</span> <span class="nc">UserWriteDTO</span><span class="p">(</span><span class="n">DataclassDTO</span><span class="p">[</span><span class="n">User</span><span class="p">]):</span>
+</span><span data-line="20"><span class="k">class</span><span class="w"> </span><span class="nc">UserWriteDTO</span><span class="p">(</span><span class="n">DataclassDTO</span><span class="p">[</span><span class="n">User</span><span class="p">]):</span>
 </span><span data-line="21">    <span class="n">config</span> <span class="o">=</span> <span class="n">DTOConfig</span><span class="p">(</span><span class="n">exclude</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">})</span>
 </span><span data-line="22">
 </span><span data-line="23">
-</span><span data-line="24"><span class="k">class</span> <span class="nc">UserReadDTO</span><span class="p">(</span><span class="n">DataclassDTO</span><span class="p">[</span><span class="n">User</span><span class="p">]):</span> <span class="o">...</span>
+</span><span data-line="24"><span class="k">class</span><span class="w"> </span><span class="nc">UserReadDTO</span><span class="p">(</span><span class="n">DataclassDTO</span><span class="p">[</span><span class="n">User</span><span class="p">]):</span> <span class="o">...</span>
 </span><span data-line="25">
 </span><span data-line="26">
-</span><span data-line="27"><span class="k">class</span> <span class="nc">UserController</span><span class="p">(</span><span class="n">Controller</span><span class="p">):</span>
+</span><span data-line="27"><span class="k">class</span><span class="w"> </span><span class="nc">UserController</span><span class="p">(</span><span class="n">Controller</span><span class="p">):</span>
 </span><span data-line="28">    <span class="n">dto</span> <span class="o">=</span> <span class="n">UserWriteDTO</span>
 </span><span data-line="29">    <span class="n">return_dto</span> <span class="o">=</span> <span class="n">UserReadDTO</span>
 </span><span data-line="30">
 </span><span data-line="31">    <span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-</span><span data-line="32">    <span class="k">def</span> <span class="nf">create_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">User</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">User</span><span class="p">:</span>
+</span><span data-line="32">    <span class="k">def</span><span class="w"> </span><span class="nf">create_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">User</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">User</span><span class="p">:</span>
 </span><span data-line="33">        <span class="k">return</span> <span class="n">data</span>
 </span><span data-line="34">
 </span><span data-line="35">    <span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-</span><span data-line="36">    <span class="k">def</span> <span class="nf">get_users</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">User</span><span class="p">]:</span>
+</span><span data-line="36">    <span class="k">def</span><span class="w"> </span><span class="nf">get_users</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">User</span><span class="p">]:</span>
 </span><span data-line="37">        <span class="k">return</span> <span class="p">[</span><span class="n">User</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Mr Sunglass&quot;</span><span class="p">,</span> <span class="n">email</span><span class="o">=</span><span class="s2">&quot;mr.sunglass@example.com&quot;</span><span class="p">,</span> <span class="n">age</span><span class="o">=</span><span class="mi">30</span><span class="p">)]</span>
 </span><span data-line="38">
 </span><span data-line="39">    <span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/{user_id:uuid}&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-</span><span data-line="40">    <span class="k">def</span> <span class="nf">get_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_id</span><span class="p">:</span> <span class="n">UUID</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">User</span><span class="p">:</span>
+</span><span data-line="40">    <span class="k">def</span><span class="w"> </span><span class="nf">get_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_id</span><span class="p">:</span> <span class="n">UUID</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">User</span><span class="p">:</span>
 </span><span data-line="41">        <span class="k">return</span> <span class="n">User</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">user_id</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Mr Sunglass&quot;</span><span class="p">,</span> <span class="n">email</span><span class="o">=</span><span class="s2">&quot;mr.sunglass@example.com&quot;</span><span class="p">,</span> <span class="n">age</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
 </span><span data-line="42">
 </span><span data-line="43">    <span class="nd">@put</span><span class="p">(</span><span class="s2">&quot;/{user_id:uuid}&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-</span><span data-line="44">    <span class="k">def</span> <span class="nf">update_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">User</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">User</span><span class="p">:</span>
+</span><span data-line="44">    <span class="k">def</span><span class="w"> </span><span class="nf">update_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">User</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">User</span><span class="p">:</span>
 </span><span data-line="45">        <span class="k">return</span> <span class="n">data</span>
 </span><span data-line="46">
 </span><span data-line="47">    <span class="nd">@delete</span><span class="p">(</span><span class="s2">&quot;/{user_id:uuid}&quot;</span><span class="p">,</span> <span class="n">return_dto</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-</span><span data-line="48">    <span class="k">def</span> <span class="nf">delete_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_id</span><span class="p">:</span> <span class="n">UUID</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="48">    <span class="k">def</span><span class="w"> </span><span class="nf">delete_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_id</span><span class="p">:</span> <span class="n">UUID</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 </span><span data-line="49">        <span class="k">return</span> <span class="kc">None</span>
 </span><span data-line="50">
 </span><span data-line="51">
@@ -711,7 +707,7 @@ the <code class="docutils literal notranslate"><span class="pre">delete()</span>
 <a class="reference internal" href="../../reference/app.html#litestar.app.Litestar" title="litestar.app.Litestar"><code class="xref py py-class docutils literal notranslate"><span class="pre">The</span> <span class="pre">application</span></code></a> itself.</p>
 </section>
 <section id="improving-performance-with-the-codegen-backend">
-<h2>Improving performance with the codegen backend<a class="headerlink" href="#improving-performance-with-the-codegen-backend" title="Permalink to this heading">¶</a></h2>
+<h2>Improving performance with the codegen backend<a class="headerlink" href="#improving-performance-with-the-codegen-backend" title="Link to this heading">¶</a></h2>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>This feature was introduced in <code class="docutils literal notranslate"><span class="pre">2.2.0</span></code> and was hidden behind the <code class="docutils literal notranslate"><span class="pre">DTO_CODEGEN</span></code>
@@ -726,25 +722,25 @@ introduced by the DTOs, the DTO codegen backend was introduced; A DTO backend th
 increases efficiency by generating optimized Python code at runtime to perform all the
 necessary operations.</p>
 <section id="disabling-the-backend">
-<h3>Disabling the backend<a class="headerlink" href="#disabling-the-backend" title="Permalink to this heading">¶</a></h3>
+<h3>Disabling the backend<a class="headerlink" href="#disabling-the-backend" title="Link to this heading">¶</a></h3>
 <p>You can use <code class="docutils literal notranslate"><span class="pre">experimental_codegen_backend=False</span></code>
 to disable the codegen backend selectively:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
-</span><span data-line="2"><span class="kn">from</span> <span class="nn">litestar.dto</span> <span class="kn">import</span> <span class="n">DTOConfig</span><span class="p">,</span> <span class="n">DataclassDTO</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.dto</span><span class="w"> </span><span class="kn">import</span> <span class="n">DTOConfig</span><span class="p">,</span> <span class="n">DataclassDTO</span>
 </span><span data-line="3">
 </span><span data-line="4">
 </span><span data-line="5"><span class="nd">@dataclass</span>
-</span><span data-line="6"><span class="k">class</span> <span class="nc">Foo</span><span class="p">:</span>
+</span><span data-line="6"><span class="k">class</span><span class="w"> </span><span class="nc">Foo</span><span class="p">:</span>
 </span><span data-line="7">    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
 </span><span data-line="8">
 </span><span data-line="9">
-</span><span data-line="10"><span class="k">class</span> <span class="nc">FooDTO</span><span class="p">(</span><span class="n">DataclassDTO</span><span class="p">[</span><span class="n">Foo</span><span class="p">]):</span>
+</span><span data-line="10"><span class="k">class</span><span class="w"> </span><span class="nc">FooDTO</span><span class="p">(</span><span class="n">DataclassDTO</span><span class="p">[</span><span class="n">Foo</span><span class="p">]):</span>
 </span><span data-line="11">    <span class="n">config</span> <span class="o">=</span> <span class="n">DTOConfig</span><span class="p">(</span><span class="n">experimental_codegen_backend</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </span></pre></div>
 </div>
 </section>
 <section id="enabling-the-backend">
-<h3>Enabling the backend<a class="headerlink" href="#enabling-the-backend" title="Permalink to this heading">¶</a></h3>
+<h3>Enabling the backend<a class="headerlink" href="#enabling-the-backend" title="Link to this heading">¶</a></h3>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>This is a historical document meant for Litestar versions prior to 2.8.0
@@ -756,51 +752,47 @@ This backend was enabled by default since 2.8.0</p>
 </div>
 <details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
 <summary class="sd-summary-title sd-card-header">
-<span class="sd-summary-icon"><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-git-pull-request-closed" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M10.72 1.227a.75.75 0 011.06 0l.97.97.97-.97a.75.75 0 111.06 1.061l-.97.97.97.97a.75.75 0 01-1.06 1.06l-.97-.97-.97.97a.75.75 0 11-1.06-1.06l.97-.97-.97-.97a.75.75 0 010-1.06zM12.75 6.5a.75.75 0 00-.75.75v3.378a2.251 2.251 0 101.5 0V7.25a.75.75 0 00-.75-.75zm0 5.5a.75.75 0 100 1.5.75.75 0 000-1.5zM2.5 3.25a.75.75 0 111.5 0 .75.75 0 01-1.5 0zM3.25 1a2.25 2.25 0 00-.75 4.372v5.256a2.251 2.251 0 101.5 0V5.372A2.25 2.25 0 003.25 1zm0 11a.75.75 0 100 1.5.75.75 0 000-1.5z"></path></svg></span>Enabling DTO codegen backend<div class="sd-summary-down docutils">
-<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-down" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M5.22 8.72a.75.75 0 000 1.06l6.25 6.25a.75.75 0 001.06 0l6.25-6.25a.75.75 0 00-1.06-1.06L12 14.44 6.28 8.72a.75.75 0 00-1.06 0z"></path></svg></div>
-<div class="sd-summary-up docutils">
-<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-up" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M18.78 15.28a.75.75 0 000-1.06l-6.25-6.25a.75.75 0 00-1.06 0l-6.25 6.25a.75.75 0 101.06 1.06L12 9.56l5.72 5.72a.75.75 0 001.06 0z"></path></svg></div>
-</summary><div class="sd-summary-content sd-card-body docutils">
+<span class="sd-summary-icon"><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-git-pull-request-closed" viewBox="0 0 16 16" aria-hidden="true"><path d="M3.25 1A2.25 2.25 0 0 1 4 5.372v5.256a2.251 2.251 0 1 1-1.5 0V5.372A2.251 2.251 0 0 1 3.25 1Zm9.5 5.5a.75.75 0 0 1 .75.75v3.378a2.251 2.251 0 1 1-1.5 0V7.25a.75.75 0 0 1 .75-.75Zm-2.03-5.273a.75.75 0 0 1 1.06 0l.97.97.97-.97a.748.748 0 0 1 1.265.332.75.75 0 0 1-.205.729l-.97.97.97.97a.751.751 0 0 1-.018 1.042.751.751 0 0 1-1.042.018l-.97-.97-.97.97a.749.749 0 0 1-1.275-.326.749.749 0 0 1 .215-.734l.97-.97-.97-.97a.75.75 0 0 1 0-1.06ZM2.5 3.25a.75.75 0 1 0 1.5 0 .75.75 0 0 0-1.5 0ZM3.25 12a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5Zm9.5 0a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5Z"></path></svg></span><span class="sd-summary-text">Enabling DTO codegen backend</span><span class="sd-summary-state-marker sd-summary-chevron-right"><svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-right" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.72 18.78a.75.75 0 0 1 0-1.06L14.44 12 8.72 6.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018l6.25 6.25a.75.75 0 0 1 0 1.06l-6.25 6.25a.75.75 0 0 1-1.06 0Z"></path></svg></span></summary><div class="sd-summary-content sd-card-body docutils">
 <p class="sd-card-text">You can enable this backend globally for all DTOs by passing the appropriate feature
 flag to your Litestar application:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span>
-</span><span data-line="2"><span class="kn">from</span> <span class="nn">litestar.config.app</span> <span class="kn">import</span> <span class="n">ExperimentalFeatures</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.config.app</span><span class="w"> </span><span class="kn">import</span> <span class="n">ExperimentalFeatures</span>
 </span><span data-line="3">
 </span><span data-line="4"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">experimental_features</span><span class="o">=</span><span class="p">[</span><span class="n">ExperimentalFeatures</span><span class="o">.</span><span class="n">DTO_CODEGEN</span><span class="p">])</span>
 </span></pre></div>
 </div>
 <p class="sd-card-text">or selectively for individual DTOs:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
-</span><span data-line="2"><span class="kn">from</span> <span class="nn">litestar.dto</span> <span class="kn">import</span> <span class="n">DTOConfig</span><span class="p">,</span> <span class="n">DataclassDTO</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.dto</span><span class="w"> </span><span class="kn">import</span> <span class="n">DTOConfig</span><span class="p">,</span> <span class="n">DataclassDTO</span>
 </span><span data-line="3">
 </span><span data-line="4">
 </span><span data-line="5"><span class="nd">@dataclass</span>
-</span><span data-line="6"><span class="k">class</span> <span class="nc">Foo</span><span class="p">:</span>
+</span><span data-line="6"><span class="k">class</span><span class="w"> </span><span class="nc">Foo</span><span class="p">:</span>
 </span><span data-line="7">    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
 </span><span data-line="8">
 </span><span data-line="9">
-</span><span data-line="10"><span class="k">class</span> <span class="nc">FooDTO</span><span class="p">(</span><span class="n">DataclassDTO</span><span class="p">[</span><span class="n">Foo</span><span class="p">]):</span>
+</span><span data-line="10"><span class="k">class</span><span class="w"> </span><span class="nc">FooDTO</span><span class="p">(</span><span class="n">DataclassDTO</span><span class="p">[</span><span class="n">Foo</span><span class="p">]):</span>
 </span><span data-line="11">    <span class="n">config</span> <span class="o">=</span> <span class="n">DTOConfig</span><span class="p">(</span><span class="n">experimental_codegen_backend</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </span></pre></div>
 </div>
 <p class="sd-card-text">The same flag can be used to disable the backend selectively:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
-</span><span data-line="2"><span class="kn">from</span> <span class="nn">litestar.dto</span> <span class="kn">import</span> <span class="n">DTOConfig</span><span class="p">,</span> <span class="n">DataclassDTO</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.dto</span><span class="w"> </span><span class="kn">import</span> <span class="n">DTOConfig</span><span class="p">,</span> <span class="n">DataclassDTO</span>
 </span><span data-line="3">
 </span><span data-line="4">
 </span><span data-line="5"><span class="nd">@dataclass</span>
-</span><span data-line="6"><span class="k">class</span> <span class="nc">Foo</span><span class="p">:</span>
+</span><span data-line="6"><span class="k">class</span><span class="w"> </span><span class="nc">Foo</span><span class="p">:</span>
 </span><span data-line="7">    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
 </span><span data-line="8">
 </span><span data-line="9">
-</span><span data-line="10"><span class="k">class</span> <span class="nc">FooDTO</span><span class="p">(</span><span class="n">DataclassDTO</span><span class="p">[</span><span class="n">Foo</span><span class="p">]):</span>
+</span><span data-line="10"><span class="k">class</span><span class="w"> </span><span class="nc">FooDTO</span><span class="p">(</span><span class="n">DataclassDTO</span><span class="p">[</span><span class="n">Foo</span><span class="p">]):</span>
 </span><span data-line="11">    <span class="n">config</span> <span class="o">=</span> <span class="n">DTOConfig</span><span class="p">(</span><span class="n">experimental_codegen_backend</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </span></pre></div>
 </div>
 </div>
 </details></section>
 <section id="performance-improvements">
-<h3>Performance improvements<a class="headerlink" href="#performance-improvements" title="Permalink to this heading">¶</a></h3>
+<h3>Performance improvements<a class="headerlink" href="#performance-improvements" title="Link to this heading">¶</a></h3>
 <p>These are some preliminary numbers showing the performance increase for certain
 operations:</p>
 <div class="table-wrapper docutils container">
@@ -890,9 +882,9 @@ operations:</p>
     </div>
   </div>
 </footer>
-      <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=c19e757c"></script>
-      <script src="../../_static/doctools.js?v=888ff710"></script>
-      <script src="../../_static/sphinx_highlight.js?v=4825356b"></script>
+      <script src="../../_static/documentation_options.js?v=b95e84ca"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
       <script src="../../_static/copybutton.js?v=f281be69"></script>
       <script src="../../_static/litestar-theme.js?v=ab2dcc9e"></script>
@@ -900,8 +892,8 @@ operations:</p>
       <script>let toggleHintHide = 'Click to hide';</script>
       <script>let toggleOpenOnPrint = 'true';</script>
       <script src="../../_static/togglebutton.js?v=4a39c7ea"></script>
-      <script src="../../_static/design-tabs.js?v=36754332"></script>
+      <script src="../../_static/design-tabs.js?v=f930bc37"></script>
       <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
-      <script src="../../_static/shibuya.js?v=e2e99575"></script>
+      <script src="../../_static/shibuya.js?v=c477d091"></script>
       <script src="../../_static/versioning.js?v=bc681eff"></script></body>
 </html>

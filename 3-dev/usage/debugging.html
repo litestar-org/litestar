@@ -1,15 +1,15 @@
 <!DOCTYPE html>
-<html lang="en" data-accent-color="amber" data-content_root="">
+<html lang="en" data-accent-color="amber" data-content_root="../">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Debugging - Litestar Framework</title><link rel="shortcut icon" href="../_static/favicon.svg"/><link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Dependency Injection" href="dependency-injection.html" /><link rel="prev" title="Piccolo ORM" href="databases/piccolo.html" /><script>
     function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
     setColorMode(localStorage._theme||"auto");
   </script><link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=397bb51e" />
-    <link rel="stylesheet" type="text/css" href="../_static/shibuya.css?v=83eaa723" />
+    <link rel="stylesheet" type="text/css" href="../_static/shibuya.css?v=76b6f612" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
-    <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx_paramlinks.css" />
     <link media="print" rel="stylesheet" type="text/css" href="../_static/print.css?v=20ff2c19" />
     <link rel="stylesheet" type="text/css" href="../_static/style.css?v=50ea2f63" />
@@ -42,13 +42,13 @@
       <img class="dark-logo" src="../_static/logo-dark.png" alt="Litestar" height="28" loading="lazy" />
       <strong>Litestar</strong>
     </a>
-    <div class="sy-head-nav" id="HeadNav">
+    <div class="sy-head-nav" id="head-nav">
       <nav class="sy-head-links"><ul><li class="link"><a href="../index.html">Home</a></li>
-      <li class="link"><button type="button">
+      <li class="link"><button class="js-menu" type="button" id="nav-trigger-2" aria-controls="nav-children-2">
             <span>Community</span>
             <i class="i-lucide chevron-down"></i>
           </button>
-        <ul><li><a href="../contribution-guide.html">
+        <ul id="nav-children-2" aria-labelledby="nav-trigger-2"><li><a href="../contribution-guide.html">
                 <span>Contributing</span>
                 <small>Learn how to contribute to the Litestar project</small>
               </a></li><li><a href="https://github.com/litestar-org/.github?tab=coc-ov-file">
@@ -59,11 +59,11 @@
                 <small>Overview of Litestar's security protocols</small>
               </a></li></ul>
       </li>
-      <li class="link"><button type="button">
+      <li class="link"><button class="js-menu" type="button" id="nav-trigger-3" aria-controls="nav-children-3">
             <span>About</span>
             <i class="i-lucide chevron-down"></i>
           </button>
-        <ul><li><a href="https://litestar.dev/about/organization">
+        <ul id="nav-children-3" aria-labelledby="nav-trigger-3"><li><a href="https://litestar.dev/about/organization">
                 <span>Litestar Organization</span>
                 <small>Details about the Litestar organization</small>
               </a></li><li><a href="https://litestar.dev/about/litestar-releases">
@@ -71,11 +71,11 @@
                 <small>Explore the release process, versioning, and deprecation policy for Litestar</small>
               </a></li></ul>
       </li>
-      <li class="link"><button type="button">
+      <li class="link"><button class="js-menu" type="button" id="nav-trigger-4" aria-controls="nav-children-4">
             <span>Release notes</span>
             <i class="i-lucide chevron-down"></i>
           </button>
-        <ul><li><a href="../release-notes/whats-new-3.html">
+        <ul id="nav-children-4" aria-labelledby="nav-trigger-4"><li><a href="../release-notes/whats-new-3.html">
                 <span>What's new in 3.0</span>
                 <small>Explore the new features in Litestar 3.0</small>
               </a></li><li><a href="../release-notes/changelog.html">
@@ -86,11 +86,11 @@
                 <small>All changes in the 2.x series</small>
               </a></li></ul>
       </li>
-      <li class="link"><button type="button">
+      <li class="link"><button class="js-menu" type="button" id="nav-trigger-5" aria-controls="nav-children-5">
             <span>Help</span>
             <i class="i-lucide chevron-down"></i>
           </button>
-        <ul><li><a href="https://discord.gg/litestar">
+        <ul id="nav-children-5" aria-labelledby="nav-trigger-5"><li><a href="https://discord.gg/litestar">
                 <span>Discord Help Forum</span>
                 <small>Dedicated Discord help forum</small>
               </a></li><li><a href="https://github.com/orgs/litestar-org/discussions">
@@ -127,7 +127,7 @@ data-aria-auto="Switch to light color mode"
 data-aria-light="Switch to dark color mode"
 data-aria-dark="Switch to auto color mode">
 <i class="i-lucide theme-icon"></i>
-</button><button class="md:hidden flex items-center js-menu" aria-label="Menu" type="button" aria-controls="HeadNav" aria-expanded="false">
+</button><button class="md:hidden flex items-center js-menu" aria-label="Menu" type="button" aria-controls="head-nav" aria-expanded="false">
         <div class="hamburger">
           <span class="hamburger_1"></span>
           <span class="hamburger_2 -translate-x-2"></span>
@@ -173,12 +173,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2"><a class="reference internal" href="databases/index.html">Databases</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="databases/sqlalchemy/index.html">SQLAlchemy</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="databases/sqlalchemy/models_and_repository.html">SQLAlchemy Models &amp; Repository</a></li>
-<li class="toctree-l4"><a class="reference internal" href="databases/sqlalchemy/plugins/index.html">Plugins</a><ul>
-<li class="toctree-l5"><a class="reference internal" href="databases/sqlalchemy/plugins/sqlalchemy_plugin.html">SQLAlchemy Plugin</a></li>
-<li class="toctree-l5"><a class="reference internal" href="databases/sqlalchemy/plugins/sqlalchemy_init_plugin.html">SQLAlchemy Init Plugin</a></li>
-<li class="toctree-l5"><a class="reference internal" href="databases/sqlalchemy/plugins/sqlalchemy_serialization_plugin.html">SQLAlchemy Serialization Plugin</a></li>
-</ul>
-</li>
+<li class="toctree-l4"><a class="reference internal" href="databases/sqlalchemy/plugins/index.html">Plugins</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="databases/piccolo.html">Piccolo ORM</a></li>
@@ -512,11 +507,12 @@ data-aria-dark="Switch to auto color mode">
     </span>
   </span>
 </a><div class="edit-this-page">
-  <a href="https://github.com/litestar-org/litestar/blob/master/docs/usage/debugging.rst">Edit this page</a>
+  <a href="https://github.com/litestar-org/litestar/blob/main/docs/usage/debugging.rst">Edit this page</a>
 </div><div id="ethical-ad-placement" data-ea-publisher="readthedocs"></div></div>
   </aside>
   <div class="rside-overlay js-menu" role="button" aria-label="Close Table of Contents" aria-controls="rside" aria-expanded="false"></div>
-  <main class="sy-main w-full max-sm:max-w-full print:pt-6"><div class="sy-breadcrumbs" role="navigation">
+  <main class="sy-main w-full max-sm:max-w-full print:pt-6">
+<div class="sy-breadcrumbs" role="navigation">
   <div class="sy-breadcrumbs-inner flex items-center">
     <div class="md:hidden mr-3">
       <button class="js-menu" aria-label="Menu" type="button" aria-controls="lside" aria-expanded="false">
@@ -546,9 +542,9 @@ data-aria-dark="Switch to auto color mode">
       <div class="min-w-0 max-w-6xl px-6 pb-6 pt-8 xl:px-12">
         <article class="yue" role="main">
           <section id="debugging">
-<h1>Debugging<a class="headerlink" href="#debugging" title="Permalink to this heading">¶</a></h1>
+<h1>Debugging<a class="headerlink" href="#debugging" title="Link to this heading">¶</a></h1>
 <section id="using-the-python-debugger">
-<h2>Using the Python debugger<a class="headerlink" href="#using-the-python-debugger" title="Permalink to this heading">¶</a></h2>
+<h2>Using the Python debugger<a class="headerlink" href="#using-the-python-debugger" title="Link to this heading">¶</a></h2>
 <p>You can configure Litestar to drop into the <a class="reference external" href="https://docs.python.org/3/library/pdb.html" title="(in Python v3.13)"><span class="xref std std-doc">Python Debugger</span></a>
 when an exception occurs. This can be configured in different ways:</p>
 <dl>
@@ -565,13 +561,13 @@ when an exception occurs. This can be configured in different ways:</p>
 </dl>
 </section>
 <section id="debugging-with-an-ide">
-<h2>Debugging with an IDE<a class="headerlink" href="#debugging-with-an-ide" title="Permalink to this heading">¶</a></h2>
+<h2>Debugging with an IDE<a class="headerlink" href="#debugging-with-an-ide" title="Link to this heading">¶</a></h2>
 <p>You can easily attach your IDEs debugger to your application, whether you’re running it
 via the CLI or a webserver like <a class="reference external" href="https://www.uvicorn.org/">uvicorn</a>.</p>
 <section id="intellij-pycharm">
-<h3>Intellij / PyCharm<a class="headerlink" href="#intellij-pycharm" title="Permalink to this heading">¶</a></h3>
+<h3>Intellij / PyCharm<a class="headerlink" href="#intellij-pycharm" title="Link to this heading">¶</a></h3>
 <section id="using-the-cli">
-<h4>Using the CLI<a class="headerlink" href="#using-the-cli" title="Permalink to this heading">¶</a></h4>
+<h4>Using the CLI<a class="headerlink" href="#using-the-cli" title="Link to this heading">¶</a></h4>
 <ol class="arabic">
 <li><p>Create a new debug configuration via <code class="docutils literal notranslate"><span class="pre">Run</span></code> &gt; <code class="docutils literal notranslate"><span class="pre">Edit</span> <span class="pre">Configurations</span></code></p></li>
 <li><p>Select <code class="docutils literal notranslate"><span class="pre">Module</span> <span class="pre">name</span></code> option and set it to <code class="docutils literal notranslate"><span class="pre">litestar</span></code></p></li>
@@ -592,7 +588,7 @@ running uvicorn process via <code class="docutils literal notranslate"><span cla
 </div>
 </section>
 <section id="using-uvicorn">
-<h4>Using uvicorn<a class="headerlink" href="#using-uvicorn" title="Permalink to this heading">¶</a></h4>
+<h4>Using uvicorn<a class="headerlink" href="#using-uvicorn" title="Link to this heading">¶</a></h4>
 <ol class="arabic">
 <li><p>Create a new debug configuration via <code class="docutils literal notranslate"><span class="pre">Run</span></code> &gt; <code class="docutils literal notranslate"><span class="pre">Edit</span> <span class="pre">Configurations</span></code></p></li>
 <li><p>Select <code class="docutils literal notranslate"><span class="pre">Module</span> <span class="pre">name</span></code> option and set it to <code class="docutils literal notranslate"><span class="pre">uvicorn</span></code></p></li>
@@ -606,9 +602,9 @@ running uvicorn process via <code class="docutils literal notranslate"><span cla
 </section>
 </section>
 <section id="vs-code">
-<h3>VS Code<a class="headerlink" href="#vs-code" title="Permalink to this heading">¶</a></h3>
+<h3>VS Code<a class="headerlink" href="#vs-code" title="Link to this heading">¶</a></h3>
 <section id="id1">
-<h4>Using the CLI<a class="headerlink" href="#id1" title="Permalink to this heading">¶</a></h4>
+<h4>Using the CLI<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h4>
 <ol class="arabic">
 <li><dl>
 <dt>Add a new debugging configuration via <code class="docutils literal notranslate"><span class="pre">Run</span></code> &gt; <code class="docutils literal notranslate"><span class="pre">Add</span> <span class="pre">configuration</span></code></dt><dd><img alt="../_images/vs-code-add-config.png" class="align-center" src="../_images/vs-code-add-config.png" />
@@ -647,7 +643,7 @@ running uvicorn process via <code class="docutils literal notranslate"><span cla
 </ol>
 </section>
 <section id="id2">
-<h4>Using uvicorn<a class="headerlink" href="#id2" title="Permalink to this heading">¶</a></h4>
+<h4>Using uvicorn<a class="headerlink" href="#id2" title="Link to this heading">¶</a></h4>
 <ol class="arabic">
 <li><dl>
 <dt>Add a new debugging configuration via <code class="docutils literal notranslate"><span class="pre">Run</span></code> &gt; <code class="docutils literal notranslate"><span class="pre">Add</span> <span class="pre">configuration</span></code></dt><dd><img alt="../_images/vs-code-add-config.png" class="align-center" src="../_images/vs-code-add-config.png" />
@@ -688,12 +684,12 @@ running uvicorn process via <code class="docutils literal notranslate"><span cla
 </section>
 </section>
 <section id="customizing-the-debugger">
-<h2>Customizing the debugger<a class="headerlink" href="#customizing-the-debugger" title="Permalink to this heading">¶</a></h2>
+<h2>Customizing the debugger<a class="headerlink" href="#customizing-the-debugger" title="Link to this heading">¶</a></h2>
 <p>You can configure Litestar with the debug_module option to enable interactive debugging. Currently, it supports the following debugging tools:
 <a class="reference external" href="https://github.com/gotcha/ipdb">ipdb</a>, <a class="reference external" href="https://documen.tician.de/pudb/">PuDB</a> and <a class="reference external" href="https://github.com/cansarigol/pdbr">pdbr</a>. Also supports <a class="reference external" href="https://github.com/pdbpp/pdbpp">pdb++</a>.
 The default value is <a class="reference external" href="https://docs.python.org/3/library/pdb.html">pdb</a>.</p>
 <blockquote>
-<div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">import</span> <span class="nn">ipdb</span>
+<div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">import</span><span class="w"> </span><span class="nn">ipdb</span>
 </span><span data-line="2">
 </span><span data-line="3">
 </span><span data-line="4"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">pdb_on_exception</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">debugger_module</span><span class="o">=</span><span class="n">ipdb</span><span class="p">)</span>
@@ -752,9 +748,9 @@ The default value is <a class="reference external" href="https://docs.python.org
     </div>
   </div>
 </footer>
-      <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=c19e757c"></script>
-      <script src="../_static/doctools.js?v=888ff710"></script>
-      <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
+      <script src="../_static/documentation_options.js?v=b95e84ca"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
       <script src="../_static/copybutton.js?v=f281be69"></script>
       <script src="../_static/litestar-theme.js?v=ab2dcc9e"></script>
@@ -762,8 +758,8 @@ The default value is <a class="reference external" href="https://docs.python.org
       <script>let toggleHintHide = 'Click to hide';</script>
       <script>let toggleOpenOnPrint = 'true';</script>
       <script src="../_static/togglebutton.js?v=4a39c7ea"></script>
-      <script src="../_static/design-tabs.js?v=36754332"></script>
+      <script src="../_static/design-tabs.js?v=f930bc37"></script>
       <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
-      <script src="../_static/shibuya.js?v=e2e99575"></script>
+      <script src="../_static/shibuya.js?v=c477d091"></script>
       <script src="../_static/versioning.js?v=bc681eff"></script></body>
 </html>

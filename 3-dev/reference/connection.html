@@ -1,15 +1,15 @@
 <!DOCTYPE html>
-<html lang="en" data-accent-color="amber" data-content_root="">
+<html lang="en" data-accent-color="amber" data-content_root="../">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>connection - Litestar Framework</title><link rel="shortcut icon" href="../_static/favicon.svg"/><link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="contrib" href="contrib/index.html" /><link rel="prev" title="config" href="config.html" /><script>
     function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
     setColorMode(localStorage._theme||"auto");
   </script><link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=397bb51e" />
-    <link rel="stylesheet" type="text/css" href="../_static/shibuya.css?v=83eaa723" />
+    <link rel="stylesheet" type="text/css" href="../_static/shibuya.css?v=76b6f612" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
-    <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx_paramlinks.css" />
     <link media="print" rel="stylesheet" type="text/css" href="../_static/print.css?v=20ff2c19" />
     <link rel="stylesheet" type="text/css" href="../_static/style.css?v=50ea2f63" />
@@ -42,13 +42,13 @@
       <img class="dark-logo" src="../_static/logo-dark.png" alt="Litestar" height="28" loading="lazy" />
       <strong>Litestar</strong>
     </a>
-    <div class="sy-head-nav" id="HeadNav">
+    <div class="sy-head-nav" id="head-nav">
       <nav class="sy-head-links"><ul><li class="link"><a href="../index.html">Home</a></li>
-      <li class="link"><button type="button">
+      <li class="link"><button class="js-menu" type="button" id="nav-trigger-2" aria-controls="nav-children-2">
             <span>Community</span>
             <i class="i-lucide chevron-down"></i>
           </button>
-        <ul><li><a href="../contribution-guide.html">
+        <ul id="nav-children-2" aria-labelledby="nav-trigger-2"><li><a href="../contribution-guide.html">
                 <span>Contributing</span>
                 <small>Learn how to contribute to the Litestar project</small>
               </a></li><li><a href="https://github.com/litestar-org/.github?tab=coc-ov-file">
@@ -59,11 +59,11 @@
                 <small>Overview of Litestar's security protocols</small>
               </a></li></ul>
       </li>
-      <li class="link"><button type="button">
+      <li class="link"><button class="js-menu" type="button" id="nav-trigger-3" aria-controls="nav-children-3">
             <span>About</span>
             <i class="i-lucide chevron-down"></i>
           </button>
-        <ul><li><a href="https://litestar.dev/about/organization">
+        <ul id="nav-children-3" aria-labelledby="nav-trigger-3"><li><a href="https://litestar.dev/about/organization">
                 <span>Litestar Organization</span>
                 <small>Details about the Litestar organization</small>
               </a></li><li><a href="https://litestar.dev/about/litestar-releases">
@@ -71,11 +71,11 @@
                 <small>Explore the release process, versioning, and deprecation policy for Litestar</small>
               </a></li></ul>
       </li>
-      <li class="link"><button type="button">
+      <li class="link"><button class="js-menu" type="button" id="nav-trigger-4" aria-controls="nav-children-4">
             <span>Release notes</span>
             <i class="i-lucide chevron-down"></i>
           </button>
-        <ul><li><a href="../release-notes/whats-new-3.html">
+        <ul id="nav-children-4" aria-labelledby="nav-trigger-4"><li><a href="../release-notes/whats-new-3.html">
                 <span>What's new in 3.0</span>
                 <small>Explore the new features in Litestar 3.0</small>
               </a></li><li><a href="../release-notes/changelog.html">
@@ -86,11 +86,11 @@
                 <small>All changes in the 2.x series</small>
               </a></li></ul>
       </li>
-      <li class="link"><button type="button">
+      <li class="link"><button class="js-menu" type="button" id="nav-trigger-5" aria-controls="nav-children-5">
             <span>Help</span>
             <i class="i-lucide chevron-down"></i>
           </button>
-        <ul><li><a href="https://discord.gg/litestar">
+        <ul id="nav-children-5" aria-labelledby="nav-trigger-5"><li><a href="https://discord.gg/litestar">
                 <span>Discord Help Forum</span>
                 <small>Dedicated Discord help forum</small>
               </a></li><li><a href="https://github.com/orgs/litestar-org/discussions">
@@ -127,7 +127,7 @@ data-aria-auto="Switch to light color mode"
 data-aria-light="Switch to dark color mode"
 data-aria-dark="Switch to auto color mode">
 <i class="i-lucide theme-icon"></i>
-</button><button class="md:hidden flex items-center js-menu" aria-label="Menu" type="button" aria-controls="HeadNav" aria-expanded="false">
+</button><button class="md:hidden flex items-center js-menu" aria-label="Menu" type="button" aria-controls="head-nav" aria-expanded="false">
         <div class="hamburger">
           <span class="hamburger_1"></span>
           <span class="hamburger_2 -translate-x-2"></span>
@@ -173,12 +173,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2"><a class="reference internal" href="../usage/databases/index.html">Databases</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../usage/databases/sqlalchemy/index.html">SQLAlchemy</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../usage/databases/sqlalchemy/models_and_repository.html">SQLAlchemy Models &amp; Repository</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../usage/databases/sqlalchemy/plugins/index.html">Plugins</a><ul>
-<li class="toctree-l5"><a class="reference internal" href="../usage/databases/sqlalchemy/plugins/sqlalchemy_plugin.html">SQLAlchemy Plugin</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../usage/databases/sqlalchemy/plugins/sqlalchemy_init_plugin.html">SQLAlchemy Init Plugin</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../usage/databases/sqlalchemy/plugins/sqlalchemy_serialization_plugin.html">SQLAlchemy Serialization Plugin</a></li>
-</ul>
-</li>
+<li class="toctree-l4"><a class="reference internal" href="../usage/databases/sqlalchemy/plugins/index.html">Plugins</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../usage/databases/piccolo.html">Piccolo ORM</a></li>
@@ -478,61 +473,61 @@ data-aria-dark="Switch to auto color mode">
     </button>
     <div class="sy-scrollbar sy-rside-inner px-6 xl:top-16 xl:sticky xl:pl-0 pt-6 pb-4"><div class="localtoc"><h3>On this page</h3><ul>
 <li><a class="reference internal" href="#litestar.connection.ASGIConnection"><code class="docutils literal notranslate"><span class="pre">ASGIConnection</span></code></a><ul>
-<li><a class="reference internal" href="#litestar.connection.ASGIConnection.__init__"><code class="docutils literal notranslate">__init__()</span></code></a></li>
-<li><a class="reference internal" href="#litestar.connection.ASGIConnection.scope"><code class="docutils literal notranslate">scope</span></code></a></li>
 <li><a class="reference internal" href="#litestar.connection.ASGIConnection.receive"><code class="docutils literal notranslate">receive</span></code></a></li>
+<li><a class="reference internal" href="#litestar.connection.ASGIConnection.scope"><code class="docutils literal notranslate">scope</span></code></a></li>
 <li><a class="reference internal" href="#litestar.connection.ASGIConnection.send"><code class="docutils literal notranslate">send</span></code></a></li>
+<li><a class="reference internal" href="#litestar.connection.ASGIConnection.__init__"><code class="docutils literal notranslate">__init__()</span></code></a></li>
 <li><a class="reference internal" href="#litestar.connection.ASGIConnection.app"><code class="docutils literal notranslate">app</span></code></a></li>
+<li><a class="reference internal" href="#litestar.connection.ASGIConnection.auth"><code class="docutils literal notranslate">auth</span></code></a></li>
+<li><a class="reference internal" href="#litestar.connection.ASGIConnection.base_url"><code class="docutils literal notranslate">base_url</span></code></a></li>
+<li><a class="reference internal" href="#litestar.connection.ASGIConnection.clear_session"><code class="docutils literal notranslate">clear_session()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.connection.ASGIConnection.client"><code class="docutils literal notranslate">client</span></code></a></li>
+<li><a class="reference internal" href="#litestar.connection.ASGIConnection.cookies"><code class="docutils literal notranslate">cookies</span></code></a></li>
+<li><a class="reference internal" href="#litestar.connection.ASGIConnection.headers"><code class="docutils literal notranslate">headers</span></code></a></li>
+<li><a class="reference internal" href="#litestar.connection.ASGIConnection.logger"><code class="docutils literal notranslate">logger</span></code></a></li>
+<li><a class="reference internal" href="#litestar.connection.ASGIConnection.path_params"><code class="docutils literal notranslate">path_params</span></code></a></li>
+<li><a class="reference internal" href="#litestar.connection.ASGIConnection.query_params"><code class="docutils literal notranslate">query_params</span></code></a></li>
 <li><a class="reference internal" href="#litestar.connection.ASGIConnection.route_handler"><code class="docutils literal notranslate">route_handler</span></code></a></li>
+<li><a class="reference internal" href="#litestar.connection.ASGIConnection.session"><code class="docutils literal notranslate">session</span></code></a></li>
+<li><a class="reference internal" href="#litestar.connection.ASGIConnection.set_session"><code class="docutils literal notranslate">set_session()</span></code></a></li>
 <li><a class="reference internal" href="#litestar.connection.ASGIConnection.state"><code class="docutils literal notranslate">state</span></code></a></li>
 <li><a class="reference internal" href="#litestar.connection.ASGIConnection.url"><code class="docutils literal notranslate">url</span></code></a></li>
-<li><a class="reference internal" href="#litestar.connection.ASGIConnection.base_url"><code class="docutils literal notranslate">base_url</span></code></a></li>
-<li><a class="reference internal" href="#litestar.connection.ASGIConnection.headers"><code class="docutils literal notranslate">headers</span></code></a></li>
-<li><a class="reference internal" href="#litestar.connection.ASGIConnection.query_params"><code class="docutils literal notranslate">query_params</span></code></a></li>
-<li><a class="reference internal" href="#litestar.connection.ASGIConnection.path_params"><code class="docutils literal notranslate">path_params</span></code></a></li>
-<li><a class="reference internal" href="#litestar.connection.ASGIConnection.cookies"><code class="docutils literal notranslate">cookies</span></code></a></li>
-<li><a class="reference internal" href="#litestar.connection.ASGIConnection.client"><code class="docutils literal notranslate">client</span></code></a></li>
-<li><a class="reference internal" href="#litestar.connection.ASGIConnection.auth"><code class="docutils literal notranslate">auth</span></code></a></li>
-<li><a class="reference internal" href="#litestar.connection.ASGIConnection.user"><code class="docutils literal notranslate">user</span></code></a></li>
-<li><a class="reference internal" href="#litestar.connection.ASGIConnection.session"><code class="docutils literal notranslate">session</span></code></a></li>
-<li><a class="reference internal" href="#litestar.connection.ASGIConnection.logger"><code class="docutils literal notranslate">logger</span></code></a></li>
-<li><a class="reference internal" href="#litestar.connection.ASGIConnection.set_session"><code class="docutils literal notranslate">set_session()</span></code></a></li>
-<li><a class="reference internal" href="#litestar.connection.ASGIConnection.clear_session"><code class="docutils literal notranslate">clear_session()</span></code></a></li>
 <li><a class="reference internal" href="#litestar.connection.ASGIConnection.url_for"><code class="docutils literal notranslate">url_for()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.connection.ASGIConnection.user"><code class="docutils literal notranslate">user</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#litestar.connection.Request"><code class="docutils literal notranslate"><span class="pre">Request</span></code></a><ul>
 <li><a class="reference internal" href="#litestar.connection.Request.__init__"><code class="docutils literal notranslate">__init__()</span></code></a></li>
-<li><a class="reference internal" href="#litestar.connection.Request.method"><code class="docutils literal notranslate">method</span></code></a></li>
-<li><a class="reference internal" href="#litestar.connection.Request.content_type"><code class="docutils literal notranslate">content_type</span></code></a></li>
 <li><a class="reference internal" href="#litestar.connection.Request.accept"><code class="docutils literal notranslate">accept</span></code></a></li>
-<li><a class="reference internal" href="#litestar.connection.Request.json"><code class="docutils literal notranslate">json()</span></code></a></li>
-<li><a class="reference internal" href="#litestar.connection.Request.msgpack"><code class="docutils literal notranslate">msgpack()</span></code></a></li>
-<li><a class="reference internal" href="#litestar.connection.Request.stream"><code class="docutils literal notranslate">stream()</span></code></a></li>
 <li><a class="reference internal" href="#litestar.connection.Request.body"><code class="docutils literal notranslate">body()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.connection.Request.content_type"><code class="docutils literal notranslate">content_type</span></code></a></li>
 <li><a class="reference internal" href="#litestar.connection.Request.form"><code class="docutils literal notranslate">form()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.connection.Request.json"><code class="docutils literal notranslate">json()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.connection.Request.method"><code class="docutils literal notranslate">method</span></code></a></li>
+<li><a class="reference internal" href="#litestar.connection.Request.msgpack"><code class="docutils literal notranslate">msgpack()</span></code></a></li>
 <li><a class="reference internal" href="#litestar.connection.Request.send_push_promise"><code class="docutils literal notranslate">send_push_promise()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.connection.Request.stream"><code class="docutils literal notranslate">stream()</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#litestar.connection.WebSocket"><code class="docutils literal notranslate"><span class="pre">WebSocket</span></code></a><ul>
 <li><a class="reference internal" href="#litestar.connection.WebSocket.__init__"><code class="docutils literal notranslate">__init__()</span></code></a></li>
-<li><a class="reference internal" href="#litestar.connection.WebSocket.receive_wrapper"><code class="docutils literal notranslate">receive_wrapper()</span></code></a></li>
-<li><a class="reference internal" href="#litestar.connection.WebSocket.send_wrapper"><code class="docutils literal notranslate">send_wrapper()</span></code></a></li>
 <li><a class="reference internal" href="#litestar.connection.WebSocket.accept"><code class="docutils literal notranslate">accept()</span></code></a></li>
 <li><a class="reference internal" href="#litestar.connection.WebSocket.close"><code class="docutils literal notranslate">close()</span></code></a></li>
-<li><a class="reference internal" href="#litestar.connection.WebSocket.receive_data"><code class="docutils literal notranslate">receive_data()</span></code></a></li>
 <li><a class="reference internal" href="#litestar.connection.WebSocket.iter_data"><code class="docutils literal notranslate">iter_data()</span></code></a></li>
-<li><a class="reference internal" href="#litestar.connection.WebSocket.receive_text"><code class="docutils literal notranslate">receive_text()</span></code></a></li>
-<li><a class="reference internal" href="#litestar.connection.WebSocket.receive_bytes"><code class="docutils literal notranslate">receive_bytes()</span></code></a></li>
-<li><a class="reference internal" href="#litestar.connection.WebSocket.receive_json"><code class="docutils literal notranslate">receive_json()</span></code></a></li>
-<li><a class="reference internal" href="#litestar.connection.WebSocket.receive_msgpack"><code class="docutils literal notranslate">receive_msgpack()</span></code></a></li>
 <li><a class="reference internal" href="#litestar.connection.WebSocket.iter_json"><code class="docutils literal notranslate">iter_json()</span></code></a></li>
 <li><a class="reference internal" href="#litestar.connection.WebSocket.iter_msgpack"><code class="docutils literal notranslate">iter_msgpack()</span></code></a></li>
-<li><a class="reference internal" href="#litestar.connection.WebSocket.send_data"><code class="docutils literal notranslate">send_data()</span></code></a></li>
-<li><a class="reference internal" href="#litestar.connection.WebSocket.send_text"><code class="docutils literal notranslate">send_text()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.connection.WebSocket.receive_bytes"><code class="docutils literal notranslate">receive_bytes()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.connection.WebSocket.receive_data"><code class="docutils literal notranslate">receive_data()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.connection.WebSocket.receive_json"><code class="docutils literal notranslate">receive_json()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.connection.WebSocket.receive_msgpack"><code class="docutils literal notranslate">receive_msgpack()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.connection.WebSocket.receive_text"><code class="docutils literal notranslate">receive_text()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.connection.WebSocket.receive_wrapper"><code class="docutils literal notranslate">receive_wrapper()</span></code></a></li>
 <li><a class="reference internal" href="#litestar.connection.WebSocket.send_bytes"><code class="docutils literal notranslate">send_bytes()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.connection.WebSocket.send_data"><code class="docutils literal notranslate">send_data()</span></code></a></li>
 <li><a class="reference internal" href="#litestar.connection.WebSocket.send_json"><code class="docutils literal notranslate">send_json()</span></code></a></li>
 <li><a class="reference internal" href="#litestar.connection.WebSocket.send_msgpack"><code class="docutils literal notranslate">send_msgpack()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.connection.WebSocket.send_text"><code class="docutils literal notranslate">send_text()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.connection.WebSocket.send_wrapper"><code class="docutils literal notranslate">send_wrapper()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -555,11 +550,12 @@ data-aria-dark="Switch to auto color mode">
     </span>
   </span>
 </a><div class="edit-this-page">
-  <a href="https://github.com/litestar-org/litestar/blob/master/docs/reference/connection.rst">Edit this page</a>
+  <a href="https://github.com/litestar-org/litestar/blob/main/docs/reference/connection.rst">Edit this page</a>
 </div><div id="ethical-ad-placement" data-ea-publisher="readthedocs"></div></div>
   </aside>
   <div class="rside-overlay js-menu" role="button" aria-label="Close Table of Contents" aria-controls="rside" aria-expanded="false"></div>
-  <main class="sy-main w-full max-sm:max-w-full print:pt-6"><div class="sy-breadcrumbs" role="navigation">
+  <main class="sy-main w-full max-sm:max-w-full print:pt-6">
+<div class="sy-breadcrumbs" role="navigation">
   <div class="sy-breadcrumbs-inner flex items-center">
     <div class="md:hidden mr-3">
       <button class="js-menu" aria-label="Menu" type="button" aria-controls="lside" aria-expanded="false">
@@ -589,7 +585,7 @@ data-aria-dark="Switch to auto color mode">
       <div class="min-w-0 max-w-6xl px-6 pb-6 pt-8 xl:px-12">
         <article class="yue" role="main">
           <section id="module-litestar.connection">
-<span id="connection"></span><h1>connection<a class="headerlink" href="#module-litestar.connection" title="Permalink to this heading">¶</a></h1>
+<span id="connection"></span><h1>connection<a class="headerlink" href="#module-litestar.connection" title="Link to this heading">¶</a></h1>
 <p>Some code in this module was adapted from <a class="reference external" href="https://github.com/encode/starlette/blob/master/starlette/requests.py">https://github.com/encode/starlette/blob/master/starlette/requests.py</a> and
 <a class="reference external" href="https://github.com/encode/starlette/blob/master/starlette/websockets.py">https://github.com/encode/starlette/blob/master/starlette/websockets.py</a>.</p>
 <p>Copyright © 2018, [Encode OSS Ltd](<a class="reference external" href="https://www.encode.io/">https://www.encode.io/</a>).
@@ -618,12 +614,30 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="litestar.connection.ASGIConnection">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.connection.</span></span><span class="sig-name descname"><span class="pre">ASGIConnection</span></span><a class="headerlink" href="#litestar.connection.ASGIConnection" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.connection.</span></span><span class="sig-name descname"><span class="pre">ASGIConnection</span></span><a class="headerlink" href="#litestar.connection.ASGIConnection" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Generic" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Generic</span></code></a>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">HandlerT</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">UserT</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">AuthT</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">StateT</span></code>]</p>
 <p>The base ASGI connection container.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="litestar.connection.ASGIConnection.receive">
+<span class="sig-name descname"><span class="pre">receive</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="types.html#litestar.types.Receive" title="litestar.types.Receive"><span class="pre">Receive</span></a></em><a class="headerlink" href="#litestar.connection.ASGIConnection.receive" title="Link to this definition">¶</a></dt>
+<dd><p>The ASGI receive function.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="litestar.connection.ASGIConnection.scope">
+<span class="sig-name descname"><span class="pre">scope</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="types.html#litestar.types.Scope" title="litestar.types.Scope"><span class="pre">Scope</span></a></em><a class="headerlink" href="#litestar.connection.ASGIConnection.scope" title="Link to this definition">¶</a></dt>
+<dd><p>The ASGI scope attached to the connection.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="litestar.connection.ASGIConnection.send">
+<span class="sig-name descname"><span class="pre">send</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="types.html#litestar.types.Send" title="litestar.types.Send"><span class="pre">Send</span></a></em><a class="headerlink" href="#litestar.connection.ASGIConnection.send" title="Link to this definition">¶</a></dt>
+<dd><p>The ASGI send function.</p>
+</dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="litestar.connection.ASGIConnection.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scope:</span> <span class="pre">Scope</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">receive:</span> <span class="pre">Receive</span> <span class="pre">=</span> <span class="pre">&lt;function</span> <span class="pre">empty_receive&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">send:</span> <span class="pre">Send</span> <span class="pre">=</span> <span class="pre">&lt;function</span> <span class="pre">empty_send&gt;</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#litestar.connection.ASGIConnection.__init__" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scope:</span> <span class="pre">Scope</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">receive:</span> <span class="pre">Receive</span> <span class="pre">=</span> <span class="pre">&lt;function</span> <span class="pre">empty_receive&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">send:</span> <span class="pre">Send</span> <span class="pre">=</span> <span class="pre">&lt;function</span> <span class="pre">empty_send&gt;</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#litestar.connection.ASGIConnection.__init__" title="Link to this definition">¶</a></dt>
 <dd><p>Initialize <code class="docutils literal notranslate"><span class="pre">ASGIConnection</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -636,27 +650,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</p>
 </dl>
 </dd></dl>
 
-<dl class="py attribute">
-<dt class="sig sig-object py" id="litestar.connection.ASGIConnection.scope">
-<span class="sig-name descname"><span class="pre">scope</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="types.html#litestar.types.Scope" title="litestar.types.Scope"><span class="pre">Scope</span></a></em><a class="headerlink" href="#litestar.connection.ASGIConnection.scope" title="Permalink to this definition">¶</a></dt>
-<dd><p>The ASGI scope attached to the connection.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="litestar.connection.ASGIConnection.receive">
-<span class="sig-name descname"><span class="pre">receive</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="types.html#litestar.types.Receive" title="litestar.types.Receive"><span class="pre">Receive</span></a></em><a class="headerlink" href="#litestar.connection.ASGIConnection.receive" title="Permalink to this definition">¶</a></dt>
-<dd><p>The ASGI receive function.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="litestar.connection.ASGIConnection.send">
-<span class="sig-name descname"><span class="pre">send</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="types.html#litestar.types.Send" title="litestar.types.Send"><span class="pre">Send</span></a></em><a class="headerlink" href="#litestar.connection.ASGIConnection.send" title="Permalink to this definition">¶</a></dt>
-<dd><p>The ASGI send function.</p>
-</dd></dl>
-
 <dl class="py property">
 <dt class="sig sig-object py" id="litestar.connection.ASGIConnection.app">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">app</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="app.html#litestar.app.Litestar" title="litestar.app.Litestar"><span class="pre">Litestar</span></a></em><a class="headerlink" href="#litestar.connection.ASGIConnection.app" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">app</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="app.html#litestar.app.Litestar" title="litestar.app.Litestar"><span class="pre">Litestar</span></a></em><a class="headerlink" href="#litestar.connection.ASGIConnection.app" title="Link to this definition">¶</a></dt>
 <dd><p>Return the <code class="docutils literal notranslate"><span class="pre">app</span></code> for this connection.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -666,108 +662,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</p>
 </dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="litestar.connection.ASGIConnection.route_handler">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">route_handler</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">HandlerT</span></em><a class="headerlink" href="#litestar.connection.ASGIConnection.route_handler" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the <code class="docutils literal notranslate"><span class="pre">route_handler</span></code> for this connection.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>The target route handler instance.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="litestar.connection.ASGIConnection.state">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">state</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">StateT</span></em><a class="headerlink" href="#litestar.connection.ASGIConnection.state" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the <code class="docutils literal notranslate"><span class="pre">State</span></code> of this connection.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>A State instance constructed from the scope[“state”] value.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="litestar.connection.ASGIConnection.url">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">url</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="datastructures/index.html#litestar.datastructures.URL" title="litestar.datastructures.url.URL"><span class="pre">URL</span></a></em><a class="headerlink" href="#litestar.connection.ASGIConnection.url" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the URL of this connection’s <code class="docutils literal notranslate"><span class="pre">Scope</span></code>.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>A URL instance constructed from the request’s scope.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="litestar.connection.ASGIConnection.base_url">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">base_url</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="datastructures/index.html#litestar.datastructures.URL" title="litestar.datastructures.url.URL"><span class="pre">URL</span></a></em><a class="headerlink" href="#litestar.connection.ASGIConnection.base_url" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the base URL of this connection’s <code class="docutils literal notranslate"><span class="pre">Scope</span></code>.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>A URL instance constructed from the request’s scope, representing only the base part
-(host + domain + prefix) of the request.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="litestar.connection.ASGIConnection.headers">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">headers</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="datastructures/index.html#litestar.datastructures.Headers" title="litestar.datastructures.headers.Headers"><span class="pre">Headers</span></a></em><a class="headerlink" href="#litestar.connection.ASGIConnection.headers" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the headers of this connection’s <code class="docutils literal notranslate"><span class="pre">Scope</span></code>.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>A Headers instance with the request’s scope[“headers”] value.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="litestar.connection.ASGIConnection.query_params">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">query_params</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="datastructures/index.html#litestar.datastructures.MultiDict" title="litestar.datastructures.multi_dicts.MultiDict"><span class="pre">MultiDict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#litestar.connection.ASGIConnection.query_params" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the query parameters of this connection’s <code class="docutils literal notranslate"><span class="pre">Scope</span></code>.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>A normalized dict of query parameters. Multiple values for the same key are returned as a list.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="litestar.connection.ASGIConnection.path_params">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">path_params</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#litestar.connection.ASGIConnection.path_params" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the <code class="docutils literal notranslate"><span class="pre">path_params</span></code> of this connection’s <code class="docutils literal notranslate"><span class="pre">Scope</span></code>.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>A string keyed dictionary of path parameter values.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="litestar.connection.ASGIConnection.cookies">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">cookies</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#litestar.connection.ASGIConnection.cookies" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the <code class="docutils literal notranslate"><span class="pre">cookies</span></code> of this connection’s <code class="docutils literal notranslate"><span class="pre">Scope</span></code>.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Returns any cookies stored in the header as a parsed dictionary.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="litestar.connection.ASGIConnection.client">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">client</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="datastructures/index.html#litestar.datastructures.Address" title="litestar.datastructures.url.Address"><span class="pre">Address</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></em><a class="headerlink" href="#litestar.connection.ASGIConnection.client" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the <code class="docutils literal notranslate"><span class="pre">client</span></code> data of this connection’s <code class="docutils literal notranslate"><span class="pre">Scope</span></code>.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>A two tuple of the host name and port number.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py property">
 <dt class="sig sig-object py" id="litestar.connection.ASGIConnection.auth">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">auth</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">AuthT</span></em><a class="headerlink" href="#litestar.connection.ASGIConnection.auth" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">auth</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">AuthT</span></em><a class="headerlink" href="#litestar.connection.ASGIConnection.auth" title="Link to this definition">¶</a></dt>
 <dd><p>Return the <code class="docutils literal notranslate"><span class="pre">auth</span></code> data of this connection’s <code class="docutils literal notranslate"><span class="pre">Scope</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
@@ -780,36 +676,66 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</p>
 </dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="litestar.connection.ASGIConnection.user">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">user</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">UserT</span></em><a class="headerlink" href="#litestar.connection.ASGIConnection.user" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the <code class="docutils literal notranslate"><span class="pre">user</span></code> data of this connection’s <code class="docutils literal notranslate"><span class="pre">Scope</span></code>.</p>
+<dt class="sig sig-object py" id="litestar.connection.ASGIConnection.base_url">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">base_url</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="datastructures/index.html#litestar.datastructures.URL" title="litestar.datastructures.url.URL"><span class="pre">URL</span></a></em><a class="headerlink" href="#litestar.connection.ASGIConnection.base_url" title="Link to this definition">¶</a></dt>
+<dd><p>Return the base URL of this connection’s <code class="docutils literal notranslate"><span class="pre">Scope</span></code>.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="exceptions.html#litestar.exceptions.ImproperlyConfiguredException" title="litestar.exceptions.ImproperlyConfiguredException"><strong>ImproperlyConfiguredException</strong></a> – If <code class="docutils literal notranslate"><span class="pre">user</span></code> is not set in scope via an <code class="docutils literal notranslate"><span class="pre">AuthMiddleware</span></code>, raises an exception</p>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A URL instance constructed from the request’s scope, representing only the base part
+(host + domain + prefix) of the request.</p>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>A type correlating to the generic variable User.</p>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="litestar.connection.ASGIConnection.clear_session">
+<span class="sig-name descname"><span class="pre">clear_session</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#litestar.connection.ASGIConnection.clear_session" title="Link to this definition">¶</a></dt>
+<dd><p>Remove the session from the connection’s <code class="docutils literal notranslate"><span class="pre">Scope</span></code>.</p>
+<p>If the <a class="reference internal" href="middleware/session/base.html#litestar.middleware.session.base.SessionMiddleware" title="litestar.middleware.session.base.SessionMiddleware"><code class="xref py py-class docutils literal notranslate"><span class="pre">Litestar</span> <span class="pre">SessionMiddleware</span></code></a> is enabled, this will cause
+the session data to be cleared.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None.</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="litestar.connection.ASGIConnection.session">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">session</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#litestar.connection.ASGIConnection.session" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the session for this connection if a session was previously set in the <code class="docutils literal notranslate"><span class="pre">Scope</span></code></p>
+<dt class="sig sig-object py" id="litestar.connection.ASGIConnection.client">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">client</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="datastructures/index.html#litestar.datastructures.Address" title="litestar.datastructures.url.Address"><span class="pre">Address</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></em><a class="headerlink" href="#litestar.connection.ASGIConnection.client" title="Link to this definition">¶</a></dt>
+<dd><p>Return the <code class="docutils literal notranslate"><span class="pre">client</span></code> data of this connection’s <code class="docutils literal notranslate"><span class="pre">Scope</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>A dictionary representing the session value - if existing.</p>
+<dd class="field-odd"><p>A two tuple of the host name and port number.</p>
 </dd>
-<dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference internal" href="exceptions.html#litestar.exceptions.ImproperlyConfiguredException" title="litestar.exceptions.ImproperlyConfiguredException"><strong>ImproperlyConfiguredException</strong></a> – if session is not set in scope.</p>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="litestar.connection.ASGIConnection.cookies">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">cookies</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#litestar.connection.ASGIConnection.cookies" title="Link to this definition">¶</a></dt>
+<dd><p>Return the <code class="docutils literal notranslate"><span class="pre">cookies</span></code> of this connection’s <code class="docutils literal notranslate"><span class="pre">Scope</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Returns any cookies stored in the header as a parsed dictionary.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="litestar.connection.ASGIConnection.headers">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">headers</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="datastructures/index.html#litestar.datastructures.Headers" title="litestar.datastructures.headers.Headers"><span class="pre">Headers</span></a></em><a class="headerlink" href="#litestar.connection.ASGIConnection.headers" title="Link to this definition">¶</a></dt>
+<dd><p>Return the headers of this connection’s <code class="docutils literal notranslate"><span class="pre">Scope</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A Headers instance with the request’s scope[“headers”] value.</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="litestar.connection.ASGIConnection.logger">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">logger</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="types.html#litestar.types.Logger" title="litestar.types.Logger"><span class="pre">Logger</span></a></em><a class="headerlink" href="#litestar.connection.ASGIConnection.logger" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">logger</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="types.html#litestar.types.Logger" title="litestar.types.Logger"><span class="pre">Logger</span></a></em><a class="headerlink" href="#litestar.connection.ASGIConnection.logger" title="Link to this definition">¶</a></dt>
 <dd><p>Return the <code class="docutils literal notranslate"><span class="pre">Logger</span></code> instance for this connection.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -821,9 +747,56 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</p>
 </dl>
 </dd></dl>
 
+<dl class="py property">
+<dt class="sig sig-object py" id="litestar.connection.ASGIConnection.path_params">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">path_params</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#litestar.connection.ASGIConnection.path_params" title="Link to this definition">¶</a></dt>
+<dd><p>Return the <code class="docutils literal notranslate"><span class="pre">path_params</span></code> of this connection’s <code class="docutils literal notranslate"><span class="pre">Scope</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A string keyed dictionary of path parameter values.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="litestar.connection.ASGIConnection.query_params">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">query_params</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="datastructures/index.html#litestar.datastructures.MultiDict" title="litestar.datastructures.multi_dicts.MultiDict"><span class="pre">MultiDict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#litestar.connection.ASGIConnection.query_params" title="Link to this definition">¶</a></dt>
+<dd><p>Return the query parameters of this connection’s <code class="docutils literal notranslate"><span class="pre">Scope</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A normalized dict of query parameters. Multiple values for the same key are returned as a list.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="litestar.connection.ASGIConnection.route_handler">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">route_handler</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">HandlerT</span></em><a class="headerlink" href="#litestar.connection.ASGIConnection.route_handler" title="Link to this definition">¶</a></dt>
+<dd><p>Return the <code class="docutils literal notranslate"><span class="pre">route_handler</span></code> for this connection.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The target route handler instance.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="litestar.connection.ASGIConnection.session">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">session</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#litestar.connection.ASGIConnection.session" title="Link to this definition">¶</a></dt>
+<dd><p>Return the session for this connection if a session was previously set in the <code class="docutils literal notranslate"><span class="pre">Scope</span></code></p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A dictionary representing the session value - if existing.</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="exceptions.html#litestar.exceptions.ImproperlyConfiguredException" title="litestar.exceptions.ImproperlyConfiguredException"><strong>ImproperlyConfiguredException</strong></a> – if session is not set in scope.</p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="litestar.connection.ASGIConnection.set_session">
-<span class="sig-name descname"><span class="pre">set_session</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">DataContainerType</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">EmptyType</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#litestar.connection.ASGIConnection.set_session" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">set_session</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">DataContainerType</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">EmptyType</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#litestar.connection.ASGIConnection.set_session" title="Link to this definition">¶</a></dt>
 <dd><p>Set the session in the connection’s <code class="docutils literal notranslate"><span class="pre">Scope</span></code>.</p>
 <p>If the <a class="reference internal" href="middleware/session/base.html#litestar.middleware.session.base.SessionMiddleware" title="litestar.middleware.session.base.SessionMiddleware"><code class="xref py py-class docutils literal notranslate"><span class="pre">SessionMiddleware</span></code></a> is enabled, the session will be added
 to the response as a cookie header.</p>
@@ -837,22 +810,31 @@ to the response as a cookie header.</p>
 </dl>
 </dd></dl>
 
-<dl class="py method">
-<dt class="sig sig-object py" id="litestar.connection.ASGIConnection.clear_session">
-<span class="sig-name descname"><span class="pre">clear_session</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#litestar.connection.ASGIConnection.clear_session" title="Permalink to this definition">¶</a></dt>
-<dd><p>Remove the session from the connection’s <code class="docutils literal notranslate"><span class="pre">Scope</span></code>.</p>
-<p>If the <a class="reference internal" href="middleware/session/base.html#litestar.middleware.session.base.SessionMiddleware" title="litestar.middleware.session.base.SessionMiddleware"><code class="xref py py-class docutils literal notranslate"><span class="pre">Litestar</span> <span class="pre">SessionMiddleware</span></code></a> is enabled, this will cause
-the session data to be cleared.</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="litestar.connection.ASGIConnection.state">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">state</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">StateT</span></em><a class="headerlink" href="#litestar.connection.ASGIConnection.state" title="Link to this definition">¶</a></dt>
+<dd><p>Return the <code class="docutils literal notranslate"><span class="pre">State</span></code> of this connection.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>None.</p>
+<dd class="field-odd"><p>A State instance constructed from the scope[“state”] value.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="litestar.connection.ASGIConnection.url">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">url</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="datastructures/index.html#litestar.datastructures.URL" title="litestar.datastructures.url.URL"><span class="pre">URL</span></a></em><a class="headerlink" href="#litestar.connection.ASGIConnection.url" title="Link to this definition">¶</a></dt>
+<dd><p>Return the URL of this connection’s <code class="docutils literal notranslate"><span class="pre">Scope</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A URL instance constructed from the request’s scope.</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="litestar.connection.ASGIConnection.url_for">
-<span class="sig-name descname"><span class="pre">url_for</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">path_parameters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><span class="pre">Any</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></span><a class="headerlink" href="#litestar.connection.ASGIConnection.url_for" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">url_for</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">path_parameters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><span class="pre">Any</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></span><a class="headerlink" href="#litestar.connection.ASGIConnection.url_for" title="Link to this definition">¶</a></dt>
 <dd><p>Return the url for a given route handler name.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -871,16 +853,30 @@ the session data to be cleared.</p>
 </dl>
 </dd></dl>
 
+<dl class="py property">
+<dt class="sig sig-object py" id="litestar.connection.ASGIConnection.user">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">user</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">UserT</span></em><a class="headerlink" href="#litestar.connection.ASGIConnection.user" title="Link to this definition">¶</a></dt>
+<dd><p>Return the <code class="docutils literal notranslate"><span class="pre">user</span></code> data of this connection’s <code class="docutils literal notranslate"><span class="pre">Scope</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="exceptions.html#litestar.exceptions.ImproperlyConfiguredException" title="litestar.exceptions.ImproperlyConfiguredException"><strong>ImproperlyConfiguredException</strong></a> – If <code class="docutils literal notranslate"><span class="pre">user</span></code> is not set in scope via an <code class="docutils literal notranslate"><span class="pre">AuthMiddleware</span></code>, raises an exception</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A type correlating to the generic variable User.</p>
+</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="litestar.connection.Request">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.connection.</span></span><span class="sig-name descname"><span class="pre">Request</span></span><a class="headerlink" href="#litestar.connection.Request" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.connection.</span></span><span class="sig-name descname"><span class="pre">Request</span></span><a class="headerlink" href="#litestar.connection.Request" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Generic" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Generic</span></code></a>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">UserT</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">AuthT</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">StateT</span></code>], <a class="reference internal" href="#litestar.connection.ASGIConnection" title="litestar.connection.base.ASGIConnection"><code class="xref py py-class docutils literal notranslate"><span class="pre">ASGIConnection</span></code></a>[<a class="reference internal" href="handlers.html#litestar.handlers.HTTPRouteHandler" title="litestar.handlers.HTTPRouteHandler"><code class="xref py py-class docutils literal notranslate"><span class="pre">HTTPRouteHandler</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">UserT</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">AuthT</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">StateT</span></code>]</p>
 <p>The Litestar Request class.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="litestar.connection.Request.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scope:</span> <span class="pre">Scope</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">receive:</span> <span class="pre">Receive</span> <span class="pre">=</span> <span class="pre">&lt;function</span> <span class="pre">empty_receive&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">send:</span> <span class="pre">Send</span> <span class="pre">=</span> <span class="pre">&lt;function</span> <span class="pre">empty_send&gt;</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#litestar.connection.Request.__init__" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scope:</span> <span class="pre">Scope</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">receive:</span> <span class="pre">Receive</span> <span class="pre">=</span> <span class="pre">&lt;function</span> <span class="pre">empty_receive&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">send:</span> <span class="pre">Send</span> <span class="pre">=</span> <span class="pre">&lt;function</span> <span class="pre">empty_send&gt;</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#litestar.connection.Request.__init__" title="Link to this definition">¶</a></dt>
 <dd><p>Initialize <code class="docutils literal notranslate"><span class="pre">Request</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -894,30 +890,8 @@ the session data to be cleared.</p>
 </dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="litestar.connection.Request.method">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">method</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="types.html#litestar.types.Method" title="litestar.types.Method"><span class="pre">Method</span></a></em><a class="headerlink" href="#litestar.connection.Request.method" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the request method.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>The request <a class="reference internal" href="types.html#litestar.types.Method" title="litestar.types.Method"><code class="xref py py-class docutils literal notranslate"><span class="pre">Method</span></code></a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="litestar.connection.Request.content_type">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">content_type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#litestar.connection.Request.content_type" title="Permalink to this definition">¶</a></dt>
-<dd><p>Parse the request’s ‘Content-Type’ header, returning the header value and any options as a dictionary.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>A tuple with the parsed value and a dictionary containing any options send in it.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py property">
 <dt class="sig sig-object py" id="litestar.connection.Request.accept">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">accept</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="datastructures/index.html#litestar.datastructures.Accept" title="litestar.datastructures.headers.Accept"><span class="pre">Accept</span></a></em><a class="headerlink" href="#litestar.connection.Request.accept" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">accept</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="datastructures/index.html#litestar.datastructures.Accept" title="litestar.datastructures.headers.Accept"><span class="pre">Accept</span></a></em><a class="headerlink" href="#litestar.connection.Request.accept" title="Link to this definition">¶</a></dt>
 <dd><p>Parse the request’s ‘Accept’ header, returning an <a class="reference internal" href="datastructures/index.html#litestar.datastructures.Accept" title="litestar.datastructures.headers.Accept"><code class="xref py py-class docutils literal notranslate"><span class="pre">Accept</span></code></a> instance.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -927,44 +901,8 @@ the session data to be cleared.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="litestar.connection.Request.json">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">json</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><span class="pre">Any</span></a></span></span><a class="headerlink" href="#litestar.connection.Request.json" title="Permalink to this definition">¶</a></dt>
-<dd><p>Retrieve the json request body from the request.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>An arbitrary value</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="litestar.connection.Request.msgpack">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">msgpack</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><span class="pre">Any</span></a></span></span><a class="headerlink" href="#litestar.connection.Request.msgpack" title="Permalink to this definition">¶</a></dt>
-<dd><p>Retrieve the MessagePack request body from the request.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>An arbitrary value</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="litestar.connection.Request.stream">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">stream</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">AsyncGenerator</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.13)"><span class="pre">bytes</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#litestar.connection.Request.stream" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return an async generator that streams chunks of bytes.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>An async generator.</p>
-</dd>
-<dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#RuntimeError" title="(in Python v3.13)"><strong>RuntimeError</strong></a> – if the stream is already consumed</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="litestar.connection.Request.body">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">body</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.13)"><span class="pre">bytes</span></a></span></span><a class="headerlink" href="#litestar.connection.Request.body" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">body</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.13)"><span class="pre">bytes</span></a></span></span><a class="headerlink" href="#litestar.connection.Request.body" title="Link to this definition">¶</a></dt>
 <dd><p>Return the body of the request.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -973,9 +911,20 @@ the session data to be cleared.</p>
 </dl>
 </dd></dl>
 
+<dl class="py property">
+<dt class="sig sig-object py" id="litestar.connection.Request.content_type">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">content_type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#litestar.connection.Request.content_type" title="Link to this definition">¶</a></dt>
+<dd><p>Parse the request’s ‘Content-Type’ header, returning the header value and any options as a dictionary.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A tuple with the parsed value and a dictionary containing any options send in it.</p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="litestar.connection.Request.form">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">form</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="datastructures/index.html#litestar.datastructures.FormMultiDict" title="litestar.datastructures.multi_dicts.FormMultiDict"><span class="pre">FormMultiDict</span></a></span></span><a class="headerlink" href="#litestar.connection.Request.form" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">form</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="datastructures/index.html#litestar.datastructures.FormMultiDict" title="litestar.datastructures.multi_dicts.FormMultiDict"><span class="pre">FormMultiDict</span></a></span></span><a class="headerlink" href="#litestar.connection.Request.form" title="Link to this definition">¶</a></dt>
 <dd><p>Retrieve form data from the request. If the request is either a ‘multipart/form-data’ or an
 ‘application/x-www-form- urlencoded’, return a FormMultiDict instance populated with the values sent in the
 request, otherwise, an empty instance.</p>
@@ -987,8 +936,41 @@ request, otherwise, an empty instance.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="litestar.connection.Request.json">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">json</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><span class="pre">Any</span></a></span></span><a class="headerlink" href="#litestar.connection.Request.json" title="Link to this definition">¶</a></dt>
+<dd><p>Retrieve the json request body from the request.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>An arbitrary value</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="litestar.connection.Request.method">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">method</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="types.html#litestar.types.Method" title="litestar.types.Method"><span class="pre">Method</span></a></em><a class="headerlink" href="#litestar.connection.Request.method" title="Link to this definition">¶</a></dt>
+<dd><p>Return the request method.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The request <a class="reference internal" href="types.html#litestar.types.Method" title="litestar.types.Method"><code class="xref py py-class docutils literal notranslate"><span class="pre">Method</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="litestar.connection.Request.msgpack">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">msgpack</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><span class="pre">Any</span></a></span></span><a class="headerlink" href="#litestar.connection.Request.msgpack" title="Link to this definition">¶</a></dt>
+<dd><p>Retrieve the MessagePack request body from the request.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>An arbitrary value</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="litestar.connection.Request.send_push_promise">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">send_push_promise</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">raise_if_unavailable</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#litestar.connection.Request.send_push_promise" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">send_push_promise</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">raise_if_unavailable</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#litestar.connection.Request.send_push_promise" title="Link to this definition">¶</a></dt>
 <dd><p>Send a push promise.</p>
 <p>This method requires the <cite>http.response.push</cite> extension to be sent from the ASGI server.</p>
 <dl class="field-list simple">
@@ -1005,16 +987,30 @@ the server</p></li>
 </dl>
 </dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="litestar.connection.Request.stream">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">stream</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">AsyncGenerator</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.13)"><span class="pre">bytes</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#litestar.connection.Request.stream" title="Link to this definition">¶</a></dt>
+<dd><p>Return an async generator that streams chunks of bytes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>An async generator.</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#RuntimeError" title="(in Python v3.13)"><strong>RuntimeError</strong></a> – if the stream is already consumed</p>
+</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="litestar.connection.WebSocket">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.connection.</span></span><span class="sig-name descname"><span class="pre">WebSocket</span></span><a class="headerlink" href="#litestar.connection.WebSocket" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.connection.</span></span><span class="sig-name descname"><span class="pre">WebSocket</span></span><a class="headerlink" href="#litestar.connection.WebSocket" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Generic" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Generic</span></code></a>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">UserT</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">AuthT</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">StateT</span></code>], <a class="reference internal" href="#litestar.connection.ASGIConnection" title="litestar.connection.base.ASGIConnection"><code class="xref py py-class docutils literal notranslate"><span class="pre">ASGIConnection</span></code></a>[<a class="reference internal" href="handlers.html#litestar.handlers.WebsocketRouteHandler" title="litestar.handlers.WebsocketRouteHandler"><code class="xref py py-class docutils literal notranslate"><span class="pre">WebsocketRouteHandler</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">UserT</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">AuthT</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">StateT</span></code>]</p>
 <p>The Litestar WebSocket class.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="litestar.connection.WebSocket.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scope:</span> <span class="pre">Scope</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">receive:</span> <span class="pre">Receive</span> <span class="pre">=</span> <span class="pre">&lt;function</span> <span class="pre">empty_receive&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">send:</span> <span class="pre">Send</span> <span class="pre">=</span> <span class="pre">&lt;function</span> <span class="pre">empty_send&gt;</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#litestar.connection.WebSocket.__init__" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scope:</span> <span class="pre">Scope</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">receive:</span> <span class="pre">Receive</span> <span class="pre">=</span> <span class="pre">&lt;function</span> <span class="pre">empty_receive&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">send:</span> <span class="pre">Send</span> <span class="pre">=</span> <span class="pre">&lt;function</span> <span class="pre">empty_send&gt;</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#litestar.connection.WebSocket.__init__" title="Link to this definition">¶</a></dt>
 <dd><p>Initialize <code class="docutils literal notranslate"><span class="pre">WebSocket</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1028,36 +1024,8 @@ the server</p></li>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="litestar.connection.WebSocket.receive_wrapper">
-<span class="sig-name descname"><span class="pre">receive_wrapper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">receive</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="types.html#litestar.types.Receive" title="litestar.types.Receive"><span class="pre">Receive</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="types.html#litestar.types.Receive" title="litestar.types.Receive"><span class="pre">Receive</span></a></span></span><a class="headerlink" href="#litestar.connection.WebSocket.receive_wrapper" title="Permalink to this definition">¶</a></dt>
-<dd><p>Wrap <code class="docutils literal notranslate"><span class="pre">receive</span></code> to set ‘self.connection_state’ and validate events.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><span class="target" id="litestar.connection.WebSocket.receive_wrapper.params.receive"></span><strong>receive</strong><a class="paramlink headerlink reference internal" href="#litestar.connection.WebSocket.receive_wrapper.params.receive">¶</a> – The ASGI receive function.</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>An ASGI receive function.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="litestar.connection.WebSocket.send_wrapper">
-<span class="sig-name descname"><span class="pre">send_wrapper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">send</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="types.html#litestar.types.Send" title="litestar.types.Send"><span class="pre">Send</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="types.html#litestar.types.Send" title="litestar.types.Send"><span class="pre">Send</span></a></span></span><a class="headerlink" href="#litestar.connection.WebSocket.send_wrapper" title="Permalink to this definition">¶</a></dt>
-<dd><p>Wrap <code class="docutils literal notranslate"><span class="pre">send</span></code> to ensure that state is not disconnected.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><span class="target" id="litestar.connection.WebSocket.send_wrapper.params.send"></span><strong>send</strong><a class="paramlink headerlink reference internal" href="#litestar.connection.WebSocket.send_wrapper.params.send">¶</a> – The ASGI send function.</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>An ASGI send function.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="litestar.connection.WebSocket.accept">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">accept</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subprotocols</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">headers</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="datastructures/index.html#litestar.datastructures.Headers" title="litestar.datastructures.headers.Headers"><span class="pre">Headers</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.13)"><span class="pre">bytes</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.13)"><span class="pre">bytes</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#litestar.connection.WebSocket.accept" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">accept</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subprotocols</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">headers</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="datastructures/index.html#litestar.datastructures.Headers" title="litestar.datastructures.headers.Headers"><span class="pre">Headers</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.13)"><span class="pre">bytes</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.13)"><span class="pre">bytes</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#litestar.connection.WebSocket.accept" title="Link to this definition">¶</a></dt>
 <dd><p>Accept the incoming connection. This method should be called before receiving data.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1074,7 +1042,7 @@ the server</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="litestar.connection.WebSocket.close">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">close</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">code</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reason</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#litestar.connection.WebSocket.close" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">close</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">code</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reason</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#litestar.connection.WebSocket.close" title="Link to this definition">¶</a></dt>
 <dd><p>Send an ‘websocket.close’ event.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1090,10 +1058,50 @@ the server</p></li>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="litestar.connection.WebSocket.iter_data">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">iter_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">WebSocketMode</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'text'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">AsyncGenerator</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.13)"><span class="pre">bytes</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#litestar.connection.WebSocket.iter_data" title="Link to this definition">¶</a></dt>
+<dd><p>Continuously receive data and yield it</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="target" id="litestar.connection.WebSocket.iter_data.params.mode"></span><strong>mode</strong><a class="paramlink headerlink reference internal" href="#litestar.connection.WebSocket.iter_data.params.mode">¶</a> – Socket mode to use. Either <code class="docutils literal notranslate"><span class="pre">text</span></code> or <code class="docutils literal notranslate"><span class="pre">binary</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="litestar.connection.WebSocket.iter_json">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">iter_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">WebSocketMode</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'text'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">AsyncGenerator</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#litestar.connection.WebSocket.iter_json" title="Link to this definition">¶</a></dt>
+<dd><p>Continuously receive data and yield it, decoding it as JSON in the process.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="target" id="litestar.connection.WebSocket.iter_json.params.mode"></span><strong>mode</strong><a class="paramlink headerlink reference internal" href="#litestar.connection.WebSocket.iter_json.params.mode">¶</a> – Socket mode to use. Either <code class="docutils literal notranslate"><span class="pre">text</span></code> or <code class="docutils literal notranslate"><span class="pre">binary</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="litestar.connection.WebSocket.iter_msgpack">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">iter_msgpack</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">AsyncGenerator</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#litestar.connection.WebSocket.iter_msgpack" title="Link to this definition">¶</a></dt>
+<dd><p>Continuously receive data and yield it, decoding it as MessagePack in the
+process.</p>
+<p>Note that since MessagePack is a binary format, this method will always receive
+data in <code class="docutils literal notranslate"><span class="pre">binary</span></code> mode.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="litestar.connection.WebSocket.receive_bytes">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">receive_bytes</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.13)"><span class="pre">bytes</span></a></span></span><a class="headerlink" href="#litestar.connection.WebSocket.receive_bytes" title="Link to this definition">¶</a></dt>
+<dd><p>Receive data as bytes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A byte-string.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="litestar.connection.WebSocket.receive_data">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">receive_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'text'</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></span><a class="headerlink" href="#litestar.connection.WebSocket.receive_data" title="Permalink to this definition">¶</a></dt>
-<dt class="sig sig-object py">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">receive_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'binary'</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.13)"><span class="pre">bytes</span></a></span></span></dt>
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">receive_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">WebSocketMode</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.13)"><span class="pre">bytes</span></a></span></span><a class="headerlink" href="#litestar.connection.WebSocket.receive_data" title="Link to this definition">¶</a></dt>
 <dd><p>Receive an ‘websocket.receive’ event and returns the data stored on it.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1106,43 +1114,8 @@ the server</p></li>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="litestar.connection.WebSocket.iter_data">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">iter_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'text'</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">AsyncGenerator</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#litestar.connection.WebSocket.iter_data" title="Permalink to this definition">¶</a></dt>
-<dt class="sig sig-object py">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">iter_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'binary'</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">AsyncGenerator</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.13)"><span class="pre">bytes</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a><span class="p"><span class="pre">]</span></span></span></span></dt>
-<dd><p>Continuously receive data and yield it</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><span class="target" id="litestar.connection.WebSocket.iter_data.params.mode"></span><strong>mode</strong><a class="paramlink headerlink reference internal" href="#litestar.connection.WebSocket.iter_data.params.mode">¶</a> – Socket mode to use. Either <code class="docutils literal notranslate"><span class="pre">text</span></code> or <code class="docutils literal notranslate"><span class="pre">binary</span></code></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="litestar.connection.WebSocket.receive_text">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">receive_text</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></span><a class="headerlink" href="#litestar.connection.WebSocket.receive_text" title="Permalink to this definition">¶</a></dt>
-<dd><p>Receive data as text.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>A string.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="litestar.connection.WebSocket.receive_bytes">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">receive_bytes</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.13)"><span class="pre">bytes</span></a></span></span><a class="headerlink" href="#litestar.connection.WebSocket.receive_bytes" title="Permalink to this definition">¶</a></dt>
-<dd><p>Receive data as bytes.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>A byte-string.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="litestar.connection.WebSocket.receive_json">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">receive_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">WebSocketMode</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'text'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span></span></span><a class="headerlink" href="#litestar.connection.WebSocket.receive_json" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">receive_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">WebSocketMode</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'text'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span></span></span><a class="headerlink" href="#litestar.connection.WebSocket.receive_json" title="Link to this definition">¶</a></dt>
 <dd><p>Receive data and decode it as JSON.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1156,7 +1129,7 @@ the server</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="litestar.connection.WebSocket.receive_msgpack">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">receive_msgpack</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><span class="pre">Any</span></a></span></span><a class="headerlink" href="#litestar.connection.WebSocket.receive_msgpack" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">receive_msgpack</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><span class="pre">Any</span></a></span></span><a class="headerlink" href="#litestar.connection.WebSocket.receive_msgpack" title="Link to this definition">¶</a></dt>
 <dd><p>Receive data and decode it as MessagePack.</p>
 <p>Note that since MessagePack is a binary format, this method will always receive
 data in <code class="docutils literal notranslate"><span class="pre">binary</span></code> mode.</p>
@@ -1168,28 +1141,50 @@ data in <code class="docutils literal notranslate"><span class="pre">binary</spa
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="litestar.connection.WebSocket.iter_json">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">iter_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">WebSocketMode</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'text'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">AsyncGenerator</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#litestar.connection.WebSocket.iter_json" title="Permalink to this definition">¶</a></dt>
-<dd><p>Continuously receive data and yield it, decoding it as JSON in the process.</p>
+<dt class="sig sig-object py" id="litestar.connection.WebSocket.receive_text">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">receive_text</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></span><a class="headerlink" href="#litestar.connection.WebSocket.receive_text" title="Link to this definition">¶</a></dt>
+<dd><p>Receive data as text.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><span class="target" id="litestar.connection.WebSocket.iter_json.params.mode"></span><strong>mode</strong><a class="paramlink headerlink reference internal" href="#litestar.connection.WebSocket.iter_json.params.mode">¶</a> – Socket mode to use. Either <code class="docutils literal notranslate"><span class="pre">text</span></code> or <code class="docutils literal notranslate"><span class="pre">binary</span></code></p>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A string.</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="litestar.connection.WebSocket.iter_msgpack">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">iter_msgpack</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">AsyncGenerator</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#litestar.connection.WebSocket.iter_msgpack" title="Permalink to this definition">¶</a></dt>
-<dd><p>Continuously receive data and yield it, decoding it as MessagePack in the
-process.</p>
-<p>Note that since MessagePack is a binary format, this method will always receive
-data in <code class="docutils literal notranslate"><span class="pre">binary</span></code> mode.</p>
+<dt class="sig sig-object py" id="litestar.connection.WebSocket.receive_wrapper">
+<span class="sig-name descname"><span class="pre">receive_wrapper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">receive</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="types.html#litestar.types.Receive" title="litestar.types.Receive"><span class="pre">Receive</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="types.html#litestar.types.Receive" title="litestar.types.Receive"><span class="pre">Receive</span></a></span></span><a class="headerlink" href="#litestar.connection.WebSocket.receive_wrapper" title="Link to this definition">¶</a></dt>
+<dd><p>Wrap <code class="docutils literal notranslate"><span class="pre">receive</span></code> to set ‘self.connection_state’ and validate events.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="target" id="litestar.connection.WebSocket.receive_wrapper.params.receive"></span><strong>receive</strong><a class="paramlink headerlink reference internal" href="#litestar.connection.WebSocket.receive_wrapper.params.receive">¶</a> – The ASGI receive function.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>An ASGI receive function.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="litestar.connection.WebSocket.send_bytes">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">send_bytes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.13)"><span class="pre">bytes</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">encoding</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'utf-8'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#litestar.connection.WebSocket.send_bytes" title="Link to this definition">¶</a></dt>
+<dd><p>Send data using the <code class="docutils literal notranslate"><span class="pre">bytes</span></code> key of the send event.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><span class="target" id="litestar.connection.WebSocket.send_bytes.params.data"></span><strong>data</strong><a class="paramlink headerlink reference internal" href="#litestar.connection.WebSocket.send_bytes.params.data">¶</a> – Data to send</p></li>
+<li><p><span class="target" id="litestar.connection.WebSocket.send_bytes.params.encoding"></span><strong>encoding</strong><a class="paramlink headerlink reference internal" href="#litestar.connection.WebSocket.send_bytes.params.encoding">¶</a> – Encoding to use for binary data.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="litestar.connection.WebSocket.send_data">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">send_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.13)"><span class="pre">bytes</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">WebSocketMode</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'text'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">encoding</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'utf-8'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#litestar.connection.WebSocket.send_data" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">send_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.13)"><span class="pre">bytes</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">WebSocketMode</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'text'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">encoding</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'utf-8'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#litestar.connection.WebSocket.send_data" title="Link to this definition">¶</a></dt>
 <dd><p>Send a ‘websocket.send’ event.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1206,46 +1201,8 @@ data in <code class="docutils literal notranslate"><span class="pre">binary</spa
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="litestar.connection.WebSocket.send_text">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">send_text</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.13)"><span class="pre">bytes</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">encoding</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'utf-8'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#litestar.connection.WebSocket.send_text" title="Permalink to this definition">¶</a></dt>
-<dt class="sig sig-object py">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">send_text</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span></dt>
-<dd><p>Send data using the <code class="docutils literal notranslate"><span class="pre">text</span></code> key of the send event.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><span class="target" id="litestar.connection.WebSocket.send_text.params.data"></span><strong>data</strong><a class="paramlink headerlink reference internal" href="#litestar.connection.WebSocket.send_text.params.data">¶</a> – Data to send</p></li>
-<li><p><span class="target" id="litestar.connection.WebSocket.send_text.params.encoding"></span><strong>encoding</strong><a class="paramlink headerlink reference internal" href="#litestar.connection.WebSocket.send_text.params.encoding">¶</a> – Encoding to use for binary data.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>None</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="litestar.connection.WebSocket.send_bytes">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">send_bytes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.13)"><span class="pre">bytes</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#litestar.connection.WebSocket.send_bytes" title="Permalink to this definition">¶</a></dt>
-<dt class="sig sig-object py">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">send_bytes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">encoding</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'utf-8'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span></dt>
-<dd><p>Send data using the <code class="docutils literal notranslate"><span class="pre">bytes</span></code> key of the send event.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><span class="target" id="litestar.connection.WebSocket.send_bytes.params.data"></span><strong>data</strong><a class="paramlink headerlink reference internal" href="#litestar.connection.WebSocket.send_bytes.params.data">¶</a> – Data to send</p></li>
-<li><p><span class="target" id="litestar.connection.WebSocket.send_bytes.params.encoding"></span><strong>encoding</strong><a class="paramlink headerlink reference internal" href="#litestar.connection.WebSocket.send_bytes.params.encoding">¶</a> – Encoding to use for binary data.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>None</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="litestar.connection.WebSocket.send_json">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">send_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data:</span> <span class="pre">Any</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode:</span> <span class="pre">WebSocketMode</span> <span class="pre">=</span> <span class="pre">'text'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">encoding:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">'utf-8'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">serializer:</span> <span class="pre">Serializer</span> <span class="pre">=</span> <span class="pre">&lt;function</span> <span class="pre">default_serializer&gt;</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#litestar.connection.WebSocket.send_json" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">send_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data:</span> <span class="pre">Any</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode:</span> <span class="pre">WebSocketMode</span> <span class="pre">=</span> <span class="pre">'text'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">encoding:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">'utf-8'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">serializer:</span> <span class="pre">Serializer</span> <span class="pre">=</span> <span class="pre">&lt;function</span> <span class="pre">default_serializer&gt;</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#litestar.connection.WebSocket.send_json" title="Link to this definition">¶</a></dt>
 <dd><p>Send data as JSON.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1264,7 +1221,7 @@ data in <code class="docutils literal notranslate"><span class="pre">binary</spa
 
 <dl class="py method">
 <dt class="sig sig-object py" id="litestar.connection.WebSocket.send_msgpack">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">send_msgpack</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data:</span> <span class="pre">Any</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">encoding:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">'utf-8'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">serializer:</span> <span class="pre">Serializer</span> <span class="pre">=</span> <span class="pre">&lt;function</span> <span class="pre">default_serializer&gt;</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#litestar.connection.WebSocket.send_msgpack" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">send_msgpack</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data:</span> <span class="pre">Any</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">encoding:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">'utf-8'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">serializer:</span> <span class="pre">Serializer</span> <span class="pre">=</span> <span class="pre">&lt;function</span> <span class="pre">default_serializer&gt;</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#litestar.connection.WebSocket.send_msgpack" title="Link to this definition">¶</a></dt>
 <dd><p>Send data as MessagePack.</p>
 <p>Note that since MessagePack is a binary format, this method will always send
 data in <code class="docutils literal notranslate"><span class="pre">binary</span></code> mode.</p>
@@ -1278,6 +1235,37 @@ data in <code class="docutils literal notranslate"><span class="pre">binary</spa
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="litestar.connection.WebSocket.send_text">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">send_text</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.13)"><span class="pre">bytes</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">encoding</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'utf-8'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#litestar.connection.WebSocket.send_text" title="Link to this definition">¶</a></dt>
+<dd><p>Send data using the <code class="docutils literal notranslate"><span class="pre">text</span></code> key of the send event.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><span class="target" id="litestar.connection.WebSocket.send_text.params.data"></span><strong>data</strong><a class="paramlink headerlink reference internal" href="#litestar.connection.WebSocket.send_text.params.data">¶</a> – Data to send</p></li>
+<li><p><span class="target" id="litestar.connection.WebSocket.send_text.params.encoding"></span><strong>encoding</strong><a class="paramlink headerlink reference internal" href="#litestar.connection.WebSocket.send_text.params.encoding">¶</a> – Encoding to use for binary data.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="litestar.connection.WebSocket.send_wrapper">
+<span class="sig-name descname"><span class="pre">send_wrapper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">send</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="types.html#litestar.types.Send" title="litestar.types.Send"><span class="pre">Send</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="types.html#litestar.types.Send" title="litestar.types.Send"><span class="pre">Send</span></a></span></span><a class="headerlink" href="#litestar.connection.WebSocket.send_wrapper" title="Link to this definition">¶</a></dt>
+<dd><p>Wrap <code class="docutils literal notranslate"><span class="pre">send</span></code> to ensure that state is not disconnected.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="target" id="litestar.connection.WebSocket.send_wrapper.params.send"></span><strong>send</strong><a class="paramlink headerlink reference internal" href="#litestar.connection.WebSocket.send_wrapper.params.send">¶</a> – The ASGI send function.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>An ASGI send function.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1335,9 +1323,9 @@ data in <code class="docutils literal notranslate"><span class="pre">binary</spa
     </div>
   </div>
 </footer>
-      <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=c19e757c"></script>
-      <script src="../_static/doctools.js?v=888ff710"></script>
-      <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
+      <script src="../_static/documentation_options.js?v=b95e84ca"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
       <script src="../_static/copybutton.js?v=f281be69"></script>
       <script src="../_static/litestar-theme.js?v=ab2dcc9e"></script>
@@ -1345,8 +1333,8 @@ data in <code class="docutils literal notranslate"><span class="pre">binary</spa
       <script>let toggleHintHide = 'Click to hide';</script>
       <script>let toggleOpenOnPrint = 'true';</script>
       <script src="../_static/togglebutton.js?v=4a39c7ea"></script>
-      <script src="../_static/design-tabs.js?v=36754332"></script>
+      <script src="../_static/design-tabs.js?v=f930bc37"></script>
       <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
-      <script src="../_static/shibuya.js?v=e2e99575"></script>
+      <script src="../_static/shibuya.js?v=c477d091"></script>
       <script src="../_static/versioning.js?v=bc681eff"></script></body>
 </html>

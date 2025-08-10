@@ -1,15 +1,15 @@
 <!DOCTYPE html>
-<html lang="en" data-accent-color="amber" data-content_root="">
+<html lang="en" data-accent-color="amber" data-content_root="../">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Events - Litestar Framework</title><link rel="shortcut icon" href="../_static/favicon.svg"/><link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Exceptions and exception handling" href="exceptions.html" /><link rel="prev" title="Implementing Custom DTO Classes" href="dto/2-creating-custom-dto-classes.html" /><script>
     function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
     setColorMode(localStorage._theme||"auto");
   </script><link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=397bb51e" />
-    <link rel="stylesheet" type="text/css" href="../_static/shibuya.css?v=83eaa723" />
+    <link rel="stylesheet" type="text/css" href="../_static/shibuya.css?v=76b6f612" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
-    <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx_paramlinks.css" />
     <link media="print" rel="stylesheet" type="text/css" href="../_static/print.css?v=20ff2c19" />
     <link rel="stylesheet" type="text/css" href="../_static/style.css?v=50ea2f63" />
@@ -42,13 +42,13 @@
       <img class="dark-logo" src="../_static/logo-dark.png" alt="Litestar" height="28" loading="lazy" />
       <strong>Litestar</strong>
     </a>
-    <div class="sy-head-nav" id="HeadNav">
+    <div class="sy-head-nav" id="head-nav">
       <nav class="sy-head-links"><ul><li class="link"><a href="../index.html">Home</a></li>
-      <li class="link"><button type="button">
+      <li class="link"><button class="js-menu" type="button" id="nav-trigger-2" aria-controls="nav-children-2">
             <span>Community</span>
             <i class="i-lucide chevron-down"></i>
           </button>
-        <ul><li><a href="../contribution-guide.html">
+        <ul id="nav-children-2" aria-labelledby="nav-trigger-2"><li><a href="../contribution-guide.html">
                 <span>Contributing</span>
                 <small>Learn how to contribute to the Litestar project</small>
               </a></li><li><a href="https://github.com/litestar-org/.github?tab=coc-ov-file">
@@ -59,11 +59,11 @@
                 <small>Overview of Litestar's security protocols</small>
               </a></li></ul>
       </li>
-      <li class="link"><button type="button">
+      <li class="link"><button class="js-menu" type="button" id="nav-trigger-3" aria-controls="nav-children-3">
             <span>About</span>
             <i class="i-lucide chevron-down"></i>
           </button>
-        <ul><li><a href="https://litestar.dev/about/organization">
+        <ul id="nav-children-3" aria-labelledby="nav-trigger-3"><li><a href="https://litestar.dev/about/organization">
                 <span>Litestar Organization</span>
                 <small>Details about the Litestar organization</small>
               </a></li><li><a href="https://litestar.dev/about/litestar-releases">
@@ -71,11 +71,11 @@
                 <small>Explore the release process, versioning, and deprecation policy for Litestar</small>
               </a></li></ul>
       </li>
-      <li class="link"><button type="button">
+      <li class="link"><button class="js-menu" type="button" id="nav-trigger-4" aria-controls="nav-children-4">
             <span>Release notes</span>
             <i class="i-lucide chevron-down"></i>
           </button>
-        <ul><li><a href="../release-notes/whats-new-3.html">
+        <ul id="nav-children-4" aria-labelledby="nav-trigger-4"><li><a href="../release-notes/whats-new-3.html">
                 <span>What's new in 3.0</span>
                 <small>Explore the new features in Litestar 3.0</small>
               </a></li><li><a href="../release-notes/changelog.html">
@@ -86,11 +86,11 @@
                 <small>All changes in the 2.x series</small>
               </a></li></ul>
       </li>
-      <li class="link"><button type="button">
+      <li class="link"><button class="js-menu" type="button" id="nav-trigger-5" aria-controls="nav-children-5">
             <span>Help</span>
             <i class="i-lucide chevron-down"></i>
           </button>
-        <ul><li><a href="https://discord.gg/litestar">
+        <ul id="nav-children-5" aria-labelledby="nav-trigger-5"><li><a href="https://discord.gg/litestar">
                 <span>Discord Help Forum</span>
                 <small>Dedicated Discord help forum</small>
               </a></li><li><a href="https://github.com/orgs/litestar-org/discussions">
@@ -127,7 +127,7 @@ data-aria-auto="Switch to light color mode"
 data-aria-light="Switch to dark color mode"
 data-aria-dark="Switch to auto color mode">
 <i class="i-lucide theme-icon"></i>
-</button><button class="md:hidden flex items-center js-menu" aria-label="Menu" type="button" aria-controls="HeadNav" aria-expanded="false">
+</button><button class="md:hidden flex items-center js-menu" aria-label="Menu" type="button" aria-controls="head-nav" aria-expanded="false">
         <div class="hamburger">
           <span class="hamburger_1"></span>
           <span class="hamburger_2 -translate-x-2"></span>
@@ -173,12 +173,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2"><a class="reference internal" href="databases/index.html">Databases</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="databases/sqlalchemy/index.html">SQLAlchemy</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="databases/sqlalchemy/models_and_repository.html">SQLAlchemy Models &amp; Repository</a></li>
-<li class="toctree-l4"><a class="reference internal" href="databases/sqlalchemy/plugins/index.html">Plugins</a><ul>
-<li class="toctree-l5"><a class="reference internal" href="databases/sqlalchemy/plugins/sqlalchemy_plugin.html">SQLAlchemy Plugin</a></li>
-<li class="toctree-l5"><a class="reference internal" href="databases/sqlalchemy/plugins/sqlalchemy_init_plugin.html">SQLAlchemy Init Plugin</a></li>
-<li class="toctree-l5"><a class="reference internal" href="databases/sqlalchemy/plugins/sqlalchemy_serialization_plugin.html">SQLAlchemy Serialization Plugin</a></li>
-</ul>
-</li>
+<li class="toctree-l4"><a class="reference internal" href="databases/sqlalchemy/plugins/index.html">Plugins</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="databases/piccolo.html">Piccolo ORM</a></li>
@@ -503,11 +498,12 @@ data-aria-dark="Switch to auto color mode">
     </span>
   </span>
 </a><div class="edit-this-page">
-  <a href="https://github.com/litestar-org/litestar/blob/master/docs/usage/events.rst">Edit this page</a>
+  <a href="https://github.com/litestar-org/litestar/blob/main/docs/usage/events.rst">Edit this page</a>
 </div><div id="ethical-ad-placement" data-ea-publisher="readthedocs"></div></div>
   </aside>
   <div class="rside-overlay js-menu" role="button" aria-label="Close Table of Contents" aria-controls="rside" aria-expanded="false"></div>
-  <main class="sy-main w-full max-sm:max-w-full print:pt-6"><div class="sy-breadcrumbs" role="navigation">
+  <main class="sy-main w-full max-sm:max-w-full print:pt-6">
+<div class="sy-breadcrumbs" role="navigation">
   <div class="sy-breadcrumbs-inner flex items-center">
     <div class="md:hidden mr-3">
       <button class="js-menu" aria-label="Menu" type="button" aria-controls="lside" aria-expanded="false">
@@ -537,33 +533,33 @@ data-aria-dark="Switch to auto color mode">
       <div class="min-w-0 max-w-6xl px-6 pb-6 pt-8 xl:px-12">
         <article class="yue" role="main">
           <section id="events">
-<h1>Events<a class="headerlink" href="#events" title="Permalink to this heading">¶</a></h1>
+<h1>Events<a class="headerlink" href="#events" title="Link to this heading">¶</a></h1>
 <p>Litestar supports a simple implementation of the event emitter / listener pattern:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
 </span><span data-line="2">
-</span><span data-line="3"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Request</span><span class="p">,</span> <span class="n">post</span>
-</span><span data-line="4"><span class="kn">from</span> <span class="nn">litestar.events</span> <span class="kn">import</span> <span class="n">listener</span>
-</span><span data-line="5"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span>
+</span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Request</span><span class="p">,</span> <span class="n">post</span>
+</span><span data-line="4"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.events</span><span class="w"> </span><span class="kn">import</span> <span class="n">listener</span>
+</span><span data-line="5"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span>
 </span><span data-line="6">
-</span><span data-line="7"><span class="kn">from</span> <span class="nn">db</span> <span class="kn">import</span> <span class="n">user_repository</span>
-</span><span data-line="8"><span class="kn">from</span> <span class="nn">utils.email</span> <span class="kn">import</span> <span class="n">send_welcome_mail</span>
+</span><span data-line="7"><span class="kn">from</span><span class="w"> </span><span class="nn">db</span><span class="w"> </span><span class="kn">import</span> <span class="n">user_repository</span>
+</span><span data-line="8"><span class="kn">from</span><span class="w"> </span><span class="nn">utils.email</span><span class="w"> </span><span class="kn">import</span> <span class="n">send_welcome_mail</span>
 </span><span data-line="9">
 </span><span data-line="10">
 </span><span data-line="11"><span class="nd">@listener</span><span class="p">(</span><span class="s2">&quot;user_created&quot;</span><span class="p">)</span>
-</span><span data-line="12"><span class="k">async</span> <span class="k">def</span> <span class="nf">send_welcome_email_handler</span><span class="p">(</span><span class="n">email</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="12"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">send_welcome_email_handler</span><span class="p">(</span><span class="n">email</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 </span><span data-line="13">    <span class="c1"># do something here to send an email</span>
 </span><span data-line="14">    <span class="k">await</span> <span class="n">send_welcome_mail</span><span class="p">(</span><span class="n">email</span><span class="p">)</span>
 </span><span data-line="15">
 </span><span data-line="16">
 </span><span data-line="17"><span class="nd">@dataclass</span>
-</span><span data-line="18"><span class="k">class</span> <span class="nc">CreateUserDTO</span><span class="p">:</span>
+</span><span data-line="18"><span class="k">class</span><span class="w"> </span><span class="nc">CreateUserDTO</span><span class="p">:</span>
 </span><span data-line="19">    <span class="n">first_name</span><span class="p">:</span> <span class="nb">str</span>
 </span><span data-line="20">    <span class="n">last_name</span><span class="p">:</span> <span class="nb">str</span>
 </span><span data-line="21">    <span class="n">email</span><span class="p">:</span> <span class="nb">str</span>
 </span><span data-line="22">
 </span><span data-line="23">
 </span><span data-line="24"><span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/users&quot;</span><span class="p">)</span>
-</span><span data-line="25"><span class="k">async</span> <span class="k">def</span> <span class="nf">create_user_handler</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">UserDTO</span><span class="p">,</span> <span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="25"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">create_user_handler</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">UserDTO</span><span class="p">,</span> <span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 </span><span data-line="26">    <span class="c1"># do something here to create a new user</span>
 </span><span data-line="27">    <span class="c1"># e.g. insert the user into a database</span>
 </span><span data-line="28">    <span class="k">await</span> <span class="n">user_repository</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
@@ -582,13 +578,13 @@ data-aria-dark="Switch to auto color mode">
 <p>The above example illustrates the power of this pattern - it allows us to perform async operations without blocking,
 and without slowing down the response cycle.</p>
 <section id="listening-to-multiple-events">
-<h2>Listening to Multiple Events<a class="headerlink" href="#listening-to-multiple-events" title="Permalink to this heading">¶</a></h2>
+<h2>Listening to Multiple Events<a class="headerlink" href="#listening-to-multiple-events" title="Link to this heading">¶</a></h2>
 <p>Event listeners can listen to multiple events:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">litestar.events</span> <span class="kn">import</span> <span class="n">listener</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.events</span><span class="w"> </span><span class="kn">import</span> <span class="n">listener</span>
 </span><span data-line="2">
 </span><span data-line="3">
 </span><span data-line="4"><span class="nd">@listener</span><span class="p">(</span><span class="s2">&quot;user_created&quot;</span><span class="p">,</span> <span class="s2">&quot;password_changed&quot;</span><span class="p">)</span>
-</span><span data-line="5"><span class="k">async</span> <span class="k">def</span> <span class="nf">send_email_handler</span><span class="p">(</span><span class="n">email</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="5"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">send_email_handler</span><span class="p">(</span><span class="n">email</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 </span><span data-line="6">    <span class="c1"># do something here to send an email</span>
 </span><span data-line="7">
 </span><span data-line="8">    <span class="k">await</span> <span class="n">send_email</span><span class="p">(</span><span class="n">email</span><span class="p">,</span> <span class="n">message</span><span class="p">)</span>
@@ -596,38 +592,38 @@ and without slowing down the response cycle.</p>
 </div>
 </section>
 <section id="using-multiple-listeners">
-<h2>Using Multiple Listeners<a class="headerlink" href="#using-multiple-listeners" title="Permalink to this heading">¶</a></h2>
+<h2>Using Multiple Listeners<a class="headerlink" href="#using-multiple-listeners" title="Link to this heading">¶</a></h2>
 <p>You can also listen to the same events using multiple listeners:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
 </span><span data-line="2">
-</span><span data-line="3"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Request</span><span class="p">,</span> <span class="n">post</span>
-</span><span data-line="4"><span class="kn">from</span> <span class="nn">litestar.events</span> <span class="kn">import</span> <span class="n">listener</span>
+</span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Request</span><span class="p">,</span> <span class="n">post</span>
+</span><span data-line="4"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.events</span><span class="w"> </span><span class="kn">import</span> <span class="n">listener</span>
 </span><span data-line="5">
-</span><span data-line="6"><span class="kn">from</span> <span class="nn">db</span> <span class="kn">import</span> <span class="n">user_repository</span>
-</span><span data-line="7"><span class="kn">from</span> <span class="nn">utils.client</span> <span class="kn">import</span> <span class="n">client</span>
-</span><span data-line="8"><span class="kn">from</span> <span class="nn">utils.email</span> <span class="kn">import</span> <span class="n">send_farewell_email</span>
+</span><span data-line="6"><span class="kn">from</span><span class="w"> </span><span class="nn">db</span><span class="w"> </span><span class="kn">import</span> <span class="n">user_repository</span>
+</span><span data-line="7"><span class="kn">from</span><span class="w"> </span><span class="nn">utils.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">client</span>
+</span><span data-line="8"><span class="kn">from</span><span class="w"> </span><span class="nn">utils.email</span><span class="w"> </span><span class="kn">import</span> <span class="n">send_farewell_email</span>
 </span><span data-line="9">
 </span><span data-line="10">
 </span><span data-line="11"><span class="nd">@listener</span><span class="p">(</span><span class="s2">&quot;user_deleted&quot;</span><span class="p">)</span>
-</span><span data-line="12"><span class="k">async</span> <span class="k">def</span> <span class="nf">send_farewell_email_handler</span><span class="p">(</span><span class="n">email</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="12"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">send_farewell_email_handler</span><span class="p">(</span><span class="n">email</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 </span><span data-line="13">    <span class="c1"># do something here to send an email</span>
 </span><span data-line="14">    <span class="k">await</span> <span class="n">send_farewell_email</span><span class="p">(</span><span class="n">email</span><span class="p">)</span>
 </span><span data-line="15">
 </span><span data-line="16">
 </span><span data-line="17"><span class="nd">@listener</span><span class="p">(</span><span class="s2">&quot;user_deleted&quot;</span><span class="p">)</span>
-</span><span data-line="18"><span class="k">async</span> <span class="k">def</span> <span class="nf">notify_customer_support</span><span class="p">(</span><span class="n">reason</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="18"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">notify_customer_support</span><span class="p">(</span><span class="n">reason</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 </span><span data-line="19">    <span class="c1"># do something here to send an email</span>
 </span><span data-line="20">    <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">&quot;some-url&quot;</span><span class="p">,</span> <span class="n">reason</span><span class="p">)</span>
 </span><span data-line="21">
 </span><span data-line="22">
 </span><span data-line="23"><span class="nd">@dataclass</span>
-</span><span data-line="24"><span class="k">class</span> <span class="nc">DeleteUserDTO</span><span class="p">:</span>
+</span><span data-line="24"><span class="k">class</span><span class="w"> </span><span class="nc">DeleteUserDTO</span><span class="p">:</span>
 </span><span data-line="25">    <span class="n">email</span><span class="p">:</span> <span class="nb">str</span>
 </span><span data-line="26">    <span class="n">reason</span><span class="p">:</span> <span class="nb">str</span>
 </span><span data-line="27">
 </span><span data-line="28">
 </span><span data-line="29"><span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/users&quot;</span><span class="p">)</span>
-</span><span data-line="30"><span class="k">async</span> <span class="k">def</span> <span class="nf">delete_user_handler</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">UserDTO</span><span class="p">,</span> <span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="30"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">delete_user_handler</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">UserDTO</span><span class="p">,</span> <span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 </span><span data-line="31">    <span class="k">await</span> <span class="n">user_repository</span><span class="o">.</span><span class="n">delete</span><span class="p">({</span><span class="s2">&quot;email&quot;</span><span class="p">:</span> <span class="n">email</span><span class="p">})</span>
 </span><span data-line="32">    <span class="n">request</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="s2">&quot;user_deleted&quot;</span><span class="p">,</span> <span class="n">email</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">email</span><span class="p">,</span> <span class="n">reason</span><span class="o">=</span><span class="s2">&quot;deleted&quot;</span><span class="p">)</span>
 </span></pre></div>
@@ -636,9 +632,9 @@ and without slowing down the response cycle.</p>
 sending an HTTP request to a service management system to create an issue.</p>
 </section>
 <section id="passing-arguments-to-listeners">
-<h2>Passing Arguments to Listeners<a class="headerlink" href="#passing-arguments-to-listeners" title="Permalink to this heading">¶</a></h2>
+<h2>Passing Arguments to Listeners<a class="headerlink" href="#passing-arguments-to-listeners" title="Link to this heading">¶</a></h2>
 <p>The method <a class="reference internal" href="../reference/events.html#litestar.events.BaseEventEmitterBackend.emit" title="litestar.events.BaseEventEmitterBackend.emit"><code class="xref py py-meth docutils literal notranslate"><span class="pre">emit</span></code></a> has the following signature:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">def</span> <span class="nf">emit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">def</span><span class="w"> </span><span class="nf">emit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
 </span></pre></div>
 </div>
 <p>This means that it expects a string for <code class="docutils literal notranslate"><span class="pre">event_id</span></code> following by any number of positional and keyword arguments. While
@@ -646,24 +642,24 @@ this is highly flexible, it also means you need to ensure the listeners for a gi
 and kwargs.</p>
 <p>For example, the following would raise an exception in python:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="nd">@listener</span><span class="p">(</span><span class="s2">&quot;user_deleted&quot;</span><span class="p">)</span>
-</span><span data-line="2"><span class="k">async</span> <span class="k">def</span> <span class="nf">send_farewell_email_handler</span><span class="p">(</span><span class="n">email</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="2"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">send_farewell_email_handler</span><span class="p">(</span><span class="n">email</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 </span><span data-line="3">    <span class="k">await</span> <span class="n">send_farewell_email</span><span class="p">(</span><span class="n">email</span><span class="p">)</span>
 </span><span data-line="4">
 </span><span data-line="5">
 </span><span data-line="6"><span class="nd">@listener</span><span class="p">(</span><span class="s2">&quot;user_deleted&quot;</span><span class="p">)</span>
-</span><span data-line="7"><span class="k">async</span> <span class="k">def</span> <span class="nf">notify_customer_support</span><span class="p">(</span><span class="n">reason</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="7"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">notify_customer_support</span><span class="p">(</span><span class="n">reason</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 </span><span data-line="8">    <span class="c1"># do something here to send an email</span>
 </span><span data-line="9">    <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">&quot;some-url&quot;</span><span class="p">,</span> <span class="n">reason</span><span class="p">)</span>
 </span><span data-line="10">
 </span><span data-line="11">
 </span><span data-line="12"><span class="nd">@dataclass</span>
-</span><span data-line="13"><span class="k">class</span> <span class="nc">DeleteUserDTO</span><span class="p">:</span>
+</span><span data-line="13"><span class="k">class</span><span class="w"> </span><span class="nc">DeleteUserDTO</span><span class="p">:</span>
 </span><span data-line="14">    <span class="n">email</span><span class="p">:</span> <span class="nb">str</span>
 </span><span data-line="15">    <span class="n">reason</span><span class="p">:</span> <span class="nb">str</span>
 </span><span data-line="16">
 </span><span data-line="17">
 </span><span data-line="18"><span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/users&quot;</span><span class="p">)</span>
-</span><span data-line="19"><span class="k">async</span> <span class="k">def</span> <span class="nf">delete_user_handler</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">UserDTO</span><span class="p">,</span> <span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="19"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">delete_user_handler</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">UserDTO</span><span class="p">,</span> <span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 </span><span data-line="20">    <span class="k">await</span> <span class="n">user_repository</span><span class="o">.</span><span class="n">delete</span><span class="p">({</span><span class="s2">&quot;email&quot;</span><span class="p">:</span> <span class="n">email</span><span class="p">})</span>
 </span><span data-line="21">    <span class="n">request</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="s2">&quot;user_deleted&quot;</span><span class="p">,</span> <span class="n">email</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">email</span><span class="p">,</span> <span class="n">reason</span><span class="o">=</span><span class="s2">&quot;deleted&quot;</span><span class="p">)</span>
 </span></pre></div>
@@ -671,17 +667,17 @@ and kwargs.</p>
 <p>The reason for this is that both listeners will receive two kwargs - <code class="docutils literal notranslate"><span class="pre">email</span></code> and <code class="docutils literal notranslate"><span class="pre">reason</span></code>. To avoid this, the previous example
 had <code class="docutils literal notranslate"><span class="pre">**kwargs</span></code> in both:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="nd">@listener</span><span class="p">(</span><span class="s2">&quot;user_deleted&quot;</span><span class="p">)</span>
-</span><span data-line="2"><span class="k">async</span> <span class="k">def</span> <span class="nf">send_farewell_email_handler</span><span class="p">(</span><span class="n">email</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="2"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">send_farewell_email_handler</span><span class="p">(</span><span class="n">email</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 </span><span data-line="3">    <span class="k">await</span> <span class="n">send_farewell_email</span><span class="p">(</span><span class="n">email</span><span class="p">)</span>
 </span><span data-line="4">
 </span><span data-line="5">
 </span><span data-line="6"><span class="nd">@listener</span><span class="p">(</span><span class="s2">&quot;user_deleted&quot;</span><span class="p">)</span>
-</span><span data-line="7"><span class="k">async</span> <span class="k">def</span> <span class="nf">notify_customer_support</span><span class="p">(</span><span class="n">reason</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="7"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">notify_customer_support</span><span class="p">(</span><span class="n">reason</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 </span><span data-line="8">    <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">&quot;some-url&quot;</span><span class="p">,</span> <span class="n">reason</span><span class="p">)</span>
 </span></pre></div>
 </div>
 <section id="creating-event-emitters">
-<h3>Creating Event Emitters<a class="headerlink" href="#creating-event-emitters" title="Permalink to this heading">¶</a></h3>
+<h3>Creating Event Emitters<a class="headerlink" href="#creating-event-emitters" title="Link to this heading">¶</a></h3>
 <p>An “event emitter” is a class that inherits from
 <a class="reference internal" href="../reference/events.html#litestar.events.BaseEventEmitterBackend" title="litestar.events.BaseEventEmitterBackend"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseEventEmitterBackend</span></code></a>, which
 itself inherits from <a class="reference external" href="https://docs.python.org/3/library/contextlib.html#contextlib.AbstractAsyncContextManager" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">contextlib.AbstractAsyncContextManager</span></code></a>.</p>
@@ -752,9 +748,9 @@ technology.</p>
     </div>
   </div>
 </footer>
-      <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=c19e757c"></script>
-      <script src="../_static/doctools.js?v=888ff710"></script>
-      <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
+      <script src="../_static/documentation_options.js?v=b95e84ca"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
       <script src="../_static/copybutton.js?v=f281be69"></script>
       <script src="../_static/litestar-theme.js?v=ab2dcc9e"></script>
@@ -762,8 +758,8 @@ technology.</p>
       <script>let toggleHintHide = 'Click to hide';</script>
       <script>let toggleOpenOnPrint = 'true';</script>
       <script src="../_static/togglebutton.js?v=4a39c7ea"></script>
-      <script src="../_static/design-tabs.js?v=36754332"></script>
+      <script src="../_static/design-tabs.js?v=f930bc37"></script>
       <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
-      <script src="../_static/shibuya.js?v=e2e99575"></script>
+      <script src="../_static/shibuya.js?v=c477d091"></script>
       <script src="../_static/versioning.js?v=bc681eff"></script></body>
 </html>

@@ -1,15 +1,15 @@
 <!DOCTYPE html>
-<html lang="en" data-accent-color="amber" data-content_root="">
+<html lang="en" data-accent-color="amber" data-content_root="./">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Contribution Guide - Litestar Framework</title><link rel="shortcut icon" href="_static/favicon.svg"/><link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="prev" title="Adding Additional Features to the Repository" href="tutorials/repository-tutorial/04-repository-other.html" /><script>
     function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
     setColorMode(localStorage._theme||"auto");
   </script><link rel="stylesheet" type="text/css" href="_static/pygments.css?v=397bb51e" />
-    <link rel="stylesheet" type="text/css" href="_static/shibuya.css?v=83eaa723" />
+    <link rel="stylesheet" type="text/css" href="_static/shibuya.css?v=76b6f612" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=13237357" />
-    <link rel="stylesheet" type="text/css" href="_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="_static/sphinx_paramlinks.css" />
     <link media="print" rel="stylesheet" type="text/css" href="_static/print.css?v=20ff2c19" />
     <link rel="stylesheet" type="text/css" href="_static/style.css?v=50ea2f63" />
@@ -42,13 +42,13 @@
       <img class="dark-logo" src="_static/logo-dark.png" alt="Litestar" height="28" loading="lazy" />
       <strong>Litestar</strong>
     </a>
-    <div class="sy-head-nav" id="HeadNav">
+    <div class="sy-head-nav" id="head-nav">
       <nav class="sy-head-links"><ul><li class="link"><a href="index.html">Home</a></li>
-      <li class="link"><button type="button">
+      <li class="link"><button class="js-menu" type="button" id="nav-trigger-2" aria-controls="nav-children-2">
             <span>Community</span>
             <i class="i-lucide chevron-down"></i>
           </button>
-        <ul><li><a href="#">
+        <ul id="nav-children-2" aria-labelledby="nav-trigger-2"><li><a href="#">
                 <span>Contributing</span>
                 <small>Learn how to contribute to the Litestar project</small>
               </a></li><li><a href="https://github.com/litestar-org/.github?tab=coc-ov-file">
@@ -59,11 +59,11 @@
                 <small>Overview of Litestar's security protocols</small>
               </a></li></ul>
       </li>
-      <li class="link"><button type="button">
+      <li class="link"><button class="js-menu" type="button" id="nav-trigger-3" aria-controls="nav-children-3">
             <span>About</span>
             <i class="i-lucide chevron-down"></i>
           </button>
-        <ul><li><a href="https://litestar.dev/about/organization">
+        <ul id="nav-children-3" aria-labelledby="nav-trigger-3"><li><a href="https://litestar.dev/about/organization">
                 <span>Litestar Organization</span>
                 <small>Details about the Litestar organization</small>
               </a></li><li><a href="https://litestar.dev/about/litestar-releases">
@@ -71,11 +71,11 @@
                 <small>Explore the release process, versioning, and deprecation policy for Litestar</small>
               </a></li></ul>
       </li>
-      <li class="link"><button type="button">
+      <li class="link"><button class="js-menu" type="button" id="nav-trigger-4" aria-controls="nav-children-4">
             <span>Release notes</span>
             <i class="i-lucide chevron-down"></i>
           </button>
-        <ul><li><a href="release-notes/whats-new-3.html">
+        <ul id="nav-children-4" aria-labelledby="nav-trigger-4"><li><a href="release-notes/whats-new-3.html">
                 <span>What's new in 3.0</span>
                 <small>Explore the new features in Litestar 3.0</small>
               </a></li><li><a href="release-notes/changelog.html">
@@ -86,11 +86,11 @@
                 <small>All changes in the 2.x series</small>
               </a></li></ul>
       </li>
-      <li class="link"><button type="button">
+      <li class="link"><button class="js-menu" type="button" id="nav-trigger-5" aria-controls="nav-children-5">
             <span>Help</span>
             <i class="i-lucide chevron-down"></i>
           </button>
-        <ul><li><a href="https://discord.gg/litestar">
+        <ul id="nav-children-5" aria-labelledby="nav-trigger-5"><li><a href="https://discord.gg/litestar">
                 <span>Discord Help Forum</span>
                 <small>Dedicated Discord help forum</small>
               </a></li><li><a href="https://github.com/orgs/litestar-org/discussions">
@@ -127,7 +127,7 @@ data-aria-auto="Switch to light color mode"
 data-aria-light="Switch to dark color mode"
 data-aria-dark="Switch to auto color mode">
 <i class="i-lucide theme-icon"></i>
-</button><button class="md:hidden flex items-center js-menu" aria-label="Menu" type="button" aria-controls="HeadNav" aria-expanded="false">
+</button><button class="md:hidden flex items-center js-menu" aria-label="Menu" type="button" aria-controls="head-nav" aria-expanded="false">
         <div class="hamburger">
           <span class="hamburger_1"></span>
           <span class="hamburger_2 -translate-x-2"></span>
@@ -173,12 +173,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2"><a class="reference internal" href="usage/databases/index.html">Databases</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="usage/databases/sqlalchemy/index.html">SQLAlchemy</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="usage/databases/sqlalchemy/models_and_repository.html">SQLAlchemy Models &amp; Repository</a></li>
-<li class="toctree-l4"><a class="reference internal" href="usage/databases/sqlalchemy/plugins/index.html">Plugins</a><ul>
-<li class="toctree-l5"><a class="reference internal" href="usage/databases/sqlalchemy/plugins/sqlalchemy_plugin.html">SQLAlchemy Plugin</a></li>
-<li class="toctree-l5"><a class="reference internal" href="usage/databases/sqlalchemy/plugins/sqlalchemy_init_plugin.html">SQLAlchemy Init Plugin</a></li>
-<li class="toctree-l5"><a class="reference internal" href="usage/databases/sqlalchemy/plugins/sqlalchemy_serialization_plugin.html">SQLAlchemy Serialization Plugin</a></li>
-</ul>
-</li>
+<li class="toctree-l4"><a class="reference internal" href="usage/databases/sqlalchemy/plugins/index.html">Plugins</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="usage/databases/piccolo.html">Piccolo ORM</a></li>
@@ -522,11 +517,12 @@ data-aria-dark="Switch to auto color mode">
     </span>
   </span>
 </a><div class="edit-this-page">
-  <a href="https://github.com/litestar-org/litestar/blob/master/docs/contribution-guide.rst">Edit this page</a>
+  <a href="https://github.com/litestar-org/litestar/blob/main/docs/contribution-guide.rst">Edit this page</a>
 </div><div id="ethical-ad-placement" data-ea-publisher="readthedocs"></div></div>
   </aside>
   <div class="rside-overlay js-menu" role="button" aria-label="Close Table of Contents" aria-controls="rside" aria-expanded="false"></div>
-  <main class="sy-main w-full max-sm:max-w-full print:pt-6"><div class="sy-breadcrumbs" role="navigation">
+  <main class="sy-main w-full max-sm:max-w-full print:pt-6">
+<div class="sy-breadcrumbs" role="navigation">
   <div class="sy-breadcrumbs-inner flex items-center">
     <div class="md:hidden mr-3">
       <button class="js-menu" aria-label="Menu" type="button" aria-controls="lside" aria-expanded="false">
@@ -552,11 +548,11 @@ data-aria-dark="Switch to auto color mode">
       <div class="min-w-0 max-w-6xl px-6 pb-6 pt-8 xl:px-12">
         <article class="yue" role="main">
           <section id="contribution-guide">
-<h1>Contribution Guide<a class="headerlink" href="#contribution-guide" title="Permalink to this heading">¶</a></h1>
+<h1>Contribution Guide<a class="headerlink" href="#contribution-guide" title="Link to this heading">¶</a></h1>
 <section id="getting-started">
-<h2>Getting Started<a class="headerlink" href="#getting-started" title="Permalink to this heading">¶</a></h2>
+<h2>Getting Started<a class="headerlink" href="#getting-started" title="Link to this heading">¶</a></h2>
 <section id="supported-python-versions">
-<h3>Supported Python Versions<a class="headerlink" href="#supported-python-versions" title="Permalink to this heading">¶</a></h3>
+<h3>Supported Python Versions<a class="headerlink" href="#supported-python-versions" title="Link to this heading">¶</a></h3>
 <p>The lowest currently supported version is Python 3.8.
 At a minimum you will need Python 3.8 for code changes and 3.12 if you plan on doing documentation building / changes.</p>
 <p>You can use various tools to manage multiple Python versions on your system including:</p>
@@ -571,7 +567,7 @@ At a minimum you will need Python 3.8 for code changes and 3.12 if you plan on d
 this ensures that the changes you made are backward compatible.</p>
 </section>
 <section id="setting-up-the-environment">
-<h3>Setting up the environment<a class="headerlink" href="#setting-up-the-environment" title="Permalink to this heading">¶</a></h3>
+<h3>Setting up the environment<a class="headerlink" href="#setting-up-the-environment" title="Link to this heading">¶</a></h3>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
 <p>We maintain a Makefile with several commands to help with common tasks.
@@ -584,7 +580,7 @@ the environment will bootstrap itself automatically. The steps below are for loc
 <li><p>Run <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">install</span></code> to create a <a class="reference external" href="https://docs.python.org/3/tutorial/venv.html">virtual environment</a>
 and install the required development dependencies or run the <code class="docutils literal notranslate"><span class="pre">uv</span> <span class="pre">sync</span></code> command manually:</p>
 <div class="literal-block-wrapper docutils container" id="id5">
-<div class="code-block-caption"><span class="caption-text">Installing the development dependencies</span><a class="headerlink" href="#id5" title="Permalink to this code">¶</a></div>
+<div class="code-block-caption"><span class="caption-text">Installing the development dependencies</span><a class="headerlink" href="#id5" title="Link to this code">¶</a></div>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span data-line="1">uv<span class="w"> </span>sync
 </span></pre></div>
 </div>
@@ -605,9 +601,9 @@ within this document.</p>
 </section>
 </section>
 <section id="code-contributions">
-<h2>Code contributions<a class="headerlink" href="#code-contributions" title="Permalink to this heading">¶</a></h2>
+<h2>Code contributions<a class="headerlink" href="#code-contributions" title="Link to this heading">¶</a></h2>
 <section id="workflow">
-<h3>Workflow<a class="headerlink" href="#workflow" title="Permalink to this heading">¶</a></h3>
+<h3>Workflow<a class="headerlink" href="#workflow" title="Link to this heading">¶</a></h3>
 <ol class="arabic simple">
 <li><p><a class="reference external" href="https://github.com/litestar-org/litestar/fork">Fork</a> the <a class="reference external" href="https://github.com/litestar-org/litestar">Litestar repository</a></p></li>
 <li><p>Clone your fork locally with git</p></li>
@@ -626,7 +622,7 @@ indicating what it changes. The style of the PR title should also follow
 </section>
 </section>
 <section id="guidelines-for-writing-code">
-<h2>Guidelines for writing code<a class="headerlink" href="#guidelines-for-writing-code" title="Permalink to this heading">¶</a></h2>
+<h2>Guidelines for writing code<a class="headerlink" href="#guidelines-for-writing-code" title="Link to this heading">¶</a></h2>
 <ul>
 <li><p>Code should be <a class="reference external" href="https://peps.python.org/pep-0020/">Pythonic and zen</a></p></li>
 <li><p>All code should be fully <a class="reference external" href="https://peps.python.org/pep-0484/">typed</a>. This is enforced via
@@ -656,7 +652,7 @@ across a function or method that doesn’t conform to this standard, please upda
 following the guidelines established in <a class="reference internal" href="#adding-examples">Adding examples</a>.</p></li>
 </ul>
 <section id="writing-and-running-tests">
-<h3>Writing and running tests<a class="headerlink" href="#writing-and-running-tests" title="Permalink to this heading">¶</a></h3>
+<h3>Writing and running tests<a class="headerlink" href="#writing-and-running-tests" title="Link to this heading">¶</a></h3>
 <p>Tests are contained within the <code class="docutils literal notranslate"><span class="pre">tests</span></code> directory, and follow the same directory structure as the <code class="docutils literal notranslate"><span class="pre">litestar</span></code> module.
 If you are adding a test case, it should be located within the correct submodule of <code class="docutils literal notranslate"><span class="pre">tests</span></code>. E.g., tests for
 <code class="docutils literal notranslate"><span class="pre">litestar/utils/sync.py</span></code> reside in <code class="docutils literal notranslate"><span class="pre">tests/utils/test_sync.py</span></code>.</p>
@@ -674,7 +670,7 @@ straightforward. For debugging, it’s recommended to run the tests individually
 <code class="docutils literal notranslate"><span class="pre">pytest</span> <span class="pre">&lt;test</span> <span class="pre">name&gt;</span></code> or via an IDE, which will skip <code class="docutils literal notranslate"><span class="pre">pytest-xdist</span></code>.</p>
 </section>
 <section id="running-type-checkers">
-<h3>Running type checkers<a class="headerlink" href="#running-type-checkers" title="Permalink to this heading">¶</a></h3>
+<h3>Running type checkers<a class="headerlink" href="#running-type-checkers" title="Link to this heading">¶</a></h3>
 <p>We use <a class="reference external" href="https://mypy.readthedocs.io/en/stable/">mypy</a> and <a class="reference external" href="https://github.com/microsoft/pyright/">pyright</a> to
 enforce type safety. You can run them with:</p>
 <ul class="simple">
@@ -687,38 +683,38 @@ enforce type safety. You can run them with:</p>
 </section>
 </section>
 <section id="project-documentation">
-<h2>Project documentation<a class="headerlink" href="#project-documentation" title="Permalink to this heading">¶</a></h2>
+<h2>Project documentation<a class="headerlink" href="#project-documentation" title="Link to this heading">¶</a></h2>
 <p>The documentation is located in the <code class="docutils literal notranslate"><span class="pre">/docs</span></code> directory and is written  in
 <a class="reference external" href="https://docutils.sourceforge.io/rst.html">reStructuredText</a> with the <a class="reference external" href="https://www.sphinx-doc.org/en/master/">Sphinx</a>.
 library. If you’re unfamiliar with any of those,
 <a class="reference external" href="https://www.sphinx-doc.org/en/master/usage/restructuredtext/basics.html">reStructuredText primer</a> and
 <a class="reference external" href="https://www.sphinx-doc.org/en/master/usage/quickstart.html">Sphinx quickstart</a> are recommended reads.</p>
 <section id="docs-theme-and-appearance">
-<h3>Docs theme and appearance<a class="headerlink" href="#docs-theme-and-appearance" title="Permalink to this heading">¶</a></h3>
+<h3>Docs theme and appearance<a class="headerlink" href="#docs-theme-and-appearance" title="Link to this heading">¶</a></h3>
 <p>We welcome contributions that enhance / improve the appearance and usability of the docs. We use the excellent
 <a class="reference external" href="https://pydata-sphinx-theme.readthedocs.io/">PyData Sphinx Theme</a> theme, which comes with a lot of options out of the box.
 If you wish to contribute to the docs style / setup, or static site generation, you should consult the theme docs
 as a first step.</p>
 </section>
 <section id="running-the-docs-locally">
-<h3>Running the docs locally<a class="headerlink" href="#running-the-docs-locally" title="Permalink to this heading">¶</a></h3>
+<h3>Running the docs locally<a class="headerlink" href="#running-the-docs-locally" title="Link to this heading">¶</a></h3>
 <p>You can serve the documentation locally with</p>
 <div class="literal-block-wrapper docutils container" id="id6">
-<div class="code-block-caption"><span class="caption-text">Serving the documentation locally</span><a class="headerlink" href="#id6" title="Permalink to this code">¶</a></div>
+<div class="code-block-caption"><span class="caption-text">Serving the documentation locally</span><a class="headerlink" href="#id6" title="Link to this code">¶</a></div>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span data-line="1">make<span class="w"> </span>docs-serve
 </span></pre></div>
 </div>
 </div>
 <p>or build it with</p>
 <div class="literal-block-wrapper docutils container" id="id7">
-<div class="code-block-caption"><span class="caption-text">Serving the documentation locally</span><a class="headerlink" href="#id7" title="Permalink to this code">¶</a></div>
+<div class="code-block-caption"><span class="caption-text">Serving the documentation locally</span><a class="headerlink" href="#id7" title="Link to this code">¶</a></div>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span data-line="1">make<span class="w"> </span>docs
 </span></pre></div>
 </div>
 </div>
 </section>
 <section id="writing-and-editing-docs">
-<h3>Writing and editing docs<a class="headerlink" href="#writing-and-editing-docs" title="Permalink to this heading">¶</a></h3>
+<h3>Writing and editing docs<a class="headerlink" href="#writing-and-editing-docs" title="Link to this heading">¶</a></h3>
 <p>We welcome contributions that enhance / improve the content of the docs. Feel free to add examples, clarify text,
 restructure the docs, etc., but make sure to follow these guidelines:</p>
 <ul class="simple">
@@ -733,7 +729,7 @@ referencing external libraries</p></li>
 <li><p>Provide diagrams using <a class="reference external" href="https://mermaid.js.org/">Mermaid</a> where applicable and possible</p></li>
 </ul>
 <section id="adding-examples">
-<h4>Adding examples<a class="headerlink" href="#adding-examples" title="Permalink to this heading">¶</a></h4>
+<h4>Adding examples<a class="headerlink" href="#adding-examples" title="Link to this heading">¶</a></h4>
 <p>The examples from the docs are located in their own modules inside the <code class="docutils literal notranslate"><span class="pre">/docs/examples</span></code> folder. This makes it easier
 to test them alongside the rest of the test suite, ensuring they do not become stale as Litestar evolves.</p>
 <p>Please follow the next guidelines when adding a new example:</p>
@@ -743,7 +739,7 @@ to test them alongside the rest of the test suite, ensuring they do not become s
 <li><p>Reference the example in the rst file with an external reference code block, e.g.</p></li>
 </ul>
 <div class="literal-block-wrapper docutils container" id="id8">
-<div class="code-block-caption"><span class="caption-text">An example of how to use literal includes of external files</span><a class="headerlink" href="#id8" title="Permalink to this code">¶</a></div>
+<div class="code-block-caption"><span class="caption-text">An example of how to use literal includes of external files</span><a class="headerlink" href="#id8" title="Link to this code">¶</a></div>
 <div class="highlight-rst notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="p">..</span> <span class="ow">literalinclude</span><span class="p">::</span> /examples/test_thing.py
 </span><span data-line="2">   <span class="nc">:language:</span> python
 </span><span data-line="3">   <span class="nc">:caption:</span> All includes should have a descriptive caption
@@ -752,7 +748,7 @@ to test them alongside the rest of the test suite, ensuring they do not become s
 </div>
 </section>
 <section id="automatically-execute-examples">
-<h4>Automatically execute examples<a class="headerlink" href="#automatically-execute-examples" title="Permalink to this heading">¶</a></h4>
+<h4>Automatically execute examples<a class="headerlink" href="#automatically-execute-examples" title="Link to this heading">¶</a></h4>
 <p>Our docs include a Sphinx extension that can automatically run requests against example apps
 and include their result in the documentation page when its being built. This only requires 2 steps:</p>
 <ol class="arabic simple">
@@ -768,14 +764,14 @@ the <code class="docutils literal notranslate"><span class="pre">curl</span></co
 specified path can just be a path relative to the app.</p>
 <p>In practice, this looks like the following:</p>
 <div class="literal-block-wrapper docutils container" id="id9">
-<div class="code-block-caption"><span class="caption-text">An example of how to use the automatic example runner</span><a class="headerlink" href="#id9" title="Permalink to this code">¶</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span>
+<div class="code-block-caption"><span class="caption-text">An example of how to use the automatic example runner</span><a class="headerlink" href="#id9" title="Link to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dict</span>
 </span><span data-line="2">
-</span><span data-line="3"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
+</span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
 </span><span data-line="4">
 </span><span data-line="5">
 </span><span data-line="6"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
-</span><span data-line="7"><span class="k">def</span> <span class="nf">hello_world</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+</span><span data-line="7"><span class="k">def</span><span class="w"> </span><span class="nf">hello_world</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
 </span><span data-line="8"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Handler function that returns a greeting dictionary.&quot;&quot;&quot;</span>
 </span><span data-line="9">    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;hello&quot;</span><span class="p">:</span> <span class="s2">&quot;world&quot;</span><span class="p">}</span>
 </span><span data-line="10">
@@ -788,14 +784,14 @@ specified path can just be a path relative to the app.</p>
 </div>
 <p>This is equivalent to:</p>
 <div class="literal-block-wrapper docutils container" id="id10">
-<div class="code-block-caption"><span class="caption-text">An example of how to use the automatic example runner</span><a class="headerlink" href="#id10" title="Permalink to this code">¶</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1">   <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span>
+<div class="code-block-caption"><span class="caption-text">An example of how to use the automatic example runner</span><a class="headerlink" href="#id10" title="Link to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1">   <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dict</span>
 </span><span data-line="2">
-</span><span data-line="3">   <span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
+</span><span data-line="3">   <span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
 </span><span data-line="4">
 </span><span data-line="5">
 </span><span data-line="6">   <span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
-</span><span data-line="7">   <span class="k">def</span> <span class="nf">hello_world</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+</span><span data-line="7">   <span class="k">def</span><span class="w"> </span><span class="nf">hello_world</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
 </span><span data-line="8"><span class="w">       </span><span class="sd">&quot;&quot;&quot;Handler function that returns a greeting dictionary.&quot;&quot;&quot;</span>
 </span><span data-line="9">       <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;hello&quot;</span><span class="p">:</span> <span class="s2">&quot;world&quot;</span><span class="p">}</span>
 </span><span data-line="10">
@@ -815,11 +811,11 @@ specified path can just be a path relative to the app.</p>
 </section>
 </section>
 <section id="creating-a-new-release">
-<h2>Creating a New Release<a class="headerlink" href="#creating-a-new-release" title="Permalink to this heading">¶</a></h2>
+<h2>Creating a New Release<a class="headerlink" href="#creating-a-new-release" title="Link to this heading">¶</a></h2>
 <ol class="arabic">
 <li><p>Checkout the <code class="docutils literal notranslate"><span class="pre">main</span></code> branch:</p>
 <div class="literal-block-wrapper docutils container" id="id11">
-<div class="code-block-caption"><span class="caption-text">Checking out the main branch of the <code class="docutils literal notranslate"><span class="pre">litestar</span></code> repository</span><a class="headerlink" href="#id11" title="Permalink to this code">¶</a></div>
+<div class="code-block-caption"><span class="caption-text">Checking out the main branch of the <code class="docutils literal notranslate"><span class="pre">litestar</span></code> repository</span><a class="headerlink" href="#id11" title="Link to this code">¶</a></div>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span data-line="1">git<span class="w"> </span>checkout<span class="w"> </span>main
 </span></pre></div>
 </div>
@@ -827,7 +823,7 @@ specified path can just be a path relative to the app.</p>
 </li>
 <li><p>Run the release preparation script:</p>
 <div class="literal-block-wrapper docutils container" id="id12">
-<div class="code-block-caption"><span class="caption-text">Preparing  a new release</span><a class="headerlink" href="#id12" title="Permalink to this code">¶</a></div>
+<div class="code-block-caption"><span class="caption-text">Preparing  a new release</span><a class="headerlink" href="#id12" title="Link to this code">¶</a></div>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span data-line="1">python<span class="w"> </span>tools/prepare_release.py<span class="w"> </span>&lt;new<span class="w"> </span>version<span class="w"> </span>number&gt;<span class="w"> </span>--update-version<span class="w"> </span>--create-draft-release
 </span></pre></div>
 </div>
@@ -844,7 +840,7 @@ specified path can just be a path relative to the app.</p>
 <li><p>Review the generated changelog entry in <a class="reference internal" href="release-notes/changelog.html"><span class="doc">3.x Changelog</span></a> to ensure it looks correct.</p></li>
 <li><p>Commit the changes to <code class="docutils literal notranslate"><span class="pre">main</span></code>:</p>
 <div class="literal-block-wrapper docutils container" id="id13">
-<div class="code-block-caption"><span class="caption-text">Committing the changes to the main branch</span><a class="headerlink" href="#id13" title="Permalink to this code">¶</a></div>
+<div class="code-block-caption"><span class="caption-text">Committing the changes to the main branch</span><a class="headerlink" href="#id13" title="Link to this code">¶</a></div>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span data-line="1">git<span class="w"> </span>commit<span class="w"> </span>-am<span class="w"> </span><span class="s2">&quot;chore(release): prepare release vX.Y.Z&quot;</span>
 </span></pre></div>
 </div>
@@ -853,7 +849,7 @@ specified path can just be a path relative to the app.</p>
 </li>
 <li><p>Create a new branch for the release:</p>
 <div class="literal-block-wrapper docutils container" id="id14">
-<div class="code-block-caption"><span class="caption-text">Creating a new branch for the release</span><a class="headerlink" href="#id14" title="Permalink to this code">¶</a></div>
+<div class="code-block-caption"><span class="caption-text">Creating a new branch for the release</span><a class="headerlink" href="#id14" title="Link to this code">¶</a></div>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span data-line="1">git<span class="w"> </span>checkout<span class="w"> </span>-b<span class="w"> </span>vX.Y.Z
 </span></pre></div>
 </div>
@@ -861,7 +857,7 @@ specified path can just be a path relative to the app.</p>
 </li>
 <li><p>Push the changes to a <code class="docutils literal notranslate"><span class="pre">vX.Y.Z</span></code> branch:</p>
 <div class="literal-block-wrapper docutils container" id="id15">
-<div class="code-block-caption"><span class="caption-text">Pushing the changes to the <code class="docutils literal notranslate"><span class="pre">vX.Y.Z</span></code> branch</span><a class="headerlink" href="#id15" title="Permalink to this code">¶</a></div>
+<div class="code-block-caption"><span class="caption-text">Pushing the changes to the <code class="docutils literal notranslate"><span class="pre">vX.Y.Z</span></code> branch</span><a class="headerlink" href="#id15" title="Link to this code">¶</a></div>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span data-line="1">git<span class="w"> </span>push<span class="w"> </span>origin<span class="w"> </span>vX.Y.Z
 </span></pre></div>
 </div>
@@ -925,9 +921,9 @@ the release workflow if necessary.</p></li>
     </div>
   </div>
 </footer>
-      <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js?v=c19e757c"></script>
-      <script src="_static/doctools.js?v=888ff710"></script>
-      <script src="_static/sphinx_highlight.js?v=4825356b"></script>
+      <script src="_static/documentation_options.js?v=b95e84ca"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="_static/clipboard.min.js?v=a7894cd8"></script>
       <script src="_static/copybutton.js?v=f281be69"></script>
       <script src="_static/litestar-theme.js?v=ab2dcc9e"></script>
@@ -935,8 +931,8 @@ the release workflow if necessary.</p></li>
       <script>let toggleHintHide = 'Click to hide';</script>
       <script>let toggleOpenOnPrint = 'true';</script>
       <script src="_static/togglebutton.js?v=4a39c7ea"></script>
-      <script src="_static/design-tabs.js?v=36754332"></script>
+      <script src="_static/design-tabs.js?v=f930bc37"></script>
       <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
-      <script src="_static/shibuya.js?v=e2e99575"></script>
+      <script src="_static/shibuya.js?v=c477d091"></script>
       <script src="_static/versioning.js?v=bc681eff"></script></body>
 </html>

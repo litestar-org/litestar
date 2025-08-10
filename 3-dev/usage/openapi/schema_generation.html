@@ -1,15 +1,15 @@
 <!DOCTYPE html>
-<html lang="en" data-accent-color="amber" data-content_root="">
+<html lang="en" data-accent-color="amber" data-content_root="../../">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Configuring schema generation - Litestar Framework</title><link rel="shortcut icon" href="../../_static/favicon.svg"/><link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="OpenAPI UI Plugins" href="ui_plugins.html" /><link rel="prev" title="OpenAPI" href="index.html" /><script>
     function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
     setColorMode(localStorage._theme||"auto");
   </script><link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=397bb51e" />
-    <link rel="stylesheet" type="text/css" href="../../_static/shibuya.css?v=83eaa723" />
+    <link rel="stylesheet" type="text/css" href="../../_static/shibuya.css?v=76b6f612" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css?v=13237357" />
-    <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../_static/sphinx_paramlinks.css" />
     <link media="print" rel="stylesheet" type="text/css" href="../../_static/print.css?v=20ff2c19" />
     <link rel="stylesheet" type="text/css" href="../../_static/style.css?v=50ea2f63" />
@@ -42,13 +42,13 @@
       <img class="dark-logo" src="../../_static/logo-dark.png" alt="Litestar" height="28" loading="lazy" />
       <strong>Litestar</strong>
     </a>
-    <div class="sy-head-nav" id="HeadNav">
+    <div class="sy-head-nav" id="head-nav">
       <nav class="sy-head-links"><ul><li class="link"><a href="../../index.html">Home</a></li>
-      <li class="link"><button type="button">
+      <li class="link"><button class="js-menu" type="button" id="nav-trigger-2" aria-controls="nav-children-2">
             <span>Community</span>
             <i class="i-lucide chevron-down"></i>
           </button>
-        <ul><li><a href="../../contribution-guide.html">
+        <ul id="nav-children-2" aria-labelledby="nav-trigger-2"><li><a href="../../contribution-guide.html">
                 <span>Contributing</span>
                 <small>Learn how to contribute to the Litestar project</small>
               </a></li><li><a href="https://github.com/litestar-org/.github?tab=coc-ov-file">
@@ -59,11 +59,11 @@
                 <small>Overview of Litestar's security protocols</small>
               </a></li></ul>
       </li>
-      <li class="link"><button type="button">
+      <li class="link"><button class="js-menu" type="button" id="nav-trigger-3" aria-controls="nav-children-3">
             <span>About</span>
             <i class="i-lucide chevron-down"></i>
           </button>
-        <ul><li><a href="https://litestar.dev/about/organization">
+        <ul id="nav-children-3" aria-labelledby="nav-trigger-3"><li><a href="https://litestar.dev/about/organization">
                 <span>Litestar Organization</span>
                 <small>Details about the Litestar organization</small>
               </a></li><li><a href="https://litestar.dev/about/litestar-releases">
@@ -71,11 +71,11 @@
                 <small>Explore the release process, versioning, and deprecation policy for Litestar</small>
               </a></li></ul>
       </li>
-      <li class="link"><button type="button">
+      <li class="link"><button class="js-menu" type="button" id="nav-trigger-4" aria-controls="nav-children-4">
             <span>Release notes</span>
             <i class="i-lucide chevron-down"></i>
           </button>
-        <ul><li><a href="../../release-notes/whats-new-3.html">
+        <ul id="nav-children-4" aria-labelledby="nav-trigger-4"><li><a href="../../release-notes/whats-new-3.html">
                 <span>What's new in 3.0</span>
                 <small>Explore the new features in Litestar 3.0</small>
               </a></li><li><a href="../../release-notes/changelog.html">
@@ -86,11 +86,11 @@
                 <small>All changes in the 2.x series</small>
               </a></li></ul>
       </li>
-      <li class="link"><button type="button">
+      <li class="link"><button class="js-menu" type="button" id="nav-trigger-5" aria-controls="nav-children-5">
             <span>Help</span>
             <i class="i-lucide chevron-down"></i>
           </button>
-        <ul><li><a href="https://discord.gg/litestar">
+        <ul id="nav-children-5" aria-labelledby="nav-trigger-5"><li><a href="https://discord.gg/litestar">
                 <span>Discord Help Forum</span>
                 <small>Dedicated Discord help forum</small>
               </a></li><li><a href="https://github.com/orgs/litestar-org/discussions">
@@ -127,7 +127,7 @@ data-aria-auto="Switch to light color mode"
 data-aria-light="Switch to dark color mode"
 data-aria-dark="Switch to auto color mode">
 <i class="i-lucide theme-icon"></i>
-</button><button class="md:hidden flex items-center js-menu" aria-label="Menu" type="button" aria-controls="HeadNav" aria-expanded="false">
+</button><button class="md:hidden flex items-center js-menu" aria-label="Menu" type="button" aria-controls="head-nav" aria-expanded="false">
         <div class="hamburger">
           <span class="hamburger_1"></span>
           <span class="hamburger_2 -translate-x-2"></span>
@@ -173,12 +173,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2"><a class="reference internal" href="../databases/index.html">Databases</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../databases/sqlalchemy/index.html">SQLAlchemy</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../databases/sqlalchemy/models_and_repository.html">SQLAlchemy Models &amp; Repository</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../databases/sqlalchemy/plugins/index.html">Plugins</a><ul>
-<li class="toctree-l5"><a class="reference internal" href="../databases/sqlalchemy/plugins/sqlalchemy_plugin.html">SQLAlchemy Plugin</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../databases/sqlalchemy/plugins/sqlalchemy_init_plugin.html">SQLAlchemy Init Plugin</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../databases/sqlalchemy/plugins/sqlalchemy_serialization_plugin.html">SQLAlchemy Serialization Plugin</a></li>
-</ul>
-</li>
+<li class="toctree-l4"><a class="reference internal" href="../databases/sqlalchemy/plugins/index.html">Plugins</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../databases/piccolo.html">Piccolo ORM</a></li>
@@ -506,11 +501,12 @@ data-aria-dark="Switch to auto color mode">
     </span>
   </span>
 </a><div class="edit-this-page">
-  <a href="https://github.com/litestar-org/litestar/blob/master/docs/usage/openapi/schema_generation.rst">Edit this page</a>
+  <a href="https://github.com/litestar-org/litestar/blob/main/docs/usage/openapi/schema_generation.rst">Edit this page</a>
 </div><div id="ethical-ad-placement" data-ea-publisher="readthedocs"></div></div>
   </aside>
   <div class="rside-overlay js-menu" role="button" aria-label="Close Table of Contents" aria-controls="rside" aria-expanded="false"></div>
-  <main class="sy-main w-full max-sm:max-w-full print:pt-6"><div class="sy-breadcrumbs" role="navigation">
+  <main class="sy-main w-full max-sm:max-w-full print:pt-6">
+<div class="sy-breadcrumbs" role="navigation">
   <div class="sy-breadcrumbs-inner flex items-center">
     <div class="md:hidden mr-3">
       <button class="js-menu" aria-label="Menu" type="button" aria-controls="lside" aria-expanded="false">
@@ -544,12 +540,12 @@ data-aria-dark="Switch to auto color mode">
       <div class="min-w-0 max-w-6xl px-6 pb-6 pt-8 xl:px-12">
         <article class="yue" role="main">
           <section id="configuring-schema-generation">
-<h1>Configuring schema generation<a class="headerlink" href="#configuring-schema-generation" title="Permalink to this heading">¶</a></h1>
+<h1>Configuring schema generation<a class="headerlink" href="#configuring-schema-generation" title="Link to this heading">¶</a></h1>
 <p>OpenAPI schema generation is enabled by default. To configure it you can pass an instance of
 <a class="reference internal" href="../../reference/openapi/openapi.html#litestar.openapi.OpenAPIConfig" title="litestar.openapi.OpenAPIConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">OpenAPIConfig</span></code></a> to the <a class="reference internal" href="../../reference/app.html#litestar.app.Litestar" title="litestar.app.Litestar"><code class="xref py py-class docutils literal notranslate"><span class="pre">Litestar</span></code></a> class using the
 <code class="docutils literal notranslate"><span class="pre">openapi_config</span></code> kwarg:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span>
-</span><span data-line="2"><span class="kn">from</span> <span class="nn">litestar.openapi</span> <span class="kn">import</span> <span class="n">OpenAPIConfig</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.openapi</span><span class="w"> </span><span class="kn">import</span> <span class="n">OpenAPIConfig</span>
 </span><span data-line="3">
 </span><span data-line="4"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
 </span><span data-line="5">    <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="o">...</span><span class="p">],</span> <span class="n">openapi_config</span><span class="o">=</span><span class="n">OpenAPIConfig</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;My API&quot;</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="s2">&quot;1.0.0&quot;</span><span class="p">)</span>
@@ -557,10 +553,10 @@ data-aria-dark="Switch to auto color mode">
 </span></pre></div>
 </div>
 <section id="disabling-schema-generation">
-<h2>Disabling schema generation<a class="headerlink" href="#disabling-schema-generation" title="Permalink to this heading">¶</a></h2>
+<h2>Disabling schema generation<a class="headerlink" href="#disabling-schema-generation" title="Link to this heading">¶</a></h2>
 <p>If you wish to disable schema generation and not include the schema endpoints in your API, simply pass <code class="docutils literal notranslate"><span class="pre">None</span></code> as the
 value for <code class="docutils literal notranslate"><span class="pre">openapi_config</span></code>:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span>
 </span><span data-line="2">
 </span><span data-line="3"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="o">...</span><span class="p">],</span> <span class="n">openapi_config</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
 </span></pre></div>
@@ -568,14 +564,14 @@ value for <code class="docutils literal notranslate"><span class="pre">openapi_c
 </section>
 </section>
 <section id="configuring-schema-generation-on-a-route-handler">
-<h1>Configuring schema generation on a route handler<a class="headerlink" href="#configuring-schema-generation-on-a-route-handler" title="Permalink to this heading">¶</a></h1>
+<h1>Configuring schema generation on a route handler<a class="headerlink" href="#configuring-schema-generation-on-a-route-handler" title="Link to this heading">¶</a></h1>
 <p>By default, an <a class="reference external" href="https://spec.openapis.org/oas/latest.html#operation-object">operation</a> schema is generated for all route
 handlers. You can omit a route handler from the schema by setting <code class="docutils literal notranslate"><span class="pre">include_in_schema=False</span></code>:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">get</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">get</span>
 </span><span data-line="2">
 </span><span data-line="3">
 </span><span data-line="4"><span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/some-path&quot;</span><span class="p">,</span> <span class="n">include_in_schema</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-</span><span data-line="5"><span class="k">def</span> <span class="nf">my_route_handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
+</span><span data-line="5"><span class="k">def</span><span class="w"> </span><span class="nf">my_route_handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
 </span></pre></div>
 </div>
 <p>You can also modify the generated schema for the route handler using the following kwargs:</p>
@@ -620,21 +616,21 @@ a description and the expected media type. For example:</p>
 </div>
 <div class="sd-tab-set docutils">
 <input id="sd-tab-item-0" name="sd-tab-set-0" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-0">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="3.8" for="sd-tab-item-0">
 Python 3.8+</label><div class="sd-tab-content docutils">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
-</span><span data-line="2"><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span>
 </span><span data-line="3">
-</span><span data-line="4"><span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseModel</span>
+</span><span data-line="4"><span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseModel</span>
 </span><span data-line="5">
-</span><span data-line="6"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">get</span>
-</span><span data-line="7"><span class="kn">from</span> <span class="nn">litestar.openapi.datastructures</span> <span class="kn">import</span> <span class="n">ResponseSpec</span>
+</span><span data-line="6"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">get</span>
+</span><span data-line="7"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.openapi.datastructures</span><span class="w"> </span><span class="kn">import</span> <span class="n">ResponseSpec</span>
 </span><span data-line="8">
 </span><span data-line="9">
-</span><span data-line="10"><span class="k">class</span> <span class="nc">Item</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span> <span class="o">...</span>
+</span><span data-line="10"><span class="k">class</span><span class="w"> </span><span class="nc">Item</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span> <span class="o">...</span>
 </span><span data-line="11">
 </span><span data-line="12">
-</span><span data-line="13"><span class="k">class</span> <span class="nc">ItemNotFound</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+</span><span data-line="13"><span class="k">class</span><span class="w"> </span><span class="nc">ItemNotFound</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
 </span><span data-line="14">    <span class="n">was_removed</span><span class="p">:</span> <span class="nb">bool</span>
 </span><span data-line="15">    <span class="n">removed_at</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">datetime</span><span class="p">]</span>
 </span><span data-line="16">
@@ -647,25 +643,25 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 </span><span data-line="23">        <span class="p">)</span>
 </span><span data-line="24">    <span class="p">},</span>
 </span><span data-line="25"><span class="p">)</span>
-</span><span data-line="26"><span class="k">def</span> <span class="nf">retrieve_item</span><span class="p">(</span><span class="n">pk</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Item</span><span class="p">:</span> <span class="o">...</span>
+</span><span data-line="26"><span class="k">def</span><span class="w"> </span><span class="nf">retrieve_item</span><span class="p">(</span><span class="n">pk</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Item</span><span class="p">:</span> <span class="o">...</span>
 </span></pre></div>
 </div>
 </div>
 <input checked="checked" id="sd-tab-item-1" name="sd-tab-set-0" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.10" for="sd-tab-item-1">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="3.10" for="sd-tab-item-1">
 Python 3.10+</label><div class="sd-tab-content docutils">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span>
 </span><span data-line="2">
-</span><span data-line="3"><span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseModel</span>
+</span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseModel</span>
 </span><span data-line="4">
-</span><span data-line="5"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">get</span>
-</span><span data-line="6"><span class="kn">from</span> <span class="nn">litestar.openapi.datastructures</span> <span class="kn">import</span> <span class="n">ResponseSpec</span>
+</span><span data-line="5"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">get</span>
+</span><span data-line="6"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.openapi.datastructures</span><span class="w"> </span><span class="kn">import</span> <span class="n">ResponseSpec</span>
 </span><span data-line="7">
 </span><span data-line="8">
-</span><span data-line="9"><span class="k">class</span> <span class="nc">Item</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span> <span class="o">...</span>
+</span><span data-line="9"><span class="k">class</span><span class="w"> </span><span class="nc">Item</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span> <span class="o">...</span>
 </span><span data-line="10">
 </span><span data-line="11">
-</span><span data-line="12"><span class="k">class</span> <span class="nc">ItemNotFound</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+</span><span data-line="12"><span class="k">class</span><span class="w"> </span><span class="nc">ItemNotFound</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
 </span><span data-line="13">    <span class="n">was_removed</span><span class="p">:</span> <span class="nb">bool</span>
 </span><span data-line="14">    <span class="n">removed_at</span><span class="p">:</span> <span class="n">datetime</span> <span class="o">|</span> <span class="kc">None</span>
 </span><span data-line="15">
@@ -678,16 +674,16 @@ Python 3.10+</label><div class="sd-tab-content docutils">
 </span><span data-line="22">        <span class="p">)</span>
 </span><span data-line="23">    <span class="p">},</span>
 </span><span data-line="24"><span class="p">)</span>
-</span><span data-line="25"><span class="k">def</span> <span class="nf">retrieve_item</span><span class="p">(</span><span class="n">pk</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Item</span><span class="p">:</span> <span class="o">...</span>
+</span><span data-line="25"><span class="k">def</span><span class="w"> </span><span class="nf">retrieve_item</span><span class="p">(</span><span class="n">pk</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Item</span><span class="p">:</span> <span class="o">...</span>
 </span></pre></div>
 </div>
 </div>
 </div>
 <p>You can also specify <code class="docutils literal notranslate"><span class="pre">security</span></code> and <code class="docutils literal notranslate"><span class="pre">tags</span></code> on higher level of the application, e.g. on a controller, router, or the
 app instance itself. For example:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
-</span><span data-line="2"><span class="kn">from</span> <span class="nn">litestar.openapi</span> <span class="kn">import</span> <span class="n">OpenAPIConfig</span>
-</span><span data-line="3"><span class="kn">from</span> <span class="nn">litestar.openapi.spec</span> <span class="kn">import</span> <span class="n">Components</span><span class="p">,</span> <span class="n">SecurityScheme</span><span class="p">,</span> <span class="n">Tag</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.openapi</span><span class="w"> </span><span class="kn">import</span> <span class="n">OpenAPIConfig</span>
+</span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.openapi.spec</span><span class="w"> </span><span class="kn">import</span> <span class="n">Components</span><span class="p">,</span> <span class="n">SecurityScheme</span><span class="p">,</span> <span class="n">Tag</span>
 </span><span data-line="4">
 </span><span data-line="5">
 </span><span data-line="6"><span class="nd">@get</span><span class="p">(</span>
@@ -695,12 +691,12 @@ app instance itself. For example:</p>
 </span><span data-line="8">    <span class="n">tags</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;public&quot;</span><span class="p">],</span>
 </span><span data-line="9">    <span class="n">security</span><span class="o">=</span><span class="p">[{}],</span>  <span class="c1"># this endpoint is marked as having optional security</span>
 </span><span data-line="10"><span class="p">)</span>
-</span><span data-line="11"><span class="k">def</span> <span class="nf">public_path_handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+</span><span data-line="11"><span class="k">def</span><span class="w"> </span><span class="nf">public_path_handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
 </span><span data-line="12">    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;hello&quot;</span><span class="p">:</span> <span class="s2">&quot;world&quot;</span><span class="p">}</span>
 </span><span data-line="13">
 </span><span data-line="14">
 </span><span data-line="15"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/other&quot;</span><span class="p">,</span> <span class="n">tags</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;internal&quot;</span><span class="p">],</span> <span class="n">security</span><span class="o">=</span><span class="p">[{</span><span class="s2">&quot;apiKey&quot;</span><span class="p">:</span> <span class="p">[]}])</span>
-</span><span data-line="16"><span class="k">def</span> <span class="nf">internal_path_handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
+</span><span data-line="16"><span class="k">def</span><span class="w"> </span><span class="nf">internal_path_handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
 </span><span data-line="17">
 </span><span data-line="18">
 </span><span data-line="19"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
@@ -727,43 +723,43 @@ app instance itself. For example:</p>
 </div>
 </section>
 <section id="accessing-the-openapi-schema-in-code">
-<h1>Accessing the OpenAPI schema in code<a class="headerlink" href="#accessing-the-openapi-schema-in-code" title="Permalink to this heading">¶</a></h1>
+<h1>Accessing the OpenAPI schema in code<a class="headerlink" href="#accessing-the-openapi-schema-in-code" title="Link to this heading">¶</a></h1>
 <p>The OpenAPI schema is generated during the <a class="reference internal" href="../../reference/app.html#litestar.app.Litestar" title="litestar.app.Litestar"><code class="xref py py-class docutils literal notranslate"><span class="pre">Litestar</span></code></a> app’s init method. Once init is finished,
 its accessible as <code class="docutils literal notranslate"><span class="pre">app.openapi_schema</span></code>. As such you can always access it inside route handlers, dependencies, etc. by
 access the request instance:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Request</span><span class="p">,</span> <span class="n">get</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Request</span><span class="p">,</span> <span class="n">get</span>
 </span><span data-line="2">
 </span><span data-line="3">
 </span><span data-line="4"><span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
-</span><span data-line="5"><span class="k">def</span> <span class="nf">my_route_handler</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+</span><span data-line="5"><span class="k">def</span><span class="w"> </span><span class="nf">my_route_handler</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 </span><span data-line="6">    <span class="n">schema</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">openapi_schema</span>
 </span><span data-line="7">    <span class="k">return</span> <span class="n">schema</span><span class="o">.</span><span class="n">to_schema</span><span class="p">()</span>
 </span></pre></div>
 </div>
 </section>
 <section id="customizing-pydantic-model-schemas">
-<h1>Customizing Pydantic model schemas<a class="headerlink" href="#customizing-pydantic-model-schemas" title="Permalink to this heading">¶</a></h1>
+<h1>Customizing Pydantic model schemas<a class="headerlink" href="#customizing-pydantic-model-schemas" title="Link to this heading">¶</a></h1>
 <p>You can customize the OpenAPI schemas generated for pydantic models by following the guidelines in
 the <a class="reference external" href="https://docs.pydantic.dev/latest/usage/json_schema/">Pydantic docs</a>.</p>
 <p>Additionally, you can affect how pydantic models are translated into OpenAPI <code class="docutils literal notranslate"><span class="pre">components</span></code> by settings a special dunder
 attribute on the model called <code class="docutils literal notranslate"><span class="pre">__schema_name__</span></code>:</p>
 <div class="literal-block-wrapper docutils container" id="id2">
-<div class="code-block-caption"><span class="caption-text">Customize Components Example</span><a class="headerlink" href="#id2" title="Permalink to this code">¶</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">uuid</span> <span class="kn">import</span> <span class="n">UUID</span><span class="p">,</span> <span class="n">uuid4</span>
+<div class="code-block-caption"><span class="caption-text">Customize Components Example</span><a class="headerlink" href="#id2" title="Link to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">uuid</span><span class="w"> </span><span class="kn">import</span> <span class="n">UUID</span><span class="p">,</span> <span class="n">uuid4</span>
 </span><span data-line="2">
-</span><span data-line="3"><span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseModel</span>
+</span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseModel</span>
 </span><span data-line="4">
-</span><span data-line="5"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
+</span><span data-line="5"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
 </span><span data-line="6">
 </span><span data-line="7">
-</span><span data-line="8"><span class="k">class</span> <span class="nc">IdModel</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+</span><span data-line="8"><span class="k">class</span><span class="w"> </span><span class="nc">IdModel</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
 </span><span data-line="9">    <span class="n">__schema_name__</span> <span class="o">=</span> <span class="s2">&quot;IdContainer&quot;</span>
 </span><span data-line="10">
 </span><span data-line="11">    <span class="nb">id</span><span class="p">:</span> <span class="n">UUID</span>
 </span><span data-line="12">
 </span><span data-line="13">
 </span><span data-line="14"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/id&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-</span><span data-line="15"><span class="k">def</span> <span class="nf">retrieve_id_handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">IdModel</span><span class="p">:</span>
+</span><span data-line="15"><span class="k">def</span><span class="w"> </span><span class="nf">retrieve_id_handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">IdModel</span><span class="p">:</span>
 </span><span data-line="16"><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 </span><span data-line="17">
 </span><span data-line="18"><span class="sd">    Returns: An IdModel</span>
@@ -824,33 +820,33 @@ dunder to ensure each has a unique name in the schema, otherwise the schema comp
 </div>
 </section>
 <section id="customizing-operation-class">
-<h1>Customizing <code class="docutils literal notranslate"><span class="pre">Operation</span></code> class<a class="headerlink" href="#customizing-operation-class" title="Permalink to this heading">¶</a></h1>
+<h1>Customizing <code class="docutils literal notranslate"><span class="pre">Operation</span></code> class<a class="headerlink" href="#customizing-operation-class" title="Link to this heading">¶</a></h1>
 <p>You can customize the <a class="reference external" href="https://spec.openapis.org/oas/v3.1.0#operation-object">operation object</a> used for a path in
 the generated OpenAPI schemas by creating a subclass of <a class="reference internal" href="../../reference/openapi/spec.html#litestar.openapi.spec.Operation" title="litestar.openapi.spec.operation.Operation"><code class="xref py py-class docutils literal notranslate"><span class="pre">Operation</span></code></a>.</p>
 <p>This option can be helpful in situations where request data needs to be manually parsed as
 Litestar will not know how to create the OpenAPI operation data by default.</p>
 <div class="sd-tab-set docutils">
 <input id="sd-tab-item-2" name="sd-tab-set-1" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-2">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="3.8" for="sd-tab-item-2">
 Python 3.8+</label><div class="sd-tab-content docutils">
 <div class="literal-block-wrapper docutils container" id="id3">
-<div class="code-block-caption"><span class="caption-text">Customize Components Example</span><a class="headerlink" href="#id3" title="Permalink to this code">¶</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
-</span><span data-line="2"><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span>
+<div class="code-block-caption"><span class="caption-text">Customize Components Example</span><a class="headerlink" href="#id3" title="Link to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span>
 </span><span data-line="3">
-</span><span data-line="4"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">MediaType</span><span class="p">,</span> <span class="n">Request</span><span class="p">,</span> <span class="n">post</span>
-</span><span data-line="5"><span class="kn">from</span> <span class="nn">litestar.exceptions</span> <span class="kn">import</span> <span class="n">HTTPException</span>
-</span><span data-line="6"><span class="kn">from</span> <span class="nn">litestar.openapi.spec</span> <span class="kn">import</span> <span class="n">OpenAPIMediaType</span><span class="p">,</span> <span class="n">OpenAPIType</span><span class="p">,</span> <span class="n">Operation</span><span class="p">,</span> <span class="n">RequestBody</span><span class="p">,</span> <span class="n">Schema</span>
-</span><span data-line="7"><span class="kn">from</span> <span class="nn">litestar.status_codes</span> <span class="kn">import</span> <span class="n">HTTP_400_BAD_REQUEST</span>
+</span><span data-line="4"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">MediaType</span><span class="p">,</span> <span class="n">Request</span><span class="p">,</span> <span class="n">post</span>
+</span><span data-line="5"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">HTTPException</span>
+</span><span data-line="6"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.openapi.spec</span><span class="w"> </span><span class="kn">import</span> <span class="n">OpenAPIMediaType</span><span class="p">,</span> <span class="n">OpenAPIType</span><span class="p">,</span> <span class="n">Operation</span><span class="p">,</span> <span class="n">RequestBody</span><span class="p">,</span> <span class="n">Schema</span>
+</span><span data-line="7"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.status_codes</span><span class="w"> </span><span class="kn">import</span> <span class="n">HTTP_400_BAD_REQUEST</span>
 </span><span data-line="8">
 </span><span data-line="9">
 </span><span data-line="10"><span class="nd">@dataclass</span>
-</span><span data-line="11"><span class="k">class</span> <span class="nc">CustomOperation</span><span class="p">(</span><span class="n">Operation</span><span class="p">):</span>
+</span><span data-line="11"><span class="k">class</span><span class="w"> </span><span class="nc">CustomOperation</span><span class="p">(</span><span class="n">Operation</span><span class="p">):</span>
 </span><span data-line="12"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Custom Operation class which includes a non-standard field which is part of an OpenAPI extension.&quot;&quot;&quot;</span>
 </span><span data-line="13">
 </span><span data-line="14">    <span class="n">x_code_samples</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;alias&quot;</span><span class="p">:</span> <span class="s2">&quot;x-codeSamples&quot;</span><span class="p">})</span>
 </span><span data-line="15">
-</span><span data-line="16">    <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="16">    <span class="k">def</span><span class="w"> </span><span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 </span><span data-line="17">        <span class="bp">self</span><span class="o">.</span><span class="n">tags</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;ok&quot;</span><span class="p">]</span>
 </span><span data-line="18">        <span class="bp">self</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;Requires OK, Returns OK&quot;</span>
 </span><span data-line="19">        <span class="bp">self</span><span class="o">.</span><span class="n">request_body</span> <span class="o">=</span> <span class="n">RequestBody</span><span class="p">(</span>
@@ -872,7 +868,7 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 </span><span data-line="35">
 </span><span data-line="36">
 </span><span data-line="37"><span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">operation_class</span><span class="o">=</span><span class="n">CustomOperation</span><span class="p">,</span> <span class="n">media_type</span><span class="o">=</span><span class="n">MediaType</span><span class="o">.</span><span class="n">TEXT</span><span class="p">)</span>
-</span><span data-line="38"><span class="k">async</span> <span class="k">def</span> <span class="nf">route</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span data-line="38"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">route</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 </span><span data-line="39"><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 </span><span data-line="40">
 </span><span data-line="41"><span class="sd">    Returns: OK</span>
@@ -890,25 +886,25 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 </div>
 </div>
 <input checked="checked" id="sd-tab-item-3" name="sd-tab-set-1" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.10" for="sd-tab-item-3">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="3.10" for="sd-tab-item-3">
 Python 3.10+</label><div class="sd-tab-content docutils">
 <div class="literal-block-wrapper docutils container" id="id4">
-<div class="code-block-caption"><span class="caption-text">Customize Components Example</span><a class="headerlink" href="#id4" title="Permalink to this code">¶</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
+<div class="code-block-caption"><span class="caption-text">Customize Components Example</span><a class="headerlink" href="#id4" title="Link to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
 </span><span data-line="2">
-</span><span data-line="3"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">MediaType</span><span class="p">,</span> <span class="n">Request</span><span class="p">,</span> <span class="n">post</span>
-</span><span data-line="4"><span class="kn">from</span> <span class="nn">litestar.exceptions</span> <span class="kn">import</span> <span class="n">HTTPException</span>
-</span><span data-line="5"><span class="kn">from</span> <span class="nn">litestar.openapi.spec</span> <span class="kn">import</span> <span class="n">OpenAPIMediaType</span><span class="p">,</span> <span class="n">OpenAPIType</span><span class="p">,</span> <span class="n">Operation</span><span class="p">,</span> <span class="n">RequestBody</span><span class="p">,</span> <span class="n">Schema</span>
-</span><span data-line="6"><span class="kn">from</span> <span class="nn">litestar.status_codes</span> <span class="kn">import</span> <span class="n">HTTP_400_BAD_REQUEST</span>
+</span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">MediaType</span><span class="p">,</span> <span class="n">Request</span><span class="p">,</span> <span class="n">post</span>
+</span><span data-line="4"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">HTTPException</span>
+</span><span data-line="5"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.openapi.spec</span><span class="w"> </span><span class="kn">import</span> <span class="n">OpenAPIMediaType</span><span class="p">,</span> <span class="n">OpenAPIType</span><span class="p">,</span> <span class="n">Operation</span><span class="p">,</span> <span class="n">RequestBody</span><span class="p">,</span> <span class="n">Schema</span>
+</span><span data-line="6"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.status_codes</span><span class="w"> </span><span class="kn">import</span> <span class="n">HTTP_400_BAD_REQUEST</span>
 </span><span data-line="7">
 </span><span data-line="8">
 </span><span data-line="9"><span class="nd">@dataclass</span>
-</span><span data-line="10"><span class="k">class</span> <span class="nc">CustomOperation</span><span class="p">(</span><span class="n">Operation</span><span class="p">):</span>
+</span><span data-line="10"><span class="k">class</span><span class="w"> </span><span class="nc">CustomOperation</span><span class="p">(</span><span class="n">Operation</span><span class="p">):</span>
 </span><span data-line="11"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Custom Operation class which includes a non-standard field which is part of an OpenAPI extension.&quot;&quot;&quot;</span>
 </span><span data-line="12">
 </span><span data-line="13">    <span class="n">x_code_samples</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;alias&quot;</span><span class="p">:</span> <span class="s2">&quot;x-codeSamples&quot;</span><span class="p">})</span>
 </span><span data-line="14">
-</span><span data-line="15">    <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="15">    <span class="k">def</span><span class="w"> </span><span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 </span><span data-line="16">        <span class="bp">self</span><span class="o">.</span><span class="n">tags</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;ok&quot;</span><span class="p">]</span>
 </span><span data-line="17">        <span class="bp">self</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;Requires OK, Returns OK&quot;</span>
 </span><span data-line="18">        <span class="bp">self</span><span class="o">.</span><span class="n">request_body</span> <span class="o">=</span> <span class="n">RequestBody</span><span class="p">(</span>
@@ -930,7 +926,7 @@ Python 3.10+</label><div class="sd-tab-content docutils">
 </span><span data-line="34">
 </span><span data-line="35">
 </span><span data-line="36"><span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">operation_class</span><span class="o">=</span><span class="n">CustomOperation</span><span class="p">,</span> <span class="n">media_type</span><span class="o">=</span><span class="n">MediaType</span><span class="o">.</span><span class="n">TEXT</span><span class="p">)</span>
-</span><span data-line="37"><span class="k">async</span> <span class="k">def</span> <span class="nf">route</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span data-line="37"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">route</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 </span><span data-line="38"><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 </span><span data-line="39">
 </span><span data-line="40"><span class="sd">    Returns: OK</span>
@@ -1004,27 +1000,27 @@ when generating the field name in the schema.</p>
 </div>
 </section>
 <section id="generating-examples">
-<h1>Generating examples<a class="headerlink" href="#generating-examples" title="Permalink to this heading">¶</a></h1>
+<h1>Generating examples<a class="headerlink" href="#generating-examples" title="Link to this heading">¶</a></h1>
 <p>Litestar can automatically generate examples for the <code class="docutils literal notranslate"><span class="pre">example</span></code> section of a schema.
 To enable this feature, you’ll need to have the
 <a class="reference external" href="https://polyfactory.litestar.dev/">polyfactory</a> library installed, which is included
 as a package extra under <code class="docutils literal notranslate"><span class="pre">litestar[polyfactory</span></code> and <code class="docutils literal notranslate"><span class="pre">litestar[full]</span></code>.</p>
 <p>Once installed, you can turn on example generation via the OpenAPI config:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">uuid</span> <span class="kn">import</span> <span class="n">UUID</span><span class="p">,</span> <span class="n">uuid4</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">uuid</span><span class="w"> </span><span class="kn">import</span> <span class="n">UUID</span><span class="p">,</span> <span class="n">uuid4</span>
 </span><span data-line="2">
-</span><span data-line="3"><span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseModel</span>
+</span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseModel</span>
 </span><span data-line="4">
-</span><span data-line="5"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
+</span><span data-line="5"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
 </span><span data-line="6">
 </span><span data-line="7">
-</span><span data-line="8"><span class="k">class</span> <span class="nc">IdModel</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+</span><span data-line="8"><span class="k">class</span><span class="w"> </span><span class="nc">IdModel</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
 </span><span data-line="9">    <span class="n">__schema_name__</span> <span class="o">=</span> <span class="s2">&quot;IdContainer&quot;</span>
 </span><span data-line="10">
 </span><span data-line="11">    <span class="nb">id</span><span class="p">:</span> <span class="n">UUID</span>
 </span><span data-line="12">
 </span><span data-line="13">
 </span><span data-line="14"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/id&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-</span><span data-line="15"><span class="k">def</span> <span class="nf">retrieve_id_handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">IdModel</span><span class="p">:</span>
+</span><span data-line="15"><span class="k">def</span><span class="w"> </span><span class="nf">retrieve_id_handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">IdModel</span><span class="p">:</span>
 </span><span data-line="16"><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 </span><span data-line="17">
 </span><span data-line="18"><span class="sd">    Returns: An IdModel</span>
@@ -1087,9 +1083,9 @@ as a package extra under <code class="docutils literal notranslate"><span class=
     </div>
   </div>
 </footer>
-      <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=c19e757c"></script>
-      <script src="../../_static/doctools.js?v=888ff710"></script>
-      <script src="../../_static/sphinx_highlight.js?v=4825356b"></script>
+      <script src="../../_static/documentation_options.js?v=b95e84ca"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
       <script src="../../_static/copybutton.js?v=f281be69"></script>
       <script src="../../_static/litestar-theme.js?v=ab2dcc9e"></script>
@@ -1097,8 +1093,8 @@ as a package extra under <code class="docutils literal notranslate"><span class=
       <script>let toggleHintHide = 'Click to hide';</script>
       <script>let toggleOpenOnPrint = 'true';</script>
       <script src="../../_static/togglebutton.js?v=4a39c7ea"></script>
-      <script src="../../_static/design-tabs.js?v=36754332"></script>
+      <script src="../../_static/design-tabs.js?v=f930bc37"></script>
       <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
-      <script src="../../_static/shibuya.js?v=e2e99575"></script>
+      <script src="../../_static/shibuya.js?v=c477d091"></script>
       <script src="../../_static/versioning.js?v=bc681eff"></script></body>
 </html>

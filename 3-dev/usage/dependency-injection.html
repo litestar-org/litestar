@@ -1,15 +1,15 @@
 <!DOCTYPE html>
-<html lang="en" data-accent-color="amber" data-content_root="">
+<html lang="en" data-accent-color="amber" data-content_root="../">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Dependency Injection - Litestar Framework</title><link rel="shortcut icon" href="../_static/favicon.svg"/><link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Data Transfer Object (DTO)" href="dto/index.html" /><link rel="prev" title="Debugging" href="debugging.html" /><script>
     function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
     setColorMode(localStorage._theme||"auto");
   </script><link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=397bb51e" />
-    <link rel="stylesheet" type="text/css" href="../_static/shibuya.css?v=83eaa723" />
+    <link rel="stylesheet" type="text/css" href="../_static/shibuya.css?v=76b6f612" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
-    <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx_paramlinks.css" />
     <link media="print" rel="stylesheet" type="text/css" href="../_static/print.css?v=20ff2c19" />
     <link rel="stylesheet" type="text/css" href="../_static/style.css?v=50ea2f63" />
@@ -42,13 +42,13 @@
       <img class="dark-logo" src="../_static/logo-dark.png" alt="Litestar" height="28" loading="lazy" />
       <strong>Litestar</strong>
     </a>
-    <div class="sy-head-nav" id="HeadNav">
+    <div class="sy-head-nav" id="head-nav">
       <nav class="sy-head-links"><ul><li class="link"><a href="../index.html">Home</a></li>
-      <li class="link"><button type="button">
+      <li class="link"><button class="js-menu" type="button" id="nav-trigger-2" aria-controls="nav-children-2">
             <span>Community</span>
             <i class="i-lucide chevron-down"></i>
           </button>
-        <ul><li><a href="../contribution-guide.html">
+        <ul id="nav-children-2" aria-labelledby="nav-trigger-2"><li><a href="../contribution-guide.html">
                 <span>Contributing</span>
                 <small>Learn how to contribute to the Litestar project</small>
               </a></li><li><a href="https://github.com/litestar-org/.github?tab=coc-ov-file">
@@ -59,11 +59,11 @@
                 <small>Overview of Litestar's security protocols</small>
               </a></li></ul>
       </li>
-      <li class="link"><button type="button">
+      <li class="link"><button class="js-menu" type="button" id="nav-trigger-3" aria-controls="nav-children-3">
             <span>About</span>
             <i class="i-lucide chevron-down"></i>
           </button>
-        <ul><li><a href="https://litestar.dev/about/organization">
+        <ul id="nav-children-3" aria-labelledby="nav-trigger-3"><li><a href="https://litestar.dev/about/organization">
                 <span>Litestar Organization</span>
                 <small>Details about the Litestar organization</small>
               </a></li><li><a href="https://litestar.dev/about/litestar-releases">
@@ -71,11 +71,11 @@
                 <small>Explore the release process, versioning, and deprecation policy for Litestar</small>
               </a></li></ul>
       </li>
-      <li class="link"><button type="button">
+      <li class="link"><button class="js-menu" type="button" id="nav-trigger-4" aria-controls="nav-children-4">
             <span>Release notes</span>
             <i class="i-lucide chevron-down"></i>
           </button>
-        <ul><li><a href="../release-notes/whats-new-3.html">
+        <ul id="nav-children-4" aria-labelledby="nav-trigger-4"><li><a href="../release-notes/whats-new-3.html">
                 <span>What's new in 3.0</span>
                 <small>Explore the new features in Litestar 3.0</small>
               </a></li><li><a href="../release-notes/changelog.html">
@@ -86,11 +86,11 @@
                 <small>All changes in the 2.x series</small>
               </a></li></ul>
       </li>
-      <li class="link"><button type="button">
+      <li class="link"><button class="js-menu" type="button" id="nav-trigger-5" aria-controls="nav-children-5">
             <span>Help</span>
             <i class="i-lucide chevron-down"></i>
           </button>
-        <ul><li><a href="https://discord.gg/litestar">
+        <ul id="nav-children-5" aria-labelledby="nav-trigger-5"><li><a href="https://discord.gg/litestar">
                 <span>Discord Help Forum</span>
                 <small>Dedicated Discord help forum</small>
               </a></li><li><a href="https://github.com/orgs/litestar-org/discussions">
@@ -127,7 +127,7 @@ data-aria-auto="Switch to light color mode"
 data-aria-light="Switch to dark color mode"
 data-aria-dark="Switch to auto color mode">
 <i class="i-lucide theme-icon"></i>
-</button><button class="md:hidden flex items-center js-menu" aria-label="Menu" type="button" aria-controls="HeadNav" aria-expanded="false">
+</button><button class="md:hidden flex items-center js-menu" aria-label="Menu" type="button" aria-controls="head-nav" aria-expanded="false">
         <div class="hamburger">
           <span class="hamburger_1"></span>
           <span class="hamburger_2 -translate-x-2"></span>
@@ -173,12 +173,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2"><a class="reference internal" href="databases/index.html">Databases</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="databases/sqlalchemy/index.html">SQLAlchemy</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="databases/sqlalchemy/models_and_repository.html">SQLAlchemy Models &amp; Repository</a></li>
-<li class="toctree-l4"><a class="reference internal" href="databases/sqlalchemy/plugins/index.html">Plugins</a><ul>
-<li class="toctree-l5"><a class="reference internal" href="databases/sqlalchemy/plugins/sqlalchemy_plugin.html">SQLAlchemy Plugin</a></li>
-<li class="toctree-l5"><a class="reference internal" href="databases/sqlalchemy/plugins/sqlalchemy_init_plugin.html">SQLAlchemy Init Plugin</a></li>
-<li class="toctree-l5"><a class="reference internal" href="databases/sqlalchemy/plugins/sqlalchemy_serialization_plugin.html">SQLAlchemy Serialization Plugin</a></li>
-</ul>
-</li>
+<li class="toctree-l4"><a class="reference internal" href="databases/sqlalchemy/plugins/index.html">Plugins</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="databases/piccolo.html">Piccolo ORM</a></li>
@@ -516,11 +511,12 @@ data-aria-dark="Switch to auto color mode">
     </span>
   </span>
 </a><div class="edit-this-page">
-  <a href="https://github.com/litestar-org/litestar/blob/master/docs/usage/dependency-injection.rst">Edit this page</a>
+  <a href="https://github.com/litestar-org/litestar/blob/main/docs/usage/dependency-injection.rst">Edit this page</a>
 </div><div id="ethical-ad-placement" data-ea-publisher="readthedocs"></div></div>
   </aside>
   <div class="rside-overlay js-menu" role="button" aria-label="Close Table of Contents" aria-controls="rside" aria-expanded="false"></div>
-  <main class="sy-main w-full max-sm:max-w-full print:pt-6"><div class="sy-breadcrumbs" role="navigation">
+  <main class="sy-main w-full max-sm:max-w-full print:pt-6">
+<div class="sy-breadcrumbs" role="navigation">
   <div class="sy-breadcrumbs-inner flex items-center">
     <div class="md:hidden mr-3">
       <button class="js-menu" aria-label="Menu" type="button" aria-controls="lside" aria-expanded="false">
@@ -550,33 +546,33 @@ data-aria-dark="Switch to auto color mode">
       <div class="min-w-0 max-w-6xl px-6 pb-6 pt-8 xl:px-12">
         <article class="yue" role="main">
           <section id="dependency-injection">
-<h1>Dependency Injection<a class="headerlink" href="#dependency-injection" title="Permalink to this heading">¶</a></h1>
+<h1>Dependency Injection<a class="headerlink" href="#dependency-injection" title="Link to this heading">¶</a></h1>
 <p>Litestar has a simple but powerful dependency injection system that allows for declaring dependencies on all layers of
 the application:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Controller</span><span class="p">,</span> <span class="n">Router</span><span class="p">,</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
-</span><span data-line="2"><span class="kn">from</span> <span class="nn">litestar.di</span> <span class="kn">import</span> <span class="n">Provide</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Controller</span><span class="p">,</span> <span class="n">Router</span><span class="p">,</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.di</span><span class="w"> </span><span class="kn">import</span> <span class="n">Provide</span>
 </span><span data-line="3">
 </span><span data-line="4">
-</span><span data-line="5"><span class="k">async</span> <span class="k">def</span> <span class="nf">bool_fn</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span> <span class="o">...</span>
+</span><span data-line="5"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">bool_fn</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span> <span class="o">...</span>
 </span><span data-line="6">
 </span><span data-line="7">
-</span><span data-line="8"><span class="k">async</span> <span class="k">def</span> <span class="nf">dict_fn</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span> <span class="o">...</span>
+</span><span data-line="8"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">dict_fn</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span> <span class="o">...</span>
 </span><span data-line="9">
 </span><span data-line="10">
-</span><span data-line="11"><span class="k">async</span> <span class="k">def</span> <span class="nf">list_fn</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span> <span class="o">...</span>
+</span><span data-line="11"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">list_fn</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span> <span class="o">...</span>
 </span><span data-line="12">
 </span><span data-line="13">
-</span><span data-line="14"><span class="k">async</span> <span class="k">def</span> <span class="nf">int_fn</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span> <span class="o">...</span>
+</span><span data-line="14"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">int_fn</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span> <span class="o">...</span>
 </span><span data-line="15">
 </span><span data-line="16">
-</span><span data-line="17"><span class="k">class</span> <span class="nc">MyController</span><span class="p">(</span><span class="n">Controller</span><span class="p">):</span>
+</span><span data-line="17"><span class="k">class</span><span class="w"> </span><span class="nc">MyController</span><span class="p">(</span><span class="n">Controller</span><span class="p">):</span>
 </span><span data-line="18">    <span class="n">path</span> <span class="o">=</span> <span class="s2">&quot;/controller&quot;</span>
 </span><span data-line="19">    <span class="c1"># on the controller</span>
 </span><span data-line="20">    <span class="n">dependencies</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;controller_dependency&quot;</span><span class="p">:</span> <span class="n">Provide</span><span class="p">(</span><span class="n">list_fn</span><span class="p">)}</span>
 </span><span data-line="21">
 </span><span data-line="22">    <span class="c1"># on the route handler</span>
 </span><span data-line="23">    <span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/handler&quot;</span><span class="p">,</span> <span class="n">dependencies</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;local_dependency&quot;</span><span class="p">:</span> <span class="n">Provide</span><span class="p">(</span><span class="n">int_fn</span><span class="p">)})</span>
-</span><span data-line="24">    <span class="k">def</span> <span class="nf">my_route_handler</span><span class="p">(</span>
+</span><span data-line="24">    <span class="k">def</span><span class="w"> </span><span class="nf">my_route_handler</span><span class="p">(</span>
 </span><span data-line="25">        <span class="bp">self</span><span class="p">,</span>
 </span><span data-line="26">        <span class="n">app_dependency</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
 </span><span data-line="27">        <span class="n">router_dependency</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
@@ -629,7 +625,7 @@ value, a warning will be raised.</p>
 </div>
 </div>
 <section id="pre-requisites-and-scope">
-<h2>Pre-requisites and scope<a class="headerlink" href="#pre-requisites-and-scope" title="Permalink to this heading">¶</a></h2>
+<h2>Pre-requisites and scope<a class="headerlink" href="#pre-requisites-and-scope" title="Link to this heading">¶</a></h2>
 <p>The pre-requisites for dependency injection are these:</p>
 <ol class="arabic simple">
 <li><p>dependencies must be callables.</p></li>
@@ -645,7 +641,7 @@ The <code class="docutils literal notranslate"><span class="pre">controller_depe
 is available to all route handlers.</p>
 </section>
 <section id="dependencies-with-yield-cleanup-step">
-<span id="yield-dependencies"></span><h2>Dependencies with yield (cleanup step)<a class="headerlink" href="#dependencies-with-yield-cleanup-step" title="Permalink to this heading">¶</a></h2>
+<span id="yield-dependencies"></span><h2>Dependencies with yield (cleanup step)<a class="headerlink" href="#dependencies-with-yield-cleanup-step" title="Link to this heading">¶</a></h2>
 <p>In addition to simple callables, dependencies can also be (async) generator functions, which allows
 to execute an additional cleanup step, such as closing a connection, after the handler function
 has returned.</p>
@@ -655,18 +651,18 @@ has returned.</p>
 response is sent (in case of HTTP requests)</p>
 </div>
 <section id="a-basic-example">
-<h3>A basic example<a class="headerlink" href="#a-basic-example" title="Permalink to this heading">¶</a></h3>
+<h3>A basic example<a class="headerlink" href="#a-basic-example" title="Link to this heading">¶</a></h3>
 <div class="literal-block-wrapper docutils container" id="id1">
-<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">dependencies.py</span></code></span><a class="headerlink" href="#id1" title="Permalink to this code">¶</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">collections.abc</span> <span class="kn">import</span> <span class="n">Generator</span>
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">dependencies.py</span></code></span><a class="headerlink" href="#id1" title="Link to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Generator</span>
 </span><span data-line="2">
-</span><span data-line="3"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
-</span><span data-line="4"><span class="kn">from</span> <span class="nn">litestar.di</span> <span class="kn">import</span> <span class="n">Provide</span>
+</span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
+</span><span data-line="4"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.di</span><span class="w"> </span><span class="kn">import</span> <span class="n">Provide</span>
 </span><span data-line="5">
 </span><span data-line="6"><span class="n">CONNECTION</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;open&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">}</span>
 </span><span data-line="7">
 </span><span data-line="8">
-</span><span data-line="9"><span class="k">def</span> <span class="nf">generator_function</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bool</span><span class="p">],</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+</span><span data-line="9"><span class="k">def</span><span class="w"> </span><span class="nf">generator_function</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bool</span><span class="p">],</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
 </span><span data-line="10"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Set connection to open and close it after the handler returns.&quot;&quot;&quot;</span>
 </span><span data-line="11">    <span class="n">CONNECTION</span><span class="p">[</span><span class="s2">&quot;open&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
 </span><span data-line="12">    <span class="k">yield</span> <span class="n">CONNECTION</span>
@@ -674,7 +670,7 @@ response is sent (in case of HTTP requests)</p>
 </span><span data-line="14">
 </span><span data-line="15">
 </span><span data-line="16"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">dependencies</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;conn&quot;</span><span class="p">:</span> <span class="n">Provide</span><span class="p">(</span><span class="n">generator_function</span><span class="p">)})</span>
-</span><span data-line="17"><span class="k">def</span> <span class="nf">index</span><span class="p">(</span><span class="n">conn</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bool</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bool</span><span class="p">]:</span>
+</span><span data-line="17"><span class="k">def</span><span class="w"> </span><span class="nf">index</span><span class="p">(</span><span class="n">conn</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bool</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bool</span><span class="p">]:</span>
 </span><span data-line="18"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the current connection state.&quot;&quot;&quot;</span>
 </span><span data-line="19">    <span class="k">return</span> <span class="n">conn</span>
 </span><span data-line="20">
@@ -685,8 +681,8 @@ response is sent (in case of HTTP requests)</p>
 </div>
 <p>If you run the code you’ll see that <code class="docutils literal notranslate"><span class="pre">CONNECTION</span></code> has been reset after the handler function
 returned:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">litestar.testing</span> <span class="kn">import</span> <span class="n">TestClient</span>
-</span><span data-line="2"><span class="kn">from</span> <span class="nn">dependencies</span> <span class="kn">import</span> <span class="n">app</span><span class="p">,</span> <span class="n">CONNECTION</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.testing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TestClient</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">dependencies</span><span class="w"> </span><span class="kn">import</span> <span class="n">app</span><span class="p">,</span> <span class="n">CONNECTION</span>
 </span><span data-line="3">
 </span><span data-line="4"><span class="k">with</span> <span class="n">TestClient</span><span class="p">(</span><span class="n">app</span><span class="o">=</span><span class="n">app</span><span class="p">)</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
 </span><span data-line="5">    <span class="nb">print</span><span class="p">(</span><span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">json</span><span class="p">())</span>  <span class="c1"># {&quot;open&quot;: True}</span>
@@ -695,22 +691,22 @@ returned:</p>
 </div>
 </section>
 <section id="handling-exceptions">
-<h3>Handling exceptions<a class="headerlink" href="#handling-exceptions" title="Permalink to this heading">¶</a></h3>
+<h3>Handling exceptions<a class="headerlink" href="#handling-exceptions" title="Link to this heading">¶</a></h3>
 <p>If an exception occurs within the handler function, it will be raised <strong>within</strong> the
 generator, at the point where it first <code class="docutils literal notranslate"><span class="pre">yield</span></code> ed. This makes it possible to adapt behaviour
 of the dependency based on exceptions, for example rolling back a database session on error
 and committing otherwise.</p>
 <div class="literal-block-wrapper docutils container" id="id2">
-<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">dependencies.py</span></code></span><a class="headerlink" href="#id2" title="Permalink to this code">¶</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">collections.abc</span> <span class="kn">import</span> <span class="n">Generator</span>
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">dependencies.py</span></code></span><a class="headerlink" href="#id2" title="Link to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Generator</span>
 </span><span data-line="2">
-</span><span data-line="3"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
-</span><span data-line="4"><span class="kn">from</span> <span class="nn">litestar.di</span> <span class="kn">import</span> <span class="n">Provide</span>
+</span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
+</span><span data-line="4"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.di</span><span class="w"> </span><span class="kn">import</span> <span class="n">Provide</span>
 </span><span data-line="5">
 </span><span data-line="6"><span class="n">STATE</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;result&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;connection&quot;</span><span class="p">:</span> <span class="s2">&quot;closed&quot;</span><span class="p">}</span>
 </span><span data-line="7">
 </span><span data-line="8">
-</span><span data-line="9"><span class="k">def</span> <span class="nf">generator_function</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+</span><span data-line="9"><span class="k">def</span><span class="w"> </span><span class="nf">generator_function</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
 </span><span data-line="10"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Set the connection state to open and close it after the handler returns.</span>
 </span><span data-line="11">
 </span><span data-line="12"><span class="sd">    If an error occurs, set `result` to `&quot;error&quot;`, else set it to `&quot;OK&quot;`.</span>
@@ -726,7 +722,7 @@ and committing otherwise.</p>
 </span><span data-line="22">
 </span><span data-line="23">
 </span><span data-line="24"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/{name:str}&quot;</span><span class="p">,</span> <span class="n">dependencies</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="n">Provide</span><span class="p">(</span><span class="n">generator_function</span><span class="p">)})</span>
-</span><span data-line="25"><span class="k">def</span> <span class="nf">index</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+</span><span data-line="25"><span class="k">def</span><span class="w"> </span><span class="nf">index</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
 </span><span data-line="26"><span class="w">    </span><span class="sd">&quot;&quot;&quot;If `name` is &quot;John&quot;, return a message, otherwise raise an error.&quot;&quot;&quot;</span>
 </span><span data-line="27">    <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;John&quot;</span><span class="p">:</span>
 </span><span data-line="28">        <span class="k">return</span> <span class="p">{</span><span class="n">name</span><span class="p">:</span> <span class="n">message</span><span class="p">}</span>
@@ -737,8 +733,8 @@ and committing otherwise.</p>
 </span></pre></div>
 </div>
 </div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">litestar.testing</span> <span class="kn">import</span> <span class="n">TestClient</span>
-</span><span data-line="2"><span class="kn">from</span> <span class="nn">dependencies</span> <span class="kn">import</span> <span class="n">STATE</span><span class="p">,</span> <span class="n">app</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.testing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TestClient</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">dependencies</span><span class="w"> </span><span class="kn">import</span> <span class="n">STATE</span><span class="p">,</span> <span class="n">app</span>
 </span><span data-line="3">
 </span><span data-line="4"><span class="k">with</span> <span class="n">TestClient</span><span class="p">(</span><span class="n">app</span><span class="o">=</span><span class="n">app</span><span class="p">)</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
 </span><span data-line="5">    <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/John&quot;</span><span class="p">)</span>
@@ -755,7 +751,7 @@ and committing otherwise.</p>
 <p>You should always wrap <code class="docutils literal notranslate"><span class="pre">yield</span></code> in a <code class="docutils literal notranslate"><span class="pre">try</span></code>/<code class="docutils literal notranslate"><span class="pre">finally</span></code> block, regardless of
 whether you want to handle exceptions, to ensure that the cleanup code is run even
 when exceptions occurred:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">def</span> <span class="nf">generator_dependency</span><span class="p">():</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">def</span><span class="w"> </span><span class="nf">generator_dependency</span><span class="p">():</span>
 </span><span data-line="2">    <span class="k">try</span><span class="p">:</span>
 </span><span data-line="3">        <span class="k">yield</span>
 </span><span data-line="4">    <span class="k">finally</span><span class="p">:</span>
@@ -780,31 +776,31 @@ cleanup of one dependencies do not affect the cleanup of other dependencies.</p>
 </section>
 </section>
 <section id="dependency-keyword-arguments">
-<h2>Dependency keyword arguments<a class="headerlink" href="#dependency-keyword-arguments" title="Permalink to this heading">¶</a></h2>
+<h2>Dependency keyword arguments<a class="headerlink" href="#dependency-keyword-arguments" title="Link to this heading">¶</a></h2>
 <p>As stated above dependencies can receive kwargs but no args. The reason for this is that dependencies are parsed using
 the same mechanism that parses route handler functions, and they too - like route handler functions, can have data
 injected into them.</p>
 <p>In fact, you can inject the same data that you
 can <a class="reference internal" href="routing/handlers.html#reserved-keyword-arguments"><span class="std std-ref">inject into route handlers</span></a>.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Controller</span><span class="p">,</span> <span class="n">patch</span>
-</span><span data-line="2"><span class="kn">from</span> <span class="nn">litestar.di</span> <span class="kn">import</span> <span class="n">Provide</span>
-</span><span data-line="3"><span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">UUID4</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Controller</span><span class="p">,</span> <span class="n">patch</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.di</span><span class="w"> </span><span class="kn">import</span> <span class="n">Provide</span>
+</span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">UUID4</span>
 </span><span data-line="4">
 </span><span data-line="5">
-</span><span data-line="6"><span class="k">class</span> <span class="nc">User</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+</span><span data-line="6"><span class="k">class</span><span class="w"> </span><span class="nc">User</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
 </span><span data-line="7">    <span class="nb">id</span><span class="p">:</span> <span class="n">UUID4</span>
 </span><span data-line="8">    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
 </span><span data-line="9">
 </span><span data-line="10">
-</span><span data-line="11"><span class="k">async</span> <span class="k">def</span> <span class="nf">retrieve_db_user</span><span class="p">(</span><span class="n">user_id</span><span class="p">:</span> <span class="n">UUID4</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">User</span><span class="p">:</span> <span class="o">...</span>
+</span><span data-line="11"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">retrieve_db_user</span><span class="p">(</span><span class="n">user_id</span><span class="p">:</span> <span class="n">UUID4</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">User</span><span class="p">:</span> <span class="o">...</span>
 </span><span data-line="12">
 </span><span data-line="13">
-</span><span data-line="14"><span class="k">class</span> <span class="nc">UserController</span><span class="p">(</span><span class="n">Controller</span><span class="p">):</span>
+</span><span data-line="14"><span class="k">class</span><span class="w"> </span><span class="nc">UserController</span><span class="p">(</span><span class="n">Controller</span><span class="p">):</span>
 </span><span data-line="15">    <span class="n">path</span> <span class="o">=</span> <span class="s2">&quot;/user&quot;</span>
 </span><span data-line="16">    <span class="n">dependencies</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;user&quot;</span><span class="p">:</span> <span class="n">Provide</span><span class="p">(</span><span class="n">retrieve_db_user</span><span class="p">)}</span>
 </span><span data-line="17">
 </span><span data-line="18">    <span class="nd">@patch</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/{user_id:uuid}&quot;</span><span class="p">)</span>
-</span><span data-line="19">    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user</span><span class="p">:</span> <span class="n">User</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">User</span><span class="p">:</span> <span class="o">...</span>
+</span><span data-line="19">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user</span><span class="p">:</span> <span class="n">User</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">User</span><span class="p">:</span> <span class="o">...</span>
 </span></pre></div>
 </div>
 <p>In the above example we have a <code class="docutils literal notranslate"><span class="pre">User</span></code> model that we are persisting into a db. The model is fetched using the helper
@@ -813,27 +809,27 @@ The <code class="docutils literal notranslate"><span class="pre">UserController<
 in turn makes it available as a kwarg in the <code class="docutils literal notranslate"><span class="pre">get_user</span></code> method.</p>
 </section>
 <section id="dependency-overrides">
-<h2>Dependency overrides<a class="headerlink" href="#dependency-overrides" title="Permalink to this heading">¶</a></h2>
+<h2>Dependency overrides<a class="headerlink" href="#dependency-overrides" title="Link to this heading">¶</a></h2>
 <p>Because dependencies are declared at each level of the app using a string keyed dictionary, overriding dependencies is
 very simple:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Controller</span><span class="p">,</span> <span class="n">get</span>
-</span><span data-line="2"><span class="kn">from</span> <span class="nn">litestar.di</span> <span class="kn">import</span> <span class="n">Provide</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Controller</span><span class="p">,</span> <span class="n">get</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.di</span><span class="w"> </span><span class="kn">import</span> <span class="n">Provide</span>
 </span><span data-line="3">
 </span><span data-line="4">
-</span><span data-line="5"><span class="k">def</span> <span class="nf">bool_fn</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span> <span class="o">...</span>
+</span><span data-line="5"><span class="k">def</span><span class="w"> </span><span class="nf">bool_fn</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span> <span class="o">...</span>
 </span><span data-line="6">
 </span><span data-line="7">
-</span><span data-line="8"><span class="k">def</span> <span class="nf">dict_fn</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span> <span class="o">...</span>
+</span><span data-line="8"><span class="k">def</span><span class="w"> </span><span class="nf">dict_fn</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span> <span class="o">...</span>
 </span><span data-line="9">
 </span><span data-line="10">
-</span><span data-line="11"><span class="k">class</span> <span class="nc">MyController</span><span class="p">(</span><span class="n">Controller</span><span class="p">):</span>
+</span><span data-line="11"><span class="k">class</span><span class="w"> </span><span class="nc">MyController</span><span class="p">(</span><span class="n">Controller</span><span class="p">):</span>
 </span><span data-line="12">    <span class="n">path</span> <span class="o">=</span> <span class="s2">&quot;/controller&quot;</span>
 </span><span data-line="13">    <span class="c1"># on the controller</span>
 </span><span data-line="14">    <span class="n">dependencies</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;some_dependency&quot;</span><span class="p">:</span> <span class="n">Provide</span><span class="p">(</span><span class="n">dict_fn</span><span class="p">)}</span>
 </span><span data-line="15">
 </span><span data-line="16">    <span class="c1"># on the route handler</span>
 </span><span data-line="17">    <span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/handler&quot;</span><span class="p">,</span> <span class="n">dependencies</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;some_dependency&quot;</span><span class="p">:</span> <span class="n">Provide</span><span class="p">(</span><span class="n">bool_fn</span><span class="p">)})</span>
-</span><span data-line="18">    <span class="k">def</span> <span class="nf">my_route_handler</span><span class="p">(</span>
+</span><span data-line="18">    <span class="k">def</span><span class="w"> </span><span class="nf">my_route_handler</span><span class="p">(</span>
 </span><span data-line="19">        <span class="bp">self</span><span class="p">,</span>
 </span><span data-line="20">        <span class="n">some_dependency</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
 </span><span data-line="21">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
@@ -843,15 +839,15 @@ very simple:</p>
 controller. The lower scoped dependency therefore overrides the higher scoped one.</p>
 </section>
 <section id="the-provide-class">
-<h2>The <code class="docutils literal notranslate"><span class="pre">Provide</span></code> class<a class="headerlink" href="#the-provide-class" title="Permalink to this heading">¶</a></h2>
+<h2>The <code class="docutils literal notranslate"><span class="pre">Provide</span></code> class<a class="headerlink" href="#the-provide-class" title="Link to this heading">¶</a></h2>
 <p>The <a class="reference internal" href="../reference/di.html#litestar.di.Provide" title="litestar.di.Provide"><code class="xref py py-class docutils literal notranslate"><span class="pre">Provide</span></code></a> class is a wrapper used for dependency injection. To inject a callable you must wrap
 it in <code class="docutils literal notranslate"><span class="pre">Provide</span></code>:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">randint</span>
-</span><span data-line="2"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">get</span>
-</span><span data-line="3"><span class="kn">from</span> <span class="nn">litestar.di</span> <span class="kn">import</span> <span class="n">Provide</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">random</span><span class="w"> </span><span class="kn">import</span> <span class="n">randint</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">get</span>
+</span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.di</span><span class="w"> </span><span class="kn">import</span> <span class="n">Provide</span>
 </span><span data-line="4">
 </span><span data-line="5">
-</span><span data-line="6"><span class="k">def</span> <span class="nf">my_dependency</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+</span><span data-line="6"><span class="k">def</span><span class="w"> </span><span class="nf">my_dependency</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 </span><span data-line="7">    <span class="k">return</span> <span class="n">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
 </span><span data-line="8">
 </span><span data-line="9">
@@ -863,7 +859,7 @@ it in <code class="docutils literal notranslate"><span class="pre">Provide</span
 </span><span data-line="15">        <span class="p">)</span>
 </span><span data-line="16">    <span class="p">},</span>
 </span><span data-line="17"><span class="p">)</span>
-</span><span data-line="18"><span class="k">def</span> <span class="nf">my_handler</span><span class="p">(</span><span class="n">my_dep</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
+</span><span data-line="18"><span class="k">def</span><span class="w"> </span><span class="nf">my_handler</span><span class="p">(</span><span class="n">my_dep</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
 </span></pre></div>
 </div>
 <div class="admonition attention">
@@ -875,23 +871,23 @@ request, even with <code class="docutils literal notranslate"><span class="pre">
 </div>
 </section>
 <section id="dependencies-within-dependencies">
-<h2>Dependencies within dependencies<a class="headerlink" href="#dependencies-within-dependencies" title="Permalink to this heading">¶</a></h2>
+<h2>Dependencies within dependencies<a class="headerlink" href="#dependencies-within-dependencies" title="Link to this heading">¶</a></h2>
 <p>You can inject dependencies into other dependencies - exactly like you would into regular functions.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
-</span><span data-line="2"><span class="kn">from</span> <span class="nn">litestar.di</span> <span class="kn">import</span> <span class="n">Provide</span>
-</span><span data-line="3"><span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">randint</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.di</span><span class="w"> </span><span class="kn">import</span> <span class="n">Provide</span>
+</span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">random</span><span class="w"> </span><span class="kn">import</span> <span class="n">randint</span>
 </span><span data-line="4">
 </span><span data-line="5">
-</span><span data-line="6"><span class="k">def</span> <span class="nf">first_dependency</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+</span><span data-line="6"><span class="k">def</span><span class="w"> </span><span class="nf">first_dependency</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 </span><span data-line="7">    <span class="k">return</span> <span class="n">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
 </span><span data-line="8">
 </span><span data-line="9">
-</span><span data-line="10"><span class="k">def</span> <span class="nf">second_dependency</span><span class="p">(</span><span class="n">injected_integer</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+</span><span data-line="10"><span class="k">def</span><span class="w"> </span><span class="nf">second_dependency</span><span class="p">(</span><span class="n">injected_integer</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 </span><span data-line="11">    <span class="k">return</span> <span class="n">injected_integer</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span>
 </span><span data-line="12">
 </span><span data-line="13">
 </span><span data-line="14"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/true-or-false&quot;</span><span class="p">)</span>
-</span><span data-line="15"><span class="k">def</span> <span class="nf">true_or_false_handler</span><span class="p">(</span><span class="n">injected_bool</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span data-line="15"><span class="k">def</span><span class="w"> </span><span class="nf">true_or_false_handler</span><span class="p">(</span><span class="n">injected_bool</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 </span><span data-line="16">    <span class="k">return</span> <span class="s2">&quot;its true!&quot;</span> <span class="k">if</span> <span class="n">injected_bool</span> <span class="k">else</span> <span class="s2">&quot;nope, its false...&quot;</span>
 </span><span data-line="17">
 </span><span data-line="18">
@@ -910,26 +906,26 @@ request, even with <code class="docutils literal notranslate"><span class="pre">
 </div>
 </section>
 <section id="the-dependency-function">
-<h2>The <code class="docutils literal notranslate"><span class="pre">Dependency</span></code> function<a class="headerlink" href="#the-dependency-function" title="Permalink to this heading">¶</a></h2>
+<h2>The <code class="docutils literal notranslate"><span class="pre">Dependency</span></code> function<a class="headerlink" href="#the-dependency-function" title="Link to this heading">¶</a></h2>
 <section id="dependency-validation">
-<h3>Dependency validation<a class="headerlink" href="#dependency-validation" title="Permalink to this heading">¶</a></h3>
+<h3>Dependency validation<a class="headerlink" href="#dependency-validation" title="Link to this heading">¶</a></h3>
 <p>By default, injected dependency values are validated by Litestar, for example, this application will raise an
 internal server error:</p>
 <div class="literal-block-wrapper docutils container" id="id3">
-<div class="code-block-caption"><span class="caption-text">Dependency validation error</span><a class="headerlink" href="#id3" title="Permalink to this code">¶</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span>
+<div class="code-block-caption"><span class="caption-text">Dependency validation error</span><a class="headerlink" href="#id3" title="Link to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
 </span><span data-line="2">
-</span><span data-line="3"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
-</span><span data-line="4"><span class="kn">from</span> <span class="nn">litestar.di</span> <span class="kn">import</span> <span class="n">Provide</span>
+</span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
+</span><span data-line="4"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.di</span><span class="w"> </span><span class="kn">import</span> <span class="n">Provide</span>
 </span><span data-line="5">
 </span><span data-line="6">
-</span><span data-line="7"><span class="k">async</span> <span class="k">def</span> <span class="nf">provide_str</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span data-line="7"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">provide_str</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 </span><span data-line="8"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns a string.&quot;&quot;&quot;</span>
 </span><span data-line="9">    <span class="k">return</span> <span class="s2">&quot;whoops&quot;</span>
 </span><span data-line="10">
 </span><span data-line="11">
 </span><span data-line="12"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">dependencies</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;injected&quot;</span><span class="p">:</span> <span class="n">Provide</span><span class="p">(</span><span class="n">provide_str</span><span class="p">)},</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-</span><span data-line="13"><span class="k">def</span> <span class="nf">hello_world</span><span class="p">(</span><span class="n">injected</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+</span><span data-line="13"><span class="k">def</span><span class="w"> </span><span class="nf">hello_world</span><span class="p">(</span><span class="n">injected</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
 </span><span data-line="14"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Handler expects an `int`, but we&#39;ve provided a `str`.&quot;&quot;&quot;</span>
 </span><span data-line="15">    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;hello&quot;</span><span class="p">:</span> <span class="n">injected</span><span class="p">}</span>
 </span><span data-line="16">
@@ -940,21 +936,21 @@ internal server error:</p>
 </div>
 <p>Dependency validation can be toggled using the <a class="reference internal" href="../reference/params.html#litestar.params.Dependency" title="litestar.params.Dependency"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dependency</span></code></a> function.</p>
 <div class="literal-block-wrapper docutils container" id="id4">
-<div class="code-block-caption"><span class="caption-text">Dependency validation error</span><a class="headerlink" href="#id4" title="Permalink to this code">¶</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Annotated</span><span class="p">,</span> <span class="n">Any</span>
+<div class="code-block-caption"><span class="caption-text">Dependency validation error</span><a class="headerlink" href="#id4" title="Link to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Annotated</span><span class="p">,</span> <span class="n">Any</span>
 </span><span data-line="2">
-</span><span data-line="3"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
-</span><span data-line="4"><span class="kn">from</span> <span class="nn">litestar.di</span> <span class="kn">import</span> <span class="n">Provide</span>
-</span><span data-line="5"><span class="kn">from</span> <span class="nn">litestar.params</span> <span class="kn">import</span> <span class="n">Dependency</span>
+</span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
+</span><span data-line="4"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.di</span><span class="w"> </span><span class="kn">import</span> <span class="n">Provide</span>
+</span><span data-line="5"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dependency</span>
 </span><span data-line="6">
 </span><span data-line="7">
-</span><span data-line="8"><span class="k">async</span> <span class="k">def</span> <span class="nf">provide_str</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span data-line="8"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">provide_str</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 </span><span data-line="9"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns a string.&quot;&quot;&quot;</span>
 </span><span data-line="10">    <span class="k">return</span> <span class="s2">&quot;whoops&quot;</span>
 </span><span data-line="11">
 </span><span data-line="12">
 </span><span data-line="13"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">dependencies</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;injected&quot;</span><span class="p">:</span> <span class="n">Provide</span><span class="p">(</span><span class="n">provide_str</span><span class="p">)},</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-</span><span data-line="14"><span class="k">def</span> <span class="nf">hello_world</span><span class="p">(</span><span class="n">injected</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Dependency</span><span class="p">(</span><span class="n">skip_validation</span><span class="o">=</span><span class="kc">True</span><span class="p">)])</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+</span><span data-line="14"><span class="k">def</span><span class="w"> </span><span class="nf">hello_world</span><span class="p">(</span><span class="n">injected</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Dependency</span><span class="p">(</span><span class="n">skip_validation</span><span class="o">=</span><span class="kc">True</span><span class="p">)])</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
 </span><span data-line="15"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Handler expects an `int`, but we&#39;ve provided a `str`.&quot;&quot;&quot;</span>
 </span><span data-line="16">    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;hello&quot;</span><span class="p">:</span> <span class="n">injected</span><span class="p">}</span>
 </span><span data-line="17">
@@ -966,23 +962,23 @@ internal server error:</p>
 <p>This may be useful for reasons of efficiency, or if pydantic cannot validate a certain type, but use with caution!</p>
 </section>
 <section id="dependency-function-as-a-marker">
-<h3>Dependency function as a marker<a class="headerlink" href="#dependency-function-as-a-marker" title="Permalink to this heading">¶</a></h3>
+<h3>Dependency function as a marker<a class="headerlink" href="#dependency-function-as-a-marker" title="Link to this heading">¶</a></h3>
 <p>The <a class="reference internal" href="../reference/params.html#litestar.params.Dependency" title="litestar.params.Dependency"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dependency</span></code></a> function can also be used as a marker that gives us a bit more detail
 about your application.</p>
 <section id="exclude-dependencies-with-default-values-from-openapi-docs">
-<h4>Exclude dependencies with default values from OpenAPI docs<a class="headerlink" href="#exclude-dependencies-with-default-values-from-openapi-docs" title="Permalink to this heading">¶</a></h4>
+<h4>Exclude dependencies with default values from OpenAPI docs<a class="headerlink" href="#exclude-dependencies-with-default-values-from-openapi-docs" title="Link to this heading">¶</a></h4>
 <p>Depending on your application design, it is possible to have a dependency declared in a handler or
 <a class="reference internal" href="../reference/di.html#litestar.di.Provide" title="litestar.di.Provide"><code class="xref py py-class docutils literal notranslate"><span class="pre">Provide</span></code></a> function that has a default value. If the dependency isn’t provided for the route, the
 default should be used by the function.</p>
 <div class="literal-block-wrapper docutils container" id="id5">
-<div class="code-block-caption"><span class="caption-text">Dependency with default value</span><a class="headerlink" href="#id5" title="Permalink to this code">¶</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span>
+<div class="code-block-caption"><span class="caption-text">Dependency with default value</span><a class="headerlink" href="#id5" title="Link to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
 </span><span data-line="2">
-</span><span data-line="3"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
+</span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
 </span><span data-line="4">
 </span><span data-line="5">
 </span><span data-line="6"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-</span><span data-line="7"><span class="k">def</span> <span class="nf">hello_world</span><span class="p">(</span><span class="n">optional_dependency</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+</span><span data-line="7"><span class="k">def</span><span class="w"> </span><span class="nf">hello_world</span><span class="p">(</span><span class="n">optional_dependency</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
 </span><span data-line="8"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Notice we haven&#39;t provided the dependency to the route.</span>
 </span><span data-line="9">
 </span><span data-line="10"><span class="sd">    This is OK, because of the default value, but the parameter shows in the docs.</span>
@@ -998,15 +994,15 @@ default should be used by the function.</p>
 parameter.</p>
 <p>By declaring the parameter to be a dependency, Litestar knows to exclude it from the docs:</p>
 <div class="literal-block-wrapper docutils container" id="id6">
-<div class="code-block-caption"><span class="caption-text">Dependency with default value</span><a class="headerlink" href="#id6" title="Permalink to this code">¶</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Annotated</span><span class="p">,</span> <span class="n">Any</span>
+<div class="code-block-caption"><span class="caption-text">Dependency with default value</span><a class="headerlink" href="#id6" title="Link to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Annotated</span><span class="p">,</span> <span class="n">Any</span>
 </span><span data-line="2">
-</span><span data-line="3"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
-</span><span data-line="4"><span class="kn">from</span> <span class="nn">litestar.params</span> <span class="kn">import</span> <span class="n">Dependency</span>
+</span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
+</span><span data-line="4"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dependency</span>
 </span><span data-line="5">
 </span><span data-line="6">
 </span><span data-line="7"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-</span><span data-line="8"><span class="k">def</span> <span class="nf">hello_world</span><span class="p">(</span><span class="n">optional_dependency</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Dependency</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">3</span><span class="p">)])</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+</span><span data-line="8"><span class="k">def</span><span class="w"> </span><span class="nf">hello_world</span><span class="p">(</span><span class="n">optional_dependency</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Dependency</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">3</span><span class="p">)])</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
 </span><span data-line="9"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Notice we haven&#39;t provided the dependency to the route.</span>
 </span><span data-line="10">
 </span><span data-line="11"><span class="sd">    This is OK, because of the default value, and now the parameter is excluded from the docs.</span>
@@ -1020,20 +1016,20 @@ parameter.</p>
 </div>
 </section>
 <section id="early-detection-if-a-dependency-isn-t-provided">
-<h4>Early detection if a dependency isn’t provided<a class="headerlink" href="#early-detection-if-a-dependency-isn-t-provided" title="Permalink to this heading">¶</a></h4>
+<h4>Early detection if a dependency isn’t provided<a class="headerlink" href="#early-detection-if-a-dependency-isn-t-provided" title="Link to this heading">¶</a></h4>
 <p>The other side of the same coin is when a dependency isn’t provided, and no default is specified. Without the dependency
 marker, the parameter is assumed to be a query parameter and the route will most likely fail when accessed.</p>
 <p>If the parameter is marked as a dependency, this allows us to fail early instead:</p>
 <div class="literal-block-wrapper docutils container" id="id7">
-<div class="code-block-caption"><span class="caption-text">Dependency not provided error</span><a class="headerlink" href="#id7" title="Permalink to this code">¶</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Annotated</span><span class="p">,</span> <span class="n">Any</span>
+<div class="code-block-caption"><span class="caption-text">Dependency not provided error</span><a class="headerlink" href="#id7" title="Link to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Annotated</span><span class="p">,</span> <span class="n">Any</span>
 </span><span data-line="2">
-</span><span data-line="3"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
-</span><span data-line="4"><span class="kn">from</span> <span class="nn">litestar.params</span> <span class="kn">import</span> <span class="n">Dependency</span>
+</span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
+</span><span data-line="4"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dependency</span>
 </span><span data-line="5">
 </span><span data-line="6">
 </span><span data-line="7"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
-</span><span data-line="8"><span class="k">def</span> <span class="nf">hello_world</span><span class="p">(</span><span class="n">non_optional_dependency</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Dependency</span><span class="p">()])</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+</span><span data-line="8"><span class="k">def</span><span class="w"> </span><span class="nf">hello_world</span><span class="p">(</span><span class="n">non_optional_dependency</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Dependency</span><span class="p">()])</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
 </span><span data-line="9"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Notice we haven&#39;t provided the dependency to the route.</span>
 </span><span data-line="10">
 </span><span data-line="11"><span class="sd">    This is not great, however by explicitly marking dependencies, Litestar won&#39;t let the app start.</span>
@@ -1102,9 +1098,9 @@ marker, the parameter is assumed to be a query parameter and the route will most
     </div>
   </div>
 </footer>
-      <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=c19e757c"></script>
-      <script src="../_static/doctools.js?v=888ff710"></script>
-      <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
+      <script src="../_static/documentation_options.js?v=b95e84ca"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
       <script src="../_static/copybutton.js?v=f281be69"></script>
       <script src="../_static/litestar-theme.js?v=ab2dcc9e"></script>
@@ -1112,8 +1108,8 @@ marker, the parameter is assumed to be a query parameter and the route will most
       <script>let toggleHintHide = 'Click to hide';</script>
       <script>let toggleOpenOnPrint = 'true';</script>
       <script src="../_static/togglebutton.js?v=4a39c7ea"></script>
-      <script src="../_static/design-tabs.js?v=36754332"></script>
+      <script src="../_static/design-tabs.js?v=f930bc37"></script>
       <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
-      <script src="../_static/shibuya.js?v=e2e99575"></script>
+      <script src="../_static/shibuya.js?v=c477d091"></script>
       <script src="../_static/versioning.js?v=bc681eff"></script></body>
 </html>

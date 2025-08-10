@@ -1,15 +1,15 @@
 <!DOCTYPE html>
-<html lang="en" data-accent-color="amber" data-content_root="">
+<html lang="en" data-accent-color="amber" data-content_root="../../">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Manually with ASGI server - Litestar Framework</title><link rel="shortcut icon" href="../../_static/favicon.svg"/><link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="Docker" href="docker.html" /><link rel="prev" title="NGINX Unit" href="nginx-unit.html" /><script>
     function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
     setColorMode(localStorage._theme||"auto");
   </script><link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=397bb51e" />
-    <link rel="stylesheet" type="text/css" href="../../_static/shibuya.css?v=83eaa723" />
+    <link rel="stylesheet" type="text/css" href="../../_static/shibuya.css?v=76b6f612" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css?v=13237357" />
-    <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../_static/sphinx_paramlinks.css" />
     <link media="print" rel="stylesheet" type="text/css" href="../../_static/print.css?v=20ff2c19" />
     <link rel="stylesheet" type="text/css" href="../../_static/style.css?v=50ea2f63" />
@@ -42,13 +42,13 @@
       <img class="dark-logo" src="../../_static/logo-dark.png" alt="Litestar" height="28" loading="lazy" />
       <strong>Litestar</strong>
     </a>
-    <div class="sy-head-nav" id="HeadNav">
+    <div class="sy-head-nav" id="head-nav">
       <nav class="sy-head-links"><ul><li class="link"><a href="../../index.html">Home</a></li>
-      <li class="link"><button type="button">
+      <li class="link"><button class="js-menu" type="button" id="nav-trigger-2" aria-controls="nav-children-2">
             <span>Community</span>
             <i class="i-lucide chevron-down"></i>
           </button>
-        <ul><li><a href="../../contribution-guide.html">
+        <ul id="nav-children-2" aria-labelledby="nav-trigger-2"><li><a href="../../contribution-guide.html">
                 <span>Contributing</span>
                 <small>Learn how to contribute to the Litestar project</small>
               </a></li><li><a href="https://github.com/litestar-org/.github?tab=coc-ov-file">
@@ -59,11 +59,11 @@
                 <small>Overview of Litestar's security protocols</small>
               </a></li></ul>
       </li>
-      <li class="link"><button type="button">
+      <li class="link"><button class="js-menu" type="button" id="nav-trigger-3" aria-controls="nav-children-3">
             <span>About</span>
             <i class="i-lucide chevron-down"></i>
           </button>
-        <ul><li><a href="https://litestar.dev/about/organization">
+        <ul id="nav-children-3" aria-labelledby="nav-trigger-3"><li><a href="https://litestar.dev/about/organization">
                 <span>Litestar Organization</span>
                 <small>Details about the Litestar organization</small>
               </a></li><li><a href="https://litestar.dev/about/litestar-releases">
@@ -71,11 +71,11 @@
                 <small>Explore the release process, versioning, and deprecation policy for Litestar</small>
               </a></li></ul>
       </li>
-      <li class="link"><button type="button">
+      <li class="link"><button class="js-menu" type="button" id="nav-trigger-4" aria-controls="nav-children-4">
             <span>Release notes</span>
             <i class="i-lucide chevron-down"></i>
           </button>
-        <ul><li><a href="../../release-notes/whats-new-3.html">
+        <ul id="nav-children-4" aria-labelledby="nav-trigger-4"><li><a href="../../release-notes/whats-new-3.html">
                 <span>What's new in 3.0</span>
                 <small>Explore the new features in Litestar 3.0</small>
               </a></li><li><a href="../../release-notes/changelog.html">
@@ -86,11 +86,11 @@
                 <small>All changes in the 2.x series</small>
               </a></li></ul>
       </li>
-      <li class="link"><button type="button">
+      <li class="link"><button class="js-menu" type="button" id="nav-trigger-5" aria-controls="nav-children-5">
             <span>Help</span>
             <i class="i-lucide chevron-down"></i>
           </button>
-        <ul><li><a href="https://discord.gg/litestar">
+        <ul id="nav-children-5" aria-labelledby="nav-trigger-5"><li><a href="https://discord.gg/litestar">
                 <span>Discord Help Forum</span>
                 <small>Dedicated Discord help forum</small>
               </a></li><li><a href="https://github.com/orgs/litestar-org/discussions">
@@ -127,7 +127,7 @@ data-aria-auto="Switch to light color mode"
 data-aria-light="Switch to dark color mode"
 data-aria-dark="Switch to auto color mode">
 <i class="i-lucide theme-icon"></i>
-</button><button class="md:hidden flex items-center js-menu" aria-label="Menu" type="button" aria-controls="HeadNav" aria-expanded="false">
+</button><button class="md:hidden flex items-center js-menu" aria-label="Menu" type="button" aria-controls="head-nav" aria-expanded="false">
         <div class="hamburger">
           <span class="hamburger_1"></span>
           <span class="hamburger_2 -translate-x-2"></span>
@@ -173,12 +173,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2"><a class="reference internal" href="../../usage/databases/index.html">Databases</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../usage/databases/sqlalchemy/index.html">SQLAlchemy</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../usage/databases/sqlalchemy/models_and_repository.html">SQLAlchemy Models &amp; Repository</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../usage/databases/sqlalchemy/plugins/index.html">Plugins</a><ul>
-<li class="toctree-l5"><a class="reference internal" href="../../usage/databases/sqlalchemy/plugins/sqlalchemy_plugin.html">SQLAlchemy Plugin</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../../usage/databases/sqlalchemy/plugins/sqlalchemy_init_plugin.html">SQLAlchemy Init Plugin</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../../usage/databases/sqlalchemy/plugins/sqlalchemy_serialization_plugin.html">SQLAlchemy Serialization Plugin</a></li>
-</ul>
-</li>
+<li class="toctree-l4"><a class="reference internal" href="../../usage/databases/sqlalchemy/plugins/index.html">Plugins</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../../usage/databases/piccolo.html">Piccolo ORM</a></li>
@@ -505,11 +500,12 @@ data-aria-dark="Switch to auto color mode">
     </span>
   </span>
 </a><div class="edit-this-page">
-  <a href="https://github.com/litestar-org/litestar/blob/master/docs/topics/deployment/manually-with-asgi-server.rst">Edit this page</a>
+  <a href="https://github.com/litestar-org/litestar/blob/main/docs/topics/deployment/manually-with-asgi-server.rst">Edit this page</a>
 </div><div id="ethical-ad-placement" data-ea-publisher="readthedocs"></div></div>
   </aside>
   <div class="rside-overlay js-menu" role="button" aria-label="Close Table of Contents" aria-controls="rside" aria-expanded="false"></div>
-  <main class="sy-main w-full max-sm:max-w-full print:pt-6"><div class="sy-breadcrumbs" role="navigation">
+  <main class="sy-main w-full max-sm:max-w-full print:pt-6">
+<div class="sy-breadcrumbs" role="navigation">
   <div class="sy-breadcrumbs-inner flex items-center">
     <div class="md:hidden mr-3">
       <button class="js-menu" aria-label="Menu" type="button" aria-controls="lside" aria-expanded="false">
@@ -543,18 +539,18 @@ data-aria-dark="Switch to auto color mode">
       <div class="min-w-0 max-w-6xl px-6 pb-6 pt-8 xl:px-12">
         <article class="yue" role="main">
           <section id="manually-with-asgi-server">
-<h1>Manually with ASGI server<a class="headerlink" href="#manually-with-asgi-server" title="Permalink to this heading">¶</a></h1>
+<h1>Manually with ASGI server<a class="headerlink" href="#manually-with-asgi-server" title="Link to this heading">¶</a></h1>
 <p>ASGI (Asynchronous Server Gateway Interface) is intended to provide a standard interface between async Python web
 frameworks like Litestar, and async web servers.</p>
 <p>There are several popular ASGI servers available, and you can choose the one that best fits your application’s needs.</p>
 <section id="use-when">
-<h2>Use When<a class="headerlink" href="#use-when" title="Permalink to this heading">¶</a></h2>
+<h2>Use When<a class="headerlink" href="#use-when" title="Link to this heading">¶</a></h2>
 <p>Running your application manually with an ASGI server is usually only ideal in development and testing environments.</p>
 <p>It is generally recommended to run your production workloads inside a containerized environment, such as
 <a class="reference internal" href="docker.html"><span class="doc">Docker</span></a> or Kubernetes or via a process control system
 such as <a class="reference internal" href="supervisor.html"><span class="doc">Supervisor</span></a> or <code class="docutils literal notranslate"><span class="pre">systemd</span></code>.</p>
 <section id="alternatives">
-<h3>Alternatives<a class="headerlink" href="#alternatives" title="Permalink to this heading">¶</a></h3>
+<h3>Alternatives<a class="headerlink" href="#alternatives" title="Link to this heading">¶</a></h3>
 <p>For different deployment scenarios, consider these alternatives:</p>
 <ul>
 <li><dl class="simple">
@@ -585,28 +581,28 @@ such as <a class="reference internal" href="supervisor.html"><span class="doc">S
 </section>
 </section>
 <section id="choosing-an-asgi-server">
-<h2>Choosing an ASGI Server<a class="headerlink" href="#choosing-an-asgi-server" title="Permalink to this heading">¶</a></h2>
+<h2>Choosing an ASGI Server<a class="headerlink" href="#choosing-an-asgi-server" title="Link to this heading">¶</a></h2>
 <div class="sd-tab-set docutils">
 <input checked="checked" id="sd-tab-item-0" name="sd-tab-set-0" type="radio">
-</input><label class="sd-tab-label" data-sync-id="uvicorn" for="sd-tab-item-0">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="uvicorn" for="sd-tab-item-0">
 Uvicorn</label><div class="sd-tab-content docutils">
 <p><a class="reference external" href="https://www.uvicorn.org/">Uvicorn</a> is an ASGI server that supports <code class="docutils literal notranslate"><span class="pre">HTTP/1.1</span></code> and WebSocket.</p>
 </div>
 <input id="sd-tab-item-1" name="sd-tab-set-0" type="radio">
-</input><label class="sd-tab-label" data-sync-id="hypercorn" for="sd-tab-item-1">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="hypercorn" for="sd-tab-item-1">
 Hypercorn</label><div class="sd-tab-content docutils">
 <p><a class="reference external" href="https://hypercorn.readthedocs.io/en/latest/#/">Hypercorn</a> is an ASGI server that was initially part of
 <a class="reference external" href="https://pgjones.gitlab.io/quart//">Quart</a>, and supports <code class="docutils literal notranslate"><span class="pre">HTTP/1.1</span></code>, <code class="docutils literal notranslate"><span class="pre">HTTP/2</span></code>, and WebSocket.</p>
 </div>
 <input id="sd-tab-item-2" name="sd-tab-set-0" type="radio">
-</input><label class="sd-tab-label" data-sync-id="daphne" for="sd-tab-item-2">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="daphne" for="sd-tab-item-2">
 Daphne</label><div class="sd-tab-content docutils">
 <p><a class="reference external" href="https://github.com/django/daphne/">Daphne</a> is an ASGI server that was originally developed for
 <a class="reference external" href="https://channels.readthedocs.io/en/latest/">Django Channels</a>, and supports <code class="docutils literal notranslate"><span class="pre">HTTP/1.1</span></code>, <code class="docutils literal notranslate"><span class="pre">HTTP/2</span></code>, and
 WebSocket.</p>
 </div>
 <input id="sd-tab-item-3" name="sd-tab-set-0" type="radio">
-</input><label class="sd-tab-label" data-sync-id="granian" for="sd-tab-item-3">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="granian" for="sd-tab-item-3">
 Granian</label><div class="sd-tab-content docutils">
 <p><a class="reference external" href="https://github.com/emmett-framework/granian/">Granian</a> is a Rust-based ASGI server that supports <code class="docutils literal notranslate"><span class="pre">HTTP/1.1</span></code>,
 <code class="docutils literal notranslate"><span class="pre">HTTP/2</span></code>, and WebSocket.</p>
@@ -614,43 +610,43 @@ Granian</label><div class="sd-tab-content docutils">
 </div>
 </section>
 <section id="install-the-asgi-server">
-<h2>Install the ASGI Server<a class="headerlink" href="#install-the-asgi-server" title="Permalink to this heading">¶</a></h2>
+<h2>Install the ASGI Server<a class="headerlink" href="#install-the-asgi-server" title="Link to this heading">¶</a></h2>
 <div class="sd-tab-set docutils">
 <input checked="checked" id="sd-tab-item-4" name="sd-tab-set-1" type="radio">
-</input><label class="sd-tab-label" data-sync-id="uvicorn" for="sd-tab-item-4">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="uvicorn" for="sd-tab-item-4">
 Uvicorn</label><div class="sd-tab-content docutils">
 <div class="literal-block-wrapper docutils container" id="id2">
-<div class="code-block-caption"><span class="caption-text">Install Uvicorn with pip</span><a class="headerlink" href="#id2" title="Permalink to this code">¶</a></div>
+<div class="code-block-caption"><span class="caption-text">Install Uvicorn with pip</span><a class="headerlink" href="#id2" title="Link to this code">¶</a></div>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span data-line="1">pip<span class="w"> </span>install<span class="w"> </span>uvicorn
 </span></pre></div>
 </div>
 </div>
 </div>
 <input id="sd-tab-item-5" name="sd-tab-set-1" type="radio">
-</input><label class="sd-tab-label" data-sync-id="hypercorn" for="sd-tab-item-5">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="hypercorn" for="sd-tab-item-5">
 Hypercorn</label><div class="sd-tab-content docutils">
 <div class="literal-block-wrapper docutils container" id="id3">
-<div class="code-block-caption"><span class="caption-text">Install Hypercorn with pip</span><a class="headerlink" href="#id3" title="Permalink to this code">¶</a></div>
+<div class="code-block-caption"><span class="caption-text">Install Hypercorn with pip</span><a class="headerlink" href="#id3" title="Link to this code">¶</a></div>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span data-line="1">pip<span class="w"> </span>install<span class="w"> </span>hypercorn
 </span></pre></div>
 </div>
 </div>
 </div>
 <input id="sd-tab-item-6" name="sd-tab-set-1" type="radio">
-</input><label class="sd-tab-label" data-sync-id="daphne" for="sd-tab-item-6">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="daphne" for="sd-tab-item-6">
 Daphne</label><div class="sd-tab-content docutils">
 <div class="literal-block-wrapper docutils container" id="id4">
-<div class="code-block-caption"><span class="caption-text">Install Daphne with pip</span><a class="headerlink" href="#id4" title="Permalink to this code">¶</a></div>
+<div class="code-block-caption"><span class="caption-text">Install Daphne with pip</span><a class="headerlink" href="#id4" title="Link to this code">¶</a></div>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span data-line="1">pip<span class="w"> </span>install<span class="w"> </span>daphne
 </span></pre></div>
 </div>
 </div>
 </div>
 <input id="sd-tab-item-7" name="sd-tab-set-1" type="radio">
-</input><label class="sd-tab-label" data-sync-id="granian" for="sd-tab-item-7">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="granian" for="sd-tab-item-7">
 Granian</label><div class="sd-tab-content docutils">
 <div class="literal-block-wrapper docutils container" id="id5">
-<div class="code-block-caption"><span class="caption-text">Install Granian with pip</span><a class="headerlink" href="#id5" title="Permalink to this code">¶</a></div>
+<div class="code-block-caption"><span class="caption-text">Install Granian with pip</span><a class="headerlink" href="#id5" title="Link to this code">¶</a></div>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span data-line="1">pip<span class="w"> </span>install<span class="w"> </span>granian
 </span></pre></div>
 </div>
@@ -659,21 +655,21 @@ Granian</label><div class="sd-tab-content docutils">
 </div>
 </section>
 <section id="run-the-asgi-server">
-<h2>Run the ASGI Server<a class="headerlink" href="#run-the-asgi-server" title="Permalink to this heading">¶</a></h2>
+<h2>Run the ASGI Server<a class="headerlink" href="#run-the-asgi-server" title="Link to this heading">¶</a></h2>
 <p>Assuming your app is defined in the same manner as <a class="reference internal" href="../../getting-started.html#minimal-example"><span class="std std-ref">Minimal Example</span></a>, you can run the
 ASGI server with the following command:</p>
 <div class="sd-tab-set docutils">
 <input checked="checked" id="sd-tab-item-8" name="sd-tab-set-2" type="radio">
-</input><label class="sd-tab-label" data-sync-id="uvicorn" for="sd-tab-item-8">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="uvicorn" for="sd-tab-item-8">
 Uvicorn</label><div class="sd-tab-content docutils">
 <div class="literal-block-wrapper docutils container" id="id6">
-<div class="code-block-caption"><span class="caption-text">Run Uvicorn with the default configuration</span><a class="headerlink" href="#id6" title="Permalink to this code">¶</a></div>
+<div class="code-block-caption"><span class="caption-text">Run Uvicorn with the default configuration</span><a class="headerlink" href="#id6" title="Link to this code">¶</a></div>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span data-line="1">uvicorn<span class="w"> </span>app:app
 </span></pre></div>
 </div>
 </div>
 <div class="literal-block-wrapper docutils container" id="id7">
-<div class="code-block-caption"><span class="caption-text">Console Output</span><a class="headerlink" href="#id7" title="Permalink to this code">¶</a></div>
+<div class="code-block-caption"><span class="caption-text">Console Output</span><a class="headerlink" href="#id7" title="Link to this code">¶</a></div>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="go">INFO:     Waiting for application startup.</span>
 </span><span data-line="2"><span class="go">INFO:     Application startup complete.</span>
 </span><span data-line="3"><span class="go">INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)</span>
@@ -682,32 +678,32 @@ Uvicorn</label><div class="sd-tab-content docutils">
 </div>
 </div>
 <input id="sd-tab-item-9" name="sd-tab-set-2" type="radio">
-</input><label class="sd-tab-label" data-sync-id="hypercorn" for="sd-tab-item-9">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="hypercorn" for="sd-tab-item-9">
 Hypercorn</label><div class="sd-tab-content docutils">
 <div class="literal-block-wrapper docutils container" id="id8">
-<div class="code-block-caption"><span class="caption-text">Run Hypercorn with the default configuration</span><a class="headerlink" href="#id8" title="Permalink to this code">¶</a></div>
+<div class="code-block-caption"><span class="caption-text">Run Hypercorn with the default configuration</span><a class="headerlink" href="#id8" title="Link to this code">¶</a></div>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span data-line="1">hypercorn<span class="w"> </span>app:app
 </span></pre></div>
 </div>
 </div>
 <div class="literal-block-wrapper docutils container" id="id9">
-<div class="code-block-caption"><span class="caption-text">Console Output</span><a class="headerlink" href="#id9" title="Permalink to this code">¶</a></div>
+<div class="code-block-caption"><span class="caption-text">Console Output</span><a class="headerlink" href="#id9" title="Link to this code">¶</a></div>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="go">[2023-11-12 23:31:26 -0800] [16748] [INFO] Running on http://127.0.0.1:8000 (CTRL + C to quit)</span>
 </span></pre></div>
 </div>
 </div>
 </div>
 <input id="sd-tab-item-10" name="sd-tab-set-2" type="radio">
-</input><label class="sd-tab-label" data-sync-id="daphne" for="sd-tab-item-10">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="daphne" for="sd-tab-item-10">
 Daphne</label><div class="sd-tab-content docutils">
 <div class="literal-block-wrapper docutils container" id="id10">
-<div class="code-block-caption"><span class="caption-text">Run Daphne with the default configuration</span><a class="headerlink" href="#id10" title="Permalink to this code">¶</a></div>
+<div class="code-block-caption"><span class="caption-text">Run Daphne with the default configuration</span><a class="headerlink" href="#id10" title="Link to this code">¶</a></div>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span data-line="1">daphne<span class="w"> </span>app:app
 </span></pre></div>
 </div>
 </div>
 <div class="literal-block-wrapper docutils container" id="id11">
-<div class="code-block-caption"><span class="caption-text">Console Output</span><a class="headerlink" href="#id11" title="Permalink to this code">¶</a></div>
+<div class="code-block-caption"><span class="caption-text">Console Output</span><a class="headerlink" href="#id11" title="Link to this code">¶</a></div>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="go">INFO - 2023-11-12 23:31:51,571 - daphne.cli - cli - Starting server at tcp:port=8000:interface=127.0.0.1</span>
 </span><span data-line="2"><span class="go">INFO - 2023-11-12 23:31:51,572 - daphne.server - server - Listening on TCP address 127.0.0.1:8000</span>
 </span></pre></div>
@@ -715,16 +711,16 @@ Daphne</label><div class="sd-tab-content docutils">
 </div>
 </div>
 <input id="sd-tab-item-11" name="sd-tab-set-2" type="radio">
-</input><label class="sd-tab-label" data-sync-id="granian" for="sd-tab-item-11">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="granian" for="sd-tab-item-11">
 Granian</label><div class="sd-tab-content docutils">
 <div class="literal-block-wrapper docutils container" id="id12">
-<div class="code-block-caption"><span class="caption-text">Run Granian with the default configuration</span><a class="headerlink" href="#id12" title="Permalink to this code">¶</a></div>
+<div class="code-block-caption"><span class="caption-text">Run Granian with the default configuration</span><a class="headerlink" href="#id12" title="Link to this code">¶</a></div>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span data-line="1">granian<span class="w"> </span>--interface<span class="w"> </span>asgi<span class="w"> </span>app:app
 </span></pre></div>
 </div>
 </div>
 <div class="literal-block-wrapper docutils container" id="id13">
-<div class="code-block-caption"><span class="caption-text">Console Output</span><a class="headerlink" href="#id13" title="Permalink to this code">¶</a></div>
+<div class="code-block-caption"><span class="caption-text">Console Output</span><a class="headerlink" href="#id13" title="Link to this code">¶</a></div>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="go">[INFO] Starting granian</span>
 </span><span data-line="2"><span class="go">[INFO] Listening at: 127.0.0.1:8000</span>
 </span></pre></div>
@@ -734,7 +730,7 @@ Granian</label><div class="sd-tab-content docutils">
 </div>
 </section>
 <section id="gunicorn-with-uvicorn-workers">
-<h2>Gunicorn with Uvicorn workers<a class="headerlink" href="#gunicorn-with-uvicorn-workers" title="Permalink to this heading">¶</a></h2>
+<h2>Gunicorn with Uvicorn workers<a class="headerlink" href="#gunicorn-with-uvicorn-workers" title="Link to this heading">¶</a></h2>
 <div class="admonition important">
 <p class="admonition-title">Important</p>
 <p><strong>Deprecation Notice</strong></p>
@@ -794,9 +790,9 @@ Granian</label><div class="sd-tab-content docutils">
     </div>
   </div>
 </footer>
-      <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=c19e757c"></script>
-      <script src="../../_static/doctools.js?v=888ff710"></script>
-      <script src="../../_static/sphinx_highlight.js?v=4825356b"></script>
+      <script src="../../_static/documentation_options.js?v=b95e84ca"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
       <script src="../../_static/copybutton.js?v=f281be69"></script>
       <script src="../../_static/litestar-theme.js?v=ab2dcc9e"></script>
@@ -804,8 +800,8 @@ Granian</label><div class="sd-tab-content docutils">
       <script>let toggleHintHide = 'Click to hide';</script>
       <script>let toggleOpenOnPrint = 'true';</script>
       <script src="../../_static/togglebutton.js?v=4a39c7ea"></script>
-      <script src="../../_static/design-tabs.js?v=36754332"></script>
+      <script src="../../_static/design-tabs.js?v=f930bc37"></script>
       <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
-      <script src="../../_static/shibuya.js?v=e2e99575"></script>
+      <script src="../../_static/shibuya.js?v=c477d091"></script>
       <script src="../../_static/versioning.js?v=bc681eff"></script></body>
 </html>

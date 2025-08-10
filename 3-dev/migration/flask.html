@@ -1,15 +1,15 @@
 <!DOCTYPE html>
-<html lang="en" data-accent-color="amber" data-content_root="">
+<html lang="en" data-accent-color="amber" data-content_root="../">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>From Flask - Litestar Framework</title><link rel="shortcut icon" href="../_static/favicon.svg"/><link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="From Starlette / FastAPI" href="fastapi.html" /><link rel="prev" title="Migrating to Litestar" href="index.html" /><script>
     function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
     setColorMode(localStorage._theme||"auto");
   </script><link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=397bb51e" />
-    <link rel="stylesheet" type="text/css" href="../_static/shibuya.css?v=83eaa723" />
+    <link rel="stylesheet" type="text/css" href="../_static/shibuya.css?v=76b6f612" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
-    <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx_paramlinks.css" />
     <link media="print" rel="stylesheet" type="text/css" href="../_static/print.css?v=20ff2c19" />
     <link rel="stylesheet" type="text/css" href="../_static/style.css?v=50ea2f63" />
@@ -42,13 +42,13 @@
       <img class="dark-logo" src="../_static/logo-dark.png" alt="Litestar" height="28" loading="lazy" />
       <strong>Litestar</strong>
     </a>
-    <div class="sy-head-nav" id="HeadNav">
+    <div class="sy-head-nav" id="head-nav">
       <nav class="sy-head-links"><ul><li class="link"><a href="../index.html">Home</a></li>
-      <li class="link"><button type="button">
+      <li class="link"><button class="js-menu" type="button" id="nav-trigger-2" aria-controls="nav-children-2">
             <span>Community</span>
             <i class="i-lucide chevron-down"></i>
           </button>
-        <ul><li><a href="../contribution-guide.html">
+        <ul id="nav-children-2" aria-labelledby="nav-trigger-2"><li><a href="../contribution-guide.html">
                 <span>Contributing</span>
                 <small>Learn how to contribute to the Litestar project</small>
               </a></li><li><a href="https://github.com/litestar-org/.github?tab=coc-ov-file">
@@ -59,11 +59,11 @@
                 <small>Overview of Litestar's security protocols</small>
               </a></li></ul>
       </li>
-      <li class="link"><button type="button">
+      <li class="link"><button class="js-menu" type="button" id="nav-trigger-3" aria-controls="nav-children-3">
             <span>About</span>
             <i class="i-lucide chevron-down"></i>
           </button>
-        <ul><li><a href="https://litestar.dev/about/organization">
+        <ul id="nav-children-3" aria-labelledby="nav-trigger-3"><li><a href="https://litestar.dev/about/organization">
                 <span>Litestar Organization</span>
                 <small>Details about the Litestar organization</small>
               </a></li><li><a href="https://litestar.dev/about/litestar-releases">
@@ -71,11 +71,11 @@
                 <small>Explore the release process, versioning, and deprecation policy for Litestar</small>
               </a></li></ul>
       </li>
-      <li class="link"><button type="button">
+      <li class="link"><button class="js-menu" type="button" id="nav-trigger-4" aria-controls="nav-children-4">
             <span>Release notes</span>
             <i class="i-lucide chevron-down"></i>
           </button>
-        <ul><li><a href="../release-notes/whats-new-3.html">
+        <ul id="nav-children-4" aria-labelledby="nav-trigger-4"><li><a href="../release-notes/whats-new-3.html">
                 <span>What's new in 3.0</span>
                 <small>Explore the new features in Litestar 3.0</small>
               </a></li><li><a href="../release-notes/changelog.html">
@@ -86,11 +86,11 @@
                 <small>All changes in the 2.x series</small>
               </a></li></ul>
       </li>
-      <li class="link"><button type="button">
+      <li class="link"><button class="js-menu" type="button" id="nav-trigger-5" aria-controls="nav-children-5">
             <span>Help</span>
             <i class="i-lucide chevron-down"></i>
           </button>
-        <ul><li><a href="https://discord.gg/litestar">
+        <ul id="nav-children-5" aria-labelledby="nav-trigger-5"><li><a href="https://discord.gg/litestar">
                 <span>Discord Help Forum</span>
                 <small>Dedicated Discord help forum</small>
               </a></li><li><a href="https://github.com/orgs/litestar-org/discussions">
@@ -127,7 +127,7 @@ data-aria-auto="Switch to light color mode"
 data-aria-light="Switch to dark color mode"
 data-aria-dark="Switch to auto color mode">
 <i class="i-lucide theme-icon"></i>
-</button><button class="md:hidden flex items-center js-menu" aria-label="Menu" type="button" aria-controls="HeadNav" aria-expanded="false">
+</button><button class="md:hidden flex items-center js-menu" aria-label="Menu" type="button" aria-controls="head-nav" aria-expanded="false">
         <div class="hamburger">
           <span class="hamburger_1"></span>
           <span class="hamburger_2 -translate-x-2"></span>
@@ -173,12 +173,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2"><a class="reference internal" href="../usage/databases/index.html">Databases</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../usage/databases/sqlalchemy/index.html">SQLAlchemy</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../usage/databases/sqlalchemy/models_and_repository.html">SQLAlchemy Models &amp; Repository</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../usage/databases/sqlalchemy/plugins/index.html">Plugins</a><ul>
-<li class="toctree-l5"><a class="reference internal" href="../usage/databases/sqlalchemy/plugins/sqlalchemy_plugin.html">SQLAlchemy Plugin</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../usage/databases/sqlalchemy/plugins/sqlalchemy_init_plugin.html">SQLAlchemy Init Plugin</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../usage/databases/sqlalchemy/plugins/sqlalchemy_serialization_plugin.html">SQLAlchemy Serialization Plugin</a></li>
-</ul>
-</li>
+<li class="toctree-l4"><a class="reference internal" href="../usage/databases/sqlalchemy/plugins/index.html">Plugins</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../usage/databases/piccolo.html">Piccolo ORM</a></li>
@@ -514,11 +509,12 @@ data-aria-dark="Switch to auto color mode">
     </span>
   </span>
 </a><div class="edit-this-page">
-  <a href="https://github.com/litestar-org/litestar/blob/master/docs/migration/flask.rst">Edit this page</a>
+  <a href="https://github.com/litestar-org/litestar/blob/main/docs/migration/flask.rst">Edit this page</a>
 </div><div id="ethical-ad-placement" data-ea-publisher="readthedocs"></div></div>
   </aside>
   <div class="rside-overlay js-menu" role="button" aria-label="Close Table of Contents" aria-controls="rside" aria-expanded="false"></div>
-  <main class="sy-main w-full max-sm:max-w-full print:pt-6"><div class="sy-breadcrumbs" role="navigation">
+  <main class="sy-main w-full max-sm:max-w-full print:pt-6">
+<div class="sy-breadcrumbs" role="navigation">
   <div class="sy-breadcrumbs-inner flex items-center">
     <div class="md:hidden mr-3">
       <button class="js-menu" aria-label="Menu" type="button" aria-controls="lside" aria-expanded="false">
@@ -548,9 +544,9 @@ data-aria-dark="Switch to auto color mode">
       <div class="min-w-0 max-w-6xl px-6 pb-6 pt-8 xl:px-12">
         <article class="yue" role="main">
           <section id="from-flask">
-<h1>From Flask<a class="headerlink" href="#from-flask" title="Permalink to this heading">¶</a></h1>
+<h1>From Flask<a class="headerlink" href="#from-flask" title="Link to this heading">¶</a></h1>
 <section id="asgi-vs-wsgi">
-<h2>ASGI vs WSGI<a class="headerlink" href="#asgi-vs-wsgi" title="Permalink to this heading">¶</a></h2>
+<h2>ASGI vs WSGI<a class="headerlink" href="#asgi-vs-wsgi" title="Link to this heading">¶</a></h2>
 <p><a class="reference external" href="https://flask.palletsprojects.com">Flask</a> is a WSGI framework, whereas Litestar
 is built using the modern <a class="reference external" href="https://asgi.readthedocs.io">ASGI</a> standard. A key difference
 is that <em>ASGI</em> is built with async in mind.</p>
@@ -566,41 +562,41 @@ Litestar then adds support for synchronous functions by running them in a non-bl
 concurrently.</p>
 </section>
 <section id="routing">
-<h2>Routing<a class="headerlink" href="#routing" title="Permalink to this heading">¶</a></h2>
+<h2>Routing<a class="headerlink" href="#routing" title="Link to this heading">¶</a></h2>
 <div class="sd-tab-set docutils">
 <input checked="checked" id="sd-tab-item-0" name="sd-tab-set-0" type="radio">
-</input><label class="sd-tab-label" data-sync-id="flask" for="sd-tab-item-0">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="flask" for="sd-tab-item-0">
 Flask</label><div class="sd-tab-content docutils">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">Flask</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">flask</span><span class="w"> </span><span class="kn">import</span> <span class="n">Flask</span>
 </span><span data-line="2">
 </span><span data-line="3">
 </span><span data-line="4"><span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 </span><span data-line="5">
 </span><span data-line="6">
 </span><span data-line="7"><span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
-</span><span data-line="8"><span class="k">def</span> <span class="nf">index</span><span class="p">():</span>
+</span><span data-line="8"><span class="k">def</span><span class="w"> </span><span class="nf">index</span><span class="p">():</span>
 </span><span data-line="9">    <span class="k">return</span> <span class="s2">&quot;Index Page&quot;</span>
 </span><span data-line="10">
 </span><span data-line="11">
 </span><span data-line="12"><span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s2">&quot;/hello&quot;</span><span class="p">)</span>
-</span><span data-line="13"><span class="k">def</span> <span class="nf">hello</span><span class="p">():</span>
+</span><span data-line="13"><span class="k">def</span><span class="w"> </span><span class="nf">hello</span><span class="p">():</span>
 </span><span data-line="14">    <span class="k">return</span> <span class="s2">&quot;Hello, World&quot;</span>
 </span></pre></div>
 </div>
 </div>
 <input id="sd-tab-item-1" name="sd-tab-set-0" type="radio">
-</input><label class="sd-tab-label" data-sync-id="litestar" for="sd-tab-item-1">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="litestar" for="sd-tab-item-1">
 Litestar</label><div class="sd-tab-content docutils">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
 </span><span data-line="2">
 </span><span data-line="3">
 </span><span data-line="4"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
-</span><span data-line="5"><span class="k">def</span> <span class="nf">index</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span data-line="5"><span class="k">def</span><span class="w"> </span><span class="nf">index</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 </span><span data-line="6">    <span class="k">return</span> <span class="s2">&quot;Index Page&quot;</span>
 </span><span data-line="7">
 </span><span data-line="8">
 </span><span data-line="9"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/hello&quot;</span><span class="p">)</span>
-</span><span data-line="10"><span class="k">def</span> <span class="nf">hello</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span data-line="10"><span class="k">def</span><span class="w"> </span><span class="nf">hello</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 </span><span data-line="11">    <span class="k">return</span> <span class="s2">&quot;Hello, World&quot;</span>
 </span><span data-line="12">
 </span><span data-line="13">
@@ -610,52 +606,52 @@ Litestar</label><div class="sd-tab-content docutils">
 </div>
 </div>
 <section id="path-parameters">
-<h3>Path parameters<a class="headerlink" href="#path-parameters" title="Permalink to this heading">¶</a></h3>
+<h3>Path parameters<a class="headerlink" href="#path-parameters" title="Link to this heading">¶</a></h3>
 <div class="sd-tab-set docutils">
 <input checked="checked" id="sd-tab-item-2" name="sd-tab-set-1" type="radio">
-</input><label class="sd-tab-label" data-sync-id="flask" for="sd-tab-item-2">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="flask" for="sd-tab-item-2">
 Flask</label><div class="sd-tab-content docutils">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">Flask</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">flask</span><span class="w"> </span><span class="kn">import</span> <span class="n">Flask</span>
 </span><span data-line="2">
 </span><span data-line="3">
 </span><span data-line="4"><span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 </span><span data-line="5">
 </span><span data-line="6">
 </span><span data-line="7"><span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s2">&quot;/user/&lt;username&gt;&quot;</span><span class="p">)</span>
-</span><span data-line="8"><span class="k">def</span> <span class="nf">show_user_profile</span><span class="p">(</span><span class="n">username</span><span class="p">):</span>
+</span><span data-line="8"><span class="k">def</span><span class="w"> </span><span class="nf">show_user_profile</span><span class="p">(</span><span class="n">username</span><span class="p">):</span>
 </span><span data-line="9">    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;User </span><span class="si">{</span><span class="n">username</span><span class="si">}</span><span class="s2">&quot;</span>
 </span><span data-line="10">
 </span><span data-line="11">
 </span><span data-line="12"><span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s2">&quot;/post/&lt;int:post_id&gt;&quot;</span><span class="p">)</span>
-</span><span data-line="13"><span class="k">def</span> <span class="nf">show_post</span><span class="p">(</span><span class="n">post_id</span><span class="p">):</span>
+</span><span data-line="13"><span class="k">def</span><span class="w"> </span><span class="nf">show_post</span><span class="p">(</span><span class="n">post_id</span><span class="p">):</span>
 </span><span data-line="14">    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Post </span><span class="si">{</span><span class="n">post_id</span><span class="si">}</span><span class="s2">&quot;</span>
 </span><span data-line="15">
 </span><span data-line="16">
 </span><span data-line="17"><span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s2">&quot;/path/&lt;path:subpath&gt;&quot;</span><span class="p">)</span>
-</span><span data-line="18"><span class="k">def</span> <span class="nf">show_subpath</span><span class="p">(</span><span class="n">subpath</span><span class="p">):</span>
+</span><span data-line="18"><span class="k">def</span><span class="w"> </span><span class="nf">show_subpath</span><span class="p">(</span><span class="n">subpath</span><span class="p">):</span>
 </span><span data-line="19">    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Subpath </span><span class="si">{</span><span class="n">subpath</span><span class="si">}</span><span class="s2">&quot;</span>
 </span></pre></div>
 </div>
 </div>
 <input id="sd-tab-item-3" name="sd-tab-set-1" type="radio">
-</input><label class="sd-tab-label" data-sync-id="litestar" for="sd-tab-item-3">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="litestar" for="sd-tab-item-3">
 Litestar</label><div class="sd-tab-content docutils">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
-</span><span data-line="2"><span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
 </span><span data-line="3">
 </span><span data-line="4">
 </span><span data-line="5"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/user/{username:str}&quot;</span><span class="p">)</span>
-</span><span data-line="6"><span class="k">def</span> <span class="nf">show_user_profile</span><span class="p">(</span><span class="n">username</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span data-line="6"><span class="k">def</span><span class="w"> </span><span class="nf">show_user_profile</span><span class="p">(</span><span class="n">username</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 </span><span data-line="7">    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;User </span><span class="si">{</span><span class="n">username</span><span class="si">}</span><span class="s2">&quot;</span>
 </span><span data-line="8">
 </span><span data-line="9">
 </span><span data-line="10"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/post/{post_id:int}&quot;</span><span class="p">)</span>
-</span><span data-line="11"><span class="k">def</span> <span class="nf">show_post</span><span class="p">(</span><span class="n">post_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span data-line="11"><span class="k">def</span><span class="w"> </span><span class="nf">show_post</span><span class="p">(</span><span class="n">post_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 </span><span data-line="12">    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Post </span><span class="si">{</span><span class="n">post_id</span><span class="si">}</span><span class="s2">&quot;</span>
 </span><span data-line="13">
 </span><span data-line="14">
 </span><span data-line="15"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/path/{subpath:path}&quot;</span><span class="p">)</span>
-</span><span data-line="16"><span class="k">def</span> <span class="nf">show_subpath</span><span class="p">(</span><span class="n">subpath</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span data-line="16"><span class="k">def</span><span class="w"> </span><span class="nf">show_subpath</span><span class="p">(</span><span class="n">subpath</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 </span><span data-line="17">    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Subpath </span><span class="si">{</span><span class="n">subpath</span><span class="si">}</span><span class="s2">&quot;</span>
 </span><span data-line="18">
 </span><span data-line="19">
@@ -675,40 +671,40 @@ in the documentation:</p>
 </section>
 </section>
 <section id="request-object">
-<h2>Request object<a class="headerlink" href="#request-object" title="Permalink to this heading">¶</a></h2>
+<h2>Request object<a class="headerlink" href="#request-object" title="Link to this heading">¶</a></h2>
 <p>In Flask, the current request can be accessed through a global <code class="docutils literal notranslate"><span class="pre">request</span></code> variable. In Litestar,
 the request can be accessed through an optional parameter in the handler function.</p>
 <div class="sd-tab-set docutils">
 <input checked="checked" id="sd-tab-item-4" name="sd-tab-set-2" type="radio">
-</input><label class="sd-tab-label" data-sync-id="flask" for="sd-tab-item-4">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="flask" for="sd-tab-item-4">
 Flask</label><div class="sd-tab-content docutils">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">Flask</span><span class="p">,</span> <span class="n">request</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">flask</span><span class="w"> </span><span class="kn">import</span> <span class="n">Flask</span><span class="p">,</span> <span class="n">request</span>
 </span><span data-line="2">
 </span><span data-line="3">
 </span><span data-line="4"><span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 </span><span data-line="5">
 </span><span data-line="6">
 </span><span data-line="7"><span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
-</span><span data-line="8"><span class="k">def</span> <span class="nf">index</span><span class="p">():</span>
+</span><span data-line="8"><span class="k">def</span><span class="w"> </span><span class="nf">index</span><span class="p">():</span>
 </span><span data-line="9">    <span class="nb">print</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">method</span><span class="p">)</span>
 </span></pre></div>
 </div>
 </div>
 <input id="sd-tab-item-5" name="sd-tab-set-2" type="radio">
-</input><label class="sd-tab-label" data-sync-id="litestar" for="sd-tab-item-5">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="litestar" for="sd-tab-item-5">
 Litestar</label><div class="sd-tab-content docutils">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">get</span><span class="p">,</span> <span class="n">Request</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">get</span><span class="p">,</span> <span class="n">Request</span>
 </span><span data-line="2">
 </span><span data-line="3">
 </span><span data-line="4"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
-</span><span data-line="5"><span class="k">def</span> <span class="nf">index</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="5"><span class="k">def</span><span class="w"> </span><span class="nf">index</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 </span><span data-line="6">    <span class="nb">print</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">method</span><span class="p">)</span>
 </span></pre></div>
 </div>
 </div>
 </div>
 <section id="request-methods">
-<h3>Request methods<a class="headerlink" href="#request-methods" title="Permalink to this heading">¶</a></h3>
+<h3>Request methods<a class="headerlink" href="#request-methods" title="Link to this heading">¶</a></h3>
 <div class="table-wrapper docutils container">
 <table class="docutils align-default">
 <thead>
@@ -736,7 +732,7 @@ Litestar</label><div class="sd-tab-content docutils">
 <td><p><code class="docutils literal notranslate"><span class="pre">request.headers.get(&quot;content-length&quot;)</span></code></p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">request.content_md5</span></code></p></td>
-<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-dash" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M2 7.75A.75.75 0 012.75 7h10a.75.75 0 010 1.5h-10A.75.75 0 012 7.75z"></path></svg></p></td>
+<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-dash" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 7.75A.75.75 0 0 1 2.75 7h10a.75.75 0 0 1 0 1.5h-10A.75.75 0 0 1 2 7.75Z"></path></svg></p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">request.content_type</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">request.content_type</span></code></p></td>
@@ -769,10 +765,10 @@ Litestar</label><div class="sd-tab-content docutils">
 <td><p><code class="docutils literal notranslate"><span class="pre">request.headers</span></code></p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">request.host</span></code></p></td>
-<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-dash" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M2 7.75A.75.75 0 012.75 7h10a.75.75 0 010 1.5h-10A.75.75 0 012 7.75z"></path></svg></p></td>
+<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-dash" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 7.75A.75.75 0 0 1 2.75 7h10a.75.75 0 0 1 0 1.5h-10A.75.75 0 0 1 2 7.75Z"></path></svg></p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">request.host_url</span></code></p></td>
-<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-dash" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M2 7.75A.75.75 0 012.75 7h10a.75.75 0 010 1.5h-10A.75.75 0 012 7.75z"></path></svg></p></td>
+<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-dash" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 7.75A.75.75 0 0 1 2.75 7h10a.75.75 0 0 1 0 1.5h-10A.75.75 0 0 1 2 7.75Z"></path></svg></p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">request.if_match</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">request.headers.get(&quot;if-match&quot;)</span></code></p></td>
@@ -793,13 +789,13 @@ Litestar</label><div class="sd-tab-content docutils">
 <td><p><code class="docutils literal notranslate"><span class="pre">request.method</span></code></p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">request.mimetype</span></code></p></td>
-<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-dash" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M2 7.75A.75.75 0 012.75 7h10a.75.75 0 010 1.5h-10A.75.75 0 012 7.75z"></path></svg></p></td>
+<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-dash" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 7.75A.75.75 0 0 1 2.75 7h10a.75.75 0 0 1 0 1.5h-10A.75.75 0 0 1 2 7.75Z"></path></svg></p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">request.mimetype_params</span></code></p></td>
-<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-dash" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M2 7.75A.75.75 0 012.75 7h10a.75.75 0 010 1.5h-10A.75.75 0 012 7.75z"></path></svg></p></td>
+<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-dash" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 7.75A.75.75 0 0 1 2.75 7h10a.75.75 0 0 1 0 1.5h-10A.75.75 0 0 1 2 7.75Z"></path></svg></p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">request.origin</span></code></p></td>
-<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-dash" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M2 7.75A.75.75 0 012.75 7h10a.75.75 0 010 1.5h-10A.75.75 0 012 7.75z"></path></svg></p></td>
+<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-dash" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 7.75A.75.75 0 0 1 2.75 7h10a.75.75 0 0 1 0 1.5h-10A.75.75 0 0 1 2 7.75Z"></path></svg></p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">request.path</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">request.scope[&quot;path&quot;]</span></code></p></td>
@@ -814,10 +810,10 @@ Litestar</label><div class="sd-tab-content docutils">
 <td><p><code class="docutils literal notranslate"><span class="pre">request.headers.get(&quot;referrer&quot;)</span></code></p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">request.remote_addr</span></code></p></td>
-<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-dash" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M2 7.75A.75.75 0 012.75 7h10a.75.75 0 010 1.5h-10A.75.75 0 012 7.75z"></path></svg></p></td>
+<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-dash" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 7.75A.75.75 0 0 1 2.75 7h10a.75.75 0 0 1 0 1.5h-10A.75.75 0 0 1 2 7.75Z"></path></svg></p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">request.remote_user</span></code></p></td>
-<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-dash" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M2 7.75A.75.75 0 012.75 7h10a.75.75 0 010 1.5h-10A.75.75 0 012 7.75z"></path></svg></p></td>
+<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-dash" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 7.75A.75.75 0 0 1 2.75 7h10a.75.75 0 0 1 0 1.5h-10A.75.75 0 0 1 2 7.75Z"></path></svg></p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">request.root_path</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">request.scope[&quot;root_path&quot;]</span></code></p></td>
@@ -832,7 +828,7 @@ Litestar</label><div class="sd-tab-content docutils">
 <td><p><code class="docutils literal notranslate"><span class="pre">request.url</span></code></p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">request.url_charset</span></code></p></td>
-<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-dash" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M2 7.75A.75.75 0 012.75 7h10a.75.75 0 010 1.5h-10A.75.75 0 012 7.75z"></path></svg></p></td>
+<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-dash" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 7.75A.75.75 0 0 1 2.75 7h10a.75.75 0 0 1 0 1.5h-10A.75.75 0 0 1 2 7.75Z"></path></svg></p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">request.user_agent</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">request.headers.get(&quot;user-agent&quot;)</span></code></p></td>
@@ -854,12 +850,12 @@ Litestar</label><div class="sd-tab-content docutils">
 </section>
 </section>
 <section id="static-files">
-<h2>Static files<a class="headerlink" href="#static-files" title="Permalink to this heading">¶</a></h2>
+<h2>Static files<a class="headerlink" href="#static-files" title="Link to this heading">¶</a></h2>
 <p>Like Flask, Litestar also has capabilities for serving static files, but while Flask
 will automatically serve files from a <code class="docutils literal notranslate"><span class="pre">static</span></code> folder, this has to be configured explicitly
 in Litestar.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span>
-</span><span data-line="2"><span class="kn">from</span> <span class="nn">litestar.static_files</span> <span class="kn">import</span> <span class="n">create_static_files_router</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.static_files</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_static_files_router</span>
 </span><span data-line="3">
 </span><span data-line="4"> <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span>
 </span><span data-line="5">     <span class="n">create_static_files_router</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/static&quot;</span><span class="p">,</span> <span class="n">directories</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;assets&quot;</span><span class="p">]),</span>
@@ -875,38 +871,38 @@ in Litestar.</p>
 </div>
 </section>
 <section id="templates">
-<h2>Templates<a class="headerlink" href="#templates" title="Permalink to this heading">¶</a></h2>
+<h2>Templates<a class="headerlink" href="#templates" title="Link to this heading">¶</a></h2>
 <p>Flask comes with the <a class="reference external" href="https://jinja.palletsprojects.com/en/3.1.x/">Jinja</a> templating
 engine built-in. You can use Jinja with Litestar as well, but you’ll need to install it
 explicitly. You can do by installing Litestar with <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">'litestar[jinja]'</span></code>.
 In addition to Jinja, Litestar supports <a class="reference external" href="https://www.makotemplates.org/">Mako</a> and <a class="reference external" href="https://github.com/mitsuhiko/minijinja/tree/main/minijinja-py">Minijinja</a> templates as well.</p>
 <div class="sd-tab-set docutils">
 <input checked="checked" id="sd-tab-item-6" name="sd-tab-set-3" type="radio">
-</input><label class="sd-tab-label" data-sync-id="flask" for="sd-tab-item-6">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="flask" for="sd-tab-item-6">
 Flask</label><div class="sd-tab-content docutils">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">Flask</span><span class="p">,</span> <span class="n">render_template</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">flask</span><span class="w"> </span><span class="kn">import</span> <span class="n">Flask</span><span class="p">,</span> <span class="n">render_template</span>
 </span><span data-line="2">
 </span><span data-line="3">
 </span><span data-line="4"><span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 </span><span data-line="5">
 </span><span data-line="6">
 </span><span data-line="7"><span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s2">&quot;/hello/&lt;name&gt;&quot;</span><span class="p">)</span>
-</span><span data-line="8"><span class="k">def</span> <span class="nf">hello</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
+</span><span data-line="8"><span class="k">def</span><span class="w"> </span><span class="nf">hello</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
 </span><span data-line="9">    <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s2">&quot;hello.html&quot;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
 </span></pre></div>
 </div>
 </div>
 <input id="sd-tab-item-7" name="sd-tab-set-3" type="radio">
-</input><label class="sd-tab-label" data-sync-id="litestar" for="sd-tab-item-7">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="litestar" for="sd-tab-item-7">
 Litestar</label><div class="sd-tab-content docutils">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
-</span><span data-line="2"><span class="kn">from</span> <span class="nn">litestar.contrib.jinja</span> <span class="kn">import</span> <span class="n">JinjaTemplateEngine</span>
-</span><span data-line="3"><span class="kn">from</span> <span class="nn">litestar.response</span> <span class="kn">import</span> <span class="n">Template</span>
-</span><span data-line="4"><span class="kn">from</span> <span class="nn">litestar.template.config</span> <span class="kn">import</span> <span class="n">TemplateConfig</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.contrib.jinja</span><span class="w"> </span><span class="kn">import</span> <span class="n">JinjaTemplateEngine</span>
+</span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.response</span><span class="w"> </span><span class="kn">import</span> <span class="n">Template</span>
+</span><span data-line="4"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.template.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">TemplateConfig</span>
 </span><span data-line="5">
 </span><span data-line="6">
 </span><span data-line="7"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/hello/{name:str}&quot;</span><span class="p">)</span>
-</span><span data-line="8"><span class="k">def</span> <span class="nf">hello</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Template</span><span class="p">:</span>
+</span><span data-line="8"><span class="k">def</span><span class="w"> </span><span class="nf">hello</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Template</span><span class="p">:</span>
 </span><span data-line="9">    <span class="k">return</span> <span class="n">Template</span><span class="p">(</span><span class="n">response_name</span><span class="o">=</span><span class="s2">&quot;hello.html&quot;</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">name</span><span class="p">})</span>
 </span><span data-line="10">
 </span><span data-line="11">
@@ -927,19 +923,19 @@ Litestar</label><div class="sd-tab-content docutils">
 </div>
 </section>
 <section id="setting-cookies-and-headers">
-<h2>Setting cookies and headers<a class="headerlink" href="#setting-cookies-and-headers" title="Permalink to this heading">¶</a></h2>
+<h2>Setting cookies and headers<a class="headerlink" href="#setting-cookies-and-headers" title="Link to this heading">¶</a></h2>
 <div class="sd-tab-set docutils">
 <input checked="checked" id="sd-tab-item-8" name="sd-tab-set-4" type="radio">
-</input><label class="sd-tab-label" data-sync-id="flask" for="sd-tab-item-8">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="flask" for="sd-tab-item-8">
 Flask</label><div class="sd-tab-content docutils">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">Flask</span><span class="p">,</span> <span class="n">make_response</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">flask</span><span class="w"> </span><span class="kn">import</span> <span class="n">Flask</span><span class="p">,</span> <span class="n">make_response</span>
 </span><span data-line="2">
 </span><span data-line="3">
 </span><span data-line="4"><span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 </span><span data-line="5">
 </span><span data-line="6">
 </span><span data-line="7"><span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
-</span><span data-line="8"><span class="k">def</span> <span class="nf">index</span><span class="p">():</span>
+</span><span data-line="8"><span class="k">def</span><span class="w"> </span><span class="nf">index</span><span class="p">():</span>
 </span><span data-line="9">    <span class="n">response</span> <span class="o">=</span> <span class="n">make_response</span><span class="p">(</span><span class="s2">&quot;hello&quot;</span><span class="p">)</span>
 </span><span data-line="10">    <span class="n">response</span><span class="o">.</span><span class="n">set_cookie</span><span class="p">(</span><span class="s2">&quot;my-cookie&quot;</span><span class="p">,</span> <span class="s2">&quot;cookie-value&quot;</span><span class="p">)</span>
 </span><span data-line="11">    <span class="n">response</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s2">&quot;my-header&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;header-value&quot;</span>
@@ -948,10 +944,10 @@ Flask</label><div class="sd-tab-content docutils">
 </div>
 </div>
 <input id="sd-tab-item-9" name="sd-tab-set-4" type="radio">
-</input><label class="sd-tab-label" data-sync-id="litestar" for="sd-tab-item-9">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="litestar" for="sd-tab-item-9">
 Litestar</label><div class="sd-tab-content docutils">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">get</span><span class="p">,</span> <span class="n">Response</span>
-</span><span data-line="2"><span class="kn">from</span> <span class="nn">litestar.datastructures</span> <span class="kn">import</span> <span class="n">ResponseHeader</span><span class="p">,</span> <span class="n">Cookie</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">get</span><span class="p">,</span> <span class="n">Response</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.datastructures</span><span class="w"> </span><span class="kn">import</span> <span class="n">ResponseHeader</span><span class="p">,</span> <span class="n">Cookie</span>
 </span><span data-line="3">
 </span><span data-line="4">
 </span><span data-line="5"><span class="nd">@get</span><span class="p">(</span>
@@ -959,13 +955,13 @@ Litestar</label><div class="sd-tab-content docutils">
 </span><span data-line="7">    <span class="n">response_headers</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;my-header&quot;</span><span class="p">:</span> <span class="n">ResponseHeader</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="s2">&quot;header-value&quot;</span><span class="p">)},</span>
 </span><span data-line="8">    <span class="n">response_cookies</span><span class="o">=</span><span class="p">[</span><span class="n">Cookie</span><span class="p">(</span><span class="s2">&quot;my-cookie&quot;</span><span class="p">,</span> <span class="s2">&quot;cookie-value&quot;</span><span class="p">)],</span>
 </span><span data-line="9"><span class="p">)</span>
-</span><span data-line="10"><span class="k">def</span> <span class="nf">static</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span data-line="10"><span class="k">def</span><span class="w"> </span><span class="nf">static</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 </span><span data-line="11">    <span class="c1"># you can set headers and cookies when defining handlers</span>
 </span><span data-line="12">    <span class="o">...</span>
 </span><span data-line="13">
 </span><span data-line="14">
 </span><span data-line="15"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/dynamic&quot;</span><span class="p">)</span>
-</span><span data-line="16"><span class="k">def</span> <span class="nf">dynamic</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+</span><span data-line="16"><span class="k">def</span><span class="w"> </span><span class="nf">dynamic</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
 </span><span data-line="17">    <span class="c1"># or dynamically, by returning an instance of Response</span>
 </span><span data-line="18">    <span class="k">return</span> <span class="n">Response</span><span class="p">(</span>
 </span><span data-line="19">        <span class="s2">&quot;hello&quot;</span><span class="p">,</span>
@@ -987,43 +983,43 @@ documentation:</p>
 </div>
 </section>
 <section id="redirects">
-<h2>Redirects<a class="headerlink" href="#redirects" title="Permalink to this heading">¶</a></h2>
+<h2>Redirects<a class="headerlink" href="#redirects" title="Link to this heading">¶</a></h2>
 <p>For redirects, instead of <code class="docutils literal notranslate"><span class="pre">redirect</span></code> use <code class="docutils literal notranslate"><span class="pre">Redirect</span></code>:</p>
 <div class="sd-tab-set docutils">
 <input checked="checked" id="sd-tab-item-10" name="sd-tab-set-5" type="radio">
-</input><label class="sd-tab-label" data-sync-id="flask" for="sd-tab-item-10">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="flask" for="sd-tab-item-10">
 Flask</label><div class="sd-tab-content docutils">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">Flask</span><span class="p">,</span> <span class="n">redirect</span><span class="p">,</span> <span class="n">url_for</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">flask</span><span class="w"> </span><span class="kn">import</span> <span class="n">Flask</span><span class="p">,</span> <span class="n">redirect</span><span class="p">,</span> <span class="n">url_for</span>
 </span><span data-line="2">
 </span><span data-line="3">
 </span><span data-line="4"><span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 </span><span data-line="5">
 </span><span data-line="6">
 </span><span data-line="7"><span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
-</span><span data-line="8"><span class="k">def</span> <span class="nf">index</span><span class="p">():</span>
+</span><span data-line="8"><span class="k">def</span><span class="w"> </span><span class="nf">index</span><span class="p">():</span>
 </span><span data-line="9">    <span class="k">return</span> <span class="s2">&quot;hello&quot;</span>
 </span><span data-line="10">
 </span><span data-line="11">
 </span><span data-line="12"><span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/hello&quot;</span><span class="p">)</span>
-</span><span data-line="13"><span class="k">def</span> <span class="nf">hello</span><span class="p">():</span>
+</span><span data-line="13"><span class="k">def</span><span class="w"> </span><span class="nf">hello</span><span class="p">():</span>
 </span><span data-line="14">    <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">url_for</span><span class="p">(</span><span class="s2">&quot;index&quot;</span><span class="p">))</span>
 </span></pre></div>
 </div>
 </div>
 <input id="sd-tab-item-11" name="sd-tab-set-5" type="radio">
-</input><label class="sd-tab-label" data-sync-id="litestar" for="sd-tab-item-11">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="litestar" for="sd-tab-item-11">
 Litestar</label><div class="sd-tab-content docutils">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
-</span><span data-line="2"><span class="kn">from</span> <span class="nn">litestar.response</span> <span class="kn">import</span> <span class="n">Redirect</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.response</span><span class="w"> </span><span class="kn">import</span> <span class="n">Redirect</span>
 </span><span data-line="3">
 </span><span data-line="4">
 </span><span data-line="5"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
-</span><span data-line="6"><span class="k">def</span> <span class="nf">index</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span data-line="6"><span class="k">def</span><span class="w"> </span><span class="nf">index</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 </span><span data-line="7">    <span class="k">return</span> <span class="s2">&quot;hello&quot;</span>
 </span><span data-line="8">
 </span><span data-line="9">
 </span><span data-line="10"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/hello&quot;</span><span class="p">)</span>
-</span><span data-line="11"><span class="k">def</span> <span class="nf">hello</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Redirect</span><span class="p">:</span>
+</span><span data-line="11"><span class="k">def</span><span class="w"> </span><span class="nf">hello</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Redirect</span><span class="p">:</span>
 </span><span data-line="12">    <span class="k">return</span> <span class="n">Redirect</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
 </span><span data-line="13">
 </span><span data-line="14">
@@ -1034,33 +1030,33 @@ Litestar</label><div class="sd-tab-content docutils">
 </div>
 </section>
 <section id="raising-http-errors">
-<h2>Raising HTTP errors<a class="headerlink" href="#raising-http-errors" title="Permalink to this heading">¶</a></h2>
+<h2>Raising HTTP errors<a class="headerlink" href="#raising-http-errors" title="Link to this heading">¶</a></h2>
 <p>Instead of using the <code class="docutils literal notranslate"><span class="pre">abort</span></code> function, raise an <code class="docutils literal notranslate"><span class="pre">HTTPException</span></code>:</p>
 <div class="sd-tab-set docutils">
 <input checked="checked" id="sd-tab-item-12" name="sd-tab-set-6" type="radio">
-</input><label class="sd-tab-label" data-sync-id="flask" for="sd-tab-item-12">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="flask" for="sd-tab-item-12">
 Flask</label><div class="sd-tab-content docutils">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">Flask</span><span class="p">,</span> <span class="n">abort</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">flask</span><span class="w"> </span><span class="kn">import</span> <span class="n">Flask</span><span class="p">,</span> <span class="n">abort</span>
 </span><span data-line="2">
 </span><span data-line="3">
 </span><span data-line="4"><span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 </span><span data-line="5">
 </span><span data-line="6">
 </span><span data-line="7"><span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
-</span><span data-line="8"><span class="k">def</span> <span class="nf">index</span><span class="p">():</span>
+</span><span data-line="8"><span class="k">def</span><span class="w"> </span><span class="nf">index</span><span class="p">():</span>
 </span><span data-line="9">    <span class="n">abort</span><span class="p">(</span><span class="mi">400</span><span class="p">,</span> <span class="s2">&quot;this did not work&quot;</span><span class="p">)</span>
 </span></pre></div>
 </div>
 </div>
 <input id="sd-tab-item-13" name="sd-tab-set-6" type="radio">
-</input><label class="sd-tab-label" data-sync-id="litestar" for="sd-tab-item-13">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="litestar" for="sd-tab-item-13">
 Litestar</label><div class="sd-tab-content docutils">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
-</span><span data-line="2"><span class="kn">from</span> <span class="nn">litestar.exceptions</span> <span class="kn">import</span> <span class="n">HTTPException</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">HTTPException</span>
 </span><span data-line="3">
 </span><span data-line="4">
 </span><span data-line="5"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
-</span><span data-line="6"><span class="k">def</span> <span class="nf">index</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="6"><span class="k">def</span><span class="w"> </span><span class="nf">index</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 </span><span data-line="7">    <span class="k">raise</span> <span class="n">HTTPException</span><span class="p">(</span><span class="n">status_code</span><span class="o">=</span><span class="mi">400</span><span class="p">,</span> <span class="n">detail</span><span class="o">=</span><span class="s2">&quot;this did not work&quot;</span><span class="p">)</span>
 </span><span data-line="8">
 </span><span data-line="9">
@@ -1078,36 +1074,36 @@ Litestar</label><div class="sd-tab-content docutils">
 </div>
 </section>
 <section id="setting-status-codes">
-<h2>Setting status codes<a class="headerlink" href="#setting-status-codes" title="Permalink to this heading">¶</a></h2>
+<h2>Setting status codes<a class="headerlink" href="#setting-status-codes" title="Link to this heading">¶</a></h2>
 <div class="sd-tab-set docutils">
 <input checked="checked" id="sd-tab-item-14" name="sd-tab-set-7" type="radio">
-</input><label class="sd-tab-label" data-sync-id="flask" for="sd-tab-item-14">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="flask" for="sd-tab-item-14">
 Flask</label><div class="sd-tab-content docutils">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">Flask</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">flask</span><span class="w"> </span><span class="kn">import</span> <span class="n">Flask</span>
 </span><span data-line="2">
 </span><span data-line="3">
 </span><span data-line="4"><span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 </span><span data-line="5">
 </span><span data-line="6">
 </span><span data-line="7"><span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
-</span><span data-line="8"><span class="k">def</span> <span class="nf">index</span><span class="p">():</span>
+</span><span data-line="8"><span class="k">def</span><span class="w"> </span><span class="nf">index</span><span class="p">():</span>
 </span><span data-line="9">    <span class="k">return</span> <span class="s2">&quot;not found&quot;</span><span class="p">,</span> <span class="mi">404</span>
 </span></pre></div>
 </div>
 </div>
 <input id="sd-tab-item-15" name="sd-tab-set-7" type="radio">
-</input><label class="sd-tab-label" data-sync-id="litestar" for="sd-tab-item-15">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="litestar" for="sd-tab-item-15">
 Litestar</label><div class="sd-tab-content docutils">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span><span class="p">,</span> <span class="n">Response</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span><span class="p">,</span> <span class="n">Response</span>
 </span><span data-line="2">
 </span><span data-line="3">
 </span><span data-line="4"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/static&quot;</span><span class="p">,</span> <span class="n">status_code</span><span class="o">=</span><span class="mi">404</span><span class="p">)</span>
-</span><span data-line="5"><span class="k">def</span> <span class="nf">static_status</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span data-line="5"><span class="k">def</span><span class="w"> </span><span class="nf">static_status</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 </span><span data-line="6">    <span class="k">return</span> <span class="s2">&quot;not found&quot;</span>
 </span><span data-line="7">
 </span><span data-line="8">
 </span><span data-line="9"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/dynamic&quot;</span><span class="p">)</span>
-</span><span data-line="10"><span class="k">def</span> <span class="nf">dynamic_status</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+</span><span data-line="10"><span class="k">def</span><span class="w"> </span><span class="nf">dynamic_status</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
 </span><span data-line="11">    <span class="k">return</span> <span class="n">Response</span><span class="p">(</span><span class="s2">&quot;not found&quot;</span><span class="p">,</span> <span class="n">status_code</span><span class="o">=</span><span class="mi">404</span><span class="p">)</span>
 </span><span data-line="12">
 </span><span data-line="13">
@@ -1118,54 +1114,54 @@ Litestar</label><div class="sd-tab-content docutils">
 </div>
 </section>
 <section id="serialization">
-<h2>Serialization<a class="headerlink" href="#serialization" title="Permalink to this heading">¶</a></h2>
+<h2>Serialization<a class="headerlink" href="#serialization" title="Link to this heading">¶</a></h2>
 <p>Flask uses a mix of explicit conversion (such as <code class="docutils literal notranslate"><span class="pre">jsonify</span></code>) and inference (i.e. the type
 of the returned data) to determine how data should be serialized. Litestar instead assumes
 the data returned is intended to be serialized into JSON and will do so unless told otherwise.</p>
 <div class="sd-tab-set docutils">
 <input checked="checked" id="sd-tab-item-16" name="sd-tab-set-8" type="radio">
-</input><label class="sd-tab-label" data-sync-id="flask" for="sd-tab-item-16">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="flask" for="sd-tab-item-16">
 Flask</label><div class="sd-tab-content docutils">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">Flask</span><span class="p">,</span> <span class="n">Response</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">flask</span><span class="w"> </span><span class="kn">import</span> <span class="n">Flask</span><span class="p">,</span> <span class="n">Response</span>
 </span><span data-line="2">
 </span><span data-line="3">
 </span><span data-line="4"><span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 </span><span data-line="5">
 </span><span data-line="6">
 </span><span data-line="7"><span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/json&quot;</span><span class="p">)</span>
-</span><span data-line="8"><span class="k">def</span> <span class="nf">get_json</span><span class="p">():</span>
+</span><span data-line="8"><span class="k">def</span><span class="w"> </span><span class="nf">get_json</span><span class="p">():</span>
 </span><span data-line="9">    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;hello&quot;</span><span class="p">:</span> <span class="s2">&quot;world&quot;</span><span class="p">}</span>
 </span><span data-line="10">
 </span><span data-line="11">
 </span><span data-line="12"><span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/text&quot;</span><span class="p">)</span>
-</span><span data-line="13"><span class="k">def</span> <span class="nf">get_text</span><span class="p">():</span>
+</span><span data-line="13"><span class="k">def</span><span class="w"> </span><span class="nf">get_text</span><span class="p">():</span>
 </span><span data-line="14">    <span class="k">return</span> <span class="s2">&quot;hello, world!&quot;</span>
 </span><span data-line="15">
 </span><span data-line="16">
 </span><span data-line="17"><span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/html&quot;</span><span class="p">)</span>
-</span><span data-line="18"><span class="k">def</span> <span class="nf">get_html</span><span class="p">():</span>
+</span><span data-line="18"><span class="k">def</span><span class="w"> </span><span class="nf">get_html</span><span class="p">():</span>
 </span><span data-line="19">    <span class="k">return</span> <span class="n">Response</span><span class="p">(</span><span class="s2">&quot;&lt;strong&gt;hello, world&lt;/strong&gt;&quot;</span><span class="p">,</span> <span class="n">mimetype</span><span class="o">=</span><span class="s2">&quot;text/html&quot;</span><span class="p">)</span>
 </span></pre></div>
 </div>
 </div>
 <input id="sd-tab-item-17" name="sd-tab-set-8" type="radio">
-</input><label class="sd-tab-label" data-sync-id="litestar" for="sd-tab-item-17">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="litestar" for="sd-tab-item-17">
 Litestar</label><div class="sd-tab-content docutils">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span><span class="p">,</span> <span class="n">MediaType</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span><span class="p">,</span> <span class="n">MediaType</span>
 </span><span data-line="2">
 </span><span data-line="3">
 </span><span data-line="4"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/json&quot;</span><span class="p">)</span>
-</span><span data-line="5"><span class="k">def</span> <span class="nf">get_json</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+</span><span data-line="5"><span class="k">def</span><span class="w"> </span><span class="nf">get_json</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
 </span><span data-line="6">    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;hello&quot;</span><span class="p">:</span> <span class="s2">&quot;world&quot;</span><span class="p">}</span>
 </span><span data-line="7">
 </span><span data-line="8">
 </span><span data-line="9"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/text&quot;</span><span class="p">,</span> <span class="n">media_type</span><span class="o">=</span><span class="n">MediaType</span><span class="o">.</span><span class="n">TEXT</span><span class="p">)</span>
-</span><span data-line="10"><span class="k">def</span> <span class="nf">get_text</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span data-line="10"><span class="k">def</span><span class="w"> </span><span class="nf">get_text</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 </span><span data-line="11">    <span class="k">return</span> <span class="s2">&quot;hello, world&quot;</span>
 </span><span data-line="12">
 </span><span data-line="13">
 </span><span data-line="14"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/html&quot;</span><span class="p">,</span> <span class="n">media_type</span><span class="o">=</span><span class="n">MediaType</span><span class="o">.</span><span class="n">HTML</span><span class="p">)</span>
-</span><span data-line="15"><span class="k">def</span> <span class="nf">get_html</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span data-line="15"><span class="k">def</span><span class="w"> </span><span class="nf">get_html</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 </span><span data-line="16">    <span class="k">return</span> <span class="s2">&quot;&lt;strong&gt;hello, world&lt;/strong&gt;&quot;</span>
 </span><span data-line="17">
 </span><span data-line="18">
@@ -1176,31 +1172,31 @@ Litestar</label><div class="sd-tab-content docutils">
 </div>
 </section>
 <section id="error-handling">
-<h2>Error handling<a class="headerlink" href="#error-handling" title="Permalink to this heading">¶</a></h2>
+<h2>Error handling<a class="headerlink" href="#error-handling" title="Link to this heading">¶</a></h2>
 <div class="sd-tab-set docutils">
 <input checked="checked" id="sd-tab-item-18" name="sd-tab-set-9" type="radio">
-</input><label class="sd-tab-label" data-sync-id="flask" for="sd-tab-item-18">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="flask" for="sd-tab-item-18">
 Flask</label><div class="sd-tab-content docutils">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">Flask</span>
-</span><span data-line="2"><span class="kn">from</span> <span class="nn">werkzeug.exceptions</span> <span class="kn">import</span> <span class="n">HTTPException</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">flask</span><span class="w"> </span><span class="kn">import</span> <span class="n">Flask</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">werkzeug.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">HTTPException</span>
 </span><span data-line="3">
 </span><span data-line="4">
 </span><span data-line="5"><span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 </span><span data-line="6">
 </span><span data-line="7">
 </span><span data-line="8"><span class="nd">@app</span><span class="o">.</span><span class="n">errorhandler</span><span class="p">(</span><span class="n">HTTPException</span><span class="p">)</span>
-</span><span data-line="9"><span class="k">def</span> <span class="nf">handle_exception</span><span class="p">(</span><span class="n">e</span><span class="p">):</span> <span class="o">...</span>
+</span><span data-line="9"><span class="k">def</span><span class="w"> </span><span class="nf">handle_exception</span><span class="p">(</span><span class="n">e</span><span class="p">):</span> <span class="o">...</span>
 </span></pre></div>
 </div>
 </div>
 <input id="sd-tab-item-19" name="sd-tab-set-9" type="radio">
-</input><label class="sd-tab-label" data-sync-id="litestar" for="sd-tab-item-19">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="litestar" for="sd-tab-item-19">
 Litestar</label><div class="sd-tab-content docutils">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">Request</span><span class="p">,</span> <span class="n">Response</span>
-</span><span data-line="2"><span class="kn">from</span> <span class="nn">litestar.exceptions</span> <span class="kn">import</span> <span class="n">HTTPException</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">Request</span><span class="p">,</span> <span class="n">Response</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">HTTPException</span>
 </span><span data-line="3">
 </span><span data-line="4">
-</span><span data-line="5"><span class="k">def</span> <span class="nf">handle_exception</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">,</span> <span class="n">exception</span><span class="p">:</span> <span class="ne">Exception</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">:</span> <span class="o">...</span>
+</span><span data-line="5"><span class="k">def</span><span class="w"> </span><span class="nf">handle_exception</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">,</span> <span class="n">exception</span><span class="p">:</span> <span class="ne">Exception</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">:</span> <span class="o">...</span>
 </span><span data-line="6">
 </span><span data-line="7">
 </span><span data-line="8"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">([],</span> <span class="n">exception_handlers</span><span class="o">=</span><span class="p">{</span><span class="n">HTTPException</span><span class="p">:</span> <span class="n">handle_exception</span><span class="p">})</span>
@@ -1267,9 +1263,9 @@ Litestar</label><div class="sd-tab-content docutils">
     </div>
   </div>
 </footer>
-      <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=c19e757c"></script>
-      <script src="../_static/doctools.js?v=888ff710"></script>
-      <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
+      <script src="../_static/documentation_options.js?v=b95e84ca"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
       <script src="../_static/copybutton.js?v=f281be69"></script>
       <script src="../_static/litestar-theme.js?v=ab2dcc9e"></script>
@@ -1277,8 +1273,8 @@ Litestar</label><div class="sd-tab-content docutils">
       <script>let toggleHintHide = 'Click to hide';</script>
       <script>let toggleOpenOnPrint = 'true';</script>
       <script src="../_static/togglebutton.js?v=4a39c7ea"></script>
-      <script src="../_static/design-tabs.js?v=36754332"></script>
+      <script src="../_static/design-tabs.js?v=f930bc37"></script>
       <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
-      <script src="../_static/shibuya.js?v=e2e99575"></script>
+      <script src="../_static/shibuya.js?v=c477d091"></script>
       <script src="../_static/versioning.js?v=bc681eff"></script></body>
 </html>

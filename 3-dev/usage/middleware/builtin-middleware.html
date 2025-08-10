@@ -1,15 +1,15 @@
 <!DOCTYPE html>
-<html lang="en" data-accent-color="amber" data-content_root="">
+<html lang="en" data-accent-color="amber" data-content_root="../../">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Built-in middleware - Litestar Framework</title><link rel="shortcut icon" href="../../_static/favicon.svg"/><link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="Creating Middleware" href="creating-middleware.html" /><link rel="prev" title="Using Middleware" href="using-middleware.html" /><script>
     function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
     setColorMode(localStorage._theme||"auto");
   </script><link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=397bb51e" />
-    <link rel="stylesheet" type="text/css" href="../../_static/shibuya.css?v=83eaa723" />
+    <link rel="stylesheet" type="text/css" href="../../_static/shibuya.css?v=76b6f612" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css?v=13237357" />
-    <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../_static/sphinx_paramlinks.css" />
     <link media="print" rel="stylesheet" type="text/css" href="../../_static/print.css?v=20ff2c19" />
     <link rel="stylesheet" type="text/css" href="../../_static/style.css?v=50ea2f63" />
@@ -42,13 +42,13 @@
       <img class="dark-logo" src="../../_static/logo-dark.png" alt="Litestar" height="28" loading="lazy" />
       <strong>Litestar</strong>
     </a>
-    <div class="sy-head-nav" id="HeadNav">
+    <div class="sy-head-nav" id="head-nav">
       <nav class="sy-head-links"><ul><li class="link"><a href="../../index.html">Home</a></li>
-      <li class="link"><button type="button">
+      <li class="link"><button class="js-menu" type="button" id="nav-trigger-2" aria-controls="nav-children-2">
             <span>Community</span>
             <i class="i-lucide chevron-down"></i>
           </button>
-        <ul><li><a href="../../contribution-guide.html">
+        <ul id="nav-children-2" aria-labelledby="nav-trigger-2"><li><a href="../../contribution-guide.html">
                 <span>Contributing</span>
                 <small>Learn how to contribute to the Litestar project</small>
               </a></li><li><a href="https://github.com/litestar-org/.github?tab=coc-ov-file">
@@ -59,11 +59,11 @@
                 <small>Overview of Litestar's security protocols</small>
               </a></li></ul>
       </li>
-      <li class="link"><button type="button">
+      <li class="link"><button class="js-menu" type="button" id="nav-trigger-3" aria-controls="nav-children-3">
             <span>About</span>
             <i class="i-lucide chevron-down"></i>
           </button>
-        <ul><li><a href="https://litestar.dev/about/organization">
+        <ul id="nav-children-3" aria-labelledby="nav-trigger-3"><li><a href="https://litestar.dev/about/organization">
                 <span>Litestar Organization</span>
                 <small>Details about the Litestar organization</small>
               </a></li><li><a href="https://litestar.dev/about/litestar-releases">
@@ -71,11 +71,11 @@
                 <small>Explore the release process, versioning, and deprecation policy for Litestar</small>
               </a></li></ul>
       </li>
-      <li class="link"><button type="button">
+      <li class="link"><button class="js-menu" type="button" id="nav-trigger-4" aria-controls="nav-children-4">
             <span>Release notes</span>
             <i class="i-lucide chevron-down"></i>
           </button>
-        <ul><li><a href="../../release-notes/whats-new-3.html">
+        <ul id="nav-children-4" aria-labelledby="nav-trigger-4"><li><a href="../../release-notes/whats-new-3.html">
                 <span>What's new in 3.0</span>
                 <small>Explore the new features in Litestar 3.0</small>
               </a></li><li><a href="../../release-notes/changelog.html">
@@ -86,11 +86,11 @@
                 <small>All changes in the 2.x series</small>
               </a></li></ul>
       </li>
-      <li class="link"><button type="button">
+      <li class="link"><button class="js-menu" type="button" id="nav-trigger-5" aria-controls="nav-children-5">
             <span>Help</span>
             <i class="i-lucide chevron-down"></i>
           </button>
-        <ul><li><a href="https://discord.gg/litestar">
+        <ul id="nav-children-5" aria-labelledby="nav-trigger-5"><li><a href="https://discord.gg/litestar">
                 <span>Discord Help Forum</span>
                 <small>Dedicated Discord help forum</small>
               </a></li><li><a href="https://github.com/orgs/litestar-org/discussions">
@@ -127,7 +127,7 @@ data-aria-auto="Switch to light color mode"
 data-aria-light="Switch to dark color mode"
 data-aria-dark="Switch to auto color mode">
 <i class="i-lucide theme-icon"></i>
-</button><button class="md:hidden flex items-center js-menu" aria-label="Menu" type="button" aria-controls="HeadNav" aria-expanded="false">
+</button><button class="md:hidden flex items-center js-menu" aria-label="Menu" type="button" aria-controls="head-nav" aria-expanded="false">
         <div class="hamburger">
           <span class="hamburger_1"></span>
           <span class="hamburger_2 -translate-x-2"></span>
@@ -173,12 +173,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2"><a class="reference internal" href="../databases/index.html">Databases</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../databases/sqlalchemy/index.html">SQLAlchemy</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../databases/sqlalchemy/models_and_repository.html">SQLAlchemy Models &amp; Repository</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../databases/sqlalchemy/plugins/index.html">Plugins</a><ul>
-<li class="toctree-l5"><a class="reference internal" href="../databases/sqlalchemy/plugins/sqlalchemy_plugin.html">SQLAlchemy Plugin</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../databases/sqlalchemy/plugins/sqlalchemy_init_plugin.html">SQLAlchemy Init Plugin</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../databases/sqlalchemy/plugins/sqlalchemy_serialization_plugin.html">SQLAlchemy Serialization Plugin</a></li>
-</ul>
-</li>
+<li class="toctree-l4"><a class="reference internal" href="../databases/sqlalchemy/plugins/index.html">Plugins</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../databases/piccolo.html">Piccolo ORM</a></li>
@@ -517,11 +512,12 @@ data-aria-dark="Switch to auto color mode">
     </span>
   </span>
 </a><div class="edit-this-page">
-  <a href="https://github.com/litestar-org/litestar/blob/master/docs/usage/middleware/builtin-middleware.rst">Edit this page</a>
+  <a href="https://github.com/litestar-org/litestar/blob/main/docs/usage/middleware/builtin-middleware.rst">Edit this page</a>
 </div><div id="ethical-ad-placement" data-ea-publisher="readthedocs"></div></div>
   </aside>
   <div class="rside-overlay js-menu" role="button" aria-label="Close Table of Contents" aria-controls="rside" aria-expanded="false"></div>
-  <main class="sy-main w-full max-sm:max-w-full print:pt-6"><div class="sy-breadcrumbs" role="navigation">
+  <main class="sy-main w-full max-sm:max-w-full print:pt-6">
+<div class="sy-breadcrumbs" role="navigation">
   <div class="sy-breadcrumbs-inner flex items-center">
     <div class="md:hidden mr-3">
       <button class="js-menu" aria-label="Menu" type="button" aria-controls="lside" aria-expanded="false">
@@ -555,14 +551,14 @@ data-aria-dark="Switch to auto color mode">
       <div class="min-w-0 max-w-6xl px-6 pb-6 pt-8 xl:px-12">
         <article class="yue" role="main">
           <section id="built-in-middleware">
-<h1>Built-in middleware<a class="headerlink" href="#built-in-middleware" title="Permalink to this heading">¶</a></h1>
+<h1>Built-in middleware<a class="headerlink" href="#built-in-middleware" title="Link to this heading">¶</a></h1>
 <section id="cors">
-<h2>CORS<a class="headerlink" href="#cors" title="Permalink to this heading">¶</a></h2>
+<h2>CORS<a class="headerlink" href="#cors" title="Link to this heading">¶</a></h2>
 <p><a class="reference external" href="https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS">CORS (Cross-Origin Resource Sharing)</a> is a common security
 mechanism that is often implemented using middleware. To enable CORS in a litestar application simply pass an instance
 of <a class="reference internal" href="../../reference/config.html#litestar.config.cors.CORSConfig" title="litestar.config.cors.CORSConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">CORSConfig</span></code></a> to <a class="reference internal" href="../../reference/app.html#litestar.app.Litestar" title="litestar.app.Litestar"><code class="xref py py-class docutils literal notranslate"><span class="pre">Litestar</span></code></a>:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span>
-</span><span data-line="2"><span class="kn">from</span> <span class="nn">litestar.config.cors</span> <span class="kn">import</span> <span class="n">CORSConfig</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.config.cors</span><span class="w"> </span><span class="kn">import</span> <span class="n">CORSConfig</span>
 </span><span data-line="3">
 </span><span data-line="4"><span class="n">cors_config</span> <span class="o">=</span> <span class="n">CORSConfig</span><span class="p">(</span><span class="n">allow_origins</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;https://www.example.com&quot;</span><span class="p">])</span>
 </span><span data-line="5">
@@ -571,7 +567,7 @@ of <a class="reference internal" href="../../reference/config.html#litestar.conf
 </div>
 </section>
 <section id="csrf">
-<h2>CSRF<a class="headerlink" href="#csrf" title="Permalink to this heading">¶</a></h2>
+<h2>CSRF<a class="headerlink" href="#csrf" title="Link to this heading">¶</a></h2>
 <p><a class="reference external" href="https://owasp.org/www-community/attacks/csrf">CSRF (Cross-site request forgery)</a> is a type of attack where unauthorized commands are submitted from a user that the web
 application trusts. This attack often uses social engineering that tricks the victim into clicking a URL that contains a
 maliciously crafted, unauthorized request for a particular Web application. The user’s browser then sends this
@@ -596,17 +592,17 @@ user to perform an action the user didn’t intend, for example:</p>
 </ol>
 <p>To enable CSRF protection in a Litestar application simply pass an instance of
 <a class="reference internal" href="../../reference/config.html#litestar.config.csrf.CSRFConfig" title="litestar.config.csrf.CSRFConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">CSRFConfig</span></code></a> to the Litestar constructor:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span><span class="p">,</span> <span class="n">post</span>
-</span><span data-line="2"><span class="kn">from</span> <span class="nn">litestar.config.csrf</span> <span class="kn">import</span> <span class="n">CSRFConfig</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span><span class="p">,</span> <span class="n">post</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.config.csrf</span><span class="w"> </span><span class="kn">import</span> <span class="n">CSRFConfig</span>
 </span><span data-line="3">
 </span><span data-line="4">
 </span><span data-line="5"><span class="nd">@get</span><span class="p">()</span>
-</span><span data-line="6"><span class="k">async</span> <span class="k">def</span> <span class="nf">get_resource</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span data-line="6"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_resource</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 </span><span data-line="7">    <span class="c1"># GET is one of the safe methods</span>
 </span><span data-line="8">    <span class="k">return</span> <span class="s2">&quot;some_resource&quot;</span>
 </span><span data-line="9">
 </span><span data-line="10"><span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;{id:int}&quot;</span><span class="p">)</span>
-</span><span data-line="11"><span class="k">async</span> <span class="k">def</span> <span class="nf">create_resource</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+</span><span data-line="11"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">create_resource</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 </span><span data-line="12">    <span class="c1"># POST is one of the unsafe methods</span>
 </span><span data-line="13">    <span class="k">return</span> <span class="kc">True</span>
 </span><span data-line="14">
@@ -627,7 +623,7 @@ user to perform an action the user didn’t intend, for example:</p>
 <p>In Python, any client such as <a class="reference external" href="https://github.com/psf/requests">requests</a> or <a class="reference external" href="https://github.com/encode/httpx">httpx</a> can be used.
 The usage of clients or sessions is recommended due to the cookie persistence it offers across requests.
 The following is an example using <a class="reference external" href="https://www.python-httpx.org/api/#client">httpx.Client</a>.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">import</span> <span class="nn">httpx</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">import</span><span class="w"> </span><span class="nn">httpx</span>
 </span><span data-line="2">
 </span><span data-line="3">
 </span><span data-line="4"><span class="k">with</span> <span class="n">httpx</span><span class="o">.</span><span class="n">Client</span><span class="p">()</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
@@ -654,7 +650,7 @@ The following is an example using <a class="reference external" href="https://ww
 <p>Routes can be marked as being exempt from the protection offered by this middleware via
 <a class="reference internal" href="../routing/handlers.html#handler-opts"><span class="std std-ref">handler opts</span></a></p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/post&quot;</span><span class="p">,</span> <span class="n">exclude_from_csrf</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</span><span data-line="2"><span class="k">def</span> <span class="nf">handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
+</span><span data-line="2"><span class="k">def</span><span class="w"> </span><span class="nf">handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
 </span></pre></div>
 </div>
 <p>If you need to exempt many routes at once you might want to consider using the
@@ -670,14 +666,14 @@ patterns to skip in the middleware.</p>
 </div>
 </section>
 <section id="allowed-hosts">
-<h2>Allowed Hosts<a class="headerlink" href="#allowed-hosts" title="Permalink to this heading">¶</a></h2>
+<h2>Allowed Hosts<a class="headerlink" href="#allowed-hosts" title="Link to this heading">¶</a></h2>
 <p>Another common security mechanism is to require that each incoming request has a <code class="docutils literal notranslate"><span class="pre">&quot;Host&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;X-Forwarded-Host&quot;</span></code> header,
 and then to restrict hosts to a specific set of domains - what’s called “allowed hosts”.</p>
 <p>Litestar includes an <a class="reference internal" href="../../reference/middleware/allowed_hosts.html#litestar.middleware.allowed_hosts.AllowedHostsMiddleware" title="litestar.middleware.allowed_hosts.AllowedHostsMiddleware"><code class="xref py py-class docutils literal notranslate"><span class="pre">AllowedHostsMiddleware</span></code></a> class that can be
 easily enabled by either passing an instance of <a class="reference internal" href="../../reference/config.html#litestar.config.allowed_hosts.AllowedHostsConfig" title="litestar.config.allowed_hosts.AllowedHostsConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">AllowedHostsConfig</span></code></a> or a
 list of domains to <a class="reference internal" href="../../reference/app.html#litestar.app.Litestar" title="litestar.app.Litestar"><code class="xref py py-class docutils literal notranslate"><span class="pre">Litestar</span></code></a>:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span>
-</span><span data-line="2"><span class="kn">from</span> <span class="nn">litestar.config.allowed_hosts</span> <span class="kn">import</span> <span class="n">AllowedHostsConfig</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.config.allowed_hosts</span><span class="w"> </span><span class="kn">import</span> <span class="n">AllowedHostsConfig</span>
 </span><span data-line="3">
 </span><span data-line="4"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
 </span><span data-line="5">    <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="o">...</span><span class="p">],</span>
@@ -697,14 +693,14 @@ domain name, not in the middle or end. Doing so will result in a validation exce
 </div>
 </section>
 <section id="compression">
-<h2>Compression<a class="headerlink" href="#compression" title="Permalink to this heading">¶</a></h2>
+<h2>Compression<a class="headerlink" href="#compression" title="Link to this heading">¶</a></h2>
 <p>HTML responses can optionally be compressed. Litestar has built in support for gzip and brotli. Gzip support is provided
 through the built-in Starlette classes, and brotli support can be added by installing the <code class="docutils literal notranslate"><span class="pre">brotli</span></code> extras.</p>
 <p>You can enable either backend by passing an instance of
 <a class="reference internal" href="../../reference/config.html#litestar.config.compression.CompressionConfig" title="litestar.config.compression.CompressionConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">CompressionConfig</span></code></a> to <code class="docutils literal notranslate"><span class="pre">compression_config</span></code> of
 <a class="reference internal" href="../../reference/app.html#litestar.app.Litestar" title="litestar.app.Litestar"><code class="xref py py-class docutils literal notranslate"><span class="pre">Litestar</span></code></a>.</p>
 <section id="gzip">
-<h3>GZIP<a class="headerlink" href="#gzip" title="Permalink to this heading">¶</a></h3>
+<h3>GZIP<a class="headerlink" href="#gzip" title="Link to this heading">¶</a></h3>
 <p>You can enable gzip compression of responses by passing an instance of <a class="reference internal" href="../../reference/config.html#litestar.config.compression.CompressionConfig" title="litestar.config.compression.CompressionConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">CompressionConfig</span></code></a> with
 the <code class="docutils literal notranslate"><span class="pre">backend</span></code> parameter set to <code class="docutils literal notranslate"><span class="pre">&quot;gzip&quot;</span></code>.</p>
 <p>You can configure the following additional gzip-specific values:</p>
@@ -720,8 +716,8 @@ the <code class="docutils literal notranslate"><span class="pre">backend</span><
 </dl>
 </li>
 </ul>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span>
-</span><span data-line="2"><span class="kn">from</span> <span class="nn">litestar.config.compression</span> <span class="kn">import</span> <span class="n">CompressionConfig</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.config.compression</span><span class="w"> </span><span class="kn">import</span> <span class="n">CompressionConfig</span>
 </span><span data-line="3">
 </span><span data-line="4"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
 </span><span data-line="5">    <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="o">...</span><span class="p">],</span>
@@ -731,7 +727,7 @@ the <code class="docutils literal notranslate"><span class="pre">backend</span><
 </div>
 </section>
 <section id="brotli">
-<h3>Brotli<a class="headerlink" href="#brotli" title="Permalink to this heading">¶</a></h3>
+<h3>Brotli<a class="headerlink" href="#brotli" title="Link to this heading">¶</a></h3>
 <p>The <a class="reference external" href="https://pypi.org/project/Brotli">Brotli</a> package is required to run this middleware. It is available as an extras to litestar with the <code class="docutils literal notranslate"><span class="pre">brotli</span></code>
 extra (<code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">'litestar[brotli]'</span></code>).</p>
 <p>You can enable brotli compression of responses by passing an instance of
@@ -761,8 +757,8 @@ extra (<code class="docutils literal notranslate"><span class="pre">pip</span> <
 </li>
 <li><p><code class="docutils literal notranslate"><span class="pre">brotli_gzip_fallback</span></code>: a boolean to indicate if gzip should be used if brotli is not supported</p></li>
 </ul>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span>
-</span><span data-line="2"><span class="kn">from</span> <span class="nn">litestar.config.compression</span> <span class="kn">import</span> <span class="n">CompressionConfig</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.config.compression</span><span class="w"> </span><span class="kn">import</span> <span class="n">CompressionConfig</span>
 </span><span data-line="3">
 </span><span data-line="4"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
 </span><span data-line="5">    <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="o">...</span><span class="p">],</span>
@@ -773,18 +769,18 @@ extra (<code class="docutils literal notranslate"><span class="pre">pip</span> <
 </section>
 </section>
 <section id="rate-limit-middleware">
-<h2>Rate-Limit Middleware<a class="headerlink" href="#rate-limit-middleware" title="Permalink to this heading">¶</a></h2>
+<h2>Rate-Limit Middleware<a class="headerlink" href="#rate-limit-middleware" title="Link to this heading">¶</a></h2>
 <p>Litestar includes an optional <a class="reference internal" href="../../reference/middleware/rate_limit.html#litestar.middleware.rate_limit.RateLimitMiddleware" title="litestar.middleware.rate_limit.RateLimitMiddleware"><code class="xref py py-class docutils literal notranslate"><span class="pre">RateLimitMiddleware</span></code></a> that follows
 the <a class="reference external" href="https://datatracker.ietf.org/doc/draft-ietf-httpapi-ratelimit-headers/">IETF RateLimit draft specification</a>.</p>
 <p>To use the rate limit middleware, use the <a class="reference internal" href="../../reference/middleware/rate_limit.html#litestar.middleware.rate_limit.RateLimitConfig" title="litestar.middleware.rate_limit.RateLimitConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">RateLimitConfig</span></code></a>:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">MediaType</span><span class="p">,</span> <span class="n">get</span>
-</span><span data-line="2"><span class="kn">from</span> <span class="nn">litestar.middleware.rate_limit</span> <span class="kn">import</span> <span class="n">RateLimitConfig</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">MediaType</span><span class="p">,</span> <span class="n">get</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.middleware.rate_limit</span><span class="w"> </span><span class="kn">import</span> <span class="n">RateLimitConfig</span>
 </span><span data-line="3">
 </span><span data-line="4"><span class="n">rate_limit_config</span> <span class="o">=</span> <span class="n">RateLimitConfig</span><span class="p">(</span><span class="n">rate_limit</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;minute&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">exclude</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;/schema&quot;</span><span class="p">])</span>
 </span><span data-line="5">
 </span><span data-line="6">
 </span><span data-line="7"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">media_type</span><span class="o">=</span><span class="n">MediaType</span><span class="o">.</span><span class="n">TEXT</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-</span><span data-line="8"><span class="k">def</span> <span class="nf">handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span data-line="8"><span class="k">def</span><span class="w"> </span><span class="nf">handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 </span><span data-line="9"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Handler which should not be accessed more than once per minute.&quot;&quot;&quot;</span>
 </span><span data-line="10">    <span class="k">return</span> <span class="s2">&quot;ok&quot;</span>
 </span><span data-line="11">
@@ -796,18 +792,18 @@ the <a class="reference external" href="https://datatracker.ietf.org/doc/draft-i
 <code class="docutils literal notranslate"><span class="pre">&quot;minute&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;hour&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;day&quot;</span></code>) and a value for the request quota (integer).</p>
 </section>
 <section id="logging-middleware">
-<h2>Logging Middleware<a class="headerlink" href="#logging-middleware" title="Permalink to this heading">¶</a></h2>
+<h2>Logging Middleware<a class="headerlink" href="#logging-middleware" title="Link to this heading">¶</a></h2>
 <p>Litestar ships with a robust logging middleware that allows logging HTTP request and responses while building on
 the Litestar’s <a class="reference internal" href="../logging.html#logging-usage"><span class="std std-ref">logging configuration</span></a>:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
-</span><span data-line="2"><span class="kn">from</span> <span class="nn">litestar.logging.config</span> <span class="kn">import</span> <span class="n">LoggingConfig</span>
-</span><span data-line="3"><span class="kn">from</span> <span class="nn">litestar.middleware.logging</span> <span class="kn">import</span> <span class="n">LoggingMiddlewareConfig</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.logging.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">LoggingConfig</span>
+</span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.middleware.logging</span><span class="w"> </span><span class="kn">import</span> <span class="n">LoggingMiddlewareConfig</span>
 </span><span data-line="4">
 </span><span data-line="5"><span class="n">logging_middleware_config</span> <span class="o">=</span> <span class="n">LoggingMiddlewareConfig</span><span class="p">()</span>
 </span><span data-line="6">
 </span><span data-line="7">
 </span><span data-line="8"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-</span><span data-line="9"><span class="k">def</span> <span class="nf">my_handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+</span><span data-line="9"><span class="k">def</span><span class="w"> </span><span class="nf">my_handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
 </span><span data-line="10">    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;hello&quot;</span><span class="p">:</span> <span class="s2">&quot;world&quot;</span><span class="p">}</span>
 </span><span data-line="11">
 </span><span data-line="12">
@@ -821,10 +817,10 @@ the Litestar’s <a class="reference internal" href="../logging.html#logging-usa
 <p>The logging middleware uses the logger configuration defined on the application level, which allows for using any supported logging tool, depending on the configuration used
 (see <a class="reference internal" href="../logging.html#logging-usage"><span class="std std-ref">logging configuration</span></a> for more details).</p>
 <section id="obfuscating-logging-output">
-<h3>Obfuscating Logging Output<a class="headerlink" href="#obfuscating-logging-output" title="Permalink to this heading">¶</a></h3>
+<h3>Obfuscating Logging Output<a class="headerlink" href="#obfuscating-logging-output" title="Link to this heading">¶</a></h3>
 <p>Sometimes certain data, e.g. request or response headers, needs to be obfuscated. This is supported by the middleware
 configuration:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">litestar.middleware.logging</span> <span class="kn">import</span> <span class="n">LoggingMiddlewareConfig</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.middleware.logging</span><span class="w"> </span><span class="kn">import</span> <span class="n">LoggingMiddlewareConfig</span>
 </span><span data-line="2">
 </span><span data-line="3"><span class="n">logging_middleware_config</span> <span class="o">=</span> <span class="n">LoggingMiddlewareConfig</span><span class="p">(</span>
 </span><span data-line="4">    <span class="n">request_cookies_to_obfuscate</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;my-custom-session-key&quot;</span><span class="p">},</span>
@@ -837,7 +833,7 @@ configuration:</p>
 <p>The middleware will obfuscate the headers <code class="docutils literal notranslate"><span class="pre">Authorization</span></code> and <code class="docutils literal notranslate"><span class="pre">X-API-KEY</span></code> , and the cookie <code class="docutils literal notranslate"><span class="pre">session</span></code> by default.</p>
 </section>
 <section id="compression-and-logging-of-response-body">
-<h3>Compression and Logging of Response Body<a class="headerlink" href="#compression-and-logging-of-response-body" title="Permalink to this heading">¶</a></h3>
+<h3>Compression and Logging of Response Body<a class="headerlink" href="#compression-and-logging-of-response-body" title="Link to this heading">¶</a></h3>
 <p>If both <a class="reference internal" href="../../reference/config.html#litestar.config.compression.CompressionConfig" title="litestar.config.compression.CompressionConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">CompressionConfig</span></code></a> and
 <a class="reference internal" href="../../reference/middleware/logging.html#litestar.middleware.logging.LoggingMiddleware" title="litestar.middleware.logging.LoggingMiddleware"><code class="xref py py-class docutils literal notranslate"><span class="pre">LoggingMiddleware</span></code></a> have been defined for the application, the response
 body will be omitted from response logging if it has been compressed, even if <code class="docutils literal notranslate"><span class="pre">&quot;body&quot;</span></code> has been included in
@@ -848,7 +844,7 @@ addition to including <code class="docutils literal notranslate"><span class="pr
 </section>
 </section>
 <section id="session-middleware">
-<h2>Session Middleware<a class="headerlink" href="#session-middleware" title="Permalink to this heading">¶</a></h2>
+<h2>Session Middleware<a class="headerlink" href="#session-middleware" title="Link to this heading">¶</a></h2>
 <p>Litestar includes a <a class="reference internal" href="../../reference/middleware/session/base.html#litestar.middleware.session.base.SessionMiddleware" title="litestar.middleware.session.base.SessionMiddleware"><code class="xref py py-class docutils literal notranslate"><span class="pre">SessionMiddleware</span></code></a>,
 offering client- and server-side sessions. Server-side sessions are backed by Litestar’s
 <a class="reference internal" href="../stores.html"><span class="doc">stores</span></a>, which offer support for:</p>
@@ -858,16 +854,16 @@ offering client- and server-side sessions. Server-side sessions are backed by Li
 <li><p>Redis based sessions</p></li>
 </ul>
 <section id="setting-up-the-middleware">
-<h3>Setting up the middleware<a class="headerlink" href="#setting-up-the-middleware" title="Permalink to this heading">¶</a></h3>
+<h3>Setting up the middleware<a class="headerlink" href="#setting-up-the-middleware" title="Link to this heading">¶</a></h3>
 <p>To start using sessions in your application all you have to do is create an instance
 of a <a class="reference internal" href="../../reference/middleware/session/base.html#litestar.middleware.session.base.BaseBackendConfig" title="litestar.middleware.session.base.BaseBackendConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">configuration</span></code></a> object and
 add its middleware to your application’s middleware stack:</p>
 <div class="literal-block-wrapper docutils container" id="id2">
-<div class="code-block-caption"><span class="caption-text">Hello World</span><a class="headerlink" href="#id2" title="Permalink to this code">¶</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">os</span> <span class="kn">import</span> <span class="n">urandom</span>
+<div class="code-block-caption"><span class="caption-text">Hello World</span><a class="headerlink" href="#id2" title="Link to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">os</span><span class="w"> </span><span class="kn">import</span> <span class="n">urandom</span>
 </span><span data-line="2">
-</span><span data-line="3"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">Request</span><span class="p">,</span> <span class="n">delete</span><span class="p">,</span> <span class="n">get</span><span class="p">,</span> <span class="n">post</span>
-</span><span data-line="4"><span class="kn">from</span> <span class="nn">litestar.middleware.session.client_side</span> <span class="kn">import</span> <span class="n">CookieBackendConfig</span>
+</span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">Request</span><span class="p">,</span> <span class="n">delete</span><span class="p">,</span> <span class="n">get</span><span class="p">,</span> <span class="n">post</span>
+</span><span data-line="4"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.middleware.session.client_side</span><span class="w"> </span><span class="kn">import</span> <span class="n">CookieBackendConfig</span>
 </span><span data-line="5">
 </span><span data-line="6"><span class="c1"># we initialize to config with a 16 byte key, i.e. 128 a bit key.</span>
 </span><span data-line="7"><span class="c1"># in real world usage we should inject the secret from the environment</span>
@@ -875,13 +871,13 @@ add its middleware to your application’s middleware stack:</p>
 </span><span data-line="9">
 </span><span data-line="10">
 </span><span data-line="11"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/session&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-</span><span data-line="12"><span class="k">def</span> <span class="nf">check_session_handler</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bool</span><span class="p">]:</span>
+</span><span data-line="12"><span class="k">def</span><span class="w"> </span><span class="nf">check_session_handler</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bool</span><span class="p">]:</span>
 </span><span data-line="13"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Handler function that accesses request.session.&quot;&quot;&quot;</span>
 </span><span data-line="14">    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;has_session&quot;</span><span class="p">:</span> <span class="n">request</span><span class="o">.</span><span class="n">session</span> <span class="o">!=</span> <span class="p">{}}</span>
 </span><span data-line="15">
 </span><span data-line="16">
 </span><span data-line="17"><span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/session&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-</span><span data-line="18"><span class="k">def</span> <span class="nf">create_session_handler</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="18"><span class="k">def</span><span class="w"> </span><span class="nf">create_session_handler</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 </span><span data-line="19"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Handler to set the session.&quot;&quot;&quot;</span>
 </span><span data-line="20">    <span class="k">if</span> <span class="ow">not</span> <span class="n">request</span><span class="o">.</span><span class="n">session</span><span class="p">:</span>
 </span><span data-line="21">        <span class="c1"># value can be a dictionary or pydantic model</span>
@@ -889,7 +885,7 @@ add its middleware to your application’s middleware stack:</p>
 </span><span data-line="23">
 </span><span data-line="24">
 </span><span data-line="25"><span class="nd">@delete</span><span class="p">(</span><span class="s2">&quot;/session&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-</span><span data-line="26"><span class="k">def</span> <span class="nf">delete_session_handler</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="26"><span class="k">def</span><span class="w"> </span><span class="nf">delete_session_handler</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 </span><span data-line="27"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Handler to clear the session.&quot;&quot;&quot;</span>
 </span><span data-line="28">    <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">session</span><span class="p">:</span>
 </span><span data-line="29">        <span class="n">request</span><span class="o">.</span><span class="n">clear_session</span><span class="p">()</span>
@@ -910,7 +906,7 @@ A complete reference of the cookie configuration can be found at <a class="refer
 </div>
 </section>
 <section id="client-side-sessions">
-<h3>Client-side sessions<a class="headerlink" href="#client-side-sessions" title="Permalink to this heading">¶</a></h3>
+<h3>Client-side sessions<a class="headerlink" href="#client-side-sessions" title="Link to this heading">¶</a></h3>
 <p>Client side sessions are available through the <a class="reference internal" href="../../reference/middleware/session/client_side.html#litestar.middleware.session.client_side.ClientSideSessionBackend" title="litestar.middleware.session.client_side.ClientSideSessionBackend"><code class="xref py py-class docutils literal notranslate"><span class="pre">ClientSideSessionBackend</span></code></a>,
 which offers strong AES-CGM encryption security best practices while support cookie splitting.</p>
 <div class="admonition important">
@@ -919,11 +915,11 @@ which offers strong AES-CGM encryption security best practices while support coo
 which can be installed together with litestar as an extra using <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">'litestar[cryptography]'</span></code></p>
 </div>
 <div class="literal-block-wrapper docutils container" id="id3">
-<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">cookie_backend.py</span></code></span><a class="headerlink" href="#id3" title="Permalink to this code">¶</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">os</span> <span class="kn">import</span> <span class="n">urandom</span>
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">cookie_backend.py</span></code></span><a class="headerlink" href="#id3" title="Link to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">os</span><span class="w"> </span><span class="kn">import</span> <span class="n">urandom</span>
 </span><span data-line="2">
-</span><span data-line="3"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span>
-</span><span data-line="4"><span class="kn">from</span> <span class="nn">litestar.middleware.session.client_side</span> <span class="kn">import</span> <span class="n">CookieBackendConfig</span>
+</span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span>
+</span><span data-line="4"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.middleware.session.client_side</span><span class="w"> </span><span class="kn">import</span> <span class="n">CookieBackendConfig</span>
 </span><span data-line="5">
 </span><span data-line="6"><span class="n">session_config</span> <span class="o">=</span> <span class="n">CookieBackendConfig</span><span class="p">(</span><span class="n">secret</span><span class="o">=</span><span class="n">urandom</span><span class="p">(</span><span class="mi">16</span><span class="p">))</span>  <span class="c1"># type: ignore</span>
 </span><span data-line="7">
@@ -939,15 +935,15 @@ which can be installed together with litestar as an extra using <code class="doc
 </div>
 </section>
 <section id="server-side-sessions">
-<h3>Server-side sessions<a class="headerlink" href="#server-side-sessions" title="Permalink to this heading">¶</a></h3>
+<h3>Server-side sessions<a class="headerlink" href="#server-side-sessions" title="Link to this heading">¶</a></h3>
 <p>Server side session store data - as the name suggests - on the server instead of the client.
 They use a cookie containing a session ID which is a randomly generated string to identify a client
 and load the appropriate data from the store</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
 </span><span data-line="2">
-</span><span data-line="3"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span>
-</span><span data-line="4"><span class="kn">from</span> <span class="nn">litestar.middleware.session.server_side</span> <span class="kn">import</span> <span class="n">ServerSideSessionConfig</span>
-</span><span data-line="5"><span class="kn">from</span> <span class="nn">litestar.stores.file</span> <span class="kn">import</span> <span class="n">FileStore</span>
+</span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span>
+</span><span data-line="4"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.middleware.session.server_side</span><span class="w"> </span><span class="kn">import</span> <span class="n">ServerSideSessionConfig</span>
+</span><span data-line="5"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.stores.file</span><span class="w"> </span><span class="kn">import</span> <span class="n">FileStore</span>
 </span><span data-line="6">
 </span><span data-line="7"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
 </span><span data-line="8">    <span class="n">middleware</span><span class="o">=</span><span class="p">[</span><span class="n">ServerSideSessionConfig</span><span class="p">()</span><span class="o">.</span><span class="n">middleware</span><span class="p">],</span>
@@ -1015,9 +1011,9 @@ and load the appropriate data from the store</p>
     </div>
   </div>
 </footer>
-      <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=c19e757c"></script>
-      <script src="../../_static/doctools.js?v=888ff710"></script>
-      <script src="../../_static/sphinx_highlight.js?v=4825356b"></script>
+      <script src="../../_static/documentation_options.js?v=b95e84ca"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
       <script src="../../_static/copybutton.js?v=f281be69"></script>
       <script src="../../_static/litestar-theme.js?v=ab2dcc9e"></script>
@@ -1025,8 +1021,8 @@ and load the appropriate data from the store</p>
       <script>let toggleHintHide = 'Click to hide';</script>
       <script>let toggleOpenOnPrint = 'true';</script>
       <script src="../../_static/togglebutton.js?v=4a39c7ea"></script>
-      <script src="../../_static/design-tabs.js?v=36754332"></script>
+      <script src="../../_static/design-tabs.js?v=f930bc37"></script>
       <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
-      <script src="../../_static/shibuya.js?v=e2e99575"></script>
+      <script src="../../_static/shibuya.js?v=c477d091"></script>
       <script src="../../_static/versioning.js?v=bc681eff"></script></body>
 </html>

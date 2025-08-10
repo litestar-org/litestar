@@ -1,15 +1,15 @@
 <!DOCTYPE html>
-<html lang="en" data-accent-color="amber" data-content_root="">
+<html lang="en" data-accent-color="amber" data-content_root="../">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>cli - Litestar Framework</title><link rel="shortcut icon" href="../_static/favicon.svg"/><link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="config" href="config.html" /><link rel="prev" title="asyncpg" href="channels/backends/asyncpg.html" /><script>
     function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
     setColorMode(localStorage._theme||"auto");
   </script><link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=397bb51e" />
-    <link rel="stylesheet" type="text/css" href="../_static/shibuya.css?v=83eaa723" />
+    <link rel="stylesheet" type="text/css" href="../_static/shibuya.css?v=76b6f612" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
-    <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx_paramlinks.css" />
     <link media="print" rel="stylesheet" type="text/css" href="../_static/print.css?v=20ff2c19" />
     <link rel="stylesheet" type="text/css" href="../_static/style.css?v=50ea2f63" />
@@ -42,13 +42,13 @@
       <img class="dark-logo" src="../_static/logo-dark.png" alt="Litestar" height="28" loading="lazy" />
       <strong>Litestar</strong>
     </a>
-    <div class="sy-head-nav" id="HeadNav">
+    <div class="sy-head-nav" id="head-nav">
       <nav class="sy-head-links"><ul><li class="link"><a href="../index.html">Home</a></li>
-      <li class="link"><button type="button">
+      <li class="link"><button class="js-menu" type="button" id="nav-trigger-2" aria-controls="nav-children-2">
             <span>Community</span>
             <i class="i-lucide chevron-down"></i>
           </button>
-        <ul><li><a href="../contribution-guide.html">
+        <ul id="nav-children-2" aria-labelledby="nav-trigger-2"><li><a href="../contribution-guide.html">
                 <span>Contributing</span>
                 <small>Learn how to contribute to the Litestar project</small>
               </a></li><li><a href="https://github.com/litestar-org/.github?tab=coc-ov-file">
@@ -59,11 +59,11 @@
                 <small>Overview of Litestar's security protocols</small>
               </a></li></ul>
       </li>
-      <li class="link"><button type="button">
+      <li class="link"><button class="js-menu" type="button" id="nav-trigger-3" aria-controls="nav-children-3">
             <span>About</span>
             <i class="i-lucide chevron-down"></i>
           </button>
-        <ul><li><a href="https://litestar.dev/about/organization">
+        <ul id="nav-children-3" aria-labelledby="nav-trigger-3"><li><a href="https://litestar.dev/about/organization">
                 <span>Litestar Organization</span>
                 <small>Details about the Litestar organization</small>
               </a></li><li><a href="https://litestar.dev/about/litestar-releases">
@@ -71,11 +71,11 @@
                 <small>Explore the release process, versioning, and deprecation policy for Litestar</small>
               </a></li></ul>
       </li>
-      <li class="link"><button type="button">
+      <li class="link"><button class="js-menu" type="button" id="nav-trigger-4" aria-controls="nav-children-4">
             <span>Release notes</span>
             <i class="i-lucide chevron-down"></i>
           </button>
-        <ul><li><a href="../release-notes/whats-new-3.html">
+        <ul id="nav-children-4" aria-labelledby="nav-trigger-4"><li><a href="../release-notes/whats-new-3.html">
                 <span>What's new in 3.0</span>
                 <small>Explore the new features in Litestar 3.0</small>
               </a></li><li><a href="../release-notes/changelog.html">
@@ -86,11 +86,11 @@
                 <small>All changes in the 2.x series</small>
               </a></li></ul>
       </li>
-      <li class="link"><button type="button">
+      <li class="link"><button class="js-menu" type="button" id="nav-trigger-5" aria-controls="nav-children-5">
             <span>Help</span>
             <i class="i-lucide chevron-down"></i>
           </button>
-        <ul><li><a href="https://discord.gg/litestar">
+        <ul id="nav-children-5" aria-labelledby="nav-trigger-5"><li><a href="https://discord.gg/litestar">
                 <span>Discord Help Forum</span>
                 <small>Dedicated Discord help forum</small>
               </a></li><li><a href="https://github.com/orgs/litestar-org/discussions">
@@ -127,7 +127,7 @@ data-aria-auto="Switch to light color mode"
 data-aria-light="Switch to dark color mode"
 data-aria-dark="Switch to auto color mode">
 <i class="i-lucide theme-icon"></i>
-</button><button class="md:hidden flex items-center js-menu" aria-label="Menu" type="button" aria-controls="HeadNav" aria-expanded="false">
+</button><button class="md:hidden flex items-center js-menu" aria-label="Menu" type="button" aria-controls="head-nav" aria-expanded="false">
         <div class="hamburger">
           <span class="hamburger_1"></span>
           <span class="hamburger_2 -translate-x-2"></span>
@@ -173,12 +173,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2"><a class="reference internal" href="../usage/databases/index.html">Databases</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../usage/databases/sqlalchemy/index.html">SQLAlchemy</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../usage/databases/sqlalchemy/models_and_repository.html">SQLAlchemy Models &amp; Repository</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../usage/databases/sqlalchemy/plugins/index.html">Plugins</a><ul>
-<li class="toctree-l5"><a class="reference internal" href="../usage/databases/sqlalchemy/plugins/sqlalchemy_plugin.html">SQLAlchemy Plugin</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../usage/databases/sqlalchemy/plugins/sqlalchemy_init_plugin.html">SQLAlchemy Init Plugin</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../usage/databases/sqlalchemy/plugins/sqlalchemy_serialization_plugin.html">SQLAlchemy Serialization Plugin</a></li>
-</ul>
-</li>
+<li class="toctree-l4"><a class="reference internal" href="../usage/databases/sqlalchemy/plugins/index.html">Plugins</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../usage/databases/piccolo.html">Piccolo ORM</a></li>
@@ -514,11 +509,12 @@ data-aria-dark="Switch to auto color mode">
     </span>
   </span>
 </a><div class="edit-this-page">
-  <a href="https://github.com/litestar-org/litestar/blob/master/docs/reference/cli.rst">Edit this page</a>
+  <a href="https://github.com/litestar-org/litestar/blob/main/docs/reference/cli.rst">Edit this page</a>
 </div><div id="ethical-ad-placement" data-ea-publisher="readthedocs"></div></div>
   </aside>
   <div class="rside-overlay js-menu" role="button" aria-label="Close Table of Contents" aria-controls="rside" aria-expanded="false"></div>
-  <main class="sy-main w-full max-sm:max-w-full print:pt-6"><div class="sy-breadcrumbs" role="navigation">
+  <main class="sy-main w-full max-sm:max-w-full print:pt-6">
+<div class="sy-breadcrumbs" role="navigation">
   <div class="sy-breadcrumbs-inner flex items-center">
     <div class="md:hidden mr-3">
       <button class="js-menu" aria-label="Menu" type="button" aria-controls="lside" aria-expanded="false">
@@ -548,10 +544,10 @@ data-aria-dark="Switch to auto color mode">
       <div class="min-w-0 max-w-6xl px-6 pb-6 pt-8 xl:px-12">
         <article class="yue" role="main">
           <section id="module-litestar.cli">
-<span id="cli"></span><h1>cli<a class="headerlink" href="#module-litestar.cli" title="Permalink to this heading">¶</a></h1>
+<span id="cli"></span><h1>cli<a class="headerlink" href="#module-litestar.cli" title="Link to this heading">¶</a></h1>
 <p>Litestar CLI.</p>
 <section id="litestar">
-<h2>litestar<a class="headerlink" href="#litestar" title="Permalink to this heading">¶</a></h2>
+<h2>litestar<a class="headerlink" href="#litestar" title="Link to this heading">¶</a></h2>
 <p>Litestar CLI.</p>
 <p>The application to will be automatically discovered if it’s in one of these
 canonical paths: ‘app.py’, ‘asgi.py’, ‘application.py’ or ‘app/__init__.py’.
@@ -567,25 +563,25 @@ instance.</p>
 <p class="rubric">Options</p>
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-litestar-app">
-<span class="sig-name descname"><span class="pre">--app</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;app_path&gt;</span></span><a class="headerlink" href="#cmdoption-litestar-app" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">--app</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;app_path&gt;</span></span><a class="headerlink" href="#cmdoption-litestar-app" title="Link to this definition">¶</a></dt>
 <dd><p>Module path to a Litestar application</p>
 </dd></dl>
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-litestar-app-dir">
-<span class="sig-name descname"><span class="pre">--app-dir</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;app_dir&gt;</span></span><a class="headerlink" href="#cmdoption-litestar-app-dir" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">--app-dir</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;app_dir&gt;</span></span><a class="headerlink" href="#cmdoption-litestar-app-dir" title="Link to this definition">¶</a></dt>
 <dd><p>Look for APP in the specified directory, by adding this to the PYTHONPATH. Defaults to the current working directory.</p>
 </dd></dl>
 
 <section id="litestar-info">
-<h3>info<a class="headerlink" href="#litestar-info" title="Permalink to this heading">¶</a></h3>
+<h3>info<a class="headerlink" href="#litestar-info" title="Link to this heading">¶</a></h3>
 <p>Show information about the detected Litestar app.</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span data-line="1">litestar<span class="w"> </span>info<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span>
 </span></pre></div>
 </div>
 </section>
 <section id="litestar-routes">
-<h3>routes<a class="headerlink" href="#litestar-routes" title="Permalink to this heading">¶</a></h3>
+<h3>routes<a class="headerlink" href="#litestar-routes" title="Link to this heading">¶</a></h3>
 <p>Display information about the application’s routes.</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span data-line="1">litestar<span class="w"> </span>routes<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span>
 </span></pre></div>
@@ -593,19 +589,19 @@ instance.</p>
 <p class="rubric">Options</p>
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-litestar-routes-schema">
-<span class="sig-name descname"><span class="pre">--schema</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-litestar-routes-schema" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">--schema</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-litestar-routes-schema" title="Link to this definition">¶</a></dt>
 <dd><p>Include schema routes</p>
 </dd></dl>
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-litestar-routes-exclude">
-<span class="sig-name descname"><span class="pre">--exclude</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;exclude&gt;</span></span><a class="headerlink" href="#cmdoption-litestar-routes-exclude" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">--exclude</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;exclude&gt;</span></span><a class="headerlink" href="#cmdoption-litestar-routes-exclude" title="Link to this definition">¶</a></dt>
 <dd><p>routes to exclude via regex</p>
 </dd></dl>
 
 </section>
 <section id="litestar-run">
-<h3>run<a class="headerlink" href="#litestar-run" title="Permalink to this heading">¶</a></h3>
+<h3>run<a class="headerlink" href="#litestar-run" title="Link to this heading">¶</a></h3>
 <p>Run a Litestar app. (requires ‘uvicorn’ to be installed).</p>
 <p>The application will be automatically discovered, or can be set as an option to the
 main ‘litestar’ command. Run ‘litestar –help’ for more information about app
@@ -616,31 +612,31 @@ autodiscovery</p>
 <p class="rubric">Options</p>
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-litestar-run-r">
-<span id="cmdoption-litestar-run-reload"></span><span class="sig-name descname"><span class="pre">-r</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--reload</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-litestar-run-r" title="Permalink to this definition">¶</a></dt>
+<span id="cmdoption-litestar-run-reload"></span><span class="sig-name descname"><span class="pre">-r</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--reload</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-litestar-run-r" title="Link to this definition">¶</a></dt>
 <dd><p>Reload server on changes</p>
 </dd></dl>
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-litestar-run-R">
-<span id="cmdoption-litestar-run-reload-dir"></span><span class="sig-name descname"><span class="pre">-R</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--reload-dir</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;reload_dir&gt;</span></span><a class="headerlink" href="#cmdoption-litestar-run-R" title="Permalink to this definition">¶</a></dt>
+<span id="cmdoption-litestar-run-reload-dir"></span><span class="sig-name descname"><span class="pre">-R</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--reload-dir</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;reload_dir&gt;</span></span><a class="headerlink" href="#cmdoption-litestar-run-R" title="Link to this definition">¶</a></dt>
 <dd><p>Directories to watch for file changes</p>
 </dd></dl>
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-litestar-run-I">
-<span id="cmdoption-litestar-run-reload-include"></span><span class="sig-name descname"><span class="pre">-I</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--reload-include</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;reload_include&gt;</span></span><a class="headerlink" href="#cmdoption-litestar-run-I" title="Permalink to this definition">¶</a></dt>
+<span id="cmdoption-litestar-run-reload-include"></span><span class="sig-name descname"><span class="pre">-I</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--reload-include</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;reload_include&gt;</span></span><a class="headerlink" href="#cmdoption-litestar-run-I" title="Link to this definition">¶</a></dt>
 <dd><p>Glob patterns for files to include when watching for file changes</p>
 </dd></dl>
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-litestar-run-E">
-<span id="cmdoption-litestar-run-reload-exclude"></span><span class="sig-name descname"><span class="pre">-E</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--reload-exclude</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;reload_exclude&gt;</span></span><a class="headerlink" href="#cmdoption-litestar-run-E" title="Permalink to this definition">¶</a></dt>
+<span id="cmdoption-litestar-run-reload-exclude"></span><span class="sig-name descname"><span class="pre">-E</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--reload-exclude</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;reload_exclude&gt;</span></span><a class="headerlink" href="#cmdoption-litestar-run-E" title="Link to this definition">¶</a></dt>
 <dd><p>Glob patterns for files to exclude when watching for file changes</p>
 </dd></dl>
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-litestar-run-p">
-<span id="cmdoption-litestar-run-port"></span><span class="sig-name descname"><span class="pre">-p</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--port</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;port&gt;</span></span><a class="headerlink" href="#cmdoption-litestar-run-p" title="Permalink to this definition">¶</a></dt>
+<span id="cmdoption-litestar-run-port"></span><span class="sig-name descname"><span class="pre">-p</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--port</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;port&gt;</span></span><a class="headerlink" href="#cmdoption-litestar-run-p" title="Link to this definition">¶</a></dt>
 <dd><p>Serve under this port</p>
 <dl class="field-list simple">
 <dt class="field-odd">Default<span class="colon">:</span></dt>
@@ -651,7 +647,7 @@ autodiscovery</p>
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-litestar-run-W">
-<span id="cmdoption-litestar-run-wc"></span><span id="cmdoption-litestar-run-web-concurrency"></span><span class="sig-name descname"><span class="pre">-W</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--wc</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--web-concurrency</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;wc&gt;</span></span><a class="headerlink" href="#cmdoption-litestar-run-W" title="Permalink to this definition">¶</a></dt>
+<span id="cmdoption-litestar-run-wc"></span><span id="cmdoption-litestar-run-web-concurrency"></span><span class="sig-name descname"><span class="pre">-W</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--wc</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--web-concurrency</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;wc&gt;</span></span><a class="headerlink" href="#cmdoption-litestar-run-W" title="Link to this definition">¶</a></dt>
 <dd><p>The number of HTTP workers to launch</p>
 <dl class="field-list simple">
 <dt class="field-odd">Default<span class="colon">:</span></dt>
@@ -662,7 +658,7 @@ autodiscovery</p>
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-litestar-run-H">
-<span id="cmdoption-litestar-run-host"></span><span class="sig-name descname"><span class="pre">-H</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--host</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;host&gt;</span></span><a class="headerlink" href="#cmdoption-litestar-run-H" title="Permalink to this definition">¶</a></dt>
+<span id="cmdoption-litestar-run-host"></span><span class="sig-name descname"><span class="pre">-H</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--host</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;host&gt;</span></span><a class="headerlink" href="#cmdoption-litestar-run-H" title="Link to this definition">¶</a></dt>
 <dd><p>Server under this host</p>
 <dl class="field-list simple">
 <dt class="field-odd">Default<span class="colon">:</span></dt>
@@ -673,48 +669,48 @@ autodiscovery</p>
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-litestar-run-F">
-<span id="cmdoption-litestar-run-fd"></span><span id="cmdoption-litestar-run-file-descriptor"></span><span class="sig-name descname"><span class="pre">-F</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--fd</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--file-descriptor</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;fd&gt;</span></span><a class="headerlink" href="#cmdoption-litestar-run-F" title="Permalink to this definition">¶</a></dt>
+<span id="cmdoption-litestar-run-fd"></span><span id="cmdoption-litestar-run-file-descriptor"></span><span class="sig-name descname"><span class="pre">-F</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--fd</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--file-descriptor</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;fd&gt;</span></span><a class="headerlink" href="#cmdoption-litestar-run-F" title="Link to this definition">¶</a></dt>
 <dd><p>Bind to a socket from this file descriptor.</p>
 </dd></dl>
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-litestar-run-U">
-<span id="cmdoption-litestar-run-uds"></span><span id="cmdoption-litestar-run-unix-domain-socket"></span><span class="sig-name descname"><span class="pre">-U</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--uds</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--unix-domain-socket</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;uds&gt;</span></span><a class="headerlink" href="#cmdoption-litestar-run-U" title="Permalink to this definition">¶</a></dt>
+<span id="cmdoption-litestar-run-uds"></span><span id="cmdoption-litestar-run-unix-domain-socket"></span><span class="sig-name descname"><span class="pre">-U</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--uds</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--unix-domain-socket</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;uds&gt;</span></span><a class="headerlink" href="#cmdoption-litestar-run-U" title="Link to this definition">¶</a></dt>
 <dd><p>Bind to a UNIX domain socket.</p>
 </dd></dl>
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-litestar-run-d">
-<span id="cmdoption-litestar-run-debug"></span><span class="sig-name descname"><span class="pre">-d</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--debug</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-litestar-run-d" title="Permalink to this definition">¶</a></dt>
+<span id="cmdoption-litestar-run-debug"></span><span class="sig-name descname"><span class="pre">-d</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--debug</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-litestar-run-d" title="Link to this definition">¶</a></dt>
 <dd><p>Run app in debug mode</p>
 </dd></dl>
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-litestar-run-P">
-<span id="cmdoption-litestar-run-pdb"></span><span id="cmdoption-litestar-run-use-pdb"></span><span class="sig-name descname"><span class="pre">-P</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--pdb</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--use-pdb</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-litestar-run-P" title="Permalink to this definition">¶</a></dt>
+<span id="cmdoption-litestar-run-pdb"></span><span id="cmdoption-litestar-run-use-pdb"></span><span class="sig-name descname"><span class="pre">-P</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--pdb</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--use-pdb</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-litestar-run-P" title="Link to this definition">¶</a></dt>
 <dd><p>Drop into PDB on an exception</p>
 </dd></dl>
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-litestar-run-ssl-certfile">
-<span class="sig-name descname"><span class="pre">--ssl-certfile</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;ssl_certfile&gt;</span></span><a class="headerlink" href="#cmdoption-litestar-run-ssl-certfile" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">--ssl-certfile</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;ssl_certfile&gt;</span></span><a class="headerlink" href="#cmdoption-litestar-run-ssl-certfile" title="Link to this definition">¶</a></dt>
 <dd><p>Location of the SSL cert file</p>
 </dd></dl>
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-litestar-run-ssl-keyfile">
-<span class="sig-name descname"><span class="pre">--ssl-keyfile</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;ssl_keyfile&gt;</span></span><a class="headerlink" href="#cmdoption-litestar-run-ssl-keyfile" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">--ssl-keyfile</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;ssl_keyfile&gt;</span></span><a class="headerlink" href="#cmdoption-litestar-run-ssl-keyfile" title="Link to this definition">¶</a></dt>
 <dd><p>Location of the SSL key file</p>
 </dd></dl>
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-litestar-run-create-self-signed-cert">
-<span class="sig-name descname"><span class="pre">--create-self-signed-cert</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-litestar-run-create-self-signed-cert" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">--create-self-signed-cert</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-litestar-run-create-self-signed-cert" title="Link to this definition">¶</a></dt>
 <dd><p>If certificate and key are not found at specified locations, create a self-signed certificate and a key</p>
 </dd></dl>
 
 <p class="rubric">Environment variables</p>
-<span class="target" id="litestar-run-reload-litestar-reload"></span><dl class="std envvar">
+<dl class="std envvar" id="litestar-run-reload-litestar-reload">
 <dt class="sig sig-object std">
 <span class="sig-name descname"><span class="pre">LITESTAR_RELOAD</span></span></dt>
 <dd><blockquote>
@@ -722,7 +718,7 @@ autodiscovery</p>
 </div></blockquote>
 </dd></dl>
 
-<span class="target" id="litestar-run-reload-dir-litestar-reload-dirs"></span><dl class="std envvar">
+<dl class="std envvar" id="litestar-run-reload-dir-litestar-reload-dirs">
 <dt class="sig sig-object std">
 <span class="sig-name descname"><span class="pre">LITESTAR_RELOAD_DIRS</span></span></dt>
 <dd><blockquote>
@@ -730,7 +726,7 @@ autodiscovery</p>
 </div></blockquote>
 </dd></dl>
 
-<span class="target" id="litestar-run-reload-include-litestar-reload-includes"></span><dl class="std envvar">
+<dl class="std envvar" id="litestar-run-reload-include-litestar-reload-includes">
 <dt class="sig sig-object std">
 <span class="sig-name descname"><span class="pre">LITESTAR_RELOAD_INCLUDES</span></span></dt>
 <dd><blockquote>
@@ -738,7 +734,7 @@ autodiscovery</p>
 </div></blockquote>
 </dd></dl>
 
-<span class="target" id="litestar-run-reload-exclude-litestar-reload-excludes"></span><dl class="std envvar">
+<dl class="std envvar" id="litestar-run-reload-exclude-litestar-reload-excludes">
 <dt class="sig sig-object std">
 <span class="sig-name descname"><span class="pre">LITESTAR_RELOAD_EXCLUDES</span></span></dt>
 <dd><blockquote>
@@ -746,7 +742,7 @@ autodiscovery</p>
 </div></blockquote>
 </dd></dl>
 
-<span class="target" id="litestar-run-port-litestar-port"></span><dl class="std envvar">
+<dl class="std envvar" id="litestar-run-port-litestar-port">
 <dt class="sig sig-object std">
 <span class="sig-name descname"><span class="pre">LITESTAR_PORT</span></span></dt>
 <dd><blockquote>
@@ -754,7 +750,7 @@ autodiscovery</p>
 </div></blockquote>
 </dd></dl>
 
-<span class="target" id="litestar-run-wc-litestar-web-concurrency-web-concurrency"></span><dl class="std envvar">
+<dl class="std envvar" id="litestar-run-wc-litestar-web-concurrency-web-concurrency">
 <dt class="sig sig-object std">
 <span class="sig-name descname"><span class="pre">['LITESTAR_WEB_CONCURRENCY',</span> <span class="pre">'WEB_CONCURRENCY']</span></span></dt>
 <dd><blockquote>
@@ -762,7 +758,7 @@ autodiscovery</p>
 </div></blockquote>
 </dd></dl>
 
-<span class="target" id="litestar-run-host-litestar-host"></span><dl class="std envvar">
+<dl class="std envvar" id="litestar-run-host-litestar-host">
 <dt class="sig sig-object std">
 <span class="sig-name descname"><span class="pre">LITESTAR_HOST</span></span></dt>
 <dd><blockquote>
@@ -770,7 +766,7 @@ autodiscovery</p>
 </div></blockquote>
 </dd></dl>
 
-<span class="target" id="litestar-run-fd-litestar-file-descriptor"></span><dl class="std envvar">
+<dl class="std envvar" id="litestar-run-fd-litestar-file-descriptor">
 <dt class="sig sig-object std">
 <span class="sig-name descname"><span class="pre">LITESTAR_FILE_DESCRIPTOR</span></span></dt>
 <dd><blockquote>
@@ -778,7 +774,7 @@ autodiscovery</p>
 </div></blockquote>
 </dd></dl>
 
-<span class="target" id="litestar-run-uds-litestar-unix-domain-socket"></span><dl class="std envvar">
+<dl class="std envvar" id="litestar-run-uds-litestar-unix-domain-socket">
 <dt class="sig sig-object std">
 <span class="sig-name descname"><span class="pre">LITESTAR_UNIX_DOMAIN_SOCKET</span></span></dt>
 <dd><blockquote>
@@ -786,7 +782,7 @@ autodiscovery</p>
 </div></blockquote>
 </dd></dl>
 
-<span class="target" id="litestar-run-debug-litestar-debug"></span><dl class="std envvar">
+<dl class="std envvar" id="litestar-run-debug-litestar-debug">
 <dt class="sig sig-object std">
 <span class="sig-name descname"><span class="pre">LITESTAR_DEBUG</span></span></dt>
 <dd><blockquote>
@@ -794,7 +790,7 @@ autodiscovery</p>
 </div></blockquote>
 </dd></dl>
 
-<span class="target" id="litestar-run-pdb-litestar-pdb"></span><dl class="std envvar">
+<dl class="std envvar" id="litestar-run-pdb-litestar-pdb">
 <dt class="sig sig-object std">
 <span class="sig-name descname"><span class="pre">LITESTAR_PDB</span></span></dt>
 <dd><blockquote>
@@ -802,7 +798,7 @@ autodiscovery</p>
 </div></blockquote>
 </dd></dl>
 
-<span class="target" id="litestar-run-ssl-certfile-litestar-ssl-cert-path"></span><dl class="std envvar">
+<dl class="std envvar" id="litestar-run-ssl-certfile-litestar-ssl-cert-path">
 <dt class="sig sig-object std">
 <span class="sig-name descname"><span class="pre">LITESTAR_SSL_CERT_PATH</span></span></dt>
 <dd><blockquote>
@@ -810,7 +806,7 @@ autodiscovery</p>
 </div></blockquote>
 </dd></dl>
 
-<span class="target" id="litestar-run-ssl-keyfile-litestar-ssl-key-path"></span><dl class="std envvar">
+<dl class="std envvar" id="litestar-run-ssl-keyfile-litestar-ssl-key-path">
 <dt class="sig sig-object std">
 <span class="sig-name descname"><span class="pre">LITESTAR_SSL_KEY_PATH</span></span></dt>
 <dd><blockquote>
@@ -818,7 +814,7 @@ autodiscovery</p>
 </div></blockquote>
 </dd></dl>
 
-<span class="target" id="litestar-run-create-self-signed-cert-litestar-create-self-signed-cert"></span><dl class="std envvar">
+<dl class="std envvar" id="litestar-run-create-self-signed-cert-litestar-create-self-signed-cert">
 <dt class="sig sig-object std">
 <span class="sig-name descname"><span class="pre">LITESTAR_CREATE_SELF_SIGNED_CERT</span></span></dt>
 <dd><blockquote>
@@ -828,13 +824,13 @@ autodiscovery</p>
 
 </section>
 <section id="litestar-schema">
-<h3>schema<a class="headerlink" href="#litestar-schema" title="Permalink to this heading">¶</a></h3>
+<h3>schema<a class="headerlink" href="#litestar-schema" title="Link to this heading">¶</a></h3>
 <p>Manage server-side OpenAPI schemas.</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span data-line="1">litestar<span class="w"> </span>schema<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span><span class="w"> </span>COMMAND<span class="w"> </span><span class="o">[</span>ARGS<span class="o">]</span>...
 </span></pre></div>
 </div>
 <section id="litestar-schema-openapi">
-<h4>openapi<a class="headerlink" href="#litestar-schema-openapi" title="Permalink to this heading">¶</a></h4>
+<h4>openapi<a class="headerlink" href="#litestar-schema-openapi" title="Link to this heading">¶</a></h4>
 <p>Generate an OpenAPI Schema.</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span data-line="1">litestar<span class="w"> </span>schema<span class="w"> </span>openapi<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span>
 </span></pre></div>
@@ -842,7 +838,7 @@ autodiscovery</p>
 <p class="rubric">Options</p>
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-litestar-schema-openapi-output">
-<span class="sig-name descname"><span class="pre">--output</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;output&gt;</span></span><a class="headerlink" href="#cmdoption-litestar-schema-openapi-output" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">--output</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;output&gt;</span></span><a class="headerlink" href="#cmdoption-litestar-schema-openapi-output" title="Link to this definition">¶</a></dt>
 <dd><p>output file path</p>
 <dl class="field-list simple">
 <dt class="field-odd">Default<span class="colon">:</span></dt>
@@ -853,7 +849,7 @@ autodiscovery</p>
 
 </section>
 <section id="litestar-schema-typescript">
-<h4>typescript<a class="headerlink" href="#litestar-schema-typescript" title="Permalink to this heading">¶</a></h4>
+<h4>typescript<a class="headerlink" href="#litestar-schema-typescript" title="Link to this heading">¶</a></h4>
 <p>Generate TypeScript specs from the OpenAPI schema.</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span data-line="1">litestar<span class="w"> </span>schema<span class="w"> </span>typescript<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span>
 </span></pre></div>
@@ -861,7 +857,7 @@ autodiscovery</p>
 <p class="rubric">Options</p>
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-litestar-schema-typescript-output">
-<span class="sig-name descname"><span class="pre">--output</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;output&gt;</span></span><a class="headerlink" href="#cmdoption-litestar-schema-typescript-output" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">--output</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;output&gt;</span></span><a class="headerlink" href="#cmdoption-litestar-schema-typescript-output" title="Link to this definition">¶</a></dt>
 <dd><p>output file path</p>
 <dl class="field-list simple">
 <dt class="field-odd">Default<span class="colon">:</span></dt>
@@ -872,27 +868,27 @@ autodiscovery</p>
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-litestar-schema-typescript-namespace">
-<span class="sig-name descname"><span class="pre">--namespace</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;namespace&gt;</span></span><a class="headerlink" href="#cmdoption-litestar-schema-typescript-namespace" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">--namespace</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;namespace&gt;</span></span><a class="headerlink" href="#cmdoption-litestar-schema-typescript-namespace" title="Link to this definition">¶</a></dt>
 <dd><p>namespace to use for the typescript specs</p>
 </dd></dl>
 
 </section>
 </section>
 <section id="litestar-sessions">
-<h3>sessions<a class="headerlink" href="#litestar-sessions" title="Permalink to this heading">¶</a></h3>
+<h3>sessions<a class="headerlink" href="#litestar-sessions" title="Link to this heading">¶</a></h3>
 <p>Manage server-side sessions.</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span data-line="1">litestar<span class="w"> </span>sessions<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span><span class="w"> </span>COMMAND<span class="w"> </span><span class="o">[</span>ARGS<span class="o">]</span>...
 </span></pre></div>
 </div>
 <section id="litestar-sessions-clear">
-<h4>clear<a class="headerlink" href="#litestar-sessions-clear" title="Permalink to this heading">¶</a></h4>
+<h4>clear<a class="headerlink" href="#litestar-sessions-clear" title="Link to this heading">¶</a></h4>
 <p>Delete all sessions.</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span data-line="1">litestar<span class="w"> </span>sessions<span class="w"> </span>clear<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span>
 </span></pre></div>
 </div>
 </section>
 <section id="litestar-sessions-delete">
-<h4>delete<a class="headerlink" href="#litestar-sessions-delete" title="Permalink to this heading">¶</a></h4>
+<h4>delete<a class="headerlink" href="#litestar-sessions-delete" title="Link to this heading">¶</a></h4>
 <p>Delete a specific session.</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span data-line="1">litestar<span class="w"> </span>sessions<span class="w"> </span>delete<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span><span class="w"> </span>SESSION_ID
 </span></pre></div>
@@ -900,14 +896,14 @@ autodiscovery</p>
 <p class="rubric">Arguments</p>
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-litestar-sessions-delete-arg-SESSION_ID">
-<span class="sig-name descname"><span class="pre">SESSION_ID</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-litestar-sessions-delete-arg-SESSION_ID" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">SESSION_ID</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-litestar-sessions-delete-arg-SESSION_ID" title="Link to this definition">¶</a></dt>
 <dd><p>Required argument</p>
 </dd></dl>
 
 </section>
 </section>
 <section id="litestar-version">
-<h3>version<a class="headerlink" href="#litestar-version" title="Permalink to this heading">¶</a></h3>
+<h3>version<a class="headerlink" href="#litestar-version" title="Link to this heading">¶</a></h3>
 <p>Show the currently installed Litestar version.</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span data-line="1">litestar<span class="w"> </span>version<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span>
 </span></pre></div>
@@ -915,7 +911,7 @@ autodiscovery</p>
 <p class="rubric">Options</p>
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-litestar-version-s">
-<span id="cmdoption-litestar-version-short"></span><span class="sig-name descname"><span class="pre">-s</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--short</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-litestar-version-s" title="Permalink to this definition">¶</a></dt>
+<span id="cmdoption-litestar-version-short"></span><span class="sig-name descname"><span class="pre">-s</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--short</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-litestar-version-s" title="Link to this definition">¶</a></dt>
 <dd><p>Exclude release level and serial information</p>
 </dd></dl>
 
@@ -972,9 +968,9 @@ autodiscovery</p>
     </div>
   </div>
 </footer>
-      <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=c19e757c"></script>
-      <script src="../_static/doctools.js?v=888ff710"></script>
-      <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
+      <script src="../_static/documentation_options.js?v=b95e84ca"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
       <script src="../_static/copybutton.js?v=f281be69"></script>
       <script src="../_static/litestar-theme.js?v=ab2dcc9e"></script>
@@ -982,8 +978,8 @@ autodiscovery</p>
       <script>let toggleHintHide = 'Click to hide';</script>
       <script>let toggleOpenOnPrint = 'true';</script>
       <script src="../_static/togglebutton.js?v=4a39c7ea"></script>
-      <script src="../_static/design-tabs.js?v=36754332"></script>
+      <script src="../_static/design-tabs.js?v=f930bc37"></script>
       <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
-      <script src="../_static/shibuya.js?v=e2e99575"></script>
+      <script src="../_static/shibuya.js?v=c477d091"></script>
       <script src="../_static/versioning.js?v=bc681eff"></script></body>
 </html>

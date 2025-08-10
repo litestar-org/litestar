@@ -1,15 +1,15 @@
 <!DOCTYPE html>
-<html lang="en" data-accent-color="amber" data-content_root="">
+<html lang="en" data-accent-color="amber" data-content_root="../">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>File Systems - Litestar Framework</title><link rel="shortcut icon" href="../_static/favicon.svg"/><link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="HTMX" href="htmx.html" /><link rel="prev" title="Exceptions and exception handling" href="exceptions.html" /><script>
     function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
     setColorMode(localStorage._theme||"auto");
   </script><link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=397bb51e" />
-    <link rel="stylesheet" type="text/css" href="../_static/shibuya.css?v=83eaa723" />
+    <link rel="stylesheet" type="text/css" href="../_static/shibuya.css?v=76b6f612" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
-    <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx_paramlinks.css" />
     <link media="print" rel="stylesheet" type="text/css" href="../_static/print.css?v=20ff2c19" />
     <link rel="stylesheet" type="text/css" href="../_static/style.css?v=50ea2f63" />
@@ -42,13 +42,13 @@
       <img class="dark-logo" src="../_static/logo-dark.png" alt="Litestar" height="28" loading="lazy" />
       <strong>Litestar</strong>
     </a>
-    <div class="sy-head-nav" id="HeadNav">
+    <div class="sy-head-nav" id="head-nav">
       <nav class="sy-head-links"><ul><li class="link"><a href="../index.html">Home</a></li>
-      <li class="link"><button type="button">
+      <li class="link"><button class="js-menu" type="button" id="nav-trigger-2" aria-controls="nav-children-2">
             <span>Community</span>
             <i class="i-lucide chevron-down"></i>
           </button>
-        <ul><li><a href="../contribution-guide.html">
+        <ul id="nav-children-2" aria-labelledby="nav-trigger-2"><li><a href="../contribution-guide.html">
                 <span>Contributing</span>
                 <small>Learn how to contribute to the Litestar project</small>
               </a></li><li><a href="https://github.com/litestar-org/.github?tab=coc-ov-file">
@@ -59,11 +59,11 @@
                 <small>Overview of Litestar's security protocols</small>
               </a></li></ul>
       </li>
-      <li class="link"><button type="button">
+      <li class="link"><button class="js-menu" type="button" id="nav-trigger-3" aria-controls="nav-children-3">
             <span>About</span>
             <i class="i-lucide chevron-down"></i>
           </button>
-        <ul><li><a href="https://litestar.dev/about/organization">
+        <ul id="nav-children-3" aria-labelledby="nav-trigger-3"><li><a href="https://litestar.dev/about/organization">
                 <span>Litestar Organization</span>
                 <small>Details about the Litestar organization</small>
               </a></li><li><a href="https://litestar.dev/about/litestar-releases">
@@ -71,11 +71,11 @@
                 <small>Explore the release process, versioning, and deprecation policy for Litestar</small>
               </a></li></ul>
       </li>
-      <li class="link"><button type="button">
+      <li class="link"><button class="js-menu" type="button" id="nav-trigger-4" aria-controls="nav-children-4">
             <span>Release notes</span>
             <i class="i-lucide chevron-down"></i>
           </button>
-        <ul><li><a href="../release-notes/whats-new-3.html">
+        <ul id="nav-children-4" aria-labelledby="nav-trigger-4"><li><a href="../release-notes/whats-new-3.html">
                 <span>What's new in 3.0</span>
                 <small>Explore the new features in Litestar 3.0</small>
               </a></li><li><a href="../release-notes/changelog.html">
@@ -86,11 +86,11 @@
                 <small>All changes in the 2.x series</small>
               </a></li></ul>
       </li>
-      <li class="link"><button type="button">
+      <li class="link"><button class="js-menu" type="button" id="nav-trigger-5" aria-controls="nav-children-5">
             <span>Help</span>
             <i class="i-lucide chevron-down"></i>
           </button>
-        <ul><li><a href="https://discord.gg/litestar">
+        <ul id="nav-children-5" aria-labelledby="nav-trigger-5"><li><a href="https://discord.gg/litestar">
                 <span>Discord Help Forum</span>
                 <small>Dedicated Discord help forum</small>
               </a></li><li><a href="https://github.com/orgs/litestar-org/discussions">
@@ -127,7 +127,7 @@ data-aria-auto="Switch to light color mode"
 data-aria-light="Switch to dark color mode"
 data-aria-dark="Switch to auto color mode">
 <i class="i-lucide theme-icon"></i>
-</button><button class="md:hidden flex items-center js-menu" aria-label="Menu" type="button" aria-controls="HeadNav" aria-expanded="false">
+</button><button class="md:hidden flex items-center js-menu" aria-label="Menu" type="button" aria-controls="head-nav" aria-expanded="false">
         <div class="hamburger">
           <span class="hamburger_1"></span>
           <span class="hamburger_2 -translate-x-2"></span>
@@ -173,12 +173,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2"><a class="reference internal" href="databases/index.html">Databases</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="databases/sqlalchemy/index.html">SQLAlchemy</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="databases/sqlalchemy/models_and_repository.html">SQLAlchemy Models &amp; Repository</a></li>
-<li class="toctree-l4"><a class="reference internal" href="databases/sqlalchemy/plugins/index.html">Plugins</a><ul>
-<li class="toctree-l5"><a class="reference internal" href="databases/sqlalchemy/plugins/sqlalchemy_plugin.html">SQLAlchemy Plugin</a></li>
-<li class="toctree-l5"><a class="reference internal" href="databases/sqlalchemy/plugins/sqlalchemy_init_plugin.html">SQLAlchemy Init Plugin</a></li>
-<li class="toctree-l5"><a class="reference internal" href="databases/sqlalchemy/plugins/sqlalchemy_serialization_plugin.html">SQLAlchemy Serialization Plugin</a></li>
-</ul>
-</li>
+<li class="toctree-l4"><a class="reference internal" href="databases/sqlalchemy/plugins/index.html">Plugins</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="databases/piccolo.html">Piccolo ORM</a></li>
@@ -506,11 +501,12 @@ data-aria-dark="Switch to auto color mode">
     </span>
   </span>
 </a><div class="edit-this-page">
-  <a href="https://github.com/litestar-org/litestar/blob/master/docs/usage/file_systems.rst">Edit this page</a>
+  <a href="https://github.com/litestar-org/litestar/blob/main/docs/usage/file_systems.rst">Edit this page</a>
 </div><div id="ethical-ad-placement" data-ea-publisher="readthedocs"></div></div>
   </aside>
   <div class="rside-overlay js-menu" role="button" aria-label="Close Table of Contents" aria-controls="rside" aria-expanded="false"></div>
-  <main class="sy-main w-full max-sm:max-w-full print:pt-6"><div class="sy-breadcrumbs" role="navigation">
+  <main class="sy-main w-full max-sm:max-w-full print:pt-6">
+<div class="sy-breadcrumbs" role="navigation">
   <div class="sy-breadcrumbs-inner flex items-center">
     <div class="md:hidden mr-3">
       <button class="js-menu" aria-label="Menu" type="button" aria-controls="lside" aria-expanded="false">
@@ -540,7 +536,7 @@ data-aria-dark="Switch to auto color mode">
       <div class="min-w-0 max-w-6xl px-6 pb-6 pt-8 xl:px-12">
         <article class="yue" role="main">
           <section id="file-systems">
-<h1>File Systems<a class="headerlink" href="#file-systems" title="Permalink to this heading">¶</a></h1>
+<h1>File Systems<a class="headerlink" href="#file-systems" title="Link to this heading">¶</a></h1>
 <p>When sending files with <a class="reference internal" href="../reference/response/index.html#litestar.response.File" title="litestar.response.File"><code class="xref py py-class docutils literal notranslate"><span class="pre">File</span></code></a> or serving
 them using <a class="reference internal" href="../reference/static_files.html#litestar.static_files.create_static_files_router" title="litestar.static_files.create_static_files_router"><code class="xref py py-func docutils literal notranslate"><span class="pre">create_static_files_router()</span></code></a>, in addition to
 doing so from the local file system Litestar also supports custom file systems,
@@ -550,17 +546,17 @@ which enables an integration with a wide range of remote file systems.</p>
 <a class="reference internal" href="../reference/file_system.html#litestar.file_system.BaseFileSystem" title="litestar.file_system.BaseFileSystem"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseFileSystem</span></code></a> class. By default, Litestar ships with a
 single implementation: <a class="reference internal" href="../reference/file_system.html#litestar.file_system.BaseLocalFileSystem" title="litestar.file_system.BaseLocalFileSystem"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseLocalFileSystem</span></code></a>.</p>
 <div class="literal-block-wrapper docutils container" id="id2">
-<div class="code-block-caption"><span class="caption-text">Sending files from S3</span><a class="headerlink" href="#id2" title="Permalink to this code">¶</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">import</span> <span class="nn">fsspec</span>
+<div class="code-block-caption"><span class="caption-text">Sending files from S3</span><a class="headerlink" href="#id2" title="Link to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">import</span><span class="w"> </span><span class="nn">fsspec</span>
 </span><span data-line="2">
-</span><span data-line="3"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
-</span><span data-line="4"><span class="kn">from</span> <span class="nn">litestar.response</span> <span class="kn">import</span> <span class="n">File</span>
+</span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
+</span><span data-line="4"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.response</span><span class="w"> </span><span class="kn">import</span> <span class="n">File</span>
 </span><span data-line="5">
 </span><span data-line="6"><span class="n">s3_fs</span> <span class="o">=</span> <span class="n">fsspec</span><span class="o">.</span><span class="n">filesystem</span><span class="p">(</span><span class="s2">&quot;s3&quot;</span><span class="p">,</span> <span class="n">asynchronous</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </span><span data-line="7">
 </span><span data-line="8">
 </span><span data-line="9"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/{file_name:str}&quot;</span><span class="p">)</span>
-</span><span data-line="10"><span class="k">async</span> <span class="k">def</span> <span class="nf">file_handler</span><span class="p">(</span><span class="n">file_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">File</span><span class="p">:</span>
+</span><span data-line="10"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">file_handler</span><span class="p">(</span><span class="n">file_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">File</span><span class="p">:</span>
 </span><span data-line="11">    <span class="k">return</span> <span class="n">File</span><span class="p">(</span><span class="n">file_name</span><span class="p">,</span> <span class="n">file_system</span><span class="o">=</span><span class="n">s3_fs</span><span class="p">)</span>
 </span><span data-line="12">
 </span><span data-line="13">
@@ -569,7 +565,7 @@ single implementation: <a class="reference internal" href="../reference/file_sys
 </div>
 </div>
 <section id="supported-file-systems">
-<h2>Supported file systems<a class="headerlink" href="#supported-file-systems" title="Permalink to this heading">¶</a></h2>
+<h2>Supported file systems<a class="headerlink" href="#supported-file-systems" title="Link to this heading">¶</a></h2>
 <p>In addition to file systems implemented on top of
 <a class="reference internal" href="../reference/file_system.html#litestar.file_system.BaseFileSystem" title="litestar.file_system.BaseFileSystem"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseFileSystem</span></code></a>, all <code class="docutils literal notranslate"><span class="pre">fsspec</span></code> file systems, synchronous
 and asynchronous, are supported. They will be wrapped in
@@ -577,7 +573,7 @@ and asynchronous, are supported. They will be wrapped in
 <a class="reference internal" href="../reference/file_system.html#litestar.file_system.FsspecAsyncWrapper" title="litestar.file_system.FsspecAsyncWrapper"><code class="xref py py-class docutils literal notranslate"><span class="pre">FsspecAsyncWrapper</span></code></a> respectively to conform to a common
 interface.</p>
 <section id="id1">
-<h3>fsspec<a class="headerlink" href="#id1" title="Permalink to this heading">¶</a></h3>
+<h3>fsspec<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h3>
 <p>Everywhere <a class="reference internal" href="../reference/file_system.html#litestar.file_system.BaseFileSystem" title="litestar.file_system.BaseFileSystem"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseFileSystem</span></code></a> is accepted, <code class="docutils literal notranslate"><span class="pre">fsspec</span></code>
 file systems are usually accepted as well.</p>
 <p>It can still make sense to set them up in the <cite>Registry</cite> instead, or wrap them manually
@@ -585,18 +581,18 @@ with <a class="reference internal" href="../reference/file_system.html#litestar.
 wrapper, so they don’t have to be wrapped again for every usage:</p>
 <div class="sd-tab-set docutils">
 <input checked="checked" id="sd-tab-item-0" name="sd-tab-set-0" type="radio">
-</input><label class="sd-tab-label" for="sd-tab-item-0">
+<label class="sd-tab-label" for="sd-tab-item-0">
 Don’t</label><div class="sd-tab-content docutils">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">import</span> <span class="nn">fsspec</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">import</span><span class="w"> </span><span class="nn">fsspec</span>
 </span><span data-line="2">
-</span><span data-line="3"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
-</span><span data-line="4"><span class="kn">from</span> <span class="nn">litestar.response</span> <span class="kn">import</span> <span class="n">File</span>
+</span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
+</span><span data-line="4"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.response</span><span class="w"> </span><span class="kn">import</span> <span class="n">File</span>
 </span><span data-line="5">
 </span><span data-line="6"><span class="n">s3_fs</span> <span class="o">=</span> <span class="n">fsspec</span><span class="o">.</span><span class="n">filesystem</span><span class="p">(</span><span class="s2">&quot;s3&quot;</span><span class="p">,</span> <span class="n">asynchronous</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </span><span data-line="7">
 </span><span data-line="8">
 </span><span data-line="9"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/{file_name:str}&quot;</span><span class="p">)</span>
-</span><span data-line="10"><span class="k">async</span> <span class="k">def</span> <span class="nf">file_handler</span><span class="p">(</span><span class="n">file_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">File</span><span class="p">:</span>
+</span><span data-line="10"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">file_handler</span><span class="p">(</span><span class="n">file_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">File</span><span class="p">:</span>
 </span><span data-line="11">    <span class="k">return</span> <span class="n">File</span><span class="p">(</span><span class="n">file_name</span><span class="p">,</span> <span class="n">file_system</span><span class="o">=</span><span class="n">s3_fs</span><span class="p">)</span>
 </span><span data-line="12">
 </span><span data-line="13">
@@ -605,21 +601,21 @@ Don’t</label><div class="sd-tab-content docutils">
 </div>
 </div>
 <input id="sd-tab-item-1" name="sd-tab-set-0" type="radio">
-</input><label class="sd-tab-label" for="sd-tab-item-1">
+<label class="sd-tab-label" for="sd-tab-item-1">
 Do instead</label><div class="sd-tab-content docutils">
 <div class="literal-block-wrapper docutils container" id="id3">
-<div class="code-block-caption"><span class="caption-text">Explicitly wrapping an fsspec file system</span><a class="headerlink" href="#id3" title="Permalink to this code">¶</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">import</span> <span class="nn">fsspec</span>
+<div class="code-block-caption"><span class="caption-text">Explicitly wrapping an fsspec file system</span><a class="headerlink" href="#id3" title="Link to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">import</span><span class="w"> </span><span class="nn">fsspec</span>
 </span><span data-line="2">
-</span><span data-line="3"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
-</span><span data-line="4"><span class="kn">from</span> <span class="nn">litestar.file_system</span> <span class="kn">import</span> <span class="n">FsspecAsyncWrapper</span>
-</span><span data-line="5"><span class="kn">from</span> <span class="nn">litestar.response</span> <span class="kn">import</span> <span class="n">File</span>
+</span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
+</span><span data-line="4"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.file_system</span><span class="w"> </span><span class="kn">import</span> <span class="n">FsspecAsyncWrapper</span>
+</span><span data-line="5"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.response</span><span class="w"> </span><span class="kn">import</span> <span class="n">File</span>
 </span><span data-line="6">
 </span><span data-line="7"><span class="n">wrapped_s3_fs</span> <span class="o">=</span> <span class="n">FsspecAsyncWrapper</span><span class="p">(</span><span class="n">fsspec</span><span class="o">.</span><span class="n">filesystem</span><span class="p">(</span><span class="s2">&quot;s3&quot;</span><span class="p">,</span> <span class="n">asynchronous</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
 </span><span data-line="8">
 </span><span data-line="9">
 </span><span data-line="10"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/{file_name:str}&quot;</span><span class="p">)</span>
-</span><span data-line="11"><span class="k">async</span> <span class="k">def</span> <span class="nf">file_handler</span><span class="p">(</span><span class="n">file_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">File</span><span class="p">:</span>
+</span><span data-line="11"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">file_handler</span><span class="p">(</span><span class="n">file_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">File</span><span class="p">:</span>
 </span><span data-line="12">    <span class="k">return</span> <span class="n">File</span><span class="p">(</span><span class="n">file_name</span><span class="p">,</span> <span class="n">file_system</span><span class="o">=</span><span class="n">wrapped_s3_fs</span><span class="p">)</span>
 </span><span data-line="13">
 </span><span data-line="14">
@@ -629,16 +625,16 @@ Do instead</label><div class="sd-tab-content docutils">
 </div>
 <p>or</p>
 <div class="literal-block-wrapper docutils container" id="id4">
-<div class="code-block-caption"><span class="caption-text">Using the registry to automatically wrap an fsspec file system</span><a class="headerlink" href="#id4" title="Permalink to this code">¶</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">import</span> <span class="nn">fsspec</span>
+<div class="code-block-caption"><span class="caption-text">Using the registry to automatically wrap an fsspec file system</span><a class="headerlink" href="#id4" title="Link to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">import</span><span class="w"> </span><span class="nn">fsspec</span>
 </span><span data-line="2">
-</span><span data-line="3"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
-</span><span data-line="4"><span class="kn">from</span> <span class="nn">litestar.file_system</span> <span class="kn">import</span> <span class="n">FileSystemRegistry</span>
-</span><span data-line="5"><span class="kn">from</span> <span class="nn">litestar.response</span> <span class="kn">import</span> <span class="n">File</span>
+</span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
+</span><span data-line="4"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.file_system</span><span class="w"> </span><span class="kn">import</span> <span class="n">FileSystemRegistry</span>
+</span><span data-line="5"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.response</span><span class="w"> </span><span class="kn">import</span> <span class="n">File</span>
 </span><span data-line="6">
 </span><span data-line="7">
 </span><span data-line="8"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/{file_name:str}&quot;</span><span class="p">)</span>
-</span><span data-line="9"><span class="k">async</span> <span class="k">def</span> <span class="nf">file_handler</span><span class="p">(</span><span class="n">file_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">File</span><span class="p">:</span>
+</span><span data-line="9"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">file_handler</span><span class="p">(</span><span class="n">file_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">File</span><span class="p">:</span>
 </span><span data-line="10">    <span class="k">return</span> <span class="n">File</span><span class="p">(</span><span class="n">file_name</span><span class="p">,</span> <span class="n">file_system</span><span class="o">=</span><span class="s2">&quot;s3&quot;</span><span class="p">)</span>
 </span><span data-line="11">
 </span><span data-line="12">
@@ -665,21 +661,21 @@ native async functions.</p>
 </div>
 </section>
 <section id="adapting-file-systems-that-support-symlinks">
-<h3>Adapting file systems that support symlinks<a class="headerlink" href="#adapting-file-systems-that-support-symlinks" title="Permalink to this heading">¶</a></h3>
+<h3>Adapting file systems that support symlinks<a class="headerlink" href="#adapting-file-systems-that-support-symlinks" title="Link to this heading">¶</a></h3>
 <p>Handling symlinks can be tricky. To ensure Litestar always does the right thing,
 existing file systems that do support symlinks can be registered as “linkable” without
 having to implement <a class="reference internal" href="../reference/file_system.html#litestar.file_system.LinkableFileSystem" title="litestar.file_system.LinkableFileSystem"><code class="xref py py-class docutils literal notranslate"><span class="pre">LinkableFileSystem</span></code></a>.</p>
 <p>To register a file system as linkable,
 <a class="reference internal" href="../reference/file_system.html#litestar.file_system.LinkableFileSystem.register_as_linkable" title="litestar.file_system.LinkableFileSystem.register_as_linkable"><code class="xref py py-meth docutils literal notranslate"><span class="pre">register_as_linkable()</span></code></a> can be used to
 register a type and a function to resolve symlinks on this file system.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">import</span> <span class="nn">os</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 </span><span data-line="2">
-</span><span data-line="3"><span class="kn">from</span> <span class="nn">fsspec.implementations.local</span> <span class="kn">import</span> <span class="n">LocalFileSystem</span>
+</span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">fsspec.implementations.local</span><span class="w"> </span><span class="kn">import</span> <span class="n">LocalFileSystem</span>
 </span><span data-line="4">
-</span><span data-line="5"><span class="kn">from</span> <span class="nn">litestar.file_system</span> <span class="kn">import</span> <span class="n">AnyFileSystem</span><span class="p">,</span> <span class="n">LinkableFileSystem</span>
+</span><span data-line="5"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.file_system</span><span class="w"> </span><span class="kn">import</span> <span class="n">AnyFileSystem</span><span class="p">,</span> <span class="n">LinkableFileSystem</span>
 </span><span data-line="6">
 </span><span data-line="7">
-</span><span data-line="8"><span class="k">async</span> <span class="k">def</span> <span class="nf">local_resolver</span><span class="p">(</span><span class="n">fs</span><span class="p">:</span> <span class="n">AnyFileSystem</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span data-line="8"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">local_resolver</span><span class="p">(</span><span class="n">fs</span><span class="p">:</span> <span class="n">AnyFileSystem</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 </span><span data-line="9">    <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
 </span><span data-line="10">
 </span><span data-line="11">
@@ -695,24 +691,24 @@ registered as a linkable file system</p>
 </section>
 </section>
 <section id="registry">
-<h2>Registry<a class="headerlink" href="#registry" title="Permalink to this heading">¶</a></h2>
+<h2>Registry<a class="headerlink" href="#registry" title="Link to this heading">¶</a></h2>
 <p>For easier configuration and testing, <a class="reference internal" href="../reference/file_system.html#litestar.file_system.FileSystemRegistry" title="litestar.file_system.FileSystemRegistry"><code class="xref py py-class docutils literal notranslate"><span class="pre">FileSystemRegistry</span></code></a>
 can be used to register file systems under a name by which they can be referenced later.</p>
 <div class="literal-block-wrapper docutils container" id="id5">
-<div class="code-block-caption"><span class="caption-text">Sending files from S3 by using the registry</span><a class="headerlink" href="#id5" title="Permalink to this code">¶</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">import</span> <span class="nn">fsspec</span>
+<div class="code-block-caption"><span class="caption-text">Sending files from S3 by using the registry</span><a class="headerlink" href="#id5" title="Link to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">import</span><span class="w"> </span><span class="nn">fsspec</span>
 </span><span data-line="2">
-</span><span data-line="3"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
-</span><span data-line="4"><span class="kn">from</span> <span class="nn">litestar.file_system</span> <span class="kn">import</span> <span class="n">FileSystemRegistry</span>
-</span><span data-line="5"><span class="kn">from</span> <span class="nn">litestar.response</span> <span class="kn">import</span> <span class="n">File</span>
+</span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
+</span><span data-line="4"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.file_system</span><span class="w"> </span><span class="kn">import</span> <span class="n">FileSystemRegistry</span>
+</span><span data-line="5"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.response</span><span class="w"> </span><span class="kn">import</span> <span class="n">File</span>
 </span><span data-line="6">
 </span><span data-line="7">
 </span><span data-line="8"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/{file_name:str}&quot;</span><span class="p">)</span>
-</span><span data-line="9"><span class="k">async</span> <span class="k">def</span> <span class="nf">file_handler</span><span class="p">(</span><span class="n">file_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">File</span><span class="p">:</span>
+</span><span data-line="9"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">file_handler</span><span class="p">(</span><span class="n">file_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">File</span><span class="p">:</span>
 </span><span data-line="10">    <span class="k">return</span> <span class="n">File</span><span class="p">(</span><span class="n">file_name</span><span class="p">,</span> <span class="n">file_system</span><span class="o">=</span><span class="s2">&quot;assets&quot;</span><span class="p">)</span>
 </span><span data-line="11">
 </span><span data-line="12">
-</span><span data-line="13"><span class="k">def</span> <span class="nf">create_app</span><span class="p">(</span><span class="n">assets_fs</span><span class="p">:</span> <span class="n">fsspec</span><span class="o">.</span><span class="n">AbstractFileSystem</span><span class="p">):</span>
+</span><span data-line="13"><span class="k">def</span><span class="w"> </span><span class="nf">create_app</span><span class="p">(</span><span class="n">assets_fs</span><span class="p">:</span> <span class="n">fsspec</span><span class="o">.</span><span class="n">AbstractFileSystem</span><span class="p">):</span>
 </span><span data-line="14">    <span class="k">return</span> <span class="n">Litestar</span><span class="p">(</span>
 </span><span data-line="15">        <span class="p">[</span><span class="n">file_handler</span><span class="p">],</span>
 </span><span data-line="16">        <span class="n">plugins</span><span class="o">=</span><span class="p">[</span><span class="n">FileSystemRegistry</span><span class="p">({</span><span class="s2">&quot;assets&quot;</span><span class="p">:</span> <span class="n">assets_fs</span><span class="p">})],</span>
@@ -730,13 +726,13 @@ automatically set up unless an instance of it is passed to the application
 explicitly.</p>
 <p>If needed, the registry can be accessed like any other plugin:</p>
 <div class="literal-block-wrapper docutils container" id="id6">
-<div class="code-block-caption"><span class="caption-text">Accessing the registry</span><a class="headerlink" href="#id6" title="Permalink to this code">¶</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">Request</span><span class="p">,</span> <span class="n">get</span>
-</span><span data-line="2"><span class="kn">from</span> <span class="nn">litestar.file_system</span> <span class="kn">import</span> <span class="n">FileSystemRegistry</span>
+<div class="code-block-caption"><span class="caption-text">Accessing the registry</span><a class="headerlink" href="#id6" title="Link to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">Request</span><span class="p">,</span> <span class="n">get</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.file_system</span><span class="w"> </span><span class="kn">import</span> <span class="n">FileSystemRegistry</span>
 </span><span data-line="3">
 </span><span data-line="4">
 </span><span data-line="5"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
-</span><span data-line="6"><span class="k">async</span> <span class="k">def</span> <span class="nf">handler</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
+</span><span data-line="6"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">handler</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
 </span><span data-line="7">    <span class="n">registry</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">plugins</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">FileSystemRegistry</span><span class="p">)</span>
 </span><span data-line="8">    <span class="k">return</span> <span class="n">registry</span><span class="o">.</span><span class="n">default</span><span class="o">.</span><span class="n">read_bytes</span><span class="p">(</span><span class="s2">&quot;some/file.txt&quot;</span><span class="p">)</span>
 </span><span data-line="9">
@@ -746,22 +742,22 @@ explicitly.</p>
 </div>
 </div>
 <section id="setting-a-default-file-system">
-<h3>Setting a default file system<a class="headerlink" href="#setting-a-default-file-system" title="Permalink to this heading">¶</a></h3>
+<h3>Setting a default file system<a class="headerlink" href="#setting-a-default-file-system" title="Link to this heading">¶</a></h3>
 <p>For actions that involve sending files, if no file system is passed explicitly, Litestar
 will use the default file system defined in the registry. This defaults to
 <a class="reference internal" href="../reference/file_system.html#litestar.file_system.BaseLocalFileSystem" title="litestar.file_system.BaseLocalFileSystem"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseLocalFileSystem</span></code></a>, but may be configured to any
 supported file system.</p>
 <div class="literal-block-wrapper docutils container" id="id7">
-<div class="code-block-caption"><span class="caption-text">Changing the default file system</span><a class="headerlink" href="#id7" title="Permalink to this code">¶</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">import</span> <span class="nn">fsspec</span>
+<div class="code-block-caption"><span class="caption-text">Changing the default file system</span><a class="headerlink" href="#id7" title="Link to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">import</span><span class="w"> </span><span class="nn">fsspec</span>
 </span><span data-line="2">
-</span><span data-line="3"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
-</span><span data-line="4"><span class="kn">from</span> <span class="nn">litestar.file_system</span> <span class="kn">import</span> <span class="n">FileSystemRegistry</span>
-</span><span data-line="5"><span class="kn">from</span> <span class="nn">litestar.response</span> <span class="kn">import</span> <span class="n">File</span>
+</span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
+</span><span data-line="4"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.file_system</span><span class="w"> </span><span class="kn">import</span> <span class="n">FileSystemRegistry</span>
+</span><span data-line="5"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.response</span><span class="w"> </span><span class="kn">import</span> <span class="n">File</span>
 </span><span data-line="6">
 </span><span data-line="7">
 </span><span data-line="8"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/{file_name:str}&quot;</span><span class="p">)</span>
-</span><span data-line="9"><span class="k">async</span> <span class="k">def</span> <span class="nf">file_handler</span><span class="p">(</span><span class="n">file_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">File</span><span class="p">:</span>
+</span><span data-line="9"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">file_handler</span><span class="p">(</span><span class="n">file_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">File</span><span class="p">:</span>
 </span><span data-line="10">    <span class="k">return</span> <span class="n">File</span><span class="p">(</span><span class="n">file_name</span><span class="p">)</span>
 </span><span data-line="11">
 </span><span data-line="12">
@@ -827,9 +823,9 @@ supported file system.</p>
     </div>
   </div>
 </footer>
-      <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=c19e757c"></script>
-      <script src="../_static/doctools.js?v=888ff710"></script>
-      <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
+      <script src="../_static/documentation_options.js?v=b95e84ca"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
       <script src="../_static/copybutton.js?v=f281be69"></script>
       <script src="../_static/litestar-theme.js?v=ab2dcc9e"></script>
@@ -837,8 +833,8 @@ supported file system.</p>
       <script>let toggleHintHide = 'Click to hide';</script>
       <script>let toggleOpenOnPrint = 'true';</script>
       <script src="../_static/togglebutton.js?v=4a39c7ea"></script>
-      <script src="../_static/design-tabs.js?v=36754332"></script>
+      <script src="../_static/design-tabs.js?v=f930bc37"></script>
       <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
-      <script src="../_static/shibuya.js?v=e2e99575"></script>
+      <script src="../_static/shibuya.js?v=c477d091"></script>
       <script src="../_static/versioning.js?v=bc681eff"></script></body>
 </html>

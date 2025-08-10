@@ -1,15 +1,15 @@
 <!DOCTYPE html>
-<html lang="en" data-accent-color="amber" data-content_root="">
+<html lang="en" data-accent-color="amber" data-content_root="../../">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>JWT Security Backends - Litestar Framework</title><link rel="shortcut icon" href="../../_static/favicon.svg"/><link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="Handling Secrets" href="secret-datastructures.html" /><link rel="prev" title="Excluding and including endpoints" href="excluding-and-including-endpoints.html" /><script>
     function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
     setColorMode(localStorage._theme||"auto");
   </script><link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=397bb51e" />
-    <link rel="stylesheet" type="text/css" href="../../_static/shibuya.css?v=83eaa723" />
+    <link rel="stylesheet" type="text/css" href="../../_static/shibuya.css?v=76b6f612" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css?v=13237357" />
-    <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../_static/sphinx_paramlinks.css" />
     <link media="print" rel="stylesheet" type="text/css" href="../../_static/print.css?v=20ff2c19" />
     <link rel="stylesheet" type="text/css" href="../../_static/style.css?v=50ea2f63" />
@@ -42,13 +42,13 @@
       <img class="dark-logo" src="../../_static/logo-dark.png" alt="Litestar" height="28" loading="lazy" />
       <strong>Litestar</strong>
     </a>
-    <div class="sy-head-nav" id="HeadNav">
+    <div class="sy-head-nav" id="head-nav">
       <nav class="sy-head-links"><ul><li class="link"><a href="../../index.html">Home</a></li>
-      <li class="link"><button type="button">
+      <li class="link"><button class="js-menu" type="button" id="nav-trigger-2" aria-controls="nav-children-2">
             <span>Community</span>
             <i class="i-lucide chevron-down"></i>
           </button>
-        <ul><li><a href="../../contribution-guide.html">
+        <ul id="nav-children-2" aria-labelledby="nav-trigger-2"><li><a href="../../contribution-guide.html">
                 <span>Contributing</span>
                 <small>Learn how to contribute to the Litestar project</small>
               </a></li><li><a href="https://github.com/litestar-org/.github?tab=coc-ov-file">
@@ -59,11 +59,11 @@
                 <small>Overview of Litestar's security protocols</small>
               </a></li></ul>
       </li>
-      <li class="link"><button type="button">
+      <li class="link"><button class="js-menu" type="button" id="nav-trigger-3" aria-controls="nav-children-3">
             <span>About</span>
             <i class="i-lucide chevron-down"></i>
           </button>
-        <ul><li><a href="https://litestar.dev/about/organization">
+        <ul id="nav-children-3" aria-labelledby="nav-trigger-3"><li><a href="https://litestar.dev/about/organization">
                 <span>Litestar Organization</span>
                 <small>Details about the Litestar organization</small>
               </a></li><li><a href="https://litestar.dev/about/litestar-releases">
@@ -71,11 +71,11 @@
                 <small>Explore the release process, versioning, and deprecation policy for Litestar</small>
               </a></li></ul>
       </li>
-      <li class="link"><button type="button">
+      <li class="link"><button class="js-menu" type="button" id="nav-trigger-4" aria-controls="nav-children-4">
             <span>Release notes</span>
             <i class="i-lucide chevron-down"></i>
           </button>
-        <ul><li><a href="../../release-notes/whats-new-3.html">
+        <ul id="nav-children-4" aria-labelledby="nav-trigger-4"><li><a href="../../release-notes/whats-new-3.html">
                 <span>What's new in 3.0</span>
                 <small>Explore the new features in Litestar 3.0</small>
               </a></li><li><a href="../../release-notes/changelog.html">
@@ -86,11 +86,11 @@
                 <small>All changes in the 2.x series</small>
               </a></li></ul>
       </li>
-      <li class="link"><button type="button">
+      <li class="link"><button class="js-menu" type="button" id="nav-trigger-5" aria-controls="nav-children-5">
             <span>Help</span>
             <i class="i-lucide chevron-down"></i>
           </button>
-        <ul><li><a href="https://discord.gg/litestar">
+        <ul id="nav-children-5" aria-labelledby="nav-trigger-5"><li><a href="https://discord.gg/litestar">
                 <span>Discord Help Forum</span>
                 <small>Dedicated Discord help forum</small>
               </a></li><li><a href="https://github.com/orgs/litestar-org/discussions">
@@ -127,7 +127,7 @@ data-aria-auto="Switch to light color mode"
 data-aria-light="Switch to dark color mode"
 data-aria-dark="Switch to auto color mode">
 <i class="i-lucide theme-icon"></i>
-</button><button class="md:hidden flex items-center js-menu" aria-label="Menu" type="button" aria-controls="HeadNav" aria-expanded="false">
+</button><button class="md:hidden flex items-center js-menu" aria-label="Menu" type="button" aria-controls="head-nav" aria-expanded="false">
         <div class="hamburger">
           <span class="hamburger_1"></span>
           <span class="hamburger_2 -translate-x-2"></span>
@@ -173,12 +173,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2"><a class="reference internal" href="../databases/index.html">Databases</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../databases/sqlalchemy/index.html">SQLAlchemy</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../databases/sqlalchemy/models_and_repository.html">SQLAlchemy Models &amp; Repository</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../databases/sqlalchemy/plugins/index.html">Plugins</a><ul>
-<li class="toctree-l5"><a class="reference internal" href="../databases/sqlalchemy/plugins/sqlalchemy_plugin.html">SQLAlchemy Plugin</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../databases/sqlalchemy/plugins/sqlalchemy_init_plugin.html">SQLAlchemy Init Plugin</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../databases/sqlalchemy/plugins/sqlalchemy_serialization_plugin.html">SQLAlchemy Serialization Plugin</a></li>
-</ul>
-</li>
+<li class="toctree-l4"><a class="reference internal" href="../databases/sqlalchemy/plugins/index.html">Plugins</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../databases/piccolo.html">Piccolo ORM</a></li>
@@ -504,11 +499,12 @@ data-aria-dark="Switch to auto color mode">
     </span>
   </span>
 </a><div class="edit-this-page">
-  <a href="https://github.com/litestar-org/litestar/blob/master/docs/usage/security/jwt.rst">Edit this page</a>
+  <a href="https://github.com/litestar-org/litestar/blob/main/docs/usage/security/jwt.rst">Edit this page</a>
 </div><div id="ethical-ad-placement" data-ea-publisher="readthedocs"></div></div>
   </aside>
   <div class="rside-overlay js-menu" role="button" aria-label="Close Table of Contents" aria-controls="rside" aria-expanded="false"></div>
-  <main class="sy-main w-full max-sm:max-w-full print:pt-6"><div class="sy-breadcrumbs" role="navigation">
+  <main class="sy-main w-full max-sm:max-w-full print:pt-6">
+<div class="sy-breadcrumbs" role="navigation">
   <div class="sy-breadcrumbs-inner flex items-center">
     <div class="md:hidden mr-3">
       <button class="js-menu" aria-label="Menu" type="button" aria-controls="lside" aria-expanded="false">
@@ -542,50 +538,46 @@ data-aria-dark="Switch to auto color mode">
       <div class="min-w-0 max-w-6xl px-6 pb-6 pt-8 xl:px-12">
         <article class="yue" role="main">
           <section id="jwt-security-backends">
-<h1>JWT Security Backends<a class="headerlink" href="#jwt-security-backends" title="Permalink to this heading">¶</a></h1>
+<h1>JWT Security Backends<a class="headerlink" href="#jwt-security-backends" title="Link to this heading">¶</a></h1>
 <p>Litestar offers optional JWT based security backends. To use these make sure to install the
 <a class="reference external" href="https://pyjwt.readthedocs.io/en/stable/">pyjwt</a> and <a class="reference external" href="https://github.com/pyca/cryptography">cryptography</a>
 packages, or simply install Litestar with the <code class="docutils literal notranslate"><span class="pre">jwt</span></code>
 <a class="reference external" href="https://packaging.python.org/en/latest/specifications/dependency-specifiers/#extras">extra</a>:</p>
 <div class="literal-block-wrapper docutils container" id="id1">
-<div class="code-block-caption"><span class="caption-text">Install Litestar with JWT extra</span><a class="headerlink" href="#id1" title="Permalink to this code">¶</a></div>
+<div class="code-block-caption"><span class="caption-text">Install Litestar with JWT extra</span><a class="headerlink" href="#id1" title="Link to this code">¶</a></div>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span data-line="1">pip<span class="w"> </span>install<span class="w"> </span><span class="s1">&#39;litestar[jwt]&#39;</span>
 </span></pre></div>
 </div>
 </div>
 <section id="jwt-auth-backend">
-<h2><a class="reference internal" href="../../reference/security/jwt.html#litestar.security.jwt.JWTAuth" title="litestar.security.jwt.JWTAuth"><code class="xref py py-class docutils literal notranslate"><span class="pre">JWT</span> <span class="pre">Auth</span></code></a> Backend<a class="headerlink" href="#jwt-auth-backend" title="Permalink to this heading">¶</a></h2>
+<h2><a class="reference internal" href="../../reference/security/jwt.html#litestar.security.jwt.JWTAuth" title="litestar.security.jwt.JWTAuth"><code class="xref py py-class docutils literal notranslate"><span class="pre">JWT</span> <span class="pre">Auth</span></code></a> Backend<a class="headerlink" href="#jwt-auth-backend" title="Link to this heading">¶</a></h2>
 <p>This is the base JWT Auth backend. You can read about its particular API in the <a class="reference internal" href="../../reference/security/jwt.html#litestar.security.jwt.JWTAuth" title="litestar.security.jwt.JWTAuth"><code class="xref py py-class docutils literal notranslate"><span class="pre">JWTAuth</span></code></a>.
 It sends the JWT token using a header - and it expects requests to send the JWT token using the same header key.</p>
 <details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
 <summary class="sd-summary-title sd-card-header">
-Click to see the code<div class="sd-summary-down docutils">
-<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-down" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M5.22 8.72a.75.75 0 000 1.06l6.25 6.25a.75.75 0 001.06 0l6.25-6.25a.75.75 0 00-1.06-1.06L12 14.44 6.28 8.72a.75.75 0 00-1.06 0z"></path></svg></div>
-<div class="sd-summary-up docutils">
-<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-up" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M18.78 15.28a.75.75 0 000-1.06l-6.25-6.25a.75.75 0 00-1.06 0l-6.25 6.25a.75.75 0 101.06 1.06L12 9.56l5.72 5.72a.75.75 0 001.06 0z"></path></svg></div>
-</summary><div class="sd-summary-content sd-card-body docutils">
+<span class="sd-summary-text">Click to see the code</span><span class="sd-summary-state-marker sd-summary-chevron-right"><svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-right" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.72 18.78a.75.75 0 0 1 0-1.06L14.44 12 8.72 6.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018l6.25 6.25a.75.75 0 0 1 0 1.06l-6.25 6.25a.75.75 0 0 1-1.06 0Z"></path></svg></span></summary><div class="sd-summary-content sd-card-body docutils">
 <div class="sd-tab-set docutils">
 <input id="sd-tab-item-0" name="sd-tab-set-0" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-0">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="3.8" for="sd-tab-item-0">
 Python 3.8+</label><div class="sd-tab-content docutils">
 <div class="literal-block-wrapper docutils container" id="id2">
-<div class="code-block-caption"><span class="caption-text">Using JWT Auth</span><a class="headerlink" href="#id2" title="Permalink to this code">¶</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">os</span> <span class="kn">import</span> <span class="n">environ</span>
-</span><span data-line="2"><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Optional</span>
-</span><span data-line="3"><span class="kn">from</span> <span class="nn">uuid</span> <span class="kn">import</span> <span class="n">UUID</span>
+<div class="code-block-caption"><span class="caption-text">Using JWT Auth</span><a class="headerlink" href="#id2" title="Link to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">os</span><span class="w"> </span><span class="kn">import</span> <span class="n">environ</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Optional</span>
+</span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">uuid</span><span class="w"> </span><span class="kn">import</span> <span class="n">UUID</span>
 </span><span data-line="4">
-</span><span data-line="5"><span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">EmailStr</span>
+</span><span data-line="5"><span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">EmailStr</span>
 </span><span data-line="6">
-</span><span data-line="7"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">Request</span><span class="p">,</span> <span class="n">Response</span><span class="p">,</span> <span class="n">get</span><span class="p">,</span> <span class="n">post</span>
-</span><span data-line="8"><span class="kn">from</span> <span class="nn">litestar.connection</span> <span class="kn">import</span> <span class="n">ASGIConnection</span>
-</span><span data-line="9"><span class="kn">from</span> <span class="nn">litestar.openapi.config</span> <span class="kn">import</span> <span class="n">OpenAPIConfig</span>
-</span><span data-line="10"><span class="kn">from</span> <span class="nn">litestar.security.jwt</span> <span class="kn">import</span> <span class="n">JWTAuth</span><span class="p">,</span> <span class="n">Token</span>
+</span><span data-line="7"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">Request</span><span class="p">,</span> <span class="n">Response</span><span class="p">,</span> <span class="n">get</span><span class="p">,</span> <span class="n">post</span>
+</span><span data-line="8"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.connection</span><span class="w"> </span><span class="kn">import</span> <span class="n">ASGIConnection</span>
+</span><span data-line="9"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.openapi.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">OpenAPIConfig</span>
+</span><span data-line="10"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.security.jwt</span><span class="w"> </span><span class="kn">import</span> <span class="n">JWTAuth</span><span class="p">,</span> <span class="n">Token</span>
 </span><span data-line="11">
 </span><span data-line="12">
 </span><span data-line="13"><span class="c1"># Let&#39;s assume we have a User model that is a pydantic model.</span>
 </span><span data-line="14"><span class="c1"># This though is not required - we need some sort of user class -</span>
 </span><span data-line="15"><span class="c1"># but it can be any arbitrary value, e.g. an SQLAlchemy model, a representation of a MongoDB  etc.</span>
-</span><span data-line="16"><span class="k">class</span> <span class="nc">User</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+</span><span data-line="16"><span class="k">class</span><span class="w"> </span><span class="nc">User</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
 </span><span data-line="17">    <span class="nb">id</span><span class="p">:</span> <span class="n">UUID</span>
 </span><span data-line="18">    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
 </span><span data-line="19">    <span class="n">email</span><span class="p">:</span> <span class="n">EmailStr</span>
@@ -600,7 +592,7 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 </span><span data-line="28"><span class="c1"># Notes:</span>
 </span><span data-line="29"><span class="c1"># - &#39;User&#39; can be any arbitrary value you decide upon.</span>
 </span><span data-line="30"><span class="c1"># - The callable can be either sync or async - both will work.</span>
-</span><span data-line="31"><span class="k">async</span> <span class="k">def</span> <span class="nf">retrieve_user_handler</span><span class="p">(</span><span class="n">token</span><span class="p">:</span> <span class="n">Token</span><span class="p">,</span> <span class="n">connection</span><span class="p">:</span> <span class="s2">&quot;ASGIConnection[Any, Any, Any, Any]&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">User</span><span class="p">]:</span>
+</span><span data-line="31"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">retrieve_user_handler</span><span class="p">(</span><span class="n">token</span><span class="p">:</span> <span class="n">Token</span><span class="p">,</span> <span class="n">connection</span><span class="p">:</span> <span class="s2">&quot;ASGIConnection[Any, Any, Any, Any]&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">User</span><span class="p">]:</span>
 </span><span data-line="32">    <span class="c1"># logic here to retrieve the user instance</span>
 </span><span data-line="33">    <span class="k">return</span> <span class="n">MOCK_DB</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">token</span><span class="o">.</span><span class="n">sub</span><span class="p">)</span>
 </span><span data-line="34">
@@ -616,7 +608,7 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 </span><span data-line="44">
 </span><span data-line="45"><span class="c1"># Given an instance of &#39;JWTAuth&#39; we can create a login handler function:</span>
 </span><span data-line="46"><span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/login&quot;</span><span class="p">)</span>
-</span><span data-line="47"><span class="k">async</span> <span class="k">def</span> <span class="nf">login_handler</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">User</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">[</span><span class="n">User</span><span class="p">]:</span>
+</span><span data-line="47"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">login_handler</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">User</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">[</span><span class="n">User</span><span class="p">]:</span>
 </span><span data-line="48">    <span class="n">MOCK_DB</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">id</span><span class="p">)]</span> <span class="o">=</span> <span class="n">data</span>
 </span><span data-line="49">    <span class="c1"># you can do whatever you want to update the response instance here</span>
 </span><span data-line="50">    <span class="c1"># e.g. response.set_cookie(...)</span>
@@ -625,7 +617,7 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 </span><span data-line="53">
 </span><span data-line="54"><span class="c1"># We also have some other routes, for example:</span>
 </span><span data-line="55"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/some-path&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-</span><span data-line="56"><span class="k">def</span> <span class="nf">some_route_handler</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="s2">&quot;Request[User, Token, Any]&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+</span><span data-line="56"><span class="k">def</span><span class="w"> </span><span class="nf">some_route_handler</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="s2">&quot;Request[User, Token, Any]&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
 </span><span data-line="57">    <span class="c1"># request.user is set to the instance of user returned by the middleware</span>
 </span><span data-line="58">    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="p">,</span> <span class="n">User</span><span class="p">)</span>
 </span><span data-line="59">    <span class="c1"># request.auth is the instance of &#39;litestar_jwt.Token&#39; created from the data encoded in the auth header</span>
@@ -651,26 +643,26 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 </div>
 </div>
 <input checked="checked" id="sd-tab-item-1" name="sd-tab-set-0" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.10" for="sd-tab-item-1">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="3.10" for="sd-tab-item-1">
 Python 3.10+</label><div class="sd-tab-content docutils">
 <div class="literal-block-wrapper docutils container" id="id3">
-<div class="code-block-caption"><span class="caption-text">Using JWT Auth</span><a class="headerlink" href="#id3" title="Permalink to this code">¶</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">os</span> <span class="kn">import</span> <span class="n">environ</span>
-</span><span data-line="2"><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span>
-</span><span data-line="3"><span class="kn">from</span> <span class="nn">uuid</span> <span class="kn">import</span> <span class="n">UUID</span>
+<div class="code-block-caption"><span class="caption-text">Using JWT Auth</span><a class="headerlink" href="#id3" title="Link to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">os</span><span class="w"> </span><span class="kn">import</span> <span class="n">environ</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
+</span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">uuid</span><span class="w"> </span><span class="kn">import</span> <span class="n">UUID</span>
 </span><span data-line="4">
-</span><span data-line="5"><span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">EmailStr</span>
+</span><span data-line="5"><span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">EmailStr</span>
 </span><span data-line="6">
-</span><span data-line="7"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">Request</span><span class="p">,</span> <span class="n">Response</span><span class="p">,</span> <span class="n">get</span><span class="p">,</span> <span class="n">post</span>
-</span><span data-line="8"><span class="kn">from</span> <span class="nn">litestar.connection</span> <span class="kn">import</span> <span class="n">ASGIConnection</span>
-</span><span data-line="9"><span class="kn">from</span> <span class="nn">litestar.openapi.config</span> <span class="kn">import</span> <span class="n">OpenAPIConfig</span>
-</span><span data-line="10"><span class="kn">from</span> <span class="nn">litestar.security.jwt</span> <span class="kn">import</span> <span class="n">JWTAuth</span><span class="p">,</span> <span class="n">Token</span>
+</span><span data-line="7"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">Request</span><span class="p">,</span> <span class="n">Response</span><span class="p">,</span> <span class="n">get</span><span class="p">,</span> <span class="n">post</span>
+</span><span data-line="8"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.connection</span><span class="w"> </span><span class="kn">import</span> <span class="n">ASGIConnection</span>
+</span><span data-line="9"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.openapi.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">OpenAPIConfig</span>
+</span><span data-line="10"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.security.jwt</span><span class="w"> </span><span class="kn">import</span> <span class="n">JWTAuth</span><span class="p">,</span> <span class="n">Token</span>
 </span><span data-line="11">
 </span><span data-line="12">
 </span><span data-line="13"><span class="c1"># Let&#39;s assume we have a User model that is a pydantic model.</span>
 </span><span data-line="14"><span class="c1"># This though is not required - we need some sort of user class -</span>
 </span><span data-line="15"><span class="c1"># but it can be any arbitrary value, e.g. an SQLAlchemy model, a representation of a MongoDB  etc.</span>
-</span><span data-line="16"><span class="k">class</span> <span class="nc">User</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+</span><span data-line="16"><span class="k">class</span><span class="w"> </span><span class="nc">User</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
 </span><span data-line="17">    <span class="nb">id</span><span class="p">:</span> <span class="n">UUID</span>
 </span><span data-line="18">    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
 </span><span data-line="19">    <span class="n">email</span><span class="p">:</span> <span class="n">EmailStr</span>
@@ -685,7 +677,7 @@ Python 3.10+</label><div class="sd-tab-content docutils">
 </span><span data-line="28"><span class="c1"># Notes:</span>
 </span><span data-line="29"><span class="c1"># - &#39;User&#39; can be any arbitrary value you decide upon.</span>
 </span><span data-line="30"><span class="c1"># - The callable can be either sync or async - both will work.</span>
-</span><span data-line="31"><span class="k">async</span> <span class="k">def</span> <span class="nf">retrieve_user_handler</span><span class="p">(</span><span class="n">token</span><span class="p">:</span> <span class="n">Token</span><span class="p">,</span> <span class="n">connection</span><span class="p">:</span> <span class="s2">&quot;ASGIConnection[Any, Any, Any, Any]&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">User</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="31"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">retrieve_user_handler</span><span class="p">(</span><span class="n">token</span><span class="p">:</span> <span class="n">Token</span><span class="p">,</span> <span class="n">connection</span><span class="p">:</span> <span class="s2">&quot;ASGIConnection[Any, Any, Any, Any]&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">User</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
 </span><span data-line="32">    <span class="c1"># logic here to retrieve the user instance</span>
 </span><span data-line="33">    <span class="k">return</span> <span class="n">MOCK_DB</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">token</span><span class="o">.</span><span class="n">sub</span><span class="p">)</span>
 </span><span data-line="34">
@@ -701,7 +693,7 @@ Python 3.10+</label><div class="sd-tab-content docutils">
 </span><span data-line="44">
 </span><span data-line="45"><span class="c1"># Given an instance of &#39;JWTAuth&#39; we can create a login handler function:</span>
 </span><span data-line="46"><span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/login&quot;</span><span class="p">)</span>
-</span><span data-line="47"><span class="k">async</span> <span class="k">def</span> <span class="nf">login_handler</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">User</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">[</span><span class="n">User</span><span class="p">]:</span>
+</span><span data-line="47"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">login_handler</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">User</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">[</span><span class="n">User</span><span class="p">]:</span>
 </span><span data-line="48">    <span class="n">MOCK_DB</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">id</span><span class="p">)]</span> <span class="o">=</span> <span class="n">data</span>
 </span><span data-line="49">    <span class="c1"># you can do whatever you want to update the response instance here</span>
 </span><span data-line="50">    <span class="c1"># e.g. response.set_cookie(...)</span>
@@ -710,7 +702,7 @@ Python 3.10+</label><div class="sd-tab-content docutils">
 </span><span data-line="53">
 </span><span data-line="54"><span class="c1"># We also have some other routes, for example:</span>
 </span><span data-line="55"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/some-path&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-</span><span data-line="56"><span class="k">def</span> <span class="nf">some_route_handler</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="s2">&quot;Request[User, Token, Any]&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+</span><span data-line="56"><span class="k">def</span><span class="w"> </span><span class="nf">some_route_handler</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="s2">&quot;Request[User, Token, Any]&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
 </span><span data-line="57">    <span class="c1"># request.user is set to the instance of user returned by the middleware</span>
 </span><span data-line="58">    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="p">,</span> <span class="n">User</span><span class="p">)</span>
 </span><span data-line="59">    <span class="c1"># request.auth is the instance of &#39;litestar_jwt.Token&#39; created from the data encoded in the auth header</span>
@@ -739,38 +731,34 @@ Python 3.10+</label><div class="sd-tab-content docutils">
 </div>
 </details></section>
 <section id="jwt-cookie-auth-backend">
-<h2><a class="reference internal" href="../../reference/security/jwt.html#litestar.security.jwt.JWTCookieAuth" title="litestar.security.jwt.JWTCookieAuth"><code class="xref py py-class docutils literal notranslate"><span class="pre">JWT</span> <span class="pre">Cookie</span> <span class="pre">Auth</span></code></a> Backend<a class="headerlink" href="#jwt-cookie-auth-backend" title="Permalink to this heading">¶</a></h2>
+<h2><a class="reference internal" href="../../reference/security/jwt.html#litestar.security.jwt.JWTCookieAuth" title="litestar.security.jwt.JWTCookieAuth"><code class="xref py py-class docutils literal notranslate"><span class="pre">JWT</span> <span class="pre">Cookie</span> <span class="pre">Auth</span></code></a> Backend<a class="headerlink" href="#jwt-cookie-auth-backend" title="Link to this heading">¶</a></h2>
 <p>This backend inherits from the <a class="reference internal" href="../../reference/security/jwt.html#litestar.security.jwt.JWTAuth" title="litestar.security.jwt.JWTAuth"><code class="xref py py-class docutils literal notranslate"><span class="pre">JWTAuth</span></code></a> backend, with the difference being
 that instead of using a header for the JWT Token, it uses a cookie.</p>
 <details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
 <summary class="sd-summary-title sd-card-header">
-Click to see the code<div class="sd-summary-down docutils">
-<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-down" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M5.22 8.72a.75.75 0 000 1.06l6.25 6.25a.75.75 0 001.06 0l6.25-6.25a.75.75 0 00-1.06-1.06L12 14.44 6.28 8.72a.75.75 0 00-1.06 0z"></path></svg></div>
-<div class="sd-summary-up docutils">
-<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-up" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M18.78 15.28a.75.75 0 000-1.06l-6.25-6.25a.75.75 0 00-1.06 0l-6.25 6.25a.75.75 0 101.06 1.06L12 9.56l5.72 5.72a.75.75 0 001.06 0z"></path></svg></div>
-</summary><div class="sd-summary-content sd-card-body docutils">
+<span class="sd-summary-text">Click to see the code</span><span class="sd-summary-state-marker sd-summary-chevron-right"><svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-right" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.72 18.78a.75.75 0 0 1 0-1.06L14.44 12 8.72 6.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018l6.25 6.25a.75.75 0 0 1 0 1.06l-6.25 6.25a.75.75 0 0 1-1.06 0Z"></path></svg></span></summary><div class="sd-summary-content sd-card-body docutils">
 <div class="sd-tab-set docutils">
 <input id="sd-tab-item-2" name="sd-tab-set-1" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-2">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="3.8" for="sd-tab-item-2">
 Python 3.8+</label><div class="sd-tab-content docutils">
 <div class="literal-block-wrapper docutils container" id="id4">
-<div class="code-block-caption"><span class="caption-text">Using JWT Cookie Auth</span><a class="headerlink" href="#id4" title="Permalink to this code">¶</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">os</span> <span class="kn">import</span> <span class="n">environ</span>
-</span><span data-line="2"><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Optional</span>
-</span><span data-line="3"><span class="kn">from</span> <span class="nn">uuid</span> <span class="kn">import</span> <span class="n">UUID</span>
+<div class="code-block-caption"><span class="caption-text">Using JWT Cookie Auth</span><a class="headerlink" href="#id4" title="Link to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">os</span><span class="w"> </span><span class="kn">import</span> <span class="n">environ</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Optional</span>
+</span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">uuid</span><span class="w"> </span><span class="kn">import</span> <span class="n">UUID</span>
 </span><span data-line="4">
-</span><span data-line="5"><span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">EmailStr</span>
+</span><span data-line="5"><span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">EmailStr</span>
 </span><span data-line="6">
-</span><span data-line="7"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">Request</span><span class="p">,</span> <span class="n">Response</span><span class="p">,</span> <span class="n">get</span><span class="p">,</span> <span class="n">post</span>
-</span><span data-line="8"><span class="kn">from</span> <span class="nn">litestar.connection</span> <span class="kn">import</span> <span class="n">ASGIConnection</span>
-</span><span data-line="9"><span class="kn">from</span> <span class="nn">litestar.openapi.config</span> <span class="kn">import</span> <span class="n">OpenAPIConfig</span>
-</span><span data-line="10"><span class="kn">from</span> <span class="nn">litestar.security.jwt</span> <span class="kn">import</span> <span class="n">JWTCookieAuth</span><span class="p">,</span> <span class="n">Token</span>
+</span><span data-line="7"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">Request</span><span class="p">,</span> <span class="n">Response</span><span class="p">,</span> <span class="n">get</span><span class="p">,</span> <span class="n">post</span>
+</span><span data-line="8"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.connection</span><span class="w"> </span><span class="kn">import</span> <span class="n">ASGIConnection</span>
+</span><span data-line="9"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.openapi.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">OpenAPIConfig</span>
+</span><span data-line="10"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.security.jwt</span><span class="w"> </span><span class="kn">import</span> <span class="n">JWTCookieAuth</span><span class="p">,</span> <span class="n">Token</span>
 </span><span data-line="11">
 </span><span data-line="12">
 </span><span data-line="13"><span class="c1"># Let&#39;s assume we have a User model that is a pydantic model.</span>
 </span><span data-line="14"><span class="c1"># This though is not required - we need some sort of user class -</span>
 </span><span data-line="15"><span class="c1"># but it can be any arbitrary value, e.g. an SQLAlchemy model, a representation of a MongoDB  etc.</span>
-</span><span data-line="16"><span class="k">class</span> <span class="nc">User</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+</span><span data-line="16"><span class="k">class</span><span class="w"> </span><span class="nc">User</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
 </span><span data-line="17">    <span class="nb">id</span><span class="p">:</span> <span class="n">UUID</span>
 </span><span data-line="18">    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
 </span><span data-line="19">    <span class="n">email</span><span class="p">:</span> <span class="n">EmailStr</span>
@@ -785,7 +773,7 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 </span><span data-line="28"><span class="c1"># Notes:</span>
 </span><span data-line="29"><span class="c1"># - &#39;User&#39; can be any arbitrary value you decide upon.</span>
 </span><span data-line="30"><span class="c1"># - The callable can be either sync or async - both will work.</span>
-</span><span data-line="31"><span class="k">async</span> <span class="k">def</span> <span class="nf">retrieve_user_handler</span><span class="p">(</span><span class="n">token</span><span class="p">:</span> <span class="s2">&quot;Token&quot;</span><span class="p">,</span> <span class="n">connection</span><span class="p">:</span> <span class="s2">&quot;ASGIConnection[Any, Any, Any, Any]&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">User</span><span class="p">]:</span>
+</span><span data-line="31"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">retrieve_user_handler</span><span class="p">(</span><span class="n">token</span><span class="p">:</span> <span class="s2">&quot;Token&quot;</span><span class="p">,</span> <span class="n">connection</span><span class="p">:</span> <span class="s2">&quot;ASGIConnection[Any, Any, Any, Any]&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">User</span><span class="p">]:</span>
 </span><span data-line="32">    <span class="c1"># logic here to retrieve the user instance</span>
 </span><span data-line="33">    <span class="k">return</span> <span class="n">MOCK_DB</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">token</span><span class="o">.</span><span class="n">sub</span><span class="p">)</span>
 </span><span data-line="34">
@@ -803,14 +791,14 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 </span><span data-line="46">
 </span><span data-line="47"><span class="c1"># Given an instance of &#39;JWTCookieAuth&#39; we can create a login handler function:</span>
 </span><span data-line="48"><span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/login&quot;</span><span class="p">)</span>
-</span><span data-line="49"><span class="k">async</span> <span class="k">def</span> <span class="nf">login_handler</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="s2">&quot;User&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Response[User]&quot;</span><span class="p">:</span>
+</span><span data-line="49"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">login_handler</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="s2">&quot;User&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Response[User]&quot;</span><span class="p">:</span>
 </span><span data-line="50">    <span class="n">MOCK_DB</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">id</span><span class="p">)]</span> <span class="o">=</span> <span class="n">data</span>
 </span><span data-line="51">    <span class="k">return</span> <span class="n">jwt_cookie_auth</span><span class="o">.</span><span class="n">login</span><span class="p">(</span><span class="n">identifier</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">id</span><span class="p">),</span> <span class="n">response_body</span><span class="o">=</span><span class="n">data</span><span class="p">)</span>
 </span><span data-line="52">
 </span><span data-line="53">
 </span><span data-line="54"><span class="c1"># We also have some other routes, for example:</span>
 </span><span data-line="55"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/some-path&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-</span><span data-line="56"><span class="k">def</span> <span class="nf">some_route_handler</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="s2">&quot;Request[User, Token, Any]&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+</span><span data-line="56"><span class="k">def</span><span class="w"> </span><span class="nf">some_route_handler</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="s2">&quot;Request[User, Token, Any]&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
 </span><span data-line="57">    <span class="c1"># request.user is set to the instance of user returned by the middleware</span>
 </span><span data-line="58">    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="p">,</span> <span class="n">User</span><span class="p">)</span>
 </span><span data-line="59">    <span class="c1"># request.auth is the instance of &#39;litestar_jwt.Token&#39; created from the data encoded in the auth header</span>
@@ -836,26 +824,26 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 </div>
 </div>
 <input checked="checked" id="sd-tab-item-3" name="sd-tab-set-1" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.10" for="sd-tab-item-3">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="3.10" for="sd-tab-item-3">
 Python 3.10+</label><div class="sd-tab-content docutils">
 <div class="literal-block-wrapper docutils container" id="id5">
-<div class="code-block-caption"><span class="caption-text">Using JWT Cookie Auth</span><a class="headerlink" href="#id5" title="Permalink to this code">¶</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">os</span> <span class="kn">import</span> <span class="n">environ</span>
-</span><span data-line="2"><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span>
-</span><span data-line="3"><span class="kn">from</span> <span class="nn">uuid</span> <span class="kn">import</span> <span class="n">UUID</span>
+<div class="code-block-caption"><span class="caption-text">Using JWT Cookie Auth</span><a class="headerlink" href="#id5" title="Link to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">os</span><span class="w"> </span><span class="kn">import</span> <span class="n">environ</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
+</span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">uuid</span><span class="w"> </span><span class="kn">import</span> <span class="n">UUID</span>
 </span><span data-line="4">
-</span><span data-line="5"><span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">EmailStr</span>
+</span><span data-line="5"><span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">EmailStr</span>
 </span><span data-line="6">
-</span><span data-line="7"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">Request</span><span class="p">,</span> <span class="n">Response</span><span class="p">,</span> <span class="n">get</span><span class="p">,</span> <span class="n">post</span>
-</span><span data-line="8"><span class="kn">from</span> <span class="nn">litestar.connection</span> <span class="kn">import</span> <span class="n">ASGIConnection</span>
-</span><span data-line="9"><span class="kn">from</span> <span class="nn">litestar.openapi.config</span> <span class="kn">import</span> <span class="n">OpenAPIConfig</span>
-</span><span data-line="10"><span class="kn">from</span> <span class="nn">litestar.security.jwt</span> <span class="kn">import</span> <span class="n">JWTCookieAuth</span><span class="p">,</span> <span class="n">Token</span>
+</span><span data-line="7"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">Request</span><span class="p">,</span> <span class="n">Response</span><span class="p">,</span> <span class="n">get</span><span class="p">,</span> <span class="n">post</span>
+</span><span data-line="8"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.connection</span><span class="w"> </span><span class="kn">import</span> <span class="n">ASGIConnection</span>
+</span><span data-line="9"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.openapi.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">OpenAPIConfig</span>
+</span><span data-line="10"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.security.jwt</span><span class="w"> </span><span class="kn">import</span> <span class="n">JWTCookieAuth</span><span class="p">,</span> <span class="n">Token</span>
 </span><span data-line="11">
 </span><span data-line="12">
 </span><span data-line="13"><span class="c1"># Let&#39;s assume we have a User model that is a pydantic model.</span>
 </span><span data-line="14"><span class="c1"># This though is not required - we need some sort of user class -</span>
 </span><span data-line="15"><span class="c1"># but it can be any arbitrary value, e.g. an SQLAlchemy model, a representation of a MongoDB  etc.</span>
-</span><span data-line="16"><span class="k">class</span> <span class="nc">User</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+</span><span data-line="16"><span class="k">class</span><span class="w"> </span><span class="nc">User</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
 </span><span data-line="17">    <span class="nb">id</span><span class="p">:</span> <span class="n">UUID</span>
 </span><span data-line="18">    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
 </span><span data-line="19">    <span class="n">email</span><span class="p">:</span> <span class="n">EmailStr</span>
@@ -870,7 +858,7 @@ Python 3.10+</label><div class="sd-tab-content docutils">
 </span><span data-line="28"><span class="c1"># Notes:</span>
 </span><span data-line="29"><span class="c1"># - &#39;User&#39; can be any arbitrary value you decide upon.</span>
 </span><span data-line="30"><span class="c1"># - The callable can be either sync or async - both will work.</span>
-</span><span data-line="31"><span class="k">async</span> <span class="k">def</span> <span class="nf">retrieve_user_handler</span><span class="p">(</span><span class="n">token</span><span class="p">:</span> <span class="s2">&quot;Token&quot;</span><span class="p">,</span> <span class="n">connection</span><span class="p">:</span> <span class="s2">&quot;ASGIConnection[Any, Any, Any, Any]&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">User</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="31"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">retrieve_user_handler</span><span class="p">(</span><span class="n">token</span><span class="p">:</span> <span class="s2">&quot;Token&quot;</span><span class="p">,</span> <span class="n">connection</span><span class="p">:</span> <span class="s2">&quot;ASGIConnection[Any, Any, Any, Any]&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">User</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
 </span><span data-line="32">    <span class="c1"># logic here to retrieve the user instance</span>
 </span><span data-line="33">    <span class="k">return</span> <span class="n">MOCK_DB</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">token</span><span class="o">.</span><span class="n">sub</span><span class="p">)</span>
 </span><span data-line="34">
@@ -888,14 +876,14 @@ Python 3.10+</label><div class="sd-tab-content docutils">
 </span><span data-line="46">
 </span><span data-line="47"><span class="c1"># Given an instance of &#39;JWTCookieAuth&#39; we can create a login handler function:</span>
 </span><span data-line="48"><span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/login&quot;</span><span class="p">)</span>
-</span><span data-line="49"><span class="k">async</span> <span class="k">def</span> <span class="nf">login_handler</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="s2">&quot;User&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Response[User]&quot;</span><span class="p">:</span>
+</span><span data-line="49"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">login_handler</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="s2">&quot;User&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Response[User]&quot;</span><span class="p">:</span>
 </span><span data-line="50">    <span class="n">MOCK_DB</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">id</span><span class="p">)]</span> <span class="o">=</span> <span class="n">data</span>
 </span><span data-line="51">    <span class="k">return</span> <span class="n">jwt_cookie_auth</span><span class="o">.</span><span class="n">login</span><span class="p">(</span><span class="n">identifier</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">id</span><span class="p">),</span> <span class="n">response_body</span><span class="o">=</span><span class="n">data</span><span class="p">)</span>
 </span><span data-line="52">
 </span><span data-line="53">
 </span><span data-line="54"><span class="c1"># We also have some other routes, for example:</span>
 </span><span data-line="55"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/some-path&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-</span><span data-line="56"><span class="k">def</span> <span class="nf">some_route_handler</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="s2">&quot;Request[User, Token, Any]&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+</span><span data-line="56"><span class="k">def</span><span class="w"> </span><span class="nf">some_route_handler</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="s2">&quot;Request[User, Token, Any]&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
 </span><span data-line="57">    <span class="c1"># request.user is set to the instance of user returned by the middleware</span>
 </span><span data-line="58">    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="p">,</span> <span class="n">User</span><span class="p">)</span>
 </span><span data-line="59">    <span class="c1"># request.auth is the instance of &#39;litestar_jwt.Token&#39; created from the data encoded in the auth header</span>
@@ -924,39 +912,35 @@ Python 3.10+</label><div class="sd-tab-content docutils">
 </div>
 </details></section>
 <section id="oauth2-bearer-password-flow">
-<h2><a class="reference internal" href="../../reference/security/jwt.html#litestar.security.jwt.OAuth2PasswordBearerAuth" title="litestar.security.jwt.auth.OAuth2PasswordBearerAuth"><code class="xref py py-class docutils literal notranslate"><span class="pre">OAuth2</span> <span class="pre">Bearer</span></code></a> Password Flow<a class="headerlink" href="#oauth2-bearer-password-flow" title="Permalink to this heading">¶</a></h2>
+<h2><a class="reference internal" href="../../reference/security/jwt.html#litestar.security.jwt.OAuth2PasswordBearerAuth" title="litestar.security.jwt.auth.OAuth2PasswordBearerAuth"><code class="xref py py-class docutils literal notranslate"><span class="pre">OAuth2</span> <span class="pre">Bearer</span></code></a> Password Flow<a class="headerlink" href="#oauth2-bearer-password-flow" title="Link to this heading">¶</a></h2>
 <p>The <a class="reference internal" href="../../reference/security/jwt.html#litestar.security.jwt.OAuth2PasswordBearerAuth" title="litestar.security.jwt.auth.OAuth2PasswordBearerAuth"><code class="xref py py-class docutils literal notranslate"><span class="pre">OAuth2PasswordBearerAuth</span></code></a> backend inherits from the <a class="reference internal" href="../../reference/security/jwt.html#litestar.security.jwt.JWTCookieAuth" title="litestar.security.jwt.JWTCookieAuth"><code class="xref py py-class docutils literal notranslate"><span class="pre">JWTCookieAuth</span></code></a>
 backend. It works similarly to the <a class="reference internal" href="../../reference/security/jwt.html#litestar.security.jwt.JWTCookieAuth" title="litestar.security.jwt.JWTCookieAuth"><code class="xref py py-class docutils literal notranslate"><span class="pre">JWTCookieAuth</span></code></a> backend, but is meant to be used for
 OAuth 2.0 Bearer password flows.</p>
 <details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
 <summary class="sd-summary-title sd-card-header">
-Click to see the code<div class="sd-summary-down docutils">
-<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-down" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M5.22 8.72a.75.75 0 000 1.06l6.25 6.25a.75.75 0 001.06 0l6.25-6.25a.75.75 0 00-1.06-1.06L12 14.44 6.28 8.72a.75.75 0 00-1.06 0z"></path></svg></div>
-<div class="sd-summary-up docutils">
-<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-up" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M18.78 15.28a.75.75 0 000-1.06l-6.25-6.25a.75.75 0 00-1.06 0l-6.25 6.25a.75.75 0 101.06 1.06L12 9.56l5.72 5.72a.75.75 0 001.06 0z"></path></svg></div>
-</summary><div class="sd-summary-content sd-card-body docutils">
+<span class="sd-summary-text">Click to see the code</span><span class="sd-summary-state-marker sd-summary-chevron-right"><svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-right" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.72 18.78a.75.75 0 0 1 0-1.06L14.44 12 8.72 6.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018l6.25 6.25a.75.75 0 0 1 0 1.06l-6.25 6.25a.75.75 0 0 1-1.06 0Z"></path></svg></span></summary><div class="sd-summary-content sd-card-body docutils">
 <div class="sd-tab-set docutils">
 <input id="sd-tab-item-4" name="sd-tab-set-2" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-4">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="3.8" for="sd-tab-item-4">
 Python 3.8+</label><div class="sd-tab-content docutils">
 <div class="literal-block-wrapper docutils container" id="id6">
-<div class="code-block-caption"><span class="caption-text">Using OAUTH2 Bearer Password</span><a class="headerlink" href="#id6" title="Permalink to this code">¶</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">os</span> <span class="kn">import</span> <span class="n">environ</span>
-</span><span data-line="2"><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Optional</span>
-</span><span data-line="3"><span class="kn">from</span> <span class="nn">uuid</span> <span class="kn">import</span> <span class="n">UUID</span>
+<div class="code-block-caption"><span class="caption-text">Using OAUTH2 Bearer Password</span><a class="headerlink" href="#id6" title="Link to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">os</span><span class="w"> </span><span class="kn">import</span> <span class="n">environ</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Optional</span>
+</span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">uuid</span><span class="w"> </span><span class="kn">import</span> <span class="n">UUID</span>
 </span><span data-line="4">
-</span><span data-line="5"><span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">EmailStr</span>
+</span><span data-line="5"><span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">EmailStr</span>
 </span><span data-line="6">
-</span><span data-line="7"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">Request</span><span class="p">,</span> <span class="n">Response</span><span class="p">,</span> <span class="n">get</span><span class="p">,</span> <span class="n">post</span>
-</span><span data-line="8"><span class="kn">from</span> <span class="nn">litestar.connection</span> <span class="kn">import</span> <span class="n">ASGIConnection</span>
-</span><span data-line="9"><span class="kn">from</span> <span class="nn">litestar.openapi.config</span> <span class="kn">import</span> <span class="n">OpenAPIConfig</span>
-</span><span data-line="10"><span class="kn">from</span> <span class="nn">litestar.security.jwt</span> <span class="kn">import</span> <span class="n">OAuth2Login</span><span class="p">,</span> <span class="n">OAuth2PasswordBearerAuth</span><span class="p">,</span> <span class="n">Token</span>
+</span><span data-line="7"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">Request</span><span class="p">,</span> <span class="n">Response</span><span class="p">,</span> <span class="n">get</span><span class="p">,</span> <span class="n">post</span>
+</span><span data-line="8"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.connection</span><span class="w"> </span><span class="kn">import</span> <span class="n">ASGIConnection</span>
+</span><span data-line="9"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.openapi.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">OpenAPIConfig</span>
+</span><span data-line="10"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.security.jwt</span><span class="w"> </span><span class="kn">import</span> <span class="n">OAuth2Login</span><span class="p">,</span> <span class="n">OAuth2PasswordBearerAuth</span><span class="p">,</span> <span class="n">Token</span>
 </span><span data-line="11">
 </span><span data-line="12">
 </span><span data-line="13"><span class="c1"># Let&#39;s assume we have a User model that is a pydantic model.</span>
 </span><span data-line="14"><span class="c1"># This though is not required - we need some sort of user class -</span>
 </span><span data-line="15"><span class="c1"># but it can be any arbitrary value, e.g. an SQLAlchemy model, a representation of a MongoDB  etc.</span>
-</span><span data-line="16"><span class="k">class</span> <span class="nc">User</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+</span><span data-line="16"><span class="k">class</span><span class="w"> </span><span class="nc">User</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
 </span><span data-line="17">    <span class="nb">id</span><span class="p">:</span> <span class="n">UUID</span>
 </span><span data-line="18">    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
 </span><span data-line="19">    <span class="n">email</span><span class="p">:</span> <span class="n">EmailStr</span>
@@ -971,7 +955,7 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 </span><span data-line="28"><span class="c1"># Notes:</span>
 </span><span data-line="29"><span class="c1"># - &#39;User&#39; can be any arbitrary value you decide upon.</span>
 </span><span data-line="30"><span class="c1"># - The callable can be either sync or async - both will work.</span>
-</span><span data-line="31"><span class="k">async</span> <span class="k">def</span> <span class="nf">retrieve_user_handler</span><span class="p">(</span><span class="n">token</span><span class="p">:</span> <span class="s2">&quot;Token&quot;</span><span class="p">,</span> <span class="n">connection</span><span class="p">:</span> <span class="s2">&quot;ASGIConnection[Any, Any, Any, Any]&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">User</span><span class="p">]:</span>
+</span><span data-line="31"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">retrieve_user_handler</span><span class="p">(</span><span class="n">token</span><span class="p">:</span> <span class="s2">&quot;Token&quot;</span><span class="p">,</span> <span class="n">connection</span><span class="p">:</span> <span class="s2">&quot;ASGIConnection[Any, Any, Any, Any]&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">User</span><span class="p">]:</span>
 </span><span data-line="32">    <span class="c1"># logic here to retrieve the user instance</span>
 </span><span data-line="33">    <span class="k">return</span> <span class="n">MOCK_DB</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">token</span><span class="o">.</span><span class="n">sub</span><span class="p">)</span>
 </span><span data-line="34">
@@ -989,7 +973,7 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 </span><span data-line="46">
 </span><span data-line="47"><span class="c1"># Given an instance of &#39;OAuth2PasswordBearerAuth&#39; we can create a login handler function:</span>
 </span><span data-line="48"><span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/login&quot;</span><span class="p">)</span>
-</span><span data-line="49"><span class="k">async</span> <span class="k">def</span> <span class="nf">login_handler</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="s2">&quot;Request[Any, Any, Any]&quot;</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="s2">&quot;User&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Response[OAuth2Login]&quot;</span><span class="p">:</span>
+</span><span data-line="49"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">login_handler</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="s2">&quot;Request[Any, Any, Any]&quot;</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="s2">&quot;User&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Response[OAuth2Login]&quot;</span><span class="p">:</span>
 </span><span data-line="50">    <span class="n">MOCK_DB</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">id</span><span class="p">)]</span> <span class="o">=</span> <span class="n">data</span>
 </span><span data-line="51">    <span class="c1"># if we do not define a response body, the login process will return a standard OAuth2 login response.  Note the `Response[OAuth2Login]` return type.</span>
 </span><span data-line="52">
@@ -999,7 +983,7 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 </span><span data-line="56">
 </span><span data-line="57">
 </span><span data-line="58"><span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/login_custom&quot;</span><span class="p">)</span>
-</span><span data-line="59"><span class="k">async</span> <span class="k">def</span> <span class="nf">login_custom_response_handler</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="s2">&quot;User&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Response[User]&quot;</span><span class="p">:</span>
+</span><span data-line="59"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">login_custom_response_handler</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="s2">&quot;User&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Response[User]&quot;</span><span class="p">:</span>
 </span><span data-line="60">    <span class="n">MOCK_DB</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">id</span><span class="p">)]</span> <span class="o">=</span> <span class="n">data</span>
 </span><span data-line="61">
 </span><span data-line="62">    <span class="c1"># you can do whatever you want to update the response instance here</span>
@@ -1009,7 +993,7 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 </span><span data-line="66">
 </span><span data-line="67"><span class="c1"># We also have some other routes, for example:</span>
 </span><span data-line="68"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/some-path&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-</span><span data-line="69"><span class="k">def</span> <span class="nf">some_route_handler</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="s2">&quot;Request[User, Token, Any]&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+</span><span data-line="69"><span class="k">def</span><span class="w"> </span><span class="nf">some_route_handler</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="s2">&quot;Request[User, Token, Any]&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
 </span><span data-line="70">    <span class="c1"># request.user is set to the instance of user returned by the middleware</span>
 </span><span data-line="71">    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="p">,</span> <span class="n">User</span><span class="p">)</span>
 </span><span data-line="72">    <span class="c1"># request.auth is the instance of &#39;litestar_jwt.Token&#39; created from the data encoded in the auth header</span>
@@ -1035,26 +1019,26 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 </div>
 </div>
 <input checked="checked" id="sd-tab-item-5" name="sd-tab-set-2" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.10" for="sd-tab-item-5">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="3.10" for="sd-tab-item-5">
 Python 3.10+</label><div class="sd-tab-content docutils">
 <div class="literal-block-wrapper docutils container" id="id7">
-<div class="code-block-caption"><span class="caption-text">Using OAUTH2 Bearer Password</span><a class="headerlink" href="#id7" title="Permalink to this code">¶</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">os</span> <span class="kn">import</span> <span class="n">environ</span>
-</span><span data-line="2"><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span>
-</span><span data-line="3"><span class="kn">from</span> <span class="nn">uuid</span> <span class="kn">import</span> <span class="n">UUID</span>
+<div class="code-block-caption"><span class="caption-text">Using OAUTH2 Bearer Password</span><a class="headerlink" href="#id7" title="Link to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">os</span><span class="w"> </span><span class="kn">import</span> <span class="n">environ</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
+</span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">uuid</span><span class="w"> </span><span class="kn">import</span> <span class="n">UUID</span>
 </span><span data-line="4">
-</span><span data-line="5"><span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">EmailStr</span>
+</span><span data-line="5"><span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">EmailStr</span>
 </span><span data-line="6">
-</span><span data-line="7"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">Request</span><span class="p">,</span> <span class="n">Response</span><span class="p">,</span> <span class="n">get</span><span class="p">,</span> <span class="n">post</span>
-</span><span data-line="8"><span class="kn">from</span> <span class="nn">litestar.connection</span> <span class="kn">import</span> <span class="n">ASGIConnection</span>
-</span><span data-line="9"><span class="kn">from</span> <span class="nn">litestar.openapi.config</span> <span class="kn">import</span> <span class="n">OpenAPIConfig</span>
-</span><span data-line="10"><span class="kn">from</span> <span class="nn">litestar.security.jwt</span> <span class="kn">import</span> <span class="n">OAuth2Login</span><span class="p">,</span> <span class="n">OAuth2PasswordBearerAuth</span><span class="p">,</span> <span class="n">Token</span>
+</span><span data-line="7"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">Request</span><span class="p">,</span> <span class="n">Response</span><span class="p">,</span> <span class="n">get</span><span class="p">,</span> <span class="n">post</span>
+</span><span data-line="8"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.connection</span><span class="w"> </span><span class="kn">import</span> <span class="n">ASGIConnection</span>
+</span><span data-line="9"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.openapi.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">OpenAPIConfig</span>
+</span><span data-line="10"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.security.jwt</span><span class="w"> </span><span class="kn">import</span> <span class="n">OAuth2Login</span><span class="p">,</span> <span class="n">OAuth2PasswordBearerAuth</span><span class="p">,</span> <span class="n">Token</span>
 </span><span data-line="11">
 </span><span data-line="12">
 </span><span data-line="13"><span class="c1"># Let&#39;s assume we have a User model that is a pydantic model.</span>
 </span><span data-line="14"><span class="c1"># This though is not required - we need some sort of user class -</span>
 </span><span data-line="15"><span class="c1"># but it can be any arbitrary value, e.g. an SQLAlchemy model, a representation of a MongoDB  etc.</span>
-</span><span data-line="16"><span class="k">class</span> <span class="nc">User</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+</span><span data-line="16"><span class="k">class</span><span class="w"> </span><span class="nc">User</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
 </span><span data-line="17">    <span class="nb">id</span><span class="p">:</span> <span class="n">UUID</span>
 </span><span data-line="18">    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
 </span><span data-line="19">    <span class="n">email</span><span class="p">:</span> <span class="n">EmailStr</span>
@@ -1069,7 +1053,7 @@ Python 3.10+</label><div class="sd-tab-content docutils">
 </span><span data-line="28"><span class="c1"># Notes:</span>
 </span><span data-line="29"><span class="c1"># - &#39;User&#39; can be any arbitrary value you decide upon.</span>
 </span><span data-line="30"><span class="c1"># - The callable can be either sync or async - both will work.</span>
-</span><span data-line="31"><span class="k">async</span> <span class="k">def</span> <span class="nf">retrieve_user_handler</span><span class="p">(</span><span class="n">token</span><span class="p">:</span> <span class="s2">&quot;Token&quot;</span><span class="p">,</span> <span class="n">connection</span><span class="p">:</span> <span class="s2">&quot;ASGIConnection[Any, Any, Any, Any]&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">User</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="31"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">retrieve_user_handler</span><span class="p">(</span><span class="n">token</span><span class="p">:</span> <span class="s2">&quot;Token&quot;</span><span class="p">,</span> <span class="n">connection</span><span class="p">:</span> <span class="s2">&quot;ASGIConnection[Any, Any, Any, Any]&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">User</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
 </span><span data-line="32">    <span class="c1"># logic here to retrieve the user instance</span>
 </span><span data-line="33">    <span class="k">return</span> <span class="n">MOCK_DB</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">token</span><span class="o">.</span><span class="n">sub</span><span class="p">)</span>
 </span><span data-line="34">
@@ -1087,7 +1071,7 @@ Python 3.10+</label><div class="sd-tab-content docutils">
 </span><span data-line="46">
 </span><span data-line="47"><span class="c1"># Given an instance of &#39;OAuth2PasswordBearerAuth&#39; we can create a login handler function:</span>
 </span><span data-line="48"><span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/login&quot;</span><span class="p">)</span>
-</span><span data-line="49"><span class="k">async</span> <span class="k">def</span> <span class="nf">login_handler</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="s2">&quot;Request[Any, Any, Any]&quot;</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="s2">&quot;User&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Response[OAuth2Login]&quot;</span><span class="p">:</span>
+</span><span data-line="49"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">login_handler</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="s2">&quot;Request[Any, Any, Any]&quot;</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="s2">&quot;User&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Response[OAuth2Login]&quot;</span><span class="p">:</span>
 </span><span data-line="50">    <span class="n">MOCK_DB</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">id</span><span class="p">)]</span> <span class="o">=</span> <span class="n">data</span>
 </span><span data-line="51">    <span class="c1"># if we do not define a response body, the login process will return a standard OAuth2 login response.  Note the `Response[OAuth2Login]` return type.</span>
 </span><span data-line="52">
@@ -1097,7 +1081,7 @@ Python 3.10+</label><div class="sd-tab-content docutils">
 </span><span data-line="56">
 </span><span data-line="57">
 </span><span data-line="58"><span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/login_custom&quot;</span><span class="p">)</span>
-</span><span data-line="59"><span class="k">async</span> <span class="k">def</span> <span class="nf">login_custom_response_handler</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="s2">&quot;User&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Response[User]&quot;</span><span class="p">:</span>
+</span><span data-line="59"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">login_custom_response_handler</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="s2">&quot;User&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Response[User]&quot;</span><span class="p">:</span>
 </span><span data-line="60">    <span class="n">MOCK_DB</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">id</span><span class="p">)]</span> <span class="o">=</span> <span class="n">data</span>
 </span><span data-line="61">
 </span><span data-line="62">    <span class="c1"># you can do whatever you want to update the response instance here</span>
@@ -1107,7 +1091,7 @@ Python 3.10+</label><div class="sd-tab-content docutils">
 </span><span data-line="66">
 </span><span data-line="67"><span class="c1"># We also have some other routes, for example:</span>
 </span><span data-line="68"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/some-path&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-</span><span data-line="69"><span class="k">def</span> <span class="nf">some_route_handler</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="s2">&quot;Request[User, Token, Any]&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+</span><span data-line="69"><span class="k">def</span><span class="w"> </span><span class="nf">some_route_handler</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="s2">&quot;Request[User, Token, Any]&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
 </span><span data-line="70">    <span class="c1"># request.user is set to the instance of user returned by the middleware</span>
 </span><span data-line="71">    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="p">,</span> <span class="n">User</span><span class="p">)</span>
 </span><span data-line="72">    <span class="c1"># request.auth is the instance of &#39;litestar_jwt.Token&#39; created from the data encoded in the auth header</span>
@@ -1136,31 +1120,31 @@ Python 3.10+</label><div class="sd-tab-content docutils">
 </div>
 </details></section>
 <section id="using-a-custom-token-class">
-<h2>Using a custom token class<a class="headerlink" href="#using-a-custom-token-class" title="Permalink to this heading">¶</a></h2>
+<h2>Using a custom token class<a class="headerlink" href="#using-a-custom-token-class" title="Link to this heading">¶</a></h2>
 <p>The token class used can be customized with arbitrary fields, by creating a subclass of
 <a class="reference internal" href="../../reference/security/jwt.html#litestar.security.jwt.Token" title="litestar.security.jwt.Token"><code class="xref py py-class docutils literal notranslate"><span class="pre">Token</span></code></a>, and specifying it on the backend:</p>
 <div class="literal-block-wrapper docutils container" id="id8">
-<div class="code-block-caption"><span class="caption-text">Using a custom token</span><a class="headerlink" href="#id8" title="Permalink to this code">¶</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">import</span> <span class="nn">dataclasses</span>
-</span><span data-line="2"><span class="kn">import</span> <span class="nn">secrets</span>
-</span><span data-line="3"><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span>
+<div class="code-block-caption"><span class="caption-text">Using a custom token</span><a class="headerlink" href="#id8" title="Link to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">import</span><span class="w"> </span><span class="nn">dataclasses</span>
+</span><span data-line="2"><span class="kn">import</span><span class="w"> </span><span class="nn">secrets</span>
+</span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
 </span><span data-line="4">
-</span><span data-line="5"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">Request</span><span class="p">,</span> <span class="n">get</span>
-</span><span data-line="6"><span class="kn">from</span> <span class="nn">litestar.connection</span> <span class="kn">import</span> <span class="n">ASGIConnection</span>
-</span><span data-line="7"><span class="kn">from</span> <span class="nn">litestar.security.jwt</span> <span class="kn">import</span> <span class="n">JWTAuth</span><span class="p">,</span> <span class="n">Token</span>
+</span><span data-line="5"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">Request</span><span class="p">,</span> <span class="n">get</span>
+</span><span data-line="6"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.connection</span><span class="w"> </span><span class="kn">import</span> <span class="n">ASGIConnection</span>
+</span><span data-line="7"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.security.jwt</span><span class="w"> </span><span class="kn">import</span> <span class="n">JWTAuth</span><span class="p">,</span> <span class="n">Token</span>
 </span><span data-line="8">
 </span><span data-line="9">
 </span><span data-line="10"><span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span>
-</span><span data-line="11"><span class="k">class</span> <span class="nc">CustomToken</span><span class="p">(</span><span class="n">Token</span><span class="p">):</span>
+</span><span data-line="11"><span class="k">class</span><span class="w"> </span><span class="nc">CustomToken</span><span class="p">(</span><span class="n">Token</span><span class="p">):</span>
 </span><span data-line="12">    <span class="n">token_flag</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
 </span><span data-line="13">
 </span><span data-line="14">
 </span><span data-line="15"><span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span>
-</span><span data-line="16"><span class="k">class</span> <span class="nc">User</span><span class="p">:</span>
+</span><span data-line="16"><span class="k">class</span><span class="w"> </span><span class="nc">User</span><span class="p">:</span>
 </span><span data-line="17">    <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span>
 </span><span data-line="18">
 </span><span data-line="19">
-</span><span data-line="20"><span class="k">async</span> <span class="k">def</span> <span class="nf">retrieve_user_handler</span><span class="p">(</span><span class="n">token</span><span class="p">:</span> <span class="n">CustomToken</span><span class="p">,</span> <span class="n">connection</span><span class="p">:</span> <span class="n">ASGIConnection</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">User</span><span class="p">:</span>
+</span><span data-line="20"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">retrieve_user_handler</span><span class="p">(</span><span class="n">token</span><span class="p">:</span> <span class="n">CustomToken</span><span class="p">,</span> <span class="n">connection</span><span class="p">:</span> <span class="n">ASGIConnection</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">User</span><span class="p">:</span>
 </span><span data-line="21">    <span class="k">return</span> <span class="n">User</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">token</span><span class="o">.</span><span class="n">sub</span><span class="p">)</span>
 </span><span data-line="22">
 </span><span data-line="23">
@@ -1174,7 +1158,7 @@ Python 3.10+</label><div class="sd-tab-content docutils">
 </span><span data-line="31">
 </span><span data-line="32">
 </span><span data-line="33"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
-</span><span data-line="34"><span class="k">def</span> <span class="nf">handler</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">[</span><span class="n">User</span><span class="p">,</span> <span class="n">CustomToken</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+</span><span data-line="34"><span class="k">def</span><span class="w"> </span><span class="nf">handler</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">[</span><span class="n">User</span><span class="p">,</span> <span class="n">CustomToken</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
 </span><span data-line="35">    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="s2">&quot;token_flag&quot;</span><span class="p">:</span> <span class="n">request</span><span class="o">.</span><span class="n">auth</span><span class="o">.</span><span class="n">token_flag</span><span class="p">}</span>
 </span><span data-line="36">
 </span><span data-line="37">
@@ -1194,7 +1178,7 @@ must be overwritten in the subclass.</p>
 </div>
 </section>
 <section id="verifying-issuer-and-audience">
-<h2>Verifying issuer and audience<a class="headerlink" href="#verifying-issuer-and-audience" title="Permalink to this heading">¶</a></h2>
+<h2>Verifying issuer and audience<a class="headerlink" href="#verifying-issuer-and-audience" title="Link to this heading">¶</a></h2>
 <p>To verify the JWT <code class="docutils literal notranslate"><span class="pre">iss</span></code> (<em>issuer</em>) and <code class="docutils literal notranslate"><span class="pre">aud</span></code> (<em>audience</em>) claim, a list of accepted
 issuers or audiences can bet set on the authentication backend. When a JWT is decoded,
 the issuer or audience on the token is compared to the list of accepted issuers /
@@ -1202,22 +1186,22 @@ audiences. If the value in the token does not match any value in the respective 
 a <a class="reference internal" href="../../reference/exceptions.html#litestar.exceptions.NotAuthorizedException" title="litestar.exceptions.NotAuthorizedException"><code class="xref py py-exc docutils literal notranslate"><span class="pre">NotAuthorizedException</span></code></a> will be raised, returning a response with a
 <code class="docutils literal notranslate"><span class="pre">401</span> <span class="pre">Unauthorized</span></code> status.</p>
 <div class="literal-block-wrapper docutils container" id="id9">
-<div class="code-block-caption"><span class="caption-text">Verifying issuer and audience</span><a class="headerlink" href="#id9" title="Permalink to this code">¶</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">import</span> <span class="nn">dataclasses</span>
-</span><span data-line="2"><span class="kn">import</span> <span class="nn">secrets</span>
-</span><span data-line="3"><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span>
+<div class="code-block-caption"><span class="caption-text">Verifying issuer and audience</span><a class="headerlink" href="#id9" title="Link to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">import</span><span class="w"> </span><span class="nn">dataclasses</span>
+</span><span data-line="2"><span class="kn">import</span><span class="w"> </span><span class="nn">secrets</span>
+</span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
 </span><span data-line="4">
-</span><span data-line="5"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">Request</span><span class="p">,</span> <span class="n">get</span>
-</span><span data-line="6"><span class="kn">from</span> <span class="nn">litestar.connection</span> <span class="kn">import</span> <span class="n">ASGIConnection</span>
-</span><span data-line="7"><span class="kn">from</span> <span class="nn">litestar.security.jwt</span> <span class="kn">import</span> <span class="n">JWTAuth</span><span class="p">,</span> <span class="n">Token</span>
+</span><span data-line="5"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">Request</span><span class="p">,</span> <span class="n">get</span>
+</span><span data-line="6"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.connection</span><span class="w"> </span><span class="kn">import</span> <span class="n">ASGIConnection</span>
+</span><span data-line="7"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.security.jwt</span><span class="w"> </span><span class="kn">import</span> <span class="n">JWTAuth</span><span class="p">,</span> <span class="n">Token</span>
 </span><span data-line="8">
 </span><span data-line="9">
 </span><span data-line="10"><span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span>
-</span><span data-line="11"><span class="k">class</span> <span class="nc">User</span><span class="p">:</span>
+</span><span data-line="11"><span class="k">class</span><span class="w"> </span><span class="nc">User</span><span class="p">:</span>
 </span><span data-line="12">    <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span>
 </span><span data-line="13">
 </span><span data-line="14">
-</span><span data-line="15"><span class="k">async</span> <span class="k">def</span> <span class="nf">retrieve_user_handler</span><span class="p">(</span><span class="n">token</span><span class="p">:</span> <span class="n">Token</span><span class="p">,</span> <span class="n">connection</span><span class="p">:</span> <span class="n">ASGIConnection</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">User</span><span class="p">:</span>
+</span><span data-line="15"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">retrieve_user_handler</span><span class="p">(</span><span class="n">token</span><span class="p">:</span> <span class="n">Token</span><span class="p">,</span> <span class="n">connection</span><span class="p">:</span> <span class="n">ASGIConnection</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">User</span><span class="p">:</span>
 </span><span data-line="16">    <span class="k">return</span> <span class="n">User</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">token</span><span class="o">.</span><span class="n">sub</span><span class="p">)</span>
 </span><span data-line="17">
 </span><span data-line="18">
@@ -1230,7 +1214,7 @@ a <a class="reference internal" href="../../reference/exceptions.html#litestar.e
 </span><span data-line="25">
 </span><span data-line="26">
 </span><span data-line="27"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
-</span><span data-line="28"><span class="k">def</span> <span class="nf">handler</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">[</span><span class="n">User</span><span class="p">,</span> <span class="n">Token</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+</span><span data-line="28"><span class="k">def</span><span class="w"> </span><span class="nf">handler</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">[</span><span class="n">User</span><span class="p">,</span> <span class="n">Token</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
 </span><span data-line="29">    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">id</span><span class="p">}</span>
 </span><span data-line="30">
 </span><span data-line="31">
@@ -1240,7 +1224,7 @@ a <a class="reference internal" href="../../reference/exceptions.html#litestar.e
 </div>
 </section>
 <section id="customizing-token-validation">
-<h2>Customizing token validation<a class="headerlink" href="#customizing-token-validation" title="Permalink to this heading">¶</a></h2>
+<h2>Customizing token validation<a class="headerlink" href="#customizing-token-validation" title="Link to this heading">¶</a></h2>
 <p>Token decoding / validation can be further customized by overriding the
 <a class="reference internal" href="../../reference/security/jwt.html#litestar.security.jwt.Token.decode_payload" title="litestar.security.jwt.Token.decode_payload"><code class="xref py py-meth docutils literal notranslate"><span class="pre">decode_payload()</span></code></a> method. It will be called by
 <a class="reference internal" href="../../reference/security/jwt.html#litestar.security.jwt.Token.decode" title="litestar.security.jwt.Token.decode"><code class="xref py py-meth docutils literal notranslate"><span class="pre">decode()</span></code></a> with the encoded token string, and must return a
@@ -1248,21 +1232,21 @@ dictionary representing the decoded payload, which will then used by
 <a class="reference internal" href="../../reference/security/jwt.html#litestar.security.jwt.Token.decode" title="litestar.security.jwt.Token.decode"><code class="xref py py-meth docutils literal notranslate"><span class="pre">decode()</span></code></a> to construct an instance of the token class.</p>
 <div class="sd-tab-set docutils">
 <input id="sd-tab-item-6" name="sd-tab-set-3" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-6">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="3.8" for="sd-tab-item-6">
 Python 3.8+</label><div class="sd-tab-content docutils">
 <div class="literal-block-wrapper docutils container" id="id10">
-<div class="code-block-caption"><span class="caption-text">Customizing payload decoding</span><a class="headerlink" href="#id10" title="Permalink to this code">¶</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">import</span> <span class="nn">dataclasses</span>
-</span><span data-line="2"><span class="kn">from</span> <span class="nn">collections.abc</span> <span class="kn">import</span> <span class="n">Sequence</span>
-</span><span data-line="3"><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
+<div class="code-block-caption"><span class="caption-text">Customizing payload decoding</span><a class="headerlink" href="#id10" title="Link to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">import</span><span class="w"> </span><span class="nn">dataclasses</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Sequence</span>
+</span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
 </span><span data-line="4">
-</span><span data-line="5"><span class="kn">from</span> <span class="nn">litestar.security.jwt.token</span> <span class="kn">import</span> <span class="n">JWTDecodeOptions</span><span class="p">,</span> <span class="n">Token</span>
+</span><span data-line="5"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.security.jwt.token</span><span class="w"> </span><span class="kn">import</span> <span class="n">JWTDecodeOptions</span><span class="p">,</span> <span class="n">Token</span>
 </span><span data-line="6">
 </span><span data-line="7">
 </span><span data-line="8"><span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span>
-</span><span data-line="9"><span class="k">class</span> <span class="nc">CustomToken</span><span class="p">(</span><span class="n">Token</span><span class="p">):</span>
+</span><span data-line="9"><span class="k">class</span><span class="w"> </span><span class="nc">CustomToken</span><span class="p">(</span><span class="n">Token</span><span class="p">):</span>
 </span><span data-line="10">    <span class="nd">@classmethod</span>
-</span><span data-line="11">    <span class="k">def</span> <span class="nf">decode_payload</span><span class="p">(</span>
+</span><span data-line="11">    <span class="k">def</span><span class="w"> </span><span class="nf">decode_payload</span><span class="p">(</span>
 </span><span data-line="12">        <span class="bp">cls</span><span class="p">,</span>
 </span><span data-line="13">        <span class="n">encoded_token</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
 </span><span data-line="14">        <span class="n">secret</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
@@ -1286,21 +1270,21 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 </div>
 </div>
 <input checked="checked" id="sd-tab-item-7" name="sd-tab-set-3" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.10" for="sd-tab-item-7">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="3.10" for="sd-tab-item-7">
 Python 3.10+</label><div class="sd-tab-content docutils">
 <div class="literal-block-wrapper docutils container" id="id11">
-<div class="code-block-caption"><span class="caption-text">Customizing payload decoding</span><a class="headerlink" href="#id11" title="Permalink to this code">¶</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">import</span> <span class="nn">dataclasses</span>
-</span><span data-line="2"><span class="kn">from</span> <span class="nn">collections.abc</span> <span class="kn">import</span> <span class="n">Sequence</span>
-</span><span data-line="3"><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span>
+<div class="code-block-caption"><span class="caption-text">Customizing payload decoding</span><a class="headerlink" href="#id11" title="Link to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">import</span><span class="w"> </span><span class="nn">dataclasses</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Sequence</span>
+</span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
 </span><span data-line="4">
-</span><span data-line="5"><span class="kn">from</span> <span class="nn">litestar.security.jwt.token</span> <span class="kn">import</span> <span class="n">JWTDecodeOptions</span><span class="p">,</span> <span class="n">Token</span>
+</span><span data-line="5"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.security.jwt.token</span><span class="w"> </span><span class="kn">import</span> <span class="n">JWTDecodeOptions</span><span class="p">,</span> <span class="n">Token</span>
 </span><span data-line="6">
 </span><span data-line="7">
 </span><span data-line="8"><span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span>
-</span><span data-line="9"><span class="k">class</span> <span class="nc">CustomToken</span><span class="p">(</span><span class="n">Token</span><span class="p">):</span>
+</span><span data-line="9"><span class="k">class</span><span class="w"> </span><span class="nc">CustomToken</span><span class="p">(</span><span class="n">Token</span><span class="p">):</span>
 </span><span data-line="10">    <span class="nd">@classmethod</span>
-</span><span data-line="11">    <span class="k">def</span> <span class="nf">decode_payload</span><span class="p">(</span>
+</span><span data-line="11">    <span class="k">def</span><span class="w"> </span><span class="nf">decode_payload</span><span class="p">(</span>
 </span><span data-line="12">        <span class="bp">cls</span><span class="p">,</span>
 </span><span data-line="13">        <span class="n">encoded_token</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
 </span><span data-line="14">        <span class="n">secret</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
@@ -1326,38 +1310,34 @@ Python 3.10+</label><div class="sd-tab-content docutils">
 </div>
 </section>
 <section id="using-token-revocation">
-<h2>Using token revocation<a class="headerlink" href="#using-token-revocation" title="Permalink to this heading">¶</a></h2>
+<h2>Using token revocation<a class="headerlink" href="#using-token-revocation" title="Link to this heading">¶</a></h2>
 <p>Token revocation can be implemented by maintaining a list of revoked tokens and checking against this list during authentication.
 When a token is revoked, it should be added to the list, and any subsequent requests with that token should be denied.</p>
 <details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
 <summary class="sd-summary-title sd-card-header">
-Click to see the code<div class="sd-summary-down docutils">
-<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-down" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M5.22 8.72a.75.75 0 000 1.06l6.25 6.25a.75.75 0 001.06 0l6.25-6.25a.75.75 0 00-1.06-1.06L12 14.44 6.28 8.72a.75.75 0 00-1.06 0z"></path></svg></div>
-<div class="sd-summary-up docutils">
-<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-up" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M18.78 15.28a.75.75 0 000-1.06l-6.25-6.25a.75.75 0 00-1.06 0l-6.25 6.25a.75.75 0 101.06 1.06L12 9.56l5.72 5.72a.75.75 0 001.06 0z"></path></svg></div>
-</summary><div class="sd-summary-content sd-card-body docutils">
+<span class="sd-summary-text">Click to see the code</span><span class="sd-summary-state-marker sd-summary-chevron-right"><svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-right" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.72 18.78a.75.75 0 0 1 0-1.06L14.44 12 8.72 6.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018l6.25 6.25a.75.75 0 0 1 0 1.06l-6.25 6.25a.75.75 0 0 1-1.06 0Z"></path></svg></span></summary><div class="sd-summary-content sd-card-body docutils">
 <div class="sd-tab-set docutils">
 <input id="sd-tab-item-8" name="sd-tab-set-4" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-8">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="3.8" for="sd-tab-item-8">
 Python 3.8+</label><div class="sd-tab-content docutils">
 <div class="literal-block-wrapper docutils container" id="id12">
-<div class="code-block-caption"><span class="caption-text">Implementing token revocation</span><a class="headerlink" href="#id12" title="Permalink to this code">¶</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">os</span> <span class="kn">import</span> <span class="n">environ</span>
-</span><span data-line="2"><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Optional</span>
-</span><span data-line="3"><span class="kn">from</span> <span class="nn">uuid</span> <span class="kn">import</span> <span class="n">UUID</span>
+<div class="code-block-caption"><span class="caption-text">Implementing token revocation</span><a class="headerlink" href="#id12" title="Link to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">os</span><span class="w"> </span><span class="kn">import</span> <span class="n">environ</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Optional</span>
+</span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">uuid</span><span class="w"> </span><span class="kn">import</span> <span class="n">UUID</span>
 </span><span data-line="4">
-</span><span data-line="5"><span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">EmailStr</span>
+</span><span data-line="5"><span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">EmailStr</span>
 </span><span data-line="6">
-</span><span data-line="7"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">Request</span><span class="p">,</span> <span class="n">Response</span><span class="p">,</span> <span class="n">get</span><span class="p">,</span> <span class="n">post</span>
-</span><span data-line="8"><span class="kn">from</span> <span class="nn">litestar.connection</span> <span class="kn">import</span> <span class="n">ASGIConnection</span>
-</span><span data-line="9"><span class="kn">from</span> <span class="nn">litestar.openapi.config</span> <span class="kn">import</span> <span class="n">OpenAPIConfig</span>
-</span><span data-line="10"><span class="kn">from</span> <span class="nn">litestar.security.jwt</span> <span class="kn">import</span> <span class="n">JWTAuth</span><span class="p">,</span> <span class="n">Token</span>
+</span><span data-line="7"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">Request</span><span class="p">,</span> <span class="n">Response</span><span class="p">,</span> <span class="n">get</span><span class="p">,</span> <span class="n">post</span>
+</span><span data-line="8"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.connection</span><span class="w"> </span><span class="kn">import</span> <span class="n">ASGIConnection</span>
+</span><span data-line="9"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.openapi.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">OpenAPIConfig</span>
+</span><span data-line="10"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.security.jwt</span><span class="w"> </span><span class="kn">import</span> <span class="n">JWTAuth</span><span class="p">,</span> <span class="n">Token</span>
 </span><span data-line="11">
 </span><span data-line="12">
 </span><span data-line="13"><span class="c1"># Let&#39;s assume we have a User model that is a pydantic model.</span>
 </span><span data-line="14"><span class="c1"># This though is not required - we need some sort of user class -</span>
 </span><span data-line="15"><span class="c1"># but it can be any arbitrary value, e.g. an SQLAlchemy model, a representation of a MongoDB  etc.</span>
-</span><span data-line="16"><span class="k">class</span> <span class="nc">User</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+</span><span data-line="16"><span class="k">class</span><span class="w"> </span><span class="nc">User</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
 </span><span data-line="17">    <span class="nb">id</span><span class="p">:</span> <span class="n">UUID</span>
 </span><span data-line="18">    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
 </span><span data-line="19">    <span class="n">email</span><span class="p">:</span> <span class="n">EmailStr</span>
@@ -1373,14 +1353,14 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 </span><span data-line="29"><span class="c1"># Notes:</span>
 </span><span data-line="30"><span class="c1"># - &#39;User&#39; can be any arbitrary value you decide upon.</span>
 </span><span data-line="31"><span class="c1"># - The callable can be either sync or async - both will work.</span>
-</span><span data-line="32"><span class="k">async</span> <span class="k">def</span> <span class="nf">retrieve_user_handler</span><span class="p">(</span><span class="n">token</span><span class="p">:</span> <span class="n">Token</span><span class="p">,</span> <span class="n">connection</span><span class="p">:</span> <span class="s2">&quot;ASGIConnection[Any, Any, Any, Any]&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">User</span><span class="p">]:</span>
+</span><span data-line="32"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">retrieve_user_handler</span><span class="p">(</span><span class="n">token</span><span class="p">:</span> <span class="n">Token</span><span class="p">,</span> <span class="n">connection</span><span class="p">:</span> <span class="s2">&quot;ASGIConnection[Any, Any, Any, Any]&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">User</span><span class="p">]:</span>
 </span><span data-line="33">    <span class="c1"># logic here to retrieve the user instance</span>
 </span><span data-line="34">    <span class="k">return</span> <span class="n">MOCK_DB</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">token</span><span class="o">.</span><span class="n">sub</span><span class="p">)</span>
 </span><span data-line="35">
 </span><span data-line="36">
 </span><span data-line="37"><span class="c1"># If you want to use JWTAuth with revoking tokens, you have to define a handler of revoked tokens</span>
 </span><span data-line="38"><span class="c1"># with your custom logic.</span>
-</span><span data-line="39"><span class="k">async</span> <span class="k">def</span> <span class="nf">revoked_token_handler</span><span class="p">(</span><span class="n">token</span><span class="p">:</span> <span class="n">Token</span><span class="p">,</span> <span class="n">connection</span><span class="p">:</span> <span class="s2">&quot;ASGIConnection[Any, Any, Any, Any]&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+</span><span data-line="39"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">revoked_token_handler</span><span class="p">(</span><span class="n">token</span><span class="p">:</span> <span class="n">Token</span><span class="p">,</span> <span class="n">connection</span><span class="p">:</span> <span class="s2">&quot;ASGIConnection[Any, Any, Any, Any]&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 </span><span data-line="40">    <span class="n">jti</span> <span class="o">=</span> <span class="n">token</span><span class="o">.</span><span class="n">jti</span>  <span class="c1"># Unique token identifier (JWT ID)</span>
 </span><span data-line="41">    <span class="k">if</span> <span class="n">jti</span><span class="p">:</span>
 </span><span data-line="42">        <span class="c1"># Check if the token is already revoked in the BLOCKLIST</span>
@@ -1402,7 +1382,7 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 </span><span data-line="58">
 </span><span data-line="59"><span class="c1"># Given an instance of &#39;JWTAuth&#39; we can create a login handler function:</span>
 </span><span data-line="60"><span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/login&quot;</span><span class="p">)</span>
-</span><span data-line="61"><span class="k">async</span> <span class="k">def</span> <span class="nf">login_handler</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">User</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">[</span><span class="n">User</span><span class="p">]:</span>
+</span><span data-line="61"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">login_handler</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">User</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">[</span><span class="n">User</span><span class="p">]:</span>
 </span><span data-line="62">    <span class="n">MOCK_DB</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">id</span><span class="p">)]</span> <span class="o">=</span> <span class="n">data</span>
 </span><span data-line="63">    <span class="c1"># you can do whatever you want to update the response instance here</span>
 </span><span data-line="64">    <span class="c1"># e.g. response.set_cookie(...)</span>
@@ -1411,7 +1391,7 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 </span><span data-line="67">
 </span><span data-line="68"><span class="c1"># Also we can create a logout</span>
 </span><span data-line="69"><span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/logout&quot;</span><span class="p">)</span>
-</span><span data-line="70"><span class="k">async</span> <span class="k">def</span> <span class="nf">logout_handler</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">[</span><span class="s2">&quot;User&quot;</span><span class="p">,</span> <span class="n">Token</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+</span><span data-line="70"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">logout_handler</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">[</span><span class="s2">&quot;User&quot;</span><span class="p">,</span> <span class="n">Token</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
 </span><span data-line="71">    <span class="c1"># Your custom logic here</span>
 </span><span data-line="72">    <span class="c1"># For example</span>
 </span><span data-line="73">    <span class="n">jti</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">auth</span><span class="o">.</span><span class="n">jti</span>
@@ -1423,7 +1403,7 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 </span><span data-line="79">
 </span><span data-line="80"><span class="c1"># We also have some other routes, for example:</span>
 </span><span data-line="81"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/some-path&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">middleware</span><span class="o">=</span><span class="p">[</span><span class="n">jwt_auth</span><span class="o">.</span><span class="n">middleware</span><span class="p">])</span>
-</span><span data-line="82"><span class="k">def</span> <span class="nf">some_route_handler</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="s2">&quot;Request[User, Token, Any]&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+</span><span data-line="82"><span class="k">def</span><span class="w"> </span><span class="nf">some_route_handler</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="s2">&quot;Request[User, Token, Any]&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
 </span><span data-line="83">    <span class="c1"># request.user is set to the instance of user returned by the middleware</span>
 </span><span data-line="84">    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="p">,</span> <span class="n">User</span><span class="p">)</span>
 </span><span data-line="85">    <span class="c1"># request.auth is the instance of &#39;litestar.security.jwt.Token&#39; created from the data encoded in the auth header</span>
@@ -1449,26 +1429,26 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 </div>
 </div>
 <input checked="checked" id="sd-tab-item-9" name="sd-tab-set-4" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.10" for="sd-tab-item-9">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="3.10" for="sd-tab-item-9">
 Python 3.10+</label><div class="sd-tab-content docutils">
 <div class="literal-block-wrapper docutils container" id="id13">
-<div class="code-block-caption"><span class="caption-text">Implementing token revocation</span><a class="headerlink" href="#id13" title="Permalink to this code">¶</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">os</span> <span class="kn">import</span> <span class="n">environ</span>
-</span><span data-line="2"><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span>
-</span><span data-line="3"><span class="kn">from</span> <span class="nn">uuid</span> <span class="kn">import</span> <span class="n">UUID</span>
+<div class="code-block-caption"><span class="caption-text">Implementing token revocation</span><a class="headerlink" href="#id13" title="Link to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">os</span><span class="w"> </span><span class="kn">import</span> <span class="n">environ</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
+</span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">uuid</span><span class="w"> </span><span class="kn">import</span> <span class="n">UUID</span>
 </span><span data-line="4">
-</span><span data-line="5"><span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">EmailStr</span>
+</span><span data-line="5"><span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">EmailStr</span>
 </span><span data-line="6">
-</span><span data-line="7"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">Request</span><span class="p">,</span> <span class="n">Response</span><span class="p">,</span> <span class="n">get</span><span class="p">,</span> <span class="n">post</span>
-</span><span data-line="8"><span class="kn">from</span> <span class="nn">litestar.connection</span> <span class="kn">import</span> <span class="n">ASGIConnection</span>
-</span><span data-line="9"><span class="kn">from</span> <span class="nn">litestar.openapi.config</span> <span class="kn">import</span> <span class="n">OpenAPIConfig</span>
-</span><span data-line="10"><span class="kn">from</span> <span class="nn">litestar.security.jwt</span> <span class="kn">import</span> <span class="n">JWTAuth</span><span class="p">,</span> <span class="n">Token</span>
+</span><span data-line="7"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">Request</span><span class="p">,</span> <span class="n">Response</span><span class="p">,</span> <span class="n">get</span><span class="p">,</span> <span class="n">post</span>
+</span><span data-line="8"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.connection</span><span class="w"> </span><span class="kn">import</span> <span class="n">ASGIConnection</span>
+</span><span data-line="9"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.openapi.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">OpenAPIConfig</span>
+</span><span data-line="10"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.security.jwt</span><span class="w"> </span><span class="kn">import</span> <span class="n">JWTAuth</span><span class="p">,</span> <span class="n">Token</span>
 </span><span data-line="11">
 </span><span data-line="12">
 </span><span data-line="13"><span class="c1"># Let&#39;s assume we have a User model that is a pydantic model.</span>
 </span><span data-line="14"><span class="c1"># This though is not required - we need some sort of user class -</span>
 </span><span data-line="15"><span class="c1"># but it can be any arbitrary value, e.g. an SQLAlchemy model, a representation of a MongoDB  etc.</span>
-</span><span data-line="16"><span class="k">class</span> <span class="nc">User</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+</span><span data-line="16"><span class="k">class</span><span class="w"> </span><span class="nc">User</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
 </span><span data-line="17">    <span class="nb">id</span><span class="p">:</span> <span class="n">UUID</span>
 </span><span data-line="18">    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
 </span><span data-line="19">    <span class="n">email</span><span class="p">:</span> <span class="n">EmailStr</span>
@@ -1484,14 +1464,14 @@ Python 3.10+</label><div class="sd-tab-content docutils">
 </span><span data-line="29"><span class="c1"># Notes:</span>
 </span><span data-line="30"><span class="c1"># - &#39;User&#39; can be any arbitrary value you decide upon.</span>
 </span><span data-line="31"><span class="c1"># - The callable can be either sync or async - both will work.</span>
-</span><span data-line="32"><span class="k">async</span> <span class="k">def</span> <span class="nf">retrieve_user_handler</span><span class="p">(</span><span class="n">token</span><span class="p">:</span> <span class="n">Token</span><span class="p">,</span> <span class="n">connection</span><span class="p">:</span> <span class="s2">&quot;ASGIConnection[Any, Any, Any, Any]&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">User</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="32"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">retrieve_user_handler</span><span class="p">(</span><span class="n">token</span><span class="p">:</span> <span class="n">Token</span><span class="p">,</span> <span class="n">connection</span><span class="p">:</span> <span class="s2">&quot;ASGIConnection[Any, Any, Any, Any]&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">User</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
 </span><span data-line="33">    <span class="c1"># logic here to retrieve the user instance</span>
 </span><span data-line="34">    <span class="k">return</span> <span class="n">MOCK_DB</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">token</span><span class="o">.</span><span class="n">sub</span><span class="p">)</span>
 </span><span data-line="35">
 </span><span data-line="36">
 </span><span data-line="37"><span class="c1"># If you want to use JWTAuth with revoking tokens, you have to define a handler of revoked tokens</span>
 </span><span data-line="38"><span class="c1"># with your custom logic.</span>
-</span><span data-line="39"><span class="k">async</span> <span class="k">def</span> <span class="nf">revoked_token_handler</span><span class="p">(</span><span class="n">token</span><span class="p">:</span> <span class="n">Token</span><span class="p">,</span> <span class="n">connection</span><span class="p">:</span> <span class="s2">&quot;ASGIConnection[Any, Any, Any, Any]&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+</span><span data-line="39"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">revoked_token_handler</span><span class="p">(</span><span class="n">token</span><span class="p">:</span> <span class="n">Token</span><span class="p">,</span> <span class="n">connection</span><span class="p">:</span> <span class="s2">&quot;ASGIConnection[Any, Any, Any, Any]&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 </span><span data-line="40">    <span class="n">jti</span> <span class="o">=</span> <span class="n">token</span><span class="o">.</span><span class="n">jti</span>  <span class="c1"># Unique token identifier (JWT ID)</span>
 </span><span data-line="41">    <span class="k">if</span> <span class="n">jti</span><span class="p">:</span>
 </span><span data-line="42">        <span class="c1"># Check if the token is already revoked in the BLOCKLIST</span>
@@ -1513,7 +1493,7 @@ Python 3.10+</label><div class="sd-tab-content docutils">
 </span><span data-line="58">
 </span><span data-line="59"><span class="c1"># Given an instance of &#39;JWTAuth&#39; we can create a login handler function:</span>
 </span><span data-line="60"><span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/login&quot;</span><span class="p">)</span>
-</span><span data-line="61"><span class="k">async</span> <span class="k">def</span> <span class="nf">login_handler</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">User</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">[</span><span class="n">User</span><span class="p">]:</span>
+</span><span data-line="61"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">login_handler</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">User</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">[</span><span class="n">User</span><span class="p">]:</span>
 </span><span data-line="62">    <span class="n">MOCK_DB</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">id</span><span class="p">)]</span> <span class="o">=</span> <span class="n">data</span>
 </span><span data-line="63">    <span class="c1"># you can do whatever you want to update the response instance here</span>
 </span><span data-line="64">    <span class="c1"># e.g. response.set_cookie(...)</span>
@@ -1522,7 +1502,7 @@ Python 3.10+</label><div class="sd-tab-content docutils">
 </span><span data-line="67">
 </span><span data-line="68"><span class="c1"># Also we can create a logout</span>
 </span><span data-line="69"><span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/logout&quot;</span><span class="p">)</span>
-</span><span data-line="70"><span class="k">async</span> <span class="k">def</span> <span class="nf">logout_handler</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">[</span><span class="s2">&quot;User&quot;</span><span class="p">,</span> <span class="n">Token</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+</span><span data-line="70"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">logout_handler</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">[</span><span class="s2">&quot;User&quot;</span><span class="p">,</span> <span class="n">Token</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
 </span><span data-line="71">    <span class="c1"># Your custom logic here</span>
 </span><span data-line="72">    <span class="c1"># For example</span>
 </span><span data-line="73">    <span class="n">jti</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">auth</span><span class="o">.</span><span class="n">jti</span>
@@ -1534,7 +1514,7 @@ Python 3.10+</label><div class="sd-tab-content docutils">
 </span><span data-line="79">
 </span><span data-line="80"><span class="c1"># We also have some other routes, for example:</span>
 </span><span data-line="81"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/some-path&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">middleware</span><span class="o">=</span><span class="p">[</span><span class="n">jwt_auth</span><span class="o">.</span><span class="n">middleware</span><span class="p">])</span>
-</span><span data-line="82"><span class="k">def</span> <span class="nf">some_route_handler</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="s2">&quot;Request[User, Token, Any]&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+</span><span data-line="82"><span class="k">def</span><span class="w"> </span><span class="nf">some_route_handler</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="s2">&quot;Request[User, Token, Any]&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
 </span><span data-line="83">    <span class="c1"># request.user is set to the instance of user returned by the middleware</span>
 </span><span data-line="84">    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="p">,</span> <span class="n">User</span><span class="p">)</span>
 </span><span data-line="85">    <span class="c1"># request.auth is the instance of &#39;litestar.security.jwt.Token&#39; created from the data encoded in the auth header</span>
@@ -1613,9 +1593,9 @@ Python 3.10+</label><div class="sd-tab-content docutils">
     </div>
   </div>
 </footer>
-      <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=c19e757c"></script>
-      <script src="../../_static/doctools.js?v=888ff710"></script>
-      <script src="../../_static/sphinx_highlight.js?v=4825356b"></script>
+      <script src="../../_static/documentation_options.js?v=b95e84ca"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
       <script src="../../_static/copybutton.js?v=f281be69"></script>
       <script src="../../_static/litestar-theme.js?v=ab2dcc9e"></script>
@@ -1623,8 +1603,8 @@ Python 3.10+</label><div class="sd-tab-content docutils">
       <script>let toggleHintHide = 'Click to hide';</script>
       <script>let toggleOpenOnPrint = 'true';</script>
       <script src="../../_static/togglebutton.js?v=4a39c7ea"></script>
-      <script src="../../_static/design-tabs.js?v=36754332"></script>
+      <script src="../../_static/design-tabs.js?v=f930bc37"></script>
       <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
-      <script src="../../_static/shibuya.js?v=e2e99575"></script>
+      <script src="../../_static/shibuya.js?v=c477d091"></script>
       <script src="../../_static/versioning.js?v=bc681eff"></script></body>
 </html>

@@ -1,15 +1,15 @@
 <!DOCTYPE html>
-<html lang="en" data-accent-color="amber" data-content_root="">
+<html lang="en" data-accent-color="amber" data-content_root="../">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Testing - Litestar Framework</title><link rel="shortcut icon" href="../_static/favicon.svg"/><link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="WebSockets" href="websockets.html" /><link rel="prev" title="Templating" href="templating.html" /><script>
     function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
     setColorMode(localStorage._theme||"auto");
   </script><link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=397bb51e" />
-    <link rel="stylesheet" type="text/css" href="../_static/shibuya.css?v=83eaa723" />
+    <link rel="stylesheet" type="text/css" href="../_static/shibuya.css?v=76b6f612" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
-    <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx_paramlinks.css" />
     <link media="print" rel="stylesheet" type="text/css" href="../_static/print.css?v=20ff2c19" />
     <link rel="stylesheet" type="text/css" href="../_static/style.css?v=50ea2f63" />
@@ -42,13 +42,13 @@
       <img class="dark-logo" src="../_static/logo-dark.png" alt="Litestar" height="28" loading="lazy" />
       <strong>Litestar</strong>
     </a>
-    <div class="sy-head-nav" id="HeadNav">
+    <div class="sy-head-nav" id="head-nav">
       <nav class="sy-head-links"><ul><li class="link"><a href="../index.html">Home</a></li>
-      <li class="link"><button type="button">
+      <li class="link"><button class="js-menu" type="button" id="nav-trigger-2" aria-controls="nav-children-2">
             <span>Community</span>
             <i class="i-lucide chevron-down"></i>
           </button>
-        <ul><li><a href="../contribution-guide.html">
+        <ul id="nav-children-2" aria-labelledby="nav-trigger-2"><li><a href="../contribution-guide.html">
                 <span>Contributing</span>
                 <small>Learn how to contribute to the Litestar project</small>
               </a></li><li><a href="https://github.com/litestar-org/.github?tab=coc-ov-file">
@@ -59,11 +59,11 @@
                 <small>Overview of Litestar's security protocols</small>
               </a></li></ul>
       </li>
-      <li class="link"><button type="button">
+      <li class="link"><button class="js-menu" type="button" id="nav-trigger-3" aria-controls="nav-children-3">
             <span>About</span>
             <i class="i-lucide chevron-down"></i>
           </button>
-        <ul><li><a href="https://litestar.dev/about/organization">
+        <ul id="nav-children-3" aria-labelledby="nav-trigger-3"><li><a href="https://litestar.dev/about/organization">
                 <span>Litestar Organization</span>
                 <small>Details about the Litestar organization</small>
               </a></li><li><a href="https://litestar.dev/about/litestar-releases">
@@ -71,11 +71,11 @@
                 <small>Explore the release process, versioning, and deprecation policy for Litestar</small>
               </a></li></ul>
       </li>
-      <li class="link"><button type="button">
+      <li class="link"><button class="js-menu" type="button" id="nav-trigger-4" aria-controls="nav-children-4">
             <span>Release notes</span>
             <i class="i-lucide chevron-down"></i>
           </button>
-        <ul><li><a href="../release-notes/whats-new-3.html">
+        <ul id="nav-children-4" aria-labelledby="nav-trigger-4"><li><a href="../release-notes/whats-new-3.html">
                 <span>What's new in 3.0</span>
                 <small>Explore the new features in Litestar 3.0</small>
               </a></li><li><a href="../release-notes/changelog.html">
@@ -86,11 +86,11 @@
                 <small>All changes in the 2.x series</small>
               </a></li></ul>
       </li>
-      <li class="link"><button type="button">
+      <li class="link"><button class="js-menu" type="button" id="nav-trigger-5" aria-controls="nav-children-5">
             <span>Help</span>
             <i class="i-lucide chevron-down"></i>
           </button>
-        <ul><li><a href="https://discord.gg/litestar">
+        <ul id="nav-children-5" aria-labelledby="nav-trigger-5"><li><a href="https://discord.gg/litestar">
                 <span>Discord Help Forum</span>
                 <small>Dedicated Discord help forum</small>
               </a></li><li><a href="https://github.com/orgs/litestar-org/discussions">
@@ -127,7 +127,7 @@ data-aria-auto="Switch to light color mode"
 data-aria-light="Switch to dark color mode"
 data-aria-dark="Switch to auto color mode">
 <i class="i-lucide theme-icon"></i>
-</button><button class="md:hidden flex items-center js-menu" aria-label="Menu" type="button" aria-controls="HeadNav" aria-expanded="false">
+</button><button class="md:hidden flex items-center js-menu" aria-label="Menu" type="button" aria-controls="head-nav" aria-expanded="false">
         <div class="hamburger">
           <span class="hamburger_1"></span>
           <span class="hamburger_2 -translate-x-2"></span>
@@ -173,12 +173,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2"><a class="reference internal" href="databases/index.html">Databases</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="databases/sqlalchemy/index.html">SQLAlchemy</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="databases/sqlalchemy/models_and_repository.html">SQLAlchemy Models &amp; Repository</a></li>
-<li class="toctree-l4"><a class="reference internal" href="databases/sqlalchemy/plugins/index.html">Plugins</a><ul>
-<li class="toctree-l5"><a class="reference internal" href="databases/sqlalchemy/plugins/sqlalchemy_plugin.html">SQLAlchemy Plugin</a></li>
-<li class="toctree-l5"><a class="reference internal" href="databases/sqlalchemy/plugins/sqlalchemy_init_plugin.html">SQLAlchemy Init Plugin</a></li>
-<li class="toctree-l5"><a class="reference internal" href="databases/sqlalchemy/plugins/sqlalchemy_serialization_plugin.html">SQLAlchemy Serialization Plugin</a></li>
-</ul>
-</li>
+<li class="toctree-l4"><a class="reference internal" href="databases/sqlalchemy/plugins/index.html">Plugins</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="databases/piccolo.html">Piccolo ORM</a></li>
@@ -507,11 +502,12 @@ data-aria-dark="Switch to auto color mode">
     </span>
   </span>
 </a><div class="edit-this-page">
-  <a href="https://github.com/litestar-org/litestar/blob/master/docs/usage/testing.rst">Edit this page</a>
+  <a href="https://github.com/litestar-org/litestar/blob/main/docs/usage/testing.rst">Edit this page</a>
 </div><div id="ethical-ad-placement" data-ea-publisher="readthedocs"></div></div>
   </aside>
   <div class="rside-overlay js-menu" role="button" aria-label="Close Table of Contents" aria-controls="rside" aria-expanded="false"></div>
-  <main class="sy-main w-full max-sm:max-w-full print:pt-6"><div class="sy-breadcrumbs" role="navigation">
+  <main class="sy-main w-full max-sm:max-w-full print:pt-6">
+<div class="sy-breadcrumbs" role="navigation">
   <div class="sy-breadcrumbs-inner flex items-center">
     <div class="md:hidden mr-3">
       <button class="js-menu" aria-label="Menu" type="button" aria-controls="lside" aria-expanded="false">
@@ -541,21 +537,21 @@ data-aria-dark="Switch to auto color mode">
       <div class="min-w-0 max-w-6xl px-6 pb-6 pt-8 xl:px-12">
         <article class="yue" role="main">
           <section id="testing">
-<h1>Testing<a class="headerlink" href="#testing" title="Permalink to this heading">¶</a></h1>
+<h1>Testing<a class="headerlink" href="#testing" title="Link to this heading">¶</a></h1>
 <p>Testing is a first class citizen in Litestar, which offers several powerful testing utilities out of the box.</p>
 <section id="test-client">
-<h2>Test Client<a class="headerlink" href="#test-client" title="Permalink to this heading">¶</a></h2>
+<h2>Test Client<a class="headerlink" href="#test-client" title="Link to this heading">¶</a></h2>
 <p>Litestar’s test client is built on top of
 the <a class="reference external" href="https://github.com/encode/httpx">httpx</a> library. To use the test client you should pass to it an
 instance of Litestar as the <code class="docutils literal notranslate"><span class="pre">app</span></code> kwarg.</p>
 <p>Let’s say we have a very simple app with a health check endpoint:</p>
 <div class="literal-block-wrapper docutils container" id="id1">
-<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">my_app/main.py</span></code></span><a class="headerlink" href="#id1" title="Permalink to this code">¶</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">MediaType</span><span class="p">,</span> <span class="n">get</span>
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">my_app/main.py</span></code></span><a class="headerlink" href="#id1" title="Link to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">MediaType</span><span class="p">,</span> <span class="n">get</span>
 </span><span data-line="2">
 </span><span data-line="3">
 </span><span data-line="4"><span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/health-check&quot;</span><span class="p">,</span> <span class="n">media_type</span><span class="o">=</span><span class="n">MediaType</span><span class="o">.</span><span class="n">TEXT</span><span class="p">)</span>
-</span><span data-line="5"><span class="k">def</span> <span class="nf">health_check</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span data-line="5"><span class="k">def</span><span class="w"> </span><span class="nf">health_check</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 </span><span data-line="6">    <span class="k">return</span> <span class="s2">&quot;healthy&quot;</span>
 </span><span data-line="7">
 </span><span data-line="8">
@@ -566,19 +562,19 @@ instance of Litestar as the <code class="docutils literal notranslate"><span cla
 <p>We would then test it using the test client like so:</p>
 <div class="sd-tab-set docutils">
 <input checked="checked" id="sd-tab-item-0" name="sd-tab-set-0" type="radio">
-</input><label class="sd-tab-label" data-sync-id="sync" for="sd-tab-item-0">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="sync" for="sd-tab-item-0">
 Sync</label><div class="sd-tab-content docutils">
 <div class="literal-block-wrapper docutils container" id="id2">
-<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">tests/test_health_check.py</span></code></span><a class="headerlink" href="#id2" title="Permalink to this code">¶</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">litestar.status_codes</span> <span class="kn">import</span> <span class="n">HTTP_200_OK</span>
-</span><span data-line="2"><span class="kn">from</span> <span class="nn">litestar.testing</span> <span class="kn">import</span> <span class="n">TestClient</span>
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">tests/test_health_check.py</span></code></span><a class="headerlink" href="#id2" title="Link to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.status_codes</span><span class="w"> </span><span class="kn">import</span> <span class="n">HTTP_200_OK</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.testing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TestClient</span>
 </span><span data-line="3">
-</span><span data-line="4"><span class="kn">from</span> <span class="nn">my_app.main</span> <span class="kn">import</span> <span class="n">app</span>
+</span><span data-line="4"><span class="kn">from</span><span class="w"> </span><span class="nn">my_app.main</span><span class="w"> </span><span class="kn">import</span> <span class="n">app</span>
 </span><span data-line="5">
 </span><span data-line="6"><span class="n">app</span><span class="o">.</span><span class="n">debug</span> <span class="o">=</span> <span class="kc">True</span>
 </span><span data-line="7">
 </span><span data-line="8">
-</span><span data-line="9"><span class="k">def</span> <span class="nf">test_health_check</span><span class="p">():</span>
+</span><span data-line="9"><span class="k">def</span><span class="w"> </span><span class="nf">test_health_check</span><span class="p">():</span>
 </span><span data-line="10">    <span class="k">with</span> <span class="n">TestClient</span><span class="p">(</span><span class="n">app</span><span class="o">=</span><span class="n">app</span><span class="p">)</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
 </span><span data-line="11">        <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/health-check&quot;</span><span class="p">)</span>
 </span><span data-line="12">        <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="n">HTTP_200_OK</span>
@@ -588,19 +584,19 @@ Sync</label><div class="sd-tab-content docutils">
 </div>
 </div>
 <input id="sd-tab-item-1" name="sd-tab-set-0" type="radio">
-</input><label class="sd-tab-label" data-sync-id="async" for="sd-tab-item-1">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="async" for="sd-tab-item-1">
 Async</label><div class="sd-tab-content docutils">
 <div class="literal-block-wrapper docutils container" id="id3">
-<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">tests/test_health_check.py</span></code></span><a class="headerlink" href="#id3" title="Permalink to this code">¶</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">litestar.status_codes</span> <span class="kn">import</span> <span class="n">HTTP_200_OK</span>
-</span><span data-line="2"><span class="kn">from</span> <span class="nn">litestar.testing</span> <span class="kn">import</span> <span class="n">AsyncTestClient</span>
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">tests/test_health_check.py</span></code></span><a class="headerlink" href="#id3" title="Link to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.status_codes</span><span class="w"> </span><span class="kn">import</span> <span class="n">HTTP_200_OK</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.testing</span><span class="w"> </span><span class="kn">import</span> <span class="n">AsyncTestClient</span>
 </span><span data-line="3">
-</span><span data-line="4"><span class="kn">from</span> <span class="nn">my_app.main</span> <span class="kn">import</span> <span class="n">app</span>
+</span><span data-line="4"><span class="kn">from</span><span class="w"> </span><span class="nn">my_app.main</span><span class="w"> </span><span class="kn">import</span> <span class="n">app</span>
 </span><span data-line="5">
 </span><span data-line="6"><span class="n">app</span><span class="o">.</span><span class="n">debug</span> <span class="o">=</span> <span class="kc">True</span>
 </span><span data-line="7">
 </span><span data-line="8">
-</span><span data-line="9"><span class="k">async</span> <span class="k">def</span> <span class="nf">test_health_check</span><span class="p">():</span>
+</span><span data-line="9"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">test_health_check</span><span class="p">():</span>
 </span><span data-line="10">    <span class="k">async</span> <span class="k">with</span> <span class="n">AsyncTestClient</span><span class="p">(</span><span class="n">app</span><span class="o">=</span><span class="n">app</span><span class="p">)</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
 </span><span data-line="11">        <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/health-check&quot;</span><span class="p">)</span>
 </span><span data-line="12">        <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="n">HTTP_200_OK</span>
@@ -613,30 +609,30 @@ Async</label><div class="sd-tab-content docutils">
 <p>Since we would probably need to use the client in multiple places, it’s better to make it into a pytest fixture:</p>
 <div class="sd-tab-set docutils">
 <input checked="checked" id="sd-tab-item-2" name="sd-tab-set-1" type="radio">
-</input><label class="sd-tab-label" data-sync-id="sync" for="sd-tab-item-2">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="sync" for="sd-tab-item-2">
 Sync</label><div class="sd-tab-content docutils">
 <div class="sd-tab-set docutils">
 <input id="sd-tab-item-4" name="sd-tab-set-2" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-4">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="3.8" for="sd-tab-item-4">
 Python 3.8+</label><div class="sd-tab-content docutils">
 <div class="literal-block-wrapper docutils container" id="id4">
-<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">tests/conftest.py</span></code></span><a class="headerlink" href="#id4" title="Permalink to this code">¶</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Iterator</span>
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">tests/conftest.py</span></code></span><a class="headerlink" href="#id4" title="Link to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Iterator</span>
 </span><span data-line="2">
-</span><span data-line="3"><span class="kn">import</span> <span class="nn">pytest</span>
+</span><span data-line="3"><span class="kn">import</span><span class="w"> </span><span class="nn">pytest</span>
 </span><span data-line="4">
-</span><span data-line="5"><span class="kn">from</span> <span class="nn">litestar.testing</span> <span class="kn">import</span> <span class="n">TestClient</span>
+</span><span data-line="5"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.testing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TestClient</span>
 </span><span data-line="6">
-</span><span data-line="7"><span class="kn">from</span> <span class="nn">my_app.main</span> <span class="kn">import</span> <span class="n">app</span>
+</span><span data-line="7"><span class="kn">from</span><span class="w"> </span><span class="nn">my_app.main</span><span class="w"> </span><span class="kn">import</span> <span class="n">app</span>
 </span><span data-line="8">
 </span><span data-line="9"><span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
-</span><span data-line="10">    <span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span>
+</span><span data-line="10">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span>
 </span><span data-line="11">
 </span><span data-line="12"><span class="n">app</span><span class="o">.</span><span class="n">debug</span> <span class="o">=</span> <span class="kc">True</span>
 </span><span data-line="13">
 </span><span data-line="14">
 </span><span data-line="15"><span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span><span class="p">(</span><span class="n">scope</span><span class="o">=</span><span class="s2">&quot;function&quot;</span><span class="p">)</span>
-</span><span data-line="16"><span class="k">def</span> <span class="nf">test_client</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">TestClient</span><span class="p">[</span><span class="n">Litestar</span><span class="p">]]:</span>
+</span><span data-line="16"><span class="k">def</span><span class="w"> </span><span class="nf">test_client</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">TestClient</span><span class="p">[</span><span class="n">Litestar</span><span class="p">]]:</span>
 </span><span data-line="17">    <span class="k">with</span> <span class="n">TestClient</span><span class="p">(</span><span class="n">app</span><span class="o">=</span><span class="n">app</span><span class="p">)</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
 </span><span data-line="18">        <span class="k">yield</span> <span class="n">client</span>
 </span></pre></div>
@@ -644,27 +640,27 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 </div>
 </div>
 <input checked="checked" id="sd-tab-item-5" name="sd-tab-set-2" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.9" for="sd-tab-item-5">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="3.9" for="sd-tab-item-5">
 Python 3.9+</label><div class="sd-tab-content docutils">
 <div class="literal-block-wrapper docutils container" id="id5">
-<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">tests/conftest.py</span></code></span><a class="headerlink" href="#id5" title="Permalink to this code">¶</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
-</span><span data-line="2"><span class="kn">from</span> <span class="nn">collections.abc</span> <span class="kn">import</span> <span class="n">Iterator</span>
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">tests/conftest.py</span></code></span><a class="headerlink" href="#id5" title="Link to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Iterator</span>
 </span><span data-line="3">
-</span><span data-line="4"><span class="kn">import</span> <span class="nn">pytest</span>
+</span><span data-line="4"><span class="kn">import</span><span class="w"> </span><span class="nn">pytest</span>
 </span><span data-line="5">
-</span><span data-line="6"><span class="kn">from</span> <span class="nn">litestar.testing</span> <span class="kn">import</span> <span class="n">TestClient</span>
+</span><span data-line="6"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.testing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TestClient</span>
 </span><span data-line="7">
-</span><span data-line="8"><span class="kn">from</span> <span class="nn">my_app.main</span> <span class="kn">import</span> <span class="n">app</span>
+</span><span data-line="8"><span class="kn">from</span><span class="w"> </span><span class="nn">my_app.main</span><span class="w"> </span><span class="kn">import</span> <span class="n">app</span>
 </span><span data-line="9">
 </span><span data-line="10"><span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
-</span><span data-line="11">    <span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span>
+</span><span data-line="11">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span>
 </span><span data-line="12">
 </span><span data-line="13"><span class="n">app</span><span class="o">.</span><span class="n">debug</span> <span class="o">=</span> <span class="kc">True</span>
 </span><span data-line="14">
 </span><span data-line="15">
 </span><span data-line="16"><span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span><span class="p">(</span><span class="n">scope</span><span class="o">=</span><span class="s2">&quot;function&quot;</span><span class="p">)</span>
-</span><span data-line="17"><span class="k">def</span> <span class="nf">test_client</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">TestClient</span><span class="p">[</span><span class="n">Litestar</span><span class="p">]]:</span>
+</span><span data-line="17"><span class="k">def</span><span class="w"> </span><span class="nf">test_client</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">TestClient</span><span class="p">[</span><span class="n">Litestar</span><span class="p">]]:</span>
 </span><span data-line="18">    <span class="k">with</span> <span class="n">TestClient</span><span class="p">(</span><span class="n">app</span><span class="o">=</span><span class="n">app</span><span class="p">)</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
 </span><span data-line="19">        <span class="k">yield</span> <span class="n">client</span>
 </span></pre></div>
@@ -674,30 +670,30 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 </div>
 </div>
 <input id="sd-tab-item-3" name="sd-tab-set-1" type="radio">
-</input><label class="sd-tab-label" data-sync-id="async" for="sd-tab-item-3">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="async" for="sd-tab-item-3">
 Async</label><div class="sd-tab-content docutils">
 <div class="sd-tab-set docutils">
 <input id="sd-tab-item-6" name="sd-tab-set-3" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-6">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="3.8" for="sd-tab-item-6">
 Python 3.8+</label><div class="sd-tab-content docutils">
 <div class="literal-block-wrapper docutils container" id="id6">
-<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">tests/conftest.py</span></code></span><a class="headerlink" href="#id6" title="Permalink to this code">¶</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">AsyncIterator</span>
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">tests/conftest.py</span></code></span><a class="headerlink" href="#id6" title="Link to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">AsyncIterator</span>
 </span><span data-line="2">
-</span><span data-line="3"><span class="kn">import</span> <span class="nn">pytest</span>
+</span><span data-line="3"><span class="kn">import</span><span class="w"> </span><span class="nn">pytest</span>
 </span><span data-line="4">
-</span><span data-line="5"><span class="kn">from</span> <span class="nn">litestar.testing</span> <span class="kn">import</span> <span class="n">AsyncTestClient</span>
+</span><span data-line="5"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.testing</span><span class="w"> </span><span class="kn">import</span> <span class="n">AsyncTestClient</span>
 </span><span data-line="6">
-</span><span data-line="7"><span class="kn">from</span> <span class="nn">my_app.main</span> <span class="kn">import</span> <span class="n">app</span>
+</span><span data-line="7"><span class="kn">from</span><span class="w"> </span><span class="nn">my_app.main</span><span class="w"> </span><span class="kn">import</span> <span class="n">app</span>
 </span><span data-line="8">
 </span><span data-line="9"><span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
-</span><span data-line="10">    <span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span>
+</span><span data-line="10">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span>
 </span><span data-line="11">
 </span><span data-line="12"><span class="n">app</span><span class="o">.</span><span class="n">debug</span> <span class="o">=</span> <span class="kc">True</span>
 </span><span data-line="13">
 </span><span data-line="14">
 </span><span data-line="15"><span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span><span class="p">(</span><span class="n">scope</span><span class="o">=</span><span class="s2">&quot;function&quot;</span><span class="p">)</span>
-</span><span data-line="16"><span class="k">async</span> <span class="k">def</span> <span class="nf">test_client</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">AsyncIterator</span><span class="p">[</span><span class="n">AsyncTestClient</span><span class="p">[</span><span class="n">Litestar</span><span class="p">]]:</span>
+</span><span data-line="16"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">test_client</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">AsyncIterator</span><span class="p">[</span><span class="n">AsyncTestClient</span><span class="p">[</span><span class="n">Litestar</span><span class="p">]]:</span>
 </span><span data-line="17">    <span class="k">async</span> <span class="k">with</span> <span class="n">AsyncTestClient</span><span class="p">(</span><span class="n">app</span><span class="o">=</span><span class="n">app</span><span class="p">)</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
 </span><span data-line="18">        <span class="k">yield</span> <span class="n">client</span>
 </span></pre></div>
@@ -705,27 +701,27 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 </div>
 </div>
 <input checked="checked" id="sd-tab-item-7" name="sd-tab-set-3" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.9" for="sd-tab-item-7">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="3.9" for="sd-tab-item-7">
 Python 3.9+</label><div class="sd-tab-content docutils">
 <div class="literal-block-wrapper docutils container" id="id7">
-<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">tests/conftest.py</span></code></span><a class="headerlink" href="#id7" title="Permalink to this code">¶</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
-</span><span data-line="2"><span class="kn">from</span> <span class="nn">collections.abc</span> <span class="kn">import</span> <span class="n">AsyncIterator</span>
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">tests/conftest.py</span></code></span><a class="headerlink" href="#id7" title="Link to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">AsyncIterator</span>
 </span><span data-line="3">
-</span><span data-line="4"><span class="kn">import</span> <span class="nn">pytest</span>
+</span><span data-line="4"><span class="kn">import</span><span class="w"> </span><span class="nn">pytest</span>
 </span><span data-line="5">
-</span><span data-line="6"><span class="kn">from</span> <span class="nn">litestar.testing</span> <span class="kn">import</span> <span class="n">AsyncTestClient</span>
+</span><span data-line="6"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.testing</span><span class="w"> </span><span class="kn">import</span> <span class="n">AsyncTestClient</span>
 </span><span data-line="7">
-</span><span data-line="8"><span class="kn">from</span> <span class="nn">my_app.main</span> <span class="kn">import</span> <span class="n">app</span>
+</span><span data-line="8"><span class="kn">from</span><span class="w"> </span><span class="nn">my_app.main</span><span class="w"> </span><span class="kn">import</span> <span class="n">app</span>
 </span><span data-line="9">
 </span><span data-line="10"><span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
-</span><span data-line="11">    <span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span>
+</span><span data-line="11">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span>
 </span><span data-line="12">
 </span><span data-line="13"><span class="n">app</span><span class="o">.</span><span class="n">debug</span> <span class="o">=</span> <span class="kc">True</span>
 </span><span data-line="14">
 </span><span data-line="15">
 </span><span data-line="16"><span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span><span class="p">(</span><span class="n">scope</span><span class="o">=</span><span class="s2">&quot;function&quot;</span><span class="p">)</span>
-</span><span data-line="17"><span class="k">async</span> <span class="k">def</span> <span class="nf">test_client</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">AsyncIterator</span><span class="p">[</span><span class="n">AsyncTestClient</span><span class="p">[</span><span class="n">Litestar</span><span class="p">]]:</span>
+</span><span data-line="17"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">test_client</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">AsyncIterator</span><span class="p">[</span><span class="n">AsyncTestClient</span><span class="p">[</span><span class="n">Litestar</span><span class="p">]]:</span>
 </span><span data-line="18">    <span class="k">async</span> <span class="k">with</span> <span class="n">AsyncTestClient</span><span class="p">(</span><span class="n">app</span><span class="o">=</span><span class="n">app</span><span class="p">)</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
 </span><span data-line="19">        <span class="k">yield</span> <span class="n">client</span>
 </span></pre></div>
@@ -738,21 +734,21 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <p>We would then be able to rewrite our test like so:</p>
 <div class="sd-tab-set docutils">
 <input checked="checked" id="sd-tab-item-8" name="sd-tab-set-4" type="radio">
-</input><label class="sd-tab-label" data-sync-id="sync" for="sd-tab-item-8">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="sync" for="sd-tab-item-8">
 Sync</label><div class="sd-tab-content docutils">
 <div class="literal-block-wrapper docutils container" id="id8">
-<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">tests/test_health_check.py</span></code></span><a class="headerlink" href="#id8" title="Permalink to this code">¶</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">collections.abc</span> <span class="kn">import</span> <span class="n">Iterator</span>
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">tests/test_health_check.py</span></code></span><a class="headerlink" href="#id8" title="Link to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Iterator</span>
 </span><span data-line="2">
-</span><span data-line="3"><span class="kn">import</span> <span class="nn">pytest</span>
+</span><span data-line="3"><span class="kn">import</span><span class="w"> </span><span class="nn">pytest</span>
 </span><span data-line="4">
-</span><span data-line="5"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">MediaType</span><span class="p">,</span> <span class="n">get</span>
-</span><span data-line="6"><span class="kn">from</span> <span class="nn">litestar.status_codes</span> <span class="kn">import</span> <span class="n">HTTP_200_OK</span>
-</span><span data-line="7"><span class="kn">from</span> <span class="nn">litestar.testing</span> <span class="kn">import</span> <span class="n">TestClient</span>
+</span><span data-line="5"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">MediaType</span><span class="p">,</span> <span class="n">get</span>
+</span><span data-line="6"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.status_codes</span><span class="w"> </span><span class="kn">import</span> <span class="n">HTTP_200_OK</span>
+</span><span data-line="7"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.testing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TestClient</span>
 </span><span data-line="8">
 </span><span data-line="9">
 </span><span data-line="10"><span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/health-check&quot;</span><span class="p">,</span> <span class="n">media_type</span><span class="o">=</span><span class="n">MediaType</span><span class="o">.</span><span class="n">TEXT</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-</span><span data-line="11"><span class="k">def</span> <span class="nf">health_check</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span data-line="11"><span class="k">def</span><span class="w"> </span><span class="nf">health_check</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 </span><span data-line="12">    <span class="k">return</span> <span class="s2">&quot;healthy&quot;</span>
 </span><span data-line="13">
 </span><span data-line="14">
@@ -760,12 +756,12 @@ Sync</label><div class="sd-tab-content docutils">
 </span><span data-line="16">
 </span><span data-line="17">
 </span><span data-line="18"><span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span><span class="p">(</span><span class="n">scope</span><span class="o">=</span><span class="s2">&quot;function&quot;</span><span class="p">)</span>
-</span><span data-line="19"><span class="k">def</span> <span class="nf">test_client</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">TestClient</span><span class="p">[</span><span class="n">Litestar</span><span class="p">]]:</span>
+</span><span data-line="19"><span class="k">def</span><span class="w"> </span><span class="nf">test_client</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">TestClient</span><span class="p">[</span><span class="n">Litestar</span><span class="p">]]:</span>
 </span><span data-line="20">    <span class="k">with</span> <span class="n">TestClient</span><span class="p">(</span><span class="n">app</span><span class="o">=</span><span class="n">app</span><span class="p">)</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
 </span><span data-line="21">        <span class="k">yield</span> <span class="n">client</span>
 </span><span data-line="22">
 </span><span data-line="23">
-</span><span data-line="24"><span class="k">def</span> <span class="nf">test_health_check_with_fixture</span><span class="p">(</span><span class="n">test_client</span><span class="p">:</span> <span class="n">TestClient</span><span class="p">[</span><span class="n">Litestar</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="24"><span class="k">def</span><span class="w"> </span><span class="nf">test_health_check_with_fixture</span><span class="p">(</span><span class="n">test_client</span><span class="p">:</span> <span class="n">TestClient</span><span class="p">[</span><span class="n">Litestar</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 </span><span data-line="25">    <span class="n">response</span> <span class="o">=</span> <span class="n">test_client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/health-check&quot;</span><span class="p">)</span>
 </span><span data-line="26">    <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="n">HTTP_200_OK</span>
 </span><span data-line="27">    <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">text</span> <span class="o">==</span> <span class="s2">&quot;healthy&quot;</span>
@@ -774,21 +770,21 @@ Sync</label><div class="sd-tab-content docutils">
 </div>
 </div>
 <input id="sd-tab-item-9" name="sd-tab-set-4" type="radio">
-</input><label class="sd-tab-label" data-sync-id="async" for="sd-tab-item-9">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="async" for="sd-tab-item-9">
 Async</label><div class="sd-tab-content docutils">
 <div class="literal-block-wrapper docutils container" id="id9">
-<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">tests/test_health_check.py</span></code></span><a class="headerlink" href="#id9" title="Permalink to this code">¶</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">collections.abc</span> <span class="kn">import</span> <span class="n">AsyncIterator</span>
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">tests/test_health_check.py</span></code></span><a class="headerlink" href="#id9" title="Link to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">AsyncIterator</span>
 </span><span data-line="2">
-</span><span data-line="3"><span class="kn">import</span> <span class="nn">pytest</span>
+</span><span data-line="3"><span class="kn">import</span><span class="w"> </span><span class="nn">pytest</span>
 </span><span data-line="4">
-</span><span data-line="5"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">MediaType</span><span class="p">,</span> <span class="n">get</span>
-</span><span data-line="6"><span class="kn">from</span> <span class="nn">litestar.status_codes</span> <span class="kn">import</span> <span class="n">HTTP_200_OK</span>
-</span><span data-line="7"><span class="kn">from</span> <span class="nn">litestar.testing</span> <span class="kn">import</span> <span class="n">AsyncTestClient</span>
+</span><span data-line="5"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">MediaType</span><span class="p">,</span> <span class="n">get</span>
+</span><span data-line="6"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.status_codes</span><span class="w"> </span><span class="kn">import</span> <span class="n">HTTP_200_OK</span>
+</span><span data-line="7"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.testing</span><span class="w"> </span><span class="kn">import</span> <span class="n">AsyncTestClient</span>
 </span><span data-line="8">
 </span><span data-line="9">
 </span><span data-line="10"><span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/health-check&quot;</span><span class="p">,</span> <span class="n">media_type</span><span class="o">=</span><span class="n">MediaType</span><span class="o">.</span><span class="n">TEXT</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-</span><span data-line="11"><span class="k">def</span> <span class="nf">health_check</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span data-line="11"><span class="k">def</span><span class="w"> </span><span class="nf">health_check</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 </span><span data-line="12">    <span class="k">return</span> <span class="s2">&quot;healthy&quot;</span>
 </span><span data-line="13">
 </span><span data-line="14">
@@ -796,12 +792,12 @@ Async</label><div class="sd-tab-content docutils">
 </span><span data-line="16">
 </span><span data-line="17">
 </span><span data-line="18"><span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span><span class="p">(</span><span class="n">scope</span><span class="o">=</span><span class="s2">&quot;function&quot;</span><span class="p">)</span>
-</span><span data-line="19"><span class="k">async</span> <span class="k">def</span> <span class="nf">test_client</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">AsyncIterator</span><span class="p">[</span><span class="n">AsyncTestClient</span><span class="p">[</span><span class="n">Litestar</span><span class="p">]]:</span>
+</span><span data-line="19"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">test_client</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">AsyncIterator</span><span class="p">[</span><span class="n">AsyncTestClient</span><span class="p">[</span><span class="n">Litestar</span><span class="p">]]:</span>
 </span><span data-line="20">    <span class="k">async</span> <span class="k">with</span> <span class="n">AsyncTestClient</span><span class="p">(</span><span class="n">app</span><span class="o">=</span><span class="n">app</span><span class="p">)</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
 </span><span data-line="21">        <span class="k">yield</span> <span class="n">client</span>
 </span><span data-line="22">
 </span><span data-line="23">
-</span><span data-line="24"><span class="k">async</span> <span class="k">def</span> <span class="nf">test_health_check_with_fixture</span><span class="p">(</span><span class="n">test_client</span><span class="p">:</span> <span class="n">AsyncTestClient</span><span class="p">[</span><span class="n">Litestar</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="24"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">test_health_check_with_fixture</span><span class="p">(</span><span class="n">test_client</span><span class="p">:</span> <span class="n">AsyncTestClient</span><span class="p">[</span><span class="n">Litestar</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 </span><span data-line="25">    <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="n">test_client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/health-check&quot;</span><span class="p">)</span>
 </span><span data-line="26">    <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="n">HTTP_200_OK</span>
 </span><span data-line="27">    <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">text</span> <span class="o">==</span> <span class="s2">&quot;healthy&quot;</span>
@@ -811,21 +807,21 @@ Async</label><div class="sd-tab-content docutils">
 </div>
 </div>
 <section id="testing-websockets">
-<h3>Testing websockets<a class="headerlink" href="#testing-websockets" title="Permalink to this heading">¶</a></h3>
+<h3>Testing websockets<a class="headerlink" href="#testing-websockets" title="Link to this heading">¶</a></h3>
 <p>Litestar’s test client enhances the httpx client to support websockets. To test a websocket endpoint, you can use the <a class="reference internal" href="../reference/testing.html#litestar.testing.TestClient.websocket_connect" title="litestar.testing.TestClient.websocket_connect"><code class="xref py py-meth docutils literal notranslate"><span class="pre">websocket_connect</span></code></a>
 method on the test client. The method returns a websocket connection object that you can use to send and receive messages, see an example below for json:</p>
 <p>For more information, see also the <a class="reference internal" href="../reference/connection.html#litestar.connection.WebSocket" title="litestar.connection.WebSocket"><code class="xref py py-class docutils literal notranslate"><span class="pre">WebSocket</span></code></a> class in the API documentation and the <a class="reference internal" href="websockets.html#websockets"><span class="std std-ref">websocket</span></a> documentation.</p>
 <blockquote>
-<div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span>
+<div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
 </span><span data-line="2">
-</span><span data-line="3"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">WebSocket</span><span class="p">,</span> <span class="n">websocket</span>
-</span><span data-line="4"><span class="kn">from</span> <span class="nn">litestar.datastructures</span> <span class="kn">import</span> <span class="n">State</span>
-</span><span data-line="5"><span class="kn">from</span> <span class="nn">litestar.testing</span> <span class="kn">import</span> <span class="n">create_test_client</span>
+</span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">WebSocket</span><span class="p">,</span> <span class="n">websocket</span>
+</span><span data-line="4"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.datastructures</span><span class="w"> </span><span class="kn">import</span> <span class="n">State</span>
+</span><span data-line="5"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.testing</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_test_client</span>
 </span><span data-line="6">
 </span><span data-line="7">
-</span><span data-line="8"><span class="k">def</span> <span class="nf">test_websocket</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="8"><span class="k">def</span><span class="w"> </span><span class="nf">test_websocket</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 </span><span data-line="9">    <span class="nd">@websocket</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/ws&quot;</span><span class="p">)</span>
-</span><span data-line="10">    <span class="k">async</span> <span class="k">def</span> <span class="nf">websocket_handler</span><span class="p">(</span><span class="n">socket</span><span class="p">:</span> <span class="n">WebSocket</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">State</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="10">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">websocket_handler</span><span class="p">(</span><span class="n">socket</span><span class="p">:</span> <span class="n">WebSocket</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">State</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 </span><span data-line="11">        <span class="k">await</span> <span class="n">socket</span><span class="o">.</span><span class="n">accept</span><span class="p">()</span>
 </span><span data-line="12">        <span class="n">recv</span> <span class="o">=</span> <span class="k">await</span> <span class="n">socket</span><span class="o">.</span><span class="n">receive_json</span><span class="p">()</span>
 </span><span data-line="13">        <span class="k">await</span> <span class="n">socket</span><span class="o">.</span><span class="n">send_json</span><span class="p">({</span><span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="n">recv</span><span class="p">})</span>
@@ -840,7 +836,7 @@ method on the test client. The method returns a websocket connection object that
 </div></blockquote>
 </section>
 <section id="using-sessions">
-<h3>Using sessions<a class="headerlink" href="#using-sessions" title="Permalink to this heading">¶</a></h3>
+<h3>Using sessions<a class="headerlink" href="#using-sessions" title="Link to this heading">¶</a></h3>
 <p>If you are using <a class="reference internal" href="middleware/builtin-middleware.html#session-middleware"><span class="std std-ref">session middleware</span></a> for session persistence
 across requests, then you might want to inject or inspect session data outside a request. For this,
 <a class="reference internal" href="../reference/testing.html#litestar.testing.TestClient" title="litestar.testing.TestClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">TestClient</span></code></a> provides two methods:</p>
@@ -858,50 +854,50 @@ install the <code class="docutils literal notranslate"><span class="pre">cryptog
 </ul>
 <div class="sd-tab-set docutils">
 <input checked="checked" id="sd-tab-item-10" name="sd-tab-set-5" type="radio">
-</input><label class="sd-tab-label" for="sd-tab-item-10">
+<label class="sd-tab-label" for="sd-tab-item-10">
 pip</label><div class="sd-tab-content docutils">
 <div class="literal-block-wrapper docutils container" id="id10">
-<div class="code-block-caption"><span class="caption-text">Using pip</span><a class="headerlink" href="#id10" title="Permalink to this code">¶</a></div>
+<div class="code-block-caption"><span class="caption-text">Using pip</span><a class="headerlink" href="#id10" title="Link to this code">¶</a></div>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">python3<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span><span class="s1">&#39;litestar[cryptography]&#39;</span>
 </span></pre></div>
 </div>
 </div>
 </div>
 <input id="sd-tab-item-11" name="sd-tab-set-5" type="radio">
-</input><label class="sd-tab-label" for="sd-tab-item-11">
+<label class="sd-tab-label" for="sd-tab-item-11">
 pipx</label><div class="sd-tab-content docutils">
 <div class="literal-block-wrapper docutils container" id="id11">
-<div class="code-block-caption"><span class="caption-text">Using <a class="reference external" href="https://pypa.github.io/pipx/">pipx</a></span><a class="headerlink" href="#id11" title="Permalink to this code">¶</a></div>
+<div class="code-block-caption"><span class="caption-text">Using <a class="reference external" href="https://pypa.github.io/pipx/">pipx</a></span><a class="headerlink" href="#id11" title="Link to this code">¶</a></div>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">pipx<span class="w"> </span>install<span class="w"> </span><span class="s1">&#39;litestar[cryptography]&#39;</span>
 </span></pre></div>
 </div>
 </div>
 </div>
 <input id="sd-tab-item-12" name="sd-tab-set-5" type="radio">
-</input><label class="sd-tab-label" for="sd-tab-item-12">
+<label class="sd-tab-label" for="sd-tab-item-12">
 pdm</label><div class="sd-tab-content docutils">
 <div class="literal-block-wrapper docutils container" id="id12">
-<div class="code-block-caption"><span class="caption-text">Using <a class="reference external" href="https://pdm.fming.dev/">PDM</a></span><a class="headerlink" href="#id12" title="Permalink to this code">¶</a></div>
+<div class="code-block-caption"><span class="caption-text">Using <a class="reference external" href="https://pdm.fming.dev/">PDM</a></span><a class="headerlink" href="#id12" title="Link to this code">¶</a></div>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">pdm<span class="w"> </span>add<span class="w"> </span><span class="s1">&#39;litestar[cryptography]&#39;</span>
 </span></pre></div>
 </div>
 </div>
 </div>
 <input id="sd-tab-item-13" name="sd-tab-set-5" type="radio">
-</input><label class="sd-tab-label" for="sd-tab-item-13">
+<label class="sd-tab-label" for="sd-tab-item-13">
 poetry</label><div class="sd-tab-content docutils">
 <div class="literal-block-wrapper docutils container" id="id13">
-<div class="code-block-caption"><span class="caption-text">Using <a class="reference external" href="https://python-poetry.org/">poetry</a></span><a class="headerlink" href="#id13" title="Permalink to this code">¶</a></div>
+<div class="code-block-caption"><span class="caption-text">Using <a class="reference external" href="https://python-poetry.org/">poetry</a></span><a class="headerlink" href="#id13" title="Link to this code">¶</a></div>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">poetry<span class="w"> </span>add<span class="w"> </span><span class="s1">&#39;litestar[cryptography]&#39;</span>
 </span></pre></div>
 </div>
 </div>
 </div>
 <input id="sd-tab-item-14" name="sd-tab-set-5" type="radio">
-</input><label class="sd-tab-label" for="sd-tab-item-14">
+<label class="sd-tab-label" for="sd-tab-item-14">
 uv</label><div class="sd-tab-content docutils">
 <div class="literal-block-wrapper docutils container" id="id14">
-<div class="code-block-caption"><span class="caption-text">Using <a class="reference external" href="https://docs.astral.sh/uv/">uv</a></span><a class="headerlink" href="#id14" title="Permalink to this code">¶</a></div>
+<div class="code-block-caption"><span class="caption-text">Using <a class="reference external" href="https://docs.astral.sh/uv/">uv</a></span><a class="headerlink" href="#id14" title="Link to this code">¶</a></div>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">uv<span class="w"> </span>add<span class="w"> </span><span class="s1">&#39;litestar[cryptography]&#39;</span>
 </span></pre></div>
 </div>
@@ -911,28 +907,28 @@ uv</label><div class="sd-tab-content docutils">
 </div>
 <div class="sd-tab-set docutils">
 <input checked="checked" id="sd-tab-item-15" name="sd-tab-set-6" type="radio">
-</input><label class="sd-tab-label" data-sync-id="sync" for="sd-tab-item-15">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="sync" for="sd-tab-item-15">
 Sync</label><div class="sd-tab-content docutils">
 <div class="literal-block-wrapper docutils container" id="id15">
-<div class="code-block-caption"><span class="caption-text">Setting session data</span><a class="headerlink" href="#id15" title="Permalink to this code">¶</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span>
+<div class="code-block-caption"><span class="caption-text">Setting session data</span><a class="headerlink" href="#id15" title="Link to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
 </span><span data-line="2">
-</span><span data-line="3"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">Request</span><span class="p">,</span> <span class="n">get</span>
-</span><span data-line="4"><span class="kn">from</span> <span class="nn">litestar.middleware.session.server_side</span> <span class="kn">import</span> <span class="n">ServerSideSessionConfig</span>
-</span><span data-line="5"><span class="kn">from</span> <span class="nn">litestar.testing</span> <span class="kn">import</span> <span class="n">TestClient</span>
+</span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">Request</span><span class="p">,</span> <span class="n">get</span>
+</span><span data-line="4"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.middleware.session.server_side</span><span class="w"> </span><span class="kn">import</span> <span class="n">ServerSideSessionConfig</span>
+</span><span data-line="5"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.testing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TestClient</span>
 </span><span data-line="6">
 </span><span data-line="7"><span class="n">session_config</span> <span class="o">=</span> <span class="n">ServerSideSessionConfig</span><span class="p">()</span>
 </span><span data-line="8">
 </span><span data-line="9">
 </span><span data-line="10"><span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/test&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-</span><span data-line="11"><span class="k">def</span> <span class="nf">get_session_data</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+</span><span data-line="11"><span class="k">def</span><span class="w"> </span><span class="nf">get_session_data</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
 </span><span data-line="12">    <span class="k">return</span> <span class="n">request</span><span class="o">.</span><span class="n">session</span>
 </span><span data-line="13">
 </span><span data-line="14">
 </span><span data-line="15"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">get_session_data</span><span class="p">],</span> <span class="n">middleware</span><span class="o">=</span><span class="p">[</span><span class="n">session_config</span><span class="o">.</span><span class="n">middleware</span><span class="p">],</span> <span class="n">debug</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </span><span data-line="16">
 </span><span data-line="17">
-</span><span data-line="18"><span class="k">def</span> <span class="nf">test_get_session_data</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="18"><span class="k">def</span><span class="w"> </span><span class="nf">test_get_session_data</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 </span><span data-line="19">    <span class="k">with</span> <span class="n">TestClient</span><span class="p">(</span><span class="n">app</span><span class="o">=</span><span class="n">app</span><span class="p">,</span> <span class="n">session_config</span><span class="o">=</span><span class="n">session_config</span><span class="p">)</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
 </span><span data-line="20">        <span class="n">client</span><span class="o">.</span><span class="n">set_session_data</span><span class="p">({</span><span class="s2">&quot;foo&quot;</span><span class="p">:</span> <span class="s2">&quot;bar&quot;</span><span class="p">})</span>
 </span><span data-line="21">        <span class="k">assert</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/test&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">json</span><span class="p">()</span> <span class="o">==</span> <span class="p">{</span><span class="s2">&quot;foo&quot;</span><span class="p">:</span> <span class="s2">&quot;bar&quot;</span><span class="p">}</span>
@@ -940,16 +936,16 @@ Sync</label><div class="sd-tab-content docutils">
 </div>
 </div>
 <div class="literal-block-wrapper docutils container" id="id16">
-<div class="code-block-caption"><span class="caption-text">Getting session data</span><a class="headerlink" href="#id16" title="Permalink to this code">¶</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">Request</span><span class="p">,</span> <span class="n">post</span>
-</span><span data-line="2"><span class="kn">from</span> <span class="nn">litestar.middleware.session.server_side</span> <span class="kn">import</span> <span class="n">ServerSideSessionConfig</span>
-</span><span data-line="3"><span class="kn">from</span> <span class="nn">litestar.testing</span> <span class="kn">import</span> <span class="n">TestClient</span>
+<div class="code-block-caption"><span class="caption-text">Getting session data</span><a class="headerlink" href="#id16" title="Link to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">Request</span><span class="p">,</span> <span class="n">post</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.middleware.session.server_side</span><span class="w"> </span><span class="kn">import</span> <span class="n">ServerSideSessionConfig</span>
+</span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.testing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TestClient</span>
 </span><span data-line="4">
 </span><span data-line="5"><span class="n">session_config</span> <span class="o">=</span> <span class="n">ServerSideSessionConfig</span><span class="p">()</span>
 </span><span data-line="6">
 </span><span data-line="7">
 </span><span data-line="8"><span class="nd">@post</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/test&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-</span><span data-line="9"><span class="k">def</span> <span class="nf">set_session_data</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="9"><span class="k">def</span><span class="w"> </span><span class="nf">set_session_data</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 </span><span data-line="10">    <span class="n">request</span><span class="o">.</span><span class="n">session</span><span class="p">[</span><span class="s2">&quot;foo&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;bar&quot;</span>
 </span><span data-line="11">
 </span><span data-line="12">
@@ -963,28 +959,28 @@ Sync</label><div class="sd-tab-content docutils">
 </div>
 </div>
 <input id="sd-tab-item-16" name="sd-tab-set-6" type="radio">
-</input><label class="sd-tab-label" data-sync-id="async" for="sd-tab-item-16">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="async" for="sd-tab-item-16">
 Async</label><div class="sd-tab-content docutils">
 <div class="literal-block-wrapper docutils container" id="id17">
-<div class="code-block-caption"><span class="caption-text">Setting session data</span><a class="headerlink" href="#id17" title="Permalink to this code">¶</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span>
+<div class="code-block-caption"><span class="caption-text">Setting session data</span><a class="headerlink" href="#id17" title="Link to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
 </span><span data-line="2">
-</span><span data-line="3"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">Request</span><span class="p">,</span> <span class="n">get</span>
-</span><span data-line="4"><span class="kn">from</span> <span class="nn">litestar.middleware.session.server_side</span> <span class="kn">import</span> <span class="n">ServerSideSessionConfig</span>
-</span><span data-line="5"><span class="kn">from</span> <span class="nn">litestar.testing</span> <span class="kn">import</span> <span class="n">AsyncTestClient</span>
+</span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">Request</span><span class="p">,</span> <span class="n">get</span>
+</span><span data-line="4"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.middleware.session.server_side</span><span class="w"> </span><span class="kn">import</span> <span class="n">ServerSideSessionConfig</span>
+</span><span data-line="5"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.testing</span><span class="w"> </span><span class="kn">import</span> <span class="n">AsyncTestClient</span>
 </span><span data-line="6">
 </span><span data-line="7"><span class="n">session_config</span> <span class="o">=</span> <span class="n">ServerSideSessionConfig</span><span class="p">()</span>
 </span><span data-line="8">
 </span><span data-line="9">
 </span><span data-line="10"><span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/test&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-</span><span data-line="11"><span class="k">def</span> <span class="nf">get_session_data</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+</span><span data-line="11"><span class="k">def</span><span class="w"> </span><span class="nf">get_session_data</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
 </span><span data-line="12">    <span class="k">return</span> <span class="n">request</span><span class="o">.</span><span class="n">session</span>
 </span><span data-line="13">
 </span><span data-line="14">
 </span><span data-line="15"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">get_session_data</span><span class="p">],</span> <span class="n">middleware</span><span class="o">=</span><span class="p">[</span><span class="n">session_config</span><span class="o">.</span><span class="n">middleware</span><span class="p">],</span> <span class="n">debug</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </span><span data-line="16">
 </span><span data-line="17">
-</span><span data-line="18"><span class="k">async</span> <span class="k">def</span> <span class="nf">test_get_session_data</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="18"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">test_get_session_data</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 </span><span data-line="19">    <span class="k">async</span> <span class="k">with</span> <span class="n">AsyncTestClient</span><span class="p">(</span><span class="n">app</span><span class="o">=</span><span class="n">app</span><span class="p">,</span> <span class="n">session_config</span><span class="o">=</span><span class="n">session_config</span><span class="p">)</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
 </span><span data-line="20">        <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">set_session_data</span><span class="p">({</span><span class="s2">&quot;foo&quot;</span><span class="p">:</span> <span class="s2">&quot;bar&quot;</span><span class="p">})</span>
 </span><span data-line="21">        <span class="n">res</span> <span class="o">=</span> <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/test&quot;</span><span class="p">)</span>
@@ -993,23 +989,23 @@ Async</label><div class="sd-tab-content docutils">
 </div>
 </div>
 <div class="literal-block-wrapper docutils container" id="id18">
-<div class="code-block-caption"><span class="caption-text">Getting session data</span><a class="headerlink" href="#id18" title="Permalink to this code">¶</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">Request</span><span class="p">,</span> <span class="n">post</span>
-</span><span data-line="2"><span class="kn">from</span> <span class="nn">litestar.middleware.session.server_side</span> <span class="kn">import</span> <span class="n">ServerSideSessionConfig</span>
-</span><span data-line="3"><span class="kn">from</span> <span class="nn">litestar.testing</span> <span class="kn">import</span> <span class="n">AsyncTestClient</span>
+<div class="code-block-caption"><span class="caption-text">Getting session data</span><a class="headerlink" href="#id18" title="Link to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">Request</span><span class="p">,</span> <span class="n">post</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.middleware.session.server_side</span><span class="w"> </span><span class="kn">import</span> <span class="n">ServerSideSessionConfig</span>
+</span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.testing</span><span class="w"> </span><span class="kn">import</span> <span class="n">AsyncTestClient</span>
 </span><span data-line="4">
 </span><span data-line="5"><span class="n">session_config</span> <span class="o">=</span> <span class="n">ServerSideSessionConfig</span><span class="p">()</span>
 </span><span data-line="6">
 </span><span data-line="7">
 </span><span data-line="8"><span class="nd">@post</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/test&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-</span><span data-line="9"><span class="k">def</span> <span class="nf">set_session_data</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="9"><span class="k">def</span><span class="w"> </span><span class="nf">set_session_data</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 </span><span data-line="10">    <span class="n">request</span><span class="o">.</span><span class="n">session</span><span class="p">[</span><span class="s2">&quot;foo&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;bar&quot;</span>
 </span><span data-line="11">
 </span><span data-line="12">
 </span><span data-line="13"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">set_session_data</span><span class="p">],</span> <span class="n">middleware</span><span class="o">=</span><span class="p">[</span><span class="n">session_config</span><span class="o">.</span><span class="n">middleware</span><span class="p">],</span> <span class="n">debug</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </span><span data-line="14">
 </span><span data-line="15">
-</span><span data-line="16"><span class="k">async</span> <span class="k">def</span> <span class="nf">test_set_session_data</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="16"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">test_set_session_data</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 </span><span data-line="17">    <span class="k">async</span> <span class="k">with</span> <span class="n">AsyncTestClient</span><span class="p">(</span><span class="n">app</span><span class="o">=</span><span class="n">app</span><span class="p">,</span> <span class="n">session_config</span><span class="o">=</span><span class="n">session_config</span><span class="p">)</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
 </span><span data-line="18">        <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">&quot;/test&quot;</span><span class="p">)</span>
 </span><span data-line="19">        <span class="k">assert</span> <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">get_session_data</span><span class="p">()</span> <span class="o">==</span> <span class="p">{</span><span class="s2">&quot;foo&quot;</span><span class="p">:</span> <span class="s2">&quot;bar&quot;</span><span class="p">}</span>
@@ -1020,7 +1016,7 @@ Async</label><div class="sd-tab-content docutils">
 </div>
 </section>
 <section id="using-a-blocking-portal">
-<h3>Using a blocking portal<a class="headerlink" href="#using-a-blocking-portal" title="Permalink to this heading">¶</a></h3>
+<h3>Using a blocking portal<a class="headerlink" href="#using-a-blocking-portal" title="Link to this heading">¶</a></h3>
 <p>The <a class="reference internal" href="../reference/testing.html#litestar.testing.TestClient" title="litestar.testing.TestClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">TestClient</span></code></a> uses a feature of <a class="reference external" href="https://anyio.readthedocs.io/en/stable/">anyio</a> called
 a <strong>Blocking Portal</strong>.</p>
 <p>The <code class="xref py py-class docutils literal notranslate"><span class="pre">anyio.abc.BlockingPortal</span></code> allows <a class="reference internal" href="../reference/testing.html#litestar.testing.TestClient" title="litestar.testing.TestClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">TestClient</span></code></a>
@@ -1029,21 +1025,21 @@ to execute asynchronous functions using a synchronous call. <code class="docutil
 <p>Any tests that are using an instance of <code class="docutils literal notranslate"><span class="pre">TestClient</span></code> can also make use of the blocking portal to execute asynchronous functions
 without the test itself being asynchronous.</p>
 <div class="literal-block-wrapper docutils container" id="id19">
-<div class="code-block-caption"><span class="caption-text">Using a blocking portal</span><a class="headerlink" href="#id19" title="Permalink to this code">¶</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">concurrent.futures</span> <span class="kn">import</span> <span class="n">Future</span><span class="p">,</span> <span class="n">wait</span>
+<div class="code-block-caption"><span class="caption-text">Using a blocking portal</span><a class="headerlink" href="#id19" title="Link to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">concurrent.futures</span><span class="w"> </span><span class="kn">import</span> <span class="n">Future</span><span class="p">,</span> <span class="n">wait</span>
 </span><span data-line="2">
-</span><span data-line="3"><span class="kn">import</span> <span class="nn">anyio</span>
+</span><span data-line="3"><span class="kn">import</span><span class="w"> </span><span class="nn">anyio</span>
 </span><span data-line="4">
-</span><span data-line="5"><span class="kn">from</span> <span class="nn">litestar.testing</span> <span class="kn">import</span> <span class="n">create_test_client</span>
+</span><span data-line="5"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.testing</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_test_client</span>
 </span><span data-line="6">
 </span><span data-line="7">
-</span><span data-line="8"><span class="k">def</span> <span class="nf">test_with_portal</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="8"><span class="k">def</span><span class="w"> </span><span class="nf">test_with_portal</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 </span><span data-line="9"><span class="w">    </span><span class="sd">&quot;&quot;&quot;This example shows how to manage asynchronous tasks using a portal.</span>
 </span><span data-line="10">
 </span><span data-line="11"><span class="sd">    The test function itself is not async. Asynchronous functions are executed and awaited using the portal.</span>
 </span><span data-line="12"><span class="sd">    &quot;&quot;&quot;</span>
 </span><span data-line="13">
-</span><span data-line="14">    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_float</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+</span><span data-line="14">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_float</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 </span><span data-line="15">        <span class="k">await</span> <span class="n">anyio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
 </span><span data-line="16">        <span class="k">return</span> <span class="n">value</span>
 </span><span data-line="17">
@@ -1062,7 +1058,7 @@ without the test itself being asynchronous.</p>
 </section>
 </section>
 <section id="creating-a-test-app">
-<h2>Creating a test app<a class="headerlink" href="#creating-a-test-app" title="Permalink to this heading">¶</a></h2>
+<h2>Creating a test app<a class="headerlink" href="#creating-a-test-app" title="Link to this heading">¶</a></h2>
 <p>Litestar also offers a helper function called <a class="reference internal" href="../reference/testing.html#litestar.testing.create_test_client" title="litestar.testing.create_test_client"><code class="xref py py-func docutils literal notranslate"><span class="pre">create_test_client</span></code></a> which first creates
 an instance of Litestar and then a test client using it. There are multiple use cases for this helper - when you need to check
 generic logic that is decoupled from a specific Litestar app, or when you want to test endpoints in isolation.</p>
@@ -1071,14 +1067,14 @@ the litestar constructor, with the <code class="docutils literal notranslate"><s
 expects <code class="docutils literal notranslate"><span class="pre">route_handlers</span></code> to be a list, here you can also pass individual values.</p>
 <p>For example, you can do this:</p>
 <div class="literal-block-wrapper docutils container" id="id20">
-<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">my_app/tests/test_health_check.py</span></code></span><a class="headerlink" href="#id20" title="Permalink to this code">¶</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">litestar.status_codes</span> <span class="kn">import</span> <span class="n">HTTP_200_OK</span>
-</span><span data-line="2"><span class="kn">from</span> <span class="nn">litestar.testing</span> <span class="kn">import</span> <span class="n">create_test_client</span>
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">my_app/tests/test_health_check.py</span></code></span><a class="headerlink" href="#id20" title="Link to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.status_codes</span><span class="w"> </span><span class="kn">import</span> <span class="n">HTTP_200_OK</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.testing</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_test_client</span>
 </span><span data-line="3">
-</span><span data-line="4"><span class="kn">from</span> <span class="nn">my_app.main</span> <span class="kn">import</span> <span class="n">health_check</span>
+</span><span data-line="4"><span class="kn">from</span><span class="w"> </span><span class="nn">my_app.main</span><span class="w"> </span><span class="kn">import</span> <span class="n">health_check</span>
 </span><span data-line="5">
 </span><span data-line="6">
-</span><span data-line="7"><span class="k">def</span> <span class="nf">test_health_check</span><span class="p">():</span>
+</span><span data-line="7"><span class="k">def</span><span class="w"> </span><span class="nf">test_health_check</span><span class="p">():</span>
 </span><span data-line="8">    <span class="k">with</span> <span class="n">create_test_client</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">health_check</span><span class="p">])</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
 </span><span data-line="9">        <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/health-check&quot;</span><span class="p">)</span>
 </span><span data-line="10">        <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="n">HTTP_200_OK</span>
@@ -1088,14 +1084,14 @@ expects <code class="docutils literal notranslate"><span class="pre">route_handl
 </div>
 <p>But also this:</p>
 <div class="literal-block-wrapper docutils container" id="id21">
-<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">my_app/tests/test_health_check.py</span></code></span><a class="headerlink" href="#id21" title="Permalink to this code">¶</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">litestar.status_codes</span> <span class="kn">import</span> <span class="n">HTTP_200_OK</span>
-</span><span data-line="2"><span class="kn">from</span> <span class="nn">litestar.testing</span> <span class="kn">import</span> <span class="n">create_test_client</span>
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">my_app/tests/test_health_check.py</span></code></span><a class="headerlink" href="#id21" title="Link to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.status_codes</span><span class="w"> </span><span class="kn">import</span> <span class="n">HTTP_200_OK</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.testing</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_test_client</span>
 </span><span data-line="3">
-</span><span data-line="4"><span class="kn">from</span> <span class="nn">my_app.main</span> <span class="kn">import</span> <span class="n">health_check</span>
+</span><span data-line="4"><span class="kn">from</span><span class="w"> </span><span class="nn">my_app.main</span><span class="w"> </span><span class="kn">import</span> <span class="n">health_check</span>
 </span><span data-line="5">
 </span><span data-line="6">
-</span><span data-line="7"><span class="k">def</span> <span class="nf">test_health_check</span><span class="p">():</span>
+</span><span data-line="7"><span class="k">def</span><span class="w"> </span><span class="nf">test_health_check</span><span class="p">():</span>
 </span><span data-line="8">    <span class="k">with</span> <span class="n">create_test_client</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="n">health_check</span><span class="p">)</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
 </span><span data-line="9">        <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/health-check&quot;</span><span class="p">)</span>
 </span><span data-line="10">        <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="n">HTTP_200_OK</span>
@@ -1105,7 +1101,7 @@ expects <code class="docutils literal notranslate"><span class="pre">route_handl
 </div>
 </section>
 <section id="running-a-live-server">
-<h2>Running a live server<a class="headerlink" href="#running-a-live-server" title="Permalink to this heading">¶</a></h2>
+<h2>Running a live server<a class="headerlink" href="#running-a-live-server" title="Link to this heading">¶</a></h2>
 <p>The test clients make use of HTTPX’s ability to directly call into an ASGI app, without
 having to run an actual server. In most cases this is sufficient but there are some
 exceptions where this won’t work, due to the limitations of the emulated client-server
@@ -1123,14 +1119,14 @@ with the regular test client setup:</p>
 </span><span data-line="2"><span class="sd">Assemble components into an app that shall be tested</span>
 </span><span data-line="3"><span class="sd">&quot;&quot;&quot;</span>
 </span><span data-line="4">
-</span><span data-line="5"><span class="kn">from</span> <span class="nn">collections.abc</span> <span class="kn">import</span> <span class="n">AsyncGenerator</span>
+</span><span data-line="5"><span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">AsyncGenerator</span>
 </span><span data-line="6">
-</span><span data-line="7"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
-</span><span data-line="8"><span class="kn">from</span> <span class="nn">litestar.response</span> <span class="kn">import</span> <span class="n">ServerSentEvent</span>
-</span><span data-line="9"><span class="kn">from</span> <span class="nn">litestar.types</span> <span class="kn">import</span> <span class="n">SSEData</span>
+</span><span data-line="7"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
+</span><span data-line="8"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.response</span><span class="w"> </span><span class="kn">import</span> <span class="n">ServerSentEvent</span>
+</span><span data-line="9"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">SSEData</span>
 </span><span data-line="10">
 </span><span data-line="11">
-</span><span data-line="12"><span class="k">async</span> <span class="k">def</span> <span class="nf">generator</span><span class="p">(</span><span class="n">topic</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AsyncGenerator</span><span class="p">[</span><span class="n">SSEData</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+</span><span data-line="12"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">generator</span><span class="p">(</span><span class="n">topic</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AsyncGenerator</span><span class="p">[</span><span class="n">SSEData</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
 </span><span data-line="13">    <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span>
 </span><span data-line="14">    <span class="k">while</span> <span class="n">count</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
 </span><span data-line="15">        <span class="k">yield</span> <span class="n">topic</span>
@@ -1138,7 +1134,7 @@ with the regular test client setup:</p>
 </span><span data-line="17">
 </span><span data-line="18">
 </span><span data-line="19"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/notify/{topic:str}&quot;</span><span class="p">)</span>
-</span><span data-line="20"><span class="k">async</span> <span class="k">def</span> <span class="nf">get_notified</span><span class="p">(</span><span class="n">topic</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ServerSentEvent</span><span class="p">:</span>
+</span><span data-line="20"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_notified</span><span class="p">(</span><span class="n">topic</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ServerSentEvent</span><span class="p">:</span>
 </span><span data-line="21">    <span class="k">return</span> <span class="n">ServerSentEvent</span><span class="p">(</span><span class="n">generator</span><span class="p">(</span><span class="n">topic</span><span class="p">),</span> <span class="n">event_type</span><span class="o">=</span><span class="s2">&quot;Notifier&quot;</span><span class="p">)</span>
 </span><span data-line="22">
 </span><span data-line="23">
@@ -1149,16 +1145,16 @@ with the regular test client setup:</p>
 </span><span data-line="2"><span class="sd">Test the app running in a subprocess</span>
 </span><span data-line="3"><span class="sd">&quot;&quot;&quot;</span>
 </span><span data-line="4">
-</span><span data-line="5"><span class="kn">import</span> <span class="nn">asyncio</span>
-</span><span data-line="6"><span class="kn">import</span> <span class="nn">pathlib</span>
-</span><span data-line="7"><span class="kn">import</span> <span class="nn">sys</span>
-</span><span data-line="8"><span class="kn">from</span> <span class="nn">collections.abc</span> <span class="kn">import</span> <span class="n">AsyncIterator</span>
+</span><span data-line="5"><span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
+</span><span data-line="6"><span class="kn">import</span><span class="w"> </span><span class="nn">pathlib</span>
+</span><span data-line="7"><span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+</span><span data-line="8"><span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">AsyncIterator</span>
 </span><span data-line="9">
-</span><span data-line="10"><span class="kn">import</span> <span class="nn">httpx</span>
-</span><span data-line="11"><span class="kn">import</span> <span class="nn">httpx_sse</span>
-</span><span data-line="12"><span class="kn">import</span> <span class="nn">pytest</span>
+</span><span data-line="10"><span class="kn">import</span><span class="w"> </span><span class="nn">httpx</span>
+</span><span data-line="11"><span class="kn">import</span><span class="w"> </span><span class="nn">httpx_sse</span>
+</span><span data-line="12"><span class="kn">import</span><span class="w"> </span><span class="nn">pytest</span>
 </span><span data-line="13">
-</span><span data-line="14"><span class="kn">from</span> <span class="nn">litestar.testing</span> <span class="kn">import</span> <span class="n">subprocess_async_client</span>
+</span><span data-line="14"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.testing</span><span class="w"> </span><span class="kn">import</span> <span class="n">subprocess_async_client</span>
 </span><span data-line="15">
 </span><span data-line="16"><span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">platform</span> <span class="o">==</span> <span class="s2">&quot;win32&quot;</span><span class="p">:</span>
 </span><span data-line="17">    <span class="n">asyncio</span><span class="o">.</span><span class="n">set_event_loop_policy</span><span class="p">(</span><span class="n">asyncio</span><span class="o">.</span><span class="n">WindowsSelectorEventLoopPolicy</span><span class="p">())</span>
@@ -1168,12 +1164,12 @@ with the regular test client setup:</p>
 </span><span data-line="21">
 </span><span data-line="22">
 </span><span data-line="23"><span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;async_client&quot;</span><span class="p">)</span>
-</span><span data-line="24"><span class="k">async</span> <span class="k">def</span> <span class="nf">fx_async_client</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">AsyncIterator</span><span class="p">[</span><span class="n">httpx</span><span class="o">.</span><span class="n">AsyncClient</span><span class="p">]:</span>
+</span><span data-line="24"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">fx_async_client</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">AsyncIterator</span><span class="p">[</span><span class="n">httpx</span><span class="o">.</span><span class="n">AsyncClient</span><span class="p">]:</span>
 </span><span data-line="25">    <span class="k">async</span> <span class="k">with</span> <span class="n">subprocess_async_client</span><span class="p">(</span><span class="n">workdir</span><span class="o">=</span><span class="n">ROOT</span><span class="p">,</span> <span class="n">app</span><span class="o">=</span><span class="s2">&quot;subprocess_sse_app:app&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
 </span><span data-line="26">        <span class="k">yield</span> <span class="n">client</span>
 </span><span data-line="27">
 </span><span data-line="28">
-</span><span data-line="29"><span class="k">async</span> <span class="k">def</span> <span class="nf">test_subprocess_async_client</span><span class="p">(</span><span class="n">async_client</span><span class="p">:</span> <span class="n">httpx</span><span class="o">.</span><span class="n">AsyncClient</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="29"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">test_subprocess_async_client</span><span class="p">(</span><span class="n">async_client</span><span class="p">:</span> <span class="n">httpx</span><span class="o">.</span><span class="n">AsyncClient</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 </span><span data-line="30"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Demonstrates functionality of the async client with an infinite SSE source that cannot be tested with the</span>
 </span><span data-line="31"><span class="sd">    regular async test client.</span>
 </span><span data-line="32"><span class="sd">    &quot;&quot;&quot;</span>
@@ -1187,20 +1183,20 @@ with the regular test client setup:</p>
 </div>
 </section>
 <section id="requestfactory">
-<h2>RequestFactory<a class="headerlink" href="#requestfactory" title="Permalink to this heading">¶</a></h2>
+<h2>RequestFactory<a class="headerlink" href="#requestfactory" title="Link to this heading">¶</a></h2>
 <p>Another helper is the <a class="reference internal" href="../reference/testing.html#litestar.testing.RequestFactory" title="litestar.testing.RequestFactory"><code class="xref py py-class docutils literal notranslate"><span class="pre">RequestFactory</span></code></a> class, which creates instances of
 <a class="reference internal" href="../reference/connection.html#litestar.connection.Request" title="litestar.connection.request.Request"><code class="xref py py-class docutils literal notranslate"><span class="pre">litestar.connection.request.Request</span></code></a>. The use case for this helper is when
 you need to test logic that expects to receive a request object.</p>
 <p>For example, lets say we wanted to unit test a <em>guard</em> function in isolation, to which end we’ll reuse the examples
 from the <a class="reference internal" href="security/guards.html"><span class="doc">route guards</span></a> documentation:</p>
 <div class="literal-block-wrapper docutils container" id="id22">
-<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">my_app/guards.py</span></code></span><a class="headerlink" href="#id22" title="Permalink to this code">¶</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Request</span>
-</span><span data-line="2"><span class="kn">from</span> <span class="nn">litestar.exceptions</span> <span class="kn">import</span> <span class="n">NotAuthorizedException</span>
-</span><span data-line="3"><span class="kn">from</span> <span class="nn">litestar.handlers.base</span> <span class="kn">import</span> <span class="n">BaseRouteHandler</span>
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">my_app/guards.py</span></code></span><a class="headerlink" href="#id22" title="Link to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Request</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">NotAuthorizedException</span>
+</span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.handlers.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseRouteHandler</span>
 </span><span data-line="4">
 </span><span data-line="5">
-</span><span data-line="6"><span class="k">def</span> <span class="nf">secret_token_guard</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">,</span> <span class="n">route_handler</span><span class="p">:</span> <span class="n">BaseRouteHandler</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="6"><span class="k">def</span><span class="w"> </span><span class="nf">secret_token_guard</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">,</span> <span class="n">route_handler</span><span class="p">:</span> <span class="n">BaseRouteHandler</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 </span><span data-line="7">    <span class="k">if</span> <span class="p">(</span>
 </span><span data-line="8">        <span class="n">route_handler</span><span class="o">.</span><span class="n">opt</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;secret&quot;</span><span class="p">)</span>
 </span><span data-line="9">        <span class="ow">and</span> <span class="ow">not</span> <span class="n">request</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;Secret-Header&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="n">route_handler</span><span class="o">.</span><span class="n">opt</span><span class="p">[</span><span class="s2">&quot;secret&quot;</span><span class="p">]</span>
@@ -1211,41 +1207,41 @@ from the <a class="reference internal" href="security/guards.html"><span class="
 </div>
 <p>We already have our route handler in place:</p>
 <div class="literal-block-wrapper docutils container" id="id23">
-<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">my_app/secret.py</span></code></span><a class="headerlink" href="#id23" title="Permalink to this code">¶</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">os</span> <span class="kn">import</span> <span class="n">environ</span>
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">my_app/secret.py</span></code></span><a class="headerlink" href="#id23" title="Link to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">os</span><span class="w"> </span><span class="kn">import</span> <span class="n">environ</span>
 </span><span data-line="2">
-</span><span data-line="3"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">get</span>
+</span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">get</span>
 </span><span data-line="4">
-</span><span data-line="5"><span class="kn">from</span> <span class="nn">my_app.guards</span> <span class="kn">import</span> <span class="n">secret_token_guard</span>
+</span><span data-line="5"><span class="kn">from</span><span class="w"> </span><span class="nn">my_app.guards</span><span class="w"> </span><span class="kn">import</span> <span class="n">secret_token_guard</span>
 </span><span data-line="6">
 </span><span data-line="7">
 </span><span data-line="8"><span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/secret&quot;</span><span class="p">,</span> <span class="n">guards</span><span class="o">=</span><span class="p">[</span><span class="n">secret_token_guard</span><span class="p">],</span> <span class="n">opt</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;secret&quot;</span><span class="p">:</span> <span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;SECRET&quot;</span><span class="p">)})</span>
-</span><span data-line="9"><span class="k">def</span> <span class="nf">secret_endpoint</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
+</span><span data-line="9"><span class="k">def</span><span class="w"> </span><span class="nf">secret_endpoint</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
 </span></pre></div>
 </div>
 </div>
 <p>We could thus test the guard function like so:</p>
 <div class="literal-block-wrapper docutils container" id="id24">
-<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">tests/guards/test_secret_token_guard.py</span></code></span><a class="headerlink" href="#id24" title="Permalink to this code">¶</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">import</span> <span class="nn">pytest</span>
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">tests/guards/test_secret_token_guard.py</span></code></span><a class="headerlink" href="#id24" title="Link to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">import</span><span class="w"> </span><span class="nn">pytest</span>
 </span><span data-line="2">
-</span><span data-line="3"><span class="kn">from</span> <span class="nn">litestar.exceptions</span> <span class="kn">import</span> <span class="n">NotAuthorizedException</span>
-</span><span data-line="4"><span class="kn">from</span> <span class="nn">litestar.testing</span> <span class="kn">import</span> <span class="n">RequestFactory</span>
+</span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">NotAuthorizedException</span>
+</span><span data-line="4"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.testing</span><span class="w"> </span><span class="kn">import</span> <span class="n">RequestFactory</span>
 </span><span data-line="5">
-</span><span data-line="6"><span class="kn">from</span> <span class="nn">my_app.guards</span> <span class="kn">import</span> <span class="n">secret_token_guard</span>
-</span><span data-line="7"><span class="kn">from</span> <span class="nn">my_app.secret</span> <span class="kn">import</span> <span class="n">secret_endpoint</span>
+</span><span data-line="6"><span class="kn">from</span><span class="w"> </span><span class="nn">my_app.guards</span><span class="w"> </span><span class="kn">import</span> <span class="n">secret_token_guard</span>
+</span><span data-line="7"><span class="kn">from</span><span class="w"> </span><span class="nn">my_app.secret</span><span class="w"> </span><span class="kn">import</span> <span class="n">secret_endpoint</span>
 </span><span data-line="8">
 </span><span data-line="9"><span class="n">request</span> <span class="o">=</span> <span class="n">RequestFactory</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
 </span><span data-line="10">
 </span><span data-line="11">
-</span><span data-line="12"><span class="k">def</span> <span class="nf">test_secret_token_guard_failure_scenario</span><span class="p">():</span>
+</span><span data-line="12"><span class="k">def</span><span class="w"> </span><span class="nf">test_secret_token_guard_failure_scenario</span><span class="p">():</span>
 </span><span data-line="13">    <span class="n">copied_endpoint_handler</span> <span class="o">=</span> <span class="n">secret_endpoint</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 </span><span data-line="14">    <span class="n">copied_endpoint_handler</span><span class="o">.</span><span class="n">opt</span><span class="p">[</span><span class="s2">&quot;secret&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
 </span><span data-line="15">    <span class="k">with</span> <span class="n">pytest</span><span class="o">.</span><span class="n">raises</span><span class="p">(</span><span class="n">NotAuthorizedException</span><span class="p">):</span>
 </span><span data-line="16">        <span class="n">secret_token_guard</span><span class="p">(</span><span class="n">request</span><span class="o">=</span><span class="n">request</span><span class="p">,</span> <span class="n">route_handler</span><span class="o">=</span><span class="n">copied_endpoint_handler</span><span class="p">)</span>
 </span><span data-line="17">
 </span><span data-line="18">
-</span><span data-line="19"><span class="k">def</span> <span class="nf">test_secret_token_guard_success_scenario</span><span class="p">():</span>
+</span><span data-line="19"><span class="k">def</span><span class="w"> </span><span class="nf">test_secret_token_guard_success_scenario</span><span class="p">():</span>
 </span><span data-line="20">    <span class="n">copied_endpoint_handler</span> <span class="o">=</span> <span class="n">secret_endpoint</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 </span><span data-line="21">    <span class="n">copied_endpoint_handler</span><span class="o">.</span><span class="n">opt</span><span class="p">[</span><span class="s2">&quot;secret&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;super-secret&quot;</span>
 </span><span data-line="22">    <span class="n">secret_token_guard</span><span class="p">(</span><span class="n">request</span><span class="o">=</span><span class="n">request</span><span class="p">,</span> <span class="n">route_handler</span><span class="o">=</span><span class="n">copied_endpoint_handler</span><span class="p">)</span>
@@ -1254,53 +1250,53 @@ from the <a class="reference internal" href="security/guards.html"><span class="
 </div>
 </section>
 <section id="using-polyfactory">
-<h2>Using polyfactory<a class="headerlink" href="#using-polyfactory" title="Permalink to this heading">¶</a></h2>
+<h2>Using polyfactory<a class="headerlink" href="#using-polyfactory" title="Link to this heading">¶</a></h2>
 <p><a class="reference external" href="https://github.com/litestar-org/polyfactory">Polyfactory</a> offers an easy
 and powerful way to generate mock data from pydantic models and dataclasses.</p>
 <p>Let’s say we have an API that talks to an external service and retrieves some data:</p>
 <div class="literal-block-wrapper docutils container" id="id25">
-<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">main.py</span></code></span><a class="headerlink" href="#id25" title="Permalink to this code">¶</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Protocol</span><span class="p">,</span> <span class="n">runtime_checkable</span>
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">main.py</span></code></span><a class="headerlink" href="#id25" title="Link to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Protocol</span><span class="p">,</span> <span class="n">runtime_checkable</span>
 </span><span data-line="2">
-</span><span data-line="3"><span class="kn">from</span> <span class="nn">polyfactory.factories.pydantic</span> <span class="kn">import</span> <span class="n">BaseModel</span>
-</span><span data-line="4"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">get</span>
+</span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">polyfactory.factories.pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseModel</span>
+</span><span data-line="4"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">get</span>
 </span><span data-line="5">
 </span><span data-line="6">
-</span><span data-line="7"><span class="k">class</span> <span class="nc">Item</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+</span><span data-line="7"><span class="k">class</span><span class="w"> </span><span class="nc">Item</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
 </span><span data-line="8">    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
 </span><span data-line="9">
 </span><span data-line="10">
 </span><span data-line="11"><span class="nd">@runtime_checkable</span>
-</span><span data-line="12"><span class="k">class</span> <span class="nc">Service</span><span class="p">(</span><span class="n">Protocol</span><span class="p">):</span>
-</span><span data-line="13">    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Item</span><span class="p">:</span> <span class="o">...</span>
+</span><span data-line="12"><span class="k">class</span><span class="w"> </span><span class="nc">Service</span><span class="p">(</span><span class="n">Protocol</span><span class="p">):</span>
+</span><span data-line="13">    <span class="k">def</span><span class="w"> </span><span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Item</span><span class="p">:</span> <span class="o">...</span>
 </span><span data-line="14">
 </span><span data-line="15">
 </span><span data-line="16"><span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/item&quot;</span><span class="p">)</span>
-</span><span data-line="17"><span class="k">def</span> <span class="nf">get_item</span><span class="p">(</span><span class="n">service</span><span class="p">:</span> <span class="n">Service</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Item</span><span class="p">:</span>
+</span><span data-line="17"><span class="k">def</span><span class="w"> </span><span class="nf">get_item</span><span class="p">(</span><span class="n">service</span><span class="p">:</span> <span class="n">Service</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Item</span><span class="p">:</span>
 </span><span data-line="18">    <span class="k">return</span> <span class="n">service</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
 </span></pre></div>
 </div>
 </div>
 <p>We could test the <code class="docutils literal notranslate"><span class="pre">/item</span></code> route like so:</p>
 <div class="literal-block-wrapper docutils container" id="id26">
-<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">tests/conftest.py</span></code></span><a class="headerlink" href="#id26" title="Permalink to this code">¶</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">import</span> <span class="nn">pytest</span>
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">tests/conftest.py</span></code></span><a class="headerlink" href="#id26" title="Link to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">import</span><span class="w"> </span><span class="nn">pytest</span>
 </span><span data-line="2">
-</span><span data-line="3"><span class="kn">from</span> <span class="nn">litestar.di</span> <span class="kn">import</span> <span class="n">Provide</span>
-</span><span data-line="4"><span class="kn">from</span> <span class="nn">litestar.status_codes</span> <span class="kn">import</span> <span class="n">HTTP_200_OK</span>
-</span><span data-line="5"><span class="kn">from</span> <span class="nn">litestar.testing</span> <span class="kn">import</span> <span class="n">create_test_client</span>
+</span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.di</span><span class="w"> </span><span class="kn">import</span> <span class="n">Provide</span>
+</span><span data-line="4"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.status_codes</span><span class="w"> </span><span class="kn">import</span> <span class="n">HTTP_200_OK</span>
+</span><span data-line="5"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.testing</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_test_client</span>
 </span><span data-line="6">
-</span><span data-line="7"><span class="kn">from</span> <span class="nn">my_app.main</span> <span class="kn">import</span> <span class="n">Service</span><span class="p">,</span> <span class="n">Item</span><span class="p">,</span> <span class="n">get_item</span>
+</span><span data-line="7"><span class="kn">from</span><span class="w"> </span><span class="nn">my_app.main</span><span class="w"> </span><span class="kn">import</span> <span class="n">Service</span><span class="p">,</span> <span class="n">Item</span><span class="p">,</span> <span class="n">get_item</span>
 </span><span data-line="8">
 </span><span data-line="9">
 </span><span data-line="10"><span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span><span class="p">()</span>
-</span><span data-line="11"><span class="k">def</span> <span class="nf">item</span><span class="p">():</span>
+</span><span data-line="11"><span class="k">def</span><span class="w"> </span><span class="nf">item</span><span class="p">():</span>
 </span><span data-line="12">    <span class="k">return</span> <span class="n">Item</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Chair&quot;</span><span class="p">)</span>
 </span><span data-line="13">
 </span><span data-line="14">
-</span><span data-line="15"><span class="k">def</span> <span class="nf">test_get_item</span><span class="p">(</span><span class="n">item</span><span class="p">:</span> <span class="n">Item</span><span class="p">):</span>
-</span><span data-line="16">    <span class="k">class</span> <span class="nc">MyService</span><span class="p">(</span><span class="n">Service</span><span class="p">):</span>
-</span><span data-line="17">        <span class="k">def</span> <span class="nf">get_one</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Item</span><span class="p">:</span>
+</span><span data-line="15"><span class="k">def</span><span class="w"> </span><span class="nf">test_get_item</span><span class="p">(</span><span class="n">item</span><span class="p">:</span> <span class="n">Item</span><span class="p">):</span>
+</span><span data-line="16">    <span class="k">class</span><span class="w"> </span><span class="nc">MyService</span><span class="p">(</span><span class="n">Service</span><span class="p">):</span>
+</span><span data-line="17">        <span class="k">def</span><span class="w"> </span><span class="nf">get_one</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Item</span><span class="p">:</span>
 </span><span data-line="18">            <span class="k">return</span> <span class="n">item</span>
 </span><span data-line="19">
 </span><span data-line="20">    <span class="k">with</span> <span class="n">create_test_client</span><span class="p">(</span>
@@ -1316,44 +1312,44 @@ and powerful way to generate mock data from pydantic models and dataclasses.</p>
 where <a class="reference external" href="https://github.com/litestar-org/polyfactory">polyfactory</a> library comes in. It generates mock data for
 pydantic models and dataclasses based on type annotations. With it, we could rewrite the above example like so:</p>
 <div class="literal-block-wrapper docutils container" id="id27">
-<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">main.py</span></code></span><a class="headerlink" href="#id27" title="Permalink to this code">¶</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Protocol</span><span class="p">,</span> <span class="n">runtime_checkable</span>
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">main.py</span></code></span><a class="headerlink" href="#id27" title="Link to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Protocol</span><span class="p">,</span> <span class="n">runtime_checkable</span>
 </span><span data-line="2">
-</span><span data-line="3"><span class="kn">import</span> <span class="nn">pytest</span>
-</span><span data-line="4"><span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseModel</span>
-</span><span data-line="5"><span class="kn">from</span> <span class="nn">polyfactory.factories.pydantic_factory</span> <span class="kn">import</span> <span class="n">ModelFactory</span>
-</span><span data-line="6"><span class="kn">from</span> <span class="nn">litestar.status_codes</span> <span class="kn">import</span> <span class="n">HTTP_200_OK</span>
-</span><span data-line="7"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">get</span>
-</span><span data-line="8"><span class="kn">from</span> <span class="nn">litestar.di</span> <span class="kn">import</span> <span class="n">Provide</span>
-</span><span data-line="9"><span class="kn">from</span> <span class="nn">litestar.testing</span> <span class="kn">import</span> <span class="n">create_test_client</span>
+</span><span data-line="3"><span class="kn">import</span><span class="w"> </span><span class="nn">pytest</span>
+</span><span data-line="4"><span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseModel</span>
+</span><span data-line="5"><span class="kn">from</span><span class="w"> </span><span class="nn">polyfactory.factories.pydantic_factory</span><span class="w"> </span><span class="kn">import</span> <span class="n">ModelFactory</span>
+</span><span data-line="6"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.status_codes</span><span class="w"> </span><span class="kn">import</span> <span class="n">HTTP_200_OK</span>
+</span><span data-line="7"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">get</span>
+</span><span data-line="8"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.di</span><span class="w"> </span><span class="kn">import</span> <span class="n">Provide</span>
+</span><span data-line="9"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.testing</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_test_client</span>
 </span><span data-line="10">
 </span><span data-line="11">
-</span><span data-line="12"><span class="k">class</span> <span class="nc">Item</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+</span><span data-line="12"><span class="k">class</span><span class="w"> </span><span class="nc">Item</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
 </span><span data-line="13">    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
 </span><span data-line="14">
 </span><span data-line="15">
 </span><span data-line="16"><span class="nd">@runtime_checkable</span>
-</span><span data-line="17"><span class="k">class</span> <span class="nc">Service</span><span class="p">(</span><span class="n">Protocol</span><span class="p">):</span>
-</span><span data-line="18">    <span class="k">def</span> <span class="nf">get_one</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Item</span><span class="p">:</span> <span class="o">...</span>
+</span><span data-line="17"><span class="k">class</span><span class="w"> </span><span class="nc">Service</span><span class="p">(</span><span class="n">Protocol</span><span class="p">):</span>
+</span><span data-line="18">    <span class="k">def</span><span class="w"> </span><span class="nf">get_one</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Item</span><span class="p">:</span> <span class="o">...</span>
 </span><span data-line="19">
 </span><span data-line="20">
 </span><span data-line="21"><span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/item&quot;</span><span class="p">)</span>
-</span><span data-line="22"><span class="k">def</span> <span class="nf">get_item</span><span class="p">(</span><span class="n">service</span><span class="p">:</span> <span class="n">Service</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Item</span><span class="p">:</span>
+</span><span data-line="22"><span class="k">def</span><span class="w"> </span><span class="nf">get_item</span><span class="p">(</span><span class="n">service</span><span class="p">:</span> <span class="n">Service</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Item</span><span class="p">:</span>
 </span><span data-line="23">    <span class="k">return</span> <span class="n">service</span><span class="o">.</span><span class="n">get_one</span><span class="p">()</span>
 </span><span data-line="24">
 </span><span data-line="25">
-</span><span data-line="26"><span class="k">class</span> <span class="nc">ItemFactory</span><span class="p">(</span><span class="n">ModelFactory</span><span class="p">[</span><span class="n">Item</span><span class="p">]):</span>
+</span><span data-line="26"><span class="k">class</span><span class="w"> </span><span class="nc">ItemFactory</span><span class="p">(</span><span class="n">ModelFactory</span><span class="p">[</span><span class="n">Item</span><span class="p">]):</span>
 </span><span data-line="27">    <span class="n">model</span> <span class="o">=</span> <span class="n">Item</span>
 </span><span data-line="28">
 </span><span data-line="29">
 </span><span data-line="30"><span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span><span class="p">()</span>
-</span><span data-line="31"><span class="k">def</span> <span class="nf">item</span><span class="p">():</span>
+</span><span data-line="31"><span class="k">def</span><span class="w"> </span><span class="nf">item</span><span class="p">():</span>
 </span><span data-line="32">    <span class="k">return</span> <span class="n">ItemFactory</span><span class="o">.</span><span class="n">build</span><span class="p">()</span>
 </span><span data-line="33">
 </span><span data-line="34">
-</span><span data-line="35"><span class="k">def</span> <span class="nf">test_get_item</span><span class="p">(</span><span class="n">item</span><span class="p">:</span> <span class="n">Item</span><span class="p">):</span>
-</span><span data-line="36">    <span class="k">class</span> <span class="nc">MyService</span><span class="p">(</span><span class="n">Service</span><span class="p">):</span>
-</span><span data-line="37">        <span class="k">def</span> <span class="nf">get_one</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Item</span><span class="p">:</span>
+</span><span data-line="35"><span class="k">def</span><span class="w"> </span><span class="nf">test_get_item</span><span class="p">(</span><span class="n">item</span><span class="p">:</span> <span class="n">Item</span><span class="p">):</span>
+</span><span data-line="36">    <span class="k">class</span><span class="w"> </span><span class="nc">MyService</span><span class="p">(</span><span class="n">Service</span><span class="p">):</span>
+</span><span data-line="37">        <span class="k">def</span><span class="w"> </span><span class="nf">get_one</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Item</span><span class="p">:</span>
 </span><span data-line="38">            <span class="k">return</span> <span class="n">item</span>
 </span><span data-line="39">
 </span><span data-line="40">    <span class="k">with</span> <span class="n">create_test_client</span><span class="p">(</span>
@@ -1417,9 +1413,9 @@ pydantic models and dataclasses based on type annotations. With it, we could rew
     </div>
   </div>
 </footer>
-      <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=c19e757c"></script>
-      <script src="../_static/doctools.js?v=888ff710"></script>
-      <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
+      <script src="../_static/documentation_options.js?v=b95e84ca"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
       <script src="../_static/copybutton.js?v=f281be69"></script>
       <script src="../_static/litestar-theme.js?v=ab2dcc9e"></script>
@@ -1427,8 +1423,8 @@ pydantic models and dataclasses based on type annotations. With it, we could rew
       <script>let toggleHintHide = 'Click to hide';</script>
       <script>let toggleOpenOnPrint = 'true';</script>
       <script src="../_static/togglebutton.js?v=4a39c7ea"></script>
-      <script src="../_static/design-tabs.js?v=36754332"></script>
+      <script src="../_static/design-tabs.js?v=f930bc37"></script>
       <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
-      <script src="../_static/shibuya.js?v=e2e99575"></script>
+      <script src="../_static/shibuya.js?v=c477d091"></script>
       <script src="../_static/versioning.js?v=bc681eff"></script></body>
 </html>

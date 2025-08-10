@@ -1,15 +1,15 @@
 <!DOCTYPE html>
-<html lang="en" data-accent-color="amber" data-content_root="">
+<html lang="en" data-accent-color="amber" data-content_root="../">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>CLI - Litestar Framework</title><link rel="shortcut icon" href="../_static/favicon.svg"/><link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Databases" href="databases/index.html" /><link rel="prev" title="Channels" href="channels.html" /><script>
     function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
     setColorMode(localStorage._theme||"auto");
   </script><link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=397bb51e" />
-    <link rel="stylesheet" type="text/css" href="../_static/shibuya.css?v=83eaa723" />
+    <link rel="stylesheet" type="text/css" href="../_static/shibuya.css?v=76b6f612" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
-    <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx_paramlinks.css" />
     <link media="print" rel="stylesheet" type="text/css" href="../_static/print.css?v=20ff2c19" />
     <link rel="stylesheet" type="text/css" href="../_static/style.css?v=50ea2f63" />
@@ -42,13 +42,13 @@
       <img class="dark-logo" src="../_static/logo-dark.png" alt="Litestar" height="28" loading="lazy" />
       <strong>Litestar</strong>
     </a>
-    <div class="sy-head-nav" id="HeadNav">
+    <div class="sy-head-nav" id="head-nav">
       <nav class="sy-head-links"><ul><li class="link"><a href="../index.html">Home</a></li>
-      <li class="link"><button type="button">
+      <li class="link"><button class="js-menu" type="button" id="nav-trigger-2" aria-controls="nav-children-2">
             <span>Community</span>
             <i class="i-lucide chevron-down"></i>
           </button>
-        <ul><li><a href="../contribution-guide.html">
+        <ul id="nav-children-2" aria-labelledby="nav-trigger-2"><li><a href="../contribution-guide.html">
                 <span>Contributing</span>
                 <small>Learn how to contribute to the Litestar project</small>
               </a></li><li><a href="https://github.com/litestar-org/.github?tab=coc-ov-file">
@@ -59,11 +59,11 @@
                 <small>Overview of Litestar's security protocols</small>
               </a></li></ul>
       </li>
-      <li class="link"><button type="button">
+      <li class="link"><button class="js-menu" type="button" id="nav-trigger-3" aria-controls="nav-children-3">
             <span>About</span>
             <i class="i-lucide chevron-down"></i>
           </button>
-        <ul><li><a href="https://litestar.dev/about/organization">
+        <ul id="nav-children-3" aria-labelledby="nav-trigger-3"><li><a href="https://litestar.dev/about/organization">
                 <span>Litestar Organization</span>
                 <small>Details about the Litestar organization</small>
               </a></li><li><a href="https://litestar.dev/about/litestar-releases">
@@ -71,11 +71,11 @@
                 <small>Explore the release process, versioning, and deprecation policy for Litestar</small>
               </a></li></ul>
       </li>
-      <li class="link"><button type="button">
+      <li class="link"><button class="js-menu" type="button" id="nav-trigger-4" aria-controls="nav-children-4">
             <span>Release notes</span>
             <i class="i-lucide chevron-down"></i>
           </button>
-        <ul><li><a href="../release-notes/whats-new-3.html">
+        <ul id="nav-children-4" aria-labelledby="nav-trigger-4"><li><a href="../release-notes/whats-new-3.html">
                 <span>What's new in 3.0</span>
                 <small>Explore the new features in Litestar 3.0</small>
               </a></li><li><a href="../release-notes/changelog.html">
@@ -86,11 +86,11 @@
                 <small>All changes in the 2.x series</small>
               </a></li></ul>
       </li>
-      <li class="link"><button type="button">
+      <li class="link"><button class="js-menu" type="button" id="nav-trigger-5" aria-controls="nav-children-5">
             <span>Help</span>
             <i class="i-lucide chevron-down"></i>
           </button>
-        <ul><li><a href="https://discord.gg/litestar">
+        <ul id="nav-children-5" aria-labelledby="nav-trigger-5"><li><a href="https://discord.gg/litestar">
                 <span>Discord Help Forum</span>
                 <small>Dedicated Discord help forum</small>
               </a></li><li><a href="https://github.com/orgs/litestar-org/discussions">
@@ -127,7 +127,7 @@ data-aria-auto="Switch to light color mode"
 data-aria-light="Switch to dark color mode"
 data-aria-dark="Switch to auto color mode">
 <i class="i-lucide theme-icon"></i>
-</button><button class="md:hidden flex items-center js-menu" aria-label="Menu" type="button" aria-controls="HeadNav" aria-expanded="false">
+</button><button class="md:hidden flex items-center js-menu" aria-label="Menu" type="button" aria-controls="head-nav" aria-expanded="false">
         <div class="hamburger">
           <span class="hamburger_1"></span>
           <span class="hamburger_2 -translate-x-2"></span>
@@ -173,12 +173,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2"><a class="reference internal" href="databases/index.html">Databases</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="databases/sqlalchemy/index.html">SQLAlchemy</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="databases/sqlalchemy/models_and_repository.html">SQLAlchemy Models &amp; Repository</a></li>
-<li class="toctree-l4"><a class="reference internal" href="databases/sqlalchemy/plugins/index.html">Plugins</a><ul>
-<li class="toctree-l5"><a class="reference internal" href="databases/sqlalchemy/plugins/sqlalchemy_plugin.html">SQLAlchemy Plugin</a></li>
-<li class="toctree-l5"><a class="reference internal" href="databases/sqlalchemy/plugins/sqlalchemy_init_plugin.html">SQLAlchemy Init Plugin</a></li>
-<li class="toctree-l5"><a class="reference internal" href="databases/sqlalchemy/plugins/sqlalchemy_serialization_plugin.html">SQLAlchemy Serialization Plugin</a></li>
-</ul>
-</li>
+<li class="toctree-l4"><a class="reference internal" href="databases/sqlalchemy/plugins/index.html">Plugins</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="databases/piccolo.html">Piccolo ORM</a></li>
@@ -508,11 +503,12 @@ data-aria-dark="Switch to auto color mode">
     </span>
   </span>
 </a><div class="edit-this-page">
-  <a href="https://github.com/litestar-org/litestar/blob/master/docs/usage/cli.rst">Edit this page</a>
+  <a href="https://github.com/litestar-org/litestar/blob/main/docs/usage/cli.rst">Edit this page</a>
 </div><div id="ethical-ad-placement" data-ea-publisher="readthedocs"></div></div>
   </aside>
   <div class="rside-overlay js-menu" role="button" aria-label="Close Table of Contents" aria-controls="rside" aria-expanded="false"></div>
-  <main class="sy-main w-full max-sm:max-w-full print:pt-6"><div class="sy-breadcrumbs" role="navigation">
+  <main class="sy-main w-full max-sm:max-w-full print:pt-6">
+<div class="sy-breadcrumbs" role="navigation">
   <div class="sy-breadcrumbs-inner flex items-center">
     <div class="md:hidden mr-3">
       <button class="js-menu" aria-label="Menu" type="button" aria-controls="lside" aria-expanded="false">
@@ -542,19 +538,19 @@ data-aria-dark="Switch to auto color mode">
       <div class="min-w-0 max-w-6xl px-6 pb-6 pt-8 xl:px-12">
         <article class="yue" role="main">
           <section id="cli">
-<h1>CLI<a class="headerlink" href="#cli" title="Permalink to this heading">¶</a></h1>
+<h1>CLI<a class="headerlink" href="#cli" title="Link to this heading">¶</a></h1>
 <p>Litestar provides a convenient command line interface (CLI) for running and managing Litestar applications. The CLI is
 powered by <a class="reference external" href="https://click.palletsprojects.com/">click</a>, <a class="reference external" href="https://rich.readthedocs.io">rich</a>,
 and <a class="reference external" href="https://github.com/ewels/rich-click">rich-click</a>.</p>
 <section id="enabling-all-cli-features">
-<h2>Enabling all CLI features<a class="headerlink" href="#enabling-all-cli-features" title="Permalink to this heading">¶</a></h2>
+<h2>Enabling all CLI features<a class="headerlink" href="#enabling-all-cli-features" title="Link to this heading">¶</a></h2>
 <p>The CLI and its hard dependencies are included by default. However, if you want to run your application
 (using <code class="docutils literal notranslate"><span class="pre">litestar</span> <span class="pre">run</span></code> ) or beautify the Typescript generated by the <code class="docutils literal notranslate"><span class="pre">litestar</span> <span class="pre">schema</span> <span class="pre">typescript</span></code>
 command, you will need <a class="reference external" href="https://www.uvicorn.org/">uvicorn</a> and <a class="reference external" href="https://pypi.org/project/jsbeautifier/">jsbeautifier</a>.
 They can be installed independently, but we recommend installing the <code class="docutils literal notranslate"><span class="pre">standard</span></code> extra which conveniently bundles
 commonly used optional dependencies.</p>
 <div class="literal-block-wrapper docutils container" id="id2">
-<div class="code-block-caption"><span class="caption-text">Install the standard group</span><a class="headerlink" href="#id2" title="Permalink to this code">¶</a></div>
+<div class="code-block-caption"><span class="caption-text">Install the standard group</span><a class="headerlink" href="#id2" title="Link to this code">¶</a></div>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span data-line="1">pip<span class="w"> </span>install<span class="w"> </span><span class="s1">&#39;litestar[standard]&#39;</span>
 </span></pre></div>
 </div>
@@ -562,7 +558,7 @@ commonly used optional dependencies.</p>
 <p>Once you have installed <code class="docutils literal notranslate"><span class="pre">standard</span></code>, you will have access to the <code class="docutils literal notranslate"><span class="pre">litestar</span> <span class="pre">run</span></code> command.</p>
 </section>
 <section id="autodiscovery">
-<h2>Autodiscovery<a class="headerlink" href="#autodiscovery" title="Permalink to this heading">¶</a></h2>
+<h2>Autodiscovery<a class="headerlink" href="#autodiscovery" title="Link to this heading">¶</a></h2>
 <p>Litestar offers autodiscovery of applications and application factories placed within the canonical modules named
 either <code class="docutils literal notranslate"><span class="pre">app</span></code> or <code class="docutils literal notranslate"><span class="pre">application</span></code>. These modules can be individual files or directories. Within these modules or their
 submodules, the CLI will detect any instances of <a class="reference internal" href="../reference/app.html#litestar.app.Litestar" title="litestar.app.Litestar"><code class="xref py py-class docutils literal notranslate"><span class="pre">Litestar</span></code></a>, callables named <code class="docutils literal notranslate"><span class="pre">create_app</span></code>, or
@@ -586,41 +582,41 @@ callables annotated to return a <a class="reference internal" href="../reference
 </ol>
 </section>
 <section id="specifying-an-application-explicitly">
-<h2>Specifying an application explicitly<a class="headerlink" href="#specifying-an-application-explicitly" title="Permalink to this heading">¶</a></h2>
+<h2>Specifying an application explicitly<a class="headerlink" href="#specifying-an-application-explicitly" title="Link to this heading">¶</a></h2>
 <p>The application to be used can be specified explicitly via either the <code class="docutils literal notranslate"><span class="pre">--app</span></code> argument
 or the <code class="docutils literal notranslate"><span class="pre">LITESTAR_APP</span></code> environment variable. The format for both of them is
 <code class="docutils literal notranslate"><span class="pre">&lt;module</span> <span class="pre">name&gt;.&lt;submodule&gt;:&lt;app</span> <span class="pre">instance</span> <span class="pre">or</span> <span class="pre">factory&gt;</span></code>.</p>
 <p>When both <code class="docutils literal notranslate"><span class="pre">--app</span></code> and <code class="docutils literal notranslate"><span class="pre">LITESTAR_APP</span></code> are set, the CLI option takes precedence over
 the environment variable.</p>
 <div class="literal-block-wrapper docutils container" id="id3">
-<div class="code-block-caption"><span class="caption-text">Using ‘litestar run’ and specifying an application factory via –app</span><a class="headerlink" href="#id3" title="Permalink to this code">¶</a></div>
+<div class="code-block-caption"><span class="caption-text">Using ‘litestar run’ and specifying an application factory via –app</span><a class="headerlink" href="#id3" title="Link to this code">¶</a></div>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">litestar<span class="w"> </span>--app<span class="o">=</span>my_application.app:create_my_app<span class="w"> </span>run
 </span></pre></div>
 </div>
 </div>
 <div class="literal-block-wrapper docutils container" id="id4">
-<div class="code-block-caption"><span class="caption-text">Using ‘litestar run’ and specifying an application factory via LITESTAR_APP</span><a class="headerlink" href="#id4" title="Permalink to this code">¶</a></div>
+<div class="code-block-caption"><span class="caption-text">Using ‘litestar run’ and specifying an application factory via LITESTAR_APP</span><a class="headerlink" href="#id4" title="Link to this code">¶</a></div>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="nv">LITESTAR_APP</span><span class="o">=</span>my_application.app:create_my_app<span class="w"> </span>litestar<span class="w"> </span>run
 </span></pre></div>
 </div>
 </div>
 </section>
 <section id="extending-the-cli">
-<h2>Extending the CLI<a class="headerlink" href="#extending-the-cli" title="Permalink to this heading">¶</a></h2>
+<h2>Extending the CLI<a class="headerlink" href="#extending-the-cli" title="Link to this heading">¶</a></h2>
 <p>Litestar’s CLI is built with <a class="reference external" href="https://click.palletsprojects.com/">click</a> and can be extended by making use of
 <a class="reference external" href="https://packaging.python.org/en/latest/specifications/entry-points/">entry points</a>,
 or by creating a plugin inheriting from <a class="reference internal" href="../reference/plugins/index.html#litestar.plugins.CLIPlugin" title="litestar.plugins.CLIPlugin"><code class="xref py py-class docutils literal notranslate"><span class="pre">CLIPlugin</span></code></a>.</p>
 <section id="using-entry-points">
-<h3>Using entry points<a class="headerlink" href="#using-entry-points" title="Permalink to this heading">¶</a></h3>
+<h3>Using entry points<a class="headerlink" href="#using-entry-points" title="Link to this heading">¶</a></h3>
 <p>Entry points for the CLI can be added under the <code class="docutils literal notranslate"><span class="pre">litestar.commands</span></code> group. These
 entries should point to a <a class="reference external" href="https://click.palletsprojects.com/en/stable/api/#click.Command" title="(in Click v8.2.x)"><code class="xref py py-class docutils literal notranslate"><span class="pre">click.Command</span></code></a> or <a class="reference external" href="https://click.palletsprojects.com/en/stable/api/#click.Group" title="(in Click v8.2.x)"><code class="xref py py-class docutils literal notranslate"><span class="pre">click.Group</span></code></a>:</p>
 <div class="sd-tab-set docutils">
 <input checked="checked" id="sd-tab-item-0" name="sd-tab-set-0" type="radio">
-</input><label class="sd-tab-label" for="sd-tab-item-0">
+<label class="sd-tab-label" for="sd-tab-item-0">
 setup.py</label><div class="sd-tab-content docutils">
 <div class="literal-block-wrapper docutils container" id="id5">
-<div class="code-block-caption"><span class="caption-text">Using <a class="reference external" href="https://setuptools.pypa.io/en/latest/">setuptools</a></span><a class="headerlink" href="#id5" title="Permalink to this code">¶</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">setuptools</span> <span class="kn">import</span> <span class="n">setup</span>
+<div class="code-block-caption"><span class="caption-text">Using <a class="reference external" href="https://setuptools.pypa.io/en/latest/">setuptools</a></span><a class="headerlink" href="#id5" title="Link to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">setuptools</span><span class="w"> </span><span class="kn">import</span> <span class="n">setup</span>
 </span><span data-line="2">
 </span><span data-line="3"><span class="n">setup</span><span class="p">(</span>
 </span><span data-line="4">   <span class="n">name</span><span class="o">=</span><span class="s2">&quot;my-litestar-plugin&quot;</span><span class="p">,</span>
@@ -634,10 +630,10 @@ setup.py</label><div class="sd-tab-content docutils">
 </div>
 </div>
 <input id="sd-tab-item-1" name="sd-tab-set-0" type="radio">
-</input><label class="sd-tab-label" for="sd-tab-item-1">
+<label class="sd-tab-label" for="sd-tab-item-1">
 pdm</label><div class="sd-tab-content docutils">
 <div class="literal-block-wrapper docutils container" id="id6">
-<div class="code-block-caption"><span class="caption-text">Using <a class="reference external" href="https://pdm.fming.dev/">PDM</a></span><a class="headerlink" href="#id6" title="Permalink to this code">¶</a></div>
+<div class="code-block-caption"><span class="caption-text">Using <a class="reference external" href="https://pdm.fming.dev/">PDM</a></span><a class="headerlink" href="#id6" title="Link to this code">¶</a></div>
 <div class="highlight-toml notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">[project.scripts]</span>
 </span><span data-line="2"><span class="n">my_command</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;my_litestar_plugin.cli:main&quot;</span>
 </span><span data-line="3">
@@ -650,10 +646,10 @@ pdm</label><div class="sd-tab-content docutils">
 </div>
 </div>
 <input id="sd-tab-item-2" name="sd-tab-set-0" type="radio">
-</input><label class="sd-tab-label" for="sd-tab-item-2">
+<label class="sd-tab-label" for="sd-tab-item-2">
 poetry</label><div class="sd-tab-content docutils">
 <div class="literal-block-wrapper docutils container" id="id7">
-<div class="code-block-caption"><span class="caption-text">Using <a class="reference external" href="https://python-poetry.org/">poetry</a></span><a class="headerlink" href="#id7" title="Permalink to this code">¶</a></div>
+<div class="code-block-caption"><span class="caption-text">Using <a class="reference external" href="https://python-poetry.org/">poetry</a></span><a class="headerlink" href="#id7" title="Link to this code">¶</a></div>
 <div class="highlight-toml notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">[tool.poetry.plugins.</span><span class="s2">&quot;litestar.commands&quot;</span><span class="k">]</span>
 </span><span data-line="2"><span class="n">my_command</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;my_litestar_plugin.cli:main&quot;</span>
 </span></pre></div>
@@ -661,10 +657,10 @@ poetry</label><div class="sd-tab-content docutils">
 </div>
 </div>
 <input id="sd-tab-item-3" name="sd-tab-set-0" type="radio">
-</input><label class="sd-tab-label" for="sd-tab-item-3">
+<label class="sd-tab-label" for="sd-tab-item-3">
 uv</label><div class="sd-tab-content docutils">
 <div class="literal-block-wrapper docutils container" id="id8">
-<div class="code-block-caption"><span class="caption-text">Using <a class="reference external" href="https://docs.astral.sh/uv/">uv</a></span><a class="headerlink" href="#id8" title="Permalink to this code">¶</a></div>
+<div class="code-block-caption"><span class="caption-text">Using <a class="reference external" href="https://docs.astral.sh/uv/">uv</a></span><a class="headerlink" href="#id8" title="Link to this code">¶</a></div>
 <div class="highlight-toml notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">[project.scripts]</span>
 </span><span data-line="2"><span class="n">my_command</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;my_litestar_plugin.cli:main&quot;</span>
 </span></pre></div>
@@ -674,21 +670,21 @@ uv</label><div class="sd-tab-content docutils">
 </div>
 </section>
 <section id="using-a-plugin">
-<h3>Using a plugin<a class="headerlink" href="#using-a-plugin" title="Permalink to this heading">¶</a></h3>
+<h3>Using a plugin<a class="headerlink" href="#using-a-plugin" title="Link to this heading">¶</a></h3>
 <p>A plugin extending the CLI can be created using the <a class="reference internal" href="../reference/plugins/index.html#litestar.plugins.CLIPlugin" title="litestar.plugins.CLIPlugin"><code class="xref py py-class docutils literal notranslate"><span class="pre">CLIPlugin</span></code></a>.
 Its <a class="reference internal" href="../reference/plugins/index.html#litestar.plugins.CLIPlugin.on_cli_init" title="litestar.plugins.CLIPlugin.on_cli_init"><code class="xref py py-meth docutils literal notranslate"><span class="pre">on_cli_init()</span></code></a> will be called during the initialization of the CLI,
 and receive the root <a class="reference external" href="https://click.palletsprojects.com/en/stable/api/#click.Group" title="(in Click v8.2.x)"><code class="xref py py-class docutils literal notranslate"><span class="pre">click.Group</span></code></a> as its first argument, which can then be used to add or override commands:</p>
 <div class="literal-block-wrapper docutils container" id="id9">
-<div class="code-block-caption"><span class="caption-text">Creating a CLI plugin</span><a class="headerlink" href="#id9" title="Permalink to this code">¶</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span>
-</span><span data-line="2"><span class="kn">from</span> <span class="nn">litestar.plugins</span> <span class="kn">import</span> <span class="n">CLIPlugin</span>
-</span><span data-line="3"><span class="kn">from</span> <span class="nn">click</span> <span class="kn">import</span> <span class="n">Group</span>
+<div class="code-block-caption"><span class="caption-text">Creating a CLI plugin</span><a class="headerlink" href="#id9" title="Link to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.plugins</span><span class="w"> </span><span class="kn">import</span> <span class="n">CLIPlugin</span>
+</span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">click</span><span class="w"> </span><span class="kn">import</span> <span class="n">Group</span>
 </span><span data-line="4">
 </span><span data-line="5">
-</span><span data-line="6"><span class="k">class</span> <span class="nc">MyPlugin</span><span class="p">(</span><span class="n">CLIPlugin</span><span class="p">):</span>
-</span><span data-line="7">    <span class="k">def</span> <span class="nf">on_cli_init</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cli</span><span class="p">:</span> <span class="n">Group</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="6"><span class="k">class</span><span class="w"> </span><span class="nc">MyPlugin</span><span class="p">(</span><span class="n">CLIPlugin</span><span class="p">):</span>
+</span><span data-line="7">    <span class="k">def</span><span class="w"> </span><span class="nf">on_cli_init</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cli</span><span class="p">:</span> <span class="n">Group</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 </span><span data-line="8">        <span class="nd">@cli</span><span class="o">.</span><span class="n">command</span><span class="p">()</span>
-</span><span data-line="9">        <span class="k">def</span> <span class="nf">is_debug_mode</span><span class="p">(</span><span class="n">app</span><span class="p">:</span> <span class="n">Litestar</span><span class="p">):</span>
+</span><span data-line="9">        <span class="k">def</span><span class="w"> </span><span class="nf">is_debug_mode</span><span class="p">(</span><span class="n">app</span><span class="p">:</span> <span class="n">Litestar</span><span class="p">):</span>
 </span><span data-line="10">            <span class="nb">print</span><span class="p">(</span><span class="n">app</span><span class="o">.</span><span class="n">debug</span><span class="p">)</span>
 </span><span data-line="11">
 </span><span data-line="12">
@@ -698,78 +694,78 @@ and receive the root <a class="reference external" href="https://click.palletspr
 </div>
 </section>
 <section id="accessing-the-app-instance">
-<h3>Accessing the app instance<a class="headerlink" href="#accessing-the-app-instance" title="Permalink to this heading">¶</a></h3>
+<h3>Accessing the app instance<a class="headerlink" href="#accessing-the-app-instance" title="Link to this heading">¶</a></h3>
 <p>When extending the Litestar CLI, you will most likely need access to the loaded <code class="docutils literal notranslate"><span class="pre">Litestar</span></code> instance.
 You can achieve this by adding the special <code class="docutils literal notranslate"><span class="pre">app</span></code> parameter to your CLI functions. This will cause the
 <code class="docutils literal notranslate"><span class="pre">Litestar</span></code> instance to be injected into the function whenever it is called from a click-context.</p>
 <div class="literal-block-wrapper docutils container" id="id10">
-<div class="code-block-caption"><span class="caption-text">Accessing the app instance programmatically</span><a class="headerlink" href="#id10" title="Permalink to this code">¶</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">import</span> <span class="nn">click</span>
-</span><span data-line="2"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span>
+<div class="code-block-caption"><span class="caption-text">Accessing the app instance programmatically</span><a class="headerlink" href="#id10" title="Link to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">import</span><span class="w"> </span><span class="nn">click</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span>
 </span><span data-line="3">
 </span><span data-line="4">
 </span><span data-line="5"><span class="nd">@click</span><span class="o">.</span><span class="n">command</span><span class="p">()</span>
-</span><span data-line="6"><span class="k">def</span> <span class="nf">my_command</span><span class="p">(</span><span class="n">app</span><span class="p">:</span> <span class="n">Litestar</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
+</span><span data-line="6"><span class="k">def</span><span class="w"> </span><span class="nf">my_command</span><span class="p">(</span><span class="n">app</span><span class="p">:</span> <span class="n">Litestar</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
 </span></pre></div>
 </div>
 </div>
 </section>
 <section id="using-the-server-lifespan-hook">
-<h3>Using the <cite>server_lifespan</cite> hook<a class="headerlink" href="#using-the-server-lifespan-hook" title="Permalink to this heading">¶</a></h3>
+<h3>Using the <cite>server_lifespan</cite> hook<a class="headerlink" href="#using-the-server-lifespan-hook" title="Link to this heading">¶</a></h3>
 <p>Server lifespan hooks provide a way to run code before and after the <em>server</em> starts and stops. In contrast to the regular <cite>lifespan</cite> hooks, they only run once, even when a server starts multiple workers, whereas <cite>lifespan</cite> hooks would run for each individual worker.</p>
 <p>This makes them suitable for tasks that should happen exactly once, like initializing a database.</p>
 <div class="sd-tab-set docutils">
 <input id="sd-tab-item-4" name="sd-tab-set-1" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-4">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="3.8" for="sd-tab-item-4">
 Python 3.8+</label><div class="sd-tab-content docutils">
 <div class="literal-block-wrapper docutils container" id="id11">
-<div class="code-block-caption"><span class="caption-text">Using the <cite>server_lifespan</cite> hook</span><a class="headerlink" href="#id11" title="Permalink to this code">¶</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">contextlib</span> <span class="kn">import</span> <span class="n">contextmanager</span>
-</span><span data-line="2"><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Generator</span>
+<div class="code-block-caption"><span class="caption-text">Using the <cite>server_lifespan</cite> hook</span><a class="headerlink" href="#id11" title="Link to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">contextlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">contextmanager</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Generator</span>
 </span><span data-line="3">
-</span><span data-line="4"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span>
-</span><span data-line="5"><span class="kn">from</span> <span class="nn">litestar.plugins.base</span> <span class="kn">import</span> <span class="n">CLIPlugin</span>
+</span><span data-line="4"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span>
+</span><span data-line="5"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.plugins.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">CLIPlugin</span>
 </span><span data-line="6">
 </span><span data-line="7">
-</span><span data-line="8"><span class="k">class</span> <span class="nc">StartupPrintPlugin</span><span class="p">(</span><span class="n">CLIPlugin</span><span class="p">):</span>
+</span><span data-line="8"><span class="k">class</span><span class="w"> </span><span class="nc">StartupPrintPlugin</span><span class="p">(</span><span class="n">CLIPlugin</span><span class="p">):</span>
 </span><span data-line="9">
 </span><span data-line="10">    <span class="nd">@contextmanager</span>
-</span><span data-line="11">    <span class="k">def</span> <span class="nf">server_lifespan</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">app</span><span class="p">:</span> <span class="n">Litestar</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+</span><span data-line="11">    <span class="k">def</span><span class="w"> </span><span class="nf">server_lifespan</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">app</span><span class="p">:</span> <span class="n">Litestar</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
 </span><span data-line="12">        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;i_run_before_startup_plugin&quot;</span><span class="p">)</span>  <span class="c1"># noqa: T201</span>
 </span><span data-line="13">        <span class="k">try</span><span class="p">:</span>
 </span><span data-line="14">            <span class="k">yield</span>
 </span><span data-line="15">        <span class="k">finally</span><span class="p">:</span>
 </span><span data-line="16">            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;i_run_after_shutdown_plugin&quot;</span><span class="p">)</span>  <span class="c1"># noqa: T201</span>
 </span><span data-line="17">
-</span><span data-line="18"><span class="k">def</span> <span class="nf">create_app</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Litestar</span><span class="p">:</span>
+</span><span data-line="18"><span class="k">def</span><span class="w"> </span><span class="nf">create_app</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Litestar</span><span class="p">:</span>
 </span><span data-line="19">    <span class="k">return</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[],</span> <span class="n">plugins</span><span class="o">=</span><span class="p">[</span><span class="n">StartupPrintPlugin</span><span class="p">()])</span>
 </span></pre></div>
 </div>
 </div>
 </div>
 <input checked="checked" id="sd-tab-item-5" name="sd-tab-set-1" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.9" for="sd-tab-item-5">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="3.9" for="sd-tab-item-5">
 Python 3.9+</label><div class="sd-tab-content docutils">
 <div class="literal-block-wrapper docutils container" id="id12">
-<div class="code-block-caption"><span class="caption-text">Using the <cite>server_lifespan</cite> hook</span><a class="headerlink" href="#id12" title="Permalink to this code">¶</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">contextlib</span> <span class="kn">import</span> <span class="n">contextmanager</span>
-</span><span data-line="2"><span class="kn">from</span> <span class="nn">collections.abc</span> <span class="kn">import</span> <span class="n">Generator</span>
+<div class="code-block-caption"><span class="caption-text">Using the <cite>server_lifespan</cite> hook</span><a class="headerlink" href="#id12" title="Link to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">contextlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">contextmanager</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Generator</span>
 </span><span data-line="3">
-</span><span data-line="4"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span>
-</span><span data-line="5"><span class="kn">from</span> <span class="nn">litestar.plugins.base</span> <span class="kn">import</span> <span class="n">CLIPlugin</span>
+</span><span data-line="4"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span>
+</span><span data-line="5"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.plugins.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">CLIPlugin</span>
 </span><span data-line="6">
 </span><span data-line="7">
-</span><span data-line="8"><span class="k">class</span> <span class="nc">StartupPrintPlugin</span><span class="p">(</span><span class="n">CLIPlugin</span><span class="p">):</span>
+</span><span data-line="8"><span class="k">class</span><span class="w"> </span><span class="nc">StartupPrintPlugin</span><span class="p">(</span><span class="n">CLIPlugin</span><span class="p">):</span>
 </span><span data-line="9">
 </span><span data-line="10">    <span class="nd">@contextmanager</span>
-</span><span data-line="11">    <span class="k">def</span> <span class="nf">server_lifespan</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">app</span><span class="p">:</span> <span class="n">Litestar</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+</span><span data-line="11">    <span class="k">def</span><span class="w"> </span><span class="nf">server_lifespan</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">app</span><span class="p">:</span> <span class="n">Litestar</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
 </span><span data-line="12">        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;i_run_before_startup_plugin&quot;</span><span class="p">)</span>  <span class="c1"># noqa: T201</span>
 </span><span data-line="13">        <span class="k">try</span><span class="p">:</span>
 </span><span data-line="14">            <span class="k">yield</span>
 </span><span data-line="15">        <span class="k">finally</span><span class="p">:</span>
 </span><span data-line="16">            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;i_run_after_shutdown_plugin&quot;</span><span class="p">)</span>  <span class="c1"># noqa: T201</span>
 </span><span data-line="17">
-</span><span data-line="18"><span class="k">def</span> <span class="nf">create_app</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Litestar</span><span class="p">:</span>
+</span><span data-line="18"><span class="k">def</span><span class="w"> </span><span class="nf">create_app</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Litestar</span><span class="p">:</span>
 </span><span data-line="19">    <span class="k">return</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[],</span> <span class="n">plugins</span><span class="o">=</span><span class="p">[</span><span class="n">StartupPrintPlugin</span><span class="p">()])</span>
 </span></pre></div>
 </div>
@@ -779,10 +775,10 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 </section>
 </section>
 <section id="cli-reference">
-<h2>CLI Reference<a class="headerlink" href="#cli-reference" title="Permalink to this heading">¶</a></h2>
+<h2>CLI Reference<a class="headerlink" href="#cli-reference" title="Link to this heading">¶</a></h2>
 <p>The most up-to-date reference for the Litestar CLI can be found by running:</p>
 <div class="literal-block-wrapper docutils container" id="id13">
-<div class="code-block-caption"><span class="caption-text">Display the CLI help</span><a class="headerlink" href="#id13" title="Permalink to this code">¶</a></div>
+<div class="code-block-caption"><span class="caption-text">Display the CLI help</span><a class="headerlink" href="#id13" title="Link to this code">¶</a></div>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span data-line="1">litestar<span class="w"> </span>--help
 </span></pre></div>
 </div>
@@ -841,9 +837,9 @@ information.</p>
     </div>
   </div>
 </footer>
-      <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=c19e757c"></script>
-      <script src="../_static/doctools.js?v=888ff710"></script>
-      <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
+      <script src="../_static/documentation_options.js?v=b95e84ca"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
       <script src="../_static/copybutton.js?v=f281be69"></script>
       <script src="../_static/litestar-theme.js?v=ab2dcc9e"></script>
@@ -851,8 +847,8 @@ information.</p>
       <script>let toggleHintHide = 'Click to hide';</script>
       <script>let toggleOpenOnPrint = 'true';</script>
       <script src="../_static/togglebutton.js?v=4a39c7ea"></script>
-      <script src="../_static/design-tabs.js?v=36754332"></script>
+      <script src="../_static/design-tabs.js?v=f930bc37"></script>
       <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
-      <script src="../_static/shibuya.js?v=e2e99575"></script>
+      <script src="../_static/shibuya.js?v=c477d091"></script>
       <script src="../_static/versioning.js?v=bc681eff"></script></body>
 </html>

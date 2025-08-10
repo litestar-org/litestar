@@ -1,15 +1,15 @@
 <!DOCTYPE html>
-<html lang="en" data-accent-color="amber" data-content_root="">
+<html lang="en" data-accent-color="amber" data-content_root="../">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>What’s changed in 3.0? - Litestar Framework</title><link rel="shortcut icon" href="../_static/favicon.svg"/><link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><script>
     function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
     setColorMode(localStorage._theme||"auto");
   </script><link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=397bb51e" />
-    <link rel="stylesheet" type="text/css" href="../_static/shibuya.css?v=83eaa723" />
+    <link rel="stylesheet" type="text/css" href="../_static/shibuya.css?v=76b6f612" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
-    <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx_paramlinks.css" />
     <link media="print" rel="stylesheet" type="text/css" href="../_static/print.css?v=20ff2c19" />
     <link rel="stylesheet" type="text/css" href="../_static/style.css?v=50ea2f63" />
@@ -42,13 +42,13 @@
       <img class="dark-logo" src="../_static/logo-dark.png" alt="Litestar" height="28" loading="lazy" />
       <strong>Litestar</strong>
     </a>
-    <div class="sy-head-nav" id="HeadNav">
+    <div class="sy-head-nav" id="head-nav">
       <nav class="sy-head-links"><ul><li class="link"><a href="../index.html">Home</a></li>
-      <li class="link"><button type="button">
+      <li class="link"><button class="js-menu" type="button" id="nav-trigger-2" aria-controls="nav-children-2">
             <span>Community</span>
             <i class="i-lucide chevron-down"></i>
           </button>
-        <ul><li><a href="../contribution-guide.html">
+        <ul id="nav-children-2" aria-labelledby="nav-trigger-2"><li><a href="../contribution-guide.html">
                 <span>Contributing</span>
                 <small>Learn how to contribute to the Litestar project</small>
               </a></li><li><a href="https://github.com/litestar-org/.github?tab=coc-ov-file">
@@ -59,11 +59,11 @@
                 <small>Overview of Litestar's security protocols</small>
               </a></li></ul>
       </li>
-      <li class="link"><button type="button">
+      <li class="link"><button class="js-menu" type="button" id="nav-trigger-3" aria-controls="nav-children-3">
             <span>About</span>
             <i class="i-lucide chevron-down"></i>
           </button>
-        <ul><li><a href="https://litestar.dev/about/organization">
+        <ul id="nav-children-3" aria-labelledby="nav-trigger-3"><li><a href="https://litestar.dev/about/organization">
                 <span>Litestar Organization</span>
                 <small>Details about the Litestar organization</small>
               </a></li><li><a href="https://litestar.dev/about/litestar-releases">
@@ -71,11 +71,11 @@
                 <small>Explore the release process, versioning, and deprecation policy for Litestar</small>
               </a></li></ul>
       </li>
-      <li class="link"><button type="button">
+      <li class="link"><button class="js-menu" type="button" id="nav-trigger-4" aria-controls="nav-children-4">
             <span>Release notes</span>
             <i class="i-lucide chevron-down"></i>
           </button>
-        <ul><li><a href="#">
+        <ul id="nav-children-4" aria-labelledby="nav-trigger-4"><li><a href="#">
                 <span>What's new in 3.0</span>
                 <small>Explore the new features in Litestar 3.0</small>
               </a></li><li><a href="changelog.html">
@@ -86,11 +86,11 @@
                 <small>All changes in the 2.x series</small>
               </a></li></ul>
       </li>
-      <li class="link"><button type="button">
+      <li class="link"><button class="js-menu" type="button" id="nav-trigger-5" aria-controls="nav-children-5">
             <span>Help</span>
             <i class="i-lucide chevron-down"></i>
           </button>
-        <ul><li><a href="https://discord.gg/litestar">
+        <ul id="nav-children-5" aria-labelledby="nav-trigger-5"><li><a href="https://discord.gg/litestar">
                 <span>Discord Help Forum</span>
                 <small>Dedicated Discord help forum</small>
               </a></li><li><a href="https://github.com/orgs/litestar-org/discussions">
@@ -127,7 +127,7 @@ data-aria-auto="Switch to light color mode"
 data-aria-light="Switch to dark color mode"
 data-aria-dark="Switch to auto color mode">
 <i class="i-lucide theme-icon"></i>
-</button><button class="md:hidden flex items-center js-menu" aria-label="Menu" type="button" aria-controls="HeadNav" aria-expanded="false">
+</button><button class="md:hidden flex items-center js-menu" aria-label="Menu" type="button" aria-controls="head-nav" aria-expanded="false">
         <div class="hamburger">
           <span class="hamburger_1"></span>
           <span class="hamburger_2 -translate-x-2"></span>
@@ -173,12 +173,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2"><a class="reference internal" href="../usage/databases/index.html">Databases</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../usage/databases/sqlalchemy/index.html">SQLAlchemy</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../usage/databases/sqlalchemy/models_and_repository.html">SQLAlchemy Models &amp; Repository</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../usage/databases/sqlalchemy/plugins/index.html">Plugins</a><ul>
-<li class="toctree-l5"><a class="reference internal" href="../usage/databases/sqlalchemy/plugins/sqlalchemy_plugin.html">SQLAlchemy Plugin</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../usage/databases/sqlalchemy/plugins/sqlalchemy_init_plugin.html">SQLAlchemy Init Plugin</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../usage/databases/sqlalchemy/plugins/sqlalchemy_serialization_plugin.html">SQLAlchemy Serialization Plugin</a></li>
-</ul>
-</li>
+<li class="toctree-l4"><a class="reference internal" href="../usage/databases/sqlalchemy/plugins/index.html">Plugins</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../usage/databases/piccolo.html">Piccolo ORM</a></li>
@@ -526,11 +521,12 @@ data-aria-dark="Switch to auto color mode">
     </span>
   </span>
 </a><div class="edit-this-page">
-  <a href="https://github.com/litestar-org/litestar/blob/master/docs/release-notes/whats-new-3.rst">Edit this page</a>
+  <a href="https://github.com/litestar-org/litestar/blob/main/docs/release-notes/whats-new-3.rst">Edit this page</a>
 </div><div id="ethical-ad-placement" data-ea-publisher="readthedocs"></div></div>
   </aside>
   <div class="rside-overlay js-menu" role="button" aria-label="Close Table of Contents" aria-controls="rside" aria-expanded="false"></div>
-  <main class="sy-main w-full max-sm:max-w-full print:pt-6"><div class="sy-breadcrumbs" role="navigation">
+  <main class="sy-main w-full max-sm:max-w-full print:pt-6">
+<div class="sy-breadcrumbs" role="navigation">
   <div class="sy-breadcrumbs-inner flex items-center">
     <div class="md:hidden mr-3">
       <button class="js-menu" aria-label="Menu" type="button" aria-controls="lside" aria-expanded="false">
@@ -556,7 +552,7 @@ data-aria-dark="Switch to auto color mode">
       <div class="min-w-0 max-w-6xl px-6 pb-6 pt-8 xl:px-12">
         <article class="yue" role="main">
           <section id="what-s-changed-in-3-0">
-<h1>What’s changed in 3.0?<a class="headerlink" href="#what-s-changed-in-3-0" title="Permalink to this heading">¶</a></h1>
+<h1>What’s changed in 3.0?<a class="headerlink" href="#what-s-changed-in-3-0" title="Link to this heading">¶</a></h1>
 <p>This document is an overview of the changes between version <strong>2.11.x</strong> and <strong>3.0</strong>.
 For a detailed list of all changes, including changes between versions leading up to the
 3.0 release, consult the <a class="reference internal" href="changelog.html"><span class="doc">3.x Changelog</span></a>.</p>
@@ -565,7 +561,7 @@ For a detailed list of all changes, including changes between versions leading u
 <p>The <strong>2.11</strong> release line is unaffected by this change</p>
 </div>
 <section id="imports">
-<h2>Imports<a class="headerlink" href="#imports" title="Permalink to this heading">¶</a></h2>
+<h2>Imports<a class="headerlink" href="#imports" title="Link to this heading">¶</a></h2>
 <div class="table-wrapper docutils container">
 <table class="docutils align-default">
 <thead>
@@ -583,7 +579,7 @@ For a detailed list of all changes, including changes between versions leading u
 </div>
 </section>
 <section id="removal-of-staticfileconfig">
-<h2>Removal of <code class="docutils literal notranslate"><span class="pre">StaticFileConfig</span></code><a class="headerlink" href="#removal-of-staticfileconfig" title="Permalink to this heading">¶</a></h2>
+<h2>Removal of <code class="docutils literal notranslate"><span class="pre">StaticFileConfig</span></code><a class="headerlink" href="#removal-of-staticfileconfig" title="Link to this heading">¶</a></h2>
 <p>The <code class="docutils literal notranslate"><span class="pre">StaticFilesConfig</span></code> has been removed, alongside these related parameters and
 functions:</p>
 <ul class="simple">
@@ -597,12 +593,12 @@ and can simply be added to the <code class="docutils literal notranslate"><span 
 call.</p>
 </section>
 <section id="implicit-optional-default-parameters">
-<h2>Implicit Optional Default Parameters<a class="headerlink" href="#implicit-optional-default-parameters" title="Permalink to this heading">¶</a></h2>
+<h2>Implicit Optional Default Parameters<a class="headerlink" href="#implicit-optional-default-parameters" title="Link to this heading">¶</a></h2>
 <p>In v2, if a handler was typed with an optional parameter it would be implicitly given a default value of <code class="docutils literal notranslate"><span class="pre">None</span></code>. For
 example, if the following handler is called with no query parameter, the value <code class="docutils literal notranslate"><span class="pre">None</span></code> would be passed in to the
 handler for the <code class="docutils literal notranslate"><span class="pre">param</span></code> parameter:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
-</span><span data-line="2"><span class="k">def</span> <span class="nf">my_handler</span><span class="p">(</span><span class="n">param</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="o">...</span><span class="p">:</span>
+</span><span data-line="2"><span class="k">def</span><span class="w"> </span><span class="nf">my_handler</span><span class="p">(</span><span class="n">param</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="o">...</span><span class="p">:</span>
 </span><span data-line="3">    <span class="o">...</span>
 </span></pre></div>
 </div>
@@ -610,17 +606,17 @@ handler for the <code class="docutils literal notranslate"><span class="pre">par
 no longer make this implicit conversion. If you want to have a default value of <code class="docutils literal notranslate"><span class="pre">None</span></code> for an optional parameter, you
 must explicitly set it:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
-</span><span data-line="2"><span class="k">def</span> <span class="nf">my_handler</span><span class="p">(</span><span class="n">param</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="o">...</span><span class="p">:</span>
+</span><span data-line="2"><span class="k">def</span><span class="w"> </span><span class="nf">my_handler</span><span class="p">(</span><span class="n">param</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="o">...</span><span class="p">:</span>
 </span><span data-line="3">    <span class="o">...</span>
 </span></pre></div>
 </div>
 </section>
 <section id="openapi-controller-replaced-by-plugins">
-<h2>OpenAPI Controller Replaced by Plugins<a class="headerlink" href="#openapi-controller-replaced-by-plugins" title="Permalink to this heading">¶</a></h2>
+<h2>OpenAPI Controller Replaced by Plugins<a class="headerlink" href="#openapi-controller-replaced-by-plugins" title="Link to this heading">¶</a></h2>
 <p>In version 3.0, the OpenAPI controller pattern, deprecated in v2.8, has been removed in
 favor of a more flexible plugin system.</p>
 <section id="elimination-of-openapicontroller-subclassing">
-<h3>Elimination of <code class="docutils literal notranslate"><span class="pre">OpenAPIController</span></code> Subclassing<a class="headerlink" href="#elimination-of-openapicontroller-subclassing" title="Permalink to this heading">¶</a></h3>
+<h3>Elimination of <code class="docutils literal notranslate"><span class="pre">OpenAPIController</span></code> Subclassing<a class="headerlink" href="#elimination-of-openapicontroller-subclassing" title="Link to this heading">¶</a></h3>
 <p>Previously, users configured elements such as the root path and styling by subclassing OpenAPIController and setting it
 on the <code class="docutils literal notranslate"><span class="pre">OpenAPIConfig.openapi_controller</span></code> attribute. As of version 3.0, this pattern has been removed. Instead, users
 are required to transition to using UI plugins for configuration.</p>
@@ -634,7 +630,7 @@ If no plugin is supplied, we automatically add the <a class="reference internal"
 <p>See the <a class="reference internal" href="../usage/openapi/ui_plugins.html"><span class="doc">OpenAPI UI Plugins</span></a> documentation for more information on how to configure OpenAPI plugins.</p>
 </section>
 <section id="changes-to-endpoint-configuration">
-<h3>Changes to Endpoint Configuration<a class="headerlink" href="#changes-to-endpoint-configuration" title="Permalink to this heading">¶</a></h3>
+<h3>Changes to Endpoint Configuration<a class="headerlink" href="#changes-to-endpoint-configuration" title="Link to this heading">¶</a></h3>
 <p>The <code class="docutils literal notranslate"><span class="pre">OpenAPIConfig.enabled_endpoints</span></code> attribute is no longer available in version 3.0.0. This attribute previously
 enabled a set of endpoints that would serve different OpenAPI UIs. In the new version, only the <code class="docutils literal notranslate"><span class="pre">openapi.json</span></code>
 endpoint is enabled by default, alongside the <code class="docutils literal notranslate"><span class="pre">Scalar</span></code> UI plugin as the default.</p>
@@ -642,7 +638,7 @@ endpoint is enabled by default, alongside the <code class="docutils literal notr
 necessary plugins within the <a class="reference internal" href="../reference/openapi/openapi.html#litestar.openapi.OpenAPIConfig.render_plugins" title="litestar.openapi.OpenAPIConfig.render_plugins"><code class="xref py py-attr docutils literal notranslate"><span class="pre">OpenAPIConfig.render_plugins</span></code></a> parameter.</p>
 </section>
 <section id="modification-to-root-schema-site-handling">
-<h3>Modification to <code class="docutils literal notranslate"><span class="pre">root_schema_site</span></code> Handling<a class="headerlink" href="#modification-to-root-schema-site-handling" title="Permalink to this heading">¶</a></h3>
+<h3>Modification to <code class="docutils literal notranslate"><span class="pre">root_schema_site</span></code> Handling<a class="headerlink" href="#modification-to-root-schema-site-handling" title="Link to this heading">¶</a></h3>
 <p>The <code class="docutils literal notranslate"><span class="pre">root_schema_site</span></code> attribute, which enabled serving a particular UI at the OpenAPI root path, has been removed in
 version 3.0. The new approach automatically assigns the first <a class="reference internal" href="../reference/openapi/plugins.html#litestar.openapi.plugins.OpenAPIRenderPlugin" title="litestar.openapi.plugins.OpenAPIRenderPlugin"><code class="xref py py-class docutils literal notranslate"><span class="pre">OpenAPIRenderPlugin</span></code></a> listed in the
 <a class="reference internal" href="../reference/openapi/openapi.html#litestar.openapi.OpenAPIConfig.render_plugins" title="litestar.openapi.OpenAPIConfig.render_plugins"><code class="xref py py-attr docutils literal notranslate"><span class="pre">OpenAPIConfig.render_plugins</span></code></a> list to serve at the <code class="docutils literal notranslate"><span class="pre">/schema</span></code> endpoint, unless a plugin has been defined with
@@ -652,13 +648,13 @@ be served at the <code class="docutils literal notranslate"><span class="pre">/s
 </section>
 </section>
 <section id="deprecated-app-parameter-for-response-to-asgi-response-has-been-removed">
-<h2>Deprecated <code class="docutils literal notranslate"><span class="pre">app</span></code> parameter for <code class="docutils literal notranslate"><span class="pre">Response.to_asgi_response</span></code> has been removed<a class="headerlink" href="#deprecated-app-parameter-for-response-to-asgi-response-has-been-removed" title="Permalink to this heading">¶</a></h2>
+<h2>Deprecated <code class="docutils literal notranslate"><span class="pre">app</span></code> parameter for <code class="docutils literal notranslate"><span class="pre">Response.to_asgi_response</span></code> has been removed<a class="headerlink" href="#deprecated-app-parameter-for-response-to-asgi-response-has-been-removed" title="Link to this heading">¶</a></h2>
 <p>The parameter <code class="docutils literal notranslate"><span class="pre">app</span></code> for <a class="reference internal" href="../reference/response/index.html#litestar.response.Response.to_asgi_response" title="litestar.response.Response.to_asgi_response"><code class="xref py py-meth docutils literal notranslate"><span class="pre">to_asgi_response()</span></code></a> has been removed.
 If you need access to the app instance inside a custom <code class="docutils literal notranslate"><span class="pre">to_asgi_response</span></code> method,
 replace the usages of <code class="docutils literal notranslate"><span class="pre">app</span></code> with <code class="docutils literal notranslate"><span class="pre">request.app</span></code>.</p>
 </section>
 <section id="deprecated-scope-state-utilities-removed">
-<h2>Deprecated scope state utilities removed<a class="headerlink" href="#deprecated-scope-state-utilities-removed" title="Permalink to this heading">¶</a></h2>
+<h2>Deprecated scope state utilities removed<a class="headerlink" href="#deprecated-scope-state-utilities-removed" title="Link to this heading">¶</a></h2>
 <p>Litestar has previously made available utilities for storing and retrieving data in the ASGI scope state. These
 utilities have been removed in version 3.0.0. If you need to store data in the ASGI scope state, you should use do so
 using a namespace that is unique to your application and unlikely to conflict with other applications.</p>
@@ -670,18 +666,18 @@ using a namespace that is unique to your application and unlikely to conflict wi
 </ul>
 </section>
 <section id="deprecated-utility-function-is-sync-or-async-generator-removed">
-<h2>Deprecated utility function <code class="docutils literal notranslate"><span class="pre">is_sync_or_async_generator</span></code> removed<a class="headerlink" href="#deprecated-utility-function-is-sync-or-async-generator-removed" title="Permalink to this heading">¶</a></h2>
+<h2>Deprecated utility function <code class="docutils literal notranslate"><span class="pre">is_sync_or_async_generator</span></code> removed<a class="headerlink" href="#deprecated-utility-function-is-sync-or-async-generator-removed" title="Link to this heading">¶</a></h2>
 <p>The utility function <code class="docutils literal notranslate"><span class="pre">is_sync_or_async_generator</span></code> has been removed as it is no longer used internally.</p>
 <p>If you were relying on this utility, you can define it yourself as follows:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">inspect</span> <span class="kn">import</span> <span class="n">isasyncgenfunction</span><span class="p">,</span> <span class="n">isgeneratorfunction</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">inspect</span><span class="w"> </span><span class="kn">import</span> <span class="n">isasyncgenfunction</span><span class="p">,</span> <span class="n">isgeneratorfunction</span>
 </span><span data-line="2">
-</span><span data-line="3"><span class="k">def</span> <span class="nf">is_sync_or_async_generator</span><span class="p">(</span><span class="n">obj</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+</span><span data-line="3"><span class="k">def</span><span class="w"> </span><span class="nf">is_sync_or_async_generator</span><span class="p">(</span><span class="n">obj</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 </span><span data-line="4">    <span class="k">return</span> <span class="n">isgeneratorfunction</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span> <span class="ow">or</span> <span class="n">isasyncgenfunction</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
 </span></pre></div>
 </div>
 </section>
 <section id="removal-of-semantic-http-route-handler-classes">
-<h2>Removal of semantic HTTP route handler classes<a class="headerlink" href="#removal-of-semantic-http-route-handler-classes" title="Permalink to this heading">¶</a></h2>
+<h2>Removal of semantic HTTP route handler classes<a class="headerlink" href="#removal-of-semantic-http-route-handler-classes" title="Link to this heading">¶</a></h2>
 <p>The semantic <code class="docutils literal notranslate"><span class="pre">HTTPRouteHandler</span></code> classes have been removed in favour of functional
 decorators. <code class="docutils literal notranslate"><span class="pre">route</span></code>, <code class="docutils literal notranslate"><span class="pre">get</span></code>, <code class="docutils literal notranslate"><span class="pre">post</span></code>, <code class="docutils literal notranslate"><span class="pre">patch</span></code>, <code class="docutils literal notranslate"><span class="pre">put</span></code>, <code class="docutils literal notranslate"><span class="pre">head</span></code> and <code class="docutils literal notranslate"><span class="pre">delete</span></code>
 are now all decorator functions returning <a class="reference internal" href="../reference/handlers.html#litestar.handlers.HTTPRouteHandler" title="litestar.handlers.HTTPRouteHandler"><code class="xref py py-class docutils literal notranslate"><span class="pre">HTTPRouteHandler</span></code></a>
@@ -690,52 +686,52 @@ instances.</p>
 use a route handler decorator with a custom route handler class, the <code class="docutils literal notranslate"><span class="pre">handler_class</span></code>
 parameter to the decorator function can be used:</p>
 <p>Before:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">class</span> <span class="nc">my_get_handler</span><span class="p">(</span><span class="n">get</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">class</span><span class="w"> </span><span class="nc">my_get_handler</span><span class="p">(</span><span class="n">get</span><span class="p">):</span>
 </span><span data-line="2">    <span class="o">...</span> <span class="c1"># custom handler</span>
 </span><span data-line="3">
 </span><span data-line="4"><span class="nd">@my_get_handler</span><span class="p">()</span>
-</span><span data-line="5"><span class="k">async</span> <span class="k">def</span> <span class="nf">handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+</span><span data-line="5"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
 </span><span data-line="6">    <span class="o">...</span>
 </span></pre></div>
 </div>
 <p>After:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">class</span> <span class="nc">MyHTTPRouteHandler</span><span class="p">(</span><span class="n">HTTPRouteHandler</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">class</span><span class="w"> </span><span class="nc">MyHTTPRouteHandler</span><span class="p">(</span><span class="n">HTTPRouteHandler</span><span class="p">):</span>
 </span><span data-line="2">    <span class="o">...</span> <span class="c1"># custom handler</span>
 </span><span data-line="3">
 </span><span data-line="4">
 </span><span data-line="5"><span class="nd">@get</span><span class="p">(</span><span class="n">handler_class</span><span class="o">=</span><span class="n">MyHTTPRouteHandler</span><span class="p">)</span>
-</span><span data-line="6"><span class="k">async</span> <span class="k">def</span> <span class="nf">handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+</span><span data-line="6"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
 </span><span data-line="7">    <span class="o">...</span>
 </span></pre></div>
 </div>
 </section>
 <section id="id1">
-<h2>Deprecated <code class="docutils literal notranslate"><span class="pre">app</span></code> parameter for <code class="docutils literal notranslate"><span class="pre">Response.to_asgi_response</span></code> has been removed<a class="headerlink" href="#id1" title="Permalink to this heading">¶</a></h2>
+<h2>Deprecated <code class="docutils literal notranslate"><span class="pre">app</span></code> parameter for <code class="docutils literal notranslate"><span class="pre">Response.to_asgi_response</span></code> has been removed<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h2>
 <p>The parameter <code class="docutils literal notranslate"><span class="pre">app</span></code> for <a class="reference internal" href="../reference/response/index.html#litestar.response.Response.to_asgi_response" title="litestar.response.Response.to_asgi_response"><code class="xref py py-meth docutils literal notranslate"><span class="pre">to_asgi_response()</span></code></a> has been removed.
 If you need access to the app instance inside a custom <code class="docutils literal notranslate"><span class="pre">to_asgi_response</span></code> method,
 replace the usages of <code class="docutils literal notranslate"><span class="pre">app</span></code> with <code class="docutils literal notranslate"><span class="pre">request.app</span></code>.</p>
 </section>
 <section id="removal-of-deprecated-litestar-middleware-exceptions-module-and-exceptionhandlermiddleware">
-<h2>Removal of deprecated <code class="docutils literal notranslate"><span class="pre">litestar.middleware.exceptions</span></code> module and <code class="docutils literal notranslate"><span class="pre">ExceptionHandlerMiddleware</span></code><a class="headerlink" href="#removal-of-deprecated-litestar-middleware-exceptions-module-and-exceptionhandlermiddleware" title="Permalink to this heading">¶</a></h2>
+<h2>Removal of deprecated <code class="docutils literal notranslate"><span class="pre">litestar.middleware.exceptions</span></code> module and <code class="docutils literal notranslate"><span class="pre">ExceptionHandlerMiddleware</span></code><a class="headerlink" href="#removal-of-deprecated-litestar-middleware-exceptions-module-and-exceptionhandlermiddleware" title="Link to this heading">¶</a></h2>
 <p>The deprecated <code class="docutils literal notranslate"><span class="pre">litestar.middleware.exceptions</span></code> module and the
 <code class="docutils literal notranslate"><span class="pre">ExceptionHandlerMiddleware</span></code> have been removed. Since <code class="docutils literal notranslate"><span class="pre">ExceptionHandlerMiddleware</span></code>
 has been applied automatically behind the scenes if necessary, no action is required.</p>
 </section>
 <section id="update-messagepack-media-type-to-application-vnd-msgpack">
-<h2>Update MessagePack media type to <code class="docutils literal notranslate"><span class="pre">application/vnd.msgpack</span></code><a class="headerlink" href="#update-messagepack-media-type-to-application-vnd-msgpack" title="Permalink to this heading">¶</a></h2>
+<h2>Update MessagePack media type to <code class="docutils literal notranslate"><span class="pre">application/vnd.msgpack</span></code><a class="headerlink" href="#update-messagepack-media-type-to-application-vnd-msgpack" title="Link to this heading">¶</a></h2>
 <p>Change the default media type of <code class="docutils literal notranslate"><span class="pre">MessagePack</span></code> from <code class="docutils literal notranslate"><span class="pre">application/x-msgpack</span></code> to the
 newly introduced official <code class="docutils literal notranslate"><span class="pre">application/vnd.msgpack</span></code>.</p>
 <p><a class="reference external" href="https://www.iana.org/assignments/media-types/application/vnd.msgpack">https://www.iana.org/assignments/media-types/application/vnd.msgpack</a></p>
 </section>
 <section id="deprecated-resolve-methods-on-route-handlers">
-<h2>Deprecated <code class="docutils literal notranslate"><span class="pre">resolve_</span></code> methods on route handlers<a class="headerlink" href="#deprecated-resolve-methods-on-route-handlers" title="Permalink to this heading">¶</a></h2>
+<h2>Deprecated <code class="docutils literal notranslate"><span class="pre">resolve_</span></code> methods on route handlers<a class="headerlink" href="#deprecated-resolve-methods-on-route-handlers" title="Link to this heading">¶</a></h2>
 <p>All <code class="docutils literal notranslate"><span class="pre">resolve_</span></code> methods on the route handlers
 (e.g. <code class="docutils literal notranslate"><span class="pre">HTTPRouteHandler.resolve_response_headers</span></code>) have been
 deprecated and will be removed in <code class="docutils literal notranslate"><span class="pre">4.0</span></code>. The attributes can now safely be accessed
 directly (e.g. <cite>HTTPRouteHandlers.response_headers</cite>).</p>
 </section>
 <section id="moved-routing-related-methods-from-router-to-litestar">
-<h2>Moved routing related methods from <code class="docutils literal notranslate"><span class="pre">Router</span></code> to <code class="docutils literal notranslate"><span class="pre">Litestar</span></code><a class="headerlink" href="#moved-routing-related-methods-from-router-to-litestar" title="Permalink to this heading">¶</a></h2>
+<h2>Moved routing related methods from <code class="docutils literal notranslate"><span class="pre">Router</span></code> to <code class="docutils literal notranslate"><span class="pre">Litestar</span></code><a class="headerlink" href="#moved-routing-related-methods-from-router-to-litestar" title="Link to this heading">¶</a></h2>
 <p><a class="reference internal" href="../reference/router.html#litestar.router.Router" title="litestar.router.Router"><code class="xref py py-class docutils literal notranslate"><span class="pre">Router</span></code></a> now only holds route handlers and configuration, while
 the actual routing is done in <a class="reference internal" href="../reference/app.html#litestar.app.Litestar" title="litestar.app.Litestar"><code class="xref py py-class docutils literal notranslate"><span class="pre">Litestar</span></code></a>. With this, several
 methods and properties have been moved from <code class="docutils literal notranslate"><span class="pre">Router</span></code> to <code class="docutils literal notranslate"><span class="pre">Litestar</span></code>:</p>
@@ -746,14 +742,14 @@ methods and properties have been moved from <code class="docutils literal notran
 </ul>
 </section>
 <section id="removal-of-clipluginprotocol">
-<h2>Removal of  <code class="docutils literal notranslate"><span class="pre">CLIPluginProtocol</span></code><a class="headerlink" href="#removal-of-clipluginprotocol" title="Permalink to this heading">¶</a></h2>
+<h2>Removal of  <code class="docutils literal notranslate"><span class="pre">CLIPluginProtocol</span></code><a class="headerlink" href="#removal-of-clipluginprotocol" title="Link to this heading">¶</a></h2>
 <p>The <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Protocol" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Protocol</span></code></a> <code class="docutils literal notranslate"><span class="pre">CLIPluginProtocol</span></code> has been removed in favour
 of the abstract <code class="docutils literal notranslate"><span class="pre">CLIPluginProtocol</span></code>. The functionality and interface remain the same,
 the only difference being that plugins that wish to provide this functionality are now
 required to inherit from <a class="reference internal" href="../reference/plugins/index.html#litestar.plugins.CLIPlugin" title="litestar.plugins.CLIPlugin"><code class="xref py py-class docutils literal notranslate"><span class="pre">CLIPlugin</span></code></a>.</p>
 </section>
 <section id="removal-of-openapischemapluginprotocol">
-<h2>Removal of <code class="docutils literal notranslate"><span class="pre">OpenAPISchemaPluginProtocol</span></code><a class="headerlink" href="#removal-of-openapischemapluginprotocol" title="Permalink to this heading">¶</a></h2>
+<h2>Removal of <code class="docutils literal notranslate"><span class="pre">OpenAPISchemaPluginProtocol</span></code><a class="headerlink" href="#removal-of-openapischemapluginprotocol" title="Link to this heading">¶</a></h2>
 <p>The <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Protocol" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Protocol</span></code></a> <code class="docutils literal notranslate"><span class="pre">OpenAPISchemaPluginProtocol</span></code> has been removed in favour
 of the abstract <a class="reference internal" href="../reference/plugins/index.html#litestar.plugins.OpenAPISchemaPlugin" title="litestar.plugins.OpenAPISchemaPlugin"><code class="xref py py-class docutils literal notranslate"><span class="pre">OpenAPISchemaPlugin</span></code></a>. The functionality and
 interface remain the same, the only difference being that plugins that wish to provide
@@ -761,12 +757,12 @@ this functionality are now required to inherit from
 <a class="reference internal" href="../reference/plugins/index.html#litestar.plugins.OpenAPISchemaPlugin" title="litestar.plugins.OpenAPISchemaPlugin"><code class="xref py py-class docutils literal notranslate"><span class="pre">OpenAPISchemaPlugin</span></code></a>.</p>
 </section>
 <section id="dropped-support-for-starlette-middleware-protocol">
-<h2>Dropped support for starlette middleware protocol<a class="headerlink" href="#dropped-support-for-starlette-middleware-protocol" title="Permalink to this heading">¶</a></h2>
+<h2>Dropped support for starlette middleware protocol<a class="headerlink" href="#dropped-support-for-starlette-middleware-protocol" title="Link to this heading">¶</a></h2>
 <p>The <a class="reference external" href="https://www.starlette.io/middleware">starlette middleware protocol</a> is no longer
 supported.</p>
 <p>Only the “factory” pattern will now be supported, i.e. a callable that receives an ASGI
 callable as its only argument and returns another ASGI callable:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">def</span> <span class="nf">middleware</span><span class="p">(</span><span class="n">app</span><span class="p">:</span> <span class="n">ASGIApp</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ASGIApp</span><span class="p">:</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">def</span><span class="w"> </span><span class="nf">middleware</span><span class="p">(</span><span class="n">app</span><span class="p">:</span> <span class="n">ASGIApp</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ASGIApp</span><span class="p">:</span>
 </span><span data-line="2">    <span class="o">...</span>
 </span></pre></div>
 </div>
@@ -776,7 +772,7 @@ callable as its only argument and returns another ASGI callable:</p>
 </div>
 </section>
 <section id="removal-of-serializationpluginprotocol">
-<h2>Removal of <code class="docutils literal notranslate"><span class="pre">SerializationPluginProtocol</span></code><a class="headerlink" href="#removal-of-serializationpluginprotocol" title="Permalink to this heading">¶</a></h2>
+<h2>Removal of <code class="docutils literal notranslate"><span class="pre">SerializationPluginProtocol</span></code><a class="headerlink" href="#removal-of-serializationpluginprotocol" title="Link to this heading">¶</a></h2>
 <p>The <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Protocol" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Protocol</span></code></a> <code class="docutils literal notranslate"><span class="pre">SerializationPluginProtocol</span></code> has been removed in favour
 of the abstract <a class="reference internal" href="../reference/plugins/index.html#litestar.plugins.SerializationPlugin" title="litestar.plugins.SerializationPlugin"><code class="xref py py-class docutils literal notranslate"><span class="pre">SerializationPlugin</span></code></a>. The functionality and
 interface remain the same, the only difference being that plugins that wish to provide
@@ -784,30 +780,30 @@ this functionality are now required to inherit from
 <a class="reference internal" href="../reference/plugins/index.html#litestar.plugins.SerializationPlugin" title="litestar.plugins.SerializationPlugin"><code class="xref py py-class docutils literal notranslate"><span class="pre">SerializationPlugin</span></code></a>.</p>
 </section>
 <section id="removal-of-body-in-streaming-responses">
-<h2>Removal of <code class="docutils literal notranslate"><span class="pre">body</span></code> in streaming responses<a class="headerlink" href="#removal-of-body-in-streaming-responses" title="Permalink to this heading">¶</a></h2>
+<h2>Removal of <code class="docutils literal notranslate"><span class="pre">body</span></code> in streaming responses<a class="headerlink" href="#removal-of-body-in-streaming-responses" title="Link to this heading">¶</a></h2>
 <p>The unsupported <code class="docutils literal notranslate"><span class="pre">body</span></code> parameter of <a class="reference internal" href="../reference/response/streaming.html#litestar.response.streaming.ASGIStreamingResponse" title="litestar.response.streaming.ASGIStreamingResponse"><code class="xref py py-class docutils literal notranslate"><span class="pre">ASGIStreamingResponse</span></code></a>
 and <a class="reference internal" href="../reference/response/file.html#litestar.response.file.ASGIFileResponse" title="litestar.response.file.ASGIFileResponse"><code class="xref py py-class docutils literal notranslate"><span class="pre">ASGIFileResponse</span></code></a> has been removed.</p>
 <p>This does not change any behaviour, as this parameter was previously ignored.</p>
 </section>
 <section id="polyfactory-package-removed-from-default-dependencies">
-<h2><code class="docutils literal notranslate"><span class="pre">polyfactory</span></code> package removed from default dependencies<a class="headerlink" href="#polyfactory-package-removed-from-default-dependencies" title="Permalink to this heading">¶</a></h2>
+<h2><code class="docutils literal notranslate"><span class="pre">polyfactory</span></code> package removed from default dependencies<a class="headerlink" href="#polyfactory-package-removed-from-default-dependencies" title="Link to this heading">¶</a></h2>
 <p>The <a class="reference external" href="https://polyfactory.litestar.dev/">polyfactory</a> library has been moved from the
 default dependencies to the <code class="docutils literal notranslate"><span class="pre">litestar[polyfactory]</span></code> package extra. It
 is also included in <code class="docutils literal notranslate"><span class="pre">litestar[full]</span></code>.</p>
 </section>
 <section id="pyyaml-package-removed-from-default-dependencies">
-<h2><code class="docutils literal notranslate"><span class="pre">pyyaml</span></code> package removed from default dependencies<a class="headerlink" href="#pyyaml-package-removed-from-default-dependencies" title="Permalink to this heading">¶</a></h2>
+<h2><code class="docutils literal notranslate"><span class="pre">pyyaml</span></code> package removed from default dependencies<a class="headerlink" href="#pyyaml-package-removed-from-default-dependencies" title="Link to this heading">¶</a></h2>
 <p>The <a class="reference external" href="https://pyyaml.org/wiki/PyYAMLDocumentation">PyYAML</a> library, used to render the
 OpenAPI schema as YAML has been moved from the default dependencies to the
 <code class="docutils literal notranslate"><span class="pre">litestar[yaml]</span></code> package extra.</p>
 </section>
 <section id="litestar-htmx-package-removed-from-default-dependencies">
-<h2><code class="docutils literal notranslate"><span class="pre">litestar-htmx</span></code> package removed from default dependencies<a class="headerlink" href="#litestar-htmx-package-removed-from-default-dependencies" title="Permalink to this heading">¶</a></h2>
+<h2><code class="docutils literal notranslate"><span class="pre">litestar-htmx</span></code> package removed from default dependencies<a class="headerlink" href="#litestar-htmx-package-removed-from-default-dependencies" title="Link to this heading">¶</a></h2>
 <p>The <a class="reference external" href="https://github.com/litestar-org/litestar-htmx/">litestar-htmx</a> package powering
 the <a class="reference internal" href="../usage/htmx.html"><span class="doc">HTMX plugin</span></a> has been moved to the <code class="docutils literal notranslate"><span class="pre">litestar[htmx]</span></code> extra.</p>
 </section>
 <section id="improved-file-system-handling-fsspec-integration">
-<h2>Improved file system handling / fsspec integration<a class="headerlink" href="#improved-file-system-handling-fsspec-integration" title="Permalink to this heading">¶</a></h2>
+<h2>Improved file system handling / fsspec integration<a class="headerlink" href="#improved-file-system-handling-fsspec-integration" title="Link to this heading">¶</a></h2>
 <p>A more coherent <a class="reference internal" href="../usage/file_systems.html"><span class="doc">file system</span></a> integration was added, with
 improved support for <a class="reference external" href="https://filesystem-spec.readthedocs.io/en/latest/">fsspec</a>.
 This new implementation is more stable, performant and consistent, and includes new
@@ -820,7 +816,7 @@ natively).</p>
 </div>
 </section>
 <section id="removal-of-resolve-symlinks-parameter-to-create-static-files-router">
-<h2>Removal of <code class="docutils literal notranslate"><span class="pre">resolve_symlinks</span></code> parameter to <code class="docutils literal notranslate"><span class="pre">create_static_files_router</span></code><a class="headerlink" href="#removal-of-resolve-symlinks-parameter-to-create-static-files-router" title="Permalink to this heading">¶</a></h2>
+<h2>Removal of <code class="docutils literal notranslate"><span class="pre">resolve_symlinks</span></code> parameter to <code class="docutils literal notranslate"><span class="pre">create_static_files_router</span></code><a class="headerlink" href="#removal-of-resolve-symlinks-parameter-to-create-static-files-router" title="Link to this heading">¶</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">resolve_symlinks</span></code> parameter of
 <a class="reference internal" href="../reference/static_files.html#litestar.static_files.create_static_files_router" title="litestar.static_files.create_static_files_router"><code class="xref py py-func docutils literal notranslate"><span class="pre">create_static_files_router()</span></code></a> has been removed in favour of
 the new
@@ -833,7 +829,7 @@ slightly different behaviour and defaults to <code class="docutils literal notra
 </div>
 </section>
 <section id="middleware-configuration-constraints">
-<h2>Middleware configuration constraints<a class="headerlink" href="#middleware-configuration-constraints" title="Permalink to this heading">¶</a></h2>
+<h2>Middleware configuration constraints<a class="headerlink" href="#middleware-configuration-constraints" title="Link to this heading">¶</a></h2>
 <p><a class="reference internal" href="../reference/middleware/index.html#litestar.middleware.ASGIMiddleware" title="litestar.middleware.ASGIMiddleware"><code class="xref py py-class docutils literal notranslate"><span class="pre">ASGIMiddleware</span></code></a>s can now express constraints for how
 they are applied in the middleware stack, which are then validated on application
 startup.</p>
@@ -879,9 +875,9 @@ startup.</p>
     </div>
   </div>
 </footer>
-      <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=c19e757c"></script>
-      <script src="../_static/doctools.js?v=888ff710"></script>
-      <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
+      <script src="../_static/documentation_options.js?v=b95e84ca"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
       <script src="../_static/copybutton.js?v=f281be69"></script>
       <script src="../_static/litestar-theme.js?v=ab2dcc9e"></script>
@@ -889,8 +885,8 @@ startup.</p>
       <script>let toggleHintHide = 'Click to hide';</script>
       <script>let toggleOpenOnPrint = 'true';</script>
       <script src="../_static/togglebutton.js?v=4a39c7ea"></script>
-      <script src="../_static/design-tabs.js?v=36754332"></script>
+      <script src="../_static/design-tabs.js?v=f930bc37"></script>
       <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
-      <script src="../_static/shibuya.js?v=e2e99575"></script>
+      <script src="../_static/shibuya.js?v=c477d091"></script>
       <script src="../_static/versioning.js?v=bc681eff"></script></body>
 </html>
