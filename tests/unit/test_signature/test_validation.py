@@ -92,6 +92,23 @@ def test_invalid_path_parameter() -> None:
     }
 
 
+def test_invalid_list_exception_key() -> None:
+    @post("/")
+    def test(data: List[int], data_list: Annotated[List[int], Parameter(query="params")]) -> None: ...
+
+    with create_test_client(route_handlers=[test]) as client:
+        response = client.post("/", json=[1, 2, "oops"], params={"params": [1, 2, "oops"]})
+
+    assert response.json() == {
+        "status_code": 400,
+        "detail": "Validation failed for POST /?params=1&params=2&params=oops",
+        "extra": [
+            {"message": "Expected `int`, got `str`", "key": "[2]", "source": "body"},
+            {"message": "Expected `int`, got `str`", "key": "params[2]", "source": "query"},
+        ],
+    }
+
+
 def test_client_backend_error_precedence_over_server_error() -> None:
     dependencies = {
         "dep": Provide(lambda: "thirteen", sync_to_thread=False),
@@ -189,8 +206,8 @@ def test_invalid_input_attrs() -> None:
         assert data["extra"] == [
             {"message": "Expected `int`, got `str`", "key": "child.val", "source": "body"},
             {"message": "Expected `int`, got `str`", "key": "int_param", "source": "query"},
-            {"message": "Expected `int`, got `str`", "key": "int_header", "source": "header"},
-            {"message": "Expected `int`, got `str`", "key": "int_cookie", "source": "cookie"},
+            {"message": "Expected `int`, got `str`", "key": "X-SOME-INT", "source": "header"},
+            {"message": "Expected `int`, got `str`", "key": "int-cookie", "source": "cookie"},
         ]
 
 
@@ -236,8 +253,8 @@ def test_invalid_input_dataclass() -> None:
             {"message": "Expected `int`, got `str`", "key": "child.val", "source": "body"},
             {"message": "Expected `int`, got `str`", "key": "int_param", "source": "query"},
             {"message": "Expected `str` of length >= 2", "key": "length_param", "source": "query"},
-            {"message": "Expected `int`, got `str`", "key": "int_header", "source": "header"},
-            {"message": "Expected `int`, got `str`", "key": "int_cookie", "source": "cookie"},
+            {"message": "Expected `int`, got `str`", "key": "X-SOME-INT", "source": "header"},
+            {"message": "Expected `int`, got `str`", "key": "int-cookie", "source": "cookie"},
         ]
 
 
@@ -280,8 +297,8 @@ def test_invalid_input_typed_dict() -> None:
             {"message": "Expected `int`, got `str`", "key": "child.val", "source": "body"},
             {"message": "Expected `int`, got `str`", "key": "int_param", "source": "query"},
             {"message": "Expected `str` of length >= 2", "key": "length_param", "source": "query"},
-            {"message": "Expected `int`, got `str`", "key": "int_header", "source": "header"},
-            {"message": "Expected `int`, got `str`", "key": "int_cookie", "source": "cookie"},
+            {"message": "Expected `int`, got `str`", "key": "X-SOME-INT", "source": "header"},
+            {"message": "Expected `int`, got `str`", "key": "int-cookie", "source": "cookie"},
         ]
 
 
