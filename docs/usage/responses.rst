@@ -696,6 +696,12 @@ If you want to send a different event type, you can use a dictionary with the ke
 
     You can further customize all the sse parameters, add comments, and set the retry duration by using the :class:`ServerSentEvent <.response.ServerSentEvent>` class directly or by using the :class:`ServerSentEventMessage <.response.ServerSentEventMessage>` or dictionaries with the appropriate keys.
 
+If the ``ServerSentEvent`` has ``ping_interval`` set to a positive value, a message with ``event_type`` ``ping``
+will be sent every ``ping_interval`` seconds. This is useful for applications that close connections after a timeout
+(e.g., TelegramMiniApps; for more details, see `issue 4082 <https://github.com/litestar-org/litestar/issues/4082>`_)
+
+.. literalinclude:: /examples/responses/sse_responses_with_ping.py
+    :language: python
 
 Template Responses
 ------------------
