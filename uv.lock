@@ -3292,7 +3292,7 @@ requires-dist = [
     { name = "redis", extras = ["hiredis"], marker = "extra == 'redis'", specifier = ">=4.4.4,<5.3" },
     { name = "rich", specifier = ">=13.0.0" },
     { name = "rich-click" },
-    { name = "structlog", marker = "extra == 'structlog'", specifier = "==24.4.0" },
+    { name = "structlog", marker = "extra == 'structlog'" },
     { name = "typing-extensions" },
     { name = "uvicorn", extras = ["standard"], marker = "extra == 'cli'" },
     { name = "uvicorn", extras = ["standard"], marker = "extra == 'standard'" },
