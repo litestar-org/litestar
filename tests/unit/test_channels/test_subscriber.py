@@ -89,9 +89,9 @@ async def test_qsize() -> None:
     assert not subscriber.qsize
     subscriber.put_nowait(b"foo")
 
-    assert subscriber.qsize == 1
+    assert subscriber.qsize == 1  # type: ignore[comparison-overlap]
 
-    await async_next(subscriber.iter_events())
+    await async_next(subscriber.iter_events())  # type: ignore[unreachable]
 
     assert not subscriber.qsize
 

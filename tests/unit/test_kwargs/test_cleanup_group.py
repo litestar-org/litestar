@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import sys
-from typing import AsyncGenerator, Generator
+from collections.abc import AsyncGenerator, Generator
 from unittest.mock import MagicMock
 
 if sys.version_info < (3, 11):

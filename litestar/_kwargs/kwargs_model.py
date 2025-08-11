@@ -312,7 +312,7 @@ class KwargsModel:
                 media_type = data_field_definition.kwarg_definition.media_type
 
             if media_type in (RequestEncodingType.MULTI_PART, RequestEncodingType.URL_ENCODED):
-                expected_form_data = (media_type, data_field_definition)
+                expected_form_data = (media_type, data_field_definition)  # pyright: ignore
                 expected_data_dto = signature_model._data_dto
             elif signature_model._data_dto:
                 expected_data_dto = signature_model._data_dto

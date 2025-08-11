@@ -3,10 +3,9 @@ from __future__ import annotations
 import warnings
 from dataclasses import replace
 from decimal import Decimal
-from typing import Any, Generator, Generic, List, Optional, TypeVar
+from typing import TYPE_CHECKING, Annotated, Any, Generic, Optional, TypeVar
 
 from msgspec import Meta
-from typing_extensions import Annotated
 
 from litestar.dto import AbstractDTO, DTOField, Mark
 from litestar.dto.data_structures import DTOFieldDefinition
@@ -14,6 +13,9 @@ from litestar.exceptions import LitestarWarning, MissingDependencyException
 from litestar.types import Empty
 from litestar.typing import FieldDefinition
 from litestar.utils import warn_deprecation
+
+if TYPE_CHECKING:
+    from collections.abc import Generator
 
 try:
     from piccolo.columns import Column, column_types
@@ -49,14 +51,14 @@ def _parse_piccolo_type(column: Column, extra: dict[str, Any]) -> FieldDefinitio
         if is_optional:
             meta = Meta(extra=extra)
             warnings.warn(
-                f"Dropping max_length constraint for column {column!r} because the " "column is optional",
+                f"Dropping max_length constraint for column {column!r} because the column is optional",
                 category=LitestarWarning,
                 stacklevel=2,
             )
         else:
             meta = Meta(max_length=column.length, extra=extra)
     elif isinstance(column, column_types.Array):
-        column_type = List[column.base_column.value_type]  # type: ignore[name-defined]
+        column_type = list[column.base_column.value_type]  # type: ignore[name-defined]
         meta = Meta(extra=extra)
     elif isinstance(column, (column_types.JSON, column_types.JSONB)):
         column_type = str

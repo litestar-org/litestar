@@ -4,8 +4,9 @@ https://github.com/encode/starlette/blob/master/tests/test_responses.py And are 
 their API.
 """
 
+from collections.abc import AsyncIterator, Iterator
 from itertools import cycle
-from typing import TYPE_CHECKING, AsyncIterator, Iterator
+from typing import TYPE_CHECKING
 
 import anyio
 
@@ -110,7 +111,7 @@ def test_streaming_response() -> None:
     client = TestClient(app)
     response = client.get("/")
     assert response.text == "1, 2, 3, 4, 5"
-    assert filled_by_bg_task == "6, 7, 8, 9"
+    assert filled_by_bg_task == "6, 7, 8, 9"  # type: ignore[comparison-overlap]
 
 
 def test_streaming_response_custom_iterator() -> None:

@@ -6,7 +6,7 @@ import os
 import subprocess
 import sys
 from contextlib import AbstractContextManager, ExitStack, contextmanager
-from typing import TYPE_CHECKING, Any, Iterator
+from typing import TYPE_CHECKING, Any
 
 try:
     import rich_click as click
@@ -32,6 +32,8 @@ from litestar.utils.helpers import unwrap_partial
 __all__ = ("info_command", "routes_command", "run_command")
 
 if TYPE_CHECKING:
+    from collections.abc import Iterator
+
     from litestar import Litestar
 
 
@@ -356,7 +358,7 @@ class _RouteTree(Tree):
             else:
                 handler_info.append("[yellow]sync[/yellow]")
 
-            handler_info.append(f'[cyan]{", ".join(sorted(handler.http_methods))}[/cyan]')
+            handler_info.append(f"[cyan]{', '.join(sorted(handler.http_methods))}[/cyan]")
 
             if len(handler.paths) > 1:
                 for path in handler.paths:

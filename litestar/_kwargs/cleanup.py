@@ -3,7 +3,7 @@ from __future__ import annotations
 import sys
 from contextlib import AbstractAsyncContextManager
 from inspect import isasyncgen
-from typing import TYPE_CHECKING, Any, AsyncGenerator, Awaitable, Callable, Generator
+from typing import TYPE_CHECKING, Any, Callable
 
 if sys.version_info < (3, 11):
     from exceptiongroup import ExceptionGroup
@@ -17,6 +17,7 @@ __all__ = ("DependencyCleanupGroup",)
 
 
 if TYPE_CHECKING:
+    from collections.abc import AsyncGenerator, Awaitable, Generator
     from types import TracebackType
 
     from litestar.types import AnyGenerator
