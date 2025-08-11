@@ -297,7 +297,7 @@ def build_gh_release_notes(release_info: ReleaseInfo) -> str:
 
     doc.add_line("## What's changed")
     if features := release_info.pull_requests.get("feat"):
-        doc.add_line("\nNew features 🚀")
+        doc.add_line("\n### New features 🚀")
         doc.add_pr_descriptions(features)
     if fixes := release_info.pull_requests.get("fix"):
         doc.add_line("\n### Bugfixes 🐛")
