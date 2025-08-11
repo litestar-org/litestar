@@ -164,6 +164,25 @@ will be used for the value of the ``snake_case`` parameter.
 
 In this case, ``param`` is validated to be an *integer larger than 5*.
 
+Documentation for enum query parameters
+---------------------------------------
+
+Using :func:`~.params.Parameter` to modify the OpenAPI schema generated for query :term:`parameters <parameter>` that
+are enums can have surprising results. Since only one schema is generated per enum, calling :func:`~.params.Parameter`
+multiple times with distinct :paramref:`~.params.Parameter.description` :term:`arguments <argument>` for the same enum
+causes descriptions to be overwritten. This can be avoided by making use of the
+:paramref:`~.params.Parameter.schema_component_key` parameter so that separate schemas are generated:
+
+.. literalinclude:: /examples/parameters/query_params_enum.py
+    :language: python
+    :caption: Query parameters with the same enum type and different descriptions
+
+In the above example, the schema for the ``q1`` query parameter references a "q1" schema component with a description of
+"This is q1". The schema for the ``q2`` query parameter references a "MyEnum" schema component with a description of "My
+enum accepts two values". If we did not pass a :paramref:`~.params.Parameter.schema_component_key` argument for
+:func:`~.params.Parameter`, then both schemas for ``q1`` and ``q2`` would reference the same "MyEnum" schema component
+with the description "This is q1".
+
 Header and Cookie Parameters
 ----------------------------
 
