@@ -170,7 +170,7 @@ Documentation for enum query parameters
 Using :func:`~.params.Parameter` to modify the OpenAPI schema generated for query :term:`parameters <parameter>` that
 are enums can have surprising results. Since only one schema is generated per enum, calling :func:`~.params.Parameter`
 multiple times with distinct :paramref:`~.params.Parameter.description` :term:`arguments <argument>` for the same enum
-causes descriptions to be overwritten. This can be avoided by making use of the
+causes descriptions to be overwritten. This can be avoided by using the
 :paramref:`~.params.Parameter.schema_component_key` parameter so that separate schemas are generated:
 
 .. literalinclude:: /examples/parameters/query_params_enum.py
@@ -179,8 +179,11 @@ causes descriptions to be overwritten. This can be avoided by making use of the
 
 In the above example, the schema for the ``q1`` query parameter references a "q1" schema component with a description of
 "This is q1". The schema for the ``q2`` query parameter references a "MyEnum" schema component with a description of "My
-enum accepts two values". If we did not pass a :paramref:`~.params.Parameter.schema_component_key` argument for
-:func:`~.params.Parameter`, then both schemas for ``q1`` and ``q2`` would reference the same "MyEnum" schema component
+enum accepts two values". The schema for the ``q3`` query parameter references a "q3" schema component with a
+description of "This is q3".
+
+If we did not pass :paramref:`~.params.Parameter.schema_component_key` arguments for :func:`~.params.Parameter` for
+``q1`` and ``q3``, then the schemas for all three query parameters would reference the same "MyEnum" schema component
 with the description "This is q1".
 
 Header and Cookie Parameters
