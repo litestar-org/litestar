@@ -305,8 +305,7 @@ html_context = {
     "current_version": release,  # Use the detected version
     "versions": [  # TODO(provinzkraut): this needs to use versions.json but im not 100% on how to do this yet
         ("latest", "/latest"),
-        ("development", "/main"),
-        ("v3 (preview)", "/3-dev"),
+        ("v3 (development)", "/main"),
         ("v2", "/2"),
         ("v1", "/1"),
     ],
