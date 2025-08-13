@@ -7,6 +7,7 @@ on:
     branches:
       - main
       - v3.0
+      - v2
 
 env:
   UV_LOCKED: 1
@@ -46,6 +47,10 @@ jobs:
       - name: Build docs (v3.0 branch)
         run: uv run python tools/build_docs.py docs-build --version 3-dev
         if: github.event_name == 'push' && github.ref == 'refs/heads/v3.0'
+
+      - name: Build docs (v2 branch)
+        run: uv run python tools/build_docs.py docs-build --version 2
+        if: github.event_name == 'push' && github.ref == 'refs/heads/v2'
 
       - name: Deploy
         uses: JamesIves/github-pages-deploy-action@v4
