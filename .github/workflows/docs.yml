@@ -6,11 +6,10 @@ on:
   push:
     branches:
       - main
-      - v2
   workflow_dispatch:
     inputs:
       version:
-        description: 'Version to build docs for (1, 2, main, or release)'
+        description: 'Version to build docs for (1, 2, main)'
         required: true
         default: 'main'
         type: choice
@@ -18,7 +17,6 @@ on:
           - main
           - '2'
           - '1'
-          - release
 
 env:
   UV_LOCKED: 1
@@ -54,10 +52,6 @@ jobs:
       - name: Build docs (main branch)
         run: uv run python tools/build_docs.py docs-build --version main
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-
-      - name: Build docs (v3.0 branch)
-        run: uv run python tools/build_docs.py docs-build --version 3-dev
-        if: github.event_name == 'push' && github.ref == 'refs/heads/v3.0'
 
       - name: Build docs (manual trigger)
         run: |

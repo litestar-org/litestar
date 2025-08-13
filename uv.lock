@@ -3400,10 +3400,9 @@ wheels = [
 [[package]]
 name = "litestar-sphinx-theme"
 version = "0.2.0"
-source = { git = "https://github.com/litestar-org/litestar-sphinx-theme.git#76b1d0e4c8afff1ad135b1917fe09cf6c1cc6c9b" }
+source = { git = "https://github.com/litestar-org/litestar-sphinx-theme.git#ca837d8c6021706dee288dc193bfcfa5d59beff9" }
 dependencies = [
-    { name = "pydata-sphinx-theme", version = "0.14.4", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.9'" },
-    { name = "pydata-sphinx-theme", version = "0.16.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.9'" },
+    { name = "pydata-sphinx-theme" },
     { name = "sphinx-design", version = "0.5.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.9'" },
     { name = "sphinx-design", version = "0.6.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.9'" },
 ]
@@ -5314,56 +5313,25 @@ wheels = [
 name = "pydata-sphinx-theme"
 version = "0.14.4"
 source = { registry = "https://pypi.org/simple" }
-resolution-markers = [
-    "python_full_version >= '3.8.1' and python_full_version < '3.9' and sys_platform != 'win32'",
-    "python_full_version < '3.8.1' and sys_platform != 'win32'",
-    "python_full_version >= '3.8.1' and python_full_version < '3.9' and sys_platform == 'win32'",
-    "python_full_version < '3.8.1' and sys_platform == 'win32'",
-]
 dependencies = [
     { name = "accessible-pygments", version = "0.0.4", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.9'" },
-    { name = "babel", marker = "python_full_version < '3.9'" },
-    { name = "beautifulsoup4", marker = "python_full_version < '3.9'" },
+    { name = "accessible-pygments", version = "0.0.5", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.9'" },
+    { name = "babel" },
+    { name = "beautifulsoup4" },
     { name = "docutils", version = "0.20.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.9'" },
-    { name = "packaging", marker = "python_full_version < '3.9'" },
-    { name = "pygments", marker = "python_full_version < '3.9'" },
+    { name = "docutils", version = "0.21.2", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.9'" },
+    { name = "packaging" },
+    { name = "pygments" },
     { name = "sphinx", version = "7.1.2", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.9'" },
+    { name = "sphinx", version = "7.4.7", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version == '3.9.*'" },
+    { name = "sphinx", version = "8.1.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version == '3.10.*'" },
+    { name = "sphinx", version = "8.2.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.11'" },
     { name = "typing-extensions", version = "4.13.2", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.9'" },
+    { name = "typing-extensions", version = "4.14.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.9'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/de/47/1bc31c4bc8b395cd37d8ceaf720abe10cf64c857fb9ce55856a6dd958484/pydata_sphinx_theme-0.14.4.tar.gz", hash = "sha256:f5d7a2cb7a98e35b9b49d3b02cec373ad28958c2ed5c9b1ffe6aff6c56e9de5b", size = 2410500, upload-time = "2023-11-27T08:21:39.179Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/1b/bf/3f8dc653e3015fa0656587e101013754d9bf926f395cbe0892f7e87158dd/pydata_sphinx_theme-0.14.4-py3-none-any.whl", hash = "sha256:ac15201f4c2e2e7042b0cad8b30251433c1f92be762ddcefdb4ae68811d918d9", size = 4682140, upload-time = "2023-11-27T08:21:35.65Z" },
-]
-
-[[package]]
-name = "pydata-sphinx-theme"
-version = "0.16.1"
-source = { registry = "https://pypi.org/simple" }
-resolution-markers = [
-    "python_full_version >= '3.13' and sys_platform == 'linux'",
-    "python_full_version >= '3.13' and sys_platform != 'linux' and sys_platform != 'win32'",
-    "python_full_version >= '3.13' and sys_platform == 'win32'",
-    "python_full_version >= '3.11' and python_full_version < '3.13' and sys_platform != 'win32'",
-    "python_full_version == '3.10.*' and sys_platform != 'win32'",
-    "python_full_version == '3.9.*' and sys_platform != 'win32'",
-    "python_full_version >= '3.11' and python_full_version < '3.13' and sys_platform == 'win32'",
-    "python_full_version == '3.10.*' and sys_platform == 'win32'",
-    "python_full_version == '3.9.*' and sys_platform == 'win32'",
-]
-dependencies = [
-    { name = "accessible-pygments", version = "0.0.5", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.9'" },
-    { name = "babel", marker = "python_full_version >= '3.9'" },
-    { name = "beautifulsoup4", marker = "python_full_version >= '3.9'" },
-    { name = "docutils", version = "0.21.2", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.9'" },
-    { name = "pygments", marker = "python_full_version >= '3.9'" },
-    { name = "sphinx", version = "7.4.7", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version == '3.9.*'" },
-    { name = "sphinx", version = "8.1.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version == '3.10.*'" },
-    { name = "sphinx", version = "8.2.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.11'" },
-    { name = "typing-extensions", version = "4.14.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.9'" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/00/20/bb50f9de3a6de69e6abd6b087b52fa2418a0418b19597601605f855ad044/pydata_sphinx_theme-0.16.1.tar.gz", hash = "sha256:a08b7f0b7f70387219dc659bff0893a7554d5eb39b59d3b8ef37b8401b7642d7", size = 2412693, upload-time = "2024-12-17T10:53:39.537Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/e2/0d/8ba33fa83a7dcde13eb3c1c2a0c1cc29950a048bfed6d9b0d8b6bd710b4c/pydata_sphinx_theme-0.16.1-py3-none-any.whl", hash = "sha256:225331e8ac4b32682c18fcac5a57a6f717c4e632cea5dd0e247b55155faeccde", size = 6723264, upload-time = "2024-12-17T10:53:35.645Z" },
 ]
 
 [[package]]
