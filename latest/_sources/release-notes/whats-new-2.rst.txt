@@ -93,7 +93,7 @@ Imports
 +----------------------------------------------------+------------------------------------------------------------------------+
 | ``starlite.OpenAPIConfig``                         | :class:`.openapi.OpenAPIConfig`                                        |
 +----------------------------------------------------+------------------------------------------------------------------------+
-| ``starlite.StaticFilesConfig``                     | ``.static_files.config.StaticFilesConfig``                             |
+| ``starlite.StaticFilesConfig``                     | :class:`.static_files.config.StaticFilesConfig`                        |
 +----------------------------------------------------+------------------------------------------------------------------------+
 | ``starlite.TemplateConfig``                        | :class:`.template.TemplateConfig`                                      |
 +----------------------------------------------------+------------------------------------------------------------------------+
@@ -318,10 +318,10 @@ cases:
 :class:`litestar.plugins.InitPluginProtocol`
     Hook into an application's initialization process
 
-``litestar.plugins.SerializationPluginProtocol``
+:class:`litestar.plugins.SerializationPluginProtocol`
     Extend the serialization and deserialization capabilities of an application
 
-``litestar.plugins.OpenAPISchemaPluginProtocol``
+:class:`litestar.plugins.OpenAPISchemaPluginProtocol`
     Extend OpenAPI schema generation
 
 

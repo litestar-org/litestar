@@ -319,17 +319,3 @@ The above example will result in an OpenAPI schema object that looks like this:
    converter. To work around this, Litestar will honor an `alias` field provided to the
    `dataclass.field <https://docs.python.org/3/library/dataclasses.html#dataclasses.field>`_ metadata
    when generating the field name in the schema.
-
-
-Generating examples
--------------------
-
-Litestar can automatically generate examples for the ``example`` section of a schema.
-To enable this feature, you'll need to have the
-`polyfactory <https://polyfactory.litestar.dev/>`_ library installed, which is included
-as a package extra under ``litestar[polyfactory`` and ``litestar[full]``.
-
-Once installed, you can turn on example generation via the OpenAPI config:
-
-.. literalinclude:: /examples/openapi/customize_pydantic_model_name.py
-    :language: python
