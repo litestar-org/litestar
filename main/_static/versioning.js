@@ -22,7 +22,7 @@ const addVersionWarning = (currentVersion, latestVersion) => {
   container.id = "version-warning";
 
   const isPreviewVersion = (version) => {
-        const previewVersions = ['dev', 'develop', 'main', '3-dev'];
+        const previewVersions = ['dev', 'develop', 'main'];
         return previewVersions.includes(version) || parseInt(version) > parseInt(latestVersion);
     };
 
