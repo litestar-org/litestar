@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en" data-accent-color="amber" data-content_root="./">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Litestar Framework</title><link rel="shortcut icon" href="_static/favicon.svg"/><link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Getting Started" href="getting-started.html" /><script>
+    function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
+    setColorMode(localStorage._theme||"auto");
+  </script><link rel="stylesheet" type="text/css" href="_static/pygments.css?v=397bb51e" />
+    <link rel="stylesheet" type="text/css" href="_static/shibuya.css?v=76b6f612" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx_paramlinks.css" />
+    <link media="print" rel="stylesheet" type="text/css" href="_static/print.css?v=20ff2c19" />
+    <link rel="stylesheet" type="text/css" href="_static/style.css?v=50ea2f63" />
+    <link rel="stylesheet" type="text/css" href="_static/litestar-sphinx-theme.css?v=f8f74789" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --sy-f-text: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
+  --sy-f-heading: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
+}
+</style>
+    
+<style>
+  .yue {
+    padding-bottom: 2rem;
+  }
+  .yue section:first-of-type h1 {
+    font-size: 4.2rem;
+    margin-top: 3.4rem;
+    margin-bottom: 1rem;
+  }
+
+  .injected,
+  .yue a.headerlink {
+    display: none;
+  }
+</style>
+
+  <meta property="og:type" content="website"/><meta property="og:title" content="Sponsors"/>
+<meta name="twitter:card" content="summary"/>
+<meta property="og:image" content="_static/logo-light.png"/>
+<meta name="description" content="Litestar is a powerful, flexible, highly performant, and opinionated ASGI framework."/>
+<meta property="og:description" content="Litestar is a powerful, flexible, highly performant, and opinionated ASGI framework."/></head>
+<body><div class="announcement">
+    <div class="announcement-inner">
+      <p>You are viewing the <bold>local</bold> version of the documentation. Click here to go to the latest version.</p>
+      <button class="announcement-close" aria-label="Close announcement">
+        <i class="i-lucide close"></i>
+      </button>
+    </div>
+  </div><div class="sy-head">
+  <div class="sy-head-blur"></div>
+  <div class="sy-head-inner sy-container mx-auto">
+    <a class="sy-head-brand" href="/">
+      <img class="light-logo" src="_static/logo-light.png" alt="Litestar" height="28" loading="lazy" />
+      <img class="dark-logo" src="_static/logo-dark.png" alt="Litestar" height="28" loading="lazy" />
+      <strong>Litestar</strong>
+    </a>
+    <div class="sy-head-nav" id="head-nav">
+      <nav class="sy-head-links"><ul><li class="link"><a href="#">Home</a></li>
+      <li class="link"><button class="js-menu" type="button" id="nav-trigger-2" aria-controls="nav-children-2">
+            <span>Community</span>
+            <i class="i-lucide chevron-down"></i>
+          </button>
+        <ul id="nav-children-2" aria-labelledby="nav-trigger-2"><li><a href="contribution-guide.html">
+                <span>Contributing</span>
+                <small>Learn how to contribute to the Litestar project</small>
+              </a></li><li><a href="https://github.com/litestar-org/.github?tab=coc-ov-file">
+                <span>Code of Conduct</span>
+                <small>Review the etiquette for interacting with the Litestar community</small>
+              </a></li><li><a href="https://github.com/litestar-org/.github?tab=coc-ov-file#security-ov-file">
+                <span>Security</span>
+                <small>Overview of Litestar's security protocols</small>
+              </a></li></ul>
+      </li>
+      <li class="link"><button class="js-menu" type="button" id="nav-trigger-3" aria-controls="nav-children-3">
+            <span>About</span>
+            <i class="i-lucide chevron-down"></i>
+          </button>
+        <ul id="nav-children-3" aria-labelledby="nav-trigger-3"><li><a href="https://litestar.dev/about/organization">
+                <span>Litestar Organization</span>
+                <small>Details about the Litestar organization</small>
+              </a></li><li><a href="https://litestar.dev/about/litestar-releases">
+                <span>Releases</span>
+                <small>Explore the release process, versioning, and deprecation policy for Litestar</small>
+              </a></li></ul>
+      </li>
+      <li class="link"><button class="js-menu" type="button" id="nav-trigger-4" aria-controls="nav-children-4">
+            <span>Release notes</span>
+            <i class="i-lucide chevron-down"></i>
+          </button>
+        <ul id="nav-children-4" aria-labelledby="nav-trigger-4"><li><a href="release-notes/whats-new-3.html">
+                <span>What's new in 3.0</span>
+                <small>Explore the new features in Litestar 3.0</small>
+              </a></li><li><a href="release-notes/changelog.html">
+                <span>3.x Changelog</span>
+                <small>All changes in the 3.x series</small>
+              </a></li><li><a href="https://docs.litestar.dev/2/release-notes/changelog.html">
+                <span>2.x Changelog</span>
+                <small>All changes in the 2.x series</small>
+              </a></li></ul>
+      </li>
+      <li class="link"><button class="js-menu" type="button" id="nav-trigger-5" aria-controls="nav-children-5">
+            <span>Help</span>
+            <i class="i-lucide chevron-down"></i>
+          </button>
+        <ul id="nav-children-5" aria-labelledby="nav-trigger-5"><li><a href="https://discord.gg/litestar">
+                <span>Discord Help Forum</span>
+                <small>Dedicated Discord help forum</small>
+              </a></li><li><a href="https://github.com/orgs/litestar-org/discussions">
+                <span>GitHub Discussions</span>
+                <small>GitHub Discussions</small>
+              </a></li><li><a href="https://stackoverflow.com/questions/tagged/litestar">
+                <span>Stack Overflow</span>
+                <small>We monitor the <code><b>litestar</b></code> tag on Stack Overflow</small>
+              </a></li></ul>
+      </li><li class="link">
+          <a href="https://github.com/sponsors/Litestar-Org">
+            <span>Sponsor</span></a>
+        </li></ul></nav>
+      <div class="sy-head-extra flex items-center print:hidden"><form class="searchbox flex items-center" action="search.html" method="get">
+  <input type="text" name="q" placeholder="Search" />
+  <kbd>/</kbd>
+</form><div class="nav-versions">
+    <button type="button" aria-label="Versions">
+      <span class="md:hidden">Versions</span>
+      <span class="hidden md:inline">3</span>
+      <i class="i-lucide chevron-down"></i>
+    </button>
+    <div class="nav-versions-choices"><ul><li><a href="/latest">latest</a></li><li><a href="/main">v3 (development)</a></li><li><a href="/2">v2</a></li><li><a href="/1">v1</a></li></ul></div>
+  </div><div class="sy-head-socials">
+<a href="https://twitter.com/LitestarAPI" aria-label="X (Twitter)">
+  <iconify-icon icon="prime:twitter"></iconify-icon>
+</a>
+  <a href="https://discord.gg/litestar" aria-label="Discord">
+    <iconify-icon icon="simple-icons:discord"></iconify-icon>
+  </a></div></div>
+    </div>
+    <div class="sy-head-actions flex items-center shrink-0 print:hidden"><button class="js-theme theme-switch flex items-center"
+data-aria-auto="Switch to light color mode"
+data-aria-light="Switch to dark color mode"
+data-aria-dark="Switch to auto color mode">
+<i class="i-lucide theme-icon"></i>
+</button><button class="md:hidden flex items-center js-menu" aria-label="Menu" type="button" aria-controls="head-nav" aria-expanded="false">
+        <div class="hamburger">
+          <span class="hamburger_1"></span>
+          <span class="hamburger_2 -translate-x-2"></span>
+          <span class="hamburger_3 -translate-x-1"></span>
+        </div>
+      </button>
+    </div>
+  </div>
+</div><div class="sy-container mx-auto body">
+    <main class="sy-content mx-auto pt-12 px-6 xl:px-12 break-words">
+      <article class="yue" role="main">
+        <div class="docutils container" id="home-head">
+<a class="reference internal image-reference" href="https://raw.githubusercontent.com/litestar-org/branding/main/assets/Branding%20-%20SVG%20-%20Transparent/Badge%20-%20Blue%20and%20Yellow.svg"><img alt="Litestar Framework" src="https://raw.githubusercontent.com/litestar-org/branding/main/assets/Branding%20-%20SVG%20-%20Transparent/Badge%20-%20Blue%20and%20Yellow.svg" style="width: 400px; height: 400px;" />
+</a>
+<div class="docutils container">
+<h1>Litestar</h1><div class="badges docutils container" id="badges">
+<blockquote>
+<div><img alt="GitHub Actions Latest Release Workflow Status" src="https://img.shields.io/github/actions/workflow/status/litestar-org/litestar/publish.yml?labelColor=202235&amp;logo=github&amp;logoColor=edb641" />
+<img alt="GitHub Actions CI Workflow Status" src="https://img.shields.io/github/actions/workflow/status/litestar-org/litestar/ci.yml?labelColor=202235&amp;logo=github&amp;logoColor=edb641" />
+<img alt="GitHub Actions Docs Build Workflow Status" src="https://img.shields.io/github/actions/workflow/status/litestar-org/litestar/docs.yml?labelColor=202235&amp;logo=github&amp;logoColor=edb641" />
+<img alt="Coverage" src="https://img.shields.io/codecov/c/github/litestar-org/litestar?labelColor=202235&amp;logo=codecov&amp;logoColor=edb641" />
+<img alt="PyPI Version" src="https://img.shields.io/pypi/v/litestar?labelColor=202235&amp;color=edb641&amp;logo=python&amp;logoColor=edb641" />
+<img alt="Contributor Count" src="https://img.shields.io/github/all-contributors/litestar-org/litestar?labelColor=202235&amp;color=edb641&amp;logoColor=edb641" />
+<img alt="PyPI Downloads" src="https://img.shields.io/pypi/dm/litestar?logo=python&amp;label=litestar%20downloads&amp;labelColor=202235&amp;color=edb641&amp;logoColor=edb641" />
+<img alt="Supported Python Versions" src="https://img.shields.io/pypi/pyversions/litestar?labelColor=202235&amp;color=edb641&amp;logo=python&amp;logoColor=edb641" />
+</div></blockquote>
+</div>
+</div>
+</div>
+<p class="lead">The Litestar framework supports <a class="reference internal" href="usage/plugins/index.html"><span class="doc">Plugins</span></a>, ships with
+<a class="reference internal" href="usage/dependency-injection.html"><span class="doc">dependency injection</span></a>, <a class="reference internal" href="usage/security/index.html"><span class="doc">security primitives</span></a>,
+<a class="reference internal" href="usage/openapi/index.html"><span class="doc">OpenAPI schema generation</span></a>, <a class="reference external" href="https://msgpack.org/">MessagePack</a>,
+<a class="reference internal" href="usage/middleware/index.html"><span class="doc">middlewares</span></a>, a great <a class="reference internal" href="usage/cli.html"><span class="doc">CLI</span></a> experience, and much more.</p>
+<div class="buttons docutils container">
+<p><a class="reference internal" href="getting-started.html"><span class="doc">Get Started</span></a>
+<a class="reference external" href="usage">Usage Docs</a>
+<a class="reference external" href="reference">API Docs</a>
+<a class="reference external" href="https://blog.litestar.dev">Blog</a></p>
+</div>
+<div class="sd-container-fluid sd-sphinx-override sd-mb-4 sd-p-0 docutils">
+<div class="sd-row sd-row-cols-1 sd-row-cols-xs-1 sd-row-cols-sm-1 sd-row-cols-md-2 sd-row-cols-lg-3 sd-g-2 sd-g-xs-2 sd-g-sm-2 sd-g-md-2 sd-g-lg-2 docutils">
+<div class="sd-col sd-d-flex-row docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+<svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-repo" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 2.5A2.5 2.5 0 0 1 4.5 0h8.75a.75.75 0 0 1 .75.75v12.5a.75.75 0 0 1-.75.75h-2.5a.75.75 0 0 1 0-1.5h1.75v-2h-8a1 1 0 0 0-.714 1.7.75.75 0 1 1-1.072 1.05A2.495 2.495 0 0 1 2 11.5Zm10.5-1h-8a1 1 0 0 0-1 1v6.708A2.486 2.486 0 0 1 4.5 9h8ZM5 12.25a.25.25 0 0 1 .25-.25h3.5a.25.25 0 0 1 .25.25v3.25a.25.25 0 0 1-.4.2l-1.45-1.087a.249.249 0 0 0-.3 0L5.4 15.7a.25.25 0 0 1-.4-.2Z"></path></svg> Tutorials</div>
+<p class="sd-card-text">Step-by-step guides addressing common use cases and scenarios for Litestar</p>
+</div>
+<a class="sd-stretched-link sd-hide-link-text reference internal" href="tutorials/index.html"><span class="doc">Tutorials</span></a></div>
+</div>
+<div class="sd-col sd-d-flex-row docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+<svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-light-bulb" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1.5c-2.363 0-4 1.69-4 3.75 0 .984.424 1.625.984 2.304l.214.253c.223.264.47.556.673.848.284.411.537.896.621 1.49a.75.75 0 0 1-1.484.211c-.04-.282-.163-.547-.37-.847a8.456 8.456 0 0 0-.542-.68c-.084-.1-.173-.205-.268-.32C3.201 7.75 2.5 6.766 2.5 5.25 2.5 2.31 4.863 0 8 0s5.5 2.31 5.5 5.25c0 1.516-.701 2.5-1.328 3.259-.095.115-.184.22-.268.319-.207.245-.383.453-.541.681-.208.3-.33.565-.37.847a.751.751 0 0 1-1.485-.212c.084-.593.337-1.078.621-1.489.203-.292.45-.584.673-.848.075-.088.147-.173.213-.253.561-.679.985-1.32.985-2.304 0-2.06-1.637-3.75-4-3.75ZM5.75 12h4.5a.75.75 0 0 1 0 1.5h-4.5a.75.75 0 0 1 0-1.5ZM6 15.25a.75.75 0 0 1 .75-.75h2.5a.75.75 0 0 1 0 1.5h-2.5a.75.75 0 0 1-.75-.75Z"></path></svg> Topics</div>
+<p class="sd-card-text">Articles discussing technical concepts, design philosophy, and strategic decisions.</p>
+</div>
+<a class="sd-stretched-link sd-hide-link-text reference internal" href="topics/index.html"><span class="doc">Topics</span></a></div>
+</div>
+<div class="sd-col sd-d-flex-row docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+<svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-versions" viewBox="0 0 16 16" aria-hidden="true"><path d="M7.75 14A1.75 1.75 0 0 1 6 12.25v-8.5C6 2.784 6.784 2 7.75 2h6.5c.966 0 1.75.784 1.75 1.75v8.5A1.75 1.75 0 0 1 14.25 14Zm-.25-1.75c0 .138.112.25.25.25h6.5a.25.25 0 0 0 .25-.25v-8.5a.25.25 0 0 0-.25-.25h-6.5a.25.25 0 0 0-.25.25ZM4.9 3.508a.75.75 0 0 1-.274 1.025.249.249 0 0 0-.126.217v6.5c0 .09.048.173.126.217a.75.75 0 0 1-.752 1.298A1.75 1.75 0 0 1 3 11.25v-6.5c0-.649.353-1.214.874-1.516a.75.75 0 0 1 1.025.274ZM1.625 5.533h.001a.249.249 0 0 0-.126.217v4.5c0 .09.048.173.126.217a.75.75 0 0 1-.752 1.298A1.748 1.748 0 0 1 0 10.25v-4.5a1.748 1.748 0 0 1 .873-1.516.75.75 0 1 1 .752 1.299Z"></path></svg> Changelog</div>
+<p class="sd-card-text">The latest updates and enhancements to the Litestar framework.</p>
+</div>
+<a class="sd-stretched-link sd-hide-link-text reference internal" href="release-notes/changelog.html"><span class="doc">3.x Changelog</span></a></div>
+</div>
+<div class="sd-col sd-d-flex-row docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+<svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-comment-discussion" viewBox="0 0 16 16" aria-hidden="true"><path d="M1.75 1h8.5c.966 0 1.75.784 1.75 1.75v5.5A1.75 1.75 0 0 1 10.25 10H7.061l-2.574 2.573A1.458 1.458 0 0 1 2 11.543V10h-.25A1.75 1.75 0 0 1 0 8.25v-5.5C0 1.784.784 1 1.75 1ZM1.5 2.75v5.5c0 .138.112.25.25.25h1a.75.75 0 0 1 .75.75v2.19l2.72-2.72a.749.749 0 0 1 .53-.22h3.5a.25.25 0 0 0 .25-.25v-5.5a.25.25 0 0 0-.25-.25h-8.5a.25.25 0 0 0-.25.25Zm13 2a.25.25 0 0 0-.25-.25h-.5a.75.75 0 0 1 0-1.5h.5c.966 0 1.75.784 1.75 1.75v5.5A1.75 1.75 0 0 1 14.25 12H14v1.543a1.458 1.458 0 0 1-2.487 1.03L9.22 12.28a.749.749 0 0 1 .326-1.275.749.749 0 0 1 .734.215l2.22 2.22v-2.19a.75.75 0 0 1 .75-.75h1a.25.25 0 0 0 .25-.25Z"></path></svg> Discussions</div>
+<p class="sd-card-text">Join discussions, pose questions, or share insights.</p>
+</div>
+<a class="sd-stretched-link sd-hide-link-text reference external" href="https://github.com/litestar-org/litestar/discussions"><span>https://github.com/litestar-org/litestar/discussions</span></a></div>
+</div>
+<div class="sd-col sd-d-flex-row docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+<svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-issue-opened" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 9.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3Z"></path><path d="M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0ZM1.5 8a6.5 6.5 0 1 0 13 0 6.5 6.5 0 0 0-13 0Z"></path></svg> Issues</div>
+<p class="sd-card-text">Report issues or suggest new features.</p>
+</div>
+<a class="sd-stretched-link sd-hide-link-text reference external" href="https://github.com/litestar-org/litestar/issues"><span>https://github.com/litestar-org/litestar/issues</span></a></div>
+</div>
+<div class="sd-col sd-d-flex-row docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+<svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-beaker" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 5.782V2.5h-.25a.75.75 0 0 1 0-1.5h6.5a.75.75 0 0 1 0 1.5H11v3.282l3.666 5.76C15.619 13.04 14.543 15 12.767 15H3.233c-1.776 0-2.852-1.96-1.899-3.458Zm-2.4 6.565a.75.75 0 0 0 .633 1.153h9.534a.75.75 0 0 0 .633-1.153L12.225 10.5h-8.45ZM9.5 2.5h-3V6c0 .143-.04.283-.117.403L4.73 9h6.54L9.617 6.403A.746.746 0 0 1 9.5 6Z"></path></svg> Contributing</div>
+<p class="sd-card-text">Contribute to Litestar’s growth with code, docs, and more.</p>
+</div>
+<a class="sd-stretched-link sd-hide-link-text reference internal" href="contribution-guide.html"><span class="doc">Contribution Guide</span></a></div>
+</div>
+</div>
+</div>
+<section id="sponsors">
+<h1>Sponsors<a class="headerlink" href="#sponsors" title="Link to this heading">¶</a></h1>
+<p class="lead">Litestar is a community-driven, open-source initiative that thrives on the generous contributions of our sponsors,
+enabling us to pursue innovative developments and continue our mission to provide exceptional tools and resources
+to our users.</p>
+<p>A huge thank you to our current sponsors:</p>
+<div class="docutils container" id="sponsors-section">
+<div class="sd-container-fluid sd-sphinx-override sd-mb-4 sd-p-0 docutils">
+<div class="sd-row sd-row-cols-3 sd-row-cols-xs-3 sd-row-cols-sm-3 sd-row-cols-md-3 sd-row-cols-lg-3 sd-g-2 sd-g-xs-2 sd-g-sm-2 sd-g-md-2 sd-g-lg-2 surface docutils">
+<div class="sd-col sd-d-flex-row docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
+<div class="sd-card-body docutils">
+<img alt="Scalar.com" class="sponsor" src="https://raw.githubusercontent.com/litestar-org/branding/main/assets/sponsors/scalar.svg" />
+<p class="sd-card-text"><a class="reference external" href="https://github.com/scalar/scalar">Scalar.com</a></p>
+</div>
+<a class="sd-stretched-link sd-hide-link-text reference external" href="https://github.com/scalar/scalar"><span>https://github.com/scalar/scalar</span></a></div>
+</div>
+<div class="sd-col sd-d-flex-row docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
+<div class="sd-card-body docutils">
+<img alt="Telemetry Sports" class="sponsor" src="https://raw.githubusercontent.com/litestar-org/branding/main/assets/sponsors/telemetry-sports/unofficial-telemetry-whitebg.svg" />
+<p class="sd-card-text"><a class="reference external" href="https://telemetrysports.com/">Telemetry Sports</a></p>
+</div>
+<a class="sd-stretched-link sd-hide-link-text reference external" href="https://telemetrysports.com/"><span>https://telemetrysports.com/</span></a></div>
+</div>
+<div class="sd-col sd-d-flex-row docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
+<div class="sd-card-body docutils">
+<img alt="Stok" class="sponsor" src="https://avatars.githubusercontent.com/u/144093421" />
+<p class="sd-card-text"><a class="reference external" href="https://www.stok.kr/">Stok</a></p>
+</div>
+<a class="sd-stretched-link sd-hide-link-text reference external" href="https://www.stok.kr/"><span>https://www.stok.kr/</span></a></div>
+</div>
+</div>
+</div>
+</div>
+<p>We invite organizations and individuals to join our sponsorship program.
+By becoming a sponsor on platforms like <a class="reference external" href="https://polar.sh/litestar-org">Polar</a>, <a class="reference external" href="https://github.com/sponsors/litestar-org">GitHub</a>
+and <a class="reference external" href="https://opencollective.com/litestar">Open Collective</a>, you can play a pivotal role in our project’s growth.</p>
+<p>On top of regular sponsorship, we engage in pledge-based sponsorship opportunities through <a class="reference external" href="https://polar.sh/litestar-org">Polar</a>,
+where you can pledge an amount towards an issue or feature you would like to see implemented.</p>
+<div class="toctree-wrapper compound">
+</div>
+<div class="toctree-wrapper compound">
+</div>
+<div class="toctree-wrapper compound">
+</div>
+</section>
+
+      </article>
+      
+
+
+    </main>
+  </div><footer class="sy-foot">
+  <div class="sy-foot-inner sy-container mx-auto">
+    <div class="sy-foot-reserved md:flex justify-between items-center">
+      <div class="sy-foot-copyright"><p>2025, Litestar Organization</p>
+  
+  <p>
+    Made with
+    
+    <a href="https://www.sphinx-doc.org/">Sphinx</a> and
+    
+    <a href="https://shibuya.lepture.com">Shibuya theme</a>.
+  </p>
+</div>
+      <div class="sy-foot-socials">
+<a href="https://twitter.com/LitestarAPI" aria-label="X (Twitter)">
+  <iconify-icon icon="prime:twitter"></iconify-icon>
+</a>
+<a href="https://discord.gg/litestar" aria-label="Discord">
+  <iconify-icon icon="simple-icons:discord"></iconify-icon>
+</a>
+<a href="https://www.reddit.com/r/LitestarAPI" aria-label="Reddit">
+  <iconify-icon icon="simple-icons:reddit"></iconify-icon>
+</a></div>
+    </div>
+  </div>
+</footer>
+      <script src="_static/documentation_options.js?v=e67ed9cd"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="_static/copybutton.js?v=f281be69"></script>
+      <script src="_static/litestar-theme.js?v=ab2dcc9e"></script>
+      <script>let toggleHintShow = 'Click to show';</script>
+      <script>let toggleHintHide = 'Click to hide';</script>
+      <script>let toggleOpenOnPrint = 'true';</script>
+      <script src="_static/togglebutton.js?v=4a39c7ea"></script>
+      <script src="_static/design-tabs.js?v=f930bc37"></script>
+      <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+      <script src="_static/shibuya.js?v=c477d091"></script>
+      <script src="_static/versioning.js?v=9ab184b9"></script></body>
+</html>

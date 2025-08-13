@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="en" data-accent-color="amber" data-content_root="../../../">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>sqlalchemy - Litestar Framework</title><link rel="shortcut icon" href="../../../_static/favicon.svg"/><link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" /><link rel="next" title="plugins" href="plugins.html" /><link rel="prev" title="pydantic" href="../pydantic.html" /><script>
+    function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
+    setColorMode(localStorage._theme||"auto");
+  </script><link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=397bb51e" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/shibuya.css?v=76b6f612" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx_paramlinks.css" />
+    <link media="print" rel="stylesheet" type="text/css" href="../../../_static/print.css?v=20ff2c19" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/style.css?v=50ea2f63" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/litestar-sphinx-theme.css?v=f8f74789" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --sy-f-text: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
+  --sy-f-heading: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
+}
+</style>
+    <meta property="og:type" content="website"/><meta property="og:title" content="sqlalchemy"/>
+<meta name="twitter:card" content="summary"/>
+<meta property="og:image" content="_static/logo-light.png"/>
+  </head>
+<body><div class="announcement">
+    <div class="announcement-inner">
+      <p>You are viewing the <bold>local</bold> version of the documentation. Click here to go to the latest version.</p>
+      <button class="announcement-close" aria-label="Close announcement">
+        <i class="i-lucide close"></i>
+      </button>
+    </div>
+  </div><div class="sy-head">
+  <div class="sy-head-blur"></div>
+  <div class="sy-head-inner sy-container mx-auto">
+    <a class="sy-head-brand" href="/">
+      <img class="light-logo" src="../../../_static/logo-light.png" alt="Litestar" height="28" loading="lazy" />
+      <img class="dark-logo" src="../../../_static/logo-dark.png" alt="Litestar" height="28" loading="lazy" />
+      <strong>Litestar</strong>
+    </a>
+    <div class="sy-head-nav" id="head-nav">
+      <nav class="sy-head-links"><ul><li class="link"><a href="../../../index.html">Home</a></li>
+      <li class="link"><button class="js-menu" type="button" id="nav-trigger-2" aria-controls="nav-children-2">
+            <span>Community</span>
+            <i class="i-lucide chevron-down"></i>
+          </button>
+        <ul id="nav-children-2" aria-labelledby="nav-trigger-2"><li><a href="../../../contribution-guide.html">
+                <span>Contributing</span>
+                <small>Learn how to contribute to the Litestar project</small>
+              </a></li><li><a href="https://github.com/litestar-org/.github?tab=coc-ov-file">
+                <span>Code of Conduct</span>
+                <small>Review the etiquette for interacting with the Litestar community</small>
+              </a></li><li><a href="https://github.com/litestar-org/.github?tab=coc-ov-file#security-ov-file">
+                <span>Security</span>
+                <small>Overview of Litestar's security protocols</small>
+              </a></li></ul>
+      </li>
+      <li class="link"><button class="js-menu" type="button" id="nav-trigger-3" aria-controls="nav-children-3">
+            <span>About</span>
+            <i class="i-lucide chevron-down"></i>
+          </button>
+        <ul id="nav-children-3" aria-labelledby="nav-trigger-3"><li><a href="https://litestar.dev/about/organization">
+                <span>Litestar Organization</span>
+                <small>Details about the Litestar organization</small>
+              </a></li><li><a href="https://litestar.dev/about/litestar-releases">
+                <span>Releases</span>
+                <small>Explore the release process, versioning, and deprecation policy for Litestar</small>
+              </a></li></ul>
+      </li>
+      <li class="link"><button class="js-menu" type="button" id="nav-trigger-4" aria-controls="nav-children-4">
+            <span>Release notes</span>
+            <i class="i-lucide chevron-down"></i>
+          </button>
+        <ul id="nav-children-4" aria-labelledby="nav-trigger-4"><li><a href="../../../release-notes/whats-new-3.html">
+                <span>What's new in 3.0</span>
+                <small>Explore the new features in Litestar 3.0</small>
+              </a></li><li><a href="../../../release-notes/changelog.html">
+                <span>3.x Changelog</span>
+                <small>All changes in the 3.x series</small>
+              </a></li><li><a href="https://docs.litestar.dev/2/release-notes/changelog.html">
+                <span>2.x Changelog</span>
+                <small>All changes in the 2.x series</small>
+              </a></li></ul>
+      </li>
+      <li class="link"><button class="js-menu" type="button" id="nav-trigger-5" aria-controls="nav-children-5">
+            <span>Help</span>
+            <i class="i-lucide chevron-down"></i>
+          </button>
+        <ul id="nav-children-5" aria-labelledby="nav-trigger-5"><li><a href="https://discord.gg/litestar">
+                <span>Discord Help Forum</span>
+                <small>Dedicated Discord help forum</small>
+              </a></li><li><a href="https://github.com/orgs/litestar-org/discussions">
+                <span>GitHub Discussions</span>
+                <small>GitHub Discussions</small>
+              </a></li><li><a href="https://stackoverflow.com/questions/tagged/litestar">
+                <span>Stack Overflow</span>
+                <small>We monitor the <code><b>litestar</b></code> tag on Stack Overflow</small>
+              </a></li></ul>
+      </li><li class="link">
+          <a href="https://github.com/sponsors/Litestar-Org">
+            <span>Sponsor</span></a>
+        </li></ul></nav>
+      <div class="sy-head-extra flex items-center print:hidden"><form class="searchbox flex items-center" action="../../../search.html" method="get">
+  <input type="text" name="q" placeholder="Search" />
+  <kbd>/</kbd>
+</form><div class="nav-versions">
+    <button type="button" aria-label="Versions">
+      <span class="md:hidden">Versions</span>
+      <span class="hidden md:inline">3</span>
+      <i class="i-lucide chevron-down"></i>
+    </button>
+    <div class="nav-versions-choices"><ul><li><a href="/latest">latest</a></li><li><a href="/main">v3 (development)</a></li><li><a href="/2">v2</a></li><li><a href="/1">v1</a></li></ul></div>
+  </div><div class="sy-head-socials">
+<a href="https://twitter.com/LitestarAPI" aria-label="X (Twitter)">
+  <iconify-icon icon="prime:twitter"></iconify-icon>
+</a>
+  <a href="https://discord.gg/litestar" aria-label="Discord">
+    <iconify-icon icon="simple-icons:discord"></iconify-icon>
+  </a></div></div>
+    </div>
+    <div class="sy-head-actions flex items-center shrink-0 print:hidden"><button class="js-theme theme-switch flex items-center"
+data-aria-auto="Switch to light color mode"
+data-aria-light="Switch to dark color mode"
+data-aria-dark="Switch to auto color mode">
+<i class="i-lucide theme-icon"></i>
+</button><button class="md:hidden flex items-center js-menu" aria-label="Menu" type="button" aria-controls="head-nav" aria-expanded="false">
+        <div class="hamburger">
+          <span class="hamburger_1"></span>
+          <span class="hamburger_2 -translate-x-2"></span>
+          <span class="hamburger_3 -translate-x-1"></span>
+        </div>
+      </button>
+    </div>
+  </div>
+</div>
+<div class="sy-page sy-container flex mx-auto">
+  <aside id="lside" class="sy-lside md:w-72 md:shrink-0 print:hidden">
+    <div class="sy-lside-inner md:sticky">
+      <div class="sy-scrollbar p-6"><div class="sidebar-links">
+  <ul>
+    <li><a class="icon-link" href="https://github.com/orgs/litestar-org/discussions">
+  <span class="icon">
+    <svg viewBox="0 0 24 24" fill="none">
+      <path fill="var(--accent-9)" fill-rule="evenodd" clip-rule="evenodd" d="M11 5a6 6 0 0 0-4.687 9.746c.215.27.315.62.231.954l-.514 2.058a1 1 0 0 0 1.485 1.1l2.848-1.71c.174-.104.374-.15.576-.148H13a6 6 0 0 0 0-12h-2Z"/>
+      <circle fill="white" cx="12" cy="11" r="1"/>
+      <circle fill="white" cx="9" cy="11" r="1"/>
+      <circle fill="white" cx="15" cy="11" r="1"/>
+    </svg>
+  </span>
+  <span class="text">Discussion</span>
+</a></li>
+  </ul>
+</div>
+        <div class="globaltoc" data-expand-depth="0"><p class="caption" role="heading" aria-level="3"><span class="caption-text">Documentation</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../getting-started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../usage/index.html">Usage</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage/applications.html">Applications</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage/routing/index.html">Routing</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../usage/routing/overview.html">Overview</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../usage/routing/handlers.html">Route handlers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../usage/routing/parameters.html">Parameters</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage/requests.html">Requests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage/caching.html">Caching</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage/channels.html">Channels</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage/cli.html">CLI</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage/databases/index.html">Databases</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../usage/databases/sqlalchemy/index.html">SQLAlchemy</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../usage/databases/sqlalchemy/models_and_repository.html">SQLAlchemy Models &amp; Repository</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../usage/databases/sqlalchemy/plugins/index.html">Plugins</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../usage/databases/piccolo.html">Piccolo ORM</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage/debugging.html">Debugging</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage/dependency-injection.html">Dependency Injection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage/dto/index.html">Data Transfer Object (DTO)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../usage/dto/0-basic-use.html">Basic Use</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../usage/dto/1-abstract-dto.html">AbstractDTO</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../usage/dto/2-creating-custom-dto-classes.html">Implementing Custom DTO Classes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage/events.html">Events</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage/exceptions.html">Exceptions and exception handling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage/file_systems.html">File Systems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage/htmx.html">HTMX</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage/lifecycle-hooks.html">Life Cycle Hooks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage/logging.html">Logging</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage/metrics/index.html">Metrics</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../usage/metrics/open-telemetry.html">OpenTelemetry</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../usage/metrics/prometheus.html">Prometheus</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage/middleware/index.html">Middleware</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../usage/middleware/using-middleware.html">Using Middleware</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../usage/middleware/builtin-middleware.html">Built-in middleware</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../usage/middleware/creating-middleware.html">Creating Middleware</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage/openapi/index.html">OpenAPI</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../usage/openapi/schema_generation.html">Configuring schema generation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../usage/openapi/schema_generation.html#configuring-schema-generation-on-a-route-handler">Configuring schema generation on a route handler</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../usage/openapi/schema_generation.html#accessing-the-openapi-schema-in-code">Accessing the OpenAPI schema in code</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../usage/openapi/schema_generation.html#customizing-pydantic-model-schemas">Customizing Pydantic model schemas</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../usage/openapi/schema_generation.html#customizing-operation-class">Customizing <code class="docutils literal notranslate"><span class="pre">Operation</span></code> class</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../usage/openapi/schema_generation.html#generating-examples">Generating examples</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../usage/openapi/ui_plugins.html">OpenAPI UI Plugins</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../usage/openapi/ui_plugins.html#using-openapi-ui-plugins">Using OpenAPI UI Plugins</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../usage/openapi/ui_plugins.html#configuring-openapi-ui-plugins">Configuring OpenAPI UI Plugins</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../usage/openapi/ui_plugins.html#configuring-the-openapi-root-path">Configuring the OpenAPI Root Path</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../usage/openapi/ui_plugins.html#building-your-own-openapi-ui-plugin">Building your own OpenAPI UI Plugin</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../usage/openapi/ui_plugins.html#interacting-with-the-router">Interacting with the <code class="docutils literal notranslate"><span class="pre">Router</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../usage/openapi/ui_plugins.html#oauth2-in-swagger-ui">OAuth2 in Swagger UI</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../usage/openapi/ui_plugins.html#customizing-the-openapi-ui">Customizing the OpenAPI UI</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../usage/openapi/ui_plugins.html#cdn-and-offline-file-support">CDN and offline file support</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage/plugins/index.html">Plugins</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../usage/plugins/flash_messages.html">Flash Messages</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../usage/plugins/problem_details.html">Problem Details</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage/responses.html">Responses</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage/security/index.html">Security</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../usage/security/abstract-authentication-middleware.html">Implementing Custom Authentication</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../usage/security/security-backends.html">Security Backends</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../usage/security/guards.html">Guards</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../usage/security/excluding-and-including-endpoints.html">Excluding and including endpoints</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../usage/security/jwt.html">JWT Security Backends</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../usage/security/secret-datastructures.html">Handling Secrets</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage/static-files.html">Static files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage/custom-types.html">Custom types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage/stores.html">Stores</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage/templating.html">Templating</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage/testing.html">Testing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage/websockets.html">WebSockets</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../index.html">API reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../app.html">app</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../background_tasks.html">background_tasks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../channels/index.html">channels</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../channels/plugin.html">plugin</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../channels/subscriber.html">subscriber</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../channels/backends/index.html">backends</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../channels/backends/base.html">base</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../channels/backends/memory.html">memory</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../channels/backends/redis.html">redis</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../channels/backends/psycopg.html">psycopg</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../channels/backends/asyncpg.html">asyncpg</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../cli.html">cli</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../config.html">config</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../connection.html">connection</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html">contrib</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../htmx.html">HTMX</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jinja.html">jinja</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jwt.html">jwt</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../mako.html">mako</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../opentelemetry.html">opentelemetry</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../piccolo.html">piccolo_orm</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../pydantic.html">pydantic</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">sqlalchemy</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="plugins.html">plugins</a></li>
+<li class="toctree-l4"><a class="reference internal" href="repository.html">repository</a></li>
+<li class="toctree-l4"><a class="reference internal" href="types.html">types</a></li>
+<li class="toctree-l4"><a class="reference internal" href="base.html">base</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dto.html">DTO</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../controller.html">controller</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../concurrency.html">concurrency</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../data_extractors.html">data_extractors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../datastructures/index.html">datastructures</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../datastructures/secret_values.html">secret_values</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../di.html">di</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../dto/index.html">dto</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../dto/config.html">config</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../dto/data_structures.html">data_structures</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../dto/field.html">field</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../dto/types.html">types</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../dto/base_dto.html">base_dto</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../dto/msgspec_dto.html">msgspec_dto</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../dto/dataclass_dto.html">dataclass_dto</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../enums.html">enums</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../events.html">events</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../exceptions.html">exceptions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../file_system.html">file_system</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../handlers.html">handlers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../logging/index.html">logging</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../logging/config.html">config</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../logging/picologging.html">picologging</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../logging/standard.html">standard</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../middleware/index.html">middleware</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../middleware/allowed_hosts.html">allowed_hosts</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../middleware/authentication.html">authentication</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../middleware/compression.html">compression</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../middleware/cors.html">cors</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../middleware/csrf.html">csrf</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../middleware/logging.html">logging</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../middleware/rate_limit.html">rate_limit</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../middleware/session/index.html">session</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../middleware/session/base.html">base</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../middleware/session/client_side.html">client_side</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../middleware/session/server_side.html">server_side</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../middleware/constraints.html">constraints</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../openapi/index.html">openapi</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../openapi/openapi.html">openapi</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../openapi/plugins.html">plugins</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../openapi/spec.html">spec</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../pagination.html">pagination</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../params.html">params</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../plugins/index.html">plugins</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../plugins/attrs.html">attrs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../plugins/flash_messages.html">flash</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../plugins/htmx.html">htmx</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../plugins/problem_details.html">problem details</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../plugins/prometheus.html">prometheus</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../plugins/pydantic.html">pydantic</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../plugins/structlog.html">structlog</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../plugins/sqlalchemy.html">sqlalchemy</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../repository/index.html">repository</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../repository/abc.html">abc</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../repository/filters.html">filters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../repository/exceptions.html">exceptions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../repository/testing.html">testing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../repository/handlers.html">handlers</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../response/index.html">response</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../response/base.html">base</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../response/file.html">file</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../response/redirect.html">redirect</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../response/streaming.html">streaming</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../response/sse.html">SSE (Server Sent Events)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../response/template.html">template</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../router.html">router</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../routes.html">routes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../security/index.html">security</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../security/jwt.html">jwt</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../security/session_auth.html">session_auth</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../serialization.html">serialization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../static_files.html">static_files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../status_codes.html">status_code</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../stores/index.html">stores</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../stores/base.html">base</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../stores/file.html">file</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../stores/memory.html">memory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../stores/redis.html">redis</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../stores/registry.html">registry</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../stores/valkey.html">valkey</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../template.html">template</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../testing.html">testing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../types.html">types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../typing.html">typing</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../benchmarks.html">Benchmarks</a></li>
+</ul>
+<p class="caption" role="heading" aria-level="3"><span class="caption-text">Guides</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../migration/index.html">Migrating to Litestar</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../migration/flask.html">From Flask</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../migration/fastapi.html">From Starlette / FastAPI</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../topics/index.html">Topics</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../topics/sync-vs-async.html">Sync vs. Async</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../topics/deployment/index.html">Deployment</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../topics/deployment/nginx-unit.html">NGINX Unit</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../topics/deployment/manually-with-asgi-server.html">Manually with ASGI server</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../topics/deployment/docker.html">Docker</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../topics/deployment/supervisor.html">Supervisor (Linux)</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorials/index.html">Tutorials</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/todo-app/index.html">Developing a basic TODO application</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../tutorials/todo-app/0-application-basics.html">Application basics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../tutorials/todo-app/1-accessing-the-list.html">Accessing the list</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../tutorials/todo-app/2-interacting-with-the-list.html">Making the list interactive</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../tutorials/todo-app/3-assembling-the-app.html">Recap and assembling the final application</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/sqlalchemy/index.html">Improving the TODO app with SQLAlchemy</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../tutorials/sqlalchemy/0-introduction.html">Introduction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../tutorials/sqlalchemy/1-provide-session-with-di.html">Providing the session with DI</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../tutorials/sqlalchemy/2-serialization-plugin.html">Using the serialization plugin</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../tutorials/sqlalchemy/3-init-plugin.html">Using the init plugin</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../tutorials/sqlalchemy/4-final-touches-and-recap.html">Final touches and recap</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/dto-tutorial/index.html">Data Transfer Object Tutorial</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../tutorials/dto-tutorial/01-simple-dto-exclude.html">Our first DTO</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../tutorials/dto-tutorial/02-nested-exclude.html">Excluding from nested models</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../tutorials/dto-tutorial/03-nested-collection-exclude.html">Excluding from collections of nested models</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../tutorials/dto-tutorial/04-max-nested-depth.html">Max nested depth</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../tutorials/dto-tutorial/05-renaming-fields.html">Renaming fields</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../tutorials/dto-tutorial/06-receiving-data.html">Receiving data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../tutorials/dto-tutorial/07-read-only-fields.html">Read only fields</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../tutorials/dto-tutorial/08-dto-data.html">Accessing the data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../tutorials/dto-tutorial/09-updating.html">Updating instances</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../tutorials/dto-tutorial/10-layered-dto-declarations.html">Declaring DTOs on app layers</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/repository-tutorial/index.html">SQLAlchemy Repository Tutorial</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../tutorials/repository-tutorial/01-modelling-and-features.html">Introduction to Database Modelling and Repository Features</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../tutorials/repository-tutorial/01-modelling-and-features.html#modelling">Modelling</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../tutorials/repository-tutorial/01-modelling-and-features.html#full-code">Full Code</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../tutorials/repository-tutorial/02-repository-introduction.html">Interacting with repositories</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../tutorials/repository-tutorial/02-repository-introduction.html#working-with-bulk-data-operations">Working with Bulk Data Operations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../tutorials/repository-tutorial/02-repository-introduction.html#full-code">Full Code</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../tutorials/repository-tutorial/03-repository-controller.html">Working with Controllers and Repositories</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../tutorials/repository-tutorial/03-repository-controller.html#full-code">Full Code</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../tutorials/repository-tutorial/04-repository-other.html">Adding Additional Features to the Repository</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../tutorials/repository-tutorial/04-repository-other.html#slug-fields">Slug Fields</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../tutorials/repository-tutorial/04-repository-other.html#full-code">Full Code</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading" aria-level="3"><span class="caption-text">Contributing</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../contribution-guide.html">Contribution Guide</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/search?q=user%3Alitestar-org+state%3Aopen+label%3A%22good+first+issue%22+++no%3Aassignee+&amp;type=issues=">Available Issues</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/litestar-org/.github?tab=coc-ov-file#readme">Code of Conduct</a></li>
+</ul>
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="lside-overlay js-menu" role="button" aria-label="Close left sidebar" aria-controls="lside" aria-expanded="false"></div>
+  <aside id="rside" class="sy-rside pb-3 w-64 shrink-0 order-last">
+    <button class="rside-close js-menu xl:hidden" aria-label="Close Table of Contents" type="button" aria-controls="rside" aria-expanded="false">
+      <i class="i-lucide close"></i>
+    </button>
+    <div class="sy-scrollbar sy-rside-inner px-6 xl:top-16 xl:sticky xl:pl-0 pt-6 pb-4"><a class="js-repo-stats repo-stats flex items-center" href="https://github.com/litestar-org/litestar"
+  data-type="github" data-user="litestar-org" data-repo="litestar">
+  <span class="w-8 flex items-center justify-around shrink-0 text-3xl">
+    <iconify-icon icon="simple-icons:github"></iconify-icon>
+  </span>
+  <span class="flex-grow px-2 break-all">
+    <span>litestar-org/litestar</span>
+    <span class="flex text-sm repo-stats-count">
+      <span class="flex items-center pr-3">
+        <iconify-icon icon="lucide:star"></iconify-icon>
+        <strong class="js-repo-stars ml-1">0</strong>
+      </span>
+      <span class="flex items-center">
+        <iconify-icon icon="lucide:git-fork"></iconify-icon>
+        <strong class="js-repo-forks ml-1">0</strong>
+      </span>
+    </span>
+  </span>
+</a><div class="edit-this-page">
+  <a href="https://github.com/litestar-org/litestar/blob/main/docs/reference/contrib/sqlalchemy/index.rst">Edit this page</a>
+</div><div id="ethical-ad-placement" data-ea-publisher="readthedocs"></div></div>
+  </aside>
+  <div class="rside-overlay js-menu" role="button" aria-label="Close Table of Contents" aria-controls="rside" aria-expanded="false"></div>
+  <main class="sy-main w-full max-sm:max-w-full print:pt-6">
+<div class="sy-breadcrumbs" role="navigation">
+  <div class="sy-breadcrumbs-inner flex items-center">
+    <div class="md:hidden mr-3">
+      <button class="js-menu" aria-label="Menu" type="button" aria-controls="lside" aria-expanded="false">
+        <i class="i-lucide menu"></i>
+      </button>
+    </div>
+    <ol class="flex-1" itemscope itemtype="https://schema.org/BreadcrumbList"><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <a itemprop="item" href="../../../index.html"><span itemprop="name">Litestar</span></a>
+        <span>/</span>
+        <meta itemprop="position" content="1" />
+      </li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <a itemprop="item" href="../../index.html"><span itemprop="name">API reference</span></a>
+        <span>/</span>
+        <meta itemprop="position" content="2" />
+      </li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <a itemprop="item" href="../index.html"><span itemprop="name">contrib</span></a>
+        <span>/</span>
+        <meta itemprop="position" content="3" />
+      </li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <strong itemprop="name">sqlalchemy</strong>
+        <meta itemprop="position" content="4" />
+      </li></ol>
+    <div class="xl:hidden ml-1">
+      <button class="js-menu" aria-label="Show table of contents" type="button" aria-controls="rside"
+        aria-expanded="false">
+        <i class="i-lucide outdent"></i>
+      </button>
+    </div>
+  </div>
+</div><div class="flex flex-col break-words justify-between">
+      <div class="min-w-0 max-w-6xl px-6 pb-6 pt-8 xl:px-12">
+        <article class="yue" role="main">
+          <section id="sqlalchemy">
+<h1>sqlalchemy<a class="headerlink" href="#sqlalchemy" title="Link to this heading">¶</a></h1>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="plugins.html">plugins</a></li>
+<li class="toctree-l1"><a class="reference internal" href="repository.html">repository</a></li>
+<li class="toctree-l1"><a class="reference internal" href="types.html">types</a></li>
+<li class="toctree-l1"><a class="reference internal" href="base.html">base</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dto.html">DTO</a></li>
+</ul>
+</div>
+</section>
+
+        </article><button class="back-to-top" type="button">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+  </svg>
+  <span>Back to top</span>
+</button><div class="navigation flex print:hidden"><div class="navigation-prev">
+    <a href="../pydantic.html">
+      <i class="i-lucide chevron-left"></i>
+      <div class="page-info">
+        <span>Previous</span><div class="title">pydantic</div></div>
+    </a>
+  </div><div class="navigation-next">
+    <a href="plugins.html">
+      <div class="page-info">
+        <span>Next</span>
+        <div class="title">plugins</div>
+      </div>
+      <i class="i-lucide chevron-right"></i>
+    </a>
+  </div></div></div>
+    </div>
+  </main>
+</div>
+<footer class="sy-foot">
+  <div class="sy-foot-inner sy-container mx-auto">
+    <div class="sy-foot-reserved md:flex justify-between items-center">
+      <div class="sy-foot-copyright"><p>2025, Litestar Organization</p>
+  
+  <p>
+    Made with
+    
+    <a href="https://www.sphinx-doc.org/">Sphinx</a> and
+    
+    <a href="https://shibuya.lepture.com">Shibuya theme</a>.
+  </p>
+</div>
+      <div class="sy-foot-socials">
+<a href="https://twitter.com/LitestarAPI" aria-label="X (Twitter)">
+  <iconify-icon icon="prime:twitter"></iconify-icon>
+</a>
+<a href="https://discord.gg/litestar" aria-label="Discord">
+  <iconify-icon icon="simple-icons:discord"></iconify-icon>
+</a>
+<a href="https://www.reddit.com/r/LitestarAPI" aria-label="Reddit">
+  <iconify-icon icon="simple-icons:reddit"></iconify-icon>
+</a></div>
+    </div>
+  </div>
+</footer>
+      <script src="../../../_static/documentation_options.js?v=e67ed9cd"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../../_static/copybutton.js?v=f281be69"></script>
+      <script src="../../../_static/litestar-theme.js?v=ab2dcc9e"></script>
+      <script>let toggleHintShow = 'Click to show';</script>
+      <script>let toggleHintHide = 'Click to hide';</script>
+      <script>let toggleOpenOnPrint = 'true';</script>
+      <script src="../../../_static/togglebutton.js?v=4a39c7ea"></script>
+      <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
+      <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+      <script src="../../../_static/shibuya.js?v=c477d091"></script>
+      <script src="../../../_static/versioning.js?v=9ab184b9"></script></body>
+</html>
