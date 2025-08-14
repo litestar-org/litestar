@@ -6,7 +6,19 @@ on:
   push:
     branches:
       - main
-      - v3.0
+      - v2
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to build docs for (1, 2, main, or release)'
+        required: true
+        default: 'main'
+        type: choice
+        options:
+          - main
+          - '2'
+          - '1'
+          - release
 
 env:
   UV_LOCKED: 1
@@ -17,7 +29,7 @@ jobs:
       contents: write
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - uses: actions/setup-python@v5
         with:
@@ -43,9 +55,18 @@ jobs:
         run: uv run python tools/build_docs.py docs-build --version main
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
 
-      - name: Build docs (v3.0 branch)
-        run: uv run python tools/build_docs.py docs-build --version 3-dev
-        if: github.event_name == 'push' && github.ref == 'refs/heads/v3.0'
+      - name: Build docs (v2 branch)
+        run: uv run python tools/build_docs.py docs-build --version 2
+        if: github.event_name == 'push' && github.ref == 'refs/heads/v2'
+
+      - name: Build docs (manual trigger)
+        run: |
+          if [ "${{ inputs.version }}" == "release" ]; then
+            uv run python tools/build_docs.py docs-build
+          else
+            uv run python tools/build_docs.py docs-build --version ${{ inputs.version }}
+          fi
+        if: github.event_name == 'workflow_dispatch'
 
       - name: Deploy
         uses: JamesIves/github-pages-deploy-action@v4

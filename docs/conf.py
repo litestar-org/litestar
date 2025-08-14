@@ -302,11 +302,10 @@ html_context = {
     "source_user": "litestar-org",
     "source_repo": "litestar",
     # "source_version": "main",  # TODO: We should set this with an envvar depending on which branch we are building?
-    "current_version": "latest",  # TODO: Version dropdown only show caret and now text
+    "current_version": release,  # Use the detected version
     "versions": [  # TODO(provinzkraut): this needs to use versions.json but im not 100% on how to do this yet
         ("latest", "/latest"),
-        ("development", "/main"),
-        ("v3", "/3-dev"),
+        ("v3 (development)", "/main"),
         ("v2", "/2"),
         ("v1", "/1"),
     ],
