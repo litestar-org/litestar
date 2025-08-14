@@ -164,13 +164,13 @@ will be used for the value of the ``snake_case`` parameter.
 
 In this case, ``param`` is validated to be an *integer larger than 5*.
 
-Documentation for enum query parameters
+Documenting enum query parameters
 ---------------------------------------
 
-Using :func:`~.params.Parameter` to modify the OpenAPI schema generated for query :term:`parameters <parameter>` that
-are enums can have surprising results. Since only one schema is generated per enum, calling :func:`~.params.Parameter`
-multiple times with distinct :paramref:`~.params.Parameter.description` :term:`arguments <argument>` for the same enum
-causes descriptions to be overwritten. This can be avoided by using the
+By default, the OpenAPI schema generated for enum query :term:`parameters <parameter>` uses the enum's docstring for the
+description section of the schema. The description can be changed with the :paramref:`~.params.Parameter.description`
+parameter of the `the parameter function`_, but doing so can overwrite the descriptions of other query parameters of the
+same enum because only one schema is generated per enum. This can be avoided by using the
 :paramref:`~.params.Parameter.schema_component_key` parameter so that separate schemas are generated:
 
 .. literalinclude:: /examples/parameters/query_params_enum.py
