@@ -34,7 +34,7 @@ def func() -> int:
 
 
 @pytest.fixture()
-def loop() -> Generator[AbstractEventLoop, None, None]:
+def loop() -> Iterator[AbstractEventLoop]:
     loop = asyncio.new_event_loop()
     try:
         yield loop
