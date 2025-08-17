@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import asyncio
 from asyncio import AbstractEventLoop
-from collections.abc import Generator
+from collections.abc import Iterator
 from concurrent.futures import ThreadPoolExecutor
 from unittest.mock import AsyncMock
 
