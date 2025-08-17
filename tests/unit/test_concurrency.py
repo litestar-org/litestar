@@ -21,7 +21,7 @@ from litestar.concurrency import (
 
 
 @pytest.fixture(autouse=True)
-def reset_state() -> Generator[None, None, None]:
+def reset_state() -> Iterator[None]:
     _State.LIMITER = None
     _State.EXECUTOR = None
     yield
