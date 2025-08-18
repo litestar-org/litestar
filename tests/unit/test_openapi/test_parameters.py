@@ -51,7 +51,7 @@ def test_create_parameters(person_controller: Type[Controller]) -> None:
 
     parameters = _create_parameters(app=Litestar(route_handlers=[person_controller]), path="/{service_id}/person")
     assert len(parameters) == 10
-    page, name, service_id, page_size, from_date, to_date, gender, lucky_number, secret_header, cookie_value = tuple(
+    service_id, page, name, page_size, from_date, to_date, gender, lucky_number, secret_header, cookie_value = tuple(
         parameters
     )
 
@@ -111,7 +111,7 @@ def test_create_parameters(person_controller: Type[Controller]) -> None:
             Schema(
                 type=OpenAPIType.ARRAY,
                 items=Reference(ref="#/components/schemas/tests_unit_test_openapi_utils_Gender"),
-                examples=[[Gender.MALE]],
+                examples=[[Gender.FEMALE]],
             ),
             Schema(type=OpenAPIType.NULL),
         ],
@@ -348,6 +348,11 @@ def test_parameter_schema_extra() -> None:
                 }
             ),
         ],
+        query2: Annotated[
+            Gender,
+            Parameter(description="gender description", schema_extra={"format": "foo"}, schema_component_key="q2"),
+        ],
+        query3: Annotated[Gender, Parameter(schema_extra={"format": "bar"}, schema_component_key="q3")],
     ) -> Any:
         return query1
 
@@ -364,6 +369,12 @@ def test_parameter_schema_extra() -> None:
             {"type": "string", "enum": ["denied", "values"]},
         ]
     }
+    assert schema["paths"]["/"]["get"]["parameters"][1]["schema"]["$ref"] == "#/components/schemas/q2"
+    assert schema["paths"]["/"]["get"]["parameters"][1]["description"] == "gender description"
+    assert schema["components"]["schemas"]["q2"]["format"] == "foo"
+    assert schema["paths"]["/"]["get"]["parameters"][2]["schema"]["$ref"] == "#/components/schemas/q3"
+    assert schema["paths"]["/"]["get"]["parameters"][2]["description"] == Gender.__doc__
+    assert schema["components"]["schemas"]["q3"]["format"] == "bar"
 
     # Attempt to pass invalid key
     app = Litestar([error_handler])
