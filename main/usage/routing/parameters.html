@@ -487,6 +487,7 @@ data-aria-dark="Switch to auto color mode">
 </li>
 <li><a class="reference internal" href="#type-coercion">Type coercion</a></li>
 <li><a class="reference internal" href="#alternative-names-and-constraints">Alternative names and constraints</a></li>
+<li><a class="reference internal" href="#documenting-enum-query-parameters">Documenting enum query parameters</a></li>
 <li><a class="reference internal" href="#header-and-cookie-parameters">Header and Cookie Parameters</a></li>
 <li><a class="reference internal" href="#layered-parameters">Layered Parameters</a></li>
 </ul>
@@ -959,12 +960,55 @@ will be used for the value of the <code class="docutils literal notranslate"><sp
 </div>
 <p>In this case, <code class="docutils literal notranslate"><span class="pre">param</span></code> is validated to be an <em>integer larger than 5</em>.</p>
 </section>
+<section id="documenting-enum-query-parameters">
+<h2>Documenting enum query parameters<a class="headerlink" href="#documenting-enum-query-parameters" title="Link to this heading">¶</a></h2>
+<p>By default, the OpenAPI schema generated for enum query <a class="reference external" href="https://docs.python.org/3/glossary.html#term-parameter" title="(in Python v3.13)"><span class="xref std std-term">parameters</span></a> uses the enum’s docstring for the
+description section of the schema. The description can be changed with the <a class="reference internal" href="../../reference/params.html#litestar.params.Parameter.params.description" title="litestar.params.Parameter"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">description</span></code></a>
+parameter of the <a class="reference internal" href="#the-parameter-function">the parameter function</a>, but doing so can overwrite the descriptions of other query parameters of the
+same enum because only one schema is generated per enum. This can be avoided by using the
+<a class="reference internal" href="../../reference/params.html#litestar.params.Parameter.params.schema_component_key" title="litestar.params.Parameter"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">schema_component_key</span></code></a> parameter so that separate schemas are generated:</p>
+<div class="literal-block-wrapper docutils container" id="id12">
+<div class="code-block-caption"><span class="caption-text">Query parameters with the same enum type and different descriptions</span><a class="headerlink" href="#id12" title="Link to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">enum</span><span class="w"> </span><span class="kn">import</span> <span class="n">Enum</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Annotated</span>
+</span><span data-line="3">
+</span><span data-line="4"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
+</span><span data-line="5"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">Parameter</span>
+</span><span data-line="6">
+</span><span data-line="7">
+</span><span data-line="8"><span class="k">class</span><span class="w"> </span><span class="nc">MyEnum</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">Enum</span><span class="p">):</span>
+</span><span data-line="9"><span class="w">    </span><span class="sd">&quot;&quot;&quot;My enum accepts two values&quot;&quot;&quot;</span>
+</span><span data-line="10">
+</span><span data-line="11">    <span class="n">A</span> <span class="o">=</span> <span class="s2">&quot;a&quot;</span>
+</span><span data-line="12">    <span class="n">B</span> <span class="o">=</span> <span class="s2">&quot;b&quot;</span>
+</span><span data-line="13">
+</span><span data-line="14">
+</span><span data-line="15"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+</span><span data-line="16"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">index</span><span class="p">(</span>
+</span><span data-line="17">    <span class="n">q1</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="n">MyEnum</span><span class="p">,</span> <span class="n">Parameter</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s2">&quot;This is q1&quot;</span><span class="p">,</span> <span class="n">schema_component_key</span><span class="o">=</span><span class="s2">&quot;q1&quot;</span><span class="p">)],</span>
+</span><span data-line="18">    <span class="n">q2</span><span class="p">:</span> <span class="n">MyEnum</span><span class="p">,</span>
+</span><span data-line="19">    <span class="n">q3</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="n">MyEnum</span><span class="p">,</span> <span class="n">Parameter</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s2">&quot;This is q3&quot;</span><span class="p">,</span> <span class="n">schema_component_key</span><span class="o">=</span><span class="s2">&quot;q3&quot;</span><span class="p">)],</span>
+</span><span data-line="20"><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
+</span><span data-line="21">
+</span><span data-line="22">
+</span><span data-line="23"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">([</span><span class="n">index</span><span class="p">])</span>
+</span></pre></div>
+</div>
+</div>
+<p>In the above example, the schema for the <code class="docutils literal notranslate"><span class="pre">q1</span></code> query parameter references a “q1” schema component with a description of
+“This is q1”. The schema for the <code class="docutils literal notranslate"><span class="pre">q2</span></code> query parameter references a “MyEnum” schema component with a description of “My
+enum accepts two values”. The schema for the <code class="docutils literal notranslate"><span class="pre">q3</span></code> query parameter references a “q3” schema component with a
+description of “This is q3”.</p>
+<p>If we did not pass <a class="reference internal" href="../../reference/params.html#litestar.params.Parameter.params.schema_component_key" title="litestar.params.Parameter"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">schema_component_key</span></code></a> arguments for <a class="reference internal" href="../../reference/params.html#litestar.params.Parameter" title="litestar.params.Parameter"><code class="xref py py-func docutils literal notranslate"><span class="pre">Parameter()</span></code></a> for
+<code class="docutils literal notranslate"><span class="pre">q1</span></code> and <code class="docutils literal notranslate"><span class="pre">q3</span></code>, then the schemas for all three query parameters would reference the same “MyEnum” schema component
+with the description “This is q1”.</p>
+</section>
 <section id="header-and-cookie-parameters">
 <h2>Header and Cookie Parameters<a class="headerlink" href="#header-and-cookie-parameters" title="Link to this heading">¶</a></h2>
 <p>Unlike <em>Query</em> <a class="reference external" href="https://docs.python.org/3/glossary.html#term-parameter" title="(in Python v3.13)"><span class="xref std std-term">parameters</span></a>, <em>Header</em> and <em>Cookie</em> parameters have to be
 declared using <a class="reference internal" href="#the-parameter-function">the parameter function</a> , for example:</p>
-<div class="literal-block-wrapper docutils container" id="id12">
-<div class="code-block-caption"><span class="caption-text">Defining header and cookie parameters</span><a class="headerlink" href="#id12" title="Link to this code">¶</a></div>
+<div class="literal-block-wrapper docutils container" id="id13">
+<div class="code-block-caption"><span class="caption-text">Defining header and cookie parameters</span><a class="headerlink" href="#id13" title="Link to this code">¶</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Annotated</span>
 </span><span data-line="2">
 </span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseModel</span>
@@ -1017,8 +1061,8 @@ of the application:</p>
 <input id="sd-tab-item-4" name="sd-tab-set-2" type="radio">
 <label class="sd-tab-label" data-sync-group="tab" data-sync-id="3.8" for="sd-tab-item-4">
 Python 3.8+</label><div class="sd-tab-content docutils">
-<div class="literal-block-wrapper docutils container" id="id13">
-<div class="code-block-caption"><span class="caption-text">Declaring parameters on different layers of the application</span><a class="headerlink" href="#id13" title="Link to this code">¶</a></div>
+<div class="literal-block-wrapper docutils container" id="id14">
+<div class="code-block-caption"><span class="caption-text">Declaring parameters on different layers of the application</span><a class="headerlink" href="#id14" title="Link to this code">¶</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Annotated</span><span class="p">,</span> <span class="n">Union</span>
 </span><span data-line="2">
 </span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Controller</span><span class="p">,</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">Router</span><span class="p">,</span> <span class="n">get</span>
@@ -1068,8 +1112,8 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 <input checked="checked" id="sd-tab-item-5" name="sd-tab-set-2" type="radio">
 <label class="sd-tab-label" data-sync-group="tab" data-sync-id="3.10" for="sd-tab-item-5">
 Python 3.10+</label><div class="sd-tab-content docutils">
-<div class="literal-block-wrapper docutils container" id="id14">
-<div class="code-block-caption"><span class="caption-text">Declaring parameters on different layers of the application</span><a class="headerlink" href="#id14" title="Link to this code">¶</a></div>
+<div class="literal-block-wrapper docutils container" id="id15">
+<div class="code-block-caption"><span class="caption-text">Declaring parameters on different layers of the application</span><a class="headerlink" href="#id15" title="Link to this code">¶</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Annotated</span>
 </span><span data-line="2">
 </span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Controller</span><span class="p">,</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">Router</span><span class="p">,</span> <span class="n">get</span>
