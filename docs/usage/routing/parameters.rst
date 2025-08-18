@@ -164,6 +164,28 @@ will be used for the value of the ``snake_case`` parameter.
 
 In this case, ``param`` is validated to be an *integer larger than 5*.
 
+Documenting enum query parameters
+---------------------------------------
+
+By default, the OpenAPI schema generated for enum query :term:`parameters <parameter>` uses the enum's docstring for the
+description section of the schema. The description can be changed with the :paramref:`~.params.Parameter.description`
+parameter of the `the parameter function`_, but doing so can overwrite the descriptions of other query parameters of the
+same enum because only one schema is generated per enum. This can be avoided by using the
+:paramref:`~.params.Parameter.schema_component_key` parameter so that separate schemas are generated:
+
+.. literalinclude:: /examples/parameters/query_params_enum.py
+    :language: python
+    :caption: Query parameters with the same enum type and different descriptions
+
+In the above example, the schema for the ``q1`` query parameter references a "q1" schema component with a description of
+"This is q1". The schema for the ``q2`` query parameter references a "MyEnum" schema component with a description of "My
+enum accepts two values". The schema for the ``q3`` query parameter references a "q3" schema component with a
+description of "This is q3".
+
+If we did not pass :paramref:`~.params.Parameter.schema_component_key` arguments for :func:`~.params.Parameter` for
+``q1`` and ``q3``, then the schemas for all three query parameters would reference the same "MyEnum" schema component
+with the description "This is q1".
+
 Header and Cookie Parameters
 ----------------------------
 

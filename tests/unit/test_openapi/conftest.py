@@ -29,17 +29,17 @@ def create_person_controller() -> type[Controller]:
             state: State,
             query: dict[str, Any],
             cookies: dict[str, Any],
+            # path parameter
+            service_id: int,
             # required query parameters below
             page: int,
             name: Optional[Union[str, list[str]]],  # intentionally without default
-            service_id: int,
             page_size: int = Parameter(
                 query="pageSize",
                 description="Page Size Description",
                 title="Page Size Title",
                 examples=[Example(description="example value", value=1)],
             ),
-            # path parameter
             # non-required query parameters below
             from_date: Optional[Union[int, datetime, date]] = None,
             to_date: Optional[Union[int, datetime, date]] = None,
