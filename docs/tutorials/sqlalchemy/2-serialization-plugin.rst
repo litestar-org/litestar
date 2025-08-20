@@ -5,7 +5,7 @@ Our next improvement is to leverage the
 :class:`SQLAlchemySerializationPlugin <litestar.contrib.sqlalchemy.plugins.SQLAlchemySerializationPlugin>`
 so that we can receive and return our SQLAlchemy models directly to and from our handlers.
 
-Before running the following code, you need to install the `advanced_alchemy` dependency. You can do this by running `pip install advanced_alchemy`.
+Before running the following code, you need to install the ``advanced_alchemy`` dependency. You can do this by running ``pip install advanced_alchemy``.
 
 Here's the code:
 
