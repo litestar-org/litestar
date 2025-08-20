@@ -178,7 +178,7 @@ and to easily access dependencies from higher levels.
 Lifespan
 ~~~~~~~~
 
-If you're using an async context manager and pass parameters to it, most likely the order of parameters is inversed between FastAPI and Litestar.
+Litestar uses the same async context manager style as FastAPI, so the code does not need to be changed:
 
 .. tab-set::
 
@@ -189,8 +189,7 @@ If you're using an async context manager and pass parameters to it, most likely 
 
             @asynccontextmanager
             async def lifespan(
-                _app: FastAPI,
-                app_settings: AppSettings,
+                app: FastAPI
             ):
                 # Setup code here
                 yield
@@ -203,8 +202,7 @@ If you're using an async context manager and pass parameters to it, most likely 
 
             @asynccontextmanager
             async def lifespan(
-                app_settings: AppSettings,
-                _app: Litestar,
+                app: Litestar
             ):
                 # Setup code here
                 yield
