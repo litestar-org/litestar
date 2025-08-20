@@ -177,7 +177,7 @@ and to easily access dependencies from higher levels.
 Lifespan
 ~~~~~~~~
 
-Litestar has the same async context manager syntax as FastAPI.
+Litestar uses the same async context manager style as FastAPI, so the code does not need to be changed:
 
 .. tab-set::
 
