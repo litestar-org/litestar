@@ -710,19 +710,18 @@ in the documentation:</p>
 </section>
 <section id="lifespan">
 <h2>Lifespan<a class="headerlink" href="#lifespan" title="Link to this heading">¶</a></h2>
-<p>If you’re using an async context manager and pass parameters to it, most likely the order of parameters is inversed between FastAPI and Litestar.</p>
+<p>Litestar uses the same async context manager style as FastAPI, so the code does not need to be changed:</p>
 <div class="sd-tab-set docutils">
 <input checked="checked" id="sd-tab-item-5" name="sd-tab-set-2" type="radio">
 <label class="sd-tab-label" data-sync-group="tab" data-sync-id="fastapi" for="sd-tab-item-5">
 FastAPI</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="nd">@asynccontextmanager</span>
 </span><span data-line="2"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">lifespan</span><span class="p">(</span>
-</span><span data-line="3">    <span class="n">_app</span><span class="p">:</span> <span class="n">FastAPI</span><span class="p">,</span>
-</span><span data-line="4">    <span class="n">app_settings</span><span class="p">:</span> <span class="n">AppSettings</span><span class="p">,</span>
-</span><span data-line="5"><span class="p">):</span>
-</span><span data-line="6">    <span class="c1"># Setup code here</span>
-</span><span data-line="7">    <span class="k">yield</span>
-</span><span data-line="8">    <span class="c1"># Teardown code here</span>
+</span><span data-line="3">    <span class="n">app</span><span class="p">:</span> <span class="n">FastAPI</span>
+</span><span data-line="4"><span class="p">):</span>
+</span><span data-line="5">    <span class="c1"># Setup code here</span>
+</span><span data-line="6">    <span class="k">yield</span>
+</span><span data-line="7">    <span class="c1"># Teardown code here</span>
 </span></pre></div>
 </div>
 </div>
@@ -731,12 +730,11 @@ FastAPI</label><div class="sd-tab-content docutils">
 Litestar</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="nd">@asynccontextmanager</span>
 </span><span data-line="2"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">lifespan</span><span class="p">(</span>
-</span><span data-line="3">    <span class="n">app_settings</span><span class="p">:</span> <span class="n">AppSettings</span><span class="p">,</span>
-</span><span data-line="4">    <span class="n">_app</span><span class="p">:</span> <span class="n">Litestar</span><span class="p">,</span>
-</span><span data-line="5"><span class="p">):</span>
-</span><span data-line="6">    <span class="c1"># Setup code here</span>
-</span><span data-line="7">    <span class="k">yield</span>
-</span><span data-line="8">    <span class="c1"># Teardown code here</span>
+</span><span data-line="3">    <span class="n">app</span><span class="p">:</span> <span class="n">Litestar</span>
+</span><span data-line="4"><span class="p">):</span>
+</span><span data-line="5">    <span class="c1"># Setup code here</span>
+</span><span data-line="6">    <span class="k">yield</span>
+</span><span data-line="7">    <span class="c1"># Teardown code here</span>
 </span></pre></div>
 </div>
 </div>
