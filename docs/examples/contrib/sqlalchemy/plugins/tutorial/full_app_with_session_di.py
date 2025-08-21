@@ -1,4 +1,4 @@
-from collections.abc import AsyncGenerator
+from collections.abc import AsyncGenerator, Sequence
 from contextlib import asynccontextmanager
 from typing import Any, Optional
 
@@ -70,7 +70,7 @@ async def get_todo_by_title(todo_name, session: AsyncSession) -> TodoItem:
         raise NotFoundException(detail=f"TODO {todo_name!r} not found") from e
 
 
-async def get_todo_list(done: Optional[bool], session: AsyncSession) -> list[TodoItem]:
+async def get_todo_list(done: Optional[bool], session: AsyncSession) -> Sequence[TodoItem]:
     query = select(TodoItem)
     if done is not None:
         query = query.where(TodoItem.done.is_(done))
