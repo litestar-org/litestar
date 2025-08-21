@@ -547,7 +547,9 @@ Note that we are only passing in the database session in this example with no ot
 parameters.</p>
 <div class="literal-block-wrapper docutils container" id="id1">
 <div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">app.py</span></code></span><a class="headerlink" href="#id1" title="Link to this code">¶</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="linenos">1</span>    <span class="n">model_type</span> <span class="o">=</span> <span class="n">AuthorModel</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="linenos">1</span><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">provide_authors_repo</span><span class="p">(</span><span class="n">db_session</span><span class="p">:</span> <span class="n">AsyncSession</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AuthorRepository</span><span class="p">:</span>
+</span><span data-line="2"><span class="linenos">2</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;This provides the default Authors repository.&quot;&quot;&quot;</span>
+</span><span data-line="3"><span class="linenos">3</span>    <span class="k">return</span> <span class="n">AuthorRepository</span><span class="p">(</span><span class="n">session</span><span class="o">=</span><span class="n">db_session</span><span class="p">)</span>
 </span></pre></div>
 </div>
 </div>
@@ -558,14 +560,14 @@ statement, but provides the flexibility to override it, allowing you to pass you
 statement:</p>
 <div class="literal-block-wrapper docutils container" id="id2">
 <div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">app.py</span></code></span><a class="headerlink" href="#id2" title="Link to this code">¶</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="linenos">1</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;This provides the default Authors repository.&quot;&quot;&quot;</span>
-</span><span data-line="2"><span class="linenos">2</span>    <span class="k">return</span> <span class="n">AuthorRepository</span><span class="p">(</span><span class="n">session</span><span class="o">=</span><span class="n">db_session</span><span class="p">)</span>
-</span><span data-line="3"><span class="linenos">3</span>
-</span><span data-line="4"><span class="linenos">4</span>
-</span><span data-line="5"><span class="linenos">5</span><span class="c1"># we can optionally override the default `select` used for the repository to pass in</span>
-</span><span data-line="6"><span class="linenos">6</span><span class="c1"># specific SQL options such as join details</span>
-</span><span data-line="7"><span class="linenos">7</span><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">provide_author_details_repo</span><span class="p">(</span><span class="n">db_session</span><span class="p">:</span> <span class="n">AsyncSession</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AuthorRepository</span><span class="p">:</span>
-</span><span data-line="8"><span class="linenos">8</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;This provides a simple example demonstrating how to override the join options for the repository.&quot;&quot;&quot;</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="linenos">1</span><span class="c1"># we can optionally override the default `select` used for the repository to pass in</span>
+</span><span data-line="2"><span class="linenos">2</span><span class="c1"># specific SQL options such as join details</span>
+</span><span data-line="3"><span class="linenos">3</span><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">provide_author_details_repo</span><span class="p">(</span><span class="n">db_session</span><span class="p">:</span> <span class="n">AsyncSession</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AuthorRepository</span><span class="p">:</span>
+</span><span data-line="4"><span class="linenos">4</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;This provides a simple example demonstrating how to override the join options for the repository.&quot;&quot;&quot;</span>
+</span><span data-line="5"><span class="linenos">5</span>    <span class="k">return</span> <span class="n">AuthorRepository</span><span class="p">(</span>
+</span><span data-line="6"><span class="linenos">6</span>        <span class="n">statement</span><span class="o">=</span><span class="n">select</span><span class="p">(</span><span class="n">AuthorModel</span><span class="p">)</span><span class="o">.</span><span class="n">options</span><span class="p">(</span><span class="n">selectinload</span><span class="p">(</span><span class="n">AuthorModel</span><span class="o">.</span><span class="n">books</span><span class="p">)),</span>
+</span><span data-line="7"><span class="linenos">7</span>        <span class="n">session</span><span class="o">=</span><span class="n">db_session</span><span class="p">,</span>
+</span><span data-line="8"><span class="linenos">8</span>    <span class="p">)</span>
 </span></pre></div>
 </div>
 </div>
@@ -579,85 +581,86 @@ interacting with the <code class="docutils literal notranslate"><span class="pre
 <span class="sd-summary-text"><code class="docutils literal notranslate"><span class="pre">AuthorController</span></code> (click to toggle)</span><span class="sd-summary-state-marker sd-summary-chevron-right"><svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-right" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.72 18.78a.75.75 0 0 1 0-1.06L14.44 12 8.72 6.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018l6.25 6.25a.75.75 0 0 1 0 1.06l-6.25 6.25a.75.75 0 0 1-1.06 0Z"></path></svg></span></summary><div class="sd-summary-content sd-card-body docutils">
 <div class="literal-block-wrapper docutils container" id="id3">
 <div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">app.py</span></code></span><a class="headerlink" href="#id3" title="Link to this code">¶</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="linenos"> 1</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-</span><span data-line="2"><span class="linenos"> 2</span><span class="sd">    return filters.LimitOffset(page_size, page_size * (current_page - 1))</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="linenos"> 1</span><span class="k">class</span><span class="w"> </span><span class="nc">AuthorController</span><span class="p">(</span><span class="n">Controller</span><span class="p">):</span>
+</span><span data-line="2"><span class="linenos"> 2</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;Author CRUD&quot;&quot;&quot;</span>
 </span><span data-line="3"><span class="linenos"> 3</span>
-</span><span data-line="4"><span class="linenos"> 4</span>
-</span><span data-line="5"><span class="linenos"> 5</span><span class="sd">class AuthorController(Controller):</span>
-</span><span data-line="6"><span class="linenos"> 6</span><span class="sd">    &quot;&quot;&quot;</span><span class="n">Author</span> <span class="n">CRUD</span><span class="s2">&quot;&quot;&quot;</span>
-</span><span data-line="7"><span class="linenos"> 7</span>
-</span><span data-line="8"><span class="linenos"> 8</span><span class="s2">    dependencies = {&quot;authors_repo&quot;: Provide(provide_authors_repo)}</span>
-</span><span data-line="9"><span class="linenos"> 9</span>
-</span><span data-line="10"><span class="linenos">10</span><span class="s2">    @get(path=&quot;/authors&quot;)</span>
-</span><span data-line="11"><span class="linenos">11</span><span class="s2">    async def list_authors(</span>
-</span><span data-line="12"><span class="linenos">12</span><span class="s2">        self,</span>
-</span><span data-line="13"><span class="linenos">13</span><span class="s2">        authors_repo: AuthorRepository,</span>
-</span><span data-line="14"><span class="linenos">14</span><span class="s2">        limit_offset: filters.LimitOffset,</span>
-</span><span data-line="15"><span class="linenos">15</span><span class="s2">    ) -&gt; OffsetPagination[Author]:</span>
-</span><span data-line="16"><span class="linenos">16</span><span class="s2">        &quot;&quot;&quot;</span><span class="n">List</span> <span class="n">authors</span><span class="o">.</span><span class="s2">&quot;&quot;&quot;</span>
-</span><span data-line="17"><span class="linenos">17</span><span class="s2">        results, total = await authors_repo.list_and_count(limit_offset)</span>
-</span><span data-line="18"><span class="linenos">18</span><span class="s2">        type_adapter = TypeAdapter(list[Author])</span>
-</span><span data-line="19"><span class="linenos">19</span><span class="s2">        return OffsetPagination[Author](</span>
-</span><span data-line="20"><span class="linenos">20</span><span class="s2">            items=type_adapter.validate_python(results),</span>
-</span><span data-line="21"><span class="linenos">21</span><span class="s2">            total=total,</span>
-</span><span data-line="22"><span class="linenos">22</span><span class="s2">            limit=limit_offset.limit,</span>
-</span><span data-line="23"><span class="linenos">23</span><span class="s2">            offset=limit_offset.offset,</span>
-</span><span data-line="24"><span class="linenos">24</span><span class="s2">        )</span>
-</span><span data-line="25"><span class="linenos">25</span>
-</span><span data-line="26"><span class="linenos">26</span><span class="s2">    @post(path=&quot;/authors&quot;)</span>
-</span><span data-line="27"><span class="linenos">27</span><span class="s2">    async def create_author(</span>
-</span><span data-line="28"><span class="linenos">28</span><span class="s2">        self,</span>
-</span><span data-line="29"><span class="linenos">29</span><span class="s2">        authors_repo: AuthorRepository,</span>
-</span><span data-line="30"><span class="linenos">30</span><span class="s2">        data: AuthorCreate,</span>
-</span><span data-line="31"><span class="linenos">31</span><span class="s2">    ) -&gt; Author:</span>
-</span><span data-line="32"><span class="linenos">32</span><span class="s2">        &quot;&quot;&quot;</span><span class="n">Create</span> <span class="n">a</span> <span class="n">new</span> <span class="n">author</span><span class="o">.</span><span class="s2">&quot;&quot;&quot;</span>
-</span><span data-line="33"><span class="linenos">33</span><span class="s2">        obj = await authors_repo.add(</span>
-</span><span data-line="34"><span class="linenos">34</span><span class="s2">            AuthorModel(**data.model_dump(exclude_unset=True, exclude_none=True)),</span>
-</span><span data-line="35"><span class="linenos">35</span><span class="s2">        )</span>
-</span><span data-line="36"><span class="linenos">36</span><span class="s2">        await authors_repo.session.commit()</span>
-</span><span data-line="37"><span class="linenos">37</span><span class="s2">        return Author.model_validate(obj)</span>
-</span><span data-line="38"><span class="linenos">38</span>
-</span><span data-line="39"><span class="linenos">39</span><span class="s2">    # we override the authors_repo to use the version that joins the Books in</span>
-</span><span data-line="40"><span class="linenos">40</span><span class="s2">    @get(path=&quot;/authors/{author_id:uuid}&quot;, dependencies={&quot;authors_repo&quot;: Provide(provide_author_details_repo)})</span>
-</span><span data-line="41"><span class="linenos">41</span><span class="s2">    async def get_author(</span>
-</span><span data-line="42"><span class="linenos">42</span><span class="s2">        self,</span>
-</span><span data-line="43"><span class="linenos">43</span><span class="s2">        authors_repo: AuthorRepository,</span>
-</span><span data-line="44"><span class="linenos">44</span><span class="s2">        author_id: UUID = Parameter(</span>
-</span><span data-line="45"><span class="linenos">45</span><span class="s2">            title=&quot;Author ID&quot;,</span>
-</span><span data-line="46"><span class="linenos">46</span><span class="s2">            description=&quot;The author to retrieve.&quot;,</span>
-</span><span data-line="47"><span class="linenos">47</span><span class="s2">        ),</span>
-</span><span data-line="48"><span class="linenos">48</span><span class="s2">    ) -&gt; Author:</span>
-</span><span data-line="49"><span class="linenos">49</span><span class="s2">        &quot;&quot;&quot;</span><span class="n">Get</span> <span class="n">an</span> <span class="n">existing</span> <span class="n">author</span><span class="o">.</span><span class="s2">&quot;&quot;&quot;</span>
-</span><span data-line="50"><span class="linenos">50</span><span class="s2">        obj = await authors_repo.get(author_id)</span>
-</span><span data-line="51"><span class="linenos">51</span><span class="s2">        return Author.model_validate(obj)</span>
-</span><span data-line="52"><span class="linenos">52</span>
-</span><span data-line="53"><span class="linenos">53</span><span class="s2">    @patch(</span>
-</span><span data-line="54"><span class="linenos">54</span><span class="s2">        path=&quot;/authors/{author_id:uuid}&quot;,</span>
-</span><span data-line="55"><span class="linenos">55</span><span class="s2">        dependencies={&quot;authors_repo&quot;: Provide(provide_author_details_repo)},</span>
-</span><span data-line="56"><span class="linenos">56</span><span class="s2">    )</span>
-</span><span data-line="57"><span class="linenos">57</span><span class="s2">    async def update_author(</span>
-</span><span data-line="58"><span class="linenos">58</span><span class="s2">        self,</span>
-</span><span data-line="59"><span class="linenos">59</span><span class="s2">        authors_repo: AuthorRepository,</span>
-</span><span data-line="60"><span class="linenos">60</span><span class="s2">        data: AuthorUpdate,</span>
-</span><span data-line="61"><span class="linenos">61</span><span class="s2">        author_id: UUID = Parameter(</span>
-</span><span data-line="62"><span class="linenos">62</span><span class="s2">            title=&quot;Author ID&quot;,</span>
-</span><span data-line="63"><span class="linenos">63</span><span class="s2">            description=&quot;The author to update.&quot;,</span>
-</span><span data-line="64"><span class="linenos">64</span><span class="s2">        ),</span>
-</span><span data-line="65"><span class="linenos">65</span><span class="s2">    ) -&gt; Author:</span>
-</span><span data-line="66"><span class="linenos">66</span><span class="s2">        &quot;&quot;&quot;</span><span class="n">Update</span> <span class="n">an</span> <span class="n">author</span><span class="o">.</span><span class="s2">&quot;&quot;&quot;</span>
-</span><span data-line="67"><span class="linenos">67</span><span class="s2">        raw_obj = data.model_dump(exclude_unset=True, exclude_none=True)</span>
-</span><span data-line="68"><span class="linenos">68</span><span class="s2">        raw_obj.update({&quot;id&quot;: author_id})</span>
-</span><span data-line="69"><span class="linenos">69</span><span class="s2">        obj = await authors_repo.update(AuthorModel(**raw_obj))</span>
-</span><span data-line="70"><span class="linenos">70</span><span class="s2">        await authors_repo.session.commit()</span>
-</span><span data-line="71"><span class="linenos">71</span><span class="s2">        return Author.from_orm(obj)</span>
-</span><span data-line="72"><span class="linenos">72</span>
-</span><span data-line="73"><span class="linenos">73</span><span class="s2">    @delete(path=&quot;/authors/{author_id:uuid}&quot;)</span>
-</span><span data-line="74"><span class="linenos">74</span><span class="s2">    async def delete_author(</span>
-</span><span data-line="75"><span class="linenos">75</span><span class="s2">        self,</span>
-</span><span data-line="76"><span class="linenos">76</span><span class="s2">        authors_repo: AuthorRepository,</span>
-</span><span data-line="77"><span class="linenos">77</span><span class="s2">        author_id: UUID = Parameter(</span>
-</span><span data-line="78"><span class="linenos">78</span><span class="s2">            title=&quot;Author ID&quot;,</span>
-</span><span data-line="79"><span class="linenos">79</span><span class="s2">            description=&quot;The author to delete.&quot;,</span>
+</span><span data-line="4"><span class="linenos"> 4</span>    <span class="n">dependencies</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;authors_repo&quot;</span><span class="p">:</span> <span class="n">Provide</span><span class="p">(</span><span class="n">provide_authors_repo</span><span class="p">)}</span>
+</span><span data-line="5"><span class="linenos"> 5</span>
+</span><span data-line="6"><span class="linenos"> 6</span>    <span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/authors&quot;</span><span class="p">)</span>
+</span><span data-line="7"><span class="linenos"> 7</span>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">list_authors</span><span class="p">(</span>
+</span><span data-line="8"><span class="linenos"> 8</span>        <span class="bp">self</span><span class="p">,</span>
+</span><span data-line="9"><span class="linenos"> 9</span>        <span class="n">authors_repo</span><span class="p">:</span> <span class="n">AuthorRepository</span><span class="p">,</span>
+</span><span data-line="10"><span class="linenos">10</span>        <span class="n">limit_offset</span><span class="p">:</span> <span class="n">filters</span><span class="o">.</span><span class="n">LimitOffset</span><span class="p">,</span>
+</span><span data-line="11"><span class="linenos">11</span>    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">OffsetPagination</span><span class="p">[</span><span class="n">Author</span><span class="p">]:</span>
+</span><span data-line="12"><span class="linenos">12</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;List authors.&quot;&quot;&quot;</span>
+</span><span data-line="13"><span class="linenos">13</span>        <span class="n">results</span><span class="p">,</span> <span class="n">total</span> <span class="o">=</span> <span class="k">await</span> <span class="n">authors_repo</span><span class="o">.</span><span class="n">list_and_count</span><span class="p">(</span><span class="n">limit_offset</span><span class="p">)</span>
+</span><span data-line="14"><span class="linenos">14</span>        <span class="n">type_adapter</span> <span class="o">=</span> <span class="n">TypeAdapter</span><span class="p">(</span><span class="nb">list</span><span class="p">[</span><span class="n">Author</span><span class="p">])</span>
+</span><span data-line="15"><span class="linenos">15</span>        <span class="k">return</span> <span class="n">OffsetPagination</span><span class="p">[</span><span class="n">Author</span><span class="p">](</span>
+</span><span data-line="16"><span class="linenos">16</span>            <span class="n">items</span><span class="o">=</span><span class="n">type_adapter</span><span class="o">.</span><span class="n">validate_python</span><span class="p">(</span><span class="n">results</span><span class="p">),</span>
+</span><span data-line="17"><span class="linenos">17</span>            <span class="n">total</span><span class="o">=</span><span class="n">total</span><span class="p">,</span>
+</span><span data-line="18"><span class="linenos">18</span>            <span class="n">limit</span><span class="o">=</span><span class="n">limit_offset</span><span class="o">.</span><span class="n">limit</span><span class="p">,</span>
+</span><span data-line="19"><span class="linenos">19</span>            <span class="n">offset</span><span class="o">=</span><span class="n">limit_offset</span><span class="o">.</span><span class="n">offset</span><span class="p">,</span>
+</span><span data-line="20"><span class="linenos">20</span>        <span class="p">)</span>
+</span><span data-line="21"><span class="linenos">21</span>
+</span><span data-line="22"><span class="linenos">22</span>    <span class="nd">@post</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/authors&quot;</span><span class="p">)</span>
+</span><span data-line="23"><span class="linenos">23</span>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">create_author</span><span class="p">(</span>
+</span><span data-line="24"><span class="linenos">24</span>        <span class="bp">self</span><span class="p">,</span>
+</span><span data-line="25"><span class="linenos">25</span>        <span class="n">authors_repo</span><span class="p">:</span> <span class="n">AuthorRepository</span><span class="p">,</span>
+</span><span data-line="26"><span class="linenos">26</span>        <span class="n">data</span><span class="p">:</span> <span class="n">AuthorCreate</span><span class="p">,</span>
+</span><span data-line="27"><span class="linenos">27</span>    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Author</span><span class="p">:</span>
+</span><span data-line="28"><span class="linenos">28</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a new author.&quot;&quot;&quot;</span>
+</span><span data-line="29"><span class="linenos">29</span>        <span class="n">obj</span> <span class="o">=</span> <span class="k">await</span> <span class="n">authors_repo</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
+</span><span data-line="30"><span class="linenos">30</span>            <span class="n">AuthorModel</span><span class="p">(</span><span class="o">**</span><span class="n">data</span><span class="o">.</span><span class="n">model_dump</span><span class="p">(</span><span class="n">exclude_unset</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exclude_none</span><span class="o">=</span><span class="kc">True</span><span class="p">)),</span>
+</span><span data-line="31"><span class="linenos">31</span>        <span class="p">)</span>
+</span><span data-line="32"><span class="linenos">32</span>        <span class="k">await</span> <span class="n">authors_repo</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+</span><span data-line="33"><span class="linenos">33</span>        <span class="k">return</span> <span class="n">Author</span><span class="o">.</span><span class="n">model_validate</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+</span><span data-line="34"><span class="linenos">34</span>
+</span><span data-line="35"><span class="linenos">35</span>    <span class="c1"># we override the authors_repo to use the version that joins the Books in</span>
+</span><span data-line="36"><span class="linenos">36</span>    <span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/authors/{author_id:uuid}&quot;</span><span class="p">,</span> <span class="n">dependencies</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;authors_repo&quot;</span><span class="p">:</span> <span class="n">Provide</span><span class="p">(</span><span class="n">provide_author_details_repo</span><span class="p">)})</span>
+</span><span data-line="37"><span class="linenos">37</span>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_author</span><span class="p">(</span>
+</span><span data-line="38"><span class="linenos">38</span>        <span class="bp">self</span><span class="p">,</span>
+</span><span data-line="39"><span class="linenos">39</span>        <span class="n">authors_repo</span><span class="p">:</span> <span class="n">AuthorRepository</span><span class="p">,</span>
+</span><span data-line="40"><span class="linenos">40</span>        <span class="n">author_id</span><span class="p">:</span> <span class="n">UUID</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
+</span><span data-line="41"><span class="linenos">41</span>            <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Author ID&quot;</span><span class="p">,</span>
+</span><span data-line="42"><span class="linenos">42</span>            <span class="n">description</span><span class="o">=</span><span class="s2">&quot;The author to retrieve.&quot;</span><span class="p">,</span>
+</span><span data-line="43"><span class="linenos">43</span>        <span class="p">),</span>
+</span><span data-line="44"><span class="linenos">44</span>    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Author</span><span class="p">:</span>
+</span><span data-line="45"><span class="linenos">45</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;Get an existing author.&quot;&quot;&quot;</span>
+</span><span data-line="46"><span class="linenos">46</span>        <span class="n">obj</span> <span class="o">=</span> <span class="k">await</span> <span class="n">authors_repo</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">author_id</span><span class="p">)</span>
+</span><span data-line="47"><span class="linenos">47</span>        <span class="k">return</span> <span class="n">Author</span><span class="o">.</span><span class="n">model_validate</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+</span><span data-line="48"><span class="linenos">48</span>
+</span><span data-line="49"><span class="linenos">49</span>    <span class="nd">@patch</span><span class="p">(</span>
+</span><span data-line="50"><span class="linenos">50</span>        <span class="n">path</span><span class="o">=</span><span class="s2">&quot;/authors/{author_id:uuid}&quot;</span><span class="p">,</span>
+</span><span data-line="51"><span class="linenos">51</span>        <span class="n">dependencies</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;authors_repo&quot;</span><span class="p">:</span> <span class="n">Provide</span><span class="p">(</span><span class="n">provide_author_details_repo</span><span class="p">)},</span>
+</span><span data-line="52"><span class="linenos">52</span>    <span class="p">)</span>
+</span><span data-line="53"><span class="linenos">53</span>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">update_author</span><span class="p">(</span>
+</span><span data-line="54"><span class="linenos">54</span>        <span class="bp">self</span><span class="p">,</span>
+</span><span data-line="55"><span class="linenos">55</span>        <span class="n">authors_repo</span><span class="p">:</span> <span class="n">AuthorRepository</span><span class="p">,</span>
+</span><span data-line="56"><span class="linenos">56</span>        <span class="n">data</span><span class="p">:</span> <span class="n">AuthorUpdate</span><span class="p">,</span>
+</span><span data-line="57"><span class="linenos">57</span>        <span class="n">author_id</span><span class="p">:</span> <span class="n">UUID</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
+</span><span data-line="58"><span class="linenos">58</span>            <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Author ID&quot;</span><span class="p">,</span>
+</span><span data-line="59"><span class="linenos">59</span>            <span class="n">description</span><span class="o">=</span><span class="s2">&quot;The author to update.&quot;</span><span class="p">,</span>
+</span><span data-line="60"><span class="linenos">60</span>        <span class="p">),</span>
+</span><span data-line="61"><span class="linenos">61</span>    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Author</span><span class="p">:</span>
+</span><span data-line="62"><span class="linenos">62</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;Update an author.&quot;&quot;&quot;</span>
+</span><span data-line="63"><span class="linenos">63</span>        <span class="n">raw_obj</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">model_dump</span><span class="p">(</span><span class="n">exclude_unset</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exclude_none</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span data-line="64"><span class="linenos">64</span>        <span class="n">raw_obj</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">author_id</span><span class="p">})</span>
+</span><span data-line="65"><span class="linenos">65</span>        <span class="n">obj</span> <span class="o">=</span> <span class="k">await</span> <span class="n">authors_repo</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">AuthorModel</span><span class="p">(</span><span class="o">**</span><span class="n">raw_obj</span><span class="p">))</span>
+</span><span data-line="66"><span class="linenos">66</span>        <span class="k">await</span> <span class="n">authors_repo</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+</span><span data-line="67"><span class="linenos">67</span>        <span class="k">return</span> <span class="n">Author</span><span class="o">.</span><span class="n">from_orm</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+</span><span data-line="68"><span class="linenos">68</span>
+</span><span data-line="69"><span class="linenos">69</span>    <span class="nd">@delete</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/authors/{author_id:uuid}&quot;</span><span class="p">)</span>
+</span><span data-line="70"><span class="linenos">70</span>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">delete_author</span><span class="p">(</span>
+</span><span data-line="71"><span class="linenos">71</span>        <span class="bp">self</span><span class="p">,</span>
+</span><span data-line="72"><span class="linenos">72</span>        <span class="n">authors_repo</span><span class="p">:</span> <span class="n">AuthorRepository</span><span class="p">,</span>
+</span><span data-line="73"><span class="linenos">73</span>        <span class="n">author_id</span><span class="p">:</span> <span class="n">UUID</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
+</span><span data-line="74"><span class="linenos">74</span>            <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Author ID&quot;</span><span class="p">,</span>
+</span><span data-line="75"><span class="linenos">75</span>            <span class="n">description</span><span class="o">=</span><span class="s2">&quot;The author to delete.&quot;</span><span class="p">,</span>
+</span><span data-line="76"><span class="linenos">76</span>        <span class="p">),</span>
+</span><span data-line="77"><span class="linenos">77</span>    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="78"><span class="linenos">78</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;Delete a author from the system.&quot;&quot;&quot;</span>
+</span><span data-line="79"><span class="linenos">79</span>        <span class="n">_</span> <span class="o">=</span> <span class="k">await</span> <span class="n">authors_repo</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">author_id</span><span class="p">)</span>
+</span><span data-line="80"><span class="linenos">80</span>        <span class="k">await</span> <span class="n">authors_repo</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
 </span></pre></div>
 </div>
 </div>
@@ -984,24 +987,24 @@ functionality to our application.</p>
 </span><span data-line="75"><span class="linenos"> 75</span>
 </span><span data-line="76"><span class="linenos"> 76</span><span class="k">class</span><span class="w"> </span><span class="nc">AuthorRepository</span><span class="p">(</span><span class="n">repository</span><span class="o">.</span><span class="n">SQLAlchemyAsyncRepository</span><span class="p">[</span><span class="n">AuthorModel</span><span class="p">]):</span>
 </span><span data-line="77"><span class="linenos"> 77</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;Author repository.&quot;&quot;&quot;</span>
-</span><span data-line="78"><span class="hll"><span class="linenos"> 78</span>
-</span></span><span data-line="79"><span class="hll"><span class="linenos"> 79</span>    <span class="n">model_type</span> <span class="o">=</span> <span class="n">AuthorModel</span>
-</span></span><span data-line="80"><span class="hll"><span class="linenos"> 80</span>
-</span></span><span data-line="81"><span class="linenos"> 81</span>
-</span><span data-line="82"><span class="linenos"> 82</span><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">provide_authors_repo</span><span class="p">(</span><span class="n">db_session</span><span class="p">:</span> <span class="n">AsyncSession</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AuthorRepository</span><span class="p">:</span>
-</span><span data-line="83"><span class="hll"><span class="linenos"> 83</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;This provides the default Authors repository.&quot;&quot;&quot;</span>
+</span><span data-line="78"><span class="linenos"> 78</span>
+</span><span data-line="79"><span class="linenos"> 79</span>    <span class="n">model_type</span> <span class="o">=</span> <span class="n">AuthorModel</span>
+</span><span data-line="80"><span class="linenos"> 80</span>
+</span><span data-line="81"><span class="linenos"> 81</span>
+</span><span data-line="82"><span class="hll"><span class="linenos"> 82</span><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">provide_authors_repo</span><span class="p">(</span><span class="n">db_session</span><span class="p">:</span> <span class="n">AsyncSession</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AuthorRepository</span><span class="p">:</span>
+</span></span><span data-line="83"><span class="hll"><span class="linenos"> 83</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;This provides the default Authors repository.&quot;&quot;&quot;</span>
 </span></span><span data-line="84"><span class="hll"><span class="linenos"> 84</span>    <span class="k">return</span> <span class="n">AuthorRepository</span><span class="p">(</span><span class="n">session</span><span class="o">=</span><span class="n">db_session</span><span class="p">)</span>
-</span></span><span data-line="85"><span class="hll"><span class="linenos"> 85</span>
-</span></span><span data-line="86"><span class="hll"><span class="linenos"> 86</span>
-</span></span><span data-line="87"><span class="hll"><span class="linenos"> 87</span><span class="c1"># we can optionally override the default `select` used for the repository to pass in</span>
+</span></span><span data-line="85"><span class="linenos"> 85</span>
+</span><span data-line="86"><span class="linenos"> 86</span>
+</span><span data-line="87"><span class="hll"><span class="linenos"> 87</span><span class="c1"># we can optionally override the default `select` used for the repository to pass in</span>
 </span></span><span data-line="88"><span class="hll"><span class="linenos"> 88</span><span class="c1"># specific SQL options such as join details</span>
 </span></span><span data-line="89"><span class="hll"><span class="linenos"> 89</span><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">provide_author_details_repo</span><span class="p">(</span><span class="n">db_session</span><span class="p">:</span> <span class="n">AsyncSession</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AuthorRepository</span><span class="p">:</span>
 </span></span><span data-line="90"><span class="hll"><span class="linenos"> 90</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;This provides a simple example demonstrating how to override the join options for the repository.&quot;&quot;&quot;</span>
-</span></span><span data-line="91"><span class="linenos"> 91</span>    <span class="k">return</span> <span class="n">AuthorRepository</span><span class="p">(</span>
-</span><span data-line="92"><span class="linenos"> 92</span>        <span class="n">statement</span><span class="o">=</span><span class="n">select</span><span class="p">(</span><span class="n">AuthorModel</span><span class="p">)</span><span class="o">.</span><span class="n">options</span><span class="p">(</span><span class="n">selectinload</span><span class="p">(</span><span class="n">AuthorModel</span><span class="o">.</span><span class="n">books</span><span class="p">)),</span>
-</span><span data-line="93"><span class="linenos"> 93</span>        <span class="n">session</span><span class="o">=</span><span class="n">db_session</span><span class="p">,</span>
-</span><span data-line="94"><span class="linenos"> 94</span>    <span class="p">)</span>
-</span><span data-line="95"><span class="linenos"> 95</span>
+</span></span><span data-line="91"><span class="hll"><span class="linenos"> 91</span>    <span class="k">return</span> <span class="n">AuthorRepository</span><span class="p">(</span>
+</span></span><span data-line="92"><span class="hll"><span class="linenos"> 92</span>        <span class="n">statement</span><span class="o">=</span><span class="n">select</span><span class="p">(</span><span class="n">AuthorModel</span><span class="p">)</span><span class="o">.</span><span class="n">options</span><span class="p">(</span><span class="n">selectinload</span><span class="p">(</span><span class="n">AuthorModel</span><span class="o">.</span><span class="n">books</span><span class="p">)),</span>
+</span></span><span data-line="93"><span class="hll"><span class="linenos"> 93</span>        <span class="n">session</span><span class="o">=</span><span class="n">db_session</span><span class="p">,</span>
+</span></span><span data-line="94"><span class="hll"><span class="linenos"> 94</span>    <span class="p">)</span>
+</span></span><span data-line="95"><span class="linenos"> 95</span>
 </span><span data-line="96"><span class="linenos"> 96</span>
 </span><span data-line="97"><span class="linenos"> 97</span><span class="k">def</span><span class="w"> </span><span class="nf">provide_limit_offset_pagination</span><span class="p">(</span>
 </span><span data-line="98"><span class="linenos"> 98</span>    <span class="n">current_page</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span><span class="n">ge</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">query</span><span class="o">=</span><span class="s2">&quot;currentPage&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
@@ -1022,11 +1025,11 @@ functionality to our application.</p>
 </span><span data-line="113"><span class="linenos">113</span><span class="sd">        LIMIT to apply to select.</span>
 </span><span data-line="114"><span class="linenos">114</span><span class="sd">    page_size : int</span>
 </span><span data-line="115"><span class="linenos">115</span><span class="sd">        OFFSET to apply to select.</span>
-</span><span data-line="116"><span class="hll"><span class="linenos">116</span><span class="sd">    &quot;&quot;&quot;</span>
-</span></span><span data-line="117"><span class="hll"><span class="linenos">117</span>    <span class="k">return</span> <span class="n">filters</span><span class="o">.</span><span class="n">LimitOffset</span><span class="p">(</span><span class="n">page_size</span><span class="p">,</span> <span class="n">page_size</span> <span class="o">*</span> <span class="p">(</span><span class="n">current_page</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span>
-</span></span><span data-line="118"><span class="hll"><span class="linenos">118</span>
-</span></span><span data-line="119"><span class="hll"><span class="linenos">119</span>
-</span></span><span data-line="120"><span class="hll"><span class="linenos">120</span><span class="k">class</span><span class="w"> </span><span class="nc">AuthorController</span><span class="p">(</span><span class="n">Controller</span><span class="p">):</span>
+</span><span data-line="116"><span class="linenos">116</span><span class="sd">    &quot;&quot;&quot;</span>
+</span><span data-line="117"><span class="linenos">117</span>    <span class="k">return</span> <span class="n">filters</span><span class="o">.</span><span class="n">LimitOffset</span><span class="p">(</span><span class="n">page_size</span><span class="p">,</span> <span class="n">page_size</span> <span class="o">*</span> <span class="p">(</span><span class="n">current_page</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span>
+</span><span data-line="118"><span class="linenos">118</span>
+</span><span data-line="119"><span class="linenos">119</span>
+</span><span data-line="120"><span class="hll"><span class="linenos">120</span><span class="k">class</span><span class="w"> </span><span class="nc">AuthorController</span><span class="p">(</span><span class="n">Controller</span><span class="p">):</span>
 </span></span><span data-line="121"><span class="hll"><span class="linenos">121</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;Author CRUD&quot;&quot;&quot;</span>
 </span></span><span data-line="122"><span class="hll"><span class="linenos">122</span>
 </span></span><span data-line="123"><span class="hll"><span class="linenos">123</span>    <span class="n">dependencies</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;authors_repo&quot;</span><span class="p">:</span> <span class="n">Provide</span><span class="p">(</span><span class="n">provide_authors_repo</span><span class="p">)}</span>
@@ -1101,12 +1104,12 @@ functionality to our application.</p>
 </span></span><span data-line="192"><span class="hll"><span class="linenos">192</span>        <span class="n">author_id</span><span class="p">:</span> <span class="n">UUID</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
 </span></span><span data-line="193"><span class="hll"><span class="linenos">193</span>            <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Author ID&quot;</span><span class="p">,</span>
 </span></span><span data-line="194"><span class="hll"><span class="linenos">194</span>            <span class="n">description</span><span class="o">=</span><span class="s2">&quot;The author to delete.&quot;</span><span class="p">,</span>
-</span></span><span data-line="195"><span class="linenos">195</span>        <span class="p">),</span>
-</span><span data-line="196"><span class="linenos">196</span>    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="197"><span class="linenos">197</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;Delete a author from the system.&quot;&quot;&quot;</span>
-</span><span data-line="198"><span class="linenos">198</span>        <span class="n">_</span> <span class="o">=</span> <span class="k">await</span> <span class="n">authors_repo</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">author_id</span><span class="p">)</span>
-</span><span data-line="199"><span class="linenos">199</span>        <span class="k">await</span> <span class="n">authors_repo</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
-</span><span data-line="200"><span class="linenos">200</span>
+</span></span><span data-line="195"><span class="hll"><span class="linenos">195</span>        <span class="p">),</span>
+</span></span><span data-line="196"><span class="hll"><span class="linenos">196</span>    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span></span><span data-line="197"><span class="hll"><span class="linenos">197</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;Delete a author from the system.&quot;&quot;&quot;</span>
+</span></span><span data-line="198"><span class="hll"><span class="linenos">198</span>        <span class="n">_</span> <span class="o">=</span> <span class="k">await</span> <span class="n">authors_repo</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">author_id</span><span class="p">)</span>
+</span></span><span data-line="199"><span class="hll"><span class="linenos">199</span>        <span class="k">await</span> <span class="n">authors_repo</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+</span></span><span data-line="200"><span class="linenos">200</span>
 </span><span data-line="201"><span class="linenos">201</span>
 </span><span data-line="202"><span class="linenos">202</span><span class="n">session_config</span> <span class="o">=</span> <span class="n">AsyncSessionConfig</span><span class="p">(</span><span class="n">expire_on_commit</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </span><span data-line="203"><span class="linenos">203</span><span class="n">sqlalchemy_config</span> <span class="o">=</span> <span class="n">SQLAlchemyAsyncConfig</span><span class="p">(</span>
