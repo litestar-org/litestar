@@ -14,6 +14,7 @@ if TYPE_CHECKING:
 
 __all__ = (
     "get_enum_string_value",
+    "get_exception_group",
     "get_name",
     "unique_name_for_scope",
     "unwrap_partial",
