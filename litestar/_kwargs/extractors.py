@@ -17,7 +17,7 @@ from litestar.exceptions import ValidationException
 from litestar.params import BodyKwarg
 from litestar.types import Empty
 from litestar.utils import make_non_optional_union
-from litestar.utils.predicates import is_non_string_sequence, is_optional_union
+from litestar.utils.predicates import is_non_string_sequence, is_optional_union, is_string_type
 from litestar.utils.scope.state import ScopeState
 
 if TYPE_CHECKING:
@@ -369,8 +369,19 @@ async def _extract_multipart(
     if data_dto:
         return data_dto(connection).decode_builtins(form_values)
 
+    # Create a copy to handle type conversions without modifying the original
+    processed_form_values: dict[str, Any] = dict(form_values)
+
     for name, tp in field_definition.get_type_hints().items():
-        value = form_values.get(name)
+        value = processed_form_values.get(name)
+
+        # Handle empty string to None conversion for non-string optional fields
+        # For GitHub issue #4204: preserve empty strings for string types, convert to None for others
+        if value == "" and is_optional_union(tp):
+            inner_type: Any = make_non_optional_union(tp)
+            if not (inner_type is str or is_string_type(inner_type)):
+                processed_form_values[name] = None
+
         if (
             value is not None
             and not isinstance(value, list)
@@ -379,9 +390,9 @@ async def _extract_multipart(
                 or (is_optional_union(tp) and is_non_string_sequence(make_non_optional_union(tp)))
             )
         ):
-            form_values[name] = [value]  # pyright: ignore
+            processed_form_values[name] = [value]
 
-    return form_values
+    return processed_form_values
 
 
 def create_multipart_extractor(

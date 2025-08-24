@@ -28,6 +28,7 @@ from litestar.utils.predicates import (
     is_mapping,
     is_non_string_iterable,
     is_non_string_sequence,
+    is_string_type,
     is_undefined_sentinel,
 )
 
@@ -282,3 +283,45 @@ class NonDataclass: ...
 )
 def test_is_dataclass_class(cls: Any, expected: bool) -> None:
     assert is_dataclass_class(cls) is expected
+
+
+class MyStr(str):
+    pass
+
+
+@pytest.mark.parametrize(
+    ("annotation", "expected"),
+    [
+        # positive cases
+        (str, True),
+        (MyStr, True),
+        (Optional[str], True),
+        (Union[str, None], True),
+        (Optional[MyStr], True),
+        (Union[MyStr, None], True),
+        (Annotated[str, "meta"], True),
+        (Annotated[MyStr, "meta"], True),
+        (Annotated[Optional[str], "meta"], True),
+        (Annotated[Union[str, None], "meta"], True),
+        (Annotated[Optional[MyStr], "meta"], True),
+        (Optional[Annotated[str, "meta"]], True),
+        (Union[Annotated[str, "meta"], None], True),
+        (Optional[Annotated[MyStr, "meta"]], True),
+        # negative cases
+        (int, False),
+        (Optional[int], False),
+        (Union[int, None], False),
+        (list, False),
+        (list[str], False),
+        (dict, False),
+        (Any, False),
+        (type(None), False),
+        (object, False),
+        (bytes, False),
+        (Optional[bytes], False),
+        (Union[str, int], False),
+    ],
+)
+def test_is_string_type(annotation: Any, expected: bool) -> None:
+    """Test is_string_type with various annotations."""
+    assert is_string_type(annotation) == expected
