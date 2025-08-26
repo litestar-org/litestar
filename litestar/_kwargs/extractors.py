@@ -340,7 +340,6 @@ async def _extract_multipart(
         else connection.app.multipart_form_part_limit
     )
     scope_state = ScopeState.from_scope(connection.scope)
-    form_values: dict[str, Any]
     if scope_state.form is Empty:
         scope_state.form = form_values = await parse_multipart_form(
             stream=connection.stream(),
@@ -380,7 +379,7 @@ async def _extract_multipart(
                 or (is_optional_union(tp) and is_non_string_sequence(make_non_optional_union(tp)))
             )
         ):
-            form_values[name] = [value]
+            form_values[name] = [value]  # pyright: ignore
 
     return form_values
 
@@ -431,16 +430,11 @@ def create_url_encoded_data_extractor(
     ) -> Any:
         scope_state = ScopeState.from_scope(connection.scope)
         if scope_state.form is Empty:
-            # The type of `scope_state.form` is `dict[str, str | list[str] | UploadFile] | Empty`.
-            # The return value of `parse_url_encoded_form_data` is `dict[str, str | list[str]]`.
-            # Because `dict` is invariant, this assignment is a type error. To fix this, we create a new
-            # dictionary from the parsed form data, which mypy can then correctly type as the wider type.
-            form_values: dict[str, str | list[str] | UploadFile] = dict(
+            scope_state.form = form_values = (  # type: ignore[assignment]
                 parse_url_encoded_form_data(await connection.body())
             )
-            scope_state.form = form_values
         else:
-            form_values = scope_state.form
+            form_values = scope_state.form  # type: ignore[assignment]
 
         if not form_values and is_data_optional:
             return None
