@@ -626,19 +626,19 @@ class EmptyStringTestData(BaseModel):
     value: Optional[str]
 
 
-@post("/test-empty-url-encoded", sync_to_thread=False)
-def test_empty_url_encoded(
-    data: Annotated[EmptyStringTestData, Body(media_type=RequestEncodingType.URL_ENCODED)],
-) -> bool:
-    return data.value is not None
-
-
-@post("/test-empty-multipart", sync_to_thread=False)
-def test_empty_multipart(data: Annotated[EmptyStringTestData, Body(media_type=RequestEncodingType.MULTI_PART)]) -> bool:
-    return data.value is not None
-
-
 def test_empty_strings_preserved_in_multipart_forms() -> None:
+    @post("/test-empty-url-encoded", sync_to_thread=False)
+    def test_empty_url_encoded(
+        data: Annotated[EmptyStringTestData, Body(media_type=RequestEncodingType.URL_ENCODED)],
+    ) -> bool:
+        return data.value is not None
+
+    @post("/test-empty-multipart", sync_to_thread=False)
+    def test_empty_multipart(
+        data: Annotated[EmptyStringTestData, Body(media_type=RequestEncodingType.MULTI_PART)],
+    ) -> bool:
+        return data.value is not None
+
     """Test that empty strings are preserved in multipart forms and not converted to None.
 
     This test addresses GitHub issue #4204 where empty strings in multipart/form-data

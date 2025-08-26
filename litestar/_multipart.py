@@ -112,7 +112,7 @@ async def parse_multipart_form(  # noqa: C901
                             await data.seek(0)
                             fields[segment.name].append(data)
                         else:
-                            # Always decode as string, even for empty data, for consistency with URL-encoded forms (fixes #4204)
+                            # Always decode as string, even for empty data
                             fields[segment.name].append(data.decode(segment.charset or "utf-8"))
 
                         # reset for next part
