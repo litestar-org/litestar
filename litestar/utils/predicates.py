@@ -37,7 +37,7 @@ from typing_extensions import (
 from litestar.constants import UNDEFINED_SENTINELS
 from litestar.types.builtin_types import NoneType, UnionTypes
 from litestar.utils.helpers import unwrap_partial
-from litestar.utils.typing import get_origin_or_inner_type, make_non_optional_union
+from litestar.utils.typing import get_origin_or_inner_type
 
 if TYPE_CHECKING:
     from litestar.types.protocols import DataclassProtocol
@@ -56,7 +56,6 @@ __all__ = (
     "is_non_string_iterable",
     "is_non_string_sequence",
     "is_optional_union",
-    "is_string_type",
     "is_undefined_sentinel",
     "is_union",
 )
@@ -295,30 +294,3 @@ def is_undefined_sentinel(value: Any) -> bool:
         A boolean.
     """
     return any(v is value for v in UNDEFINED_SENTINELS)
-
-
-def is_string_type(annotation: Any) -> bool:
-    """Check if a type annotation represents a string type.
-
-    This includes ``str``, subclasses of ``str``, and ``Optional`` variants of
-    these types. It also handles ``Annotated`` and ``ForwardRef`` types.
-
-    Args:
-        annotation: A type annotation to check.
-
-    Returns:
-        ``True`` if the annotation is a string type, ``False`` otherwise.
-    """
-    while get_origin(annotation) is Annotated:
-        annotation = get_args(annotation)[0]
-
-    if is_optional_union(annotation):
-        annotation = make_non_optional_union(annotation)
-        while get_origin(annotation) is Annotated:
-            annotation = get_args(annotation)[0]
-
-    # This handles cases like Union[str, int] which are not string types
-    if get_origin(annotation) in UnionTypes:
-        return False
-
-    return is_class_and_subclass(annotation, str)

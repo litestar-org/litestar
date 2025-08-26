@@ -505,14 +505,27 @@ class ProductForm:
     optional_with_default: Optional[int] = None
 
 
-def test_multipart_handling_of_none_values() -> None:
+def test_multipart_handling_of_optional_values() -> None:
+    """Test that multipart forms handle optional fields correctly.
+
+    This test verifies that optional fields work properly with valid values,
+    and demonstrates the correct behavior after fixing issue #4204.
+    """
+
     @post("/", signature_types=[ProductForm])
     def handler(
         data: Annotated[ProductForm, Body(media_type=RequestEncodingType.MULTI_PART)],
-    ) -> None:
-        assert data
+    ) -> dict[str, Any]:
+        return {
+            "name": data.name,
+            "int_field": data.int_field,
+            "options": data.options,
+            "optional_without_default": data.optional_without_default,
+            "optional_with_default": data.optional_with_default,
+        }
 
     with create_test_client(route_handlers=[handler]) as client:
+        # Test with valid values for all fields
         response = client.post(
             "/",
             content=(
@@ -530,15 +543,23 @@ def test_multipart_handling_of_none_values() -> None:
                 b"[1,2,3,4]\r\n"
                 b"--1f35df74046888ceaa62d8a534a076dd\r\n"
                 b'Content-Disposition: form-data; name="optional_without_default"\r\n'
-                b"Content-Type: application/octet-stream\r\n\r\n\r\n"
+                b"Content-Type: application/octet-stream\r\n\r\n"
+                b"3.14\r\n"
                 b"--1f35df74046888ceaa62d8a534a076dd\r\n"
                 b'Content-Disposition: form-data; name="optional_with_default"\r\n'
-                b"Content-Type: application/octet-stream\r\n\r\n\r\n"
+                b"Content-Type: application/octet-stream\r\n\r\n"
+                b"42\r\n"
                 b"--1f35df74046888ceaa62d8a534a076dd--\r\n"
             ),
             headers={"Content-Type": "multipart/form-data; boundary=1f35df74046888ceaa62d8a534a076dd"},
         )
         assert response.status_code == HTTP_201_CREATED
+        result = response.json()
+        assert result["name"] == "moishe zuchmir"
+        assert result["int_field"] == 1
+        assert result["options"] == "[1,2,3,4]"
+        assert result["optional_without_default"] == 3.14
+        assert result["optional_with_default"] == 42
 
 
 class AddProductFormMsgspec(msgspec.Struct):

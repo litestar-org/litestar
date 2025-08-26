@@ -17,7 +17,7 @@ from litestar.exceptions import ValidationException
 from litestar.params import BodyKwarg
 from litestar.types import Empty
 from litestar.utils import make_non_optional_union
-from litestar.utils.predicates import is_non_string_sequence, is_optional_union, is_string_type
+from litestar.utils.predicates import is_non_string_sequence, is_optional_union
 from litestar.utils.scope.state import ScopeState
 
 if TYPE_CHECKING:
@@ -340,6 +340,7 @@ async def _extract_multipart(
         else connection.app.multipart_form_part_limit
     )
     scope_state = ScopeState.from_scope(connection.scope)
+    form_values: dict[str, Any]
     if scope_state.form is Empty:
         scope_state.form = form_values = await parse_multipart_form(
             stream=connection.stream(),
@@ -369,19 +370,8 @@ async def _extract_multipart(
     if data_dto:
         return data_dto(connection).decode_builtins(form_values)
 
-    # Create a copy to handle type conversions without modifying the original
-    processed_form_values: dict[str, Any] = dict(form_values)
-
     for name, tp in field_definition.get_type_hints().items():
-        value = processed_form_values.get(name)
-
-        # Handle empty string to None conversion for non-string optional fields
-        # For GitHub issue #4204: preserve empty strings for string types, convert to None for others
-        if value == "" and is_optional_union(tp):
-            inner_type: Any = make_non_optional_union(tp)
-            if not (inner_type is str or is_string_type(inner_type)):
-                processed_form_values[name] = None
-
+        value = form_values.get(name)
         if (
             value is not None
             and not isinstance(value, list)
@@ -390,9 +380,9 @@ async def _extract_multipart(
                 or (is_optional_union(tp) and is_non_string_sequence(make_non_optional_union(tp)))
             )
         ):
-            processed_form_values[name] = [value]
+            form_values[name] = [value]
 
-    return processed_form_values
+    return form_values
 
 
 def create_multipart_extractor(
@@ -441,11 +431,16 @@ def create_url_encoded_data_extractor(
     ) -> Any:
         scope_state = ScopeState.from_scope(connection.scope)
         if scope_state.form is Empty:
-            scope_state.form = form_values = (  # type: ignore[assignment]
+            # The type of `scope_state.form` is `dict[str, str | list[str] | UploadFile] | Empty`.
+            # The return value of `parse_url_encoded_form_data` is `dict[str, str | list[str]]`.
+            # Because `dict` is invariant, this assignment is a type error. To fix this, we create a new
+            # dictionary from the parsed form data, which mypy can then correctly type as the wider type.
+            form_values: dict[str, str | list[str] | UploadFile] = dict(
                 parse_url_encoded_form_data(await connection.body())
             )
+            scope_state.form = form_values
         else:
-            form_values = scope_state.form  # type: ignore[assignment]
+            form_values = scope_state.form
 
         if not form_values and is_data_optional:
             return None

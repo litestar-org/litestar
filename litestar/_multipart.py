@@ -112,9 +112,8 @@ async def parse_multipart_form(  # noqa: C901
                             await data.seek(0)
                             fields[segment.name].append(data)
                         else:
-                            # Always decode as string, handling None/empty data for consistency with URL-encoded forms (fixes #4204)
-                            decoded_data = (data or b"").decode(segment.charset or "utf-8")
-                            fields[segment.name].append(decoded_data)
+                            # Always decode as string, even for empty data, for consistency with URL-encoded forms (fixes #4204)
+                            fields[segment.name].append(data.decode(segment.charset or "utf-8"))
 
                         # reset for next part
                         data = bytearray()
@@ -138,12 +137,4 @@ async def parse_multipart_form(  # noqa: C901
         # backwards compatibility, we keep it as a 400 for now
         raise ClientException("Request Entity Too Large") from None
 
-    # Ensure no None values are returned - filter them out or convert to empty strings
-    filtered_fields: dict[str, Any] = {}
-    for k, v in fields.items():
-        if len(v) > 1:
-            filtered_fields[k] = [item for item in v if item is not None]
-        else:
-            filtered_fields[k] = v[0] if v and v[0] is not None else ""
-
-    return filtered_fields
+    return {k: v if len(v) > 1 else v[0] for k, v in fields.items()}
