@@ -9,7 +9,6 @@ from typing import Annotated, Any, Optional
 
 import msgspec
 import pytest
-from pydantic import BaseModel
 
 from litestar import Request, post
 from litestar.datastructures.upload_file import UploadFile
@@ -622,38 +621,45 @@ def test_invalid_multipart_raises_client_error() -> None:
 
 
 # Test for GitHub issue #4204: Empty strings in multipart/form-data should be preserved
-class EmptyStringTestData(BaseModel):
-    value: Optional[str]
-
-
 def test_empty_strings_preserved_in_multipart_forms() -> None:
-    @post("/test-empty-url-encoded", sync_to_thread=False)
-    def test_empty_url_encoded(
-        data: Annotated[EmptyStringTestData, Body(media_type=RequestEncodingType.URL_ENCODED)],
-    ) -> bool:
-        return data.value is not None
-
-    @post("/test-empty-multipart", sync_to_thread=False)
-    def test_empty_multipart(
-        data: Annotated[EmptyStringTestData, Body(media_type=RequestEncodingType.MULTI_PART)],
-    ) -> bool:
-        return data.value is not None
-
     """Test that empty strings are preserved in multipart forms and not converted to None.
 
     This test addresses GitHub issue #4204 where empty strings in multipart/form-data
     requests were being converted to None instead of being preserved as empty strings.
+    The test focuses on core multipart parsing behavior, not serialization library specifics.
     """
-    with create_test_client([test_empty_url_encoded, test_empty_multipart]) as client:
-        # Test URL-encoded form (should work correctly)
-        response_url_encoded = client.post("/test-empty-url-encoded", data={"value": ""})
-        assert response_url_encoded.status_code == HTTP_201_CREATED
-        assert response_url_encoded.text == "true"  # Empty string should be preserved, not None
 
-        # Test multipart form (this was broken before the fix)
-        response_multipart = client.post("/test-empty-multipart", data={"value": ""}, files={"dummy": ""})
+    @post("/test-form")
+    async def form_handler(request: Request) -> dict[str, Any]:
+        """Handler that directly tests form parsing without any serialization library."""
+        data = await request.form()
+        return {
+            "value": data.get("value"),
+            "value_type": type(data.get("value")).__name__,
+            "value_is_none": data.get("value") is None,
+        }
+
+    with create_test_client([form_handler]) as client:
+        # Test URL-encoded form (baseline behavior)
+        response_url_encoded = client.post("/test-form", data={"value": ""})
+        assert response_url_encoded.status_code == HTTP_201_CREATED
+        url_result = response_url_encoded.json()
+
+        # Test multipart form (should behave identically to URL-encoded)
+        response_multipart = client.post("/test-form", data={"value": ""}, files={"dummy": ""})
         assert response_multipart.status_code == HTTP_201_CREATED
-        assert response_multipart.text == "true"  # Empty string should be preserved, not None
+        multipart_result = response_multipart.json()
+
+        # Both should preserve empty strings, not convert to None
+        assert url_result["value"] == ""
+        assert multipart_result["value"] == ""
+        assert url_result["value_type"] == "str"
+        assert multipart_result["value_type"] == "str"
+        assert url_result["value_is_none"] is False
+        assert multipart_result["value_is_none"] is False
+
+        # Results should be identical (consistency between form types)
+        assert url_result == multipart_result
 
 
 def test_empty_strings_consistency_between_encodings() -> None:
