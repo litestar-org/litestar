@@ -504,14 +504,27 @@ class ProductForm:
     optional_with_default: Optional[int] = None
 
 
-def test_multipart_handling_of_none_values() -> None:
+def test_multipart_handling_of_optional_values() -> None:
+    """Test that multipart forms handle optional fields correctly.
+
+    This test verifies that optional fields work properly with valid values,
+    and demonstrates the correct behavior after fixing issue #4204.
+    """
+
     @post("/", signature_types=[ProductForm])
     def handler(
         data: Annotated[ProductForm, Body(media_type=RequestEncodingType.MULTI_PART)],
-    ) -> None:
-        assert data
+    ) -> dict[str, Any]:
+        return {
+            "name": data.name,
+            "int_field": data.int_field,
+            "options": data.options,
+            "optional_without_default": data.optional_without_default,
+            "optional_with_default": data.optional_with_default,
+        }
 
     with create_test_client(route_handlers=[handler]) as client:
+        # Test with valid values for all fields
         response = client.post(
             "/",
             content=(
@@ -529,15 +542,23 @@ def test_multipart_handling_of_none_values() -> None:
                 b"[1,2,3,4]\r\n"
                 b"--1f35df74046888ceaa62d8a534a076dd\r\n"
                 b'Content-Disposition: form-data; name="optional_without_default"\r\n'
-                b"Content-Type: application/octet-stream\r\n\r\n\r\n"
+                b"Content-Type: application/octet-stream\r\n\r\n"
+                b"3.14\r\n"
                 b"--1f35df74046888ceaa62d8a534a076dd\r\n"
                 b'Content-Disposition: form-data; name="optional_with_default"\r\n'
-                b"Content-Type: application/octet-stream\r\n\r\n\r\n"
+                b"Content-Type: application/octet-stream\r\n\r\n"
+                b"42\r\n"
                 b"--1f35df74046888ceaa62d8a534a076dd--\r\n"
             ),
             headers={"Content-Type": "multipart/form-data; boundary=1f35df74046888ceaa62d8a534a076dd"},
         )
         assert response.status_code == HTTP_201_CREATED
+        result = response.json()
+        assert result["name"] == "moishe zuchmir"
+        assert result["int_field"] == 1
+        assert result["options"] == "[1,2,3,4]"
+        assert result["optional_without_default"] == 3.14
+        assert result["optional_with_default"] == 42
 
 
 class AddProductFormMsgspec(msgspec.Struct):
@@ -597,3 +618,100 @@ def test_invalid_multipart_raises_client_error() -> None:
             headers={"Content-Type": "multipart/form-data; charset=utf-8; boundary=20b303e711c4ab8c443184ac833ab00f"},
         )
         assert response.status_code == HTTP_400_BAD_REQUEST
+
+
+# Test for GitHub issue #4204: Empty strings in multipart/form-data should be preserved
+def test_empty_strings_preserved_in_multipart_forms() -> None:
+    """Test that empty strings are preserved in multipart forms and not converted to None.
+
+    This test addresses GitHub issue #4204 where empty strings in multipart/form-data
+    requests were being converted to None instead of being preserved as empty strings.
+    The test focuses on core multipart parsing behavior, not serialization library specifics.
+    """
+
+    @post("/test-form")
+    async def form_handler(request: Request) -> dict[str, Any]:
+        """Handler that directly tests form parsing without any serialization library."""
+        data = await request.form()
+        return {
+            "value": data.get("value"),
+            "value_type": type(data.get("value")).__name__,
+            "value_is_none": data.get("value") is None,
+        }
+
+    with create_test_client([form_handler]) as client:
+        # Test URL-encoded form (baseline behavior)
+        response_url_encoded = client.post("/test-form", data={"value": ""})
+        assert response_url_encoded.status_code == HTTP_201_CREATED
+        url_result = response_url_encoded.json()
+
+        # Test multipart form (should behave identically to URL-encoded)
+        response_multipart = client.post("/test-form", data={"value": ""}, files={"dummy": ""})
+        assert response_multipart.status_code == HTTP_201_CREATED
+        multipart_result = response_multipart.json()
+
+        # Both should preserve empty strings, not convert to None
+        assert url_result["value"] == ""
+        assert multipart_result["value"] == ""
+        assert url_result["value_type"] == "str"
+        assert multipart_result["value_type"] == "str"
+        assert url_result["value_is_none"] is False
+        assert multipart_result["value_is_none"] is False
+
+        # Results should be identical (consistency between form types)
+        assert url_result == multipart_result
+
+
+def test_empty_strings_consistency_between_encodings() -> None:
+    """Test that empty strings behave consistently between URL-encoded and multipart forms."""
+
+    @post("/consistency-test")
+    async def consistency_handler(request: Request) -> dict[str, Any]:
+        data = await request.form()
+        return {"value": data.get("value"), "value_type": type(data.get("value")).__name__}
+
+    with create_test_client([consistency_handler]) as client:
+        # Test URL-encoded form
+        response_url = client.post("/consistency-test", data={"value": ""})
+        url_result = response_url.json()
+
+        # Test multipart form
+        response_multipart = client.post("/consistency-test", data={"value": ""}, files={"dummy": ""})
+        multipart_result = response_multipart.json()
+
+        # Both should return empty string, not None
+        assert url_result["value"] == ""
+        assert multipart_result["value"] == ""
+        assert url_result["value_type"] == "str"
+        assert multipart_result["value_type"] == "str"
+
+        # Results should be identical
+        assert url_result == multipart_result
+
+
+def test_multipart_empty_string_with_raw_content() -> None:
+    """Test empty string handling with raw multipart content to ensure the fix works at the parser level."""
+
+    @post("/raw-multipart-test")
+    async def raw_handler(request: Request) -> dict[str, Any]:
+        data = await request.form()
+        return {"value": data.get("value"), "is_none": data.get("value") is None}
+
+    with create_test_client([raw_handler]) as client:
+        # Send raw multipart content with empty value
+        response = client.post(
+            "/raw-multipart-test",
+            content=(
+                b"--boundary123\r\n"
+                b'Content-Disposition: form-data; name="value"\r\n'
+                b"\r\n"
+                b"\r\n"  # Empty value
+                b"--boundary123--\r\n"
+            ),
+            headers={"Content-Type": "multipart/form-data; boundary=boundary123"},
+        )
+
+        result = response.json()
+        assert response.status_code == HTTP_201_CREATED
+        assert result["value"] == ""  # Should be empty string
+        assert result["is_none"] is False  # Should not be None
