@@ -54,7 +54,7 @@ class HTTPException(LitestarException):
         *args: Any,
         detail: str = "",
         status_code: int | None = None,
-        headers: dict[str, str] | None = None,
+        headers: dict[str, str] | None  | EmptyType = Empty,
         extra: dict[str, Any] | list[Any] | None | EmptyType = Empty,
     ) -> None:
         """Initialize ``HTTPException``.
@@ -71,7 +71,7 @@ class HTTPException(LitestarException):
         super().__init__(*args, detail=detail)
         self.status_code = status_code or self.status_code
         self.extra = extra if extra is not Empty else self.extra
-        self.headers = headers
+        self.headers = headers if headers is not Empty else self.headers
         if not self.detail:
             self.detail = HTTPStatus(self.status_code).phrase
         self.args = (f"{self.status_code}: {self.detail}", *self.args)
