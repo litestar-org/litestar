@@ -44,7 +44,7 @@ class HTTPException(LitestarException):
     """Exception status code."""
     detail: str
     """Exception details or message."""
-    headers: dict[str, str] | None
+    headers: dict[str, str] | None = None
     """Headers to attach to the response."""
     extra: dict[str, Any] | list[Any] | None = None
     """An extra mapping to attach to the exception."""
@@ -54,7 +54,7 @@ class HTTPException(LitestarException):
         *args: Any,
         detail: str = "",
         status_code: int | None = None,
-        headers: dict[str, str] | None  | EmptyType = Empty,
+        headers: dict[str, str] | None | EmptyType = Empty,
         extra: dict[str, Any] | list[Any] | None | EmptyType = Empty,
     ) -> None:
         """Initialize ``HTTPException``.
