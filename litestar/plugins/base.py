@@ -14,7 +14,7 @@ if TYPE_CHECKING:
     from litestar.app import Litestar
     from litestar.config.app import AppConfig
     from litestar.dto import AbstractDTO
-    from litestar.openapi.spec import Schema
+    from litestar.openapi.spec import Reference, Schema
     from litestar.routes import BaseRoute
     from litestar.typing import FieldDefinition
 
@@ -237,7 +237,7 @@ class OpenAPISchemaPlugin(abc.ABC):
         )
 
     @abc.abstractmethod
-    def to_openapi_schema(self, field_definition: FieldDefinition, schema_creator: SchemaCreator) -> Schema:
+    def to_openapi_schema(self, field_definition: FieldDefinition, schema_creator: SchemaCreator) -> Schema | Reference:
         """Given a type annotation, transform it into an OpenAPI schema class.
 
         Args:

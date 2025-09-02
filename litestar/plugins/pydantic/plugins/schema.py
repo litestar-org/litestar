@@ -3,15 +3,17 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any
 
 from litestar.exceptions import MissingDependencyException
-from litestar.openapi.spec import OpenAPIFormat, OpenAPIType, Schema
+from litestar.openapi.spec import OpenAPIFormat, OpenAPIType, Reference, Schema
 from litestar.plugins import OpenAPISchemaPlugin
 from litestar.plugins.pydantic.utils import (
     get_model_info,
     is_pydantic_constrained_field,
     is_pydantic_model_class,
+    is_pydantic_root_model,
     is_pydantic_undefined,
     is_pydantic_v2,
 )
+from litestar.typing import FieldDefinition
 from litestar.utils import is_class_and_subclass
 
 try:
@@ -33,7 +35,6 @@ except ImportError:
 
 if TYPE_CHECKING:
     from litestar._openapi.schema_generation.schema import SchemaCreator
-    from litestar.typing import FieldDefinition
 
 PYDANTIC_TYPE_MAP: dict[type[Any] | None | Any, Schema] = {
     pydantic_v1.ByteSize: Schema(type=OpenAPIType.INTEGER),
@@ -259,7 +260,7 @@ class PydanticSchemaPlugin(OpenAPISchemaPlugin):
     def is_constrained_field(field_definition: FieldDefinition) -> bool:
         return is_pydantic_constrained_field(field_definition.annotation)
 
-    def to_openapi_schema(self, field_definition: FieldDefinition, schema_creator: SchemaCreator) -> Schema:
+    def to_openapi_schema(self, field_definition: FieldDefinition, schema_creator: SchemaCreator) -> Schema | Reference:
         """Given a type annotation, transform it into an OpenAPI schema class.
 
         Args:
@@ -276,7 +277,7 @@ class PydanticSchemaPlugin(OpenAPISchemaPlugin):
         return PYDANTIC_TYPE_MAP[field_definition.annotation]  # pragma: no cover
 
     @classmethod
-    def for_pydantic_model(cls, field_definition: FieldDefinition, schema_creator: SchemaCreator) -> Schema:  # pyright: ignore
+    def for_pydantic_model(cls, field_definition: FieldDefinition, schema_creator: SchemaCreator) -> Schema | Reference:  # pyright: ignore
         """Create a schema object for a given pydantic model class.
 
         Args:
@@ -288,6 +289,18 @@ class PydanticSchemaPlugin(OpenAPISchemaPlugin):
         """
 
         model_info = get_model_info(field_definition.annotation, prefer_alias=schema_creator.prefer_alias)
+
+        # Handle RootModel: generate schema for the root field content instead of treating it as a regular field
+        if is_pydantic_root_model(field_definition.annotation) and (
+            root_field := model_info.field_definitions.get("root")
+        ):
+            root_field_def = FieldDefinition.from_annotation(
+                annotation=root_field.annotation,
+                name=field_definition.name,
+                default=field_definition.default,
+                extra=field_definition.extra,
+            )
+            return schema_creator.for_field_definition(root_field_def)
 
         return schema_creator.create_component_schema(
             field_definition,
