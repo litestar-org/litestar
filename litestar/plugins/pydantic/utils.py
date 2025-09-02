@@ -240,6 +240,18 @@ def is_pydantic_v2(module: ModuleType) -> bool:
     return bool(module.__version__.startswith("2."))
 
 
+def is_pydantic_root_model(annotation: Any) -> bool:
+    """Check if the given annotation is a Pydantic RootModel.
+
+    Args:
+        annotation: A type annotation
+
+    Returns:
+        True if the annotation is a RootModel, otherwise False.
+    """
+    return getattr(annotation, "__pydantic_root_model__", False) is True
+
+
 @dataclass(frozen=True)
 class PydanticModelInfo:
     pydantic_version: Literal["1", "2"]

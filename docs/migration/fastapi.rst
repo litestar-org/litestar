@@ -136,7 +136,8 @@ and to easily access dependencies from higher levels.
 
         .. code-block:: python
 
-           from litestar import Litestar, Provide, get, Router
+           from litestar import Litestar, get, Router
+           from litestar.di import Provide
 
 
            async def route_dependency() -> bool: ...
