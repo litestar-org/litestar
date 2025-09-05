@@ -135,7 +135,7 @@ class KwargDefinition:
     def is_constrained(self) -> bool:
         """Return True if any of the constraints are set."""
         return any(
-            attr if attr and attr is not Empty else False  # type: ignore[comparison-overlap]
+            attr is not None
             for attr in (
                 self.gt,
                 self.ge,

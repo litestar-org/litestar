@@ -640,6 +640,7 @@ def test_empty_strings_consistency_between_encodings() -> None:
     @post("/consistency-test")
     async def consistency_handler(request: Request) -> str:
         data = await request.form()
+        assert isinstance(data["value"], str)
         return data["value"]
 
     with create_test_client([consistency_handler]) as client:
