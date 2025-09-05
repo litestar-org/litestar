@@ -23,7 +23,7 @@ jobs:
         run:
           echo "issues=$(python ./.github/workflows/notify_released_issues/get_closed_issues.py ${{ inputs.release_tag }})" >> "$GITHUB_OUTPUT"
 
-      - uses: actions/github-script@v7
+      - uses: actions/github-script@v8
         env:
           CLOSED_ISSUES: ${{ steps.get-released-issues.outputs.issues }}
         with:
