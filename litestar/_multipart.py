@@ -111,10 +111,9 @@ async def parse_multipart_form(  # noqa: C901
                         if isinstance(data, UploadFile):
                             await data.seek(0)
                             fields[segment.name].append(data)
-                        elif data:
-                            fields[segment.name].append(data.decode(segment.charset or "utf-8"))
                         else:
-                            fields[segment.name].append(None)
+                            # Always decode as string, even for empty data
+                            fields[segment.name].append(data.decode(segment.charset or "utf-8"))
 
                         # reset for next part
                         data = bytearray()
