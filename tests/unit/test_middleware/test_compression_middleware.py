@@ -258,7 +258,7 @@ def test_compression_with_custom_backend(handler: HTTPRouteHandler) -> None:
             self.compression_encoding = compression_encoding
             self.config = config
 
-        def write(self, body: bytes, final: bool) -> None:
+        def write(self, body: Union[bytes, bytearray], final: bool = False) -> None:
             self.buffer.write(zlib.compress(body, level=self.config.backend_config["level"]))
 
         def close(self) -> None: ...

@@ -24,8 +24,9 @@ class GzipCompression(CompressionFacade):
         self.compression_encoding = compression_encoding
         self.compressor = GzipFile(mode="wb", fileobj=buffer, compresslevel=config.gzip_compress_level)
 
-    def write(self, body: bytes, final: bool = False) -> None:
-        self.compressor.write(body)
+    def write(self, body: bytes | bytearray, final: bool = False) -> None:
+        data = bytes(body)
+        self.compressor.write(data)
         self.compressor.flush()
 
     def close(self) -> None:
