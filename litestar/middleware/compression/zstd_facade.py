@@ -24,13 +24,7 @@ class ZstdCompression(CompressionFacade):
         self.cctx = zstd.ZstdCompressor(level=config.zstd_compress_level)
         self.compressor = self.cctx.stream_writer(buffer)
 
-    def write(self, body: bytes, final: bool = False) -> None:
-        """Write data to the compressor.
-
-        Args:
-            body: Bytes to compress.
-            final: Whether this is the final chunk (non-streaming).
-        """
+    def write(self, body: bytes | bytearray, final: bool = False) -> None:
         self.compressor.write(body)
         if final:
             self.compressor.flush(zstd.FLUSH_FRAME)
