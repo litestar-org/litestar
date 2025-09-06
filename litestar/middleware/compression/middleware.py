@@ -90,7 +90,7 @@ class CompressionMiddleware(AbstractMiddleware):
     ) -> type[CompressionFacade]:
         if compression_encoding == CompressionEncoding.GZIP:
             return GzipCompression
-        if compression_encoding == CompressionEncoding.ZSTD:
+        elif compression_encoding == CompressionEncoding.ZSTD:
             return ZstdCompression
         return self.config.compression_facade
 
