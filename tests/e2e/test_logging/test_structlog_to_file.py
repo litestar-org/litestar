@@ -61,7 +61,7 @@ def test_structlog_to_file(tmp_path: Path) -> None:
             "headers": {
                 "host": "testserver.local",
                 "accept": "*/*",
-                "accept-encoding": "gzip, deflate, br",
+                "accept-encoding": "gzip, deflate, br, zstd",
                 "connection": "keep-alive",
                 "user-agent": "testclient",
             },

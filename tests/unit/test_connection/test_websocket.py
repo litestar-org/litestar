@@ -144,7 +144,7 @@ def test_websocket_headers() -> None:
     with create_test_client(handler).websocket_connect("/") as ws:
         expected_headers = {
             "accept": "*/*",
-            "accept-encoding": "gzip, deflate, br",
+            "accept-encoding": "gzip, deflate, br, zstd",
             "connection": "upgrade",
             "host": "testserver.local",
             "user-agent": "testclient",

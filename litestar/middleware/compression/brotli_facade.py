@@ -43,7 +43,7 @@ class BrotliCompression(CompressionFacade):
             lgblock=config.brotli_lgblock,
         )
 
-    def write(self, body: bytes) -> None:
+    def write(self, body: bytes, final: bool) -> None:
         self.buffer.write(self.compressor.process(body))
         self.buffer.write(self.compressor.flush())
 
