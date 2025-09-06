@@ -362,7 +362,7 @@ def test_postman_multipart_form_data() -> None:
         "accept": "*/*",
         "cache-control": "no-cache",
         "host": "10.0.5.13:80",
-        "accept-encoding": "gzip, deflate, br",
+        "accept-encoding": "gzip, deflate, br, zstd",
         "connection": "keep-alive",
         "content-length": "2455",
     }

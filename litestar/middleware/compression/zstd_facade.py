@@ -1,0 +1,41 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Literal
+
+import zstandard as zstd
+
+from litestar.enums import CompressionEncoding
+from litestar.middleware.compression.facade import CompressionFacade
+
+if TYPE_CHECKING:
+    from io import BytesIO
+
+    from litestar.config.compression import CompressionConfig
+
+
+class ZstdCompression(CompressionFacade):
+    __slots__ = ("buffer", "cctx", "compression_encoding", "compressor")
+
+    encoding = CompressionEncoding("zstd")
+
+    def __init__(self, buffer: BytesIO, compression_encoding: Literal["zstd"] | str, config: CompressionConfig) -> None:
+        self.buffer = buffer
+        self.compression_encoding = compression_encoding
+        self.cctx = zstd.ZstdCompressor(level=config.zstd_compress_level)
+        self.compressor = self.cctx.stream_writer(buffer)
+
+    def write(self, body: bytes, final: bool = False) -> None:
+        """Write data to the compressor.
+
+        Args:
+            body: Bytes to compress.
+            final: Whether this is the final chunk (non-streaming).
+        """
+        self.compressor.write(body)
+        if final:
+            self.compressor.flush(zstd.FLUSH_FRAME)
+        else:
+            self.compressor.flush(zstd.FLUSH_BLOCK)
+
+    def close(self) -> None:
+        self.compressor.flush(zstd.FLUSH_FRAME)
