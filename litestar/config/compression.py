@@ -87,7 +87,9 @@ class CompressionConfig:
             self.compression_facade = BrotliCompression
         elif self.backend == "zstd":
             if self.zstd_compress_level < 1 or self.zstd_compress_level > 22:
-                raise ImproperlyConfiguredException(f"zstd_compress_level must be between 1 and 22, given: {self.zstd_compress_level}")
+                raise ImproperlyConfiguredException(
+                    f"zstd_compress_level must be between 1 and 22, given: {self.zstd_compress_level}"
+                )
 
             from litestar.middleware.compression.zstd_facade import ZstdCompression
 

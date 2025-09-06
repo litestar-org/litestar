@@ -29,7 +29,7 @@ class CompressionFacade(Protocol):
         """
         ...
 
-    def write(self, body: bytes, final: bool) -> None:
+    def write(self, body: bytes, final: bool = False) -> None:
         """Write compressed bytes.
 
         Args:
