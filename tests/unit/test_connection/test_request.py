@@ -171,7 +171,7 @@ def test_request_headers() -> None:
         "headers": {
             "host": "example.org",
             "user-agent": "testclient",
-            "accept-encoding": "gzip, deflate, br",
+            "accept-encoding": "gzip, deflate, br, zstd",
             "accept": "*/*",
             "connection": "keep-alive",
         }

@@ -77,6 +77,7 @@ class CompressionEncoding(str, Enum):
 
     GZIP = "gzip"
     BROTLI = "br"
+    ZSTD = "zstd"
 
 
 class ASGIExtension(str, Enum):

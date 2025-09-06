@@ -50,6 +50,7 @@ dependencies = [
   "exceptiongroup>=1.2.2; python_version < \"3.11\"",
   # default litestar plugins
   "litestar-htmx>=0.4.0",
+  "zstandard>=0.24.0",
 ]
 
 [project.optional-dependencies]

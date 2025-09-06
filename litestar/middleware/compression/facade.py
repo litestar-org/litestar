@@ -29,11 +29,12 @@ class CompressionFacade(Protocol):
         """
         ...
 
-    def write(self, body: bytes) -> None:
+    def write(self, body: bytes, final: bool) -> None:
         """Write compressed bytes.
 
         Args:
             body: Message body to process
+            final: Indicates whether this is the last chunk of data.
 
         Returns:
             None
