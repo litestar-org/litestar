@@ -50,6 +50,7 @@ dependencies = [
   "exceptiongroup>=1.2.2; python_version < \"3.11\"",
   # default litestar plugins
   "litestar-htmx>=0.4.0",
+  # starting from Python 3.14, `compression.zstd` is built-in and this will no longer be required
   "zstandard>=0.24.0",
 ]
 
