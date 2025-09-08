@@ -265,5 +265,6 @@ class JWTCookieAuthenticationMiddleware(JWTAuthenticationMiddleware):
         auth_header = connection.headers.get(self.auth_header) or connection.cookies.get(self.auth_cookie_key)
         if not auth_header:
             raise NotAuthorizedException("No JWT token found in request header or cookies")
-        encoded_token = auth_header.partition(" ")[-1]
+        parts = auth_header.strip().split(maxsplit=1)
+        encoded_token = parts[-1] if parts else ""
         return await self.authenticate_token(encoded_token=encoded_token, connection=connection)
