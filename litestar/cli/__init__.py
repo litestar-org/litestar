@@ -7,6 +7,7 @@ from importlib.util import find_spec
 if find_spec("rich_click") is not None:  # pragma: no cover
     import rich_click
 
+    rich_click.rich_click.THEME = "star-box"  # pyright: ignore
     rich_click.rich_click.USE_RICH_MARKUP = True
     rich_click.rich_click.USE_MARKDOWN = False
     rich_click.rich_click.SHOW_ARGUMENTS = True
