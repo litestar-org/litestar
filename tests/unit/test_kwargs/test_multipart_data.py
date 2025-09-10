@@ -505,14 +505,28 @@ class ProductForm:
     optional_with_default: Optional[int] = None
 
 
-def test_multipart_handling_of_none_values() -> None:
+def test_multipart_handling_of_optional_values() -> None:
+    # https://github.com/litestar-org/litestar/issues/4204
+    """Test that multipart forms handle optional fields correctly.
+
+    This test verifies that optional fields work properly with valid values,
+    and demonstrates the correct behavior after fixing issue #4204.
+    """
+
     @post("/", signature_types=[ProductForm])
     def handler(
         data: Annotated[ProductForm, Body(media_type=RequestEncodingType.MULTI_PART)],
-    ) -> None:
-        assert data
+    ) -> dict[str, Any]:
+        return {
+            "name": data.name,
+            "int_field": data.int_field,
+            "options": data.options,
+            "optional_without_default": data.optional_without_default,
+            "optional_with_default": data.optional_with_default,
+        }
 
     with create_test_client(route_handlers=[handler]) as client:
+        # Test with valid values for all fields
         response = client.post(
             "/",
             content=(
@@ -530,15 +544,23 @@ def test_multipart_handling_of_none_values() -> None:
                 b"[1,2,3,4]\r\n"
                 b"--1f35df74046888ceaa62d8a534a076dd\r\n"
                 b'Content-Disposition: form-data; name="optional_without_default"\r\n'
-                b"Content-Type: application/octet-stream\r\n\r\n\r\n"
+                b"Content-Type: application/octet-stream\r\n\r\n"
+                b"3.14\r\n"
                 b"--1f35df74046888ceaa62d8a534a076dd\r\n"
                 b'Content-Disposition: form-data; name="optional_with_default"\r\n'
-                b"Content-Type: application/octet-stream\r\n\r\n\r\n"
+                b"Content-Type: application/octet-stream\r\n\r\n"
+                b"42\r\n"
                 b"--1f35df74046888ceaa62d8a534a076dd--\r\n"
             ),
             headers={"Content-Type": "multipart/form-data; boundary=1f35df74046888ceaa62d8a534a076dd"},
         )
         assert response.status_code == HTTP_201_CREATED
+        result = response.json()
+        assert result["name"] == "moishe zuchmir"
+        assert result["int_field"] == 1
+        assert result["options"] == "[1,2,3,4]"
+        assert result["optional_without_default"] == 3.14
+        assert result["optional_with_default"] == 42
 
 
 class AddProductFormMsgspec(msgspec.Struct):
@@ -598,3 +620,36 @@ def test_invalid_multipart_raises_client_error() -> None:
             headers={"Content-Type": "multipart/form-data; charset=utf-8; boundary=20b303e711c4ab8c443184ac833ab00f"},
         )
         assert response.status_code == HTTP_400_BAD_REQUEST
+
+
+# https://github.com/litestar-org/litestar/issues/4204
+def test_empty_strings_preserved_in_multipart_forms() -> None:
+    """Test that empty strings are preserved in multipart forms."""
+
+    @post("/test-form")
+    async def form_handler(request: Request) -> None:
+        data = await request.form()
+        assert data.get("value") == ""
+
+    with create_test_client([form_handler]) as client:
+        client.post("/test-form", data={"value": ""}, files={"dummy": ""})
+
+
+def test_empty_strings_consistency_between_encodings() -> None:
+    """Test that empty strings behave consistently between URL-encoded and multipart forms."""
+
+    @post("/consistency-test")
+    async def consistency_handler(request: Request) -> str:
+        data = await request.form()
+        assert isinstance(data["value"], str)
+        return data["value"]
+
+    with create_test_client([consistency_handler]) as client:
+        # Test URL-encoded form
+        response_url = client.post("/consistency-test", data={"value": ""})
+
+        # Test multipart form
+        response_multipart = client.post("/consistency-test", data={"value": ""}, files={"dummy": ""})
+
+        # Results should be identical
+        assert response_url.text == response_multipart.text
