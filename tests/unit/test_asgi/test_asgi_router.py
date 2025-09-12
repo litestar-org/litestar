@@ -22,8 +22,6 @@ if TYPE_CHECKING:
 
     from litestar.types import Receive, Scope, Send
 
-_ExceptionGroup = get_exception_group()
-
 
 def test_add_mount_route_disallow_path_parameter() -> None:
     async def handler(scope: Scope, receive: Receive, send: Send) -> None:
@@ -41,7 +39,7 @@ class _LifeSpanCallable:
     def __call__(self) -> None:
         self.called = True
         if self.should_raise:
-            raise RuntimeError("damn")
+            raise ValueError("something_wrong")
 
 
 def test_life_span_startup() -> None:
@@ -53,8 +51,9 @@ def test_life_span_startup() -> None:
 def test_life_span_startup_error_handling() -> None:
     life_span_callable = _LifeSpanCallable(should_raise=True)
 
-    with pytest.raises(_ExceptionGroup), create_test_client([], on_startup=[life_span_callable]):
-        pass
+    with pytest.RaisesGroup(pytest.RaisesExc(ValueError, match="something_wrong"), flatten_subgroups=True):
+        with create_test_client([], on_startup=[life_span_callable]):
+            pass
 
 
 def test_life_span_shutdown() -> None:
@@ -66,8 +65,9 @@ def test_life_span_shutdown() -> None:
 
 def test_life_span_shutdown_error_handling() -> None:
     life_span_callable = _LifeSpanCallable(should_raise=True)
-    with pytest.raises(RuntimeError), create_test_client([], on_shutdown=[life_span_callable]):
-        pass
+    with pytest.RaisesGroup(pytest.RaisesExc(ValueError, match="something_wrong"), flatten_subgroups=True):
+        with create_test_client([], on_startup=[life_span_callable]):
+            pass
 
 
 @pytest.fixture
@@ -172,7 +172,7 @@ async def test_lifespan_startup_failure(mock_format_exc: MagicMock) -> None:
 
     router = ASGIRouter(app=Litestar(on_startup=[on_startup]))
 
-    with pytest.raises(_ExceptionGroup):
+    with pytest.RaisesGroup(pytest.RaisesExc(ValueError, match="foo"), flatten_subgroups=True):
         await router.lifespan(receive, send)
 
     assert send.call_count == 1
@@ -208,7 +208,7 @@ async def test_lifespan_context_exception_after_startup(mock_format_exc: MagicMo
 
     async def sleep_and_raise() -> None:
         await anyio.sleep(0)
-        raise RuntimeError("An error occurred")
+        raise ValueError("something_wrong")
 
     @asynccontextmanager
     async def lifespan(_: Litestar) -> AsyncGenerator[None, None]:
@@ -218,7 +218,7 @@ async def test_lifespan_context_exception_after_startup(mock_format_exc: MagicMo
 
     router = ASGIRouter(app=Litestar(lifespan=[lifespan]))
 
-    with pytest.raises(_ExceptionGroup):
+    with pytest.RaisesGroup(pytest.RaisesExc(ValueError, match="something_wrong"), flatten_subgroups=True):
         await router.lifespan(receive, send)
 
     assert receive.call_count == 2

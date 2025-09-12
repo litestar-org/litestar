@@ -11,11 +11,11 @@ from _pytest.fixtures import FixtureRequest
 from pytest_mock import MockerFixture
 
 from litestar import Litestar, get
-from litestar.channels import ChannelsBackend, ChannelsPlugin
+from litestar.channels import ChannelsBackend, ChannelsPlugin, Subscriber
 from litestar.channels.backends.memory import MemoryChannelsBackend
 from litestar.channels.subscriber import BacklogStrategy
 from litestar.exceptions import ImproperlyConfiguredException, LitestarException
-from litestar.testing import TestClient, create_test_client
+from litestar.testing import TestClient, create_test_client, AsyncTestClient
 from litestar.types.asgi_types import WebSocketMode
 from tests.unit.test_channels.util import get_from_stream
 
@@ -154,8 +154,8 @@ async def test_ws_route_handlers_receive_arbitrary_message(channels_backend: Cha
         assert ws.receive_json(timeout=2) == ["foo"]
 
 
-@pytest.mark.flaky(reruns=15)
-def test_create_ws_route_handlers_arbitrary_channels_allowed(channels_backend: ChannelsBackend) -> None:
+@pytest.mark.flaky(reruns=5)
+async def test_create_ws_route_handlers_arbitrary_channels_allowed(channels_backend: ChannelsBackend) -> None:
     channels_plugin = ChannelsPlugin(
         backend=channels_backend,
         arbitrary_channels_allowed=True,
@@ -165,16 +165,17 @@ def test_create_ws_route_handlers_arbitrary_channels_allowed(channels_backend: C
 
     app = Litestar(plugins=[channels_plugin])
 
-    with TestClient(app) as client:
-        with client.websocket_connect("/ws/foo") as ws:
-            channels_plugin.publish("something", "foo")
-            assert ws.receive_text(timeout=2) == "something"
+    async with AsyncTestClient(app) as client:
+        async with await client.websocket_connect("/ws/foo") as ws:
+            await asyncio.sleep(0.1)
+            await channels_plugin.wait_published("something", "foo")
+            assert await ws.receive_text(timeout=2) == "something"
 
-        time.sleep(0.4)
+        async with await client.websocket_connect("/ws/bar") as ws:
+            await asyncio.sleep(0.1)
 
-        with client.websocket_connect("/ws/bar") as ws:
-            channels_plugin.publish("something else", "bar")
-            assert ws.receive_text(timeout=2) == "something else"
+            await channels_plugin.wait_published("something else", "bar")
+            assert await ws.receive_text(timeout=2) == "something else"
 
 
 @pytest.mark.parametrize("arbitrary_channels_allowed", [True, False])

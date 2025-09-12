@@ -21,6 +21,7 @@ async def test_client() -> AsyncIterator[AsyncTestClient[Litestar]]:
         yield client
 
 
+@pytest.mark.skip(reason="pytest-asyncio issue: https://github.com/pytest-dev/pytest-asyncio/issues/1191")
 async def test_health_check_with_fixture(test_client: AsyncTestClient[Litestar]) -> None:
     response = await test_client.get("/health-check")
     assert response.status_code == HTTP_200_OK
