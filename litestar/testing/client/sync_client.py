@@ -1,13 +1,25 @@
 from __future__ import annotations
 
+import contextlib
 from contextlib import ExitStack
 from typing import TYPE_CHECKING, Any, Generic, TypeVar
+from warnings import warn
 
+import anyio.from_thread
+import httpx
 from httpx import USE_CLIENT_DEFAULT, Client
 
-from litestar.testing.client.base import BaseTestClient
+from litestar import Litestar
+from litestar.testing.client._base import (
+    _prepare_ws_connect_request,
+    _wrap_app_to_add_state,
+    _get_session_data,
+    _set_session_data,
+)
 from litestar.testing.life_span_handler import LifeSpanHandler
-from litestar.testing.transport import ConnectionUpgradeExceptionError, TestClientTransport
+from litestar.testing.transport import ConnectionUpgradeExceptionError, SyncTestClientTransport
+from litestar.testing.websocket_test_session import WebSocketTestSession
+
 from litestar.types import AnyIOBackend, ASGIApp
 
 if TYPE_CHECKING:
@@ -23,16 +35,14 @@ if TYPE_CHECKING:
     )
     from typing_extensions import Self
 
-    from litestar.middleware.session.base import BaseBackendConfig
-    from litestar.testing.websocket_test_session import WebSocketTestSession
+    from litestar.middleware.session.base import BaseBackendConfig, BaseSessionBackend
 
 
 T = TypeVar("T", bound=ASGIApp)
 
 
-class TestClient(Client, BaseTestClient, Generic[T]):  # type: ignore[misc]
-    lifespan_handler: LifeSpanHandler[Any]
-    exit_stack: ExitStack
+class TestClient(Client, Generic[T]):
+    __test__ = False
 
     def __init__(
         self,
@@ -40,11 +50,12 @@ class TestClient(Client, BaseTestClient, Generic[T]):  # type: ignore[misc]
         base_url: str = "http://testserver.local",
         raise_server_exceptions: bool = True,
         root_path: str = "",
-        backend: AnyIOBackend = "asyncio",
-        backend_options: Mapping[str, Any] | None = None,
-        session_config: BaseBackendConfig | None = None,
         timeout: float | None = None,
         cookies: CookieTypes | None = None,
+        backend: AnyIOBackend = "asyncio",
+        backend_options: dict[str, Any] | None = None,
+        session_config: BaseBackendConfig | None = None,
+        disable_lifespan: bool = False,
     ) -> None:
         """A client implementation providing a context manager for testing applications.
 
@@ -54,57 +65,69 @@ class TestClient(Client, BaseTestClient, Generic[T]):  # type: ignore[misc]
             raise_server_exceptions: Flag for the underlying test client to raise server exceptions instead of
                 wrapping them in an HTTP response.
             root_path: Path prefix for requests.
-            backend: The async backend to use, options are "asyncio" or "trio".
-            backend_options: ``anyio`` options.
-            session_config: Configuration for Session Middleware class to create raw session cookies for request to the
-                route handlers.
             timeout: Request timeout
             cookies: Cookies to set on the client.
+            backend: The async backend to use, options are "asyncio" or "trio".
+            backend_options: ``anyio`` options.
         """
-        BaseTestClient.__init__(
-            self,
-            app=app,
-            base_url=base_url,
-            backend=backend,
-            backend_options=backend_options,
-            session_config=session_config,
-            cookies=cookies,
-        )
+        if "." not in base_url:
+            warn(
+                f"The base_url {base_url!r} might cause issues. Try adding a domain name such as .local: "
+                f"'{base_url}.local'",
+                UserWarning,
+                stacklevel=1,
+            )
 
-        Client.__init__(
-            self,
+        # if not isinstance(app, Litestar):
+        #     app = _wrap_app_to_add_state(app)
+
+        self._startup_done = False
+        self._session_backend: BaseSessionBackend | None = None
+        if session_config:
+            self._session_backend = session_config._backend_class(config=session_config)
+
+        self.app = app
+        self.exit_stack = contextlib.ExitStack()
+        self.blocking_portal = self.exit_stack.enter_context(
+            anyio.from_thread.start_blocking_portal(
+                backend=backend,
+                backend_options=backend_options,
+                name="test_client",
+            )
+        )
+        self._disable_lifespan = disable_lifespan
+
+        super().__init__(
             base_url=base_url,
             headers={"user-agent": "testclient"},
             follow_redirects=True,
             cookies=cookies,
-            transport=TestClientTransport(  # type: ignore[arg-type]
+            transport=SyncTestClientTransport(
                 client=self,
                 raise_server_exceptions=raise_server_exceptions,
                 root_path=root_path,
             ),
             timeout=timeout,
         )
+        # warn on usafe if client not initialized
 
     def __enter__(self) -> Self:
-        with ExitStack() as stack:
-            self.blocking_portal = portal = stack.enter_context(self.portal())
-            self.lifespan_handler = LifeSpanHandler(client=self)
-            stack.enter_context(self.lifespan_handler)
+        if not self._disable_lifespan:
+            lifespan = self.exit_stack.enter_context(
+                self.blocking_portal.wrap_async_context_manager(LifeSpanHandler(self.app))
+            )
 
-            @stack.callback
-            def reset_portal() -> None:
-                delattr(self, "blocking_portal")
-
-            @stack.callback
             def wait_shutdown() -> None:
-                portal.call(self.lifespan_handler.wait_shutdown)
+                self.blocking_portal.call(lifespan.wait_shutdown)
 
-            self.exit_stack = stack.pop_all()
+            self.exit_stack.callback(wait_shutdown)
 
+        self._startup_done = True
         return self
 
     def __exit__(self, *args: Any) -> None:
         self.exit_stack.close()
+        super().__exit__(*args)
 
     def websocket_connect(
         self,
@@ -115,7 +138,7 @@ class TestClient(Client, BaseTestClient, Generic[T]):  # type: ignore[misc]
         cookies: CookieTypes | None = None,
         auth: AuthTypes | UseClientDefault = USE_CLIENT_DEFAULT,
         follow_redirects: bool | UseClientDefault = USE_CLIENT_DEFAULT,
-        timeout: TimeoutTypes | UseClientDefault = USE_CLIENT_DEFAULT,
+        timeout: float | None = None,
         extensions: Mapping[str, Any] | None = None,
     ) -> WebSocketTestSession:
         """Sends a GET request to establish a websocket connection.
@@ -136,7 +159,8 @@ class TestClient(Client, BaseTestClient, Generic[T]):  # type: ignore[misc]
         """
         try:
             self.send(
-                self._prepare_ws_connect_request(
+                _prepare_ws_connect_request(
+                    client=self,
                     url=url,
                     subprotocols=subprotocols,
                     params=params,
@@ -149,9 +173,45 @@ class TestClient(Client, BaseTestClient, Generic[T]):  # type: ignore[misc]
                 follow_redirects=follow_redirects,
             )
         except ConnectionUpgradeExceptionError as exc:
-            return exc.session
+            return WebSocketTestSession(
+                client=self,
+                scope=exc.scope,
+                portal=self.blocking_portal,
+                connect_timeout=timeout,
+            )
 
         raise RuntimeError("Expected WebSocket upgrade")  # pragma: no cover
+
+    def get_session_data(self) -> dict[str, Any]:
+        """Get session data.
+
+        Returns:
+            A dictionary containing session data.
+
+        Examples:
+            .. code-block:: python
+
+                from litestar import Litestar, post
+                from litestar.middleware.session.memory_backend import MemoryBackendConfig
+
+                session_config = MemoryBackendConfig()
+
+
+                @post(path="/test")
+                def set_session_data(request: Request) -> None:
+                    request.session["foo"] == "bar"
+
+
+                app = Litestar(
+                    route_handlers=[set_session_data], middleware=[session_config.middleware]
+                )
+
+                async with AsyncTestClient(app=app, session_config=session_config) as client:
+                    await client.post("/test")
+                    assert await client.get_session_data() == {"foo": "bar"}
+
+        """
+        return self.blocking_portal.call(_get_session_data, self)
 
     def set_session_data(self, data: dict[str, Any]) -> None:
         """Set session data.
@@ -180,42 +240,9 @@ class TestClient(Client, BaseTestClient, Generic[T]):  # type: ignore[misc]
                     route_handlers=[get_session_data], middleware=[session_config.middleware]
                 )
 
-                with TestClient(app=app, session_config=session_config) as client:
-                    client.set_session_data({"foo": "bar"})
-                    assert client.get("/test").json() == {"foo": "bar"}
+                async with AsyncTestClient(app=app, session_config=session_config) as client:
+                    await client.set_session_data({"foo": "bar"})
+                    assert await client.get("/test").json() == {"foo": "bar"}
 
         """
-        with self.portal() as portal:
-            portal.call(self._set_session_data, data)
-
-    def get_session_data(self) -> dict[str, Any]:
-        """Get session data.
-
-        Returns:
-            A dictionary containing session data.
-
-        Examples:
-            .. code-block:: python
-
-                from litestar import Litestar, post
-                from litestar.middleware.session.memory_backend import MemoryBackendConfig
-
-                session_config = MemoryBackendConfig()
-
-
-                @post(path="/test")
-                def set_session_data(request: Request) -> None:
-                    request.session["foo"] == "bar"
-
-
-                app = Litestar(
-                    route_handlers=[set_session_data], middleware=[session_config.middleware]
-                )
-
-                with TestClient(app=app, session_config=session_config) as client:
-                    client.post("/test")
-                    assert client.get_session_data() == {"foo": "bar"}
-
-        """
-        with self.portal() as portal:
-            return portal.call(self._get_session_data)
+        return self.blocking_portal.call(_set_session_data, self, data)
