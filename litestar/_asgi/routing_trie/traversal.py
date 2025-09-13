@@ -81,7 +81,10 @@ def parse_node_handlers(
     if node.is_asgi:
         return node.asgi_handlers["asgi"]
     if method:
-        return node.asgi_handlers[method]
+        try:
+            return node.asgi_handlers[method]
+        except KeyError as e:
+            raise MethodNotAllowedException(headers={"allowed": ", ".join(node.asgi_handlers.keys())}) from e
     return node.asgi_handlers["websocket"]
 
 
@@ -170,7 +173,5 @@ def parse_path_to_route(
             parsed_path_parameters,
             node.path_template,
         )
-    except KeyError as e:
-        raise MethodNotAllowedException() from e
     except ValueError as e:
         raise NotFoundException() from e
