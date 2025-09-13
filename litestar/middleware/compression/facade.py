@@ -29,11 +29,13 @@ class CompressionFacade(Protocol):
         """
         ...
 
-    def write(self, body: bytes) -> None:
-        """Write compressed bytes.
+    def write(self, body: bytes | bytearray, final: bool = False) -> None:
+        """Write compressed bytes to the buffer.
 
         Args:
-            body: Message body to process
+            body: The message body to process. Can be `bytes` or `bytearray`.
+            final: Indicates whether this is the last chunk of data. If True,
+                the compressor may flush any remaining internal buffers.
 
         Returns:
             None

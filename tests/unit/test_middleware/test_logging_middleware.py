@@ -75,7 +75,7 @@ def test_logging_middleware_regular_logger(
         assert (
             caplog.messages[0] == 'HTTP Request: path=/, method=GET, content_type=["",{}], '
             'headers={"host":"testserver.local","accept":"*/*","accept-encoding":"gzip, '
-            'deflate, br","connection":"keep-alive","user-agent":"testclient",'
+            'deflate, br, zstd","connection":"keep-alive","user-agent":"testclient",'
             '"request-header":"1","cookie":"request-cookie=abc"}, '
             'cookies={"request-cookie":"abc"}, query={}, path_params={}, body=None'
         )
@@ -103,7 +103,7 @@ def test_logging_middleware_struct_logger(handler: HTTPRouteHandler) -> None:
             "headers": {
                 "host": "testserver.local",
                 "accept": "*/*",
-                "accept-encoding": "gzip, deflate, br",
+                "accept-encoding": "gzip, deflate, br, zstd",
                 "connection": "keep-alive",
                 "user-agent": "testclient",
                 "request-header": "1",

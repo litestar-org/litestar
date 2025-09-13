@@ -45,12 +45,13 @@ def test_compression_disabled_for_unsupported_client(handler: HTTPRouteHandler) 
 
 
 @pytest.mark.parametrize(
-    "backend, compression_encoding", (("brotli", CompressionEncoding.BROTLI), ("gzip", CompressionEncoding.GZIP))
+    "backend, compression_encoding",
+    (("brotli", CompressionEncoding.BROTLI), ("gzip", CompressionEncoding.GZIP), ("zstd", CompressionEncoding.ZSTD)),
 )
 def test_regular_compressed_response(
-    backend: Literal["gzip", "brotli"], compression_encoding: CompressionEncoding, handler: HTTPRouteHandler
+    backend: Literal["gzip", "brotli", "zstd"], compression_encoding: CompressionEncoding, handler: HTTPRouteHandler
 ) -> None:
-    with create_test_client(route_handlers=[handler], compression_config=CompressionConfig(backend="brotli")) as client:
+    with create_test_client(route_handlers=[handler], compression_config=CompressionConfig(backend=backend)) as client:
         response = client.get("/", headers={"Accept-Encoding": str(compression_encoding.value)})
         assert response.status_code == HTTP_200_OK
         assert response.text == "_litestar_" * 4000
@@ -59,10 +60,11 @@ def test_regular_compressed_response(
 
 
 @pytest.mark.parametrize(
-    "backend, compression_encoding", (("brotli", CompressionEncoding.BROTLI), ("gzip", CompressionEncoding.GZIP))
+    "backend, compression_encoding",
+    (("brotli", CompressionEncoding.BROTLI), ("gzip", CompressionEncoding.GZIP), ("zstd", CompressionEncoding.ZSTD)),
 )
 def test_compression_works_for_streaming_response(
-    backend: Literal["gzip", "brotli"], compression_encoding: CompressionEncoding
+    backend: Literal["gzip", "brotli", "zstd"], compression_encoding: CompressionEncoding
 ) -> None:
     @get("/streaming-response")
     def streaming_handler() -> Stream:
@@ -79,10 +81,11 @@ def test_compression_works_for_streaming_response(
 
 
 @pytest.mark.parametrize(
-    "backend, compression_encoding", (("brotli", CompressionEncoding.BROTLI), ("gzip", CompressionEncoding.GZIP))
+    "backend, compression_encoding",
+    (("brotli", CompressionEncoding.BROTLI), ("gzip", CompressionEncoding.GZIP), ("zstd", CompressionEncoding.ZSTD)),
 )
 def test_compression_skips_small_responses(
-    backend: Literal["gzip", "brotli"], compression_encoding: CompressionEncoding
+    backend: Literal["gzip", "brotli", "zstd"], compression_encoding: CompressionEncoding
 ) -> None:
     @get(path="/no-compression", media_type=MediaType.TEXT)
     def no_compress_handler() -> str:
@@ -155,6 +158,17 @@ def test_config_gzip_compress_level_validation(gzip_compress_level: int, should_
         CompressionConfig(backend="gzip", brotli_gzip_fallback=False, gzip_compress_level=gzip_compress_level)
 
 
+@pytest.mark.parametrize(
+    "zstd_compress_level, should_raise", ((0, True), (1, False), (22, False), (23, True), (-1, True))
+)
+def test_config_zstd_compress_level_validation(zstd_compress_level: int, should_raise: bool) -> None:
+    if should_raise:
+        with pytest.raises(ImproperlyConfiguredException):
+            CompressionConfig(backend="zstd", zstd_compress_level=zstd_compress_level)
+    else:
+        CompressionConfig(backend="zstd", zstd_compress_level=zstd_compress_level)
+
+
 @pytest.mark.parametrize("brotli_quality, should_raise", ((0, False), (1, False), (-1, True), (12, True), (11, False)))
 def test_config_brotli_quality_validation(brotli_quality: int, should_raise: bool) -> None:
     if should_raise:
@@ -174,11 +188,16 @@ def test_config_brotli_lgwin_validation(brotli_lgwin: int, should_raise: bool) -
 
 
 @pytest.mark.parametrize(
-    "backend, compression_encoding", (("brotli", CompressionEncoding.BROTLI), ("gzip", CompressionEncoding.GZIP))
+    "backend, compression_encoding",
+    (
+        ("brotli", CompressionEncoding.BROTLI),
+        ("gzip", CompressionEncoding.GZIP),
+        ("zstd", CompressionEncoding.ZSTD),
+    ),
 )
 async def test_compression_streaming_response_emitted_messages(
-    backend: Literal["gzip", "brotli"],
-    compression_encoding: Literal[CompressionEncoding.BROTLI, CompressionEncoding.GZIP],
+    backend: Literal["gzip", "brotli", "zstd"],
+    compression_encoding: CompressionEncoding,
     create_scope: Callable[..., Scope],
     mock_asgi_app: ASGIApp,
 ) -> None:
@@ -202,7 +221,8 @@ async def test_compression_streaming_response_emitted_messages(
 
 
 @pytest.mark.parametrize(
-    "backend, compression_encoding", (("brotli", CompressionEncoding.BROTLI), ("gzip", CompressionEncoding.GZIP))
+    "backend, compression_encoding",
+    (("brotli", CompressionEncoding.BROTLI), ("gzip", CompressionEncoding.GZIP), ("zstd", CompressionEncoding.ZSTD)),
 )
 def test_dont_recompress_cached(backend: Literal["gzip", "brotli"], compression_encoding: CompressionEncoding) -> None:
     mock = MagicMock(return_value="_litestar_" * 4000)
@@ -238,7 +258,7 @@ def test_compression_with_custom_backend(handler: HTTPRouteHandler) -> None:
             self.compression_encoding = compression_encoding
             self.config = config
 
-        def write(self, body: bytes) -> None:
+        def write(self, body: Union[bytes, bytearray], final: bool = False) -> None:
             self.buffer.write(zlib.compress(body, level=self.config.backend_config["level"]))
 
         def close(self) -> None: ...
