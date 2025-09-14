@@ -1,3 +1,4 @@
+# pyright: reportAttributeAccessIssue=false, reportOptionalMemberAccess=false
 import importlib
 import logging
 import sys
