@@ -88,11 +88,15 @@ def _prepare_ws_connect_request(
 
 
 async def _set_session_data(client: TestClient | AsyncTestClient, data: dict[str, Any]) -> None:
+    if client._session_backend is None:
+        raise RuntimeError("Session backend not configured")
+
     mutable_headers = MutableScopeHeaders()
     connection = fake_asgi_connection(
         app=client.app,
         cookies=dict(client.cookies),
     )
+
     session_id = client._session_backend.get_session_id(connection)
     connection._connection_state.session_id = session_id  # pyright: ignore [reportGeneralTypeIssues]
     await client._session_backend.store_in_message(
@@ -106,6 +110,9 @@ async def _set_session_data(client: TestClient | AsyncTestClient, data: dict[str
 
 
 async def _get_session_data(client: TestClient | AsyncTestClient) -> dict[str, Any]:
+    if client._session_backend is None:
+        raise RuntimeError("Session backend not configured")
+
     return await client._session_backend.load_from_connection(
         connection=fake_asgi_connection(
             app=client.app,

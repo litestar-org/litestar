@@ -230,4 +230,4 @@ class TestClient(Client, Generic[T]):
                     assert await client.get("/test").json() == {"foo": "bar"}
 
         """
-        return self.blocking_portal.call(_set_session_data, self, data)
+        self.blocking_portal.call(_set_session_data, self, data)

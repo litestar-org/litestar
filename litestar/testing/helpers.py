@@ -60,7 +60,7 @@ def create_test_client(
     after_response: AfterResponseHookHandler | None = None,
     allowed_hosts: Sequence[str] | AllowedHostsConfig | None = None,
     backend: Literal["asyncio", "trio"] = "asyncio",
-    backend_options: Mapping[str, Any] | None = None,
+    backend_options: dict[str, Any] | None = None,
     base_url: str = "http://testserver.local",
     before_request: BeforeRequestHookHandler | None = None,
     before_send: Sequence[BeforeMessageSendHookHandler] | None = None,
