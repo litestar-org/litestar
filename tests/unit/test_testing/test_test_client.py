@@ -329,7 +329,7 @@ def test_websocket_accept_timeout(anyio_backend: "AnyIOBackend") -> None:
         pass
 
     with create_test_client(handler, backend=anyio_backend) as client:
-        with pytest.raises(TimeoutError):
+        with pytest.RaisesGroup(pytest.RaisesExc(TimeoutError)):
             with client.websocket_connect("/", timeout=0.1):
                 pass
 
@@ -388,11 +388,8 @@ async def test_websocket_test_session_block_no_timeout_async(
     async def handler(socket: WebSocket) -> None:
         await socket.accept()
 
-    with pytest.raises(TimeoutError):
-        async with (
-            create_async_test_client(handler) as client,
-            await client.websocket_connect("/") as ws,
-        ):
+    async with create_async_test_client(handler) as client, await client.websocket_connect("/") as ws:
+        with pytest.raises(TimeoutError):
             with anyio.fail_after(0.01):
                 await receive_method(ws, timeout=None, block=True)
 

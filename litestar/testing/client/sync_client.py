@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import contextlib
 from contextlib import ExitStack
+from types import TracebackType
 from typing import TYPE_CHECKING, Any, Generic, TypeVar
 from warnings import warn
 
@@ -118,9 +119,14 @@ class TestClient(Client, Generic[T]):
         self._startup_done = True
         return self
 
-    def __exit__(self, *args: Any) -> None:
-        self.exit_stack.close()
-        super().__exit__(*args)
+    def __exit__(
+        self,
+        exc_type: type[BaseException] | None = None,
+        exc_value: BaseException | None = None,
+        traceback: TracebackType | None = None,
+    ) -> None:
+        self.exit_stack.__exit__(exc_type, exc_value, traceback)
+        super().__exit__(exc_type)
 
     def websocket_connect(
         self,

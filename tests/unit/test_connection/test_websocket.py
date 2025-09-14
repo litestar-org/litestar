@@ -375,9 +375,14 @@ def test_rejected_connection() -> None:
     async def handler(socket: WebSocket[Any, Any, State]) -> None:
         await socket.close(WS_1001_GOING_AWAY)
 
-    with pytest.raises(WebSocketDisconnect) as exc, create_test_client(handler).websocket_connect("/"):
+    with (
+        create_test_client(handler) as client,
+        pytest.RaisesGroup(pytest.RaisesExc(WebSocketDisconnect)) as exc,
+        client.websocket_connect("/"),
+    ):
         pass
-    assert exc.value.code == WS_1001_GOING_AWAY
+    assert len(exc.value.exceptions) == 1
+    assert exc.value.exceptions[0].code == WS_1001_GOING_AWAY
 
 
 def test_subprotocol() -> None:
@@ -395,7 +400,11 @@ def test_websocket_exception() -> None:
     async def app(scope: Scope, receive: Receive, send: Send) -> None:
         raise RuntimeError
 
-    with pytest.raises(RuntimeError), TestClient(app).websocket_connect("/123?a=abc"):
+    with (
+        pytest.RaisesGroup(pytest.RaisesExc(RuntimeError)),
+        TestClient(app) as client,
+        client.websocket_connect("/123?a=abc"),
+    ):
         pass
 
 

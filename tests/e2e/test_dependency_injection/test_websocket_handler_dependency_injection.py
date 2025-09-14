@@ -119,6 +119,9 @@ def test_dependency_isolation() -> None:
         async def test_method(self, socket: WebSocket[Any, Any, Any], _: dict[Any, Any]) -> None:
             await socket.accept()
 
-    client = create_test_client([FirstController, SecondController])
-    with pytest.raises(WebSocketDisconnect), client.websocket_connect("/second/abcdef?query_param=12345") as ws:
+    with (
+        create_test_client([FirstController, SecondController]) as client,
+        pytest.RaisesGroup(pytest.RaisesExc(WebSocketDisconnect)),
+        client.websocket_connect("/second/abcdef?query_param=12345") as ws,
+    ):
         ws.send_json({"data": "123"})

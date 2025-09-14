@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import contextlib
+from types import TracebackType
 from typing import TYPE_CHECKING, Generic
 
 import anyio
@@ -102,8 +103,14 @@ class AsyncTestClient(AsyncClient, Generic[T]):
 
         return self
 
-    async def __aexit__(self, *args: Any) -> None:
-        await self.exit_stack.aclose()
+    async def __aexit__(
+        self,
+        exc_type: type[BaseException] | None = None,
+        exc_value: BaseException | None = None,
+        traceback: TracebackType | None = None,
+    ) -> None:
+        await self.exit_stack.__aexit__(exc_type, exc_value, traceback)
+        await super().__aexit__(exc_type, exc_value, traceback)
 
     async def websocket_connect(
         self,
