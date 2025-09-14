@@ -25,6 +25,7 @@ if TYPE_CHECKING:
 class ExampleFactory(DataclassFactory[Example]):
     __model__ = Example
     __random_seed__ = 10
+    __check_model__ = False
 
 
 def _normalize_example_value(value: Any) -> Any:
