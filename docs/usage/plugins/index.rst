@@ -148,4 +148,4 @@ The following example shows a simple plugin that logs information about each rou
 
     class RouteLoggerPlugin(ReceiveRoutePlugin):
         def receive_route(self, route: BaseRoute) -> None:
-            print(f"Route registered: {route.path} [{', '.join(route.http_methods)}]")
+            print(f"Route registered: {route.path} [{', '.join(route.methods)}]")
