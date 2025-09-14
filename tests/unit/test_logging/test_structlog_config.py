@@ -1,3 +1,5 @@
+# pyright: reportAttributeAccessIssue=false, reportOptionalMemberAccess=false
+
 import datetime
 import sys
 from typing import Callable, Union
