@@ -9,13 +9,6 @@ import anyio.abc
 from anyio.streams.stapled import StapledObjectStream
 
 from litestar import Litestar
-
-try:
-    ExceptionGroup
-except ImportError:
-    from exceptiongroup import ExceptionGroup
-
-
 from litestar.exceptions import WebSocketDisconnect
 from litestar.serialization import decode_json, decode_msgpack, encode_json, encode_msgpack
 from litestar.status_codes import WS_1000_NORMAL_CLOSURE
@@ -62,12 +55,9 @@ class WebSocketTestSession:
 
     def __enter__(self) -> WebSocketTestSession:
         with contextlib.ExitStack() as exit_stack:
-            try:
-                self._async_session = exit_stack.enter_context(
-                    self._portal.wrap_async_context_manager(self._portal.call(self._run_session))
-                )
-            except ExceptionGroup as exc:
-                raise exc.exceptions[0]
+            self._async_session = exit_stack.enter_context(
+                self._portal.wrap_async_context_manager(self._portal.call(self._run_session))
+            )
 
             self._exit_stack = exit_stack.pop_all()
 
