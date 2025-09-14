@@ -14,6 +14,7 @@ from litestar.status_codes import WS_1000_NORMAL_CLOSURE
 
 if TYPE_CHECKING:
     from collections.abc import AsyncGenerator
+    from types import TracebackType
 
     from litestar import Litestar
     from litestar.testing.client.sync_client import TestClient
@@ -65,8 +66,13 @@ class WebSocketTestSession:
 
             return self
 
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        self._exit_stack.close()
+    def __exit__(
+        self,
+        exc_type: type[BaseException] | None = None,
+        exc_value: BaseException | None = None,
+        traceback: TracebackType | None = None,
+    ):
+        self._exit_stack.__exit__(exc_type, exc_value, traceback)
 
     @property
     def accepted_subprotocol(self) -> str:
@@ -247,8 +253,13 @@ class AsyncWebSocketTestSession:
             self._exit_stack = exit_stack.pop_all()
         return self
 
-    async def __aexit__(self, *args: Any) -> None:
-        await self._exit_stack.__aexit__(*args)
+    async def __aexit__(
+        self,
+        exc_type: type[BaseException] | None = None,
+        exc_value: BaseException | None = None,
+        traceback: TracebackType | None = None,
+    ) -> None:
+        await self._exit_stack.__aexit__(exc_type, exc_value, traceback)
 
     async def _run(
         self,
