@@ -6,11 +6,9 @@ from typing import TYPE_CHECKING, Any, Generic, TypedDict, TypeVar, Union, cast
 from urllib.parse import unquote
 
 import anyio
-from anyio.from_thread import BlockingPortal
-from httpx import ByteStream, Response, AsyncBaseTransport, BaseTransport
+from httpx import AsyncBaseTransport, BaseTransport, ByteStream, Response
 
 from litestar.status_codes import HTTP_500_INTERNAL_SERVER_ERROR
-from litestar.testing.websocket_test_session import WebSocketTestSession
 
 if TYPE_CHECKING:
     from httpx import Request

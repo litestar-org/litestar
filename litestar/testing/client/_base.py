@@ -6,19 +6,13 @@ from typing import TYPE_CHECKING, Any
 from litestar.connection import ASGIConnection
 from litestar.datastructures import MutableScopeHeaders
 from litestar.enums import ScopeType
-
-# from litestar.testing.client.async_client import fake_asgi_connection, fake_http_send_message
-from litestar.types import ASGIApp, HTTPResponseStartEvent, HTTPScope, Scope, Receive, Send
+from litestar.types import ASGIApp, HTTPResponseStartEvent, HTTPScope
 from litestar.utils.scope.state import ScopeState
 
 if TYPE_CHECKING:
     from collections.abc import Mapping, Sequence
-    from litestar.testing import TestClient, AsyncTestClient
 
     from httpx._client import UseClientDefault
-    from collections.abc import Mapping, Sequence
-    from collections.abc import Mapping
-
     from httpx._types import (
         CookieTypes,
         HeaderTypes,
@@ -26,13 +20,11 @@ if TYPE_CHECKING:
         TimeoutTypes,
     )
 
+    from litestar.testing import AsyncTestClient, TestClient
 
-from httpx._client import USE_CLIENT_DEFAULT, UseClientDefault
-
-
-from typing import Any
 
 import httpx
+from httpx._client import USE_CLIENT_DEFAULT, UseClientDefault
 
 
 def fake_http_send_message(headers: MutableScopeHeaders) -> HTTPResponseStartEvent:
@@ -66,32 +58,6 @@ def fake_asgi_connection(app: ASGIApp, cookies: dict[str, str]) -> ASGIConnectio
     }
     ScopeState.from_scope(scope).cookies = cookies
     return ASGIConnection[Any, Any, Any, Any](scope=scope)
-
-
-def _wrap_app_to_add_state(app: ASGIApp) -> ASGIApp:
-    """Wrap an ASGI app to add state to the scope.
-
-    Litestar depends on `state` being present in the ASGI connection scope. Scope state is optional in the ASGI spec,
-    however, the Litestar app always ensures it is present so that it can be depended on internally.
-
-    When the ASGI app that is passed to the test client is _not_ a Litestar app, we need to add
-    state to the scope, because httpx does not do this for us.
-
-    This assists us in testing Litestar components that rely on state being present in the scope, without having
-    to create a Litestar app for every test case.
-
-    Args:
-        app: The ASGI app to wrap.
-
-    Returns:
-        The wrapped ASGI app.
-    """
-
-    async def wrapped(scope: Scope, receive: Receive, send: Send) -> None:
-        scope["state"] = {}
-        await app(scope, receive, send)
-
-    return wrapped
 
 
 def _prepare_ws_connect_request(

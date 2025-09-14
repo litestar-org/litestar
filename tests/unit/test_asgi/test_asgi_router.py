@@ -14,7 +14,6 @@ from litestar._asgi.asgi_router import ASGIRouter
 from litestar.exceptions import ImproperlyConfiguredException, NotFoundException
 from litestar.testing import TestClient, create_test_client
 from litestar.types.empty import Empty
-from litestar.utils.helpers import get_exception_group
 from litestar.utils.scope.state import ScopeState
 
 if TYPE_CHECKING:

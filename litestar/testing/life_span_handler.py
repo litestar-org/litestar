@@ -1,25 +1,22 @@
 from __future__ import annotations
 
 import contextlib
-import math
-import warnings
 from math import inf
-from typing import TYPE_CHECKING, Generic, Optional, TypeVar, cast
+from typing import TYPE_CHECKING, Optional, cast
 
 import anyio
 from anyio import create_memory_object_stream
 from anyio.streams.stapled import StapledObjectStream
 
-
 if TYPE_CHECKING:
     from types import TracebackType
 
     from litestar.types import (
+        ASGIApp,
         LifeSpanReceiveMessage,  # noqa: F401
         LifeSpanSendMessage,
         LifeSpanShutdownEvent,
         LifeSpanStartupEvent,
-        ASGIApp,
     )
 
 

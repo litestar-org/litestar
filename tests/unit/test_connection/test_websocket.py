@@ -5,8 +5,8 @@ were meant to ensure our compatibility with their API.
 
 from __future__ import annotations
 
-from collections.abc import AsyncGenerator
-from typing import TYPE_CHECKING, Any, Literal, Callable, Awaitable
+from collections.abc import AsyncGenerator, Awaitable
+from typing import TYPE_CHECKING, Any, Callable, Literal
 from unittest.mock import MagicMock
 
 import anyio

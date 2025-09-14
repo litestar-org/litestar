@@ -1,19 +1,18 @@
 from __future__ import annotations
 
 import contextlib
-from types import TracebackType
 from typing import TYPE_CHECKING, Generic
 
 import anyio
 from httpx import AsyncClient
 
-from litestar.middleware.session.base import BaseBackendConfig, BaseSessionBackend
 from litestar.testing.life_span_handler import LifeSpanHandler
 from litestar.testing.transport import ConnectionUpgradeExceptionError, TestClientTransport
 from litestar.testing.websocket_test_session import AsyncWebSocketTestSession
 
 if TYPE_CHECKING:
     from collections.abc import Mapping, Sequence
+    from types import TracebackType
 
     from httpx._client import UseClientDefault
     from httpx._types import (
@@ -24,13 +23,15 @@ if TYPE_CHECKING:
     )
     from typing_extensions import Self
 
+    from litestar.middleware.session.base import BaseBackendConfig, BaseSessionBackend
+
 from typing import TYPE_CHECKING, Any, TypeVar
 from warnings import warn
 
 from httpx._client import USE_CLIENT_DEFAULT, UseClientDefault
 
+from litestar.testing.client._base import _get_session_data, _prepare_ws_connect_request, _set_session_data
 from litestar.types import ASGIApp
-from litestar.testing.client._base import _prepare_ws_connect_request, _set_session_data, _get_session_data
 
 if TYPE_CHECKING:
     from collections.abc import Mapping, Sequence
@@ -65,6 +66,7 @@ class AsyncTestClient(AsyncClient, Generic[T]):
             root_path: Path prefix for requests.
             timeout: Request timeout
             cookies: Cookies to set on the client.
+            session_config: Session backend configuration
         """
         if "." not in base_url:
             warn(

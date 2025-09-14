@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import asyncio
-import time
 from secrets import token_hex
 from typing import cast
 from unittest.mock import AsyncMock, MagicMock
@@ -11,11 +10,11 @@ from _pytest.fixtures import FixtureRequest
 from pytest_mock import MockerFixture
 
 from litestar import Litestar, get
-from litestar.channels import ChannelsBackend, ChannelsPlugin, Subscriber
+from litestar.channels import ChannelsBackend, ChannelsPlugin
 from litestar.channels.backends.memory import MemoryChannelsBackend
 from litestar.channels.subscriber import BacklogStrategy
 from litestar.exceptions import ImproperlyConfiguredException, LitestarException
-from litestar.testing import TestClient, create_test_client, AsyncTestClient
+from litestar.testing import AsyncTestClient, TestClient, create_test_client
 from litestar.types.asgi_types import WebSocketMode
 from tests.unit.test_channels.util import get_from_stream
 

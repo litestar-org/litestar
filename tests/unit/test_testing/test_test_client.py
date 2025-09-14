@@ -3,7 +3,8 @@ from typing import TYPE_CHECKING, Callable, NoReturn, Union, cast
 import anyio
 from _pytest.fixtures import FixtureRequest
 
-from litestar import Controller, WebSocket, delete, head, patch, put, websocket, Request
+from litestar import Controller, Request, WebSocket, delete, head, patch, put, websocket
+from litestar.middleware.session.base import BaseBackendConfig
 from litestar.status_codes import HTTP_200_OK, HTTP_201_CREATED, HTTP_204_NO_CONTENT
 from litestar.stores.base import Store
 from litestar.testing import AsyncTestClient, WebSocketTestSession, create_async_test_client, create_test_client
@@ -24,7 +25,6 @@ import pytest
 from litestar import Litestar, get, post
 from litestar.testing import TestClient
 from litestar.utils.helpers import get_exception_group
-from tests.helpers import maybe_async, maybe_async_cm
 
 _ExceptionGroup = get_exception_group()
 

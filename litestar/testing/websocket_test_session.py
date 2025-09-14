@@ -2,18 +2,20 @@ from __future__ import annotations
 
 import contextlib
 import math
-from typing import TYPE_CHECKING, Any, Literal, cast, AsyncGenerator
+from typing import TYPE_CHECKING, Any, Literal, cast
 
 import anyio
 import anyio.abc
 from anyio.streams.stapled import StapledObjectStream
 
-from litestar import Litestar
 from litestar.exceptions import WebSocketDisconnect
 from litestar.serialization import decode_json, decode_msgpack, encode_json, encode_msgpack
 from litestar.status_codes import WS_1000_NORMAL_CLOSURE
 
 if TYPE_CHECKING:
+    from collections.abc import AsyncGenerator
+
+    from litestar import Litestar
     from litestar.testing.client.sync_client import TestClient
     from litestar.types import (
         WebSocketDisconnectEvent,
@@ -23,7 +25,7 @@ if TYPE_CHECKING:
     )
 
 
-__all__ = ("WebSocketTestSession", "AsyncWebSocketTestSession")
+__all__ = ("AsyncWebSocketTestSession", "WebSocketTestSession")
 
 
 class WebSocketTestSession:
@@ -143,6 +145,7 @@ class WebSocketTestSession:
 
         Args:
             code: status code for closing the connection.
+            reason: Reason for closure
 
         Returns:
             None.
@@ -227,7 +230,7 @@ class AsyncWebSocketTestSession:
         self._exit_stack = contextlib.AsyncExitStack()
         self._connect_timeout = connect_timeout
 
-    async def __aenter__(self) -> "AsyncWebSocketTestSession":
+    async def __aenter__(self) -> AsyncWebSocketTestSession:
         async with contextlib.AsyncExitStack() as exit_stack:
             cancel_scope = anyio.CancelScope()
             app_done = await self._tg.start(self._run, cancel_scope, self._receive_stream, self._send_stream)
@@ -266,7 +269,7 @@ class AsyncWebSocketTestSession:
     async def _raise_on_close(self, message: WebSocketSendMessage) -> None:
         if message["type"] == "websocket.close":
             raise WebSocketDisconnect(code=message.get("code", 1000), reason=message.get("reason", ""))
-        elif message["type"] == "websocket.http.response.start":
+        if message["type"] == "websocket.http.response.start":
             while True:
                 await self.receive()
                 if message["type"] != "websocket.http.response.body":
@@ -289,6 +292,7 @@ class AsyncWebSocketTestSession:
 
         Args:
             code: status code for closing the connection.
+            reason: Reason for closure
 
         Returns:
             None.
