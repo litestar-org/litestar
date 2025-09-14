@@ -31,9 +31,6 @@ class LifeSpanHandler:
         self._lifespan_finished = anyio.Event()
         self._exit_stack = contextlib.AsyncExitStack()
 
-    async def close(self) -> None:
-        await self._exit_stack.aclose()
-
     async def __aenter__(self) -> LifeSpanHandler:
         async with contextlib.AsyncExitStack() as exit_stack:
             await exit_stack.enter_async_context(self.stream_send)
@@ -43,6 +40,7 @@ class LifeSpanHandler:
             with anyio.CancelScope() as cs:
                 self._tg.start_soon(self.lifespan, cs)
                 await self.wait_startup()
+            exit_stack.push_async_callback(self.wait_shutdown)
 
             self._lifespan_finished.set()
             self._exit_stack = exit_stack.pop_all()
@@ -54,8 +52,7 @@ class LifeSpanHandler:
         exc_value: BaseException | None,
         traceback: TracebackType | None,
     ) -> None:
-        # await self.wait_shutdown()
-        await self._exit_stack.aclose()
+        await self._exit_stack.__aexit__(exc_type, exc_value, traceback)
 
     async def receive(self) -> LifeSpanSendMessage:
         message = await self.stream_send.receive()
@@ -80,21 +77,20 @@ class LifeSpanHandler:
             await self.receive()
 
     async def wait_shutdown(self) -> None:
-        async with self.stream_send:
-            lifespan_shutdown_event: LifeSpanShutdownEvent = {"type": "lifespan.shutdown"}
-            await self.stream_receive.send(lifespan_shutdown_event)
+        lifespan_shutdown_event: LifeSpanShutdownEvent = {"type": "lifespan.shutdown"}
+        await self.stream_receive.send(lifespan_shutdown_event)
 
-            message = await self.receive()
-            if message["type"] not in (
-                "lifespan.shutdown.complete",
-                "lifespan.shutdown.failed",
-            ):
-                raise RuntimeError(
-                    "Received unexpected ASGI message type. Expected 'lifespan.shutdown.complete' or "
-                    f"'lifespan.shutdown.failed'. Got {message['type']!r}",
-                )
-            if message["type"] == "lifespan.shutdown.failed":
-                await self.receive()
+        message = await self.receive()
+        if message["type"] not in (
+            "lifespan.shutdown.complete",
+            "lifespan.shutdown.failed",
+        ):
+            raise RuntimeError(
+                "Received unexpected ASGI message type. Expected 'lifespan.shutdown.complete' or "
+                f"'lifespan.shutdown.failed'. Got {message['type']!r}",
+            )
+        if message["type"] == "lifespan.shutdown.failed":
+            await self.receive()
 
     async def lifespan(self, cs: anyio.CancelScope) -> None:
         scope = {"type": "lifespan"}

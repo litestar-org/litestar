@@ -113,14 +113,7 @@ class TestClient(Client, Generic[T]):
 
     def __enter__(self) -> Self:
         if not self._disable_lifespan:
-            lifespan = self.exit_stack.enter_context(
-                self.blocking_portal.wrap_async_context_manager(LifeSpanHandler(self.app))
-            )
-
-            def wait_shutdown() -> None:
-                self.blocking_portal.call(lifespan.wait_shutdown)
-
-            self.exit_stack.callback(wait_shutdown)
+            self.exit_stack.enter_context(self.blocking_portal.wrap_async_context_manager(LifeSpanHandler(self.app)))
 
         self._startup_done = True
         return self
