@@ -247,9 +247,9 @@ class AsyncWebSocketTestSession:
 
             await self._asgi_send({"type": "websocket.connect"})
             message = await self.receive(timeout=self._connect_timeout)
-            await self._raise_on_close(message)
-            self.accepted_subprotocol = message.get("subprotocol")
-            self.extra_headers = message.get("headers")
+            if message["type"] == "websocket.accept":
+                self.accepted_subprotocol = message.get("subprotocol")
+                self.extra_headers = list(message.get("headers", []))
             self._exit_stack = exit_stack.pop_all()
         return self
 
@@ -276,21 +276,6 @@ class AsyncWebSocketTestSession:
                 await self.app(self.scope, receive_stream.receive, send_stream.send)
                 app_done.set()
                 await anyio.sleep_forever()
-
-    async def _raise_on_close(self, message: WebSocketSendMessage) -> None:
-        if message["type"] == "websocket.close":
-            raise WebSocketDisconnect(code=message.get("code", 1000), reason=message.get("reason", ""))
-        if message["type"] == "websocket.http.response.start":
-            while True:
-                await self.receive()
-                if message["type"] != "websocket.http.response.body":
-                    raise RuntimeError(
-                        f"Unexpected ASGI message type. Got {message['type']!r}, expected 'websocket.http.response.body'"
-                    )
-                if not message.get("more_body", False):
-                    break
-
-            raise RuntimeError("Unexpected early closure of WebSocket session")
 
     async def _asgi_send(self, message) -> None:
         await self._receive_stream.send(message)
