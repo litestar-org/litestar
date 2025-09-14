@@ -569,19 +569,25 @@ class TransferFunctionFactory:
         source_value_name: str,
         assignment_target: str,
     ) -> None:
-        # special case: Handle nested union types where the union is with a 'None' type,
-        # e.g. 'Union[None, list[NestedModel]]'
+        # special case: Handle nested union types where the union is with a 'SimpleType' type,
+        # e.g. 'Union[None, list[NestedModel]]' or 'Union[int, list[NestedModel]]'
 
         if len(transfer_type.inner_types) == 2:
-            has_none_type = any(t.field_definition.is_none_type for t in transfer_type.inner_types)
-            not_none_type = next((t for t in transfer_type.inner_types if not t.field_definition.is_none_type), None)
+            simple_type = next((t for t in transfer_type.inner_types if isinstance(t, SimpleType)), None)
+            non_simple_type = next((t for t in transfer_type.inner_types if not isinstance(t, SimpleType)), None)
 
-            if has_none_type and not_none_type:
-                with self._start_block(f"if {source_value_name} is None:"):
+            if simple_type and non_simple_type:
+                if simple_type.field_definition.is_none_type:
+                    stmt = f"if {source_value_name} is None:"
+                else:
+                    constraint_type = simple_type.field_definition.annotation
+                    constraint_type_name = self._add_to_fn_globals("constraint_type", constraint_type)
+                    stmt = f"if isinstance({source_value_name}, {constraint_type_name}):"
+                with self._start_block(stmt):
                     self._add_stmt(f"{assignment_target} = {source_value_name}")
                 with self._start_block("else:"):
                     self._create_transfer_type_data_body(
-                        transfer_type=not_none_type,
+                        transfer_type=non_simple_type,
                         nested_as_dict=False,
                         source_value_name=source_value_name,
                         assignment_target=assignment_target,
@@ -590,6 +596,8 @@ class TransferFunctionFactory:
 
         for inner_type in transfer_type.inner_types:
             if isinstance(inner_type, CompositeType):
+                # it's a nested union of complex types e.g. 'Union[SomeModel, list[SomeOtherModel]]'. This is currently
+                # unsupported
                 raise RuntimeError("Composite types within unions are not supported")
 
             if inner_type.nested_field_info:

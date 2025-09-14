@@ -6,7 +6,6 @@ from types import ModuleType
 from typing import TYPE_CHECKING, Callable, Optional
 from unittest.mock import MagicMock
 
-import msgspec
 import pytest
 from msgspec import Meta, Struct, to_builtins
 
@@ -552,19 +551,34 @@ def test_create_struct_field_meta_for_field_definition(constraint_kwargs: Any) -
     )
 
 
-def test_transfer_nested_optional_union(
-    asgi_connection: Request[Any, Any, Any], create_module: Callable[[str], ModuleType]
+@pytest.mark.parametrize(
+    "simple_type, value",
+    [
+        ("None", [{"value": "hello"}]),
+        ("None", None),
+        ("int", [{"value": "hello"}]),
+        ("int", 1),
+        ("bool", [{"value": "hello"}]),
+        ("bool", True),
+    ],
+)
+def test_transfer_nested_simple_type_union(
+    asgi_connection: Request[Any, Any, Any],
+    create_module: Callable[[str], ModuleType],
+    simple_type: str,
+    value: Any,
 ) -> None:
     # https://github.com/litestar-org/litestar/issues/4273
-    module = create_module("""
-from typing import Optional
+
+    module = create_module(f"""
+from typing import Union
 import msgspec
 
 class Inner(msgspec.Struct):
     value: str
 
 class Outer(msgspec.Struct):
-    some_field: Optional[list[Inner]]
+    some_field: Union[{simple_type}, list[Inner]]
 """)
 
     backend = DTOCodegenBackend(
@@ -576,6 +590,9 @@ class Outer(msgspec.Struct):
         is_data_field=True,
     )
 
-    data = backend.populate_data_from_builtins({"some_field": [{"value": "hello"}]}, asgi_connection)
+    data = backend.populate_data_from_builtins({"some_field": value}, asgi_connection)
     assert isinstance(data, module.Outer)
-    assert isinstance(data.some_field[0], module.Inner)
+    if isinstance(value, list):
+        assert isinstance(data.some_field[0], module.Inner)
+    else:
+        assert data.some_field == value
