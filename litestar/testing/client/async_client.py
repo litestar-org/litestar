@@ -99,7 +99,6 @@ class AsyncTestClient(AsyncClient, Generic[T]):
         self._tg = await self.exit_stack.enter_async_context(anyio.create_task_group())
         lifespan_handler = LifeSpanHandler(app=self.app)
         await self.exit_stack.enter_async_context(lifespan_handler)
-        self.exit_stack.push_async_callback(lifespan_handler.wait_shutdown)
 
         return self
 
