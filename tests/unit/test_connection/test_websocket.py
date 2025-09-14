@@ -382,6 +382,7 @@ def test_rejected_connection() -> None:
     ):
         pass
     assert len(exc.value.exceptions) == 1
+    assert isinstance(exc.value.exceptions[0], WebSocketDisconnect)
     assert exc.value.exceptions[0].code == WS_1001_GOING_AWAY
 
 
