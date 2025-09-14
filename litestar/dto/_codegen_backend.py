@@ -569,9 +569,28 @@ class TransferFunctionFactory:
         source_value_name: str,
         assignment_target: str,
     ) -> None:
+        # special case: Handle nested union types where the union is with a 'None' type,
+        # e.g. 'Union[None, list[NestedModel]]'
+
+        if len(transfer_type.inner_types) == 2:
+            has_none_type = any(t.field_definition.is_none_type for t in transfer_type.inner_types)
+            not_none_type = next((t for t in transfer_type.inner_types if not t.field_definition.is_none_type), None)
+
+            if has_none_type and not_none_type:
+                with self._start_block(f"if {source_value_name} is None:"):
+                    self._add_stmt(f"{assignment_target} = {source_value_name}")
+                with self._start_block("else:"):
+                    self._create_transfer_type_data_body(
+                        transfer_type=not_none_type,
+                        nested_as_dict=False,
+                        source_value_name=source_value_name,
+                        assignment_target=assignment_target,
+                    )
+                return
+
         for inner_type in transfer_type.inner_types:
             if isinstance(inner_type, CompositeType):
-                continue
+                raise RuntimeError("Composite types within unions are not supported")
 
             if inner_type.nested_field_info:
                 if self.is_data_field:

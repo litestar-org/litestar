@@ -6,12 +6,13 @@ from types import ModuleType
 from typing import TYPE_CHECKING, Callable, Optional
 from unittest.mock import MagicMock
 
+import msgspec
 import pytest
 from msgspec import Meta, Struct, to_builtins
 
 from litestar import Litestar, Request, get, post
 from litestar._openapi.schema_generation import SchemaCreator
-from litestar.dto import DataclassDTO, DTOConfig, DTOField
+from litestar.dto import DataclassDTO, DTOConfig, DTOField, MsgspecDTO
 from litestar.dto._backend import DTOBackend, _create_struct_field_meta_for_field_definition
 from litestar.dto._codegen_backend import DTOCodegenBackend
 from litestar.dto._types import CollectionType, SimpleType, TransferDTOFieldDefinition
@@ -549,3 +550,32 @@ def test_create_struct_field_meta_for_field_definition(constraint_kwargs: Any) -
         title="test",
         **constraint_kwargs,
     )
+
+
+def test_transfer_nested_optional_union(
+    asgi_connection: Request[Any, Any, Any], create_module: Callable[[str], ModuleType]
+) -> None:
+    # https://github.com/litestar-org/litestar/issues/4273
+    module = create_module("""
+from typing import Optional
+import msgspec
+
+class Inner(msgspec.Struct):
+    value: str
+
+class Outer(msgspec.Struct):
+    some_field: Optional[list[Inner]]
+""")
+
+    backend = DTOCodegenBackend(
+        handler_id="test",
+        dto_factory=MsgspecDTO[module.Outer],  # type: ignore[name-defined]
+        field_definition=TransferDTOFieldDefinition.from_annotation(module.Outer),
+        model_type=module.Outer,
+        wrapper_attribute_name=None,
+        is_data_field=True,
+    )
+
+    data = backend.populate_data_from_builtins({"some_field": [{"value": "hello"}]}, asgi_connection)
+    assert isinstance(data, module.Outer)
+    assert isinstance(data.some_field[0], module.Inner)
