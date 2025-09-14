@@ -2088,7 +2088,6 @@ docs = [
     { name = "auto-pytabs", extra = ["sphinx"] },
     { name = "litestar-sphinx-theme" },
     { name = "psycopg", extra = ["binary"], marker = "python_full_version < '3.13'" },
-    { name = "psycopg", extra = ["c"], marker = "python_full_version >= '3.13' and sys_platform == 'linux'" },
     { name = "psycopg", extra = ["pool"] },
     { name = "sphinx", version = "7.4.7", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.10'" },
     { name = "sphinx", version = "8.1.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version == '3.10.*'" },
@@ -2206,9 +2205,8 @@ docs = [
     { name = "asyncpg" },
     { name = "auto-pytabs", extras = ["sphinx"], specifier = ">=0.5.0" },
     { name = "litestar-sphinx-theme", git = "https://github.com/litestar-org/litestar-sphinx-theme.git?rev=v3" },
-    { name = "psycopg", extras = ["pool"], marker = "python_full_version >= '3.13' and sys_platform != 'linux'" },
+    { name = "psycopg", extras = ["pool"], marker = "python_full_version >= '3.13'", specifier = "<3.2.4" },
     { name = "psycopg", extras = ["pool", "binary"], marker = "python_full_version < '3.13'", specifier = ">=3.1.10,<3.2" },
-    { name = "psycopg", extras = ["pool", "c"], marker = "python_full_version >= '3.13' and sys_platform == 'linux'" },
     { name = "sphinx", specifier = ">=7.1.2" },
     { name = "sphinx-autobuild", specifier = ">=2021.3.14" },
     { name = "sphinx-click", specifier = ">=4.4.0" },
@@ -3067,9 +3065,6 @@ wheels = [
 binary = [
     { name = "psycopg-binary", marker = "python_full_version < '3.13' and implementation_name != 'pypy'" },
 ]
-c = [
-    { name = "psycopg-c", marker = "python_full_version >= '3.13' and implementation_name != 'pypy' and sys_platform == 'linux'" },
-]
 pool = [
     { name = "psycopg-pool" },
 ]
@@ -3123,12 +3118,6 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/42/ff/2f06d75396431a459d0fa8debdb66a7f04070e51b04eae0046e76966ebb0/psycopg_binary-3.1.20-cp39-cp39-musllinux_1_2_x86_64.whl", hash = "sha256:8a92fc898af4080e3cf562c02e3a8a9cb897dc70976c91e05fd064bff76928ea", size = 3223204, upload-time = "2024-06-30T17:03:45.429Z" },
     { url = "https://files.pythonhosted.org/packages/01/10/01ec61e06f6bb2305ab66f05f0501431ce5edbb61700e1cd5fa73cf05884/psycopg_binary-3.1.20-cp39-cp39-win_amd64.whl", hash = "sha256:47dd369cb4b263d29aed12ee23b37c03e58bfe656843692d109896c258c554b0", size = 2896197, upload-time = "2024-06-30T17:03:53.295Z" },
 ]
-
-[[package]]
-name = "psycopg-c"
-version = "3.1.20"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/5b/49/6960b5e5fc82ab4dbde845bbd430d9f9e049847178b3bbe7f1c49c145667/psycopg_c-3.1.20.tar.gz", hash = "sha256:a8dadb012fce8918b0c35d9e5be3d6ba4495067117ee45fa49644e46be3c43c8", size = 562110, upload-time = "2024-06-30T17:03:58.379Z" }
 
 [[package]]
 name = "psycopg-pool"
