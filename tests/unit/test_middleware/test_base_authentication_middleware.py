@@ -117,7 +117,10 @@ def test_authentication_middleware_not_installed_raises_for_user_scope_websocket
         assert isinstance(socket.user, User)
 
     client = create_test_client(route_handlers=route_handler)
-    with pytest.RaisesGroup(pytest.RaisesExc(WebSocketDisconnect)), client.websocket_connect("/", headers={"Authorization": "yep"}) as ws:
+    with (
+        pytest.RaisesGroup(pytest.RaisesExc(WebSocketDisconnect)),
+        client.websocket_connect("/", headers={"Authorization": "yep"}) as ws,
+    ):
         ws.receive_json()
 
 
@@ -128,7 +131,10 @@ def test_authentication_middleware_not_installed_raises_for_auth_scope_websocket
         assert isinstance(socket.auth, Auth)
 
     client = create_test_client(route_handlers=route_handler)
-    with pytest.RaisesGroup(pytest.RaisesExc(WebSocketDisconnect)), client.websocket_connect("/", headers={"Authorization": "yep"}) as ws:
+    with (
+        pytest.RaisesGroup(pytest.RaisesExc(WebSocketDisconnect)),
+        client.websocket_connect("/", headers={"Authorization": "yep"}) as ws,
+    ):
         ws.receive_json()
 
 

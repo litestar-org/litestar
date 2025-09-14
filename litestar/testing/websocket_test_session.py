@@ -16,9 +16,11 @@ if TYPE_CHECKING:
     from collections.abc import AsyncGenerator
     from types import TracebackType
 
-    from litestar import Litestar
+    from anyio.streams.memory import MemoryObjectReceiveStream
+
     from litestar.testing.client.sync_client import TestClient
     from litestar.types import (
+        ASGIApp,
         WebSocketDisconnectEvent,
         WebSocketReceiveMessage,
         WebSocketScope,
@@ -71,11 +73,11 @@ class WebSocketTestSession:
         exc_type: type[BaseException] | None = None,
         exc_value: BaseException | None = None,
         traceback: TracebackType | None = None,
-    ):
+    ) -> None:
         self._exit_stack.__exit__(exc_type, exc_value, traceback)
 
     @property
-    def accepted_subprotocol(self) -> str:
+    def accepted_subprotocol(self) -> str | None:
         return self._async_session.accepted_subprotocol
 
     @property
@@ -220,7 +222,7 @@ class AsyncWebSocketTestSession:
     def __init__(
         self,
         *,
-        app: Litestar,
+        app: ASGIApp,
         scope: WebSocketScope,
         connect_timeout: float | None = None,
         tg: anyio.abc.TaskGroup,
@@ -230,9 +232,11 @@ class AsyncWebSocketTestSession:
         self.extra_headers: list[tuple[bytes, bytes]] = []
         self.app = app
 
-        self._tg: anyio.TaskGroup = tg
+        self._tg = tg
         self._send_stream = StapledObjectStream(*anyio.create_memory_object_stream["WebSocketSendMessage"](math.inf))
-        self._receive_stream = StapledObjectStream(*anyio.create_memory_object_stream["WebSocketSendMessage"](math.inf))
+        self._receive_stream = StapledObjectStream(
+            *anyio.create_memory_object_stream["WebSocketReceiveMessage"](math.inf)
+        )
         self._exit_stack = contextlib.AsyncExitStack()
         self._connect_timeout = connect_timeout
 
@@ -277,10 +281,10 @@ class AsyncWebSocketTestSession:
                 app_done.set()
                 await anyio.sleep_forever()
 
-    async def _asgi_send(self, message) -> None:
+    async def _asgi_send(self, message: WebSocketReceiveMessage) -> None:
         await self._receive_stream.send(message)
 
-    async def _asgi_receive(self):
+    async def _asgi_receive(self) -> WebSocketSendMessage:
         return await self._send_stream.receive()
 
     async def close(self, code: int = WS_1000_NORMAL_CLOSURE, reason: str | None = None) -> None:
@@ -378,7 +382,7 @@ class AsyncWebSocketTestSession:
         """
         message: WebSocketSendMessage | BaseException
         if not block:
-            message = self._send_stream.receive_nowait()
+            message = cast("MemoryObjectReceiveStream", self._send_stream.receive_stream).receive_nowait()
         else:
             with anyio.fail_after(timeout):
                 message = await self._send_stream.receive()

@@ -446,7 +446,7 @@ def test_websocket_close_reason() -> None:
         WebSocket.receive_msgpack,
     ],
 )
-def test_receive_before_accept(receive_method: Callable[[WebSocket, ...], Awaitable[Any]]) -> None:
+def test_receive_before_accept(receive_method: Callable[..., Awaitable[Any]]) -> None:
     @websocket("/")
     async def handler(socket: WebSocket) -> None:
         with pytest.raises(WebSocketDisconnect):
