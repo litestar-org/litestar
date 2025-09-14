@@ -1,30 +1,25 @@
 from __future__ import annotations
 
 import contextlib
-from contextlib import ExitStack
-from types import TracebackType
 from typing import TYPE_CHECKING, Any, Generic, TypeVar
 from warnings import warn
 
 import anyio.from_thread
-import httpx
 from httpx import USE_CLIENT_DEFAULT, Client
 
-from litestar import Litestar
 from litestar.testing.client._base import (
-    _prepare_ws_connect_request,
-    _wrap_app_to_add_state,
     _get_session_data,
+    _prepare_ws_connect_request,
     _set_session_data,
 )
 from litestar.testing.life_span_handler import LifeSpanHandler
 from litestar.testing.transport import ConnectionUpgradeExceptionError, SyncTestClientTransport
 from litestar.testing.websocket_test_session import WebSocketTestSession
-
 from litestar.types import AnyIOBackend, ASGIApp
 
 if TYPE_CHECKING:
     from collections.abc import Mapping, Sequence
+    from types import TracebackType
 
     from httpx._client import UseClientDefault
     from httpx._types import (
@@ -32,7 +27,6 @@ if TYPE_CHECKING:
         CookieTypes,
         HeaderTypes,
         QueryParamTypes,
-        TimeoutTypes,
     )
     from typing_extensions import Self
 
@@ -56,7 +50,6 @@ class TestClient(Client, Generic[T]):
         backend: AnyIOBackend = "asyncio",
         backend_options: dict[str, Any] | None = None,
         session_config: BaseBackendConfig | None = None,
-        disable_lifespan: bool = False,
     ) -> None:
         """A client implementation providing a context manager for testing applications.
 
@@ -70,6 +63,7 @@ class TestClient(Client, Generic[T]):
             cookies: Cookies to set on the client.
             backend: The async backend to use, options are "asyncio" or "trio".
             backend_options: ``anyio`` options.
+            session_config: Session backend configuration
         """
         if "." not in base_url:
             warn(
@@ -79,10 +73,6 @@ class TestClient(Client, Generic[T]):
                 stacklevel=1,
             )
 
-        # if not isinstance(app, Litestar):
-        #     app = _wrap_app_to_add_state(app)
-
-        self._startup_done = False
         self._session_backend: BaseSessionBackend | None = None
         if session_config:
             self._session_backend = session_config._backend_class(config=session_config)
@@ -96,7 +86,6 @@ class TestClient(Client, Generic[T]):
                 name="test_client",
             )
         )
-        self._disable_lifespan = disable_lifespan
 
         super().__init__(
             base_url=base_url,
@@ -113,10 +102,7 @@ class TestClient(Client, Generic[T]):
         # warn on usafe if client not initialized
 
     def __enter__(self) -> Self:
-        if not self._disable_lifespan:
-            self.exit_stack.enter_context(self.blocking_portal.wrap_async_context_manager(LifeSpanHandler(self.app)))
-
-        self._startup_done = True
+        self.exit_stack.enter_context(self.blocking_portal.wrap_async_context_manager(LifeSpanHandler(self.app)))
         return self
 
     def __exit__(
