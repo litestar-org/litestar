@@ -1954,7 +1954,6 @@ dependencies = [
     { name = "rich" },
     { name = "rich-click" },
     { name = "typing-extensions" },
-    { name = "zstandard" },
 ]
 
 [package.optional-dependencies]
@@ -2060,6 +2059,9 @@ valkey = [
 ]
 yaml = [
     { name = "pyyaml" },
+]
+zstd = [
+    { name = "zstandard", marker = "python_full_version < '3.14'" },
 ]
 
 [package.dev-dependencies]
@@ -2178,9 +2180,9 @@ requires-dist = [
     { name = "uvloop", marker = "sys_platform != 'win32' and extra == 'cli'", specifier = ">=0.18.0" },
     { name = "uvloop", marker = "sys_platform != 'win32' and extra == 'standard'", specifier = ">=0.18.0" },
     { name = "valkey", extras = ["libvalkey"], marker = "extra == 'valkey'", specifier = ">=6.0.2" },
-    { name = "zstandard", specifier = ">=0.24.0" },
+    { name = "zstandard", marker = "python_full_version < '3.14' and extra == 'zstd'", specifier = ">=0.24.0" },
 ]
-provides-extras = ["annotated-types", "attrs", "brotli", "cli", "cryptography", "full", "htmx", "jinja", "jwt", "mako", "minijinja", "opentelemetry", "piccolo", "picologging", "polyfactory", "prometheus", "pydantic", "redis", "sqlalchemy", "standard", "structlog", "valkey", "yaml"]
+provides-extras = ["annotated-types", "attrs", "brotli", "zstd", "cli", "cryptography", "full", "htmx", "jinja", "jwt", "mako", "minijinja", "opentelemetry", "piccolo", "picologging", "polyfactory", "prometheus", "pydantic", "redis", "sqlalchemy", "standard", "structlog", "valkey", "yaml"]
 
 [package.metadata.requires-dev]
 dev = [
