@@ -1,3 +1,5 @@
+# pyright: reportAttributeAccessIssue=false, reportOptionalMemberAccess=false
+
 import datetime
 import sys
 from typing import Callable, Union
@@ -50,8 +52,9 @@ def test_set_level_custom_logger_factory() -> None:
 
 def test_structlog_plugin(capsys: CaptureFixture) -> None:
     with create_test_client([], plugins=[StructlogPlugin()]) as client:
-        assert client.app.logger
+        assert isinstance(client.app.logger, structlog._config.BoundLoggerLazyProxy)
         assert isinstance(client.app.logger.bind(), BindableLogger)
+
         client.app.logger.info("message", key="value")
 
         log_messages = [decode_json(value=x) for x in capsys.readouterr().out.splitlines()]
@@ -65,7 +68,7 @@ def test_structlog_plugin(capsys: CaptureFixture) -> None:
 def test_structlog_plugin_config(capsys: CaptureFixture) -> None:
     config = StructlogConfig()
     with create_test_client([], plugins=[StructlogPlugin(config=config)]) as client:
-        assert client.app.logger
+        assert isinstance(client.app.logger, structlog._config.BoundLoggerLazyProxy)
         assert isinstance(client.app.logger.bind(), BindableLogger)
         client.app.logger.info("message", key="value")
 
@@ -110,7 +113,7 @@ def test_structlog_plugin_config_with_existing_logging_config(capsys: CaptureFix
 
 def test_structlog_config_no_tty_default(capsys: CaptureFixture) -> None:
     with create_test_client([], logging_config=StructLoggingConfig()) as client:
-        assert client.app.logger
+        assert isinstance(client.app.logger, structlog._config.BoundLoggerLazyProxy)
         assert isinstance(client.app.logger.bind(), BindableLogger)
         client.app.logger.info("message", key="value")
 
@@ -128,7 +131,7 @@ def test_structlog_config_tty_default(capsys: CaptureFixture, monkeypatch: pytes
     monkeypatch.setattr(stderr, "isatty", lambda: True)
 
     with create_test_client([], logging_config=StructLoggingConfig()) as client:
-        assert client.app.logger
+        assert isinstance(client.app.logger, structlog._config.BoundLoggerLazyProxy)
         assert isinstance(client.app.logger.bind(), BindableLogger)
         client.app.logger.info("message", key="value")
 
@@ -145,7 +148,7 @@ def test_structlog_config_specify_processors(capsys: CaptureFixture) -> None:
     logging_config = StructLoggingConfig(processors=[JSONRenderer(serializer=default_json_serializer)])
 
     with create_test_client([], logging_config=logging_config) as client:
-        assert client.app.logger
+        assert isinstance(client.app.logger, structlog._config.BoundLoggerLazyProxy)
         assert isinstance(client.app.logger.bind(), BindableLogger)
 
         client.app.logger.info("message1", key="value1")

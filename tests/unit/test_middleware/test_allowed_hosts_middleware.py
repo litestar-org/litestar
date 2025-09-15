@@ -28,7 +28,7 @@ def test_allowed_hosts_middleware() -> None:
     cur = client.app.asgi_router.root_route_map_node.children["/"].asgi_handlers["GET"][0]
     while hasattr(cur, "app"):
         unpacked_middleware.append(cur)
-        cur = cast("Any", cur.app)
+        cur = cast("Any", cur.app)  # pyright: ignore
     unpacked_middleware.append(cur)
 
     allowed_hosts_middleware, *_ = unpacked_middleware

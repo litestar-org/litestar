@@ -224,7 +224,7 @@ def test_middleware_not_applied_to_non_cached_routes(
     cur = client.app.asgi_router.root_route_map_node.children["/"].asgi_handlers["GET"][0]
     while hasattr(cur, "app"):
         unpacked_middleware.append(cur)
-        cur = cur.app
+        cur = cur.app  # pyright: ignore
     unpacked_middleware.append(cur)
 
     assert len([m for m in unpacked_middleware if isinstance(m, ResponseCacheMiddleware)]) == int(expect_applied)

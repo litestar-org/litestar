@@ -5,11 +5,10 @@ from types import GeneratorType
 from typing import TYPE_CHECKING, Any, Generic, TypedDict, TypeVar, Union, cast
 from urllib.parse import unquote
 
-from anyio import Event
-from httpx import ByteStream, Response
+import anyio
+from httpx import AsyncBaseTransport, BaseTransport, ByteStream, Response
 
 from litestar.status_codes import HTTP_500_INTERNAL_SERVER_ERROR
-from litestar.testing.websocket_test_session import WebSocketTestSession
 
 if TYPE_CHECKING:
     from httpx import Request
@@ -30,20 +29,20 @@ T = TypeVar("T", bound=Union["AsyncTestClient", "TestClient"])
 
 
 class ConnectionUpgradeExceptionError(Exception):
-    def __init__(self, session: WebSocketTestSession) -> None:
-        self.session = session
+    def __init__(self, scope: WebSocketScope) -> None:
+        self.scope = scope
 
 
 class SendReceiveContext(TypedDict):
     request_complete: bool
-    response_complete: Event
+    response_complete: anyio.Event
     raw_kwargs: dict[str, Any]
     response_started: bool
     template: str | None
     context: Any | None
 
 
-class TestClientTransport(Generic[T]):
+class TestClientTransport(AsyncBaseTransport, Generic[T]):
     def __init__(
         self,
         client: T,
@@ -138,36 +137,33 @@ class TestClientTransport(Generic[T]):
             "server": (host, port),
         }
 
-    def handle_request(self, request: Request) -> Response:
+    async def handle_async_request(self, request: Request) -> Response:
         scope = self.parse_request(request=request)
         if scope["type"] == "websocket":
             scope.update(
                 subprotocols=[value.strip() for value in request.headers.get("sec-websocket-protocol", "").split(",")]
             )
-            session = WebSocketTestSession(client=self.client, scope=cast("WebSocketScope", scope))  # type: ignore[arg-type]
-            raise ConnectionUpgradeExceptionError(session)
+            raise ConnectionUpgradeExceptionError(cast("WebSocketScope", scope))
 
         scope.update(method=request.method, http_version="1.1", extensions={"http.response.template": {}})
 
         raw_kwargs: dict[str, Any] = {"stream": BytesIO()}
 
         try:
-            with self.client.portal() as portal:
-                response_complete = portal.call(Event)
-                context: SendReceiveContext = {
-                    "response_complete": response_complete,
-                    "request_complete": False,
-                    "raw_kwargs": raw_kwargs,
-                    "response_started": False,
-                    "template": None,
-                    "context": None,
-                }
-                portal.call(
-                    self.client.app,
-                    scope,
-                    self.create_receive(request=request, context=context),
-                    self.create_send(request=request, context=context),
-                )
+            response_complete = anyio.Event()
+            context: SendReceiveContext = {
+                "response_complete": response_complete,
+                "request_complete": False,
+                "raw_kwargs": raw_kwargs,
+                "response_started": False,
+                "template": None,
+                "context": None,
+            }
+            await self.client.app(
+                scope,
+                self.create_receive(request=request, context=context),
+                self.create_send(request=request, context=context),
+            )
         except BaseException as exc:
             if self.raise_server_exceptions:
                 raise exc
@@ -188,5 +184,20 @@ class TestClientTransport(Generic[T]):
             setattr(response, "context", context["context"])
             return response
 
-    async def handle_async_request(self, request: Request) -> Response:
-        return self.handle_request(request=request)
+
+class SyncTestClientTransport(BaseTransport):
+    def __init__(
+        self,
+        client: TestClient,
+        raise_server_exceptions: bool = True,
+        root_path: str = "",
+    ):
+        self.client = client
+        self._async_transport = TestClientTransport(
+            client=client,
+            raise_server_exceptions=raise_server_exceptions,
+            root_path=root_path,
+        )
+
+    def handle_request(self, request: Request) -> Response:
+        return self.client.blocking_portal.call(self._async_transport.handle_async_request, request)

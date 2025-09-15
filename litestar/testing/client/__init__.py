@@ -30,7 +30,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 """
 
 from .async_client import AsyncTestClient
-from .base import BaseTestClient
 from .sync_client import TestClient
 
-__all__ = ("AsyncTestClient", "BaseTestClient", "TestClient")
+__all__ = ("AsyncTestClient", "TestClient")
