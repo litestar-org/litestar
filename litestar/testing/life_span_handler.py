@@ -25,7 +25,6 @@ class LifeSpanHandler:
         self.stream_send = StapledObjectStream[Optional["LifeSpanSendMessage"]](*create_memory_object_stream(inf))  # type: ignore[arg-type]
         self.stream_receive = StapledObjectStream["LifeSpanReceiveMessage"](*create_memory_object_stream(inf))  # type: ignore[arg-type]
         self.app = app
-        self._lifespan_finished = anyio.Event()
         self._exit_stack = contextlib.AsyncExitStack()
 
     async def __aenter__(self) -> LifeSpanHandler:
@@ -38,8 +37,6 @@ class LifeSpanHandler:
                 self._tg.start_soon(self.lifespan, cs)
                 await self.wait_startup()
             exit_stack.push_async_callback(self.wait_shutdown)
-
-            self._lifespan_finished.set()
             self._exit_stack = exit_stack.pop_all()
         return self
 
@@ -53,8 +50,6 @@ class LifeSpanHandler:
 
     async def receive(self) -> LifeSpanSendMessage:
         message = await self.stream_send.receive()
-        if message is None:
-            await self._lifespan_finished.wait()
         return cast("LifeSpanSendMessage", message)
 
     async def wait_startup(self) -> None:
