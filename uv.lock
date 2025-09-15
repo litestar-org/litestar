@@ -2001,6 +2001,7 @@ full = [
     { name = "uvicorn", extra = ["standard"] },
     { name = "uvloop", marker = "sys_platform != 'win32'" },
     { name = "valkey", extra = ["libvalkey"] },
+    { name = "zstandard", marker = "python_full_version < '3.14'" },
 ]
 htmx = [
     { name = "litestar-htmx" },
@@ -2152,8 +2153,8 @@ requires-dist = [
     { name = "jinja2", marker = "extra == 'standard'" },
     { name = "jsbeautifier", marker = "extra == 'cli'" },
     { name = "jsbeautifier", marker = "extra == 'standard'" },
-    { name = "litestar", extras = ["annotated-types", "attrs", "brotli", "cli", "cryptography", "jinja", "jwt", "mako", "minijinja", "opentelemetry", "piccolo", "polyfactory", "picologging", "prometheus", "pydantic", "redis", "sqlalchemy", "standard", "structlog", "valkey", "htmx", "yaml"], marker = "python_full_version < '3.13' and extra == 'full'" },
-    { name = "litestar", extras = ["annotated-types", "attrs", "brotli", "cli", "cryptography", "jinja", "jwt", "mako", "minijinja", "opentelemetry", "piccolo", "polyfactory", "prometheus", "pydantic", "redis", "sqlalchemy", "standard", "structlog", "valkey", "htmx", "yaml"], marker = "python_full_version >= '3.13' and extra == 'full'" },
+    { name = "litestar", extras = ["annotated-types", "attrs", "brotli", "cli", "cryptography", "jinja", "jwt", "mako", "minijinja", "opentelemetry", "piccolo", "polyfactory", "picologging", "prometheus", "pydantic", "redis", "sqlalchemy", "standard", "structlog", "valkey", "htmx", "yaml", "zstd"], marker = "python_full_version < '3.13' and extra == 'full'" },
+    { name = "litestar", extras = ["annotated-types", "attrs", "brotli", "cli", "cryptography", "jinja", "jwt", "mako", "minijinja", "opentelemetry", "piccolo", "polyfactory", "prometheus", "pydantic", "redis", "sqlalchemy", "standard", "structlog", "valkey", "htmx", "yaml", "zstd"], marker = "python_full_version >= '3.13' and extra == 'full'" },
     { name = "litestar-htmx", specifier = ">=0.4.0" },
     { name = "litestar-htmx", marker = "extra == 'htmx'", specifier = ">=0.4.0" },
     { name = "mako", marker = "extra == 'mako'", specifier = ">=1.2.4" },
