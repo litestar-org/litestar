@@ -1,3 +1,6 @@
+import asyncio
+import contextlib
+from collections.abc import AsyncGenerator
 from typing import TYPE_CHECKING, Callable, NoReturn, Union, cast
 
 import anyio
@@ -435,3 +438,23 @@ async def test_websocket_connect_async() -> None:
             await ws.send_json({"data": "123"})
             data = await ws.receive_json()
             assert data == {"data": "123"}
+
+
+async def test_client_uses_native_loop() -> None:
+    @get("/")
+    def handler() -> dict:
+        return {"loop_id": id(asyncio.get_running_loop())}
+
+    async with create_async_test_client(handler) as client:
+        res = await client.get("/")
+    assert res.json() == {"loop_id": id(asyncio.get_running_loop())}
+
+
+async def test_lifespan_uses_native_loop() -> None:
+    @contextlib.asynccontextmanager
+    async def lifespan(app: Litestar) -> AsyncGenerator[None, None]:
+        app.state["loop"] = asyncio.get_running_loop()
+        yield
+
+    async with create_async_test_client([], lifespan=[lifespan]) as client:
+        assert client.app.state["loop"] is asyncio.get_running_loop()
