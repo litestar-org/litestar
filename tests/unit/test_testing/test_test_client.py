@@ -507,24 +507,28 @@ def test_websocket_send_msgpack() -> None:
     @websocket()
     async def handler(socket: WebSocket) -> None:
         await socket.accept()
-        await socket.send_msgpack({"hello": "world"})
+        msg = await socket.receive_msgpack()
+        await socket.send_msgpack(msg)
         await socket.close()
 
     with create_test_client(handler) as client, client.websocket_connect("/") as ws:
-        data = ws.receive_msgpack(timeout=0.1)
-        assert data == {"hello": "world"}
+        data = {"hello": "world"}
+        ws.send_msgpack(data)
+        assert ws.receive_msgpack(timeout=0.1) == data
 
 
 async def test_websocket_send_msgpack_async() -> None:
     @websocket()
     async def handler(socket: WebSocket) -> None:
         await socket.accept()
-        await socket.send_msgpack({"hello": "world"})
+        msg = await socket.receive_msgpack()
+        await socket.send_msgpack(msg)
         await socket.close()
 
     async with create_async_test_client(handler) as client, await client.websocket_connect("/") as ws:
-        data = await ws.receive_msgpack(timeout=0.1)
-        assert data == {"hello": "world"}
+        data = {"hello": "world"}
+        await ws.send_msgpack(data)
+        assert await ws.receive_msgpack(timeout=0.1) == data
 
 
 async def test_client_uses_native_loop() -> None:
