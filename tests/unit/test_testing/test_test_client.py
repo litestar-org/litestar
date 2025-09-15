@@ -44,6 +44,25 @@ def test_client_cls(request: FixtureRequest) -> type[AnyTestClient]:
 
 
 @pytest.mark.parametrize("anyio_backend", ["asyncio", "trio"])
+def test_test_client_get_set_session_data_no_backend(anyio_backend: "AnyIOBackend") -> None:
+    with create_test_client(backend=anyio_backend) as client:
+        with pytest.raises(RuntimeError, match="Session backend not configured"):
+            client.set_session_data({})
+
+        with pytest.raises(RuntimeError, match="Session backend not configured"):
+            client.get_session_data()
+
+
+async def test_test_client_get_set_session_data_no_backend_async() -> None:
+    async with create_async_test_client() as client:
+        with pytest.RaisesExc(RuntimeError, match="Session backend not configured"):
+            await client.set_session_data({})
+
+        with pytest.RaisesExc(RuntimeError, match="Session backend not configured"):
+            await client.get_session_data()
+
+
+@pytest.mark.parametrize("anyio_backend", ["asyncio", "trio"])
 @pytest.mark.parametrize("with_domain", [False, True])
 def test_test_client_set_session_data(
     with_domain: bool,
@@ -308,6 +327,7 @@ async def test_client_interface_context_manager_async(method: str) -> None:
             assert response.status_code == HTTP_204_NO_CONTENT
 
 
+@pytest.mark.parametrize("block,exception", [(True, TimeoutError), (False, anyio.WouldBlock)])
 @pytest.mark.parametrize(
     "receive_method",
     [
@@ -317,19 +337,38 @@ async def test_client_interface_context_manager_async(method: str) -> None:
         WebSocketTestSession.receive_bytes,
     ],
 )
-def test_websocket_test_session_block_timeout(
-    receive_method: Callable[..., Any], anyio_backend: "AnyIOBackend"
+def test_websocket_receive_no_data_with_timeout(
+    receive_method: Callable[..., Any], block: bool, exception: type[Exception]
 ) -> None:
     @websocket()
     async def handler(socket: WebSocket) -> None:
         await socket.accept()
 
     with (
-        create_test_client(handler, backend=anyio_backend) as client,
+        create_test_client(handler) as client,
         client.websocket_connect("/") as ws,
     ):
-        with pytest.raises(TimeoutError):
-            receive_method(ws, timeout=0.01, block=True)
+        with pytest.raises(exception):
+            receive_method(ws, timeout=0.01, block=block)
+
+
+@pytest.mark.parametrize(
+    "receive_method",
+    [
+        WebSocketTestSession.receive,
+        WebSocketTestSession.receive_json,
+        WebSocketTestSession.receive_text,
+        WebSocketTestSession.receive_bytes,
+    ],
+)
+def test_websocket_receive_no_data_no_timeout_no_block(receive_method: Callable[..., Any]) -> None:
+    @websocket()
+    async def handler(socket: WebSocket) -> None:
+        await socket.accept()
+
+    with create_test_client(handler) as client, client.websocket_connect("/") as ws:
+        with pytest.raises(anyio.WouldBlock):
+            receive_method(ws, timeout=None, block=False)
 
 
 def test_websocket_accept_timeout(anyio_backend: "AnyIOBackend") -> None:
@@ -340,6 +379,19 @@ def test_websocket_accept_timeout(anyio_backend: "AnyIOBackend") -> None:
     with create_test_client(handler, backend=anyio_backend) as client:
         with pytest.RaisesGroup(pytest.RaisesExc(TimeoutError)):
             with client.websocket_connect("/", timeout=0.1):
+                pass
+
+
+def test_unexpected_message_before_accept(anyio_backend: "AnyIOBackend") -> None:
+    @websocket()
+    async def handler(socket: WebSocket) -> None:
+        await socket.send({"type": "something.else"})  # type: ignore[typeddict-item]
+
+    with create_test_client(handler, backend=anyio_backend) as client:
+        with pytest.RaisesGroup(
+            pytest.RaisesExc(RuntimeError, match=r"Unexpected ASGI message.*Received 'something\.else'")
+        ):
+            with client.websocket_connect("/"):
                 pass
 
 
@@ -359,6 +411,7 @@ def test_websocket_connect(anyio_backend: "AnyIOBackend") -> None:
 
 
 # ASYNC TESTS
+@pytest.mark.parametrize("block,exception", [(True, TimeoutError), (False, anyio.WouldBlock)])
 @pytest.mark.parametrize(
     "receive_method",
     [
@@ -368,7 +421,9 @@ def test_websocket_connect(anyio_backend: "AnyIOBackend") -> None:
         AsyncWebSocketTestSession.receive_bytes,
     ],
 )
-async def test_websocket_test_session_block_timeout_async(receive_method: Callable[..., Any]) -> None:
+async def test_websocket_receive_no_data_with_timeout_async(
+    receive_method: Callable[..., Any], block: bool, exception: type[Exception]
+) -> None:
     @websocket()
     async def handler(socket: WebSocket) -> None:
         await socket.accept()
@@ -377,8 +432,8 @@ async def test_websocket_test_session_block_timeout_async(receive_method: Callab
         create_async_test_client(handler) as client,
         await client.websocket_connect("/") as ws,
     ):
-        with pytest.raises(TimeoutError):
-            await receive_method(ws, timeout=0.01, block=True)
+        with pytest.raises(exception):
+            await receive_method(ws, timeout=0.01, block=block)
 
 
 @pytest.mark.parametrize(
@@ -390,17 +445,14 @@ async def test_websocket_test_session_block_timeout_async(receive_method: Callab
         AsyncWebSocketTestSession.receive_bytes,
     ],
 )
-async def test_websocket_test_session_block_no_timeout_async(
-    receive_method: Callable[..., Any],
-) -> None:
+async def test_websocket_receive_no_data_no_timeout_no_block_async(receive_method: Callable[..., Any]) -> None:
     @websocket()
     async def handler(socket: WebSocket) -> None:
         await socket.accept()
 
     async with create_async_test_client(handler) as client, await client.websocket_connect("/") as ws:
-        with pytest.raises(TimeoutError):
-            with anyio.fail_after(0.01):
-                await receive_method(ws, timeout=None, block=True)
+        with pytest.raises(anyio.WouldBlock):
+            await receive_method(ws, timeout=None, block=False)
 
 
 async def test_websocket_accept_timeout_async() -> None:
@@ -425,6 +477,17 @@ async def test_websocket_accept_no_timeout_async() -> None:
                 pass
 
 
+async def test_unexpected_message_before_accept_async() -> None:
+    @websocket()
+    async def handler(socket: WebSocket) -> None:
+        await socket.send({"type": "something.else"})  # type: ignore[typeddict-item]
+
+    async with create_async_test_client(handler) as client:
+        with pytest.raises(RuntimeError, match=r"Unexpected ASGI message.*Received 'something\.else'"):
+            async with await client.websocket_connect("/"):
+                pass
+
+
 async def test_websocket_connect_async() -> None:
     @websocket()
     async def handler(socket: WebSocket) -> None:
@@ -438,6 +501,30 @@ async def test_websocket_connect_async() -> None:
             await ws.send_json({"data": "123"})
             data = await ws.receive_json()
             assert data == {"data": "123"}
+
+
+def test_websocket_send_msgpack() -> None:
+    @websocket()
+    async def handler(socket: WebSocket) -> None:
+        await socket.accept()
+        await socket.send_msgpack({"hello": "world"})
+        await socket.close()
+
+    with create_test_client(handler) as client, client.websocket_connect("/") as ws:
+        data = ws.receive_msgpack(timeout=0.1)
+        assert data == {"hello": "world"}
+
+
+async def test_websocket_send_msgpack_async() -> None:
+    @websocket()
+    async def handler(socket: WebSocket) -> None:
+        await socket.accept()
+        await socket.send_msgpack({"hello": "world"})
+        await socket.close()
+
+    async with create_async_test_client(handler) as client, await client.websocket_connect("/") as ws:
+        data = await ws.receive_msgpack(timeout=0.1)
+        assert data == {"hello": "world"}
 
 
 async def test_client_uses_native_loop() -> None:

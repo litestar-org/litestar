@@ -251,9 +251,13 @@ class AsyncWebSocketTestSession:
 
             await self._asgi_send({"type": "websocket.connect"})
             message = await self.receive(timeout=self._connect_timeout)
-            if message["type"] == "websocket.accept":
-                self.accepted_subprotocol = message.get("subprotocol")
-                self.extra_headers = list(message.get("headers", []))
+            if message["type"] != "websocket.accept":
+                raise RuntimeError(
+                    f"Unexpected ASGI message. Expected 'websocket.accept'. Received {message['type']!r}"
+                )
+
+            self.accepted_subprotocol = message.get("subprotocol")
+            self.extra_headers = list(message.get("headers", []))
             self._exit_stack = exit_stack.pop_all()
         return self
 
@@ -283,9 +287,6 @@ class AsyncWebSocketTestSession:
 
     async def _asgi_send(self, message: WebSocketReceiveMessage) -> None:
         await self._receive_stream.send(message)
-
-    async def _asgi_receive(self) -> WebSocketSendMessage:
-        return await self._send_stream.receive()
 
     async def close(self, code: int = WS_1000_NORMAL_CLOSURE, reason: str | None = None) -> None:
         """Sends an 'websocket.disconnect' event.
@@ -380,15 +381,12 @@ class AsyncWebSocketTestSession:
         Returns:
             A websocket message.
         """
-        message: WebSocketSendMessage | BaseException
+        message: WebSocketSendMessage
         if not block:
             message = cast("MemoryObjectReceiveStream", self._send_stream.receive_stream).receive_nowait()
         else:
             with anyio.fail_after(timeout):
                 message = await self._send_stream.receive()
-
-        if isinstance(message, BaseException):
-            raise message
 
         if message["type"] == "websocket.close":
             raise WebSocketDisconnect(
