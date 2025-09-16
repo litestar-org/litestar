@@ -56,6 +56,10 @@ dependencies = [
 annotated-types = ["annotated-types"]
 attrs = ["attrs"]
 brotli = ["brotli"]
+zstd = [
+    # Only needed for <3.14, since >=3.14 ships with stdlib support
+    "zstandard>=0.24.0; python_version < '3.14'",
+]
 cli = ["jsbeautifier", "uvicorn[standard]", "uvloop>=0.18.0; sys_platform != 'win32'"]
 cryptography = ["cryptography"]
 full = [
@@ -80,7 +84,8 @@ full = [
     structlog, \
     valkey, \
     htmx, \
-    yaml]; \
+    yaml, \
+    zstd]; \
     python_version < \"3.13\"""",
 
   # full extra without picologging
@@ -104,7 +109,8 @@ full = [
     structlog, \
     valkey, \
     htmx, \
-    yaml]; \
+    yaml, \
+    zstd]; \
     python_version >= \"3.13\"""",
 ]
 htmx = ["litestar-htmx>=0.4.0"]
@@ -329,6 +335,8 @@ module = [
   "exceptiongroup",
   "picologging",
   "picologging.*",
+  "zstandard",
+  "zstandard.*"
 ]
 
 [[tool.mypy.overrides]]
