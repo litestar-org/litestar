@@ -34,13 +34,6 @@ from litestar.security.jwt.token import JWTDecodeOptions
     [
         pytest.param(None, id="None"),
         pytest.param("627224198b4245ed91cf8353e4ccdf1650728c7ee92748f55fe1e9a9c4d961df", id="String"),
-        pytest.param(
-            [
-                "627224198b4245ed91cf8353e4ccdf1650728c7ee92748f55fe1e9a9c4d961df",
-                "887224198b4245ed91cf8353e4ccdf1650728c7ee92748f55fe1e9a9c4d961df",
-            ],
-            id="List",
-        ),
     ],
 )
 @pytest.mark.parametrize(
@@ -224,6 +217,34 @@ def test_strict_aud_with_one_element_sequence(audience: str | list[str]) -> None
         audience=["foo"],
         strict_audience=True,
     )
+
+
+@pytest.mark.parametrize(
+    "audience",
+    [
+        pytest.param(None, id="None"),
+        pytest.param("foo", id="String"),
+        pytest.param("not-foo", id="InvalidAudience"),
+        pytest.param(["foo", "bar"], id="List"),
+    ],
+)
+def test_validate_audience(audience: str | list[str]) -> None:
+    secret = secrets.token_hex()
+    encoded = Token(exp=datetime.now() + timedelta(days=1), sub="foo", aud=["foo", "bar"]).encode(secret, "HS256")
+
+    def decode() -> None:
+        Token.decode(
+            encoded,
+            secret=secret,
+            algorithm="HS256",
+            audience=audience,
+        )
+
+    if audience != "not-foo":
+        decode()
+    else:
+        with pytest.raises(NotAuthorizedException):
+            decode()
 
 
 def test_custom_decode_payload() -> None:
