@@ -29,27 +29,28 @@ def structlog_reset() -> Iterator[None]:
 def test_structlog_to_file(tmp_path: Path) -> None:
     log_file = tmp_path / "log.log"
 
-    logging_config = StructlogConfig(
-        structlog_logging_config=StructLoggingConfig(
-            logger_factory=structlog.WriteLoggerFactory(file=log_file.open("wt")),
-            processors=default_structlog_processors(
-                json_serializer=lambda v, **_: str(default_json_serializer(v), "utf-8")
+    with log_file.open("wt") as file_handle:
+        logging_config = StructlogConfig(
+            structlog_logging_config=StructLoggingConfig(
+                logger_factory=structlog.WriteLoggerFactory(file=file_handle),
+                processors=default_structlog_processors(
+                    json_serializer=lambda v, **_: str(default_json_serializer(v), "utf-8")
+                ),
             ),
-        ),
-    )
+        )
 
-    logger = structlog.get_logger()
+        logger = structlog.get_logger()
 
-    @get("/")
-    def handler() -> str:
-        logger.info("handled", hello="world")
-        return "hello"
+        @get("/")
+        def handler() -> str:
+            logger.info("handled", hello="world")
+            return "hello"
 
-    app = Litestar(route_handlers=[handler], plugins=[StructlogPlugin(config=logging_config)], debug=True)
+        app = Litestar(route_handlers=[handler], plugins=[StructlogPlugin(config=logging_config)], debug=True)
 
-    with TestClient(app) as client:
-        resp = client.get("/")
-        assert resp.text == "hello"
+        with TestClient(app) as client:
+            resp = client.get("/")
+            assert resp.text == "hello"
 
     logged_data = [json.loads(line) for line in log_file.read_text().splitlines()]
     assert logged_data == [
@@ -60,7 +61,7 @@ def test_structlog_to_file(tmp_path: Path) -> None:
             "headers": {
                 "host": "testserver.local",
                 "accept": "*/*",
-                "accept-encoding": "gzip, deflate, br",
+                "accept-encoding": "gzip, deflate, br, zstd",
                 "connection": "keep-alive",
                 "user-agent": "testclient",
             },

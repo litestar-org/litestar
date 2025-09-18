@@ -1,5 +1,6 @@
+from collections.abc import Generator
 from inspect import getinnerframes
-from typing import TYPE_CHECKING, Any, Callable, Generator, Optional
+from typing import TYPE_CHECKING, Any, Callable, Optional
 from unittest.mock import MagicMock
 
 import pydantic
@@ -48,7 +49,7 @@ def app() -> Litestar:
 
 @pytest.fixture()
 def middleware() -> ExceptionHandlerMiddleware:
-    return ExceptionHandlerMiddleware(dummy_app, None)
+    return ExceptionHandlerMiddleware(dummy_app)
 
 
 @pytest.fixture()
@@ -245,7 +246,7 @@ def test_exception_handler_default_logging(
         if should_log:
             assert len(caplog.records) == 1
             assert caplog.records[0].levelname == "ERROR"
-            assert caplog.records[0].message.startswith("Uncaught exception (connection_type=http, path=/test):")
+            assert caplog.records[0].message.startswith("Uncaught exception (connection_type=http, path='/test'):")
         else:
             assert not caplog.records
             assert "Uncaught exception" not in response.text
@@ -357,7 +358,7 @@ def test_get_debug_from_scope(get_logger: "GetLogger", caplog: "LogCaptureFixtur
         assert "Test debug exception" in response.text
         assert len(caplog.records) == 1
         assert caplog.records[0].levelname == "ERROR"
-        assert caplog.records[0].message.startswith("Uncaught exception (connection_type=http, path=/test):")
+        assert caplog.records[0].message.startswith("Uncaught exception (connection_type=http, path='/test'):")
 
 
 def test_get_symbol_name_where_type_doesnt_support_bool() -> None:
@@ -416,7 +417,7 @@ async def test_exception_handler_middleware_response_already_started(scope: HTTP
         await send(start_message)
         raise RuntimeError("Test exception")
 
-    mw = ExceptionHandlerMiddleware(asgi_app, None)
+    mw = ExceptionHandlerMiddleware(asgi_app)
 
     with pytest.raises(LitestarException):
         await mw(scope, mock_receive, mock_send)

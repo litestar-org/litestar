@@ -2,9 +2,10 @@ from __future__ import annotations
 
 import abc
 from contextlib import contextmanager
-from typing import TYPE_CHECKING, Any, Iterator, Protocol, TypeVar, Union, cast, runtime_checkable
+from typing import TYPE_CHECKING, Any, Protocol, TypeVar, Union, cast, runtime_checkable
 
 if TYPE_CHECKING:
+    from collections.abc import Iterator
     from inspect import Signature
 
     from click import Group
@@ -13,23 +14,20 @@ if TYPE_CHECKING:
     from litestar.app import Litestar
     from litestar.config.app import AppConfig
     from litestar.dto import AbstractDTO
-    from litestar.openapi.spec import Schema
+    from litestar.openapi.spec import Reference, Schema
     from litestar.routes import BaseRoute
     from litestar.typing import FieldDefinition
 
 __all__ = (
     "CLIPlugin",
-    "CLIPluginProtocol",
     "DIPlugin",
     "InitPlugin",
     "InitPluginProtocol",
     "OpenAPISchemaPlugin",
-    "OpenAPISchemaPluginProtocol",
     "PluginProtocol",
     "PluginRegistry",
     "ReceiveRoutePlugin",
     "SerializationPlugin",
-    "SerializationPluginProtocol",
 )
 
 
@@ -133,11 +131,8 @@ class ReceiveRoutePlugin:
         """Receive routes as they are registered on an application."""
 
 
-@runtime_checkable
-class CLIPluginProtocol(Protocol):
-    """Plugin protocol to extend the CLI."""
-
-    __slots__ = ()
+class CLIPlugin:
+    """Plugin protocol to extend the CLI Server Lifespan."""
 
     def on_cli_init(self, cli: Group) -> None:
         """Called when the CLI is initialized.
@@ -151,11 +146,11 @@ class CLIPluginProtocol(Protocol):
             .. code-block:: python
 
                 from litestar import Litestar
-                from litestar.plugins import CLIPluginProtocol
+                from litestar.plugins import CLIPlugin
                 from click import Group
 
 
-                class CLIPlugin(CLIPluginProtocol):
+                class CLIPlugin(CLIPlugin):
                     def on_cli_init(self, cli: Group) -> None:
                         @cli.command()
                         def is_debug_mode(app: Litestar):
@@ -165,52 +160,12 @@ class CLIPluginProtocol(Protocol):
                 app = Litestar(plugins=[CLIPlugin()])
         """
 
-
-class CLIPlugin(CLIPluginProtocol):
-    """Plugin protocol to extend the CLI Server Lifespan."""
-
-    __slots__ = ()
-
     @contextmanager
     def server_lifespan(self, app: Litestar) -> Iterator[None]:
         yield
 
 
-@runtime_checkable
-class SerializationPluginProtocol(Protocol):
-    """Protocol used to define a serialization plugin for DTOs.
-
-    .. deprecated:: 2.15
-        Use 'litestar.plugins.SerializationPluginProtocol' instead
-
-    """
-
-    __slots__ = ()
-
-    def supports_type(self, field_definition: FieldDefinition) -> bool:
-        """Given a value of indeterminate type, determine if this value is supported by the plugin.
-
-        Args:
-            field_definition: A parsed type.
-
-        Returns:
-            Whether the type is supported by the plugin.
-        """
-        raise NotImplementedError()
-
-    def create_dto_for_type(self, field_definition: FieldDefinition) -> type[AbstractDTO]:
-        """Given a parsed type, create a DTO class.
-
-        Args:
-            field_definition: A parsed type.
-
-        Returns:
-            A DTO class.
-        """
-        raise NotImplementedError()
-
-
-class SerializationPlugin(SerializationPluginProtocol, abc.ABC):
+class SerializationPlugin(abc.ABC):
     """Abstract base class for plugins that extend DTO functionality"""
 
     @abc.abstractmethod
@@ -258,41 +213,8 @@ class DIPlugin(abc.ABC):
         ...
 
 
-@runtime_checkable
-class OpenAPISchemaPluginProtocol(Protocol):
-    """Plugin protocol to extend the support of OpenAPI schema generation for non-library types."""
-
-    __slots__ = ()
-
-    @staticmethod
-    def is_plugin_supported_type(value: Any) -> bool:
-        """Given a value of indeterminate type, determine if this value is supported by the plugin.
-
-        Args:
-            value: An arbitrary value.
-
-        Returns:
-            A typeguard dictating whether the value is supported by the plugin.
-        """
-        raise NotImplementedError()
-
-    def to_openapi_schema(self, field_definition: FieldDefinition, schema_creator: SchemaCreator) -> Schema:
-        """Given a type annotation, transform it into an OpenAPI schema class.
-
-        Args:
-            field_definition: An :class:`OpenAPI <litestar.openapi.spec.schema.Schema>` instance.
-            schema_creator: An instance of the openapi SchemaCreator.
-
-        Returns:
-            An :class:`OpenAPI <litestar.openapi.spec.schema.Schema>` instance.
-        """
-        raise NotImplementedError()
-
-
-class OpenAPISchemaPlugin(OpenAPISchemaPluginProtocol):
+class OpenAPISchemaPlugin(abc.ABC):
     """Plugin to extend the support of OpenAPI schema generation for non-library types."""
-
-    __slots__ = ()
 
     @staticmethod
     def is_plugin_supported_type(value: Any) -> bool:
@@ -313,6 +235,19 @@ class OpenAPISchemaPlugin(OpenAPISchemaPluginProtocol):
             "for backwards compatibility. Users should prefer to override is_plugin_supported_field "
             "as it receives a 'FieldDefinition' instance which is more useful than a raw type."
         )
+
+    @abc.abstractmethod
+    def to_openapi_schema(self, field_definition: FieldDefinition, schema_creator: SchemaCreator) -> Schema | Reference:
+        """Given a type annotation, transform it into an OpenAPI schema class.
+
+        Args:
+            field_definition: An :class:`OpenAPI <litestar.openapi.spec.schema.Schema>` instance.
+            schema_creator: An instance of the openapi SchemaCreator.
+
+        Returns:
+            An :class:`OpenAPI <litestar.openapi.spec.schema.Schema>` instance.
+        """
+        raise NotImplementedError()
 
     def is_plugin_supported_field(self, field_definition: FieldDefinition) -> bool:
         """Given a :class:`FieldDefinition <litestar.typing.FieldDefinition>` that represents an indeterminate type,
@@ -341,12 +276,10 @@ class OpenAPISchemaPlugin(OpenAPISchemaPluginProtocol):
 
 PluginProtocol = Union[
     CLIPlugin,
-    CLIPluginProtocol,
     InitPluginProtocol,
     OpenAPISchemaPlugin,
-    OpenAPISchemaPluginProtocol,
     ReceiveRoutePlugin,
-    SerializationPluginProtocol,
+    SerializationPlugin,
     DIPlugin,
 ]
 
@@ -355,11 +288,11 @@ PluginT = TypeVar("PluginT", bound=PluginProtocol)
 
 class PluginRegistry:
     __slots__ = {  # noqa: RUF023
-        "init": "Plugins that implement the InitPluginProtocol",
-        "openapi": "Plugins that implement the OpenAPISchemaPluginProtocol",
+        "init": "Plugins that implement InitPlugin",
+        "openapi": "Plugins that implement OpenAPISchemaPlugin",
         "receive_route": "ReceiveRoutePlugin instances",
-        "serialization": "Plugins that implement the SerializationPluginProtocol",
-        "cli": "Plugins that implement the CLIPluginProtocol",
+        "serialization": "Plugins that implement SerializationPlugin",
+        "cli": "Plugins that implement CLIPlugin",
         "di": "DIPlugin instances",
         "_plugins_by_type": None,
         "_plugins": None,
@@ -370,10 +303,10 @@ class PluginRegistry:
         self._plugins_by_type = {type(p): p for p in plugins}
         self._plugins = frozenset(plugins)
         self.init = tuple(p for p in plugins if isinstance(p, InitPluginProtocol))
-        self.openapi = tuple(p for p in plugins if isinstance(p, OpenAPISchemaPluginProtocol))
+        self.openapi = tuple(p for p in plugins if isinstance(p, OpenAPISchemaPlugin))
         self.receive_route = tuple(p for p in plugins if isinstance(p, ReceiveRoutePlugin))
-        self.serialization = tuple(p for p in plugins if isinstance(p, SerializationPluginProtocol))
-        self.cli = tuple(p for p in plugins if isinstance(p, CLIPluginProtocol))
+        self.serialization = tuple(p for p in plugins if isinstance(p, SerializationPlugin))
+        self.cli = tuple(p for p in plugins if isinstance(p, CLIPlugin))
         self.di = tuple(p for p in plugins if isinstance(p, DIPlugin))
 
     def get(self, type_: type[PluginT] | str) -> PluginT:
@@ -391,10 +324,10 @@ class PluginRegistry:
                     else plugin.__class__.__qualname__
                 )
                 if type_ in {_name, _qualname}:
-                    return cast(PluginT, plugin)
+                    return cast("PluginT", plugin)
             raise KeyError(f"No plugin of type {type_!r} registered")
         try:
-            return cast(PluginT, self._plugins_by_type[type_])  # type: ignore[index]
+            return cast("PluginT", self._plugins_by_type[type_])  # type: ignore[index]
         except KeyError as e:
             raise KeyError(f"No plugin of type {type_.__name__!r} registered") from e
 

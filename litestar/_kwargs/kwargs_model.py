@@ -312,7 +312,7 @@ class KwargsModel:
                 media_type = data_field_definition.kwarg_definition.media_type
 
             if media_type in (RequestEncodingType.MULTI_PART, RequestEncodingType.URL_ENCODED):
-                expected_form_data = (media_type, data_field_definition)
+                expected_form_data = (media_type, data_field_definition)  # pyright: ignore
                 expected_data_dto = signature_model._data_dto
             elif signature_model._data_dto:
                 expected_data_dto = signature_model._data_dto
@@ -349,6 +349,12 @@ class KwargsModel:
             expected_reserved_kwargs.update(dependency_kwargs_model.expected_reserved_kwargs)
             sequence_query_parameter_names.update(dependency_kwargs_model.sequence_query_parameter_names)
 
+        is_data_optional = (
+            field_definitions["data"].is_optional
+            if "data" in expected_reserved_kwargs and "data" in field_definitions
+            else False
+        )
+
         return KwargsModel(
             expected_cookie_params=expected_cookie_parameters,
             expected_dependencies=expected_dependencies,
@@ -359,7 +365,7 @@ class KwargsModel:
             expected_path_params=expected_path_parameters,
             expected_query_params=expected_query_parameters,
             expected_reserved_kwargs=expected_reserved_kwargs,
-            is_data_optional=field_definitions["data"].is_optional if "data" in expected_reserved_kwargs else False,
+            is_data_optional=is_data_optional,
             sequence_query_parameter_names=sequence_query_parameter_names,
         )
 

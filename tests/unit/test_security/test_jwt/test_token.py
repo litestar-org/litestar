@@ -3,9 +3,10 @@ from __future__ import annotations
 import dataclasses
 import secrets
 import sys
+from collections.abc import Sequence
 from dataclasses import asdict
 from datetime import datetime, timedelta, timezone
-from typing import Any, Sequence
+from typing import Any
 from uuid import uuid4
 
 import jwt
@@ -254,7 +255,7 @@ def test_custom_decode_payload() -> None:
         def decode_payload(
             cls,
             encoded_token: str,
-            secret: str,
+            secret: str | bytes,
             algorithms: list[str],
             issuer: list[str] | None = None,
             audience: str | Sequence[str] | None = None,
@@ -271,3 +272,14 @@ def test_custom_decode_payload() -> None:
     _secret = secrets.token_hex()
     encoded = CustomToken(exp=datetime.now() + timedelta(days=1), sub="foo").encode(_secret, "HS256")
     assert CustomToken.decode(encoded, secret=_secret, algorithm="HS256").sub == "some-random-value"
+
+
+def test_token_encode_includes_custom_headers() -> None:
+    token = Token(exp=datetime.now() + timedelta(days=1), sub="some-random-value")
+    custom_headers = {"kid": "key-id"}
+    encoded = token.encode(secret=secrets.token_hex(), algorithm="HS256", headers=custom_headers)
+    header = jwt.get_unverified_header(encoded)
+
+    assert header["alg"] == "HS256"
+    assert "kid" in header
+    assert header["kid"] == custom_headers["kid"]

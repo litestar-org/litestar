@@ -1,5 +1,3 @@
-from typing import Type
-
 import pytest
 from hypothesis import given
 from hypothesis import strategies as st
@@ -27,6 +25,16 @@ class CustomHTTPException(HTTPException):
     detail = "Custom HTTP Exception"
 
 
+class CustomHTTPExceptionWithExtra(HTTPException):
+    status_code = HTTP_400_BAD_REQUEST
+    extra = {"key": "value"}
+
+
+class CustomHTTPExceptionWithHeaders(HTTPException):
+    status_code = HTTP_400_BAD_REQUEST
+    headers = {"X-Custom-Header": "value"}
+
+
 @given(detail=st.text())
 def test_litestar_exception_detail(detail: str) -> None:
     for result in LitestarException(detail=detail), LitestarException(detail):
@@ -41,7 +49,7 @@ def test_custom_litestar_exception_detail(detail: str) -> None:
 
 @given(detail=st.text())
 @pytest.mark.parametrize("ex_type", [LitestarException, CustomLitestarException])
-def test_litestar_exception_repr(ex_type: Type[LitestarException], detail: str) -> None:
+def test_litestar_exception_repr(ex_type: type[LitestarException], detail: str) -> None:
     for result in ex_type(detail), ex_type(detail=detail):
         if result.detail:
             assert repr(result) == f"{result.__class__.__name__} - {result.detail}"
@@ -51,7 +59,7 @@ def test_litestar_exception_repr(ex_type: Type[LitestarException], detail: str) 
 
 @given(detail=st.text())
 @pytest.mark.parametrize("ex_type", [LitestarException, CustomLitestarException])
-def test_litestar_exception_str(ex_type: Type[LitestarException], detail: str) -> None:
+def test_litestar_exception_str(ex_type: type[LitestarException], detail: str) -> None:
     for result in ex_type(detail), ex_type(detail=detail):
         assert str(result) == result.detail.strip()
 
@@ -73,7 +81,7 @@ def test_custom_http_exception_detail(detail: str) -> None:
 
 @given(status_code=st.integers(min_value=400, max_value=404), detail=st.text())
 @pytest.mark.parametrize("ex_type", [HTTPException, CustomHTTPException])
-def test_http_exception(ex_type: Type[HTTPException], status_code: int, detail: str) -> None:
+def test_http_exception(ex_type: type[HTTPException], status_code: int, detail: str) -> None:
     assert ex_type().status_code == HTTP_500_INTERNAL_SERVER_ERROR
     for result in ex_type(detail, status_code=status_code), ex_type(detail=detail, status_code=status_code):
         assert isinstance(result, LitestarException)
@@ -196,3 +204,56 @@ def test_non_litestar_exception_with_detail_is_not_included() -> None:
 
     with create_test_client([handler], debug=False) as client:
         assert client.get("/", headers={"Accept": MediaType.JSON}).json().get("detail") == "Internal Server Error"
+
+
+def test_http_exception_with_class_var_extra() -> None:
+    @get("/")
+    def handler() -> None:
+        raise CustomHTTPExceptionWithExtra("hello")
+
+    with create_test_client([handler], debug=False) as client:
+        assert client.get("/").json() == {
+            "extra": {"key": "value"},
+            "status_code": 400,
+            "detail": "hello",
+        }
+
+
+def test_http_exception_with_class_var_extra_explicit_none() -> None:
+    @get("/")
+    def handler() -> None:
+        raise CustomHTTPExceptionWithExtra("hello", extra=None)
+
+    with create_test_client([handler], debug=False) as client:
+        assert client.get("/").json() == {
+            "status_code": 400,
+            "detail": "hello",
+        }
+
+
+def test_http_exception_with_class_var_headers() -> None:
+    @get("/")
+    def handler() -> None:
+        raise CustomHTTPExceptionWithHeaders("hello")
+
+    with create_test_client([handler], debug=False) as client:
+        response = client.get("/")
+        assert response.headers["X-Custom-Header"] == "value"
+        assert response.json() == {
+            "status_code": 400,
+            "detail": "hello",
+        }
+
+
+def test_http_exception_with_class_var_headers_explicit_none() -> None:
+    @get("/")
+    def handler() -> None:
+        raise CustomHTTPExceptionWithHeaders("hello", headers=None)
+
+    with create_test_client([handler], debug=False) as client:
+        response = client.get("/")
+        assert "X-Custom-Header" not in response.headers
+        assert response.json() == {
+            "status_code": 400,
+            "detail": "hello",
+        }

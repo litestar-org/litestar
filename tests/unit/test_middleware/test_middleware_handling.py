@@ -1,7 +1,8 @@
 import logging
 import sys
+from collections.abc import Awaitable
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Any, Awaitable, Callable, List, cast
+from typing import TYPE_CHECKING, Any, Callable, cast
 
 import pytest
 from _pytest.capture import CaptureFixture
@@ -14,8 +15,6 @@ from litestar.middleware import DefineMiddleware, MiddlewareProtocol
 from litestar.testing import create_test_client
 
 if TYPE_CHECKING:
-    from typing import Type
-
     from litestar.types import ASGIApp, Receive, Scope, Send
 
 logger = logging.getLogger(__name__)
@@ -35,7 +34,7 @@ class MiddlewareProtocolRequestLoggingMiddleware(MiddlewareProtocol):
 
 
 class BaseMiddlewareRequestLoggingMiddleware(BaseHTTPMiddleware):
-    async def dispatch(self, request: Request, call_next: RequestResponseEndpoint) -> Response:  # type: ignore[explicit-override, override]
+    async def dispatch(self, request: Request, call_next: RequestResponseEndpoint) -> Response:  # type: ignore[override]
         logging.getLogger(__name__).info("%s - %s", request.method, request.url)
         return await call_next(request)  # type: ignore[arg-type, return-value]
 
@@ -46,7 +45,7 @@ class MiddlewareWithArgsAndKwargs(BaseHTTPMiddleware):
         self.arg = arg
         self.kwarg = kwarg
 
-    async def dispatch(  # type: ignore[empty-body, explicit-override, override]
+    async def dispatch(  # type: ignore[empty-body, override]
         self, request: Request, call_next: Callable[[Request], Awaitable[Response]]
     ) -> Response: ...
 
@@ -124,9 +123,9 @@ def test_request_body_logging_middleware(caplog: LogCaptureFixture, capsys: "Cap
 def test_middleware_call_order() -> None:
     """Test that middlewares are called in the order they have been passed."""
 
-    results: List[int] = []
+    results: list[int] = []
 
-    def create_test_middleware(middleware_id: int) -> "Type[MiddlewareProtocol]":
+    def create_test_middleware(middleware_id: int) -> "type[MiddlewareProtocol]":
         class TestMiddleware(MiddlewareProtocol):
             def __init__(self, app: "ASGIApp") -> None:
                 self.app = app

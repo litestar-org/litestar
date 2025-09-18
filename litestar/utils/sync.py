@@ -1,13 +1,11 @@
 from __future__ import annotations
 
+from collections.abc import AsyncGenerator, Awaitable, Iterable, Iterator
 from typing import (
-    AsyncGenerator,
-    Awaitable,
     Callable,
     Generic,
-    Iterable,
-    Iterator,
     TypeVar,
+    overload,
 )
 
 from typing_extensions import ParamSpec
@@ -22,7 +20,15 @@ P = ParamSpec("P")
 T = TypeVar("T")
 
 
-def ensure_async_callable(fn: Callable[P, T]) -> Callable[P, Awaitable[T]]:
+@overload
+def ensure_async_callable(fn: Callable[P, Awaitable[T]]) -> Callable[P, Awaitable[T]]: ...
+
+
+@overload
+def ensure_async_callable(fn: Callable[P, T]) -> Callable[P, Awaitable[T]]: ...
+
+
+def ensure_async_callable(fn: Callable[P, T]) -> Callable[P, Awaitable[T]]:  # pyright: ignore
     """Ensure that ``fn`` is an asynchronous callable.
     If it is an asynchronous, return the original object, else wrap it in an
     ``AsyncCallable``
@@ -41,7 +47,7 @@ class AsyncCallable:
     def __init__(self, fn: Callable[P, T]) -> None:  # pyright: ignore
         self.func = fn
 
-    def __call__(self, *args: P.args, **kwargs: P.kwargs) -> Awaitable[T]:  # pyright: ignore
+    def __call__(self, *args: P.args, **kwargs: P.kwargs) -> Awaitable[T]:  # type: ignore[valid-type]
         return sync_to_thread(self.func, *args, **kwargs)  # type: ignore[arg-type]
 
 

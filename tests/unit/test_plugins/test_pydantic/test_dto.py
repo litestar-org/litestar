@@ -1,11 +1,11 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Optional, cast
+from typing import TYPE_CHECKING, Annotated, Optional, cast
 
 import pydantic as pydantic_v2
 import pytest
 from pydantic import v1 as pydantic_v1
-from typing_extensions import Annotated, Literal
+from typing_extensions import Literal
 
 from litestar import Request, post
 from litestar.dto import DTOConfig
@@ -52,7 +52,7 @@ def test_schema_required_fields_with_pydantic_dto(
 
 def test_field_definition_implicit_optional_default(base_model: type[BaseModel]) -> None:
     class Model(base_model):  # type: ignore[misc, valid-type]
-        a: Optional[str]  # noqa: UP007
+        a: Optional[str]
 
     dto_type = PydanticDTO[Model]
     field_defs = list(dto_type.generate_field_definitions(Model))

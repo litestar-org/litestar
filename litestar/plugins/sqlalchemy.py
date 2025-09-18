@@ -1,4 +1,4 @@
-# ruff: noqa: TC004, F401
+# ruff: noqa: F401
 # pyright: reportUnusedImport=false
 from __future__ import annotations
 
@@ -65,16 +65,14 @@ def __getattr__(attr_name: str) -> object:
 
     if attr_name in _deprecated_attrs:
         from advanced_alchemy.base import (
-            AuditColumns,
             BigIntAuditBase,
             BigIntBase,
-            BigIntPrimaryKey,
             CommonTableAttributes,
             UUIDAuditBase,
             UUIDBase,
-            UUIDPrimaryKey,
             orm_registry,
         )
+        from advanced_alchemy.mixins import AuditColumns, BigIntPrimaryKey, UUIDPrimaryKey
 
         warn_deprecation(
             deprecated_name=f"litestar.plugins.sqlalchemy.{attr_name}",
@@ -140,14 +138,11 @@ if TYPE_CHECKING:
         utils,
     )
     from advanced_alchemy.base import (
-        AuditColumns,
         BigIntAuditBase,
         BigIntBase,
-        BigIntPrimaryKey,
         CommonTableAttributes,
         UUIDAuditBase,
         UUIDBase,
-        UUIDPrimaryKey,
         orm_registry,
     )
     from advanced_alchemy.extensions.litestar import (
@@ -173,3 +168,4 @@ if TYPE_CHECKING:
         sync_default_before_send_handler,
         sync_default_handler_maker,
     )
+    from advanced_alchemy.mixins import AuditColumns, BigIntPrimaryKey, UUIDPrimaryKey

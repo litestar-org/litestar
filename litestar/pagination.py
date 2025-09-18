@@ -1,9 +1,8 @@
-# ruff: noqa: UP006,UP007
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import Generic, List, Optional, TypeVar
+from typing import Generic, Optional, TypeVar
 from uuid import UUID
 
 __all__ = (
@@ -29,7 +28,7 @@ class ClassicPagination(Generic[T]):
 
     __slots__ = ("current_page", "items", "page_size", "total_pages")
 
-    items: List[T]
+    items: list[T]
     """List of data being sent as part of the response."""
     page_size: int
     """Number of items per page."""
@@ -42,9 +41,7 @@ class ClassicPagination(Generic[T]):
 # AA requires it's own `OffsetPagination` class in versions greater that 0.9.0
 # If we find it, use it.
 try:
-    from advanced_alchemy.service import (
-        OffsetPagination,  # pyright: ignore[reportMissingImports,reportGeneralTypeIssues]
-    )
+    from advanced_alchemy.service import OffsetPagination  # pyright: ignore
 except ImportError:
 
     @dataclass
@@ -53,7 +50,7 @@ except ImportError:
 
         __slots__ = ("items", "limit", "offset", "total")
 
-        items: List[T]
+        items: list[T]
         """List of data being sent as part of the response."""
         limit: int
         """Maximal number of items to send."""
@@ -72,11 +69,11 @@ class CursorPagination(Generic[C, T]):
 
     __slots__ = ("cursor", "items", "next_cursor", "results_per_page")
 
-    items: List[T]
+    items: list[T]
     """List of data being sent as part of the response."""
     results_per_page: int
     """Maximal number of items to send."""
-    cursor: Optional[C]
+    cursor: Optional[C]  # noqa: UP045
     """Unique ID, designating the last identifier in the given data set.
 
     This value can be used to request the "next" batch of records.

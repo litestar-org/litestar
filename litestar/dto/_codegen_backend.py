@@ -8,14 +8,12 @@ import linecache
 import re
 import secrets
 import textwrap
-from contextlib import contextmanager, nullcontext
+from collections.abc import Generator, Mapping
+from contextlib import AbstractContextManager, contextmanager, nullcontext
 from typing import (
     TYPE_CHECKING,
     Any,
     Callable,
-    ContextManager,
-    Generator,
-    Mapping,
     Protocol,
     cast,
 )
@@ -177,7 +175,7 @@ class DTOCodegenBackend(DTOBackend):
 
 
 class FieldAccessManager(Protocol):
-    def __call__(self, source_name: str, field_name: str, expect_optional: bool) -> ContextManager[str]: ...
+    def __call__(self, source_name: str, field_name: str, expect_optional: bool) -> AbstractContextManager[str]: ...
 
 
 class TransferFunctionFactory:
@@ -571,28 +569,79 @@ class TransferFunctionFactory:
         source_value_name: str,
         assignment_target: str,
     ) -> None:
-        for inner_type in transfer_type.inner_types:
-            if isinstance(inner_type, CompositeType):
-                continue
+        def _handle_transfer_instance(simple_type_: SimpleType, conditional_: str) -> None:
+            if simple_type_.field_definition.is_none_type:
+                with self._start_block(f"{conditional_} {source_value_name} is None:"):
+                    self._add_stmt(f"{assignment_target} = {source_value_name}")
+                return
 
-            if inner_type.nested_field_info:
-                if self.is_data_field:
-                    constraint_type = inner_type.nested_field_info.model
-                    destination_type = inner_type.field_definition.annotation
-                else:
-                    constraint_type = inner_type.field_definition.annotation
-                    destination_type = inner_type.nested_field_info.model
+            field_definitions: tuple[TransferDTOFieldDefinition, ...] | None
+            if simple_type_.nested_field_info and self.is_data_field:
+                constraint_type = simple_type_.nested_field_info.model
+                destination_type = simple_type_.field_definition.annotation
+                field_definitions = simple_type_.nested_field_info.field_definitions
+            else:
+                constraint_type = simple_type_.field_definition.annotation
+                destination_type = (
+                    simple_type_.nested_field_info.model
+                    if simple_type_.nested_field_info and not self.is_data_field
+                    else simple_type_.field_definition.annotation
+                )
+                field_definitions = (
+                    simple_type_.nested_field_info.field_definitions if simple_type_.nested_field_info else None
+                )
 
-                constraint_type_name = self._add_to_fn_globals("constraint_type", constraint_type)
-                destination_type_name = self._add_to_fn_globals("destination_type", destination_type)
+            constraint_type_name = self._add_to_fn_globals("constraint_type", constraint_type)
+            destination_type_name = self._add_to_fn_globals("destination_type", destination_type)
 
-                with self._start_block(f"if isinstance({source_value_name}, {constraint_type_name}):"):
+            with self._start_block(f"{conditional_} isinstance({source_value_name}, {constraint_type_name}):"):
+                if field_definitions:
                     self._create_transfer_instance_data(
                         destination_type_name=destination_type_name,
                         destination_type_is_dict=destination_type is dict,
-                        field_definitions=inner_type.nested_field_info.field_definitions,
+                        field_definitions=field_definitions,
                         source_instance_name=source_value_name,
                         tmp_return_type_name=assignment_target,
                     )
-                    return
+                else:
+                    self._add_stmt(f"{assignment_target} = {source_value_name}")
+
+        simple_types: list[SimpleType] = []
+        non_simple_types: list[CompositeType] = []
+        for inner_type in transfer_type.inner_types:
+            if isinstance(inner_type, SimpleType):
+                simple_types.append(inner_type)
+            else:
+                non_simple_types.append(inner_type)
+
+        if len(non_simple_types) > 1:
+            # we've got something like 'Union[list[str], dict[str, int]]. Since checking against these goes beyond the
+            # scope of simple 'isinstance' or 'type' checks, we cannot generate code that handles these correctly.
+            # so we give up with an exception
+            raise RuntimeError(
+                "Multiple composite types within unions are not supported. Received: "
+                f"{', '.join(str(t.field_definition.raw) for t in non_simple_types)}"
+            )
+
+        # special case: simple + one non-simple
+        if len(non_simple_types) == 1 and simple_types:
+            conditional = "if"
+            for simple_type in simple_types:
+                _handle_transfer_instance(simple_type, conditional_=conditional)
+                conditional = "elif"
+
+            with self._start_block("else:"):
+                self._create_transfer_type_data_body(
+                    transfer_type=non_simple_types[0],
+                    nested_as_dict=False,
+                    source_value_name=source_value_name,
+                    assignment_target=assignment_target,
+                )
+            return
+
+        for inner_type in simple_types:
+            if inner_type.nested_field_info:
+                _handle_transfer_instance(inner_type, conditional_="if")
+                return
+
         self._add_stmt(f"{assignment_target} = {source_value_name}")

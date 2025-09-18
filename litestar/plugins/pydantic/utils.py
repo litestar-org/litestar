@@ -6,9 +6,7 @@ import datetime
 import re
 from dataclasses import dataclass
 from inspect import isclass
-from typing import TYPE_CHECKING, Any, Callable, Literal, Optional
-
-from typing_extensions import Annotated, get_type_hints
+from typing import TYPE_CHECKING, Annotated, Any, Callable, Literal, Optional, get_type_hints
 
 from litestar.openapi.spec import Example
 from litestar.params import KwargDefinition, ParameterKwarg
@@ -242,6 +240,18 @@ def is_pydantic_v2(module: ModuleType) -> bool:
     return bool(module.__version__.startswith("2."))
 
 
+def is_pydantic_root_model(annotation: Any) -> bool:
+    """Check if the given annotation is a Pydantic RootModel.
+
+    Args:
+        annotation: A type annotation
+
+    Returns:
+        True if the annotation is a RootModel, otherwise False.
+    """
+    return getattr(annotation, "__pydantic_root_model__", False) is True
+
+
 @dataclass(frozen=True)
 class PydanticModelInfo:
     pydantic_version: Literal["1", "2"]
@@ -337,7 +347,7 @@ def _create_field_definition_v1(  # noqa: C901
             )
             field_definition_kwargs["raw"] = field_annotation
             # on < 3.9, these builtins are not generic
-            origin = get_safe_generic_origin(None, field_annotation.__origin__)
+            origin = get_safe_generic_origin(field_annotation.__origin__, field_annotation.__origin__)
             field_annotation = origin[field_annotation.item_type]
 
     if kwarg_definition is None and kwargs:
@@ -460,7 +470,7 @@ def get_model_info(
     else:
         # pydantic v1 requires some workarounds here
         model_annotations = {
-            k: f.outer_type_ if f.required or f.default else Optional[f.outer_type_]
+            k: f.outer_type_ if f.required or f.default else Optional[f.outer_type_]  # type: ignore[union-attr]
             for k, f in model.__fields__.items()  # type: ignore[union-attr]
         }
 
@@ -489,7 +499,7 @@ def get_model_info(
     }
 
     computed_field_definitions = create_field_definitions_for_computed_fields(
-        model,
+        model,  # type: ignore[arg-type]
         prefer_alias=prefer_alias,
     )
     property_fields.update(computed_field_definitions)

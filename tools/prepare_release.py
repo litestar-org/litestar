@@ -10,11 +10,14 @@ import shutil
 import subprocess
 from collections import defaultdict
 from dataclasses import dataclass
-from typing import Generator
+from typing import TYPE_CHECKING
 
 import click
 import httpx
 import msgspec
+
+if TYPE_CHECKING:
+    from collections.abc import Generator
 
 _polar = "[Polar.sh](https://polar.sh/litestar-org)"
 _open_collective = "[OpenCollective](https://opencollective.com/litestar)"
@@ -293,16 +296,16 @@ def build_gh_release_notes(release_info: ReleaseInfo) -> str:
     doc.add_line(f"- A huge 'Thank you!' to all sponsors across {_polar}, {_open_collective} and {_github_sponsors}!")
 
     doc.add_line("## What's changed")
+    if features := release_info.pull_requests.get("feat"):
+        doc.add_line("\n### New features 🚀")
+        doc.add_pr_descriptions(features)
+    if fixes := release_info.pull_requests.get("fix"):
+        doc.add_line("\n### Bugfixes 🐛")
+        doc.add_pr_descriptions(fixes)
     if release_info.first_time_prs:
         doc.add_line("\n## New contributors 🎉")
         for pr in release_info.first_time_prs:
             doc.add_line(f"* @{pr.user.login} made their first contribution in {pr.url}")
-    if fixes := release_info.pull_requests.get("fix"):
-        doc.add_line("\n### Bugfixes 🐛")
-        doc.add_pr_descriptions(fixes)
-    if features := release_info.pull_requests.get("feat"):
-        doc.add_line("\nNew features 🚀")
-        doc.add_pr_descriptions(features)
 
     ignore_sections = {"fix", "feat", "ci", "chore"}
 

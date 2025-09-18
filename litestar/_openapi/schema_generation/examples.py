@@ -25,6 +25,7 @@ if TYPE_CHECKING:
 class ExampleFactory(DataclassFactory[Example]):
     __model__ = Example
     __random_seed__ = 10
+    __check_model__ = False
 
 
 def _normalize_example_value(value: Any) -> Any:
@@ -41,7 +42,7 @@ def _normalize_example_value(value: Any) -> Any:
             # UnsetType not part of the Union
             pass
 
-    value = unwrap_annotation(annotation=value, random=ExampleFactory.__random__)
+    value = unwrap_annotation(annotation=value)
     if isinstance(value, (Decimal, float)):
         value = round(float(value), 2)
     if isinstance(value, Enum):
@@ -63,7 +64,6 @@ def _create_field_meta(field: FieldDefinition) -> FieldMeta:
         annotation=field.annotation,
         default=field.default if field.default is not Empty else Null,
         name=field.name,
-        random=ExampleFactory.__random__,
     )
 
 

@@ -1,9 +1,9 @@
 import dataclasses
-from typing import TYPE_CHECKING, Any, List, Optional, Type, cast
+from typing import TYPE_CHECKING, Annotated, Any, Optional, cast
 from uuid import UUID
 
 import pytest
-from typing_extensions import Annotated, NewType
+from typing_extensions import NewType
 
 from litestar import Controller, Litestar, Router, get
 from litestar._openapi.datastructures import OpenAPIContext
@@ -37,21 +37,21 @@ def create_factory(route: BaseRoute, handler: HTTPRouteHandler) -> ParameterFact
     )
 
 
-def _create_parameters(app: Litestar, path: str) -> List["OpenAPIParameter"]:
+def _create_parameters(app: Litestar, path: str) -> list["OpenAPIParameter"]:
     index = find_index(app.routes, lambda x: x.path_format == path)
     route = app.routes[index]
-    route_handler = route.route_handler_map["GET"][0]  # type: ignore[union-attr]
+    route_handler = route.route_handler_map["GET"]  # type: ignore[union-attr]
     handler = route_handler.fn
     assert callable(handler)
     return create_factory(route, route_handler).create_parameters_for_handler()
 
 
-def test_create_parameters(person_controller: Type[Controller]) -> None:
+def test_create_parameters(person_controller: type[Controller]) -> None:
     ExampleFactory.seed_random(10)
 
     parameters = _create_parameters(app=Litestar(route_handlers=[person_controller]), path="/{service_id}/person")
     assert len(parameters) == 10
-    page, name, service_id, page_size, from_date, to_date, gender, lucky_number, secret_header, cookie_value = tuple(
+    service_id, page, name, page_size, from_date, to_date, gender, lucky_number, secret_header, cookie_value = tuple(
         parameters
     )
 
@@ -111,7 +111,7 @@ def test_create_parameters(person_controller: Type[Controller]) -> None:
             Schema(
                 type=OpenAPIType.ARRAY,
                 items=Reference(ref="#/components/schemas/tests_unit_test_openapi_utils_Gender"),
-                examples=[[Gender.MALE]],
+                examples=[[Gender.FEMALE]],
             ),
             Schema(type=OpenAPIType.NULL),
         ],
@@ -244,7 +244,7 @@ def test_layered_parameters() -> None:
             router1: str,
             router2: float,
             app1: str,
-            app2: List[str],
+            app2: list[str],
             controller2: float = Parameter(float, ge=5.0),
         ) -> dict:
             return {}
@@ -263,7 +263,7 @@ def test_layered_parameters() -> None:
             route_handlers=[router],
             parameters={
                 "app1": Parameter(str, cookie="app4"),
-                "app2": Parameter(List[str], min_items=2),
+                "app2": Parameter(list[str], min_items=2),
                 "app3": Parameter(bool, required=False),
             },
         ),
@@ -348,6 +348,11 @@ def test_parameter_schema_extra() -> None:
                 }
             ),
         ],
+        query2: Annotated[
+            Gender,
+            Parameter(description="gender description", schema_extra={"format": "foo"}, schema_component_key="q2"),
+        ],
+        query3: Annotated[Gender, Parameter(schema_extra={"format": "bar"}, schema_component_key="q3")],
     ) -> Any:
         return query1
 
@@ -364,6 +369,12 @@ def test_parameter_schema_extra() -> None:
             {"type": "string", "enum": ["denied", "values"]},
         ]
     }
+    assert schema["paths"]["/"]["get"]["parameters"][1]["schema"]["$ref"] == "#/components/schemas/q2"
+    assert schema["paths"]["/"]["get"]["parameters"][1]["description"] == "gender description"
+    assert schema["components"]["schemas"]["q2"]["format"] == "foo"
+    assert schema["paths"]["/"]["get"]["parameters"][2]["schema"]["$ref"] == "#/components/schemas/q3"
+    assert schema["paths"]["/"]["get"]["parameters"][2]["description"] == Gender.__doc__
+    assert schema["components"]["schemas"]["q3"]["format"] == "bar"
 
     # Attempt to pass invalid key
     app = Litestar([error_handler])

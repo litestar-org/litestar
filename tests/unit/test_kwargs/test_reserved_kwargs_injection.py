@@ -1,4 +1,4 @@
-from typing import Any, List, Optional, Type, cast
+from typing import Annotated, Any, Optional, cast
 
 import msgspec.json
 import pytest
@@ -16,7 +16,9 @@ from litestar import (
     put,
 )
 from litestar.datastructures.state import ImmutableState, State
+from litestar.di import Provide
 from litestar.exceptions import ImproperlyConfiguredException
+from litestar.params import Dependency
 from litestar.status_codes import (
     HTTP_200_OK,
     HTTP_201_CREATED,
@@ -47,7 +49,7 @@ def test_application_immutable_state_injection() -> None:
 
 
 @pytest.mark.parametrize("state_typing", (State, CustomState))
-def test_application_state_injection(state_typing: Type[State]) -> None:
+def test_application_state_injection(state_typing: type[State]) -> None:
     @get("/", media_type=MediaType.TEXT)
     def route_handler(state: state_typing) -> str:  # type: ignore[valid-type]
         assert state
@@ -108,7 +110,7 @@ def test_data_using_list_of_models(decorator: Any, http_method: Any, expected_st
         path = test_path
 
         @decorator()
-        def test_method(self, data: List[DataclassPerson]) -> None:
+        def test_method(self, data: list[DataclassPerson]) -> None:
             assert data == people
 
     with create_test_client(MyController) as client:
@@ -164,7 +166,7 @@ def test_path_params(decorator: Any, http_method: Any, expected_status_code: Any
 )
 def test_query_params(decorator: Any, http_method: Any, expected_status_code: Any) -> None:
     @decorator("/person")
-    def handler(first: str, second: List[str], third: int, fourth: Optional[str] = None) -> None:
+    def handler(first: str, second: list[str], third: int, fourth: Optional[str] = None) -> None:
         assert first == "foo"
         assert second == ["a", "b"]
         assert third == 2
@@ -284,7 +286,7 @@ def test_body(decorator: Any, http_method: Any, expected_status_code: Any) -> No
 
 
 def test_improper_use_of_state_kwarg() -> None:
-    """Test error condition of State kwarg with unexpected type.."""
+    """Test the error condition of State kwarg with an unexpected type."""
     test_path = "/bad-state"
 
     class MyController(Controller):
@@ -296,3 +298,37 @@ def test_improper_use_of_state_kwarg() -> None:
 
     with pytest.raises(ImproperlyConfiguredException):
         Litestar(route_handlers=[MyController], openapi_config=None)
+
+
+@pytest.mark.parametrize(
+    "decorator, http_method, expected_status_code",
+    [
+        (post, HttpMethod.POST, HTTP_201_CREATED),
+        (put, HttpMethod.PUT, HTTP_200_OK),
+        (patch, HttpMethod.PATCH, HTTP_200_OK),
+        (delete, HttpMethod.DELETE, HTTP_204_NO_CONTENT),
+    ],
+)
+def test_data_kwarg_in_dependency(decorator: Any, http_method: Any, expected_status_code: Any) -> None:
+    """Test that using 'data' kwarg in a dependency function doesn't raise KeyError.
+
+    This test addresses GitHub issue #4230 where using the 'data' reserved kwarg
+    in a dependency function would cause a KeyError during application initialization.
+    """
+    test_path = "/person"
+
+    async def dependency_with_data(data: DataclassPerson) -> str:
+        assert isinstance(data, DataclassPerson)
+        return f"{data.first_name} {data.last_name}"
+
+    class MyController(Controller):
+        path = test_path
+
+        @decorator(dependencies={"person_name": Provide(dependency_with_data)})
+        async def test_method(self, data: DataclassPerson, person_name: Annotated[str, Dependency()]) -> None:
+            assert data == person_instance
+            assert person_name == f"{person_instance.first_name} {person_instance.last_name}"
+
+    with create_test_client(MyController) as client:
+        response = client.request(http_method, test_path, json=msgspec.to_builtins(person_instance))
+        assert response.status_code == expected_status_code

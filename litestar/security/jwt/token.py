@@ -11,6 +11,8 @@ import msgspec
 from litestar.exceptions import ImproperlyConfiguredException, NotAuthorizedException
 
 if TYPE_CHECKING:
+    from collections.abc import Sequence
+
     from typing_extensions import Self
 
 __all__ = (
@@ -55,13 +57,13 @@ class Token:
     """Subject - usually a unique identifier of the user or equivalent entity."""
     iat: datetime = field(default_factory=lambda: _normalize_datetime(datetime.now(timezone.utc)))
     """Issued at - should always be current now."""
-    iss: Optional[str] = field(default=None)  # noqa: UP007
+    iss: str | None = field(default=None)
     """Issuer - optional unique identifier for the issuer."""
     aud: Union[str, Sequence[str], None] = field(default=None)  # noqa: UP007
     """Audience - intended audience(s)."""
     jti: Optional[str] = field(default=None)  # noqa: UP007
     """JWT ID - a unique identifier of the JWT between different issuers."""
-    extras: Dict[str, Any] = field(default_factory=dict)  # noqa: UP006
+    extras: dict[str, Any] = field(default_factory=dict)
     """Extra fields that were found on the JWT token."""
 
     def __post_init__(self) -> None:
@@ -88,7 +90,7 @@ class Token:
     def decode_payload(
         cls,
         encoded_token: str,
-        secret: str,
+        secret: str | bytes,
         algorithms: list[str],
         issuer: list[str] | None = None,
         audience: str | Sequence[str] | None = None,
@@ -108,7 +110,7 @@ class Token:
     def decode(
         cls,
         encoded_token: str,
-        secret: str,
+        secret: str | bytes,
         algorithm: str,
         audience: str | Sequence[str] | None = None,
         issuer: str | Sequence[str] | None = None,
@@ -192,12 +194,18 @@ class Token:
         ) as e:
             raise NotAuthorizedException("Invalid token") from e
 
-    def encode(self, secret: str, algorithm: str) -> str:
+    def encode(
+        self,
+        secret: str | bytes,
+        algorithm: str,
+        headers: dict[str, Any] | None = None,
+    ) -> str:
         """Encode the token instance into a string.
 
         Args:
             secret: The secret with which the JWT is encoded.
             algorithm: The algorithm used to encode the JWT.
+            headers: Optional headers to include in the JWT (e.g., {"kid": "..."}).
 
         Returns:
             An encoded token string.
@@ -210,6 +218,7 @@ class Token:
                 payload={k: v for k, v in asdict(self).items() if v is not None},
                 key=secret,
                 algorithm=algorithm,
+                headers=headers,
             )
         except (jwt.DecodeError, NotImplementedError) as e:
             raise ImproperlyConfiguredException("Failed to encode token") from e

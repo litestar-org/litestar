@@ -157,7 +157,7 @@ def test_path_param_type_resolution(
     mock = MagicMock()
 
     @get("/some/test/path/{test:" + param_type_name + "}")
-    def handler(test: param_type_class) -> None:
+    def handler(test: param_type_class) -> None:  # pyright: ignore
         mock(test)
 
     with create_test_client(handler) as client:
@@ -187,7 +187,7 @@ def test_differently_named_path_params_on_same_level() -> None:
 
 def test_optional_path_parameter() -> None:
     @get(path=["/", "/{message:str}"], media_type=MediaType.TEXT, sync_to_thread=False)
-    def handler(message: Optional[str]) -> str:
+    def handler(message: Optional[str] = None) -> str:
         return message or "no message"
 
     with create_test_client(route_handlers=[handler]) as client:

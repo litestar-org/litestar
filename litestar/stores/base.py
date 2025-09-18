@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from datetime import datetime, timedelta, timezone
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING
 
 from msgspec import Struct
 from msgspec.msgpack import decode as msgpack_decode
@@ -112,7 +112,7 @@ class NamespacedStore(Store):
 class StorageObject(Struct):
     """:class:`msgspec.Struct` to store serialized data alongside with their expiry time."""
 
-    expires_at: Optional[datetime]  # noqa: UP007
+    expires_at: datetime | None
     data: bytes
 
     @classmethod

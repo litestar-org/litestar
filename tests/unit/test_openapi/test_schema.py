@@ -4,23 +4,21 @@ from datetime import date, datetime, timezone
 from enum import Enum, auto
 from typing import (
     TYPE_CHECKING,
+    Annotated,
     Any,
-    Dict,
     Generic,
-    List,
     Literal,
     Optional,
-    Tuple,
     TypedDict,
     TypeVar,
-    Union,  # pyright: ignore
+    Union,
 )
 
 import annotated_types
 import msgspec
 import pytest
 from msgspec import Struct
-from typing_extensions import Annotated, TypeAlias, TypeAliasType
+from typing_extensions import TypeAlias, TypeAliasType
 
 from litestar import Controller, MediaType, get, post
 from litestar._openapi.schema_generation.plugins import openapi_schema_plugins
@@ -257,7 +255,7 @@ def test_create_schema_for_dataclass_with_annotated_model_attribute(
     """Test that a model with an annotated attribute is correctly handled."""
     module = create_module(
         f"""
-{'from __future__ import annotations' if with_future_annotations else ''}
+{"from __future__ import annotations" if with_future_annotations else ""}
 from typing_extensions import Annotated
 from dataclasses import dataclass
 
@@ -277,7 +275,7 @@ def test_create_schema_for_typedict_with_annotated_required_and_not_required_mod
     """Test that a model with an annotated attribute is correctly handled."""
     module = create_module(
         f"""
-{'from __future__ import annotations' if with_future_annotations else ''}
+{"from __future__ import annotations" if with_future_annotations else ""}
 from typing_extensions import Annotated, Required, NotRequired
 from typing import TypedDict
 
@@ -293,6 +291,7 @@ class Foo(TypedDict):
 
 def test_create_schema_from_msgspec_annotated_type() -> None:
     class Lookup(msgspec.Struct):
+        int_field: Annotated[int, msgspec.Meta(gt=0)]
         str_field: Annotated[
             str,
             msgspec.Meta(max_length=16, examples=["example"], description="description", title="title", pattern=r"\w+"),
@@ -302,12 +301,14 @@ def test_create_schema_from_msgspec_annotated_type() -> None:
 
     schema = get_schema_for_field_definition(FieldDefinition.from_kwarg(name="Lookup", annotation=Lookup))
 
+    assert schema.properties["int_field"].type == OpenAPIType.INTEGER  # type: ignore[index, union-attr]
+    assert schema.properties["int_field"].exclusive_minimum == 0  # type: ignore[index, union-attr]
     assert schema.properties["str_field"].type == OpenAPIType.STRING  # type: ignore[index, union-attr]
     assert schema.properties["str_field"].examples == ["example"]  # type: ignore[index, union-attr]
     assert schema.properties["str_field"].description == "description"  # type: ignore[index]
     assert schema.properties["str_field"].title == "title"  # type: ignore[index, union-attr]
     assert schema.properties["str_field"].max_length == 16  # type: ignore[index, union-attr]
-    assert sorted(schema.required) == sorted(["str_field", "bytes_field"])  # type: ignore[arg-type]
+    assert sorted(schema.required) == sorted(["int_field", "str_field", "bytes_field"])  # type: ignore[arg-type]
     assert schema.properties["bytes_field"].to_schema() == {  # type: ignore[index]
         "contentEncoding": "utf-8",
         "maxLength": 2,
@@ -355,7 +356,7 @@ def test_literal_enums() -> None:
         A = auto()
         B = auto()
 
-    schema = get_schema_for_field_definition(FieldDefinition.from_annotation(List[Literal[Foo.A]]))
+    schema = get_schema_for_field_definition(FieldDefinition.from_annotation(list[Literal[Foo.A]]))
     assert isinstance(schema.items, Schema)
     assert schema.items.const == 1
 
@@ -373,7 +374,7 @@ class MsgspecGeneric(Struct, Generic[T]):
     annotated_foo: Annotated[T, object()]
 
 
-annotations: List[type] = [DataclassGeneric[int], MsgspecGeneric[int]]
+annotations: list[type] = [DataclassGeneric[int], MsgspecGeneric[int]]
 
 # Generic TypedDict was only supported from 3.11 onwards
 if sys.version_info >= (3, 11):
@@ -454,13 +455,13 @@ def test_schema_generation_with_pagination(annotation: Any) -> None:
 
 
 def test_schema_generation_with_ellipsis() -> None:
-    schema = get_schema_for_field_definition(FieldDefinition.from_annotation(Tuple[int, ...]))
+    schema = get_schema_for_field_definition(FieldDefinition.from_annotation(tuple[int, ...]))
     assert isinstance(schema.items, Schema)
     assert schema.items.type == OpenAPIType.INTEGER
 
 
 def test_schema_tuple_with_union() -> None:
-    schema = get_schema_for_field_definition(FieldDefinition.from_annotation(Tuple[int, Union[int, str]]))
+    schema = get_schema_for_field_definition(FieldDefinition.from_annotation(tuple[int, Union[int, str]]))
     assert schema.prefix_items == [
         Schema(type=OpenAPIType.INTEGER),
         Schema(one_of=[Schema(type=OpenAPIType.INTEGER), Schema(type=OpenAPIType.STRING)]),
@@ -468,7 +469,7 @@ def test_schema_tuple_with_union() -> None:
 
 
 def test_schema_tuple() -> None:
-    schema = get_schema_for_field_definition(FieldDefinition.from_annotation(Tuple[int, str]))
+    schema = get_schema_for_field_definition(FieldDefinition.from_annotation(tuple[int, str]))
     assert schema == Schema(
         prefix_items=[Schema(type=OpenAPIType.INTEGER), Schema(type=OpenAPIType.STRING)],
         type=OpenAPIType.ARRAY,
@@ -476,7 +477,7 @@ def test_schema_tuple() -> None:
 
 
 def test_schema_optional_tuple() -> None:
-    schema = get_schema_for_field_definition(FieldDefinition.from_annotation(Optional[Tuple[int, str]]))
+    schema = get_schema_for_field_definition(FieldDefinition.from_annotation(Optional[tuple[int, str]]))
     assert schema == Schema(
         one_of=[
             Schema(
@@ -726,7 +727,7 @@ def test_type_alias_type() -> None:
 
 @pytest.mark.skipif(sys.version_info < (3, 12), reason="type keyword not available before 3.12")
 def test_type_alias_type_keyword() -> None:
-    ctx: Dict[str, Any] = {}
+    ctx: dict[str, Any] = {}
     exec("type IntAlias = int", ctx, None)
     annotation = ctx["IntAlias"]
 

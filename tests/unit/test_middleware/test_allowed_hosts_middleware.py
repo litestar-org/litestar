@@ -73,23 +73,23 @@ def test_middleware_allowed_hosts() -> None:
     config = AllowedHostsConfig(allowed_hosts=["*.example.com", "moishe.zuchmir.com"])
 
     with create_test_client(handler, allowed_hosts=config) as client:
-        client.base_url = "http://x.example.com"  # type: ignore[assignment]
+        client.base_url = "http://x.example.com"
         response = client.get("/")
         assert response.status_code == HTTP_200_OK
 
-        client.base_url = "http://x.y.example.com"  # type: ignore[assignment]
+        client.base_url = "http://x.y.example.com"
         response = client.get("/")
         assert response.status_code == HTTP_200_OK
 
-        client.base_url = "http://moishe.zuchmir.com"  # type: ignore[assignment]
+        client.base_url = "http://moishe.zuchmir.com"
         response = client.get("/")
         assert response.status_code == HTTP_200_OK
 
-        client.base_url = "http://x.moishe.zuchmir.com"  # type: ignore[assignment]
+        client.base_url = "http://x.moishe.zuchmir.com"
         response = client.get("/")
         assert response.status_code == HTTP_400_BAD_REQUEST
 
-        client.base_url = "http://x.example.x.com"  # type: ignore[assignment]
+        client.base_url = "http://x.example.x.com"
         response = client.get("/")
         assert response.status_code == HTTP_400_BAD_REQUEST
 
@@ -103,7 +103,7 @@ def test_middleware_allow_all() -> None:
     config = AllowedHostsConfig(allowed_hosts=["*", "*.example.com", "moishe.zuchmir.com"])
 
     with create_test_client(handler, allowed_hosts=config) as client:
-        client.base_url = "http://any.domain.allowed.com"  # type: ignore[assignment]
+        client.base_url = "http://any.domain.allowed.com"
         response = client.get("/")
         assert response.status_code == HTTP_200_OK
 
@@ -116,7 +116,7 @@ def test_middleware_redirect_on_www_by_default() -> None:
     config = AllowedHostsConfig(allowed_hosts=["www.moishe.zuchmir.com"])
 
     with create_test_client(handler, allowed_hosts=config) as client:
-        client.base_url = "http://moishe.zuchmir.com"  # type: ignore[assignment]
+        client.base_url = "http://moishe.zuchmir.com"
         response = client.get("/")
         assert response.status_code == HTTP_200_OK
         assert str(response.url) == "http://www.moishe.zuchmir.com/"
@@ -130,7 +130,7 @@ def test_middleware_does_not_redirect_when_off() -> None:
     config = AllowedHostsConfig(allowed_hosts=["www.moishe.zuchmir.com"], www_redirect=False)
 
     with create_test_client(handler, allowed_hosts=config) as client:
-        client.base_url = "http://moishe.zuchmir.com"  # type: ignore[assignment]
+        client.base_url = "http://moishe.zuchmir.com"
         response = client.get("/")
         assert response.status_code == HTTP_400_BAD_REQUEST
 

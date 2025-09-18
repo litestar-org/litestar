@@ -1,18 +1,19 @@
-# ruff: noqa: UP006,UP007
 from __future__ import annotations
 
 import inspect
+import re
 from dataclasses import dataclass, field
 from types import ModuleType
-from typing import TYPE_CHECKING, Callable, Dict, List, Optional
+from typing import TYPE_CHECKING, Callable, Optional
 from unittest.mock import MagicMock
 
+import msgspec
 import pytest
 from msgspec import Meta, Struct, to_builtins
 
 from litestar import Litestar, Request, get, post
 from litestar._openapi.schema_generation import SchemaCreator
-from litestar.dto import DataclassDTO, DTOConfig, DTOField
+from litestar.dto import DataclassDTO, DTOConfig, DTOField, MsgspecDTO
 from litestar.dto._backend import DTOBackend, _create_struct_field_meta_for_field_definition
 from litestar.dto._codegen_backend import DTOCodegenBackend
 from litestar.dto._types import CollectionType, SimpleType, TransferDTOFieldDefinition
@@ -41,11 +42,11 @@ class NestedDC:
 class DC:
     a: int
     nested: NestedDC
-    nested_list: List[NestedDC]
-    nested_mapping: Dict[str, NestedDC]
+    nested_list: list[NestedDC]
+    nested_mapping: dict[str, NestedDC]
     integer: int
     b: str = field(default="b")
-    c: List[int] = field(default_factory=list)
+    c: list[int] = field(default_factory=list)
     optional: Optional[str] = None
 
 
@@ -154,7 +155,7 @@ def test_backend_iterable_annotation(dto_factory: type[DataclassDTO], backend_cl
     backend = DTOBackend(
         handler_id="test",
         dto_factory=dto_factory,
-        field_definition=FieldDefinition.from_annotation(List[DC]),
+        field_definition=FieldDefinition.from_annotation(list[DC]),
         model_type=DC,
         wrapper_attribute_name=None,
         is_data_field=True,
@@ -283,7 +284,7 @@ def test_backend_populate_collection_data_from_raw(
     backend = backend_cls(
         handler_id="test",
         dto_factory=dto_factory,
-        field_definition=FieldDefinition.from_annotation(List[DC]),
+        field_definition=FieldDefinition.from_annotation(list[DC]),
         model_type=DC,
         wrapper_attribute_name=None,
         is_data_field=True,
@@ -313,7 +314,7 @@ def test_backend_encode_collection_data(
     backend = backend_cls(
         handler_id="test",
         dto_factory=dto_factory,
-        field_definition=FieldDefinition.from_annotation(List[DC]),
+        field_definition=FieldDefinition.from_annotation(list[DC]),
         model_type=DC,
         wrapper_attribute_name=None,
         is_data_field=True,
@@ -366,7 +367,7 @@ def test_custom_attribute_accessor(backend_cls: type[DTOBackend]) -> None:
         return getattr(obj, attr)
 
     class MyDataclassDTO(DataclassDTO):
-        attribute_accessor = my_getattr
+        attribute_accessor = my_getattr  # type: ignore[assignment]
 
     class Factory(MyDataclassDTO):
         config = DTOConfig(include={"id"})
@@ -430,7 +431,7 @@ class NestedNestedModel:
 @dataclass
 class NestedModel:
     c: int
-    d: List[NestedNestedModel]
+    d: list[NestedNestedModel]
 
 @dataclass
 class Model:
@@ -486,7 +487,7 @@ class NestedNestedModel:
 @dataclass
 class NestedModel:
     c: int
-    d: List[NestedNestedModel]
+    d: list[NestedNestedModel]
 
 @dataclass
 class Model:
@@ -550,3 +551,96 @@ def test_create_struct_field_meta_for_field_definition(constraint_kwargs: Any) -
         title="test",
         **constraint_kwargs,
     )
+
+
+@pytest.mark.parametrize(
+    "simple_type, value",
+    [
+        ("None", [{"value": "hello"}]),
+        ("None", None),
+        ("None,int", None),
+        ("None,int", 1),
+        ("None,int", [{"value": "hello"}]),
+        ("int", [{"value": "hello"}]),
+        ("int", 1),
+        ("bool", [{"value": "hello"}]),
+        ("bool", True),
+        ("bool,str,int", True),
+        ("bool,str,int", 1),
+        ("bool,str,int", "hello"),
+        ("bool,str,int", [{"value": "hello"}]),
+        ("bool,Inner", {"value": "hello"}),
+        ("bool,Inner", [{"value": "hello"}]),
+        ("bool,Inner", True),
+    ],
+)
+def test_transfer_nested_simple_type_union(
+    asgi_connection: Request[Any, Any, Any],
+    create_module: Callable[[str], ModuleType],
+    simple_type: str,
+    value: Any,
+) -> None:
+    # https://github.com/litestar-org/litestar/issues/4273
+
+    module = create_module(f"""
+from typing import Union
+import msgspec
+
+class Inner(msgspec.Struct):
+    value: str
+
+class Outer(msgspec.Struct):
+    some_field: Union[{simple_type}, list[Inner]]
+""")
+
+    backend = DTOCodegenBackend(
+        handler_id="test",
+        dto_factory=MsgspecDTO[module.Outer],  # type: ignore[name-defined]
+        field_definition=TransferDTOFieldDefinition.from_annotation(module.Outer),
+        model_type=module.Outer,
+        wrapper_attribute_name=None,
+        is_data_field=True,
+    )
+
+    data = backend.populate_data_from_builtins({"some_field": value}, asgi_connection)
+    assert isinstance(data, module.Outer)
+    if isinstance(value, list):
+        assert data.some_field == msgspec.convert(value, type=list[module.Inner])  # type: ignore[name-defined]
+    elif isinstance(value, dict):
+        assert data.some_field == msgspec.convert(value, type=module.Inner)
+    else:
+        assert data.some_field == value
+
+
+def test_nested_union_with_multiple_composite_types_raises(
+    asgi_connection: Request[Any, Any, Any],
+    create_module: Callable[[str], ModuleType],
+) -> None:
+    module = create_module("""
+from typing import Union
+import dataclasses
+
+@dataclasses.dataclass
+class Inner:
+    value: str
+
+
+@dataclasses.dataclass
+class Outer:
+    some_field: Union[list[str], dict[str, str], Inner]
+""")
+
+    with pytest.raises(
+        RuntimeError,
+        match=re.escape(
+            "Multiple composite types within unions are not supported. Received: list[str], dict[str, str]"
+        ),
+    ):
+        DTOCodegenBackend(
+            handler_id="test",
+            dto_factory=DataclassDTO[module.Outer],  # type: ignore[name-defined]
+            field_definition=TransferDTOFieldDefinition.from_annotation(module.Outer),
+            model_type=module.Outer,
+            wrapper_attribute_name=None,
+            is_data_field=True,
+        )

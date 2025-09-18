@@ -27,6 +27,7 @@ REDIRECT_TEMPLATE = """
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--version", required=False)
+parser.add_argument("--environment", required=False)
 parser.add_argument("output")
 
 
@@ -39,7 +40,7 @@ class VersionSpec(TypedDict):
 def checkout(branch: str) -> None:
     subprocess.run(["git", "checkout", branch], check=True)  # noqa: S603 S607
     yield
-    subprocess.run(["git", "checkout", "-"], check=True)  # noqa: S603 S607
+    subprocess.run(["git", "checkout", "-"], check=True)  # noqa: S607
 
 
 def load_version_spec() -> VersionSpec:
@@ -49,13 +50,16 @@ def load_version_spec() -> VersionSpec:
     return {"versions": [], "latest": ""}
 
 
-def build(output_dir: str, version: str | None) -> None:
+def build(output_dir: str, version: str | None, environment: str = "local") -> None:
     if version is None:
         version = importlib.metadata.version("litestar").rsplit(".")[0]
     else:
         os.environ["_LITESTAR_DOCS_BUILD_VERSION"] = version
 
-    subprocess.run(["make", "docs"], check=True)  # noqa: S603 S607
+    if environment is not None:
+        os.environ["_LITESTAR_DOCS_BUILD_ENVIRONMENT"] = environment
+
+    subprocess.run(["make", "docs"], check=True)  # noqa: S607
 
     output_dir = Path(output_dir)
     output_dir.mkdir()
@@ -83,7 +87,7 @@ def build(output_dir: str, version: str | None) -> None:
 
 def main() -> None:
     args = parser.parse_args()
-    build(output_dir=args.output, version=args.version)
+    build(output_dir=args.output, version=args.version, environment=args.environment)
 
 
 if __name__ == "__main__":

@@ -14,7 +14,7 @@ jobs:
 
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Download artifact
         uses: dawidd6/action-download-artifact@v11
@@ -43,7 +43,7 @@ jobs:
           target-folder: ${{ env.PR_NUMBER }}
           branch: gh-pages
 
-      - uses: actions/github-script@v7
+      - uses: actions/github-script@v8
         env:
           PR_NUMBER: ${{ env.PR_NUMBER }}
         with:

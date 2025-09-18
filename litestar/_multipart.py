@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import re
 from collections import defaultdict
-from typing import TYPE_CHECKING, Any, AsyncGenerator
+from typing import TYPE_CHECKING, Any
 
 from multipart import (  # type: ignore[import-untyped]
     MultipartSegment,
@@ -19,6 +19,8 @@ __all__ = ("parse_content_header", "parse_multipart_form")
 from litestar.utils.compat import async_next
 
 if TYPE_CHECKING:
+    from collections.abc import AsyncGenerator
+
     from litestar.types import TypeDecodersSequence
 
 _token = r"([\w!#$%&'*+\-.^_`|~]+)"  # noqa: S105
@@ -109,10 +111,9 @@ async def parse_multipart_form(  # noqa: C901
                         if isinstance(data, UploadFile):
                             await data.seek(0)
                             fields[segment.name].append(data)
-                        elif data:
-                            fields[segment.name].append(data.decode(segment.charset or "utf-8"))
                         else:
-                            fields[segment.name].append(None)
+                            # Always decode as string, even for empty data
+                            fields[segment.name].append(data.decode(segment.charset or "utf-8"))
 
                         # reset for next part
                         data = bytearray()

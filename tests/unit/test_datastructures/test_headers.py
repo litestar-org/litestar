@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Callable, List, Optional, Union
+from typing import TYPE_CHECKING, Callable, Optional, Union
 
 import pytest
 from pytest import FixtureRequest
@@ -36,7 +36,7 @@ def test_header_container_requires_header_key_being_defined() -> None:
         def _get_header_value(self) -> str:
             return ""
 
-        def from_header(self, header_value: str) -> "Header":  # type: ignore[explicit-override, override]
+        def from_header(self, header_value: str) -> "Header":  # type: ignore[override]
             return self
 
     with pytest.raises(ImproperlyConfiguredException):
@@ -370,7 +370,7 @@ def test_etag_to_header_weak() -> None:
         ("text/*,text/html", ["text/plain", "text/html"], "text/html"),
     ),
 )
-def test_accept_best_match(accept_value: str, provided_types: List[str], best_match: Optional[str]) -> None:
+def test_accept_best_match(accept_value: str, provided_types: list[str], best_match: Optional[str]) -> None:
     accept = Accept(accept_value)
     assert accept.best_match(provided_types) == best_match
 
