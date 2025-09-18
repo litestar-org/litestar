@@ -18,17 +18,45 @@ from litestar.security.jwt import Token
 from litestar.security.jwt.token import JWTDecodeOptions
 
 
-@pytest.mark.parametrize("algorithm", ["HS256", "HS384", "HS512"])
-@pytest.mark.parametrize("token_issuer", [None, "e3d7d10edbbc28bfebd8861d39ae7587acde1e1fcefe2cbbec686d235d68f475"])
-@pytest.mark.parametrize("token_audience", [None, "627224198b4245ed91cf8353e4ccdf1650728c7ee92748f55fe1e9a9c4d961df"])
 @pytest.mark.parametrize(
-    "token_unique_jwt_id", [None, "10f5c6967783ddd6bb0c4e8262d7097caeae64705e45f83275e3c32eee5d30f2"]
+    "algorithm",
+    [pytest.param("HS256", id="HS256"), pytest.param("HS384", id="HS384"), pytest.param("HS512", id="HS512")],
 )
-@pytest.mark.parametrize("token_extras", [None, {"email": "test@test.com"}])
+@pytest.mark.parametrize(
+    "token_issuer",
+    [
+        pytest.param(None, id="None"),
+        pytest.param("e3d7d10edbbc28bfebd8861d39ae7587acde1e1fcefe2cbbec686d235d68f475", id="String"),
+    ],
+)
+@pytest.mark.parametrize(
+    "token_audience",
+    [
+        pytest.param(None, id="None"),
+        pytest.param("627224198b4245ed91cf8353e4ccdf1650728c7ee92748f55fe1e9a9c4d961df", id="String"),
+        pytest.param(
+            [
+                "627224198b4245ed91cf8353e4ccdf1650728c7ee92748f55fe1e9a9c4d961df",
+                "887224198b4245ed91cf8353e4ccdf1650728c7ee92748f55fe1e9a9c4d961df",
+            ],
+            id="List",
+        ),
+    ],
+)
+@pytest.mark.parametrize(
+    "token_unique_jwt_id",
+    [
+        pytest.param(None, id="None"),
+        pytest.param("10f5c6967783ddd6bb0c4e8262d7097caeae64705e45f83275e3c32eee5d30f2", id="String"),
+    ],
+)
+@pytest.mark.parametrize(
+    "token_extras", [pytest.param(None, id="None"), pytest.param({"email": "test@test.com"}, id="Dict")]
+)
 def test_token(
     algorithm: str,
     token_issuer: str | None,
-    token_audience: str | None,
+    token_audience: str | Sequence[str] | None,
     token_unique_jwt_id: str | None,
     token_extras: dict[str, Any] | None,
 ) -> None:
