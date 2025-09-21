@@ -243,7 +243,7 @@ class LitestarExtensionGroup(LitestarGroup):
         original_ignore_unknown_option = ctx.ignore_unknown_options
         ctx.ignore_unknown_options = True
 
-        opts, remaining_args, order = parser.parse_args(list(args))
+        opts, _remaining_args, order = parser.parse_args(list(args))
         self._preparsed_app_path = opts.get("app_path", None)
         self._preparsed_app_dir = opts.get("app_dir", None)
 
@@ -254,6 +254,11 @@ class LitestarExtensionGroup(LitestarGroup):
     def list_commands(self, ctx: Context) -> list[str]:
         self._prepare(ctx)
         return super().list_commands(ctx)
+
+    def format_help(self, ctx: Context, formatter: Any) -> None:
+        """Override format_help to ensure plugins are loaded before rendering help."""
+        self._prepare(ctx)
+        return super().format_help(ctx, formatter)
 
 
 def _inject_args(func: Callable[P, T]) -> Callable[P, T]:
