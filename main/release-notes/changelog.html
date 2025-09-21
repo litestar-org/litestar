@@ -549,6 +549,31 @@ which they run internally within a dedicated thread + event loop.</p>
 <p>References: <span><a class="reference external" href="https://github.com/litestar-org/litestar/issues/1920">https://github.com/litestar-org/litestar/issues/1920</a></span>, <span><a class="reference external" href="https://github.com/litestar-org/litestar/pull/4291">https://github.com/litestar-org/litestar/pull/4291</a></span></p>
 </div>
 </dd>
+<dt>Remove deprecated plugin properties from <code class="docutils literal notranslate"><span class="pre">Litestar</span></code><a class="headerlink reference internal" href="#3.0.0-remove deprecated plugin properties from" id="3.0.0-remove deprecated plugin properties from">#</a><span class="breaking-change">breaking</span></dt><dd><div class="changelog-change docutils container">
+<p>Remove deprecated <code class="docutils literal notranslate"><span class="pre">&lt;plugin_type&gt;_plugins</span></code> properties from <a class="reference internal" href="../reference/app.html#litestar.app.Litestar" title="litestar.app.Litestar"><code class="xref py py-class docutils literal notranslate"><span class="pre">Litestar</span></code></a>.</p>
+<div class="table-wrapper docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Removed</p></th>
+<th class="head"><p>Use instead</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Litestar.openapi_schema_plugins</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Litestar.plugins.openapi_schema</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Litestar.cli_plugins</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Litestar.plugins.cli</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Litestar.serialization_plugins</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Litestar.serialization.cli</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>References: </p>
+</div>
+</dd>
 </dl>
 </section>
 </section>

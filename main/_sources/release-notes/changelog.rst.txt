@@ -24,3 +24,17 @@
         .. seealso::
             :ref:`usage/testing:Test Clients`
             :ref:`usage/testing:Deciding which test client to use`
+
+    .. change:: Remove deprecated plugin properties from ``Litestar``
+        :type: feature
+        :breaking:
+
+        Remove deprecated ``<plugin_type>_plugins`` properties from :class:`Litestar`.
+
+        ===================================  ===================================
+        Removed                              Use instead
+        ===================================  ===================================
+        ``Litestar.openapi_schema_plugins``  ``Litestar.plugins.openapi_schema``
+        ``Litestar.cli_plugins``             ``Litestar.plugins.cli``
+        ``Litestar.serialization_plugins``   ``Litestar.serialization.cli``
+        ===================================  ===================================
