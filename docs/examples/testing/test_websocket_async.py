@@ -17,5 +17,5 @@ async def test_websocket() -> None:
         await client.websocket_connect("/ws") as ws,
     ):
         await ws.send_json({"hello": "world"})
-        data = ws.receive_json()
+        data = await ws.receive_json()
         assert data == {"message": {"hello": "world"}}
