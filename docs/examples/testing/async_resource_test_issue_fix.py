@@ -1,10 +1,10 @@
-from typing import AsyncIterable
+from collections.abc import AsyncIterable
 
 import httpx
 import pytest
 import pytest_asyncio
 
-from litestar import get, Litestar
+from litestar import Litestar, get
 from litestar.testing import AsyncTestClient
 
 

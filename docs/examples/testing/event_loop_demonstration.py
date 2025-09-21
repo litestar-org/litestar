@@ -2,7 +2,7 @@ import asyncio
 
 import pytest_asyncio
 
-from litestar import get, Litestar
+from litestar import Litestar, get
 from litestar.testing import AsyncTestClient, TestClient
 
 

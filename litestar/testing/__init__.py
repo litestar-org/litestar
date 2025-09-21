@@ -3,10 +3,11 @@ from litestar.testing.client.subprocess_client import subprocess_async_client, s
 from litestar.testing.client.sync_client import TestClient
 from litestar.testing.helpers import create_async_test_client, create_test_client
 from litestar.testing.request_factory import RequestFactory
-from litestar.testing.websocket_test_session import WebSocketTestSession
+from litestar.testing.websocket_test_session import AsyncWebSocketTestSession, WebSocketTestSession
 
 __all__ = (
     "AsyncTestClient",
+    "AsyncWebSocketTestSession",
     "RequestFactory",
     "TestClient",
     "WebSocketTestSession",

@@ -12,8 +12,10 @@ async def test_websocket() -> None:
         await socket.send_json({"message": recv})
         await socket.close()
 
-    async with create_async_test_client(route_handlers=[websocket_handler]) as client:
-        async with await client.websocket_connect("/ws") as ws:
-            await ws.send_json({"hello": "world"})
-            data = ws.receive_json()
-            assert data == {"message": {"hello": "world"}}
+    async with (
+        create_async_test_client(route_handlers=[websocket_handler]) as client,
+        await client.websocket_connect("/ws") as ws,
+    ):
+        await ws.send_json({"hello": "world"})
+        data = ws.receive_json()
+        assert data == {"message": {"hello": "world"}}
