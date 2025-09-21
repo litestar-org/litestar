@@ -574,25 +574,3 @@ def test_file_response_media_type(content_media_type: Any, expected: Any, create
 
     response = create_factory(handler).create_success_response()
     assert next(iter(response.content.values())).schema.content_media_type == expected  # type: ignore[union-attr]
-
-
-def test_response_header_deprecated_properties() -> None:
-    assert ResponseHeader(name="foo", value="bar").allow_empty_value is False
-    assert ResponseHeader(name="foo", value="bar").allow_reserved is False
-
-    with pytest.warns(DeprecationWarning, match="property is invalid for headers"):
-        ResponseHeader(name="foo", value="bar", allow_empty_value=True)
-
-    with pytest.warns(DeprecationWarning, match="property is invalid for headers"):
-        ResponseHeader(name="foo", value="bar", allow_reserved=True)
-
-
-def test_header_deprecated_properties() -> None:
-    assert OpenAPIHeader().allow_empty_value is False
-    assert OpenAPIHeader().allow_reserved is False
-
-    with pytest.warns(DeprecationWarning, match="property is invalid for headers"):
-        OpenAPIHeader(allow_empty_value=True)
-
-    with pytest.warns(DeprecationWarning, match="property is invalid for headers"):
-        OpenAPIHeader(allow_reserved=True)

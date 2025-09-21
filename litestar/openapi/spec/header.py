@@ -4,7 +4,6 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any, Literal
 
 from litestar.openapi.spec.base import BaseSchemaObject
-from litestar.utils import warn_deprecation
 
 if TYPE_CHECKING:
     from litestar.openapi.spec.example import Example
@@ -54,19 +53,6 @@ class OpenAPIHeader(BaseSchemaObject):
     deprecated: bool = False
     """Specifies that a parameter is deprecated and SHOULD be transitioned out of usage. Default value is ``False``."""
 
-    allow_empty_value: bool = None  # type: ignore[assignment]
-    """Sets the ability to pass empty-valued parameters. This is valid only for ``query`` parameters and allows sending
-    a parameter with an empty value. Default value is ``False``. If
-    `style <https://spec.openapis.org/oas/v3.1.0#parameterStyle>`__ is used, and if behavior is ``n/a`` (cannot be
-    serialized), the value of ``allowEmptyValue`` SHALL be ignored. Use of this property is NOT RECOMMENDED, as it is
-    likely to be removed in a later revision.
-
-    The rules for serialization of the parameter are specified in one of two ways.For simpler scenarios, a
-    `schema <https://spec.openapis.org/oas/v3.1.0#parameterSchema>`_ and
-    `style <https://spec.openapis.org/oas/v3.1.0#parameterStyle>`__ can describe the structure and syntax of the
-    parameter.
-    """
-
     style: str | None = None
     """Describes how the parameter value will be serialized depending on the
     type of the parameter value. Default values (based on value of ``in``):
@@ -84,13 +70,6 @@ class OpenAPIHeader(BaseSchemaObject):
     For other types of parameters this property has no effect.When
     `style <https://spec.openapis.org/oas/v3.1.0#parameterStyle>`__ is ``form``, the default value is ``True``. For all
     other styles, the default value is ``False``.
-    """
-
-    allow_reserved: bool = None  # type: ignore[assignment]
-    """Determines whether the parameter value SHOULD allow reserved characters, as defined by. :rfc:`3986`
-    (``:/?#[]@!$&'()*+,;=``) to be included without percent-encoding.
-
-    This property only applies to parameters with an ``in`` value of ``query``. The default value is ``False``.
     """
 
     example: Any | None = None
@@ -123,27 +102,4 @@ class OpenAPIHeader(BaseSchemaObject):
 
     @property
     def _exclude_fields(self) -> set[str]:
-        return {"name", "param_in", "allow_reserved", "allow_empty_value"}
-
-    def __post_init__(self) -> None:
-        if self.allow_reserved is None:
-            self.allow_reserved = False  # type: ignore[unreachable]
-        else:
-            warn_deprecation(
-                "2.13.1",
-                "allow_reserved",
-                kind="parameter",
-                removal_in="4",
-                info="This property is invalid for headers and will be ignored",
-            )
-
-        if self.allow_empty_value is None:
-            self.allow_empty_value = False  # type: ignore[unreachable]
-        else:
-            warn_deprecation(
-                "2.13.1",
-                "allow_empty_value",
-                kind="parameter",
-                removal_in="4",
-                info="This property is invalid for headers and will be ignored",
-            )
+        return {"name", "param_in"}

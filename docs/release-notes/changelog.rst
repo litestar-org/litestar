@@ -27,6 +27,7 @@
 
     .. change:: Remove deprecated plugin properties from ``Litestar``
         :type: feature
+        :pr: 4297
         :breaking:
 
         Remove deprecated ``<plugin_type>_plugins`` properties from :class:`Litestar`.
@@ -38,3 +39,11 @@
         ``Litestar.cli_plugins``             ``Litestar.plugins.cli``
         ``Litestar.serialization_plugins``   ``Litestar.serialization.cli``
         ===================================  ===================================
+
+    .. change:: Remove deprecated ``allow_reserved`` and ``allow_empty_value`` property from ``ResponseHeader`` and ``OpenAPIHeader``
+        :type: feature
+        :pr: 4299
+        :breaking:
+
+        Remove the deprecated properties ``allow_reserved`` and ``allow_empty_value`` from
+        :class:`~litestar.datastructures.ResponseHeader` and :class:`~litestar.openapi.spec.OpenAPIHeader`.
