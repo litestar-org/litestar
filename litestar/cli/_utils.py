@@ -528,10 +528,12 @@ def _generate_self_signed_cert(certfile_path: Path, keyfile_path: Path, common_n
             "Cryptography must be installed when using --create-self-signed-cert\nPlease install the litestar[cryptography] extras"
         ) from err
 
-    subject = x509.Name([
-        x509.NameAttribute(NameOID.COMMON_NAME, common_name),
-        x509.NameAttribute(NameOID.ORGANIZATION_NAME, "Development Certificate"),
-    ])
+    subject = x509.Name(
+        [
+            x509.NameAttribute(NameOID.COMMON_NAME, common_name),
+            x509.NameAttribute(NameOID.ORGANIZATION_NAME, "Development Certificate"),
+        ]
+    )
 
     key = rsa.generate_private_key(public_exponent=65537, key_size=2048, backend=default_backend())
 
