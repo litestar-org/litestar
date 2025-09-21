@@ -42,6 +42,11 @@ if TYPE_CHECKING:
     from collections.abc import Generator, Iterable, Sequence
     from types import ModuleType
 
+    try:
+        from rich_click import RichContext
+    except ImportError:
+        RichContext = Context  # type: ignore[assignment,misc]
+
     from litestar.openapi import OpenAPIConfig
     from litestar.routes import ASGIRoute, HTTPRoute, WebSocketRoute
     from litestar.types import AnyCallable
@@ -254,6 +259,11 @@ class LitestarExtensionGroup(LitestarGroup):
     def list_commands(self, ctx: Context) -> list[str]:
         self._prepare(ctx)
         return super().list_commands(ctx)
+
+    def format_help(self, ctx: Context, formatter: Any) -> None:
+        """Override format_help to ensure plugins are loaded before rendering help."""
+        self._prepare(ctx)
+        return super().format_help(ctx, formatter)  # type: ignore[arg-type]
 
 
 def _inject_args(func: Callable[P, T]) -> Callable[P, T]:
