@@ -13,7 +13,8 @@ def test_websocket() -> None:
         await socket.send_json({"message": recv})
         await socket.close()
 
-    with create_test_client(route_handlers=[websocket_handler]).websocket_connect("/ws") as ws:
-        ws.send_json({"hello": "world"})
-        data = ws.receive_json()
-        assert data == {"message": {"hello": "world"}}
+    with create_test_client(route_handlers=[websocket_handler]) as client:
+        with client.websocket_connect("/ws") as ws:
+            ws.send_json({"hello": "world"})
+            data = ws.receive_json()
+            assert data == {"message": {"hello": "world"}}

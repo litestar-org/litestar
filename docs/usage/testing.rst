@@ -1,15 +1,23 @@
 Testing
 =======
 
-Testing is a first class citizen in Litestar, which offers several powerful testing utilities out of the box.
+Testing a Litestar application is made simple by the testing utilities provided out of the box.
+Based on `httpx <https://www.python-httpx.org/>`_, they come with a familier interface and integrate seamlessly into
+synchronous or asynchronous tests.
 
 
-Test Client
------------
+Test Clients
+------------
 
-Litestar's test client is built on top of
-the `httpx <https://github.com/encode/httpx>`_ library. To use the test client you should pass to it an
-instance of Litestar as the ``app`` kwarg.
+Litestar provides 2 test clients:
+
+- :class:`~litestar.testing.AsyncTestClient`: An asynchronous test client to be used in asynchronous environments. It
+  runs the application and client on an externally managed event loop. Ideal for testing asynchronous behaviour, or when
+  dealing with asynchronous resources
+- :class:`~litestar.testing.TestClient`: A synchronous test client. It runs the application in a newly created event
+  loop within a separate thread. Ideal when no async behaviour needs to be tested, and no external event loop is
+  provided by the testing library
+
 
 Let's say we have a very simple app with a health check endpoint:
 
@@ -148,71 +156,90 @@ We would then be able to rewrite our test like so:
             :caption: ``tests/test_health_check.py``
             :language: python
 
+
+Deciding which test client to use
++++++++++++++++++++++++++++++++++
+
+In most situations, it doesn't make a functional difference, and just comes down to preference, as both clients offer
+the same API and capabilities. However, there are some situations where the way the clients run and interact with the
+application are important, specifically when testing in an asynchronous context.
+
+A common issue when using `anyio's pytest plugin <https://anyio.readthedocs.io/en/stable/testing.html>`_ or
+`pytest-asyncio <https://github.com/pytest-dev/pytest-asyncio>`_ to run asynchronous tests or fixtures, using the
+synchronous :class:`~litestar.testing.TestClient` means that the application will run in a *different event loop* than
+the test or fixture. In practice, this can result in some difficult to debug and solve situations, especially when
+setting up async resources outside the application, for example when using the factory pattern.
+
+The following example uses a shared instance of an ``httpx.AsyncClient``. It uses the common factory function, which
+allows to customise the client for tests, for example to add authentication headers.
+
+.. literalinclude:: /examples/testing/async_resource_test_issue.py
+    :language: python
+
+Running this test will fail with a ``RuntimeError: Event loop is closed``, when trying to close the ``AsyncClient``
+instance. This is happening because:
+
+- The ``http_test_client`` fixture sets up the client in *event loop A*
+- The ``TestClient`` instance created within the ``test_handler`` test sets up *event loop B* and runs the application
+  in it
+- A call to ``http_client.get``, the ``httpx.AsyncClient`` instance creates a new connection within *loop B* and
+  attaches it to the client instance
+- The ``TestClient`` instance closes *event loop B*
+- The cleanup step of the ``http_test_client`` fixture calls ``httpx.AsyncClient.aclose()`` instance within *loop A*,
+  which internally tries to close the connection made in the previous step. That connection however is still attached
+  to *loop B* that was owned by the ``TestClient`` instance, and is now closed
+
+
+This can easily fixed by switching the test from :class:`~litestar.testing.TestClient` to
+:class:`~litestar.testing.AsyncTestClient`:
+
+.. literalinclude:: /examples/testing/async_resource_test_issue_fix.py
+    :language: python
+
+Now the fixture, test and application code are all running within the same event loop, ensuring that all resources can
+be cleaned up properly without issues.
+
+.. literalinclude:: /examples/testing/event_loop_demonstration.py
+    :language: python
+    :caption: Showcasing the different running event loops when using ``TestClient``
+
+
 Testing websockets
 ++++++++++++++++++
 
-Litestar's test client enhances the httpx client to support websockets. To test a websocket endpoint, you can use the :meth:`websocket_connect <litestar.testing.TestClient.websocket_connect>`
-method on the test client. The method returns a websocket connection object that you can use to send and receive messages, see an example below for json:
+Litestar's test client enhances the httpx client to support websockets. To test a websocket endpoint, you can use the
+:meth:`websocket_connect <litestar.testing.TestClient.websocket_connect>` method on the test client. The method returns
+a websocket connection object that you can use to send and receive messages, see an example below for json:
 
-For more information, see also the :class:`WebSocket <litestar.connection.WebSocket>` class in the API documentation and the :ref:`websocket <usage/websockets:websockets>` documentation.
+For more information, see also the :class:`WebSocket <litestar.connection.WebSocket>` class in the API documentation and
+the :ref:`websocket <usage/websockets:websockets>` documentation.
 
-    .. literalinclude:: /examples/testing/test_websocket.py
-        :language: python
+
+.. tab-set::
+
+    .. tab-item:: Sync
+        :sync: sync
+
+        .. literalinclude:: /examples/testing/test_websocket_sync.py
+            :language: python
+
+    .. tab-item:: Async
+        :sync: async
+
+        .. literalinclude:: /examples/testing/test_websocket_async.py
+            :language: python
 
 
 Using sessions
 ++++++++++++++
 
-If you are using :ref:`session middleware <usage/middleware/builtin-middleware:session middleware>` for session persistence
-across requests, then you might want to inject or inspect session data outside a request. For this,
+If you are using :ref:`session middleware <usage/middleware/builtin-middleware:session middleware>` for session
+persistence across requests, then you might want to inject or inspect session data outside a request. For this,
 :class:`TestClient <.testing.TestClient>` provides two methods:
 
 * :meth:`set_session_data <litestar.testing.TestClient.set_session_data>`
 * :meth:`get_session_data <litestar.testing.TestClient.get_session_data>`
 
-.. attention::
-
-    - The Session Middleware must be enabled in Litestar app provided to the TestClient to use sessions.
-    - If you are using the
-      :class:`ClientSideSessionBackend <litestar.middleware.session.client_side.ClientSideSessionBackend>` you need to
-      install the ``cryptography`` package. You can do so by installing ``litestar``:
-
-    .. tab-set::
-
-        .. tab-item:: pip
-
-            .. code-block:: bash
-                :caption: Using pip
-
-                python3 -m pip install 'litestar[cryptography]'
-
-        .. tab-item:: pipx
-
-            .. code-block:: bash
-                :caption: Using `pipx <https://pypa.github.io/pipx/>`_
-
-                pipx install 'litestar[cryptography]'
-
-        .. tab-item:: pdm
-
-            .. code-block:: bash
-                :caption: Using `PDM <https://pdm.fming.dev/>`_
-
-                pdm add 'litestar[cryptography]'
-
-        .. tab-item:: poetry
-
-            .. code-block:: bash
-                :caption: Using `poetry <https://python-poetry.org/>`_
-
-                poetry add 'litestar[cryptography]'
-
-        .. tab-item:: uv
-
-            .. code-block:: bash
-                :caption: Using `uv <https://docs.astral.sh/uv/>`_
-
-                uv add 'litestar[cryptography]'
 
 .. tab-set::
 
@@ -241,18 +268,14 @@ across requests, then you might want to inject or inspect session data outside a
             :language: python
 
 
-Using a blocking portal
-+++++++++++++++++++++++
+Running async functions on TestClient
++++++++++++++++++++++++++++++++++++++
 
-The :class:`TestClient <.testing.TestClient>` uses a feature of `anyio <https://anyio.readthedocs.io/en/stable/>`_ called
-a **Blocking Portal**.
+When using the synchronous :class:`TestClient <.testing.TestClient>`, it runs the application in a separate thread,
+which provides the event loop. For this, it makes use of :class:`anyio.BlockingPortal <anyio.abc.BlockingPortal>`.
 
-The :class:`anyio.abc.BlockingPortal` allows :class:`TestClient <.testing.TestClient>`
-to execute asynchronous functions using a synchronous call. ``TestClient`` creates a blocking portal to manage
-``Litestar``'s async logic, and it allows ``TestClient``'s API to remain fully synchronous.
-
-Any tests that are using an instance of ``TestClient`` can also make use of the blocking portal to execute asynchronous functions
-without the test itself being asynchronous.
+``TestClient`` makes this portal public, so it can be used to run arbitrary asynchronous code in the same event loop as
+the application:
 
 .. literalinclude:: /examples/testing/test_with_portal.py
    :caption: Using a blocking portal
@@ -262,15 +285,10 @@ without the test itself being asynchronous.
 Creating a test app
 -------------------
 
-Litestar also offers a helper function called :func:`create_test_client <litestar.testing.create_test_client>` which first creates
-an instance of Litestar and then a test client using it. There are multiple use cases for this helper - when you need to check
-generic logic that is decoupled from a specific Litestar app, or when you want to test endpoints in isolation.
-
-You can pass to this helper all the kwargs accepted by
-the litestar constructor, with the ``route_handlers`` kwarg being **required**. Yet unlike the Litestar app, which
-expects ``route_handlers`` to be a list, here you can also pass individual values.
-
-For example, you can do this:
+Litestar also offers a helper function called :func:`create_test_client <litestar.testing.create_test_client>` which
+first creates an instance of Litestar and then a test client using it. There are multiple use cases for this helper -
+when you need to check generic logic that is decoupled from a specific Litestar app, or when you want to test endpoints
+in isolation.
 
 .. code-block:: python
     :caption: ``my_app/tests/test_health_check.py``
@@ -280,26 +298,8 @@ For example, you can do this:
 
     from my_app.main import health_check
 
-
     def test_health_check():
-        with create_test_client(route_handlers=[health_check]) as client:
-            response = client.get("/health-check")
-            assert response.status_code == HTTP_200_OK
-            assert response.text == "healthy"
-
-But also this:
-
-.. code-block:: python
-    :caption: ``my_app/tests/test_health_check.py``
-
-    from litestar.status_codes import HTTP_200_OK
-    from litestar.testing import create_test_client
-
-    from my_app.main import health_check
-
-
-    def test_health_check():
-        with create_test_client(route_handlers=health_check) as client:
+        with create_test_client([health_check]) as client:
             response = client.get("/health-check")
             assert response.status_code == HTTP_200_OK
             assert response.text == "healthy"
@@ -399,119 +399,3 @@ We could thus test the guard function like so:
         copied_endpoint_handler.opt["secret"] = "super-secret"
         secret_token_guard(request=request, route_handler=copied_endpoint_handler)
 
-
-Using polyfactory
-------------------------
-
-`Polyfactory <https://github.com/litestar-org/polyfactory>`__ offers an easy
-and powerful way to generate mock data from pydantic models and dataclasses.
-
-Let's say we have an API that talks to an external service and retrieves some data:
-
-.. code-block:: python
-    :caption: ``main.py``
-
-    from typing import Protocol, runtime_checkable
-
-    from polyfactory.factories.pydantic import BaseModel
-    from litestar import get
-
-
-    class Item(BaseModel):
-        name: str
-
-
-    @runtime_checkable
-    class Service(Protocol):
-        def get(self) -> Item: ...
-
-
-    @get(path="/item")
-    def get_item(service: Service) -> Item:
-        return service.get()
-
-
-We could test the ``/item`` route like so:
-
-.. code-block:: python
-    :caption: ``tests/conftest.py``
-
-    import pytest
-
-    from litestar.di import Provide
-    from litestar.status_codes import HTTP_200_OK
-    from litestar.testing import create_test_client
-
-    from my_app.main import Service, Item, get_item
-
-
-    @pytest.fixture()
-    def item():
-        return Item(name="Chair")
-
-
-    def test_get_item(item: Item):
-        class MyService(Service):
-            def get_one(self) -> Item:
-                return item
-
-        with create_test_client(
-            route_handlers=get_item, dependencies={"service": Provide(lambda: MyService())}
-        ) as client:
-            response = client.get("/item")
-            assert response.status_code == HTTP_200_OK
-            assert response.json() == item.dict()
-
-While we can define the test data manually, as is done in the above, this can be quite cumbersome. That's
-where `polyfactory <https://github.com/litestar-org/polyfactory>`_ library comes in. It generates mock data for
-pydantic models and dataclasses based on type annotations. With it, we could rewrite the above example like so:
-
-
-.. code-block:: python
-    :caption: ``main.py``
-
-    from typing import Protocol, runtime_checkable
-
-    import pytest
-    from pydantic import BaseModel
-    from polyfactory.factories.pydantic_factory import ModelFactory
-    from litestar.status_codes import HTTP_200_OK
-    from litestar import get
-    from litestar.di import Provide
-    from litestar.testing import create_test_client
-
-
-    class Item(BaseModel):
-        name: str
-
-
-    @runtime_checkable
-    class Service(Protocol):
-        def get_one(self) -> Item: ...
-
-
-    @get(path="/item")
-    def get_item(service: Service) -> Item:
-        return service.get_one()
-
-
-    class ItemFactory(ModelFactory[Item]):
-        model = Item
-
-
-    @pytest.fixture()
-    def item():
-        return ItemFactory.build()
-
-
-    def test_get_item(item: Item):
-        class MyService(Service):
-            def get_one(self) -> Item:
-                return item
-
-        with create_test_client(
-            route_handlers=get_item, dependencies={"service": Provide(lambda: MyService())}
-        ) as client:
-            response = client.get("/item")
-            assert response.status_code == HTTP_200_OK
-            assert response.json() == item.dict()
