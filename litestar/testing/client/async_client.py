@@ -1,17 +1,19 @@
+# pyright: reportInvalidTypeForm=false
 from __future__ import annotations
 
-from contextlib import AsyncExitStack
-from typing import TYPE_CHECKING, Any, Generic, TypeVar
+import contextlib
+from typing import TYPE_CHECKING, Generic
 
-from httpx import USE_CLIENT_DEFAULT, AsyncClient
+import anyio
+from httpx import AsyncClient
 
-from litestar.testing.client.base import BaseTestClient
 from litestar.testing.life_span_handler import LifeSpanHandler
 from litestar.testing.transport import ConnectionUpgradeExceptionError, TestClientTransport
-from litestar.types import AnyIOBackend, ASGIApp
+from litestar.testing.websocket_test_session import AsyncWebSocketTestSession
 
 if TYPE_CHECKING:
     from collections.abc import Mapping, Sequence
+    from types import TracebackType
 
     from httpx._client import UseClientDefault
     from httpx._types import (
@@ -19,32 +21,41 @@ if TYPE_CHECKING:
         CookieTypes,
         HeaderTypes,
         QueryParamTypes,
-        TimeoutTypes,
     )
     from typing_extensions import Self
 
-    from litestar.middleware.session.base import BaseBackendConfig
-    from litestar.testing.websocket_test_session import WebSocketTestSession
+    from litestar.middleware.session.base import BaseBackendConfig, BaseSessionBackend
 
+from typing import TYPE_CHECKING, Any, TypeVar
+from warnings import warn
+
+from httpx._client import USE_CLIENT_DEFAULT, UseClientDefault
+
+from litestar.testing.client._base import _get_session_data, _prepare_ws_connect_request, _set_session_data
+from litestar.types import ASGIApp
+
+if TYPE_CHECKING:
+    from collections.abc import Mapping, Sequence
+
+    from httpx._types import (
+        CookieTypes,
+        HeaderTypes,
+        QueryParamTypes,
+    )
 
 T = TypeVar("T", bound=ASGIApp)
 
 
-class AsyncTestClient(AsyncClient, BaseTestClient, Generic[T]):  # type: ignore[misc]
-    lifespan_handler: LifeSpanHandler[Any]
-    exit_stack: AsyncExitStack
-
+class AsyncTestClient(AsyncClient, Generic[T]):
     def __init__(
         self,
         app: T,
         base_url: str = "http://testserver.local",
         raise_server_exceptions: bool = True,
         root_path: str = "",
-        backend: AnyIOBackend = "asyncio",
-        backend_options: Mapping[str, Any] | None = None,
-        session_config: BaseBackendConfig | None = None,
         timeout: float | None = None,
         cookies: CookieTypes | None = None,
+        session_config: BaseBackendConfig | None = None,
     ) -> None:
         """An Async client implementation providing a context manager for testing applications asynchronously.
 
@@ -54,55 +65,55 @@ class AsyncTestClient(AsyncClient, BaseTestClient, Generic[T]):  # type: ignore[
             raise_server_exceptions: Flag for the underlying test client to raise server exceptions instead of
                 wrapping them in an HTTP response.
             root_path: Path prefix for requests.
-            backend: The async backend to use, options are "asyncio" or "trio".
-            backend_options: 'anyio' options.
-            session_config: Configuration for Session Middleware class to create raw session cookies for request to the
-                route handlers.
             timeout: Request timeout
             cookies: Cookies to set on the client.
+            session_config: Session backend configuration
         """
-        BaseTestClient.__init__(
-            self,
-            app=app,
-            base_url=base_url,
-            backend=backend,
-            backend_options=backend_options,
-            session_config=session_config,
-            cookies=cookies,
-        )
-        AsyncClient.__init__(
-            self,
+        if "." not in base_url:
+            warn(
+                f"The base_url {base_url!r} might cause issues. Try adding a domain name such as .local: "
+                f"'{base_url}.local'",
+                UserWarning,
+                stacklevel=1,
+            )
+
+        self.app = app
+
+        self._session_backend: BaseSessionBackend | None = None
+        if session_config:
+            self._session_backend = session_config._backend_class(config=session_config)
+
+        self.exit_stack = contextlib.AsyncExitStack()
+
+        super().__init__(
             base_url=base_url,
             headers={"user-agent": "testclient"},
             follow_redirects=True,
             cookies=cookies,
-            transport=TestClientTransport(  # type: ignore [arg-type]
+            transport=TestClientTransport(
                 client=self,
                 raise_server_exceptions=raise_server_exceptions,
                 root_path=root_path,
             ),
             timeout=timeout,
         )
+        # warn on usafe if client not initialized
 
     async def __aenter__(self) -> Self:
-        async with AsyncExitStack() as stack:
-            self.blocking_portal = portal = stack.enter_context(self.portal())
-            self.lifespan_handler = LifeSpanHandler(client=self)
-            stack.enter_context(self.lifespan_handler)
+        self._tg = await self.exit_stack.enter_async_context(anyio.create_task_group())
+        lifespan_handler = LifeSpanHandler(app=self.app)
+        await self.exit_stack.enter_async_context(lifespan_handler)
 
-            @stack.callback
-            def reset_portal() -> None:
-                delattr(self, "blocking_portal")
-
-            @stack.callback
-            def wait_shutdown() -> None:
-                portal.call(self.lifespan_handler.wait_shutdown)
-
-            self.exit_stack = stack.pop_all()
         return self
 
-    async def __aexit__(self, *args: Any) -> None:
-        await self.exit_stack.aclose()
+    async def __aexit__(
+        self,
+        exc_type: type[BaseException] | None = None,
+        exc_value: BaseException | None = None,
+        traceback: TracebackType | None = None,
+    ) -> None:
+        await self.exit_stack.__aexit__(exc_type, exc_value, traceback)
+        await super().__aexit__(exc_type, exc_value, traceback)
 
     async def websocket_connect(
         self,
@@ -113,9 +124,9 @@ class AsyncTestClient(AsyncClient, BaseTestClient, Generic[T]):  # type: ignore[
         cookies: CookieTypes | None = None,
         auth: AuthTypes | UseClientDefault = USE_CLIENT_DEFAULT,
         follow_redirects: bool | UseClientDefault = USE_CLIENT_DEFAULT,
-        timeout: TimeoutTypes | UseClientDefault = USE_CLIENT_DEFAULT,
+        timeout: float | None = None,
         extensions: Mapping[str, Any] | None = None,
-    ) -> WebSocketTestSession:
+    ) -> AsyncWebSocketTestSession:
         """Sends a GET request to establish a websocket connection.
 
         Args:
@@ -134,7 +145,8 @@ class AsyncTestClient(AsyncClient, BaseTestClient, Generic[T]):  # type: ignore[
         """
         try:
             await self.send(
-                self._prepare_ws_connect_request(
+                _prepare_ws_connect_request(
+                    client=self,
                     url=url,
                     subprotocols=subprotocols,
                     params=params,
@@ -147,7 +159,12 @@ class AsyncTestClient(AsyncClient, BaseTestClient, Generic[T]):  # type: ignore[
                 follow_redirects=follow_redirects,
             )
         except ConnectionUpgradeExceptionError as exc:
-            return exc.session
+            return AsyncWebSocketTestSession(
+                app=self.app,
+                scope=exc.scope,
+                connect_timeout=timeout,
+                tg=self._tg,
+            )
 
         raise RuntimeError("Expected WebSocket upgrade")  # pragma: no cover
 
@@ -180,7 +197,7 @@ class AsyncTestClient(AsyncClient, BaseTestClient, Generic[T]):  # type: ignore[
                     assert await client.get_session_data() == {"foo": "bar"}
 
         """
-        return await super()._get_session_data()
+        return await _get_session_data(self)
 
     async def set_session_data(self, data: dict[str, Any]) -> None:
         """Set session data.
@@ -214,4 +231,4 @@ class AsyncTestClient(AsyncClient, BaseTestClient, Generic[T]):  # type: ignore[
                     assert await client.get("/test").json() == {"foo": "bar"}
 
         """
-        return await super()._set_session_data(data)
+        return await _set_session_data(self, data)

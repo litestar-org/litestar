@@ -15,7 +15,7 @@ async def handler(socket: WebSocket) -> None:
 
     async def handle_stream() -> AsyncGenerator[str, None]:
         while not should_stop.is_set():
-            await anyio.sleep(0.5)
+            await anyio.sleep(0.1)
             yield "ping"
 
     async def handle_receive() -> Any:

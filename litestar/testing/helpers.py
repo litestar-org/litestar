@@ -60,7 +60,7 @@ def create_test_client(
     after_response: AfterResponseHookHandler | None = None,
     allowed_hosts: Sequence[str] | AllowedHostsConfig | None = None,
     backend: Literal["asyncio", "trio"] = "asyncio",
-    backend_options: Mapping[str, Any] | None = None,
+    backend_options: dict[str, Any] | None = None,
     base_url: str = "http://testserver.local",
     before_request: BeforeRequestHookHandler | None = None,
     before_send: Sequence[BeforeMessageSendHookHandler] | None = None,
@@ -317,8 +317,6 @@ def create_async_test_client(
     after_request: AfterRequestHookHandler | None = None,
     after_response: AfterResponseHookHandler | None = None,
     allowed_hosts: Sequence[str] | AllowedHostsConfig | None = None,
-    backend: Literal["asyncio", "trio"] = "asyncio",
-    backend_options: Mapping[str, Any] | None = None,
     base_url: str = "http://testserver.local",
     before_request: BeforeRequestHookHandler | None = None,
     before_send: Sequence[BeforeMessageSendHookHandler] | None = None,
@@ -398,8 +396,6 @@ def create_async_test_client(
         route_handlers: A single handler or a sequence of route handlers, which can include instances of
             :class:`Router <litestar.router.Router>`, subclasses of :class:`Controller <.controller.Controller>` or
             any function decorated by the route handler decorators.
-        backend: The async backend to use, options are "asyncio" or "trio".
-        backend_options: ``anyio`` options.
         base_url: URL scheme and domain for test request paths, e.g. ``http://testserver``.
         raise_server_exceptions: Flag for underlying the test client to raise server exceptions instead of wrapping them
             in an HTTP response.
@@ -557,11 +553,8 @@ def create_async_test_client(
 
     return AsyncTestClient[Litestar](
         app=app,
-        backend=backend,
-        backend_options=backend_options,
         base_url=base_url,
         raise_server_exceptions=raise_server_exceptions,
         root_path=root_path,
-        session_config=session_config,
         timeout=timeout,
     )

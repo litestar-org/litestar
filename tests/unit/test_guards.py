@@ -87,7 +87,7 @@ def test_guards_with_websocket_handler(local_guard: Guard) -> None:
 
     client = create_test_client(route_handlers=my_websocket_route_handler)
 
-    with pytest.raises(WebSocketDisconnect), client.websocket_connect("/") as ws:
+    with pytest.RaisesGroup(pytest.RaisesExc(WebSocketDisconnect)), client.websocket_connect("/") as ws:
         ws.send_json({"data": "123"})
 
     client.app.asgi_router.root_route_map_node.children["/"].asgi_handlers["websocket"][1].opt["allow_all"] = True

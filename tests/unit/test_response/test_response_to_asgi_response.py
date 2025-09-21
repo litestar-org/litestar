@@ -19,6 +19,7 @@ from litestar.response.file import ASGIFileResponse, File
 from litestar.response.redirect import Redirect
 from litestar.response.streaming import ASGIStreamingResponse, Stream
 from litestar.response.template import Template
+from litestar.routes import HTTPRoute
 from litestar.status_codes import HTTP_200_OK, HTTP_308_PERMANENT_REDIRECT
 from litestar.template.config import TemplateConfig
 from litestar.testing import RequestFactory, create_test_client
@@ -27,8 +28,6 @@ from litestar.utils import AsyncIteratorWrapper
 
 if TYPE_CHECKING:
     from collections.abc import AsyncGenerator
-
-    from litestar.routes import HTTPRoute
 
 
 def my_generator() -> Generator[str, None, None]:
@@ -73,7 +72,8 @@ async def test_to_response_returning_litestar_response() -> None:
         return Response(media_type=MediaType.TEXT, content="ok")
 
     with create_test_client(handler) as client:
-        http_route: HTTPRoute = client.app.routes[0]
+        http_route = client.app.routes[0]
+        assert isinstance(http_route, HTTPRoute)
         route_handler = http_route.route_handlers[0]
         response = await route_handler.to_response(data=route_handler.fn(), request=RequestFactory().get())
         assert isinstance(response, ASGIResponse)
@@ -96,7 +96,8 @@ async def test_to_response_returning_starlette_response(
         return expected_response
 
     with create_test_client(handler) as client:
-        http_route: HTTPRoute = client.app.routes[0]
+        http_route = client.app.routes[0]
+        assert isinstance(http_route, HTTPRoute)
         route_handler = http_route.route_handlers[0]
         response = await route_handler.to_response(data=route_handler.fn(), request=RequestFactory().get())
         assert isinstance(response, StarletteResponse)
@@ -121,7 +122,8 @@ async def test_to_response_returning_redirect_response(anyio_backend: str) -> No
         )
 
     with create_test_client(handler) as client:
-        route: HTTPRoute = client.app.routes[0]
+        route = client.app.routes[0]
+        assert isinstance(route, HTTPRoute)
         route_handler = route.route_handlers[0]
         response = await route_handler.to_response(data=route_handler.fn(), request=RequestFactory().get())
         encoded_headers = response.encode_headers()  # type: ignore[attr-defined]
@@ -173,7 +175,8 @@ async def test_to_response_returning_file_response(anyio_backend: str) -> None:
         )
 
     with create_test_client(handler) as client:
-        route: HTTPRoute = client.app.routes[0]
+        route = client.app.routes[0]
+        assert isinstance(route, HTTPRoute)
         route_handler = route.route_handlers[0]
         response = await route_handler.to_response(data=route_handler.fn(), request=RequestFactory().get())
         assert isinstance(response, ASGIFileResponse)
@@ -225,7 +228,8 @@ async def test_to_response_streaming_response(iterator: Any, should_raise: bool,
         )
 
     with create_test_client(handler) as client:
-        route: HTTPRoute = client.app.routes[0]
+        route = client.app.routes[0]
+        assert isinstance(route, HTTPRoute)
         route_handler = route.route_handlers[0]
         if should_raise:
             with pytest.raises(TypeError):
@@ -273,7 +277,8 @@ async def test_to_response_template_response(anyio_backend: str, tmp_path: Path)
     with create_test_client(
         handler, template_config=TemplateConfig(engine=JinjaTemplateEngine, directory=tmp_path)
     ) as client:
-        route: HTTPRoute = client.app.routes[0]
+        route = client.app.routes[0]
+        assert isinstance(route, HTTPRoute)
         route_handler = route.route_handlers[0]
         response = await route_handler.to_response(data=route_handler.fn(), request=RequestFactory(app=app).get())
         assert isinstance(response, ASGIResponse)
@@ -322,7 +327,8 @@ async def test_to_response_sse_events(content: str | bytes | StreamType[str | by
         )
 
     with create_test_client(handler) as client:
-        route: HTTPRoute = client.app.routes[0]
+        route = client.app.routes[0]
+        assert isinstance(route, HTTPRoute)
         route_handler = route.route_handlers[0]
         response = await route_handler.to_response(data=route_handler.fn(), request=RequestFactory().get())
         encoded_headers = response.encode_headers()  # type: ignore[attr-defined]
@@ -365,7 +371,8 @@ async def test_sse_events_content(content: str | bytes | StreamType[str | bytes]
     events: list[bytes] = []
 
     with create_test_client(handler) as client:
-        route: HTTPRoute = client.app.routes[0]
+        route = client.app.routes[0]
+        assert isinstance(route, HTTPRoute)
         route_handler = route.route_handlers[0]
         response = await route_handler.to_response(data=route_handler.fn(), request=RequestFactory().get())
         assert isinstance(response, ASGIStreamingResponse)

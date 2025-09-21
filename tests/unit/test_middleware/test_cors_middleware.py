@@ -26,7 +26,7 @@ def test_setting_cors_middleware() -> None:
         cur = client.app.asgi_handler
         while hasattr(cur, "app"):
             unpacked_middleware.append(cur)
-            cur = cast("Any", cur.app)
+            cur = cast("Any", cur.app)  # pyright: ignore
         unpacked_middleware.append(cur)
         assert len(unpacked_middleware) == 4
         cors_middleware = cast("Any", unpacked_middleware[0])

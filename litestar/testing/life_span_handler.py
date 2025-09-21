@@ -1,91 +1,58 @@
 from __future__ import annotations
 
-import warnings
+import contextlib
 from math import inf
-from typing import TYPE_CHECKING, Generic, Optional, TypeVar, cast
+from typing import TYPE_CHECKING, Optional, cast
 
+import anyio
 from anyio import create_memory_object_stream
 from anyio.streams.stapled import StapledObjectStream
-
-from litestar.testing.client.base import BaseTestClient
 
 if TYPE_CHECKING:
     from types import TracebackType
 
     from litestar.types import (
+        ASGIApp,
         LifeSpanReceiveMessage,  # noqa: F401
         LifeSpanSendMessage,
         LifeSpanShutdownEvent,
         LifeSpanStartupEvent,
     )
 
-T = TypeVar("T", bound=BaseTestClient)
 
-
-class LifeSpanHandler(Generic[T]):
-    __slots__ = (
-        "_startup_done",
-        "client",
-        "stream_receive",
-        "stream_send",
-        "task",
-    )
-
-    def __init__(self, client: T) -> None:
-        self.client = client
+class LifeSpanHandler:
+    def __init__(self, app: ASGIApp) -> None:
         self.stream_send = StapledObjectStream[Optional["LifeSpanSendMessage"]](*create_memory_object_stream(inf))  # type: ignore[arg-type]
         self.stream_receive = StapledObjectStream["LifeSpanReceiveMessage"](*create_memory_object_stream(inf))  # type: ignore[arg-type]
-        self._startup_done = False
+        self.app = app
+        self._exit_stack = contextlib.AsyncExitStack()
 
-    def _ensure_setup(self, is_safe: bool = False) -> None:
-        if self._startup_done:
-            return
+    async def __aenter__(self) -> LifeSpanHandler:
+        async with contextlib.AsyncExitStack() as exit_stack:
+            await exit_stack.enter_async_context(self.stream_send)
+            await exit_stack.enter_async_context(self.stream_receive)
 
-        if not is_safe:
-            warnings.warn(
-                "LifeSpanHandler used with implicit startup; Use LifeSpanHandler as a context manager instead. "
-                "Implicit startup will be deprecated in version 3.0.",
-                category=DeprecationWarning,
-                stacklevel=2,
-            )
-
-        self._startup_done = True
-        with self.client.portal() as portal:
-            self.task = portal.start_task_soon(self.lifespan)
-            portal.call(self.wait_startup)
-
-    def close(self) -> None:
-        with self.client.portal() as portal:
-            portal.call(self.stream_send.aclose)
-            portal.call(self.stream_receive.aclose)
-
-    def __enter__(self) -> LifeSpanHandler:
-        try:
-            self._ensure_setup(is_safe=True)
-        except Exception as exc:
-            self.close()
-            raise exc
+            self._tg = await exit_stack.enter_async_context(anyio.create_task_group())
+            with anyio.CancelScope() as cs:
+                self._tg.start_soon(self.lifespan, cs)
+                await self.wait_startup()
+            exit_stack.push_async_callback(self.wait_shutdown)
+            self._exit_stack = exit_stack.pop_all()
         return self
 
-    def __exit__(
+    async def __aexit__(
         self,
         exc_type: type[BaseException] | None,
         exc_value: BaseException | None,
         traceback: TracebackType | None,
     ) -> None:
-        self.close()
+        await self._exit_stack.__aexit__(exc_type, exc_value, traceback)
 
     async def receive(self) -> LifeSpanSendMessage:
-        self._ensure_setup()
-
         message = await self.stream_send.receive()
-        if message is None:
-            self.task.result()
         return cast("LifeSpanSendMessage", message)
 
     async def wait_startup(self) -> None:
-        self._ensure_setup()
-
         event: LifeSpanStartupEvent = {"type": "lifespan.startup"}
         await self.stream_receive.send(event)
 
@@ -102,29 +69,25 @@ class LifeSpanHandler(Generic[T]):
             await self.receive()
 
     async def wait_shutdown(self) -> None:
-        self._ensure_setup()
+        lifespan_shutdown_event: LifeSpanShutdownEvent = {"type": "lifespan.shutdown"}
+        await self.stream_receive.send(lifespan_shutdown_event)
 
-        async with self.stream_send:
-            lifespan_shutdown_event: LifeSpanShutdownEvent = {"type": "lifespan.shutdown"}
-            await self.stream_receive.send(lifespan_shutdown_event)
+        message = await self.receive()
+        if message["type"] not in (
+            "lifespan.shutdown.complete",
+            "lifespan.shutdown.failed",
+        ):
+            raise RuntimeError(
+                "Received unexpected ASGI message type. Expected 'lifespan.shutdown.complete' or "
+                f"'lifespan.shutdown.failed'. Got {message['type']!r}",
+            )
+        if message["type"] == "lifespan.shutdown.failed":
+            await self.receive()
 
-            message = await self.receive()
-            if message["type"] not in (
-                "lifespan.shutdown.complete",
-                "lifespan.shutdown.failed",
-            ):
-                raise RuntimeError(
-                    "Received unexpected ASGI message type. Expected 'lifespan.shutdown.complete' or "
-                    f"'lifespan.shutdown.failed'. Got {message['type']!r}",
-                )
-            if message["type"] == "lifespan.shutdown.failed":
-                await self.receive()
-
-    async def lifespan(self) -> None:
-        self._ensure_setup()
-
+    async def lifespan(self, cs: anyio.CancelScope) -> None:
         scope = {"type": "lifespan"}
         try:
-            await self.client.app(scope, self.stream_receive.receive, self.stream_send.send)
-        finally:
-            await self.stream_send.send(None)
+            await self.app(scope, self.stream_receive.receive, self.stream_send.send)  # type: ignore[arg-type]
+        except BaseException:
+            cs.cancel()
+            raise

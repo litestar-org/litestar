@@ -1,12 +1,10 @@
 import logging
-import sys
 from collections.abc import Awaitable
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any, Callable, cast
 
 import pytest
-from _pytest.capture import CaptureFixture
-from _pytest.logging import LogCaptureFixture
+from pytest_mock import MockerFixture
 from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
 
 from litestar import Controller, Request, Response, Router, get, post
@@ -91,33 +89,23 @@ def test_custom_middleware_processing(middleware: Any) -> None:
             assert middleware_instance.arg == 1
 
 
-def test_request_body_logging_middleware(caplog: LogCaptureFixture, capsys: "CaptureFixture[str]") -> None:
+def test_request_body_logging_middleware(mocker: MockerFixture) -> None:
     @dataclass
     class JSONRequest:
         name: str
-        age: int
-        programmer: bool
 
     @post(path="/")
     def post_handler(data: JSONRequest) -> JSONRequest:
         return data
 
-    if sys.version_info < (3, 13):
-        with caplog.at_level(logging.INFO):
-            client = create_test_client(
-                route_handlers=[post_handler], middleware=[MiddlewareProtocolRequestLoggingMiddleware]
-            )
-            response = client.post("/", json={"name": "moishe zuchmir", "age": 40, "programmer": True})
-            assert response.status_code == 201
-            assert "test logging" in caplog.text
-    else:
-        client = create_test_client(
-            route_handlers=[post_handler], middleware=[MiddlewareProtocolRequestLoggingMiddleware]
-        )
-        response = client.post("/", json={"name": "moishe zuchmir", "age": 40, "programmer": True})
+    mock_log_info = mocker.patch.object(logger, "info")
+
+    with create_test_client(
+        route_handlers=[post_handler], middleware=[MiddlewareProtocolRequestLoggingMiddleware]
+    ) as client:
+        response = client.post("/", json={"name": "moishe zuchmir"})
         assert response.status_code == 201
-        log = capsys.readouterr()
-        assert "test logging" in log.err
+    mock_log_info.assert_called_once_with("test logging: POST, http://testserver.local/, {'name': 'moishe zuchmir'}")
 
 
 def test_middleware_call_order() -> None:

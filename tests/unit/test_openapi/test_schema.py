@@ -177,8 +177,12 @@ def test_dependency_schema_generation() -> None:
         dependencies={"top_level": Provide(top_dependency)},
         openapi_config=DEFAULT_OPENAPI_CONFIG,
     ) as client:
-        handler = client.app.openapi_schema.paths["/test/{path_param}"]
-        data = {param.name: {"in": param.param_in, "required": param.required} for param in handler.get.parameters}
+        handler = client.app.openapi_schema.paths["/test/{path_param}"]  # type: ignore[index]
+        assert handler.get is not None
+        data = {
+            param.name: {"in": param.param_in, "required": param.required}  # type: ignore[union-attr]
+            for param in handler.get.parameters or []
+        }
         assert data == {
             "path_param": {"in": ParamType.PATH, "required": True},
             "header_param": {"in": ParamType.HEADER, "required": False},

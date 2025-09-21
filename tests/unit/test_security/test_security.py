@@ -157,7 +157,7 @@ def test_abstract_security_config_setting_openapi_components(
         if openapi_config is not None:
             assert client.app.openapi_schema
             assert client.app.openapi_config
-            assert client.app.openapi_config.components
+            assert isinstance(client.app.openapi_config.components, Components)
             assert client.app.openapi_config.components.to_schema() == expected
         else:
             assert not client.app.openapi_config
