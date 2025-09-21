@@ -45,17 +45,15 @@ from litestar.openapi.config import OpenAPIConfig
 from litestar.plugins import (
     CLIPlugin,
     InitPluginProtocol,
-    OpenAPISchemaPlugin,
     PluginProtocol,
     PluginRegistry,
-    SerializationPlugin,
 )
 from litestar.router import Router
 from litestar.routes import ASGIRoute, HTTPRoute, WebSocketRoute
 from litestar.stores.registry import StoreRegistry
 from litestar.types import Empty, TypeDecodersSequence
 from litestar.types.internal_types import PathParameterDefinition, RouteHandlerMapItem, TemplateConfigType
-from litestar.utils import deprecated, ensure_async_callable, join_paths, unique
+from litestar.utils import ensure_async_callable, join_paths, unique
 from litestar.utils.dataclass import extract_dataclass_items
 from litestar.utils.predicates import is_async_callable, is_class_and_subclass
 from litestar.utils.warnings import warn_pdb_on_exception
@@ -528,21 +526,6 @@ class Litestar(Router):
         except ImportError:
             pass
         return config
-
-    @property
-    @deprecated(version="2.0", alternative="Litestar.plugins.cli", kind="property")
-    def cli_plugins(self) -> list[CLIPlugin]:
-        return list(self.plugins.cli)
-
-    @property
-    @deprecated(version="2.0", alternative="Litestar.plugins.openapi", kind="property")
-    def openapi_schema_plugins(self) -> list[OpenAPISchemaPlugin]:
-        return list(self.plugins.openapi)
-
-    @property
-    @deprecated(version="2.0", alternative="Litestar.plugins.serialization", kind="property")
-    def serialization_plugins(self) -> list[SerializationPlugin]:
-        return list(self.plugins.serialization)
 
     @staticmethod
     def _get_default_plugins(plugins: list[PluginProtocol]) -> list[PluginProtocol]:
