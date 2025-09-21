@@ -163,7 +163,7 @@ async def test_http_route_raises_for_unsupported_method(anyio_backend: str) -> N
     with create_test_client(route_handlers=[my_get_handler, my_post_handler]) as client:
         response = client.delete("/")
         assert response.status_code == HTTP_405_METHOD_NOT_ALLOWED
-        assert response.headers.get("allowed", "") == "GET, POST, OPTIONS"
+        assert response.headers.get("allowed", "") == "GET, OPTIONS, POST"
 
 
 def test_path_order() -> None:
