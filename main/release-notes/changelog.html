@@ -533,9 +533,20 @@ data-aria-dark="Switch to auto color mode">
 <strong>Released: </strong>2024-08-30<section id="3.0.0-feature">
 <h3>Features<a class="headerlink" href="#3.0.0-feature" title="Link to this heading">¶</a></h3>
 <dl>
-<dt>New stuff<a class="headerlink reference internal" href="#3.0.0-new stuff" id="3.0.0-new stuff">#</a><span class="breaking-change">breaking</span></dt><dd><div class="changelog-change docutils container">
-<p>This is a changelog entry</p>
-<p>References: <span><a class="reference external" href="https://github.com/litestar-org/litestar/pull/1234">https://github.com/litestar-org/litestar/pull/1234</a></span></p>
+<dt>Make <code class="docutils literal notranslate"><span class="pre">AsyncTestClient</span></code> async-native<a class="headerlink reference internal" href="#3.0.0-make" id="3.0.0-make">#</a><span class="breaking-change">breaking</span></dt><dd><div class="changelog-change docutils container">
+<p>Re-implement <a class="reference internal" href="../reference/testing.html#litestar.testing.AsyncTestClient" title="litestar.testing.AsyncTestClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">AsyncTestClient</span></code></a> to be async-native, i.e. use the currently running event
+loop to run the application, instead of running a separate event loop in a new thread. Additionally, a new
+<a class="reference internal" href="../reference/testing.html#litestar.testing.AsyncWebSocketTestSession" title="litestar.testing.AsyncWebSocketTestSession"><code class="xref py py-class docutils literal notranslate"><span class="pre">AsyncWebSocketTestSession</span></code></a> has been introduced, providing an async testing utility
+for WebSockets.</p>
+<p>To ensure consisten behaviour across <code class="docutils literal notranslate"><span class="pre">TestClient</span></code> and <code class="docutils literal notranslate"><span class="pre">AsyncTestClient</span></code>, all testing utilities have been
+rewritten to be async first, with their synchronous counterparts proxying calls to the async implementation,
+which they run internally within a dedicated thread + event loop.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="../usage/testing.html#test-clients"><span class="std std-ref">Test Clients</span></a>
+<a class="reference internal" href="../usage/testing.html#deciding-which-test-client-to-use"><span class="std std-ref">Deciding which test client to use</span></a></p>
+</div>
+<p>References: <span><a class="reference external" href="https://github.com/litestar-org/litestar/issues/1920">https://github.com/litestar-org/litestar/issues/1920</a></span>, <span><a class="reference external" href="https://github.com/litestar-org/litestar/pull/4291">https://github.com/litestar-org/litestar/pull/4291</a></span></p>
 </div>
 </dd>
 </dl>
