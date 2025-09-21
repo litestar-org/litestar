@@ -45,7 +45,7 @@ if TYPE_CHECKING:
     try:
         from rich_click import RichContext
     except ImportError:
-        RichContext = Context  # type: ignore[misc]
+        RichContext = Context  # type: ignore[assignment,misc]
 
     from litestar.openapi import OpenAPIConfig
     from litestar.routes import ASGIRoute, HTTPRoute, WebSocketRoute
