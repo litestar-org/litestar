@@ -1,13 +1,12 @@
 from typing import Any
 
 from litestar import WebSocket, websocket
-from litestar.datastructures import State
 from litestar.testing import create_test_client
 
 
 def test_websocket() -> None:
     @websocket(path="/ws")
-    async def websocket_handler(socket: WebSocket[Any, Any, State]) -> None:
+    async def websocket_handler(socket: WebSocket[Any, Any, Any]) -> None:
         await socket.accept()
         recv = await socket.receive_json()
         await socket.send_json({"message": recv})
