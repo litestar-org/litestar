@@ -248,7 +248,7 @@ class LitestarExtensionGroup(LitestarGroup):
         original_ignore_unknown_option = ctx.ignore_unknown_options
         ctx.ignore_unknown_options = True
 
-        opts, _remaining_args, order = parser.parse_args(list(args))
+        opts, remaining_args, order = parser.parse_args(list(args))
         self._preparsed_app_path = opts.get("app_path", None)
         self._preparsed_app_dir = opts.get("app_dir", None)
 
