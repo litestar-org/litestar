@@ -2,7 +2,7 @@ Testing
 =======
 
 Testing a Litestar application is made simple by the testing utilities provided out of the box.
-Based on `httpx <https://www.python-httpx.org/>`_, they come with a familier interface and integrate seamlessly into
+Based on `httpx <https://www.python-httpx.org/>`_, they come with a familiar interface and integrate seamlessly into
 synchronous or asynchronous tests.
 
 
@@ -398,4 +398,3 @@ We could thus test the guard function like so:
         copied_endpoint_handler = secret_endpoint.copy()
         copied_endpoint_handler.opt["secret"] = "super-secret"
         secret_token_guard(request=request, route_handler=copied_endpoint_handler)
-

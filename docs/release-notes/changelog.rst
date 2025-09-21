@@ -24,5 +24,3 @@
         .. seealso::
             :ref:`usage/testing:Test Clients`
             :ref:`usage/testing:Deciding which test client to use`
-
-
