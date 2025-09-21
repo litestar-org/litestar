@@ -15,7 +15,6 @@ from pytest import MonkeyPatch
 from litestar import Litestar, MediaType, Request, Response, get
 from litestar.config.app import AppConfig, ExperimentalFeatures
 from litestar.config.response_cache import ResponseCacheConfig
-from litestar.contrib.sqlalchemy.plugins import SQLAlchemySerializationPlugin
 from litestar.datastructures import MutableScopeHeaders, State
 from litestar.events.emitter import SimpleEventEmitter
 from litestar.exceptions import (
@@ -370,18 +369,6 @@ def test_registering_route_handler_generates_openapi_docs() -> None:
     app.register(get("/path2")(fn))
     assert app.openapi_schema.paths.get("/path1")
     assert app.openapi_schema.paths.get("/path2")
-
-
-def test_plugin_properties() -> None:
-    class FooPlugin(CLIPlugin):
-        def on_cli_init(self, cli: Group) -> None:
-            return
-
-    app = Litestar(plugins=[FooPlugin(), SQLAlchemySerializationPlugin()])
-
-    assert app.openapi_schema_plugins == list(app.plugins.openapi)
-    assert app.cli_plugins == list(app.plugins.cli)
-    assert app.serialization_plugins == list(app.plugins.serialization)
 
 
 def test_plugin_registry() -> None:
