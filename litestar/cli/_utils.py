@@ -42,6 +42,11 @@ if TYPE_CHECKING:
     from collections.abc import Generator, Iterable, Sequence
     from types import ModuleType
 
+    try:
+        from rich_click import RichContext
+    except ImportError:
+        RichContext = Context  # type: ignore[misc]
+
     from litestar.openapi import OpenAPIConfig
     from litestar.routes import ASGIRoute, HTTPRoute, WebSocketRoute
     from litestar.types import AnyCallable
@@ -258,7 +263,7 @@ class LitestarExtensionGroup(LitestarGroup):
     def format_help(self, ctx: Context, formatter: Any) -> None:
         """Override format_help to ensure plugins are loaded before rendering help."""
         self._prepare(ctx)
-        return super().format_help(ctx, formatter)
+        return super().format_help(ctx, formatter)  # type: ignore[arg-type]
 
 
 def _inject_args(func: Callable[P, T]) -> Callable[P, T]:
@@ -523,12 +528,10 @@ def _generate_self_signed_cert(certfile_path: Path, keyfile_path: Path, common_n
             "Cryptography must be installed when using --create-self-signed-cert\nPlease install the litestar[cryptography] extras"
         ) from err
 
-    subject = x509.Name(
-        [
-            x509.NameAttribute(NameOID.COMMON_NAME, common_name),
-            x509.NameAttribute(NameOID.ORGANIZATION_NAME, "Development Certificate"),
-        ]
-    )
+    subject = x509.Name([
+        x509.NameAttribute(NameOID.COMMON_NAME, common_name),
+        x509.NameAttribute(NameOID.ORGANIZATION_NAME, "Development Certificate"),
+    ])
 
     key = rsa.generate_private_key(public_exponent=65537, key_size=2048, backend=default_backend())
 
