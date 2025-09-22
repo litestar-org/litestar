@@ -621,6 +621,12 @@ configure the CORS middleware, use <a class="reference internal" href="../refere
 <p>References: <span><a class="reference external" href="https://github.com/litestar-org/litestar/pull/4313">https://github.com/litestar-org/litestar/pull/4313</a></span></p>
 </div>
 </dd>
+<dt>Remove deprecated <code class="docutils literal notranslate"><span class="pre">ASGIResponse.encoded_headers</span></code> property<a class="headerlink reference internal" href="#3.0.0-remove deprecated" id="3.0.0-remove deprecated">#</a><span class="breaking-change">breaking</span></dt><dd><div class="changelog-change docutils container">
+<p>Remove the deprecated <code class="docutils literal notranslate"><span class="pre">ASGIResponse.encoded_headers</span></code> property. Instead,
+<a class="reference internal" href="../reference/response/base.html#litestar.response.base.ASGIResponse.encode_headers" title="litestar.response.base.ASGIResponse.encode_headers"><code class="xref py py-meth docutils literal notranslate"><span class="pre">encode_headers()</span></code></a> should be used.</p>
+<p>References: <span><a class="reference external" href="https://github.com/litestar-org/litestar/pull/4314">https://github.com/litestar-org/litestar/pull/4314</a></span></p>
+</div>
+</dd>
 <dt>Remove deprecated <code class="docutils literal notranslate"><span class="pre">pydantic_get_unwrapped_annotation_and_type_hints</span></code><a class="headerlink reference internal" href="#3.0.0-remove deprecated" id="3.0.0-remove deprecated">#</a><span class="breaking-change">breaking</span></dt><dd><div class="changelog-change docutils container">
 <p>Remove the deprecated <code class="docutils literal notranslate"><span class="pre">pydantic_get_unwrapped_annotation_and_type_hints</span></code> function.</p>
 <p>References: <span><a class="reference external" href="https://github.com/litestar-org/litestar/pull/4315">https://github.com/litestar-org/litestar/pull/4315</a></span></p>

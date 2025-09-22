@@ -473,6 +473,7 @@ data-aria-dark="Switch to auto color mode">
     <div class="sy-scrollbar sy-rside-inner px-6 xl:top-16 xl:sticky xl:pl-0 pt-6 pb-4"><div class="localtoc"><h3>On this page</h3><ul>
 <li><a class="reference internal" href="#litestar.response.base.ASGIResponse"><code class="docutils literal notranslate"><span class="pre">ASGIResponse</span></code></a><ul>
 <li><a class="reference internal" href="#litestar.response.base.ASGIResponse.__init__"><code class="docutils literal notranslate">__init__()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.response.base.ASGIResponse.encode_headers"><code class="docutils literal notranslate">encode_headers()</span></code></a></li>
 <li><a class="reference internal" href="#litestar.response.base.ASGIResponse.after_response"><code class="docutils literal notranslate">after_response()</span></code></a></li>
 <li><a class="reference internal" href="#litestar.response.base.ASGIResponse.start_response"><code class="docutils literal notranslate">start_response()</span></code></a></li>
 <li><a class="reference internal" href="#litestar.response.base.ASGIResponse.send_body"><code class="docutils literal notranslate">send_body()</span></code></a></li>
@@ -573,6 +574,14 @@ data-aria-dark="Switch to auto color mode">
 </ul>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="litestar.response.base.ASGIResponse.encode_headers">
+<span class="sig-name descname"><span class="pre">encode_headers</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.13)"><span class="pre">bytes</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.13)"><span class="pre">bytes</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#litestar.response.base.ASGIResponse.encode_headers" title="Link to this definition">¶</a></dt>
+<dd><p>Return a list of headers for this response.</p>
+<p>The list contains both headers and encoded cookies, as tuples, where each tuple
+represents a single header key-value pair encoded as bytes.</p>
 </dd></dl>
 
 <dl class="py method">
