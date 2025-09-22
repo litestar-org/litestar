@@ -1,10 +1,9 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Callable, Protocol, TypedDict, TypeVar, cast, runtime_checkable
+from typing import TYPE_CHECKING, Any, Callable, Protocol, TypeVar, cast, runtime_checkable
 
 from typing_extensions import Concatenate, ParamSpec, TypeAlias
 
-from litestar.utils.deprecation import warn_deprecation
 from litestar.utils.empty import value_or_default
 from litestar.utils.scope.state import ScopeState
 
@@ -148,23 +147,3 @@ class TemplateEngineProtocol(Protocol[TemplateType_co, ContextType_co]):
         Returns:
             None
         """
-
-
-class _TemplateContext(TypedDict):
-    """Dictionary representing a template context."""
-
-    request: Request[Any, Any, Any]
-    csrf_input: str
-
-
-def __getattr__(name: str) -> Any:
-    if name == "TemplateContext":
-        warn_deprecation(
-            "2.3.0",
-            "TemplateContext",
-            "import",
-            removal_in="3.0.0",
-            alternative="Mapping",
-        )
-        return _TemplateContext
-    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
