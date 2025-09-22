@@ -56,3 +56,11 @@
         The ``traceback_line_limit`` parameter of :class:`~litestar.logging.config.LoggingConfig` has been removed. This
         parameter had no effect since version ``2.9.0``, so it can be removed safely from applications without any
         change in behaviour.
+
+    .. change:: Remove deprecated ``litestar.middleware.cors`` module
+        :type: feature
+        :breaking:
+        :pr: 4309
+
+        Remove the deprecated ``litestar.middleware.cors`` module and ``litestar.middleware.cors.CORSMiddleware``. To
+        configure the CORS middleware, use :class:`~litestar.config.cors.CORSConfig`.
