@@ -64,3 +64,22 @@
 
         Remove the deprecated ``litestar.middleware.cors`` module and ``litestar.middleware.cors.CORSMiddleware``. To
         configure the CORS middleware, use :class:`~litestar.config.cors.CORSConfig`.
+
+    .. change:: Remove deprecated ``encoded_headers`` parameter from ASGI response classes and ``to_asgi_response`` methods
+        :type: feature
+        :pr: 4311
+        :breaking:
+
+        The deprecated ``encoded_headers`` parameter has been removed from the following clases:
+
+        - :class:`~litestar.response.base.ASGIResponse`
+        - :meth:`~litestar.response.Response.to_asgi_response`
+        - :class:`~litestar.response.file.ASGIFileResponse`
+        - :meth:`~litestar.response.File.to_asgi_response`
+        - :class:`~litestar.response.redirect.ASGIRedirectResponse`
+        - :meth:`~litestar.response.Redirect.to_asgi_response`
+        - :class:`~litestar.response.streaming.ASGIStreamingResponse`
+        - :meth:`~litestar.response.Stream.to_asgi_response`
+        - :meth:`~litestar.response.Template.to_asgi_response`
+
+        Existing code still using ``encoded_headers`` should be migrated to using the ``headers`` parameter instead.

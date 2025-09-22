@@ -79,7 +79,6 @@ class ASGIFileResponse(ASGIStreamingResponse):
         content_disposition_type: Literal["attachment", "inline"] = "attachment",
         content_length: int | None = None,
         cookies: Iterable[Cookie] | None = None,
-        encoded_headers: Iterable[tuple[bytes, bytes]] | None = None,
         encoding: str = "utf-8",
         etag: ETag | None = None,
         file_info: FileInfo | None = None,
@@ -99,7 +98,6 @@ class ASGIFileResponse(ASGIStreamingResponse):
             content_disposition_type: The type of the ``Content-Disposition``. Either ``inline`` or ``attachment``.
             content_length: The response content length.
             cookies: The response cookies.
-            encoded_headers: A list of encoded headers.
             encoding: The response encoding.
             etag: An etag.
             file_info: A file info.
@@ -131,7 +129,6 @@ class ASGIFileResponse(ASGIStreamingResponse):
             content_length=content_length,
             encoding=encoding,
             is_head_response=is_head_response,
-            encoded_headers=encoded_headers,
         )
 
         quoted_filename = quote(filename)
@@ -296,7 +293,6 @@ class File(Response):
         request: Request,
         *,
         background: BackgroundTask | BackgroundTasks | None = None,
-        encoded_headers: Iterable[tuple[bytes, bytes]] | None = None,
         cookies: Iterable[Cookie] | None = None,
         headers: dict[str, str] | None = None,
         is_head_response: bool = False,
@@ -309,7 +305,6 @@ class File(Response):
         Args:
             background: Background task(s) to be executed after the response is sent.
             cookies: A list of cookies to be set on the response.
-            encoded_headers: A list of already encoded headers.
             headers: Additional headers to be merged with the response headers. Response headers take precedence.
             is_head_response: Whether the response is a HEAD response.
             media_type: Media type for the response. If ``media_type`` is already set on the response, this is ignored.
@@ -346,7 +341,6 @@ class File(Response):
             content_disposition_type=self.content_disposition_type,  # pyright: ignore
             content_length=0,
             cookies=cookies,
-            encoded_headers=encoded_headers,
             encoding=self.encoding,
             etag=self.etag,
             file_info=self.file_info,

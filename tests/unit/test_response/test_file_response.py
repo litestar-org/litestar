@@ -463,12 +463,3 @@ def test_does_not_override_existing_last_modified_header(header_name: str, tmpdi
         response = client.get("/")
         assert response.status_code == HTTP_200_OK
         assert response.headers.get_list("last-modified") == ["foo"]
-
-
-def test_asgi_response_encoded_headers(file: Path) -> None:
-    response = ASGIFileResponse(encoded_headers=[(b"foo", b"bar")], file_path=file, file_system=BaseLocalFileSystem())
-    assert response.encode_headers() == [
-        (b"foo", b"bar"),
-        (b"content-type", b"application/octet-stream"),
-        (b"content-disposition", b'attachment; filename=""'),
-    ]

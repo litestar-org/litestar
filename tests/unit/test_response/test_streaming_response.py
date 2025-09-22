@@ -167,8 +167,3 @@ def test_sync_streaming_response() -> None:
     client = TestClient(app)
     response = client.get("/")
     assert response.text == "1, 2, 3, 4, 5"
-
-
-def test_asgi_response_encoded_headers() -> None:
-    response = ASGIStreamingResponse(encoded_headers=[(b"foo", b"bar")], iterator="")
-    assert response.encode_headers() == [(b"foo", b"bar"), (b"content-type", b"application/json")]
