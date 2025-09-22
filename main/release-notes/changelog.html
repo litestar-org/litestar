@@ -592,6 +592,23 @@ configure the CORS middleware, use <a class="reference internal" href="../refere
 <p>References: <span><a class="reference external" href="https://github.com/litestar-org/litestar/pull/4309">https://github.com/litestar-org/litestar/pull/4309</a></span></p>
 </div>
 </dd>
+<dt>Remove deprecated <code class="docutils literal notranslate"><span class="pre">encoded_headers</span></code> parameter from ASGI response classes and <code class="docutils literal notranslate"><span class="pre">to_asgi_response</span></code> methods<a class="headerlink reference internal" href="#3.0.0-remove deprecated" id="3.0.0-remove deprecated">#</a><span class="breaking-change">breaking</span></dt><dd><div class="changelog-change docutils container">
+<p>The deprecated <code class="docutils literal notranslate"><span class="pre">encoded_headers</span></code> parameter has been removed from the following clases:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../reference/response/base.html#litestar.response.base.ASGIResponse" title="litestar.response.base.ASGIResponse"><code class="xref py py-class docutils literal notranslate"><span class="pre">ASGIResponse</span></code></a></p></li>
+<li><p><a class="reference internal" href="../reference/response/index.html#litestar.response.Response.to_asgi_response" title="litestar.response.Response.to_asgi_response"><code class="xref py py-meth docutils literal notranslate"><span class="pre">to_asgi_response()</span></code></a></p></li>
+<li><p><a class="reference internal" href="../reference/response/file.html#litestar.response.file.ASGIFileResponse" title="litestar.response.file.ASGIFileResponse"><code class="xref py py-class docutils literal notranslate"><span class="pre">ASGIFileResponse</span></code></a></p></li>
+<li><p><a class="reference internal" href="../reference/response/index.html#litestar.response.File.to_asgi_response" title="litestar.response.File.to_asgi_response"><code class="xref py py-meth docutils literal notranslate"><span class="pre">to_asgi_response()</span></code></a></p></li>
+<li><p><a class="reference internal" href="../reference/response/redirect.html#litestar.response.redirect.ASGIRedirectResponse" title="litestar.response.redirect.ASGIRedirectResponse"><code class="xref py py-class docutils literal notranslate"><span class="pre">ASGIRedirectResponse</span></code></a></p></li>
+<li><p><a class="reference internal" href="../reference/response/index.html#litestar.response.Redirect.to_asgi_response" title="litestar.response.Redirect.to_asgi_response"><code class="xref py py-meth docutils literal notranslate"><span class="pre">to_asgi_response()</span></code></a></p></li>
+<li><p><a class="reference internal" href="../reference/response/streaming.html#litestar.response.streaming.ASGIStreamingResponse" title="litestar.response.streaming.ASGIStreamingResponse"><code class="xref py py-class docutils literal notranslate"><span class="pre">ASGIStreamingResponse</span></code></a></p></li>
+<li><p><a class="reference internal" href="../reference/response/index.html#litestar.response.Stream.to_asgi_response" title="litestar.response.Stream.to_asgi_response"><code class="xref py py-meth docutils literal notranslate"><span class="pre">to_asgi_response()</span></code></a></p></li>
+<li><p><a class="reference internal" href="../reference/response/index.html#litestar.response.Template.to_asgi_response" title="litestar.response.Template.to_asgi_response"><code class="xref py py-meth docutils literal notranslate"><span class="pre">to_asgi_response()</span></code></a></p></li>
+</ul>
+<p>Existing code still using <code class="docutils literal notranslate"><span class="pre">encoded_headers</span></code> should be migrated to using the <code class="docutils literal notranslate"><span class="pre">headers</span></code> parameter instead.</p>
+<p>References: <span><a class="reference external" href="https://github.com/litestar-org/litestar/pull/4311">https://github.com/litestar-org/litestar/pull/4311</a></span></p>
+</div>
+</dd>
 </dl>
 </section>
 </section>
