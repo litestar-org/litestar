@@ -83,3 +83,11 @@
         - :meth:`~litestar.response.Template.to_asgi_response`
 
         Existing code still using ``encoded_headers`` should be migrated to using the ``headers`` parameter instead.
+
+    .. change:: Remove deprecated ``LitestarType``
+        :type: feature
+        :pr: 4312
+        :breaking:
+
+        Remove the deprecated ``litestar.types.internal_types.LitestarType`` type alias. Its usages can safely replaced
+        by using ``type[Litestar]`` directly.
