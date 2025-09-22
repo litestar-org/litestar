@@ -166,7 +166,7 @@ Compression
 -----------
 
 HTML responses can optionally be compressed. Litestar has built in support for gzip, brotli, and zstd. Gzip support is provided
-through the built-in Starlette classes. Brotli support can be added by installing the ``brotli`` extras, and Zstd support by installing the ``zstd`` extras.
+through the built-in Starlette classes. Brotli support can be added by installing the ``brotli`` extra, and Zstd support by installing the ``zstd`` extra.
 
 You can enable either backend by passing an instance of
 :class:`~litestar.config.compression.CompressionConfig` to ``compression_config`` of
