@@ -610,9 +610,15 @@ configure the CORS middleware, use <a class="reference internal" href="../refere
 </div>
 </dd>
 <dt>Remove deprecated <code class="docutils literal notranslate"><span class="pre">LitestarType</span></code><a class="headerlink reference internal" href="#3.0.0-remove deprecated" id="3.0.0-remove deprecated">#</a><span class="breaking-change">breaking</span></dt><dd><div class="changelog-change docutils container">
-<p>Remove the deprecated <code class="docutils literal notranslate"><span class="pre">litestar.types.internal_types.LitestarType</span></code> type alias. Its usages can safely replaced
-by using <code class="docutils literal notranslate"><span class="pre">type[Litestar]</span></code> directly.</p>
+<p>Remove the deprecated <code class="docutils literal notranslate"><span class="pre">litestar.types.internal_types.LitestarType</span></code> type alias. In its stead,
+<code class="docutils literal notranslate"><span class="pre">type[Litestar]</span></code> can be used.</p>
 <p>References: <span><a class="reference external" href="https://github.com/litestar-org/litestar/pull/4312">https://github.com/litestar-org/litestar/pull/4312</a></span></p>
+</div>
+</dd>
+<dt>Remove deprecated <code class="docutils literal notranslate"><span class="pre">TemplateContext</span></code><a class="headerlink reference internal" href="#3.0.0-remove deprecated" id="3.0.0-remove deprecated">#</a><span class="breaking-change">breaking</span></dt><dd><div class="changelog-change docutils container">
+<p>Remove the deprecated <code class="docutils literal notranslate"><span class="pre">litestar.template.base.TemplateContext</span></code> type. Its usages should be replaced with
+<a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Mapping" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">collections.abc.Mapping</span></code></a>.</p>
+<p>References: <span><a class="reference external" href="https://github.com/litestar-org/litestar/pull/4313">https://github.com/litestar-org/litestar/pull/4313</a></span></p>
 </div>
 </dd>
 </dl>
