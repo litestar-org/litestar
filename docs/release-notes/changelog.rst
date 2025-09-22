@@ -92,4 +92,3 @@
 
         Remove the deprecated ``litestar.contrib.htmx`` module. Code still using imports
         from this module should switch to using ``litestar.plugins.htmx``.
-

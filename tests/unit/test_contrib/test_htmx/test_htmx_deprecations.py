@@ -1,4 +1,3 @@
-# ruff: noqa: F401
 import importlib.util
 import sys
 from pathlib import Path
