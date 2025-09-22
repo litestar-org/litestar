@@ -93,7 +93,7 @@
         Remove the deprecated ``litestar.contrib.htmx`` module. Code still using imports
         from this module should switch to using ``litestar.plugins.htmx``.
 
-.. change:: Remove deprecated ``LitestarType``
+    .. change:: Remove deprecated ``LitestarType``
         :type: feature
         :pr: 4312
         :breaking:
