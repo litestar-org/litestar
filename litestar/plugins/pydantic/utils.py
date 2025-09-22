@@ -12,7 +12,7 @@ from litestar.openapi.spec import Example
 from litestar.params import KwargDefinition, ParameterKwarg
 from litestar.types import Empty
 from litestar.typing import FieldDefinition
-from litestar.utils import deprecated, is_class_and_subclass, is_generic, is_undefined_sentinel
+from litestar.utils import is_class_and_subclass, is_generic, is_undefined_sentinel
 from litestar.utils.typing import (
     _substitute_typevars,
     get_origin_or_inner_type,
@@ -157,23 +157,6 @@ def pydantic_get_type_hints_with_generics_resolved(
         typevar_map = dict(zip(parameters, args))
 
     return {n: _substitute_typevars(type_, typevar_map) for n, type_ in model_annotations.items()}
-
-
-@deprecated(version="2.6.2")
-def pydantic_get_unwrapped_annotation_and_type_hints(annotation: Any) -> tuple[Any, dict[str, Any]]:  # pragma: no cover
-    """Get the unwrapped annotation and the type hints after resolving generics.
-
-    Args:
-        annotation: A type annotation.
-
-    Returns:
-        A tuple containing the unwrapped annotation and the type hints.
-    """
-
-    if is_generic(annotation):
-        origin = pydantic_unwrap_and_get_origin(annotation)
-        return origin or annotation, pydantic_get_type_hints_with_generics_resolved(annotation, include_extras=True)
-    return annotation, get_type_hints(annotation, include_extras=True)
 
 
 def is_pydantic_2_model(
