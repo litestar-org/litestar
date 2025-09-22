@@ -99,3 +99,10 @@
 
         Remove the deprecated ``litestar.template.base.TemplateContext`` type. Its usages should be replaced with
         :class:`collections.abc.Mapping`.
+
+    .. change:: Remove deprecated ``pydantic_get_unwrapped_annotation_and_type_hints``
+        :type: feature
+        :pr: 4315
+        :breaking:
+
+        Remove the deprecated ``pydantic_get_unwrapped_annotation_and_type_hints`` function.
