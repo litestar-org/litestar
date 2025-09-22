@@ -92,3 +92,26 @@
 
         Remove the deprecated ``litestar.contrib.htmx`` module. Code still using imports
         from this module should switch to using ``litestar.plugins.htmx``.
+
+.. change:: Remove deprecated ``LitestarType``
+        :type: feature
+        :pr: 4312
+        :breaking:
+
+        Remove the deprecated ``litestar.types.internal_types.LitestarType`` type alias. In its stead,
+        ``type[Litestar]`` can be used.
+
+    .. change:: Remove deprecated ``TemplateContext``
+        :type: feature
+        :pr: 4313
+        :breaking:
+
+        Remove the deprecated ``litestar.template.base.TemplateContext`` type. Its usages should be replaced with
+        :class:`collections.abc.Mapping`.
+
+    .. change:: Remove deprecated ``pydantic_get_unwrapped_annotation_and_type_hints``
+        :type: feature
+        :pr: 4315
+        :breaking:
+
+        Remove the deprecated ``pydantic_get_unwrapped_annotation_and_type_hints`` function.
