@@ -40,7 +40,6 @@ class ASGIStreamingResponse(ASGIResponse):
         background: BackgroundTask | BackgroundTasks | None = None,
         content_length: int | None = None,
         cookies: Iterable[Cookie] | None = None,
-        encoded_headers: Iterable[tuple[bytes, bytes]] | None = None,
         encoding: str = "utf-8",
         headers: dict[str, Any] | None = None,
         is_head_response: bool = False,
@@ -53,7 +52,6 @@ class ASGIStreamingResponse(ASGIResponse):
             background: A background task or a list of background tasks to be executed after the response is sent.
             content_length: The response content length.
             cookies: The response cookies.
-            encoded_headers: The response headers.
             encoding: The response encoding.
             headers: The response headers.
             is_head_response: A boolean indicating if the response is a HEAD response.
@@ -71,7 +69,6 @@ class ASGIStreamingResponse(ASGIResponse):
             is_head_response=is_head_response,
             media_type=media_type,
             status_code=status_code,
-            encoded_headers=encoded_headers,
         )
         self.iterator: AsyncIterable[str | bytes] | AsyncGenerator[str | bytes, None] = (
             iterator if isinstance(iterator, (AsyncIterable, AsyncIterator)) else AsyncIteratorWrapper(iterator)
@@ -178,7 +175,6 @@ class Stream(Response[StreamType[Union[str, bytes]]]):
         *,
         background: BackgroundTask | BackgroundTasks | None = None,
         cookies: Iterable[Cookie] | None = None,
-        encoded_headers: Iterable[tuple[bytes, bytes]] | None = None,
         headers: dict[str, str] | None = None,
         is_head_response: bool = False,
         media_type: MediaType | str | None = None,
@@ -190,7 +186,6 @@ class Stream(Response[StreamType[Union[str, bytes]]]):
         Args:
             background: Background task(s) to be executed after the response is sent.
             cookies: A list of cookies to be set on the response.
-            encoded_headers: A list of already encoded headers.
             headers: Additional headers to be merged with the response headers. Response headers take precedence.
             is_head_response: Whether the response is a HEAD response.
             media_type: Media type for the response. If ``media_type`` is already set on the response, this is ignored.
@@ -215,7 +210,6 @@ class Stream(Response[StreamType[Union[str, bytes]]]):
             background=self.background or background,
             content_length=0,
             cookies=cookies,
-            encoded_headers=encoded_headers,
             encoding=self.encoding,
             headers=headers,
             is_head_response=is_head_response,
