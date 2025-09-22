@@ -109,6 +109,14 @@
         Remove the deprecated ``litestar.template.base.TemplateContext`` type. Its usages should be replaced with
         :class:`collections.abc.Mapping`.
 
+    .. change:: Remove deprecated ``ASGIResponse.encoded_headers`` property
+        :type: feature
+        :pr: 4314
+        :breaking:
+
+        Remove the deprecated ``ASGIResponse.encoded_headers`` property. Instead,
+        :meth:`~litestar.response.base.ASGIResponse.encode_headers` should be used.
+
     .. change:: Remove deprecated ``pydantic_get_unwrapped_annotation_and_type_hints``
         :type: feature
         :pr: 4315
