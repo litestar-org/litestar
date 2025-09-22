@@ -12,7 +12,6 @@ from litestar.exceptions import ImproperlyConfiguredException
 from litestar.serialization import default_serializer, encode_json, encode_msgpack, get_serializer
 from litestar.status_codes import HTTP_200_OK, HTTP_204_NO_CONTENT, HTTP_304_NOT_MODIFIED
 from litestar.types.empty import Empty
-from litestar.utils.deprecation import deprecated
 from litestar.utils.helpers import get_enum_string_value
 
 if TYPE_CHECKING:
@@ -124,12 +123,12 @@ class ASGIResponse:
         self.is_head_response = is_head_response
         self.status_code: int = status_code
 
-    @property
-    @deprecated("3.0", kind="property", alternative="encode_headers()")
-    def encoded_headers(self) -> list[tuple[bytes, bytes]]:
-        return self.encode_headers()
-
     def encode_headers(self) -> list[tuple[bytes, bytes]]:
+        """Return a list of headers for this response.
+
+        The list contains both headers and encoded cookies, as tuples, where each tuple
+        represents a single header key-value pair encoded as bytes.
+        """
         return [*self.headers.headers, *self._encoded_cookies]
 
     async def after_response(self) -> None:
