@@ -266,7 +266,7 @@ Litestar supports typical ASGI middleware and ships with middlewares to handle t
 - CORS
 - CSRF
 - Rate limiting
-- GZip and Brotli compression
+- GZip, Brotli, and Zstd compression
 - Client- and server-side sessions
 
 ### Route Guards

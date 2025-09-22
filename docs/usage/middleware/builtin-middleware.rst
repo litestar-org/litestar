@@ -165,7 +165,7 @@ list of domains to :class:`~litestar.app.Litestar`:
 Compression
 -----------
 
-HTML responses can optionally be compressed. Litestar has built in support for gzip, brotli and zstd. Gzip support is provided
+HTML responses can optionally be compressed. Litestar has built in support for gzip, brotli, and zstd. Gzip support is provided
 through the built-in Starlette classes. Brotli support can be added by installing the ``brotli`` extras, and Zstd support by installing the ``zstd`` extras.
 
 You can enable either backend by passing an instance of
