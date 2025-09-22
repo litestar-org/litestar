@@ -535,19 +535,6 @@ def test_excluded_fields(logging_module: str) -> None:
 
 
 @pytest.mark.parametrize(
-    "traceback_line_limit, expected_warning_deprecation_called",
-    [
-        [-1, False],
-        [20, True],
-    ],
-)
-def test_traceback_line_limit_deprecation(traceback_line_limit: int, expected_warning_deprecation_called: bool) -> None:
-    with patch("litestar.logging.config.warn_deprecation") as mock_warning_deprecation:
-        LoggingConfig(traceback_line_limit=traceback_line_limit)
-        assert mock_warning_deprecation.called is expected_warning_deprecation_called
-
-
-@pytest.mark.parametrize(
     "disable_stack_trace, exception_to_raise, handler_called",
     [
         # will log the stack trace
