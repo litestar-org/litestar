@@ -89,5 +89,13 @@
         :pr: 4312
         :breaking:
 
-        Remove the deprecated ``litestar.types.internal_types.LitestarType`` type alias. Its usages can safely replaced
-        by using ``type[Litestar]`` directly.
+        Remove the deprecated ``litestar.types.internal_types.LitestarType`` type alias. In its stead,
+        ``type[Litestar]`` can be used.
+
+    .. change:: Remove deprecated ``TemplateContext``
+        :type: feature
+        :pr: 4313
+        :breaking:
+
+        Remove the deprecated ``litestar.template.base.TemplateContext`` type. Its usages should be replaced with
+        :class:`collections.abc.Mapping`.
