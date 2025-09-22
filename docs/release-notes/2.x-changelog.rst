@@ -1948,7 +1948,7 @@
         :pr: 2145
 
         Add missing default values for the ``receive`` and ``send`` parameters of
-        :class:`~litestar.contrib.htmx.request.HTMXRequest`.
+        ``~litestar.contrib.htmx.request.HTMXRequest``.
 
     .. change:: DTO: Excluded attributes accessed during transfer
         :type: bugfix
@@ -3329,8 +3329,8 @@
         :type: feature
         :pr: 1488
 
-        Pass the template context to the :class:`Template <litestar.response_containers.Template>` returned by
-        :class:`htmx.Response <litestar.contrib.htmx.response>`.
+        Pass the template context to the `Template <litestar.response_containers.Template>` returned by
+        `htmx.Response <litestar.contrib.htmx.response>`.
 
 
     .. change:: OpenAPI support for attrs and msgspec classes
