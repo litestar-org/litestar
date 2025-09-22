@@ -315,7 +315,6 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l3"><a class="reference internal" href="../reference/middleware/allowed_hosts.html">allowed_hosts</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/middleware/authentication.html">authentication</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/middleware/compression.html">compression</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../reference/middleware/cors.html">cors</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/middleware/csrf.html">csrf</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/middleware/logging.html">logging</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/middleware/rate_limit.html">rate_limit</a></li>
@@ -585,6 +584,12 @@ which they run internally within a dedicated thread + event loop.</p>
 parameter had no effect since version <code class="docutils literal notranslate"><span class="pre">2.9.0</span></code>, so it can be removed safely from applications without any
 change in behaviour.</p>
 <p>References: <span><a class="reference external" href="https://github.com/litestar-org/litestar/pull/4300">https://github.com/litestar-org/litestar/pull/4300</a></span></p>
+</div>
+</dd>
+<dt>Remove deprecated <code class="docutils literal notranslate"><span class="pre">litestar.middleware.cors</span></code> module<a class="headerlink reference internal" href="#3.0.0-remove deprecated" id="3.0.0-remove deprecated">#</a><span class="breaking-change">breaking</span></dt><dd><div class="changelog-change docutils container">
+<p>Remove the deprecated <code class="docutils literal notranslate"><span class="pre">litestar.middleware.cors</span></code> module and <code class="docutils literal notranslate"><span class="pre">litestar.middleware.cors.CORSMiddleware</span></code>. To
+configure the CORS middleware, use <a class="reference internal" href="../reference/config.html#litestar.config.cors.CORSConfig" title="litestar.config.cors.CORSConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">CORSConfig</span></code></a>.</p>
+<p>References: <span><a class="reference external" href="https://github.com/litestar-org/litestar/pull/4309">https://github.com/litestar-org/litestar/pull/4309</a></span></p>
 </div>
 </dd>
 </dl>
