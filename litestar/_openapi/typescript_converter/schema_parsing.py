@@ -124,6 +124,10 @@ def parse_type_schema(schema: Schema) -> TypeScriptPrimitive | TypeScriptLiteral
         )
     if schema.type in openapi_to_typescript_type_map and isinstance(schema.type, OpenAPIType):
         return TypeScriptPrimitive(openapi_to_typescript_type_map[schema.type])
+    if schema.type is None:
+        # Handle schemas with no type specified (e.g., additional_properties that can contain any value)
+        # According to OpenAPI spec, a schema without a type can contain any JSON value
+        return TypeScriptPrimitive("any")
     raise TypeError(f"received an unexpected openapi type: {schema.type}")  # pragma: no cover
 
 
