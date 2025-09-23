@@ -3329,8 +3329,8 @@
         :type: feature
         :pr: 1488
 
-        Pass the template context to the `Template <litestar.response_containers.Template>` returned by
-        `htmx.Response <litestar.contrib.htmx.response>`.
+        Pass the template context to the ``Template`` returned by
+        ``htmx.Response``.
 
 
     .. change:: OpenAPI support for attrs and msgspec classes
