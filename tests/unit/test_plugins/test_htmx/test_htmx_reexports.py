@@ -1,7 +1,7 @@
 """Test that all htmx re-exports from litestar.plugins.htmx are working correctly."""
 
 
-def test_all_re_exports_are_importable():
+def test_all_re_exports_are_importable() -> None:
     """Test that all items in __all__ can be imported from litestar.plugins.htmx."""
     from litestar.plugins.htmx import (
         ClientRedirect as LitestarClientRedirect,
@@ -95,7 +95,7 @@ def test_all_re_exports_are_importable():
     assert litestar_utils is not None
 
 
-def test_all_items_in_all_are_exported():
+def test_all_items_in_all_are_exported() -> None:
     """Test that all items listed in __all__ are actually exported."""
     from litestar.plugins import htmx
 
