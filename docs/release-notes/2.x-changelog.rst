@@ -1948,7 +1948,7 @@
         :pr: 2145
 
         Add missing default values for the ``receive`` and ``send`` parameters of
-        ``~litestar.contrib.htmx.request.HTMXRequest``.
+        ``litestar.contrib.htmx.request.HTMXRequest``.
 
     .. change:: DTO: Excluded attributes accessed during transfer
         :type: bugfix
