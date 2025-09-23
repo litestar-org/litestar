@@ -1,29 +1,44 @@
-def test_all_re_exports_are_importable() -> None:
-    """Test that all items in __all__ can be imported from litestar.plugins.attrs."""
-    from litestar.plugins.attrs import (
-        AttrsSchemaPlugin as LitestarAttrsSchemaPlugin,
-    )
-    from litestar.plugins.attrs import (
-        is_attrs_class as litestar_is_attrs_class,
-    )
+# ruff: noqa: F401
+from __future__ import annotations
 
-    # Verify all imports succeeded (no ImportError raised)
-    assert LitestarAttrsSchemaPlugin is not None
-    assert litestar_is_attrs_class is not None
+import sys
+import warnings
+from importlib.util import cache_from_source
+from pathlib import Path
+
+import pytest
+
+from litestar.contrib import attrs as contrib_attrs
+from litestar.plugins import attrs as plugin_attrs
 
 
-def test_all_items_in_all_are_exported() -> None:
-    """Test that all items listed in __all__ are actually exported."""
-    from litestar.plugins import attrs
+def purge_module(module_names: list[str], path: str | Path) -> None:
+    for name in module_names:
+        if name in sys.modules:
+            del sys.modules[name]
+    Path(cache_from_source(str(path))).unlink(missing_ok=True)
 
-    expected_exports = {
-        "AttrsSchemaPlugin",
-        "is_attrs_class",
-    }
 
-    # Check that all items in __all__ are actually available as attributes
-    for item_name in expected_exports:
-        assert hasattr(attrs, item_name), f"{item_name} is missing from litestar.plugins.attrs"
+def test_contrib_attrs_deprecation_warning() -> None:
+    """Test that importing from contrib.attrs raises a deprecation warning."""
+    purge_module(["litestar.contrib.attrs"], __file__)
+    with pytest.warns(
+        DeprecationWarning, match="importing AttrsSchemaPlugin from 'litestar.contrib.attrs' is deprecated"
+    ):
+        from litestar.contrib.attrs import AttrsSchemaPlugin
 
-    # Also verify that __all__ contains exactly what we expect
-    assert set(attrs.__all__) == expected_exports
+
+def test_contrib_attrs_schema_deprecation_warning() -> None:
+    """Test that importing from contrib.attrs raises a deprecation warning."""
+    purge_module(["litestar.contrib.attrs.attrs_schema_plugin"], __file__)
+    with pytest.warns(
+        DeprecationWarning,
+        match="importing AttrsSchemaPlugin from 'litestar.contrib.attrs.attrs_schema_plugin' is deprecated",
+    ):
+        from litestar.contrib.attrs.attrs_schema_plugin import AttrsSchemaPlugin
+
+
+def test_functionality_parity() -> None:
+    """Test that the functionality is identical between contrib and plugin versions."""
+    assert contrib_attrs.AttrsSchemaPlugin is plugin_attrs.AttrsSchemaPlugin
+    assert contrib_attrs.is_attrs_class is plugin_attrs.is_attrs_class
