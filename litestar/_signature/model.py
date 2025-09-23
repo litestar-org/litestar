@@ -311,7 +311,7 @@ class SignatureModel(Struct):
                 for inner_type in field_definition.inner_types
                 if not inner_type.is_none_type
             ]
-            return Union[*types, None] if field_definition.is_optional else Union[*types]  # type: ignore
+            return Union[(*tuple(types), None)] if field_definition.is_optional else Union[tuple(types)]  # type: ignore
 
         if decoder := _get_decoder_for_type(annotation, type_decoders=type_decoders):
             # FIXME: temporary (hopefully) hack, see: https://github.com/jcrist/msgspec/issues/497
