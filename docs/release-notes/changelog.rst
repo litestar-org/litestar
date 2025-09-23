@@ -118,7 +118,7 @@
 .. change:: Remove deprecated ``litestar.contrib.attrs`` module
         :type: feature
         :breaking:
-        :pr: <pr number>
+        :pr: 4322
         :issue: 4302
 
         Remove the deprecated ``litestar.contrib.attrs`` module. Code still using imports
