@@ -115,7 +115,7 @@
 
         Remove the deprecated ``pydantic_get_unwrapped_annotation_and_type_hints`` function.
 
-.. change:: Remove deprecated ``litestar.contrib.attrs`` module
+    .. change:: Remove deprecated ``litestar.contrib.attrs`` module
         :type: feature
         :breaking:
         :pr: 4322
