@@ -94,7 +94,7 @@ def create_interface(
         TypeScriptProperty(
             key=normalize_typescript_namespace(key, allow_quoted=True),
             value=parse_schema(schema),
-            required=key in required if required is not None else True,
+            required=key in required if required is not None else False,
         )
         for key, schema in properties.items()
     )
