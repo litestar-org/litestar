@@ -8,7 +8,6 @@ from typing import (
     Literal,
     Optional,
     TypeVar,
-    Union,
 )
 
 if TYPE_CHECKING:
@@ -24,18 +23,18 @@ __all__ = ("AnyIOBackend", "MaybePartial", "OptionalSequence", "SSEData", "Strea
 OptionalSequence: TypeAlias = Optional[Sequence[T]]
 """Types 'T' as union of Sequence[T] and None."""
 
-SyncOrAsyncUnion: TypeAlias = Union[T, Awaitable[T]]
+SyncOrAsyncUnion: TypeAlias = T | Awaitable[T]
 """Types 'T' as a union of T and awaitable T."""
 
 
 AnyIOBackend: TypeAlias = Literal["asyncio", "trio"]
 """Anyio backend names."""
 
-StreamType: TypeAlias = Union[Iterable[T], Iterator[T], AsyncIterable[T], AsyncIterator[T]]
+StreamType: TypeAlias = Iterable[T] | Iterator[T] | AsyncIterable[T] | AsyncIterator[T]
 """A stream type."""
 
-MaybePartial: TypeAlias = Union[T, partial]
+MaybePartial: TypeAlias = T | partial
 """A potentially partial callable."""
 
-SSEData: TypeAlias = Union[int, str, bytes, dict[str, Any], "ServerSentEventMessage"]
+SSEData: TypeAlias = "int | str | bytes | dict[str, Any] | ServerSentEventMessage"
 """A type alias for SSE data."""

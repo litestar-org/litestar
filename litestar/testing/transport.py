@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from io import BytesIO
 from types import GeneratorType
-from typing import TYPE_CHECKING, Any, Generic, TypedDict, TypeVar, Union, cast
+from typing import TYPE_CHECKING, Any, Generic, TypedDict, TypeVar, cast
 from urllib.parse import unquote
 
 import anyio
@@ -25,7 +25,7 @@ if TYPE_CHECKING:
     )
 
 
-T = TypeVar("T", bound=Union["AsyncTestClient", "TestClient"])
+T = TypeVar("T", bound="AsyncTestClient | TestClient")
 
 
 class ConnectionUpgradeExceptionError(Exception):
@@ -62,7 +62,7 @@ class TestClientTransport(AsyncBaseTransport, Generic[T]):
                 disconnect_event: HTTPDisconnectEvent = {"type": "http.disconnect"}
                 return disconnect_event
 
-            body = cast("Union[bytes, str, GeneratorType]", (request.read() or b""))
+            body = cast("bytes | str | GeneratorType", (request.read() or b""))
             request_event: HTTPRequestEvent = {"type": "http.request", "body": b"", "more_body": False}
             if isinstance(body, GeneratorType):  # pragma: no cover
                 try:

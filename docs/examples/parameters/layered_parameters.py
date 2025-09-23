@@ -1,4 +1,4 @@
-from typing import Annotated, Union
+from typing import Annotated
 
 from litestar import Controller, Litestar, Router, get
 from litestar.params import Parameter
@@ -17,7 +17,7 @@ class MyController(Controller):
         local_param: str,
         router_param: str,
         controller_param: Annotated[int, Parameter(int, lt=50)],
-    ) -> dict[str, Union[str, int]]:
+    ) -> dict[str, str | int]:
         return {
             "path_param": path_param,
             "local_param": local_param,

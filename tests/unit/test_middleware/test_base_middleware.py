@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Union
+from typing import TYPE_CHECKING
 from warnings import catch_warnings
 
 import pytest
@@ -125,7 +125,7 @@ def test_exclude_by_pattern_list() -> None:
 
 
 @pytest.mark.parametrize("excludes", ["/", ["/", "/foo"], "/*", "/.*"])
-def test_exclude_by_pattern_warns_if_exclude_all(excludes: Union[str, list[str]]) -> None:
+def test_exclude_by_pattern_warns_if_exclude_all(excludes: str | list[str]) -> None:
     class SubclassMiddleware(AbstractMiddleware):
         exclude = excludes
 
@@ -286,7 +286,7 @@ def test_asgi_middleware_exclude_by_pattern_tuple() -> None:
 
 
 @pytest.mark.parametrize("excludes", ["/", ("/", "/foo"), "/*", "/.*"])
-def test_asgi_middleware_exclude_by_pattern_warns_if_exclude_all(excludes: Union[str, tuple[str, ...]]) -> None:
+def test_asgi_middleware_exclude_by_pattern_warns_if_exclude_all(excludes: str | tuple[str, ...]) -> None:
     class SubclassMiddleware(ASGIMiddleware):
         exclude_path_pattern = excludes
 

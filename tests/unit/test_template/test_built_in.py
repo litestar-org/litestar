@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Optional, Union
+from typing import TYPE_CHECKING, Any, Optional
 
 import pytest
 from jinja2 import DictLoader, Environment
@@ -20,11 +20,11 @@ if TYPE_CHECKING:
 
 @dataclass
 class EngineTest:
-    engine_class: Optional[type[Union[JinjaTemplateEngine, MakoTemplateEngine, MiniJinjaTemplateEngine]]]
+    engine_class: Optional[type[JinjaTemplateEngine | MakoTemplateEngine | MiniJinjaTemplateEngine]]
     index_template: str
     nested_template: str
     instantiated: bool
-    instance: Optional[Union[JinjaTemplateEngine, MakoTemplateEngine, MiniJinjaTemplateEngine]]
+    instance: Optional[JinjaTemplateEngine | MakoTemplateEngine | MiniJinjaTemplateEngine]
 
 
 mako_template_lookup = TemplateLookup()

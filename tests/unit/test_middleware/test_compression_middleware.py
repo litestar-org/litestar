@@ -1,7 +1,7 @@
 import zlib
 from collections.abc import AsyncIterator
 from io import BytesIO
-from typing import Callable, Literal, Union
+from typing import Callable, Literal
 from unittest.mock import MagicMock
 
 import pytest
@@ -251,14 +251,14 @@ def test_compression_with_custom_backend(handler: HTTPRouteHandler) -> None:
         def __init__(
             self,
             buffer: BytesIO,
-            compression_encoding: Union[Literal[CompressionEncoding.GZIP], str],
+            compression_encoding: Literal[CompressionEncoding.GZIP] | str,
             config: CompressionConfig,
         ) -> None:
             self.buffer = buffer
             self.compression_encoding = compression_encoding
             self.config = config
 
-        def write(self, body: Union[bytes, bytearray], final: bool = False) -> None:
+        def write(self, body: bytes | bytearray, final: bool = False) -> None:
             self.buffer.write(zlib.compress(body, level=self.config.backend_config["level"]))
 
         def close(self) -> None: ...

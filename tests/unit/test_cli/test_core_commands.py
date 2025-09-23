@@ -4,7 +4,7 @@ import re
 import sys
 from collections.abc import Generator
 from pathlib import Path
-from typing import Callable, Literal, Optional, Union
+from typing import Callable, Literal, Optional
 from unittest.mock import MagicMock
 
 import pytest
@@ -353,8 +353,8 @@ def test_run_command_with_app_factory(
     ),
 )
 def test_run_command_arguments_precedence(
-    cli: tuple[str, Union[Literal[True], list[str], str]],
-    env: tuple[str, Union[Literal[True], list[str], str]],
+    cli: tuple[str, Literal[True] | list[str] | str],
+    env: tuple[str, Literal[True] | list[str] | str],
     expected: str,
     runner: CliRunner,
     monkeypatch: MonkeyPatch,

@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Union
 
 import pytest
 from msgspec import Struct
@@ -124,7 +123,7 @@ def test_create_transfer_model_type_annotation_tuple_type_nested() -> None:
 
 
 def test_create_transfer_model_type_annotation_unexpected_transfer_type() -> None:
-    transfer_type = CompositeType(field_definition=FieldDefinition.from_annotation(Union[str, int]), has_nested=False)
+    transfer_type = CompositeType(field_definition=FieldDefinition.from_annotation(str | int), has_nested=False)
     with pytest.raises(RuntimeError):
         _create_transfer_model_type_annotation(transfer_type=transfer_type)
 

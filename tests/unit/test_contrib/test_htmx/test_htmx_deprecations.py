@@ -2,12 +2,11 @@
 import importlib.util
 import sys
 from pathlib import Path
-from typing import Union
 
 import pytest
 
 
-def purge_module(module_names: list[str], path: Union[str, Path]) -> None:
+def purge_module(module_names: list[str], path: str | Path) -> None:
     for name in module_names:
         if name in sys.modules:
             del sys.modules[name]

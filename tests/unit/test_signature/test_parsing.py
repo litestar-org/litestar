@@ -1,7 +1,7 @@
 from collections.abc import Iterable, Sequence
 from dataclasses import dataclass
 from types import ModuleType
-from typing import Annotated, Any, Callable, Optional, Union
+from typing import Annotated, Any, Callable, Optional
 from unittest.mock import MagicMock
 
 import msgspec
@@ -149,7 +149,7 @@ def test_union_constraint_handling() -> None:
     mock = MagicMock()
 
     @get("/")
-    def handler(param: Annotated[Union[str, list[str]], Body(max_length=3, max_items=3)]) -> None:
+    def handler(param: Annotated[str | list[str], Body(max_length=3, max_items=3)]) -> None:
         mock(param)
 
     with create_test_client([handler]) as client:
@@ -171,7 +171,7 @@ def test_collection_union_struct_fields(with_optional: bool) -> None:
     the same error.
     """
 
-    annotation = Union[list[str], list[int]]
+    annotation = list[str] | list[int]
 
     if with_optional:
         annotation = Optional[annotation]  # type: ignore[misc]

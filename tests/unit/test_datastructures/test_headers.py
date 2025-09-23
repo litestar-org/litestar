@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Callable, Optional, Union
+from typing import TYPE_CHECKING, Callable, Optional
 
 import pytest
 from pytest import FixtureRequest
@@ -296,7 +296,7 @@ def test_cache_control_header_prevent_storing() -> None:
 def test_cache_control_header_unsupported_type_annotation() -> None:
     @dataclass
     class InvalidCacheControlHeader(CacheControlHeader):
-        foo_field: Union[int, str] = "foo"
+        foo_field: int | str = "foo"
 
     with pytest.raises(ImproperlyConfiguredException):
         InvalidCacheControlHeader.from_header("unsupported_type")
