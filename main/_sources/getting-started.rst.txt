@@ -23,6 +23,9 @@ Installation
     :ref:`Brotli Compression Middleware <usage/middleware/builtin-middleware:brotli>`:
         :code:`pip install litestar[brotli]`
 
+   :ref:`Zstd Compression Middleware <usage/middleware/builtin-middleware:zstd>`:
+        :code:`pip install litestar[zstd]`
+
     :ref:`Cookie Based Sessions <usage/middleware/builtin-middleware:client-side sessions>`
         :code:`pip install litestar[cryptography]`
 

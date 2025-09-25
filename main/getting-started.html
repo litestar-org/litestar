@@ -540,14 +540,23 @@ data-aria-dark="Switch to auto color mode">
 </div>
 <details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
 <summary class="sd-summary-title sd-card-header">
-<span class="sd-summary-icon"><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-star" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 .25a.75.75 0 0 1 .673.418l1.882 3.815 4.21.612a.75.75 0 0 1 .416 1.279l-3.046 2.97.719 4.192a.751.751 0 0 1-1.088.791L8 12.347l-3.766 1.98a.75.75 0 0 1-1.088-.79l.72-4.194L.818 6.374a.75.75 0 0 1 .416-1.28l4.21-.611L7.327.668A.75.75 0 0 1 8 .25Zm0 2.445L6.615 5.5a.75.75 0 0 1-.564.41l-3.097.45 2.24 2.184a.75.75 0 0 1 .216.664l-.528 3.084 2.769-1.456a.75.75 0 0 1 .698 0l2.77 1.456-.53-3.084a.75.75 0 0 1 .216-.664l2.24-2.183-3.096-.45a.75.75 0 0 1-.564-.41L8 2.694Z"></path></svg></span><span class="sd-summary-text">Extras</span><span class="sd-summary-state-marker sd-summary-chevron-right"><svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-right" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.72 18.78a.75.75 0 0 1 0-1.06L14.44 12 8.72 6.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018l6.25 6.25a.75.75 0 0 1 0 1.06l-6.25 6.25a.75.75 0 0 1-1.06 0Z"></path></svg></span></summary><div class="sd-summary-content sd-card-body docutils">
-<dl>
+<span class="sd-summary-text">Extras
+ :icon: star</span><span class="sd-summary-state-marker sd-summary-chevron-right"><svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-right" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.72 18.78a.75.75 0 0 1 0-1.06L14.44 12 8.72 6.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018l6.25 6.25a.75.75 0 0 1 0 1.06l-6.25 6.25a.75.75 0 0 1-1.06 0Z"></path></svg></span></summary><div class="sd-summary-content sd-card-body docutils">
+<blockquote>
+<div><dl class="simple">
 <dt><a class="reference external" href="https://docs.pydantic.dev/latest/">Pydantic</a></dt><dd><p class="sd-card-text"><code class="code docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">litestar[pydantic]</span></code></p>
 </dd>
 <dt><a class="reference external" href="https://www.attrs.org">Attrs</a></dt><dd><p class="sd-card-text"><code class="code docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">litestar[attrs]</span></code></p>
 </dd>
 <dt><a class="reference internal" href="usage/middleware/builtin-middleware.html#brotli"><span class="std std-ref">Brotli Compression Middleware</span></a>:</dt><dd><p class="sd-card-text"><code class="code docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">litestar[brotli]</span></code></p>
 </dd>
+</dl>
+</div></blockquote>
+<dl>
+<dt><a class="reference internal" href="usage/middleware/builtin-middleware.html#zstd"><span class="std std-ref">Zstd Compression Middleware</span></a>:</dt><dd><blockquote>
+<div><p class="sd-card-text"><code class="code docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">litestar[zstd]</span></code></p>
+</div></blockquote>
+<dl>
 <dt><a class="reference internal" href="usage/middleware/builtin-middleware.html#client-side-sessions"><span class="std std-ref">Cookie Based Sessions</span></a></dt><dd><p class="sd-card-text"><code class="code docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">litestar[cryptography]</span></code></p>
 </dd>
 <dt><a class="reference internal" href="usage/security/jwt.html"><span class="doc">JWT</span></a></dt><dd><p class="sd-card-text"><code class="code docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">litestar[jwt]</span></code></p>
@@ -591,6 +600,8 @@ If you need the optional CLI dependencies, install the <code class="docutils lit
 <p class="admonition-title">Note</p>
 <p class="sd-card-text">The full extras is not recommended because it will add a lot of unnecessary extras.</p>
 </div>
+</dd>
+</dl>
 </div>
 </details></section>
 <section id="minimal-example">
