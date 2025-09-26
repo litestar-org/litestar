@@ -227,8 +227,6 @@ test = [
   "pytest-rerunfailures",
   "pytest-timeout",
   "pytest-xdist",
-  #  "rangehttpserver>=1.4.0", # until https://github.com/danvk/RangeHTTPServer/pull/42 is merged
-  "rangehttpserver @ git+https://github.com/provinzkraut/RangeHTTPServer@fix-unclosed-resource",
   "time-machine",
 ]
 

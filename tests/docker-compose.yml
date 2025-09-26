@@ -17,3 +17,9 @@ services:
     restart: always
     ports:
       - "6381:6379" # also a non-standard port
+  nginx:
+    image: nginx
+    ports:
+      - "8187:80"
+    volumes:
+      - ./nginx_test_files:/usr/share/nginx/html:ro
