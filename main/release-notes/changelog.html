@@ -532,6 +532,12 @@ data-aria-dark="Switch to auto color mode">
 <strong>Released: </strong>2024-08-30<section id="3.0.0-feature">
 <h3>Features<a class="headerlink" href="#3.0.0-feature" title="Link to this heading">¶</a></h3>
 <dl>
+<dt>Remove deprecated <code class="docutils literal notranslate"><span class="pre">litestar.contrib.prometheus</span></code> module<a class="headerlink reference internal" href="#3.0.0-remove deprecated" id="3.0.0-remove deprecated">#</a><span class="breaking-change">breaking</span></dt><dd><div class="changelog-change docutils container">
+<p>Remove the deprecated <code class="docutils literal notranslate"><span class="pre">litestar.contrib.prometheus</span></code> module. Code still using imports
+from this module should switch to using <code class="docutils literal notranslate"><span class="pre">litestar.plugins.prometheus</span></code>.</p>
+<p>References: <span><a class="reference external" href="https://github.com/litestar-org/litestar/issues/4305">https://github.com/litestar-org/litestar/issues/4305</a></span>, <span><a class="reference external" href="https://github.com/litestar-org/litestar/pull/4328">https://github.com/litestar-org/litestar/pull/4328</a></span></p>
+</div>
+</dd>
 <dt>Make <code class="docutils literal notranslate"><span class="pre">AsyncTestClient</span></code> async-native<a class="headerlink reference internal" href="#3.0.0-make" id="3.0.0-make">#</a><span class="breaking-change">breaking</span></dt><dd><div class="changelog-change docutils container">
 <p>Re-implement <a class="reference internal" href="../reference/testing.html#litestar.testing.AsyncTestClient" title="litestar.testing.AsyncTestClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">AsyncTestClient</span></code></a> to be async-native, i.e. use the currently running event
 loop to run the application, instead of running a separate event loop in a new thread. Additionally, a new
