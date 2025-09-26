@@ -80,7 +80,7 @@ def http_server(
     file_path: pathlib.Path,
     monkeypatch: pytest.MonkeyPatch,
     nginx_service: None,
-    setup_http_serve: None,
+    setup_http_server: None,
 ) -> None:
     monkeypatch.chdir(file_path.parent)
 
@@ -105,7 +105,7 @@ async def http_fs(
         "fsspec_local_fs",
         # there's a bug in the fs with handling the aiohttp session that can cause a warning
         # to be emitted due to improper resource closing. we can't really handle this here
-        pytest.param("http_fs", marks=[pytest.mark.flaky(reruns=10)]),
+        pytest.param("http_fs", marks=[pytest.mark.flaky(reruns=10), pytest.mark.xdist_group("nginx")]),
     ]
 )
 def fs_name(request: pytest.FixtureRequest) -> str:
