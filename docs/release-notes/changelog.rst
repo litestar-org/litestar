@@ -6,6 +6,17 @@
 .. changelog:: 3.0.0
     :date: 2024-08-30
 
+
+    .. change:: Remove deprecated ``litestar.contrib.prometheus`` module
+        :type: feature
+        :breaking:
+        :pr: 4328
+        :issue: 4305
+
+        Remove the deprecated ``litestar.contrib.prometheus`` module. Code still using imports
+        from this module should switch to using ``litestar.plugins.prometheus``.
+
+
     .. change:: Make ``AsyncTestClient`` async-native
         :type: feature
         :pr: 4291
