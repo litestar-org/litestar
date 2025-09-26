@@ -2128,7 +2128,6 @@ test = [
     { name = "pytest-rerunfailures" },
     { name = "pytest-timeout" },
     { name = "pytest-xdist" },
-    { name = "rangehttpserver" },
     { name = "time-machine" },
 ]
 
@@ -2245,7 +2244,6 @@ test = [
     { name = "pytest-rerunfailures" },
     { name = "pytest-timeout" },
     { name = "pytest-xdist" },
-    { name = "rangehttpserver", git = "https://github.com/provinzkraut/RangeHTTPServer?rev=fix-unclosed-resource" },
     { name = "time-machine" },
 ]
 
@@ -3666,11 +3664,6 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/ed/5e/46168b1f2757f1fcd442bc3029cd8767d88a98c9c05770d8b420948743bb/PyYAML-6.0.2-cp39-cp39-win32.whl", hash = "sha256:6395c297d42274772abc367baaa79683958044e5d3835486c16da75d2a694631", size = 144593, upload-time = "2024-08-06T20:33:46.63Z" },
     { url = "https://files.pythonhosted.org/packages/19/87/5124b1c1f2412bb95c59ec481eaf936cd32f0fe2a7b16b97b81c4c017a6a/PyYAML-6.0.2-cp39-cp39-win_amd64.whl", hash = "sha256:39693e1f8320ae4f43943590b49779ffb98acb81f788220ea932a6b6c51004d8", size = 162312, upload-time = "2024-08-06T20:33:49.073Z" },
 ]
-
-[[package]]
-name = "rangehttpserver"
-version = "1.4.0"
-source = { git = "https://github.com/provinzkraut/RangeHTTPServer?rev=fix-unclosed-resource#4518302c8c215b203650bed1aebe84903cf5f8c2" }
 
 [[package]]
 name = "redis"

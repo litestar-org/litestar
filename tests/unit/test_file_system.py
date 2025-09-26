@@ -1,15 +1,11 @@
-import os
 import pathlib
-import threading
 from collections.abc import AsyncGenerator, Generator
-from http.server import HTTPServer
 from typing import Any
 
 import aiohttp
 import pytest
 from fsspec.implementations.http import HTTPFileSystem
 from fsspec.implementations.local import LocalFileSystem
-from RangeHTTPServer import RangeRequestHandler  # type: ignore[import-untyped]
 
 from litestar.file_system import (
     BaseFileSystem,
@@ -19,7 +15,6 @@ from litestar.file_system import (
     FsspecSyncWrapper,
     maybe_wrap_fsspec_file_system,
 )
-from litestar.testing.client.subprocess_client import _get_available_port
 
 
 class PatchedHTTPFileSystem(HTTPFileSystem):  # type: ignore[misc]
@@ -42,7 +37,7 @@ def tmp_dir(tmp_path_factory: pytest.TempPathFactory) -> pathlib.Path:
 
 @pytest.fixture(scope="session")
 def http_server_port() -> int:
-    return _get_available_port()
+    return 8187
 
 
 @pytest.fixture(scope="session")
@@ -70,20 +65,24 @@ def fsspec_local_fs(monkeypatch: pytest.MonkeyPatch, file_path: pathlib.Path) ->
 
 
 @pytest.fixture(scope="session")
-def http_server(tmp_dir: pathlib.Path, http_server_port: int, file_path: pathlib.Path) -> Generator[None, None, None]:
-    current_dir = os.getcwd()
-    os.chdir(file_path.parent)
+def setup_http_server(
+    tmp_dir: pathlib.Path,
+    file_path: pathlib.Path,
+) -> Generator[None, None, None]:
+    server_file_path = pathlib.Path("tests/nginx_test_files").joinpath(file_path.name)
+    server_file_path.write_bytes(file_path.read_bytes())
+    yield
+    server_file_path.unlink()
 
-    server = HTTPServer(("127.0.0.1", http_server_port), RangeRequestHandler)  # pyright: ignore
-    thread = threading.Thread(daemon=True, target=server.serve_forever)
-    thread.start()
-    try:
-        yield
-    finally:
-        server.server_close()
-        server.shutdown()
-        thread.join()
-        os.chdir(current_dir)
+
+@pytest.fixture()
+def http_server(
+    file_path: pathlib.Path,
+    monkeypatch: pytest.MonkeyPatch,
+    nginx_service: None,
+    setup_http_serve: None,
+) -> None:
+    monkeypatch.chdir(file_path.parent)
 
 
 @pytest.fixture()
