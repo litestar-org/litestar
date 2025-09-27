@@ -6,7 +6,6 @@ contrib
 
     htmx
     jinja
-    jwt
     mako
     opentelemetry
     piccolo
