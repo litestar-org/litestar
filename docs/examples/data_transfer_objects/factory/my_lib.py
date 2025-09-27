@@ -2,9 +2,8 @@ from __future__ import annotations
 
 from typing import Any
 
+from advanced_alchemy.extensions.litestar import base, mixins
 from sqlalchemy.orm import DeclarativeBase
-
-from litestar.plugins.sqlalchemy import base, mixins
 
 
 class _Base(base.CommonTableAttributes, mixins.UUIDPrimaryKey, DeclarativeBase):

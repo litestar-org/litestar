@@ -1,6 +1,11 @@
 from collections.abc import AsyncGenerator
 from typing import Optional
 
+from advanced_alchemy.extensions.litestar import (
+    SQLAlchemyAsyncConfig,
+    SQLAlchemyInitPlugin,
+    SQLAlchemySerializationPlugin,
+)
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError, NoResultFound
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -8,11 +13,6 @@ from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 from litestar import Litestar, get, post, put
 from litestar.exceptions import ClientException, NotFoundException
-from litestar.plugins.sqlalchemy import (
-    SQLAlchemyAsyncConfig,
-    SQLAlchemyInitPlugin,
-    SQLAlchemySerializationPlugin,
-)
 from litestar.status_codes import HTTP_409_CONFLICT
 
 
