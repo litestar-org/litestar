@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import dataclasses
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Annotated, Generic, TypeVar, Union
+from typing import TYPE_CHECKING, Annotated, Generic, TypeVar
 
 import pytest
 
@@ -35,7 +35,7 @@ def test_union_type_argument_raises_exception() -> None:
     class ModelB(Model): ...
 
     with pytest.raises(InvalidAnnotationException):
-        DataclassDTO[Union[Model, ModelB]]
+        DataclassDTO[Model | ModelB]
 
 
 def test_type_narrowing_with_scalar_type_arg() -> None:

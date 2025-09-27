@@ -1,6 +1,6 @@
 import dataclasses
 from collections.abc import Sequence
-from typing import Any, Optional, Union
+from typing import Any, Optional
 
 from litestar.security.jwt.token import JWTDecodeOptions, Token
 
@@ -14,7 +14,7 @@ class CustomToken(Token):
         secret: str,
         algorithms: list[str],
         issuer: Optional[list[str]] = None,
-        audience: Union[str, Sequence[str], None] = None,
+        audience: Optional[str | Sequence[str]] = None,
         options: Optional[JWTDecodeOptions] = None,
     ) -> Any:
         payload = super().decode_payload(

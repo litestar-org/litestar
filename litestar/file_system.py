@@ -6,7 +6,7 @@ import os.path
 import pathlib
 from datetime import datetime
 from stat import S_ISDIR
-from typing import TYPE_CHECKING, Any, Callable, ClassVar, Final, Union, cast
+from typing import TYPE_CHECKING, Any, Callable, ClassVar, Final, cast
 
 import anyio
 from typing_extensions import NotRequired, TypeAlias, TypedDict
@@ -37,7 +37,7 @@ if TYPE_CHECKING:
     from litestar.types import PathType
 
 
-AnyFileSystem: TypeAlias = "Union[BaseFileSystem, FsspecFileSystem, FsspecAsyncFileSystem]"
+AnyFileSystem: TypeAlias = "BaseFileSystem | FsspecFileSystem | FsspecAsyncFileSystem"
 SymlinkResolver: TypeAlias = "Callable[[AnyFileSystem, PathType], Awaitable[str]]"
 
 

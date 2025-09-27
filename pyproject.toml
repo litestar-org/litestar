@@ -7,7 +7,7 @@ keywords = ["api", "rest", "asgi", "litestar", "starlite"]
 license = { text = "MIT" }
 name = "litestar"
 readme = "docs/PYPI_README.md"
-requires-python = ">=3.9,<4.0"
+requires-python = ">=3.10,<4.0"
 version = "3.0.0b0"
 
 
@@ -17,7 +17,6 @@ classifiers = [
   "License :: OSI Approved :: MIT License",
   "Natural Language :: English",
   "Operating System :: OS Independent",
-  "Programming Language :: Python :: 3.9",
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
@@ -289,7 +288,7 @@ enable_error_code = [
 ]
 packages = ["litestar", "tests"]
 plugins = ["pydantic.mypy"]
-python_version = "3.9"
+python_version = "3.10"
 
 disallow_any_generics = false
 local_partial_types = true
@@ -378,7 +377,7 @@ exclude = [
   "tests/unit/test_repository/test_generic_mock_repository.py",
 ]
 include = ["litestar", "tests"]
-pythonVersion = "3.9"
+pythonVersion = "3.10"
 reportUnnecessaryTypeIgnoreComments = true
 
 [tool.slotscheck]

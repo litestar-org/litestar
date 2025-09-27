@@ -1,9 +1,9 @@
-# ruff: noqa: UP007, UP006
+# ruff: noqa: UP006
 
 from __future__ import annotations
 
 from sys import version_info
-from typing import Annotated, Any, Dict, Generic, List, Optional, TypeVar, Union  # noqa: UP035
+from typing import Annotated, Any, Dict, Generic, List, Optional, TypeVar  # noqa: UP035
 
 import pytest
 
@@ -33,9 +33,7 @@ else:
     py_310_plus_annotation = []
 
 
-@pytest.mark.parametrize(
-    ("annotation", "expected"), [(Union[None, str, int], Union[str, int]), (Optional[Union[str, int]], Union[str, int])]
-)
+@pytest.mark.parametrize(("annotation", "expected"), [(None | str | int, str | int), (Optional[str | int], str | int)])
 def test_make_non_optional_union(annotation: Any, expected: Any) -> None:
     assert make_non_optional_union(annotation) == expected
 
@@ -70,9 +68,9 @@ class AnnotatedFoo(Generic[T]):
 
 
 class UnionFoo(Generic[T, V, U]):
-    union_foo: Union[T, bool]
-    constrained_union_foo: Union[V, bool]
-    bound_union_foo: Union[U, bool]
+    union_foo: T | bool
+    constrained_union_foo: V | bool
+    bound_union_foo: U | bool
 
 
 class MixedFoo(Generic[T]):
@@ -95,22 +93,22 @@ class NestedFoo(Generic[T]):
         (BoundFoo, {"bound_foo": int}),
         (BoundFoo[int], {"bound_foo": int}),
         (ConstrainedFoo[int], {"constrained_foo": int}),
-        (ConstrainedFoo, {"constrained_foo": Union[int, str]}),
+        (ConstrainedFoo, {"constrained_foo": int | str}),
         (AnnotatedFoo[int], {"annotated_foo": Annotated[int, ANNOTATION]}),
         (
             UnionFoo[T, V, U],  # type: ignore[valid-type]
             {
-                "union_foo": Union[T, bool],  # pyright: ignore[reportGeneralTypeIssues]
-                "constrained_union_foo": Union[int, str, bool],
-                "bound_union_foo": Union[int, bool],
+                "union_foo": T | bool,  # pyright: ignore[reportGeneralTypeIssues]
+                "constrained_union_foo": int | str | bool,
+                "bound_union_foo": int | bool,
             },
         ),
         (
             UnionFoo,
             {
-                "union_foo": Union[T, bool],  # pyright: ignore[reportGeneralTypeIssues]
-                "constrained_union_foo": Union[int, str, bool],
-                "bound_union_foo": Union[int, bool],
+                "union_foo": T | bool,
+                "constrained_union_foo": int | str | bool,
+                "bound_union_foo": int | bool,
             },
         ),
         (
@@ -126,7 +124,7 @@ class NestedFoo(Generic[T]):
             NestedFoo[int],
             {
                 "bound_foo": BoundFoo[int],
-                "constrained_foo": ConstrainedFoo[Union[int, str]],  # type: ignore[type-var]
+                "constrained_foo": ConstrainedFoo[int | str],  # type: ignore[type-var]
                 "constrained_foo_with_t": ConstrainedFoo[int],
             },
         ),

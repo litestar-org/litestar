@@ -1,12 +1,6 @@
 from __future__ import annotations
 
-from typing import (
-    TYPE_CHECKING,
-    Any,
-    Callable,
-    Literal,
-    Union,
-)
+from typing import TYPE_CHECKING, Any, Callable, Literal
 
 __all__ = (
     "Dependencies",
@@ -38,14 +32,14 @@ if TYPE_CHECKING:
     from .asgi_types import ASGIApp
     from .callable_types import AnyCallable, ExceptionHandler
 
-Dependencies: TypeAlias = "Mapping[str, Union[Provide, AnyCallable]]"
-ExceptionHandlersMap: TypeAlias = "MutableMapping[Union[int, type[Exception]], ExceptionHandler]"
+Dependencies: TypeAlias = "Mapping[str, Provide | AnyCallable]"
+ExceptionHandlersMap: TypeAlias = "MutableMapping[int | type[Exception], ExceptionHandler]"
 Middleware: TypeAlias = Callable[..., "ASGIApp"]
 MiddlewareFactory: TypeAlias = Callable[..., Middleware]
 ParametersMap: TypeAlias = "Mapping[str, ParameterKwarg]"
-PathType: TypeAlias = "Union[Path, PathLike, str]"
-ResponseCookies: TypeAlias = "Union[Sequence[Cookie], Mapping[str, str]]"
-ResponseHeaders: TypeAlias = "Union[Sequence[ResponseHeader], Mapping[str, str]]"
+PathType: TypeAlias = "Path | PathLike | str"
+ResponseCookies: TypeAlias = "Sequence[Cookie] | Mapping[str, str]"
+ResponseHeaders: TypeAlias = "Sequence[ResponseHeader] | Mapping[str, str]"
 Scopes: TypeAlias = "set[Literal[ScopeType.HTTP, ScopeType.WEBSOCKET]]"
 TypeDecodersSequence: TypeAlias = "Sequence[tuple[Callable[[Any], bool], Callable[[Any, Any], Any]]]"
 TypeEncodersMap: TypeAlias = "Mapping[Any, Callable[[Any], Any]]"

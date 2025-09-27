@@ -14,7 +14,6 @@ from typing import (
     ClassVar,
     Final,
     Protocol,
-    Union,
     cast,
 )
 
@@ -825,7 +824,7 @@ def _create_struct_for_field_definitions(
 
         field_type = _create_transfer_model_type_annotation(field_definition.transfer_type)
         if field_definition.is_partial:
-            field_type = Union[field_type, UnsetType]
+            field_type = field_type | UnsetType
 
         if field_definition.passthrough_constraints:
             if (field_meta := _create_struct_field_meta_for_field_definition(field_definition)) is not None:

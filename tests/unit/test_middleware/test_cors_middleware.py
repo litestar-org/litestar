@@ -1,5 +1,5 @@
 from collections.abc import Mapping
-from typing import Any, Literal, Optional, Union, cast
+from typing import Any, Literal, Optional, cast
 
 import pytest
 
@@ -53,7 +53,7 @@ def test_cors_simple_response(
     allow_credentials: bool,
     expose_headers: list[str],
     allow_headers: list[str],
-    allow_methods: list[Union[Literal["*"], "Method"]],
+    allow_methods: list[Literal["*"] | "Method"],
 ) -> None:
     @get("/")
     def handler() -> dict[str, str]:

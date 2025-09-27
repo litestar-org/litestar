@@ -10,7 +10,6 @@ from typing import (
     Any,
     ClassVar,
     Optional,
-    Union,
     cast,
 )
 
@@ -46,14 +45,14 @@ def _encode_headers(headers: Iterable[tuple[str, str]]) -> "RawHeadersList":
 class Headers(CIMultiDictProxy[str], MultiMixin[str]):  # pyright: ignore
     """An immutable, case-insensitive multi dict for HTTP headers."""
 
-    def __init__(self, headers: Optional[Union[Mapping[str, str], "RawHeaders", MultiDict[str]]] = None) -> None:  # pyright: ignore
+    def __init__(self, headers: "Optional[Mapping[str, str] | RawHeaders | MultiDict[str]]" = None) -> None:  # pyright: ignore
         """Initialize ``Headers``.
 
         Args:
             headers: Initial value.
         """
         if not isinstance(headers, MultiDict):
-            headers_: Union[Mapping[str, str], list[tuple[str, str]]] = {}
+            headers_: Mapping[str, str] | list[tuple[str, str]] = {}
             if headers:
                 if isinstance(headers, Mapping):
                     headers_ = headers  # pyright: ignore

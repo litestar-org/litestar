@@ -5,7 +5,7 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass, field, fields
 from importlib.util import find_spec
 from logging import INFO
-from typing import TYPE_CHECKING, Any, Callable, Literal, Union, cast
+from typing import TYPE_CHECKING, Any, Callable, Literal, cast
 
 from litestar.exceptions import ImproperlyConfiguredException, MissingDependencyException
 from litestar.serialization.msgspec_hooks import _msgspec_json_encoder
@@ -148,7 +148,7 @@ class BaseLoggingConfig(ABC):
 
     exception_logging_handler: ExceptionLoggingHandler | None
     """Handler function for logging exceptions."""
-    disable_stack_trace: set[Union[int, type[Exception]]]  # noqa: UP007
+    disable_stack_trace: set[int | type[Exception]]
     """Set of http status codes and exceptions to disable stack trace logging for."""
 
     @abstractmethod
@@ -227,7 +227,7 @@ class LoggingConfig(BaseLoggingConfig):
     """Should the root logger be configured, defaults to True for ease of configuration."""
     log_exceptions: Literal["always", "debug", "never"] = field(default="always")
     """Should exceptions be logged, defaults to log exceptions when 'app.debug == True'"""
-    disable_stack_trace: set[Union[int, type[Exception]]] = field(default_factory=set)  # noqa: UP007
+    disable_stack_trace: set[int | type[Exception]] = field(default_factory=set)
     """Set of http status codes and exceptions to disable stack trace logging for."""
     exception_logging_handler: ExceptionLoggingHandler | None = field(default=None)
     """Handler function for logging exceptions."""
@@ -453,7 +453,7 @@ class StructLoggingConfig(BaseLoggingConfig):
     """Whether to cache the logger configuration and reuse."""
     log_exceptions: Literal["always", "debug", "never"] = field(default="always")
     """Should exceptions be logged, defaults to log exceptions when 'app.debug == True'"""
-    disable_stack_trace: set[Union[int, type[Exception]]] = field(default_factory=set)  # noqa: UP007
+    disable_stack_trace: set[int | type[Exception]] = field(default_factory=set)
     """Set of http status codes and exceptions to disable stack trace logging for."""
     exception_logging_handler: ExceptionLoggingHandler | None = field(default=None)
     """Handler function for logging exceptions."""

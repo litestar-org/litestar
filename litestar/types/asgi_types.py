@@ -38,7 +38,6 @@ from typing import (
     Callable,
     Literal,
     TypedDict,
-    Union,
 )
 
 from litestar.enums import HttpMethod
@@ -101,7 +100,7 @@ if TYPE_CHECKING:
     from .serialization import DataContainerType
 
 HttpMethodName: TypeAlias = Literal["GET", "POST", "DELETE", "PATCH", "PUT", "HEAD", "TRACE", "OPTIONS"]
-Method: TypeAlias = Union[HttpMethodName, HttpMethod]
+Method: TypeAlias = HttpMethodName | HttpMethod
 ScopeSession: TypeAlias = "EmptyType | dict[str, Any] | DataContainerType | None"
 
 
@@ -298,44 +297,35 @@ class LifeSpanShutdownFailedEvent(TypedDict):
     message: str
 
 
-HTTPReceiveMessage: TypeAlias = Union[
-    HTTPRequestEvent,
-    HTTPDisconnectEvent,
-]
-WebSocketReceiveMessage: TypeAlias = Union[
-    WebSocketConnectEvent,
-    WebSocketReceiveEvent,
-    WebSocketDisconnectEvent,
-]
-LifeSpanReceiveMessage: TypeAlias = Union[
-    LifeSpanStartupEvent,
-    LifeSpanShutdownEvent,
-]
-HTTPSendMessage: TypeAlias = Union[
-    HTTPResponseStartEvent,
-    HTTPResponseBodyEvent,
-    HTTPServerPushEvent,
-    HTTPDisconnectEvent,
-]
-WebSocketSendMessage: TypeAlias = Union[
-    WebSocketAcceptEvent,
-    WebSocketSendEvent,
-    WebSocketResponseStartEvent,
-    WebSocketResponseBodyEvent,
-    WebSocketCloseEvent,
-]
-LifeSpanSendMessage: TypeAlias = Union[
-    LifeSpanStartupCompleteEvent,
-    LifeSpanStartupFailedEvent,
-    LifeSpanShutdownCompleteEvent,
-    LifeSpanShutdownFailedEvent,
-]
+HTTPReceiveMessage: TypeAlias = HTTPRequestEvent | HTTPDisconnectEvent
+
+WebSocketReceiveMessage: TypeAlias = WebSocketConnectEvent | WebSocketReceiveEvent | WebSocketDisconnectEvent
+
+LifeSpanReceiveMessage: TypeAlias = LifeSpanStartupEvent | LifeSpanShutdownEvent
+
+HTTPSendMessage: TypeAlias = HTTPResponseStartEvent | HTTPResponseBodyEvent | HTTPServerPushEvent | HTTPDisconnectEvent
+
+WebSocketSendMessage: TypeAlias = (
+    WebSocketAcceptEvent
+    | WebSocketSendEvent
+    | WebSocketResponseStartEvent
+    | WebSocketResponseBodyEvent
+    | WebSocketCloseEvent
+)
+
+LifeSpanSendMessage: TypeAlias = (
+    LifeSpanStartupCompleteEvent
+    | LifeSpanStartupFailedEvent
+    | LifeSpanShutdownCompleteEvent
+    | LifeSpanShutdownFailedEvent
+)
+
 LifeSpanReceive: TypeAlias = Callable[..., Awaitable[LifeSpanReceiveMessage]]
 LifeSpanSend: TypeAlias = Callable[[LifeSpanSendMessage], Awaitable[None]]
-Message: TypeAlias = Union[HTTPSendMessage, WebSocketSendMessage]
-ReceiveMessage: TypeAlias = Union[HTTPReceiveMessage, WebSocketReceiveMessage]
-Scope: TypeAlias = Union[HTTPScope, WebSocketScope]
-Receive: TypeAlias = Callable[..., Awaitable[Union[HTTPReceiveMessage, WebSocketReceiveMessage]]]
+Message: TypeAlias = HTTPSendMessage | WebSocketSendMessage
+ReceiveMessage: TypeAlias = HTTPReceiveMessage | WebSocketReceiveMessage
+Scope: TypeAlias = HTTPScope | WebSocketScope
+Receive: TypeAlias = Callable[..., Awaitable[HTTPReceiveMessage | WebSocketReceiveMessage]]
 Send: TypeAlias = Callable[[Message], Awaitable[None]]
 ASGIApp: TypeAlias = Callable[[Scope, Receive, Send], Awaitable[None]]
 RawHeaders: TypeAlias = Iterable[tuple[bytes, bytes]]

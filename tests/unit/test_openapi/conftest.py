@@ -1,5 +1,5 @@
 from datetime import date, datetime
-from typing import Any, Optional, Union
+from typing import Any, Optional
 
 import pytest
 
@@ -33,7 +33,7 @@ def create_person_controller() -> type[Controller]:
             service_id: int,
             # required query parameters below
             page: int,
-            name: Optional[Union[str, list[str]]],  # intentionally without default
+            name: Optional[str | list[str]],  # intentionally without default
             page_size: int = Parameter(
                 query="pageSize",
                 description="Page Size Description",
@@ -41,9 +41,9 @@ def create_person_controller() -> type[Controller]:
                 examples=[Example(description="example value", value=1)],
             ),
             # non-required query parameters below
-            from_date: Optional[Union[int, datetime, date]] = None,
-            to_date: Optional[Union[int, datetime, date]] = None,
-            gender: Optional[Union[Gender, list[Gender]]] = Parameter(
+            from_date: Optional[int | datetime | date] = None,
+            to_date: Optional[int | datetime | date] = None,
+            gender: Optional[Gender | list[Gender]] = Parameter(
                 examples=[Example(value=Gender.MALE), Example(value=[Gender.MALE, Gender.OTHER])]
             ),
             lucky_number: Optional[LuckyNumber] = Parameter(examples=[Example(value=LuckyNumber.SEVEN)]),
@@ -128,7 +128,7 @@ def create_pet_controller() -> type[Controller]:
             raises=[PetException],
             sync_to_thread=False,
         )
-        def get_pets_or_owners(self) -> list[Union[DataclassPerson, DataclassPet]]:
+        def get_pets_or_owners(self) -> list[DataclassPerson | DataclassPet]:
             return []
 
     return PetController

@@ -3,7 +3,7 @@ from __future__ import annotations
 from inspect import getmro
 from sys import exc_info
 from traceback import format_exception
-from typing import TYPE_CHECKING, Any, Union, cast
+from typing import TYPE_CHECKING, Any, cast
 
 from litestar.enums import ScopeType
 from litestar.exceptions import HTTPException, LitestarException, WebSocketException
@@ -220,7 +220,7 @@ class ExceptionHandlerMiddleware:
             None
         """
         exc = exc_info()
-        exc_detail: set[Union[Exception, int]] = {exc[0], getattr(exc[0], "status_code", None)}  # type: ignore[arg-type]  # noqa: UP007
+        exc_detail: set[Exception | int] = {exc[0], getattr(exc[0], "status_code", None)}  # type: ignore[arg-type]
 
         if (
             (

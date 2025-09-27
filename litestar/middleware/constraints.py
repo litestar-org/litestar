@@ -2,7 +2,7 @@ import collections
 import dataclasses
 import functools
 import inspect
-from typing import TYPE_CHECKING, Any, Literal, Optional, Union, cast
+from typing import TYPE_CHECKING, Any, Literal, Optional, cast
 
 from typing_extensions import Self
 
@@ -343,7 +343,7 @@ def check_middleware_constraints(middlewares: tuple[Middleware, ...]) -> None:
     positions: collections.defaultdict[object, list[int]] = collections.defaultdict(list)
 
     for i, middleware in enumerate(middlewares):
-        middleware_type: Union[object, type]
+        middleware_type: object | type
         if inspect.isfunction(middleware):
             positions[middleware].append(i)
             middleware_type = middleware

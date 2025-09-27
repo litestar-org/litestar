@@ -1,12 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Union
-
-if TYPE_CHECKING:
-    from litestar.openapi.spec.reference import Reference
-    from litestar.openapi.spec.response import OpenAPIResponse
-
-Responses = dict[str, Union["OpenAPIResponse", "Reference"]]
+Responses = "dict[str, OpenAPIResponse | Reference]"
 """A container for the expected responses of an operation. The container maps a
 HTTP response code to the expected response.
 
@@ -21,7 +15,7 @@ operation call.
 
 Fixed Fields
 
-default: ``Optional[Union[Response, Reference]]``
+default: ``Optional[Response | Reference]``
 
 The documentation of responses other than the ones declared for specific HTTP response codes. Use this field to cover
 undeclared responses. A `Reference Object <https://spec.openapis.org/oas/v3.1.0#referenceObject>`_ can link to a

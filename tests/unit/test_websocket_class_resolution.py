@@ -1,5 +1,3 @@
-from typing import Union
-
 import pytest
 
 from litestar import Controller, Litestar, Router, WebSocket
@@ -31,10 +29,10 @@ HandlerWebSocket: type[WebSocket] = type("HandlerWebSocket", (WebSocket,), {})
     ),
 )
 def test_websocket_class_resolution_of_layers(
-    handler_websocket_class: Union[type[WebSocket], None],
-    controller_websocket_class: Union[type[WebSocket], None],
-    router_websocket_class: Union[type[WebSocket], None],
-    app_websocket_class: Union[type[WebSocket], None],
+    handler_websocket_class: type[WebSocket] | None,
+    controller_websocket_class: type[WebSocket] | None,
+    router_websocket_class: type[WebSocket] | None,
+    app_websocket_class: type[WebSocket] | None,
     has_default_app_class: bool,
     expected: type[WebSocket],
 ) -> None:
@@ -76,9 +74,9 @@ def test_websocket_class_resolution_of_layers(
     ),
 )
 def test_listener_websocket_class_resolution_of_layers(
-    handler_websocket_class: Union[type[WebSocket], None],
-    router_websocket_class: Union[type[WebSocket], None],
-    app_websocket_class: Union[type[WebSocket], None],
+    handler_websocket_class: type[WebSocket] | None,
+    router_websocket_class: type[WebSocket] | None,
+    app_websocket_class: type[WebSocket] | None,
     expected: type[WebSocket],
 ) -> None:
     class Handler(WebsocketListener):

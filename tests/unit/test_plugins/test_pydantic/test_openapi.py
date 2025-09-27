@@ -2,7 +2,7 @@ from datetime import date, timedelta
 from decimal import Decimal
 from re import Pattern
 from types import ModuleType
-from typing import Annotated, Any, Callable, Optional, Union, cast
+from typing import Annotated, Any, Callable, Optional, cast
 
 import annotated_types
 import pydantic as pydantic_v2
@@ -28,7 +28,7 @@ from tests.unit.test_plugins.test_pydantic.models import (
 
 from . import PydanticVersion
 
-AnyBaseModelType = type[Union[pydantic_v1.BaseModel, pydantic_v2.BaseModel]]
+AnyBaseModelType = type[pydantic_v1.BaseModel | pydantic_v2.BaseModel]
 
 
 constrained_string_v1 = [
@@ -196,15 +196,15 @@ def test_create_collection_constrained_field_schema_sub_fields(
     if pydantic_version == "v1":
 
         class Modelv1(pydantic_v1.BaseModel):
-            set_field: conset(Union[str, int], min_items=1, max_items=10)  # type: ignore[valid-type]
-            list_field: conlist(Union[str, int], min_items=1, max_items=10)  # type: ignore[valid-type]
+            set_field: conset(str | int, min_items=1, max_items=10)  # type: ignore[valid-type]
+            list_field: conlist(str | int, min_items=1, max_items=10)  # type: ignore[valid-type]
 
         model_schema = schema_creator.for_plugin(FieldDefinition.from_annotation(Modelv1), plugin)
     else:
 
         class Modelv2(pydantic_v2.BaseModel):
-            set_field: conset(Union[str, int], min_length=1, max_length=10)  # type: ignore[valid-type]
-            list_field: conlist(Union[str, int], min_length=1, max_length=10)  # type: ignore[valid-type]
+            set_field: conset(str | int, min_length=1, max_length=10)  # type: ignore[valid-type]
+            list_field: conlist(str | int, min_length=1, max_length=10)  # type: ignore[valid-type]
 
         model_schema = schema_creator.for_plugin(FieldDefinition.from_annotation(Modelv2), plugin)
 
@@ -301,7 +301,7 @@ def test_create_numerical_constrained_field_schema_pydantic_v1(
 ) -> None:
     from pydantic.v1.types import ConstrainedDecimal, ConstrainedFloat, ConstrainedInt
 
-    annotation = cast(Union[ConstrainedInt, ConstrainedFloat, ConstrainedDecimal], annotation)
+    annotation = cast(ConstrainedInt | ConstrainedFloat | ConstrainedDecimal, annotation)
 
     class Model(pydantic_v1.BaseModel):
         field: annotation

@@ -105,7 +105,7 @@ argument which should be the template class, and it specifies two methods:
 
 .. code-block:: python
 
-   from typing import Protocol, Union, List
+   from typing import Protocol, List
    from pydantic import DirectoryPath
 
    # the template class of the respective library
@@ -113,7 +113,7 @@ argument which should be the template class, and it specifies two methods:
 
 
    class TemplateEngineProtocol(Protocol[SomeTemplate]):
-       def __init__(self, directory: Union[DirectoryPath, List[DirectoryPath]]) -> None:
+       def __init__(self, directory: DirectoryPath | List[DirectoryPath]) -> None:
            """Builds a template engine."""
            ...
 

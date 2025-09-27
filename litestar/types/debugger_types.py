@@ -1,5 +1,5 @@
 from types import ModuleType, TracebackType
-from typing import Any, Optional, Protocol, Union
+from typing import Any, Optional, Protocol
 
 from typing_extensions import TypeAlias
 
@@ -13,4 +13,4 @@ class PDBProtocol(Protocol):
     ) -> Any: ...
 
 
-Debugger: TypeAlias = Union[ModuleType, PDBProtocol]
+Debugger: TypeAlias = ModuleType | PDBProtocol
