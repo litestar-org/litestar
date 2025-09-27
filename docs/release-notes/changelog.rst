@@ -134,3 +134,12 @@
 
         Remove the deprecated ``litestar.contrib.attrs`` module. Code still using imports
         from this module should switch to using ``litestar.plugins.attrs``.
+
+    .. change:: Remove deprecated ``litestar.contrib.jwt`` module
+        :type: feature
+        :breaking:
+        :pr: 4333
+        :issue: 4304
+
+        Remove the deprecated ``litestar.contrib.jwt`` module. Code still using imports
+        from this module should switch to using ``litestar.security.jwt``.
