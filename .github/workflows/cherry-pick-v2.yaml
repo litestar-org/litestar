@@ -72,6 +72,8 @@ jobs:
           echo "name=$branch_name" >> $GITHUB_OUTPUT
 
       - name: Create Pull Request with GH CLI
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: >
           gh pr create 
           --base v2 
