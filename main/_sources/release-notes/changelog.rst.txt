@@ -143,3 +143,12 @@
 
         Remove the deprecated ``litestar.contrib.jwt`` module. Code still using imports
         from this module should switch to using ``litestar.security.jwt``.
+
+    .. change:: Remove deprecated ``litestar.contrib.repository`` module
+        :type: feature
+        :breaking:
+        :pr: 4337
+        :issue: 4307
+
+        Remove the deprecated ``litestar.contrib.repository`` module. Code still using imports
+        from this module should switch to using ``litestar.repository``.
