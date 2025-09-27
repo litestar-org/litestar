@@ -16,4 +16,3 @@ plugins
     prometheus
     pydantic
     structlog
-    sqlalchemy
