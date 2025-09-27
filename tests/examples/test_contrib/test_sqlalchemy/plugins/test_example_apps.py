@@ -5,10 +5,10 @@ from typing import Any
 
 import pytest
 from _pytest.monkeypatch import MonkeyPatch
+from advanced_alchemy.extensions.litestar import EngineConfig
 from sqlalchemy import Engine, StaticPool, create_engine
 from sqlalchemy.ext.asyncio import AsyncEngine, create_async_engine
 
-from litestar.plugins.sqlalchemy import EngineConfig
 from litestar.testing import TestClient
 
 pytestmark = pytest.mark.xdist_group("sqlalchemy_examples")
@@ -92,17 +92,15 @@ def test_sqlalchemy_sync_init_plugin_dependencies(monkeypatch: MonkeyPatch) -> N
 
 
 def test_sqlalchemy_async_before_send_handler() -> None:
+    from advanced_alchemy.extensions.litestar import async_autocommit_before_send_handler
     from docs.examples.contrib.sqlalchemy.plugins.sqlalchemy_async_before_send_handler import app
-
-    from litestar.plugins.sqlalchemy import async_autocommit_before_send_handler
 
     assert async_autocommit_before_send_handler is app.before_send[0]
 
 
 def test_sqlalchemy_sync_before_send_handler() -> None:
+    from advanced_alchemy.extensions.litestar import sync_autocommit_before_send_handler
     from docs.examples.contrib.sqlalchemy.plugins.sqlalchemy_sync_before_send_handler import app
-
-    from litestar.plugins.sqlalchemy import sync_autocommit_before_send_handler
 
     assert sync_autocommit_before_send_handler is app.before_send[0].func
 

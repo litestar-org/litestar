@@ -3,11 +3,11 @@ from __future__ import annotations
 from collections.abc import Sequence
 from typing import TYPE_CHECKING
 
+from advanced_alchemy.extensions.litestar import SQLAlchemyPlugin, SQLAlchemySyncConfig
 from sqlalchemy import select
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 from litestar import Litestar, post
-from litestar.plugins.sqlalchemy import SQLAlchemyPlugin, SQLAlchemySyncConfig
 
 if TYPE_CHECKING:
     from sqlalchemy.orm import Session
