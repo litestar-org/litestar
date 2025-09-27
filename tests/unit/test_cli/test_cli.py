@@ -91,3 +91,21 @@ def test_invalid_import_in_app_argument(
 
     result = runner.invoke(cli_command, ["--app", "main:create_app", "--app-dir", app_dir, "info"])
     assert isinstance(result.exception, ModuleNotFoundError)
+
+
+# https://github.com/litestar-org/litestar/issues/4331
+@pytest.mark.xdist_group("cli_autodiscovery")
+def test_help_option_with_app_dir(runner: "CliRunner", create_app_file: CreateAppFileFixture) -> None:
+    app_file = "main.py"
+    app_file_without_extension = app_file.split(".")[0]
+    create_app_file(
+        file=app_file,
+        directory="src",
+        content=CREATE_APP_FILE_CONTENT,
+        subdir="help_with_app_dir",
+        init_content=f"from .{app_file_without_extension} import create_app",
+    )
+    app_dir = "docker/neurogate"
+    result = runner.invoke(cli_command, ["--app-dir", app_dir, "--help"])
+
+    assert result.output.strip().startswith("Usage: litestar [OPTIONS] COMMAND [ARGS]...")
