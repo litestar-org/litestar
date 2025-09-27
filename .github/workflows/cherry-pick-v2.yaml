@@ -60,6 +60,7 @@ jobs:
 
       - name: Create cherry-pick branch
         id: branch
+        continue-on-error: true
         run: |
           branch_name="cherry-pick/pr-${{ github.event.pull_request.number }}"
           git checkout -b "$branch_name" origin/v2
@@ -72,11 +73,21 @@ jobs:
           echo "name=$branch_name" >> $GITHUB_OUTPUT
 
       - name: Create Pull Request with GH CLI
+        if: steps.branch.outcome == 'success'
         env:
           GH_TOKEN: ${{ github.token }}
         run: >
-          gh pr create 
+          pr_url=$(gh pr create 
           --base v2 
           --head ${{ steps.branch.outputs.name }} 
           --title "${{ github.event.pull_request.title }}" 
-          --body "This PR was automatically created to cherry-pick commit ${{ steps.commit.outputs.sha }} from #${{ github.event.pull_request.number }} into the `v2` branch."
+          --body "This PR was automatically created to cherry-pick commit ${{ steps.commit.outputs.sha }} from #${{ github.event.pull_request.number }} into v2."
+          --json url | jq -r .url)
+          echo "pr_url=$pr_url" >> $GITHUB_OUTPUT
+
+      - name: Comment on original PR
+        run: |
+          if [ ${{ steps.branch.outcome }} == 'success']; then
+            gh pr comment ${{ github.event.pull_request.number }} --body "A PR has been created to cherry pick these changes into the 'v2' branch: ${{ steps.create_pr.outputs.pr_url }}"
+          else
+            gh pr comment ${{ github.event.pull_request.number }} --body "⚠️ A PR could not be created to cherry pick these changes into the 'v2' due to conflicts. Cherry-pick must be performed manually."
