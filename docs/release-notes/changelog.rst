@@ -168,3 +168,12 @@
 
         Remove the deprecated ``litestar.contrib.repository`` module. Code still using imports
         from this module should switch to using ``litestar.repository``.
+
+    .. change:: Remove deprecated ``litestar.contrib.pydantic`` module
+        :type: feature
+        :breaking:
+        :pr: 4339
+        :issue: 4306
+
+        Remove the deprecated ``litestar.contrib.pydantic`` module. Code still using imports
+        from this module should switch to using ``litestar.plugins.pydantic``.

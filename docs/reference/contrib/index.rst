@@ -9,4 +9,3 @@ contrib
     mako
     opentelemetry
     piccolo
-    pydantic
