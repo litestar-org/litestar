@@ -9,5 +9,4 @@ contrib
     mako
     opentelemetry
     piccolo
-    pydantic
     sqlalchemy/index
