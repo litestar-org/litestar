@@ -1,12 +1,12 @@
 from typing import TYPE_CHECKING, cast
 
+from advanced_alchemy.extensions.litestar import SQLAlchemyAsyncConfig, SQLAlchemyInitPlugin, base
 from sqlalchemy import func, select
 from sqlalchemy.orm import Mapped
 
 from litestar import Litestar, get
 from litestar.di import Provide
 from litestar.pagination import AbstractAsyncOffsetPaginator, OffsetPagination
-from litestar.plugins.sqlalchemy import SQLAlchemyAsyncConfig, SQLAlchemyInitPlugin, base
 
 if TYPE_CHECKING:
     from sqlalchemy.engine.result import ScalarResult

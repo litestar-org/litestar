@@ -2,11 +2,11 @@ import json
 from pathlib import Path
 from typing import Any
 
+from advanced_alchemy.extensions.litestar import base, repository
 from rich import get_console
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Mapped, Session, sessionmaker
 
-from litestar.plugins.sqlalchemy import base, repository
 from litestar.repository.filters import LimitOffset
 
 here = Path(__file__).parent
