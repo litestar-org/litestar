@@ -7,4 +7,5 @@ contrib
     jinja
     mako
     opentelemetry
-    sqlalchemy/index
+    piccolo
+    pydantic

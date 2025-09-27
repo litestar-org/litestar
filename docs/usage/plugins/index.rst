@@ -74,12 +74,9 @@ that annotation.
 Example
 +++++++
 
-The following example shows the actual implementation of the ``SerializationPlugin`` for
-`SQLAlchemy <https://www.sqlalchemy.org/>`_ models that is is provided in ``advanced_alchemy``.
-
-.. literalinclude:: ../../../litestar/contrib/sqlalchemy/plugins/serialization.py
-   :language: python
-   :caption: ``SerializationPlugin`` implementation example
+The following example shows the implementation pattern of a ``SerializationPlugin`` for
+`SQLAlchemy <https://www.sqlalchemy.org/>`_ models. For the actual implementation, see the
+``advanced_alchemy`` library documentation.
 
 :meth:`supports_type(self, field_definition: FieldDefinition) -> bool: <advanced_alchemy.extensions.litestar.SQLAlchemySerializationPlugin.supports_type>`
 returns a :class:`bool` indicating whether the plugin supports serialization for the given type. Specifically, we return
