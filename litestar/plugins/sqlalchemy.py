@@ -6,6 +6,16 @@ from typing import TYPE_CHECKING
 
 from litestar.utils import warn_deprecation
 
+# Module-level deprecation warning
+warn_deprecation(
+    deprecated_name="litestar.plugins.sqlalchemy",
+    version="2.18.0",
+    kind="import",
+    removal_in="3.0.0",
+    info="The 'litestar.plugins.sqlalchemy' module is deprecated. "
+         "Please import directly from 'advanced_alchemy.extensions.litestar' instead.",
+)
+
 __all__ = (
     "AlembicAsyncConfig",
     "AlembicCommands",
