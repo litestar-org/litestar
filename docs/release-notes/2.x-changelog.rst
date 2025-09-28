@@ -3613,8 +3613,8 @@
         A :class:`SQLAlchemyInitPlugin <litestar.contrib.sqlalchemy.plugins.SQLAlchemyInitPlugin>` was added,
         providing support for managed synchronous and asynchronous sessions.
 
-        .. seealso::
-            :doc:`/usage/databases/sqlalchemy/index`
+        .. note::
+            SQLAlchemy documentation was available in v2 but SQLAlchemy support was removed in v3.
 
     .. change:: Attrs signature modelling
         :type: feature

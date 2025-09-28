@@ -295,7 +295,7 @@ SQLAlchemy 2 only.
 TODO: Migration instructions
 
 .. seealso::
-    The :doc:`/usage/databases/sqlalchemy/index` usage documentation and the
+    SQLAlchemy usage documentation was available in v2, but SQLAlchemy support was removed in v3. See the
     `advanced-alchemy documentation <https://docs.advanced-alchemy.litestar.dev/>`_ for API reference
 
 
