@@ -6,9 +6,6 @@ Plugins
 
 Litestar supports a plugin system that allows you to extend the functionality of the framework.
 
-.. seealso::
-
-    * :doc:`/usage/databases/sqlalchemy/plugins/index`
 
 Plugins are defined by protocols, and any type that satisfies a protocol can be included in the ``plugins`` argument of
 the :class:`app <litestar.app.Litestar>`.
