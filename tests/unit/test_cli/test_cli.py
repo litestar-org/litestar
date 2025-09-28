@@ -106,6 +106,6 @@ def test_help_option_with_app_dir(runner: "CliRunner", create_app_file: CreateAp
         init_content=f"from .{app_file_without_extension} import create_app",
     )
     app_dir = "docker/neurogate"
-    result = runner.invoke(cli_command, ["--app-dir", app_dir, "--help"])
+    result = runner.invoke(cli_command, ["--app-dir", app_dir, "--help"], color=False)
 
     assert result.output.strip().startswith("Usage: litestar [OPTIONS] COMMAND [ARGS]...")
