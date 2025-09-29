@@ -164,7 +164,6 @@
 
     .. change:: Add ``round_trip`` parameter to ``PydanticPlugin``
         :type: feature
-        :breaking:
         :pr: 4350
         :issue: 4349
 
