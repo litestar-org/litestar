@@ -452,7 +452,7 @@ def test_pydantic_v2_round_trip() -> None:
 
     @get("/")
     async def handler() -> Model:
-        return Model(foo=resp)
+        return Model(foo=resp)  # type: ignore[arg-type] # pyright: ignore[reportArgumentType]
 
     with create_test_client([handler], plugins=[PydanticPlugin(round_trip=True)]) as client:
         assert client.get("/").json() == {"foo": resp}

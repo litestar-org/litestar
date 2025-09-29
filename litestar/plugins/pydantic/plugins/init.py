@@ -130,8 +130,8 @@ class PydanticInitPlugin(InitPlugin):
         "exclude_unset",
         "include",
         "prefer_alias",
-        "validate_strict",
         "round_trip",
+        "validate_strict",
     )
 
     def __init__(
