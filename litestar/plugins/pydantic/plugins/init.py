@@ -130,6 +130,7 @@ class PydanticInitPlugin(InitPlugin):
         "exclude_unset",
         "include",
         "prefer_alias",
+        "round_trip",
         "validate_strict",
     )
 
@@ -142,6 +143,7 @@ class PydanticInitPlugin(InitPlugin):
         include: PydanticV1FieldsListType | PydanticV2FieldsListType | None = None,
         prefer_alias: bool = False,
         validate_strict: bool = False,
+        round_trip: bool = False,
     ) -> None:
         """Pydantic Plugin to support serialization / validation of Pydantic types / models
 
@@ -152,6 +154,8 @@ class PydanticInitPlugin(InitPlugin):
         :param include: Fields to exclude during serialization
         :param prefer_alias: Use the ``by_alias=True`` flag when dumping models
         :param validate_strict: Use ``strict=True`` when calling ``.model_validate`` on Pydantic 2.x models
+        :param round_trip: use ``round_trip=True`` when calling ``.model_dump``
+          and ``.model_dump_json`` on Pydantic 2.x models
         """
         self.exclude = exclude
         self.exclude_defaults = exclude_defaults
@@ -160,6 +164,7 @@ class PydanticInitPlugin(InitPlugin):
         self.include = include
         self.prefer_alias = prefer_alias
         self.validate_strict = validate_strict
+        self.round_trip = round_trip
 
     @classmethod
     def encoders(
@@ -170,6 +175,7 @@ class PydanticInitPlugin(InitPlugin):
         exclude_unset: bool = False,
         include: PydanticV1FieldsListType | PydanticV2FieldsListType | None = None,
         prefer_alias: bool = False,
+        round_trip: bool = False,
     ) -> dict[Any, Callable[[Any], Any]]:
         encoders = {
             **_base_encoders,
@@ -191,6 +197,7 @@ class PydanticInitPlugin(InitPlugin):
                     exclude_none=exclude_none,
                     exclude_unset=exclude_unset,
                     include=include,  # type: ignore[arg-type]
+                    round_trip=round_trip,
                 )
             )
         return encoders
@@ -250,6 +257,7 @@ class PydanticInitPlugin(InitPlugin):
         exclude_unset: bool = False,
         include: PydanticV2FieldsListType | None = None,
         prefer_alias: bool = False,
+        round_trip: bool = False,
     ) -> dict[Any, Callable[[Any], Any]]:
         encoders: dict[Any, Callable[[Any], Any]] = {
             pydantic_v2.BaseModel: lambda model: model.model_dump(  # pyright: ignore[reportOptionalMemberAccess]
@@ -260,6 +268,7 @@ class PydanticInitPlugin(InitPlugin):
                 exclude_unset=exclude_unset,
                 include=include,
                 mode="json",
+                round_trip=round_trip,
             ),
             pydantic_v2.types.SecretStr: lambda val: "**********" if val else "",  # pyright: ignore[reportOptionalMemberAccess]
             pydantic_v2.types.SecretBytes: lambda val: "**********" if val else "",  # pyright: ignore[reportOptionalMemberAccess]
@@ -282,6 +291,7 @@ class PydanticInitPlugin(InitPlugin):
                 exclude_none=self.exclude_none,
                 exclude_unset=self.exclude_unset,
                 include=self.include,
+                round_trip=self.round_trip,
             ),
             **(app_config.type_encoders or {}),
         }
