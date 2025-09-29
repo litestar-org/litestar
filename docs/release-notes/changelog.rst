@@ -161,3 +161,13 @@
 
         Remove the deprecated ``litestar.contrib.pydantic`` module. Code still using imports
         from this module should switch to using ``litestar.plugins.pydantic``.
+
+    .. change:: Add ``round_trip`` parameter to ``PydanticPlugin``
+        :type: feature
+        :breaking:
+        :pr: 4350
+        :issue: 4349
+
+        New ``round_trip: bool`` parameter
+        to :class:`~litestar.contrib.pydantic.PydanticPlugin` allows
+        serializing types like ``pydanctic.Json`` correctly.

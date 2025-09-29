@@ -438,3 +438,21 @@ def test_v2_computed_fields(with_dto: bool) -> None:
         assert schema.properties["baz"].title == "this is computed"  # type: ignore[union-attr, index]
         assert schema.properties["baz"].examples == [1]  # type: ignore[union-attr, index]
         assert res.json() == {"foo": 1, "bar": 2, "baz": 3}
+
+
+def test_pydantic_v2_round_trip() -> None:
+    class Submodel(pydantic_v2.BaseModel):
+        bar: str
+        baz: list[int]
+
+    class Model(pydantic_v2.BaseModel):
+        foo: pydantic_v2.Json[Submodel]
+
+    resp = '{"bar":"abc","baz":[1,2,3]}'
+
+    @get("/")
+    async def handler() -> Model:
+        return Model(foo=resp)
+
+    with create_test_client([handler], plugins=[PydanticPlugin(round_trip=True)]) as client:
+        assert client.get("/").json() == {"foo": resp}
