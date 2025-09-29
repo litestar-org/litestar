@@ -88,15 +88,107 @@ field in the ``User`` object that should be excluded from the output DTO.
     )
 
 In this example, ``"id"`` represents the id field of the ``User`` object, ``"address.id"`` and ``"address.street"``
-represent fields of the ``Address`` object nested inside the ``User`` object, and ``"pets.0.id"`` and
-``"pets.0.user_id"`` represent fields of the ``Pets`` objects nested within the list of ``User.pets``.
+represent fields of the ``Address`` object nested inside the ``User`` object.
+
+The ``"pets.0.id"`` and ``"pets.0.user_id"`` entries demonstrate how to exclude fields from objects within generic collections.
+Here's what they mean:
+
+- ``"pets.0.id"``: Excludes the ``id`` field from **all** ``Pets`` objects in the ``User.pets`` list
+- ``"pets.0.user_id"``: Excludes the ``user_id`` field from **all** ``Pets`` objects in the ``User.pets`` list
+
+The ``0`` in ``pets.0.id`` refers to the type parameter index of the generic ``list[Pets]`` type annotation.
+Since ``Pets`` is the first (and only) type parameter in ``list[Pets]``, we use ``0`` to reference it.
+
+.. important::
+    **Common misconception**: The ``0`` in ``pets.0.id`` does **NOT** mean "exclude id from only the first pet in the list".
+    It means "exclude id from ALL pets in the list". The ``0`` refers to the type parameter position, not the list index.
 
 .. note::
 
     Given a generic type, with an arbitrary number of type parameters (e.g., ``GenericType[Type0, Type1, ..., TypeN]``),
-    we use the index of the type parameter to indicate which type the exclusion should refer to. For example, ``a.0.b``,
-    excludes the ``b`` field from the first type parameter of ``a``, ``a.1.b`` excludes the ``b`` field from the second
-    type parameter of ``a``, and so on.
+    we use the index of the type parameter to indicate which type the exclusion should refer to. For example:
+    
+    - ``a.0.b`` excludes the ``b`` field from the first type parameter of ``a``
+    - ``a.1.b`` excludes the ``b`` field from the second type parameter of ``a``
+    
+    This is most commonly seen with collection types like ``list[SomeType]`` where ``0`` refers to ``SomeType``.
+
+Understanding collection field exclusion
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+To clarify how collection field exclusion works, let's examine what the response would look like both with and without exclusions:
+
+**Without any exclusions**, a user response might look like:
+
+.. code-block:: json
+
+    {
+        "id": "123e4567-e89b-12d3-a456-426614174000",
+        "name": "John Doe",
+        "address": {
+            "id": "987fcdeb-51a2-43d1-9f4b-426614174001", 
+            "street": "123 Main St",
+            "city": "Anytown",
+            "state": "NY",
+            "zip": "12345"
+        },
+        "pets": [
+            {
+                "id": "456e7890-e89b-12d3-a456-426614174002",
+                "name": "Fluffy",
+                "species": "cat",
+                "user_id": "123e4567-e89b-12d3-a456-426614174000"
+            },
+            {
+                "id": "789abcde-e89b-12d3-a456-426614174003", 
+                "name": "Rex",
+                "species": "dog",
+                "user_id": "123e4567-e89b-12d3-a456-426614174000"
+            }
+        ]
+    }
+
+**With the exclusions** from our config (``"id"``, ``"address.id"``, ``"address.street"``, ``"pets.0.id"``, ``"pets.0.user_id"``):
+
+.. code-block:: json
+
+    {
+        "name": "John Doe",
+        "address": {
+            "city": "Anytown",
+            "state": "NY", 
+            "zip": "12345"
+        },
+        "pets": [
+            {
+                "name": "Fluffy",
+                "species": "cat"
+            },
+            {
+                "name": "Rex",
+                "species": "dog"
+            }
+        ]
+    }
+
+Notice that ``pets.0.id`` and ``pets.0.user_id`` are excluded from **both** pets in the array, not just the first one.
+
+Complex generic type exclusions
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+For more complex scenarios involving multiple type parameters (like ``Dict[KeyType, ValueType]`` or ``Union[Type1, Type2]``),
+you can find a comprehensive example demonstrating various exclusion patterns:
+
+.. literalinclude:: /examples/data_transfer_objects/factory/complex_exclusions.py
+    :caption: Complex generic type exclusions
+    :language: python
+    :lines: 1-50
+
+This example shows how to exclude fields from:
+
+- Dictionary values: ``inventory.1.0.field`` (where ``1`` refers to the value type parameter)  
+- Union types: ``featured_item.0.field`` (where ``0`` refers to the first union member)
+- Nested collections: ``categories.0.field`` (where ``0`` refers to the list element type)
 
 Renaming fields
 ---------------
