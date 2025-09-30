@@ -38,18 +38,13 @@ jobs:
       - name: Check for breaking change
         id: check
         run: |
-          msg="${{ steps.message.outputs.message }}"
-          if echo "$msg" | grep -qE "BREAKING CHANGE|^[a-z]+\(.*\)!:"; then
-            echo "breaking=true" >> $GITHUB_OUTPUT
-          else
-            echo "breaking=false" >> $GITHUB_OUTPUT
+          if cat <<'MSG' | grep -qE '^[a-z]+\(.*\)!:'
+          ${{ steps.message.outputs.message }}
+          MSG
+          then
+            echo "Commit message indicates breaking change. Skipping cherry-pick."
+            exit 1
           fi
-
-      - name: Stop if breaking
-        if: steps.check.outputs.breaking == 'true'
-        run: |
-          echo "Commit message indicates breaking change. Skipping cherry-pick."
-          exit 1
 
       - name: Configure Git
         run: |

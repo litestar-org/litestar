@@ -179,3 +179,12 @@
         New ``round_trip: bool`` parameter
         to :class:`~litestar.contrib.pydantic.PydanticPlugin` allows
         serializing types like ``pydanctic.Json`` correctly.
+
+    .. change:: Remove deprecated ``litestar.contrib.minijinja.minijinja_from_state`` function
+        :type: feature
+        :breaking:
+        :pr: 4355
+        :issue: 4356
+
+        Remove the deprecated ``litestar.contrib.minijinja.minijinja_from_state`` function.
+        Instead use a callable that receives the minijinja ``State`` object as first argument.
