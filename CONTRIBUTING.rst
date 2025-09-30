@@ -14,8 +14,8 @@ Getting Started
 Supported Python Versions
 +++++++++++++++++++++++++
 
-The lowest currently supported version is Python 3.8.
-At a minimum you will need Python 3.8 for code changes and 3.12 if you plan on doing documentation building / changes.
+The lowest currently supported version is Python 3.9.
+At a minimum you will need Python 3.9 for code changes and 3.13 if you plan on doing documentation building / changes.
 
 You can use various tools to manage multiple Python versions on your system including:
 
@@ -139,7 +139,7 @@ enforce type safety. You can run them with:
 - ``make type-check`` to run both
 - ``make lint`` to run pre-commit hooks and type checkers.
 
-Our type checkers are run on Python 3.8 in CI, so you should make sure to run them on the same version locally as well.
+Our type checkers are run on Python 3.9 in CI, so you should make sure to run them on the same version locally as well.
 
 Project documentation
 ---------------------
