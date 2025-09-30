@@ -198,3 +198,11 @@
         Use ``litestar[piccolo]`` extra installation target
         and ``litestar_piccolo`` plugin instead:
         https://github.com/litestar-org/litestar-piccolo
+
+    .. change:: Change ``Optional`` to ``NotRequired`` for pydantic fields with ``default_factory``
+        :type: bugfix
+        :pr: 4347
+        :issue: 4294
+
+        Now, in the OpenAPI schema, ``pydantic`` fields with ``default_factory`` are displayed as non-null and not required.
+        Previously, this fields was nullable and not required.
