@@ -1,78 +1,61 @@
 Basic Use
 =========
 
-Here we demonstrate how to declare DTO types to your route handlers. For demonstration purposes, we assume that we
-are working with a data model ``User``, and already have two DTO types created in our application, ``UserDTO``, and
-``UserReturnDTO``.
+DTOs (Data Transfer Objects) control how data is transformed between your application and external interfaces.
+They handle validation, serialization, and field filtering for both incoming requests and outgoing responses.
 
-DTO layer parameters
-~~~~~~~~~~~~~~~~~~~~
+This guide shows how to apply DTOs to your route handlers using two main parameters:
 
-On every :ref:`Layer <layered-architecture>` of the Litestar application there are two parameters that control the DTOs
-that will take responsibility for the data received and returned from handlers:
+- ``dto``: Processes incoming request data
+- ``return_dto``: Processes outgoing response data
 
-- ``dto``: This parameter describes the DTO that will be used to parse inbound data to be injected as the ``data``
-  keyword argument for a handler. Additionally, if no ``return_dto`` is declared on the handler, this will also be used
-  to encode the return data for the handler.
-- ``return_dto``: This parameter describes the DTO that will be used to encode data returned from the handler. If not
-  provided, the DTO described by the ``dto`` parameter is used.
+.. literalinclude:: /examples/data_transfer_objects/basic_example_complete.py
+    :caption: Complete example showing DTO benefits
+    :language: python
 
-The object provided to both of these parameters must be a class that conforms to the
-:class:`AbstractDTO <litestar.dto.base_dto.AbstractDTO>` protocol.
+DTO parameters
+~~~~~~~~~~~~~~
 
-Defining DTOs on handlers
+Apply DTOs to any :ref:`Layer <layered-architecture>` using these parameters:
+
+``dto``
+    Processes incoming request data and converts it to the handler's expected type.
+    Also used for response encoding if no ``return_dto`` is specified.
+
+``return_dto``
+    Processes outgoing response data. If not provided, the ``dto`` parameter handles both
+    request and response processing.
+
+Applying DTOs to handlers
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The ``dto`` parameter
----------------------
+Use the ``dto`` parameter to process incoming data:
 
 .. literalinclude:: /examples/data_transfer_objects/the_dto_parameter.py
-    :caption: Using the ``dto`` Parameter
+    :caption: Using the ``dto`` parameter
     :language: python
 
-In this example, ``UserDTO`` performs decoding of client data into the ``User`` type, and encoding of the returned
-``User`` instance into a type that Litestar can encode into bytes.
-
-The ``return_dto`` parameter
-----------------------------
+Use ``return_dto`` to process response data differently from request data:
 
 .. literalinclude:: /examples/data_transfer_objects/the_return_dto_parameter.py
-    :caption: Using the ``return_dto`` Parameter
+    :caption: Using the ``return_dto`` parameter
     :language: python
 
-In this example, ``UserDTO`` performs decoding of client data into the ``User`` type, and ``UserReturnDTO`` is
-responsible for converting the ``User`` instance into a type that Litestar can encode into bytes.
-
-Overriding implicit ``return_dto``
-----------------------------------
-
-If a ``return_dto`` type is not declared for a handler, the type declared for the ``dto`` parameter is used for both
-decoding and encoding request and response data. If this behavior is undesirable, it can be disabled by explicitly
-setting the ``return_dto`` to ``None``.
+Set ``return_dto=None`` to disable automatic response processing:
 
 .. literalinclude:: /examples/data_transfer_objects/overriding_implicit_return_dto.py
-    :caption: Disable implicit ``return_dto`` behavior
+    :caption: Disabling response DTO
     :language: python
 
-In this example, we use ``UserDTO`` to decode request data, and convert it into the ``User`` type, but we want to manage
-encoding the response data ourselves, and so we explicitly declare the ``return_dto`` as ``None``.
-
-Defining DTOs on layers
+Applying DTOs to layers
 ~~~~~~~~~~~~~~~~~~~~~~~
 
-DTOs can be defined on any :ref:`Layer <layered-architecture>` of the application. The DTO type applied is the one
-defined in the ownership chain, closest to the handler in question.
+Define DTOs on any :ref:`Layer <layered-architecture>` (Controller, Router, or Application) to apply them
+to all contained handlers:
 
 .. literalinclude:: /examples/data_transfer_objects/defining_dtos_on_layers.py
-    :caption: Controller defined DTOs
+    :caption: Controller-level DTOs
     :language: python
-
-In this example, the ``User`` instance received by any handler that declares a ``data`` kwarg, is converted by the
-``UserDTO`` type, and all handler return values are converted into an encodable type by ``UserReturnDTO`` (except for
-the ``delete()`` route, which has the ``return_dto`` disabled).
-
-DTOs can similarly be defined on :class:`Routers <litestar.router.Router>` and
-:class:`The application <litestar.app.Litestar>` itself.
 
 
 Improving performance with the codegen backend
