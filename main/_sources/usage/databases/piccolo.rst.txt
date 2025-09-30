@@ -1,10 +1,16 @@
 Piccolo ORM
 ===========
 
-Piccolo ORM is an easy-to-use async ORM and query builder and Litestar includes
-the class :class:`PiccoloDTO <litestar.contrib.piccolo.PiccoloDTO>`
-for data flow control. Example of a small application:
+Piccolo ORM is an easy-to-use async ORM and query builder and Litestar
+has a plugin called ``litestar-piccolo`` for working with this ORM.
 
-.. literalinclude:: /examples/contrib/piccolo/app.py
-    :caption: ``app.py``
-    :language: python
+Check out `the plugin docs <https://github.com/litestar-org/litestar-piccolo>`_
+for more information about enabling the support.
+
+.. note::
+  Prior to removal in ``3.0.0`` we had ``piccolo`` bundled
+  with the ``litestar`` itself.
+
+  To migrate:
+  - Use ``litestar[piccolo]`` installation extra
+  - Use ``litestar_piccolo`` plugin

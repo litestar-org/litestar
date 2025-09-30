@@ -269,7 +269,6 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l3"><a class="reference internal" href="../reference/contrib/jinja.html">jinja</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/contrib/mako.html">mako</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/contrib/opentelemetry.html">opentelemetry</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../reference/contrib/piccolo.html">piccolo_orm</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/contrib/sqlalchemy/index.html">sqlalchemy</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../reference/contrib/sqlalchemy/plugins.html">plugins</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../reference/contrib/sqlalchemy/repository.html">repository</a></li>
@@ -677,6 +676,13 @@ serializing types like <code class="docutils literal notranslate"><span class="p
 <p>Remove the deprecated <code class="docutils literal notranslate"><span class="pre">litestar.contrib.minijinja.minijinja_from_state</span></code> function.
 Instead use a callable that receives the minijinja <code class="docutils literal notranslate"><span class="pre">State</span></code> object as first argument.</p>
 <p>References: <span><a class="reference external" href="https://github.com/litestar-org/litestar/issues/4356">https://github.com/litestar-org/litestar/issues/4356</a></span>, <span><a class="reference external" href="https://github.com/litestar-org/litestar/pull/4355">https://github.com/litestar-org/litestar/pull/4355</a></span></p>
+</div>
+</dd>
+<dt>Remove deprecated <code class="docutils literal notranslate"><span class="pre">litestar.contrib.piccolo</span></code> module<a class="headerlink reference internal" href="#3.0.0-remove deprecated" id="3.0.0-remove deprecated">#</a><span class="breaking-change">breaking</span></dt><dd><div class="changelog-change docutils container">
+<p>Use <code class="docutils literal notranslate"><span class="pre">litestar[piccolo]</span></code> extra installation target
+and <code class="docutils literal notranslate"><span class="pre">litestar_piccolo</span></code> plugin instead:
+<a class="reference external" href="https://github.com/litestar-org/litestar-piccolo">https://github.com/litestar-org/litestar-piccolo</a></p>
+<p>References: <span><a class="reference external" href="https://github.com/litestar-org/litestar/issues/4364">https://github.com/litestar-org/litestar/issues/4364</a></span>, <span><a class="reference external" href="https://github.com/litestar-org/litestar/pull/4363">https://github.com/litestar-org/litestar/pull/4363</a></span></p>
 </div>
 </dd>
 </dl>
