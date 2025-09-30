@@ -162,6 +162,15 @@
         Remove the deprecated ``litestar.contrib.pydantic`` module. Code still using imports
         from this module should switch to using ``litestar.plugins.pydantic``.
 
+    .. change:: Remove deprecated module ``litestar/contrib/minijnja``
+        :type: feature
+        :breaking:
+        :pr: 4357
+        :issue: 4357
+
+        Remove the deprecated module ``litestar.contrib.minijnja``. This module was created with a typo in its name
+        (`minijnja` instead of `minijinja`). Instead ``litestar.contrib.minijinja`` should be used.
+
     .. change:: Add ``round_trip`` parameter to ``PydanticPlugin``
         :type: feature
         :pr: 4350
@@ -170,3 +179,12 @@
         New ``round_trip: bool`` parameter
         to :class:`~litestar.contrib.pydantic.PydanticPlugin` allows
         serializing types like ``pydanctic.Json`` correctly.
+
+    .. change:: Remove deprecated ``litestar.contrib.minijinja.minijinja_from_state`` function
+        :type: feature
+        :breaking:
+        :pr: 4355
+        :issue: 4356
+
+        Remove the deprecated ``litestar.contrib.minijinja.minijinja_from_state`` function.
+        Instead use a callable that receives the minijinja ``State`` object as first argument.
