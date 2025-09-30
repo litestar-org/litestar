@@ -188,3 +188,11 @@
 
         Remove the deprecated ``litestar.contrib.minijinja.minijinja_from_state`` function.
         Instead use a callable that receives the minijinja ``State`` object as first argument.
+
+    .. change:: Remove deprecated ``litestar.contrib.piccolo`` module
+        :type: feature
+        :breaking:
+        :pr: 4363
+        :issue: 4364
+
+        Use ``litestar[piccolo]`` extra installation target and ``litestar_piccolo`` plugin instead.
