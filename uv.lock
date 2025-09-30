@@ -1985,6 +1985,7 @@ full = [
     { name = "jinja2" },
     { name = "jsbeautifier" },
     { name = "litestar-htmx" },
+    { name = "litestar-piccolo" },
     { name = "mako" },
     { name = "minijinja" },
     { name = "opentelemetry-instrumentation-asgi" },
@@ -2023,6 +2024,7 @@ opentelemetry = [
     { name = "opentelemetry-instrumentation-asgi" },
 ]
 piccolo = [
+    { name = "litestar-piccolo" },
     { name = "piccolo" },
 ]
 picologging = [
@@ -2155,6 +2157,7 @@ requires-dist = [
     { name = "litestar", extras = ["annotated-types", "attrs", "brotli", "cli", "cryptography", "jinja", "jwt", "mako", "minijinja", "opentelemetry", "piccolo", "polyfactory", "prometheus", "pydantic", "redis", "sqlalchemy", "standard", "structlog", "valkey", "htmx", "yaml", "zstd"], marker = "python_full_version >= '3.13' and extra == 'full'" },
     { name = "litestar-htmx", specifier = ">=0.4.0" },
     { name = "litestar-htmx", marker = "extra == 'htmx'", specifier = ">=0.4.0" },
+    { name = "litestar-piccolo", marker = "extra == 'piccolo'" },
     { name = "mako", marker = "extra == 'mako'", specifier = ">=1.2.4" },
     { name = "minijinja", marker = "extra == 'minijinja'", specifier = ">=1.0.0" },
     { name = "msgspec", specifier = ">=0.19.0" },
@@ -2254,6 +2257,19 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/3f/b9/7e296aa1adada25cce8e5f89a996b0e38d852d93b1b656a2058226c542a2/litestar_htmx-0.5.0.tar.gz", hash = "sha256:e02d1a3a92172c874835fa3e6749d65ae9fc626d0df46719490a16293e2146fb", size = 119755, upload-time = "2025-06-11T21:19:45.573Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/f2/24/8d99982f0aa9c1cd82073c6232b54a0dbe6797c7d63c0583a6c68ee3ddf2/litestar_htmx-0.5.0-py3-none-any.whl", hash = "sha256:92833aa47e0d0e868d2a7dbfab75261f124f4b83d4f9ad12b57b9a68f86c50e6", size = 9970, upload-time = "2025-06-11T21:19:44.465Z" },
+]
+
+[[package]]
+name = "litestar-piccolo"
+version = "0.1.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "litestar", extra = ["cli"] },
+    { name = "piccolo" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/ac/93/5434d3f6e3a7f100cc0086364da7a3236ec2308ddfe73fbfc0452cdf6baf/litestar_piccolo-0.1.0.tar.gz", hash = "sha256:4d91185d171ae75882751255133592770ea15448036cf5235567589977f4aad8", size = 74094, upload-time = "2023-11-17T19:11:19.47Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/99/d3/7cdfdb63a6b5c099e0de904976e0fb282433955169310103f49ba757bb12/litestar_piccolo-0.1.0-py3-none-any.whl", hash = "sha256:8659e666ddaa96cd48cf3b33b8d63c6de0d2e2f664f34e8a3e2e513f97dd1bd9", size = 5106, upload-time = "2023-11-17T19:11:18.091Z" },
 ]
 
 [[package]]
