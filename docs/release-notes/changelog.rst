@@ -195,4 +195,6 @@
         :pr: 4363
         :issue: 4364
 
-        Use ``litestar[piccolo]`` extra installation target and ``litestar_piccolo`` plugin instead.
+        Use ``litestar[piccolo]`` extra installation target
+        and ``litestar_piccolo`` plugin instead:
+        https://github.com/litestar-org/litestar-piccolo
