@@ -4,8 +4,9 @@ from warnings import catch_warnings
 
 import pytest
 
-from litestar import MediaType, asgi, get
+from litestar import MediaType, WebSocket, asgi, get, websocket
 from litestar.datastructures.headers import MutableScopeHeaders
+from litestar.enums import ScopeType
 from litestar.exceptions import LitestarWarning, ValidationException
 from litestar.middleware import AbstractMiddleware, ASGIMiddleware, DefineMiddleware
 from litestar.response.base import ASGIResponse
@@ -210,6 +211,53 @@ def test_asgi_middleware_raises_exception() -> None:
     with create_test_client(handler, middleware=[SubclassMiddleware()]) as client:
         response = client.get("/")
         assert response.status_code == HTTP_400_BAD_REQUEST
+
+
+@pytest.mark.parametrize(
+    "allowed_scopes,expected_calls",
+    [
+        ((ScopeType.HTTP,), ["/http"]),
+        ((ScopeType.HTTP, ScopeType.ASGI), ["/http", "/asgi"]),
+        ((ScopeType.ASGI,), ["/asgi"]),
+        ((ScopeType.ASGI, ScopeType.WEBSOCKET), ["/asgi", "/ws"]),
+        ((ScopeType.WEBSOCKET,), ["/ws"]),
+    ],
+)
+def test_asgi_middleware_exclude_by_scope_type(
+    allowed_scopes: tuple[ScopeType, ...], expected_calls: list[str]
+) -> None:
+    mock = MagicMock()
+
+    class SubclassMiddleware(ASGIMiddleware):
+        scopes = allowed_scopes
+
+        async def handle(self, scope: "Scope", receive: "Receive", send: "Send", next_app: "ASGIApp") -> None:
+            mock(scope["path"])
+            await next_app(scope, receive, send)
+
+    @get("/http")
+    def http_handler() -> None:
+        return None
+
+    @websocket("/ws")
+    async def websocket_handler(socket: WebSocket) -> None:
+        await socket.accept()
+        await socket.close()
+
+    @asgi("/asgi")
+    async def asgi_handler(scope: "Scope", receive: "Receive", send: "Send") -> None:
+        response = ASGIResponse(body=b"ok", media_type=MediaType.TEXT)
+        await response(scope, receive, send)
+
+    with create_test_client(
+        [http_handler, asgi_handler, websocket_handler], middleware=[SubclassMiddleware()]
+    ) as client:
+        assert client.get("/http").status_code == 200
+        assert client.get("/asgi").status_code == 200
+        with client.websocket_connect("/ws"):
+            pass
+
+        mock.assert_has_calls([call(path) for path in expected_calls])
 
 
 def test_asgi_middleware_exclude_by_pattern() -> None:
