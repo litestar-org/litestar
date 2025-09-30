@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import functools
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Protocol, TypeVar, cast
+from typing import TYPE_CHECKING, Any, Protocol, TypeVar
 
 from typing_extensions import ParamSpec
 
@@ -14,7 +14,6 @@ from litestar.template.base import (
     csrf_token,
     url_for,
 )
-from litestar.utils.deprecation import warn_deprecation
 
 try:
     from minijinja import Environment  # type:ignore[import-untyped]
@@ -201,22 +200,3 @@ class MiniJinjaTemplateEngine(TemplateEngineProtocol["MiniJinjaTemplate", StateP
             MiniJinjaTemplateEngine instance
         """
         return cls(directory=None, engine_instance=minijinja_environment)
-
-
-@pass_state
-def _minijinja_from_state(func: Callable, state: StateProtocol, *args: Any, **kwargs: Any) -> str:  # pragma: no cover
-    template_context = {"request": state.lookup("request"), "csrf_input": state.lookup("csrf_input")}
-    return cast("str", func(template_context, *args, **kwargs))
-
-
-def __getattr__(name: str) -> Any:
-    if name == "minijinja_from_state":
-        warn_deprecation(
-            "2.3.0",
-            "minijinja_from_state",
-            "import",
-            removal_in="3.0.0",
-            alternative="Use a callable that receives the minijinja State object as first argument.",
-        )
-        return _minijinja_from_state
-    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
