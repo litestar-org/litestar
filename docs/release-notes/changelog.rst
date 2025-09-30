@@ -179,3 +179,10 @@
 
         Remove the deprecated ``litestar.contrib.minijinja.minijinja_from_state`` function.
         Instead use a callable that receives the minijinja ``State`` object as first argument.
+
+    .. change:: Drop ``litestar-htmx`` from the list of default dependencies
+        :type: feature
+        :breaking:
+        :pr: 4362
+
+        Use ``litestar[htmx]`` extra to install ``litestar-htmx`` plugin.
