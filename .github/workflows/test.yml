@@ -21,8 +21,6 @@ on:
 
 env:
   UV_LOCKED: 1
-  ACTIONS_RUNNER_DEBUG: true     # Enables runner debugging
-  ACTIONS_STEP_DEBUG: true       # Enables step debugging
 
 jobs:
   test:
