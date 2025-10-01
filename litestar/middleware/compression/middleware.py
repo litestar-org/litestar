@@ -105,12 +105,7 @@ class CompressionMiddleware(AbstractMiddleware):
         # it may be being used as a fallback.
         if compression_encoding == CompressionEncoding.GZIP:
             facade = GzipCompression(buffer=bytes_buffer, compression_encoding=compression_encoding, config=self.config)
-        elif compression_encoding == CompressionEncoding.ZSTD:
-            facade = ZstdCompression(buffer=bytes_buffer, compression_encoding=compression_encoding, config=self.config)  # type: ignore[assignment]
-        else:
-            facade = self.config.compression_facade(  # type: ignore[assignment]
-                buffer=bytes_buffer, compression_encoding=compression_encoding, config=self.config
-            )
+        facade = self.config.compression_facade
 
         initial_message: HTTPResponseStartEvent | None = None
         started = False
