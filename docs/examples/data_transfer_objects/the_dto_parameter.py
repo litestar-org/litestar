@@ -20,7 +20,7 @@ UserDTO = DataclassDTO[User]
 @post("/", dto=UserDTO)
 def create_user(data: User) -> User:
     """Create a new user.
-    
+
     The dto=UserDTO parameter tells Litestar to:
     1. Validate incoming JSON against the User model
     2. Convert the JSON to a User instance (available as 'data')

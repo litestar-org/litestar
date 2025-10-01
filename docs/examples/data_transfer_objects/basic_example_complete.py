@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from uuid import UUID, uuid4
 
 from litestar import Litestar, post
-from litestar.dto import DTOConfig, DataclassDTO
+from litestar.dto import DataclassDTO, DTOConfig
 
 
 @dataclass
@@ -23,6 +23,7 @@ class User:
 
 # With DTOs, Litestar handles all of this automatically:
 
+
 # DTO for incoming data - excludes auto-generated ID
 class UserCreateDTO(DataclassDTO[User]):
     config = DTOConfig(exclude={"id"})
@@ -36,7 +37,7 @@ class UserResponseDTO(DataclassDTO[User]):
 @post("/users", dto=UserCreateDTO, return_dto=UserResponseDTO)
 def create_user(data: User) -> User:
     """Create a new user.
-    
+
     DTOs automatically:
     - Validate that incoming JSON matches User model (excluding id)
     - Convert JSON to User instance with generated id
@@ -44,12 +45,12 @@ def create_user(data: User) -> User:
     """
     # Generate an ID for the new user
     data.id = uuid4()
-    
+
     # In a real application, you would:
     # - Hash the password
     # - Save to database
     # - Handle validation errors
-    
+
     return data
 
 
@@ -59,7 +60,7 @@ app = Litestar(route_handlers=[create_user])
 # POST /users
 # {
 #   "name": "John Doe",
-#   "email": "john@example.com", 
+#   "email": "john@example.com",
 #   "password": "secret123"
 # }
 #

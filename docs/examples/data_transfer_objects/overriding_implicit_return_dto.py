@@ -21,7 +21,7 @@ UserDTO = DataclassDTO[User]
 @post("/", dto=UserDTO, return_dto=None, sync_to_thread=False)
 def create_user(data: User) -> bytes:
     """Create a new user with custom response handling.
-    
+
     The dto=UserDTO parameter handles incoming JSON validation.
     The return_dto=None parameter disables automatic response serialization,
     allowing you to return custom response formats like raw bytes.

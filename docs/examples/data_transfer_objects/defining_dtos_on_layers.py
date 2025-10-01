@@ -4,7 +4,7 @@ from dataclasses import dataclass, field
 from uuid import UUID, uuid4
 
 from litestar import Controller, Litestar, delete, get, post, put
-from litestar.dto import DTOConfig, DataclassDTO
+from litestar.dto import DataclassDTO, DTOConfig
 
 
 @dataclass
@@ -27,10 +27,11 @@ class UserReadDTO(DataclassDTO[User]):
 
 class UserController(Controller):
     """User management controller.
-    
+
     DTOs are defined at the controller level and apply to all routes
     unless explicitly overridden on individual route handlers.
     """
+
     path = "/"
     dto = UserWriteDTO  # For incoming data (POST, PUT)
     return_dto = UserReadDTO  # For outgoing data

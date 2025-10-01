@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from uuid import UUID
 
 from litestar import Litestar, post
-from litestar.dto import DTOConfig, DataclassDTO
+from litestar.dto import DataclassDTO, DTOConfig
 
 
 @dataclass
@@ -18,6 +18,7 @@ class User:
 # DTO for incoming data - accepts all fields
 UserDTO = DataclassDTO[User]
 
+
 # DTO for outgoing data - excludes sensitive fields like password
 class UserReturnDTO(DataclassDTO[User]):
     config = DTOConfig(exclude={"password"})
@@ -26,7 +27,7 @@ class UserReturnDTO(DataclassDTO[User]):
 @post("/", dto=UserDTO, return_dto=UserReturnDTO)
 def create_user(data: User) -> User:
     """Create a new user.
-    
+
     The dto=UserDTO parameter handles incoming JSON validation.
     The return_dto=UserReturnDTO parameter serializes the response,
     automatically excluding the password field for security.

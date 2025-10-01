@@ -17,6 +17,7 @@ from litestar.dto import DataclassDTO
 @dataclass
 class User:
     """Basic user model for demonstration purposes."""
+
     id: UUID
     name: str
     email: str
@@ -25,7 +26,7 @@ class User:
 # Basic DTO that handles all fields
 UserDTO = DataclassDTO[User]
 
+
 # Alternative: explicitly defined DTO class
 class UserReturnDTO(DataclassDTO[User]):
     """DTO for user responses."""
-    pass
