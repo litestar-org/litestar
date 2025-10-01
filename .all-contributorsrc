@@ -2000,6 +2000,17 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "IDrokin117",
+      "name": "Igor Drokin",
+      "avatar_url": "https://avatars.githubusercontent.com/u/41319097?v=4",
+      "profile": "https://github.com/IDrokin117",
+      "contributions": [
+        "code",
+        "test",
+        "doc"
+      ]
     }
   ],
   "contributorsPerLine": 7,

@@ -6,6 +6,17 @@
 .. changelog:: 3.0.0
     :date: 2024-08-30
 
+
+    .. change:: Remove deprecated ``litestar.contrib.prometheus`` module
+        :type: feature
+        :breaking:
+        :pr: 4328
+        :issue: 4305
+
+        Remove the deprecated ``litestar.contrib.prometheus`` module. Code still using imports
+        from this module should switch to using ``litestar.plugins.prometheus``.
+
+
     .. change:: Make ``AsyncTestClient`` async-native
         :type: feature
         :pr: 4291
@@ -123,3 +134,67 @@
 
         Remove the deprecated ``litestar.contrib.attrs`` module. Code still using imports
         from this module should switch to using ``litestar.plugins.attrs``.
+
+    .. change:: Remove deprecated ``litestar.contrib.jwt`` module
+        :type: feature
+        :breaking:
+        :pr: 4333
+        :issue: 4304
+
+        Remove the deprecated ``litestar.contrib.jwt`` module. Code still using imports
+        from this module should switch to using ``litestar.security.jwt``.
+
+    .. change:: Remove deprecated ``litestar.contrib.repository`` module
+        :type: feature
+        :breaking:
+        :pr: 4337
+        :issue: 4307
+
+        Remove the deprecated ``litestar.contrib.repository`` module. Code still using imports
+        from this module should switch to using ``litestar.repository``.
+
+    .. change:: Remove deprecated ``litestar.contrib.pydantic`` module
+        :type: feature
+        :breaking:
+        :pr: 4339
+        :issue: 4306
+
+        Remove the deprecated ``litestar.contrib.pydantic`` module. Code still using imports
+        from this module should switch to using ``litestar.plugins.pydantic``.
+
+    .. change:: Remove deprecated module ``litestar/contrib/minijnja``
+        :type: feature
+        :breaking:
+        :pr: 4357
+        :issue: 4357
+
+        Remove the deprecated module ``litestar.contrib.minijnja``. This module was created with a typo in its name
+        (`minijnja` instead of `minijinja`). Instead ``litestar.contrib.minijinja`` should be used.
+
+    .. change:: Add ``round_trip`` parameter to ``PydanticPlugin``
+        :type: feature
+        :pr: 4350
+        :issue: 4349
+
+        New ``round_trip: bool`` parameter
+        to :class:`~litestar.contrib.pydantic.PydanticPlugin` allows
+        serializing types like ``pydanctic.Json`` correctly.
+
+    .. change:: Remove deprecated ``litestar.contrib.minijinja.minijinja_from_state`` function
+        :type: feature
+        :breaking:
+        :pr: 4355
+        :issue: 4356
+
+        Remove the deprecated ``litestar.contrib.minijinja.minijinja_from_state`` function.
+        Instead use a callable that receives the minijinja ``State`` object as first argument.
+
+    .. change:: Remove deprecated ``litestar.contrib.piccolo`` module
+        :type: feature
+        :breaking:
+        :pr: 4363
+        :issue: 4364
+
+        Use ``litestar[piccolo]`` extra installation target
+        and ``litestar_piccolo`` plugin instead:
+        https://github.com/litestar-org/litestar-piccolo

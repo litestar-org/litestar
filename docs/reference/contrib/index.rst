@@ -6,9 +6,6 @@ contrib
 
     htmx
     jinja
-    jwt
     mako
     opentelemetry
-    piccolo
-    pydantic
     sqlalchemy/index
