@@ -108,7 +108,7 @@ class CompressionMiddleware(AbstractMiddleware):
         elif compression_encoding == CompressionEncoding.ZSTD:
             facade = ZstdCompression(buffer=bytes_buffer, compression_encoding=compression_encoding, config=self.config)  # type: ignore[assignment]
         else:
-            facade = self.config.compression_facade(
+            facade = self.config.compression_facade(  # type: ignore[assignment]
                 buffer=bytes_buffer, compression_encoding=compression_encoding, config=self.config
             )
 
