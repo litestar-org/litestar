@@ -7,7 +7,6 @@ from litestar.datastructures import Headers, MutableScopeHeaders
 from litestar.enums import CompressionEncoding, ScopeType
 from litestar.middleware.base import AbstractMiddleware
 from litestar.middleware.compression.gzip_facade import GzipCompression
-from litestar.middleware.compression.zstd_facade import ZstdCompression
 from litestar.utils.empty import value_or_default
 from litestar.utils.scope.state import ScopeState
 
@@ -82,7 +81,7 @@ class CompressionMiddleware(AbstractMiddleware):
 
         await self.app(scope, receive, send)
 
-    def create_compression_send_wrapper(  # noqa: C901
+    def create_compression_send_wrapper(
         self,
         send: Send,
         compression_encoding: Literal[CompressionEncoding.BROTLI, CompressionEncoding.GZIP, CompressionEncoding.ZSTD]
@@ -105,7 +104,10 @@ class CompressionMiddleware(AbstractMiddleware):
         # it may be being used as a fallback.
         if compression_encoding == CompressionEncoding.GZIP:
             facade = GzipCompression(buffer=bytes_buffer, compression_encoding=compression_encoding, config=self.config)
-        facade = self.config.compression_facade
+        else:
+            facade = self.config.compression_facade(  # type: ignore[assignment]
+                buffer=bytes_buffer, compression_encoding=compression_encoding, config=self.config
+            )
 
         initial_message: HTTPResponseStartEvent | None = None
         started = False
