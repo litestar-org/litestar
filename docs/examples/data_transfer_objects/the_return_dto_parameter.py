@@ -23,7 +23,7 @@ class UserReturnDTO(DataclassDTO[User]):
     config = DTOConfig(exclude={"password"})
 
 
-@post("/users", dto=UserDTO, return_dto=UserReturnDTO)
+@post("/", dto=UserDTO, return_dto=UserReturnDTO)
 def create_user(data: User) -> User:
     """Create a new user.
     

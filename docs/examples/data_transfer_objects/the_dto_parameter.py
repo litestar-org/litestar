@@ -17,7 +17,7 @@ class User:
 UserDTO = DataclassDTO[User]
 
 
-@post("/users", dto=UserDTO)
+@post("/", dto=UserDTO)
 def create_user(data: User) -> User:
     """Create a new user.
     

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
-from uuid import UUID
+from dataclasses import dataclass, field
+from uuid import UUID, uuid4
 
 from litestar import Litestar, post
 from litestar.dto import DataclassDTO
@@ -9,14 +9,16 @@ from litestar.dto import DataclassDTO
 
 @dataclass
 class User:
-    id: UUID
     name: str
+    email: str
+    age: int
+    id: UUID = field(default_factory=uuid4)
 
 
 UserDTO = DataclassDTO[User]
 
 
-@post("/users", dto=UserDTO, return_dto=None)
+@post("/", dto=UserDTO, return_dto=None, sync_to_thread=False)
 def create_user(data: User) -> bytes:
     """Create a new user with custom response handling.
     
@@ -26,7 +28,7 @@ def create_user(data: User) -> bytes:
     """
     # Process the validated user data
     # Return a custom byte response instead of serialized User data
-    return f"User {data.name} created successfully".encode("utf-8")
+    return data.name.encode("utf-8")
 
 
-app = Litestar([create_user])
+app = Litestar(route_handlers=[create_user])
