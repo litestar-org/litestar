@@ -104,7 +104,7 @@ class CompressionMiddleware(AbstractMiddleware):
         # We can't use `self.config.compression_facade` directly if the compression is `gzip` since
         # it may be being used as a fallback.
         if compression_encoding == CompressionEncoding.GZIP:
-            facade = GzipCompression(buffer=bytes_buffer, compression_encoding=compression_encoding, config=self.config)  # type: ignore[assignment]
+            facade = GzipCompression(buffer=bytes_buffer, compression_encoding=compression_encoding, config=self.config)
         elif compression_encoding == CompressionEncoding.ZSTD:
             facade = ZstdCompression(buffer=bytes_buffer, compression_encoding=compression_encoding, config=self.config)  # type: ignore[assignment]
         else:
