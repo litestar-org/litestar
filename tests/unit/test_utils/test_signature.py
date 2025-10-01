@@ -4,7 +4,7 @@ import inspect
 import warnings
 from inspect import Parameter
 from types import ModuleType
-from typing import Annotated, Any, Callable, Generic, Optional, TypeVar, Union, get_type_hints
+from typing import Annotated, Any, Callable, Generic, Optional, TypeVar, get_type_hints
 
 import pytest
 from typing_extensions import NotRequired, Required, TypedDict, get_args
@@ -62,10 +62,10 @@ def test_get_fn_type_hints_class_no_init() -> None:
     ("hint",),
     [
         ("Optional[str]",),
-        ("Union[str, None]",),
-        ("Union[str, int, None]",),
-        ("Optional[Union[str, int]]",),
-        ("Union[str, int]",),
+        ("str | None",),
+        ("str | int | None",),
+        ("Optional[str | int]",),
+        ("str | int",),
         ("str",),
     ],
 )
@@ -144,7 +144,7 @@ def test_parsed_signature() -> None:
     assert parsed_sig.return_type.annotation is NoneType
     assert parsed_sig.parameters["foo"].annotation is int
     assert parsed_sig.parameters["bar"].args == (list[int], NoneType)
-    assert parsed_sig.parameters["bar"].annotation == Union[list[int], NoneType]
+    assert parsed_sig.parameters["bar"].annotation == list[int] | NoneType
     assert parsed_sig.parameters["bar"].default is None
     assert parsed_sig.original_signature == inspect.signature(fn)
 

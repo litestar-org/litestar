@@ -1,7 +1,7 @@
 import asyncio
 import contextlib
 from collections.abc import AsyncGenerator
-from typing import TYPE_CHECKING, Callable, NoReturn, Union, cast
+from typing import TYPE_CHECKING, Callable, NoReturn, cast
 
 import anyio
 from _pytest.fixtures import FixtureRequest
@@ -31,7 +31,7 @@ from litestar.utils.helpers import get_exception_group
 
 _ExceptionGroup = get_exception_group()
 
-AnyTestClient = Union[TestClient, AsyncTestClient]
+AnyTestClient = TestClient | AsyncTestClient
 
 
 async def mock_asgi_app(scope: "Scope", receive: "Receive", send: "Send") -> None:

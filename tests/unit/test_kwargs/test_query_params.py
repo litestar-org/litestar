@@ -3,7 +3,6 @@ from typing import (
     Annotated,
     Any,
     Optional,
-    Union,
 )
 from urllib.parse import urlencode
 
@@ -126,8 +125,8 @@ def test_query_params(params_dict: dict, should_raise: bool) -> None:
 @pytest.mark.parametrize(
     "expected_type,provided_value,default,expected_response_code",
     [
-        (Union[int, list[int]], [1, 2, 3], None, HTTP_200_OK),
-        (Union[int, list[int]], [1], None, HTTP_200_OK),
+        (int | list[int], [1, 2, 3], None, HTTP_200_OK),
+        (int | list[int], [1], None, HTTP_200_OK),
     ],
 )
 def test_query_param_arrays(expected_type: Any, provided_value: Any, default: Any, expected_response_code: int) -> None:

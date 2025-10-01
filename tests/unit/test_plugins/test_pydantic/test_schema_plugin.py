@@ -1,6 +1,6 @@
 import datetime
 from decimal import Decimal
-from typing import Annotated, Any, Generic, Literal, Optional, TypeVar, Union
+from typing import Annotated, Any, Generic, Literal, Optional, TypeVar
 
 import pydantic as pydantic_v2
 import pytest
@@ -33,7 +33,7 @@ class PydanticV2Generic(pydantic_v2.BaseModel, Generic[T]):
 
 
 @pytest.mark.parametrize("model", [PydanticV1Generic, PydanticV2Generic])
-def test_schema_generation_with_generic_classes(model: type[Union[PydanticV1Generic, PydanticV2Generic]]) -> None:
+def test_schema_generation_with_generic_classes(model: type[PydanticV1Generic | PydanticV2Generic]) -> None:
     cls = model[int]  # type: ignore[index]
     field_definition = FieldDefinition.from_kwarg(name=get_name(cls), annotation=cls)
     properties = get_schema_for_field_definition(field_definition, plugins=[PydanticSchemaPlugin()]).properties
@@ -123,7 +123,7 @@ class V2GenericModelWithPrivateFields(pydantic_v2.BaseModel, Generic[T]):
         V2GenericModelWithPrivateFields,
     ],
 )
-def test_exclude_private_fields(model_class: type[Union[pydantic_v1.BaseModel, pydantic_v2.BaseModel]]) -> None:
+def test_exclude_private_fields(model_class: type[pydantic_v1.BaseModel | pydantic_v2.BaseModel]) -> None:
     # https://github.com/litestar-org/litestar/issues/3150
     schema = PydanticSchemaPlugin.for_pydantic_model(
         FieldDefinition.from_annotation(model_class), schema_creator=SchemaCreator(plugins=[PydanticSchemaPlugin()])
@@ -177,11 +177,9 @@ def test_root_model_schema_generation() -> None:
 
     class Pet(pydantic_v2.RootModel[BasePet]):
         root: Annotated[  # pyright: ignore
-            Union[
-                Annotated[Cat, pydantic_v2.Tag("cat")],
-                Annotated[Dog, pydantic_v2.Tag("dog")],
-                Annotated[Lizard, pydantic_v2.Tag("lizard")],
-            ],
+            Annotated[Cat, pydantic_v2.Tag("cat")]
+            | Annotated[Dog, pydantic_v2.Tag("dog")]
+            | Annotated[Lizard, pydantic_v2.Tag("lizard")],
             pydantic_v2.Field(discriminator="pet_type"),
         ]
 

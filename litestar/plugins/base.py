@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import abc
 from contextlib import contextmanager
-from typing import TYPE_CHECKING, Any, Protocol, TypeVar, Union, cast, runtime_checkable
+from typing import TYPE_CHECKING, Any, Protocol, TypeVar, cast, runtime_checkable
 
 if TYPE_CHECKING:
     from collections.abc import Iterator
@@ -274,14 +274,9 @@ class OpenAPISchemaPlugin(abc.ABC):
         return False
 
 
-PluginProtocol = Union[
-    CLIPlugin,
-    InitPluginProtocol,
-    OpenAPISchemaPlugin,
-    ReceiveRoutePlugin,
-    SerializationPlugin,
-    DIPlugin,
-]
+PluginProtocol = (
+    CLIPlugin | InitPluginProtocol | OpenAPISchemaPlugin | ReceiveRoutePlugin | SerializationPlugin | DIPlugin
+)
 
 PluginT = TypeVar("PluginT", bound=PluginProtocol)
 

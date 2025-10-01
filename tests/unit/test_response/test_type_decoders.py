@@ -1,4 +1,4 @@
-from typing import Any, Literal, Union
+from typing import Any, Literal
 from unittest import mock
 
 import pytest
@@ -98,7 +98,7 @@ def app(router: Router) -> Litestar:
     ),
 )
 def test_resolve_type_decoders(
-    path: str, method: Union[HttpMethod, Literal["websocket"]], type_decoders: TypeDecodersSequence, app: Litestar
+    path: str, method: HttpMethod | Literal["websocket"], type_decoders: TypeDecodersSequence, app: Litestar
 ) -> None:
     handler = app.route_handler_method_map[path][method]
     assert handler.type_decoders == handler.resolve_type_decoders() == tuple(type_decoders)

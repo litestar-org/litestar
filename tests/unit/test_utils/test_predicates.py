@@ -11,7 +11,6 @@ from typing import (
     Generic,
     Optional,
     TypeVar,
-    Union,
     cast,
 )
 
@@ -84,7 +83,7 @@ def test_is_class_and_subclass(args: tuple[Any, Any], expected: bool) -> None:
             (bytes, False),
             (dict, True),
             (dict[str, Any], True),
-            (Union[str, int], False),
+            (str | int, False),
             (1, False),
         )
     ),
@@ -114,7 +113,7 @@ def test_is_non_string_iterable(value: Any, expected: bool) -> None:
             (bytes, False),
             (dict, False),
             (dict[str, Any], False),
-            (Union[str, int], False),
+            (str | int, False),
             (1, False),
         )
     ),
@@ -150,7 +149,7 @@ def test_is_mapping(value: Any, expected: bool) -> None:
 
 @pytest.mark.parametrize(
     "value, expected",
-    ((Any, True), (Union[Any, str], True), (int, False), (dict, False), (dict[str, Any], False), (None, False)),
+    ((Any, True), (Any | str, True), (int, False), (dict, False), (dict[str, Any], False), (None, False)),
 )
 def test_is_any(value: Any, expected: bool) -> None:
     assert is_any(value) is expected
@@ -160,11 +159,11 @@ def test_is_any(value: Any, expected: bool) -> None:
     "value, expected",
     (
         (Optional[int], True),
-        (Optional[Union[int, str]], True),
-        (Union[str, None], True),
+        (Optional[[int, str]], True),
+        (str | None, True),
         (None, False),
         (int, False),
-        (Union[int, str], True),
+        (int | str, True),
     ),
 )
 def test_is_union(value: Any, expected: bool) -> None:
@@ -175,11 +174,11 @@ def test_is_union(value: Any, expected: bool) -> None:
     "value, expected",
     (
         (Optional[int], True),
-        (Optional[Union[int, str]], True),
-        (Union[str, None], True),
+        (Optional[int | str], True),
+        (str | None, True),
         (None, False),
         (int, False),
-        (Union[int, str], False),
+        (int | str, False),
     ),
 )
 def test_is_optional_union(value: Any, expected: bool) -> None:

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from collections.abc import Generator
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Any, Union
+from typing import TYPE_CHECKING, Any
 
 import pytest
 
@@ -163,11 +163,11 @@ def create_transfer_type(
 @pytest.mark.parametrize(
     ("field_definition", "should_have_nested", "has_nested_field_info"),
     [
-        (FieldDefinition.from_annotation(Union[Model, None]), True, (True, False)),
-        (FieldDefinition.from_annotation(Union[Model, str]), True, (True, False)),
-        (FieldDefinition.from_annotation(Union[Model, int]), True, (True, False)),
-        (FieldDefinition.from_annotation(Union[Model, Model2]), True, (True, True)),
-        (FieldDefinition.from_annotation(Union[int, str]), False, (False, False)),
+        (FieldDefinition.from_annotation(Model | None), True, (True, False)),
+        (FieldDefinition.from_annotation(Model | str), True, (True, False)),
+        (FieldDefinition.from_annotation(Model | int), True, (True, False)),
+        (FieldDefinition.from_annotation(Model | Model2), True, (True, True)),
+        (FieldDefinition.from_annotation(int | str), False, (False, False)),
     ],
 )
 def test_create_transfer_type_union(
@@ -269,7 +269,7 @@ def test_create_transfer_type_collection(
 
 
 def test_create_collection_type_nested_union(backend: DTOBackend) -> None:
-    field_definition = FieldDefinition.from_annotation(list[Union[Model, Model2]])
+    field_definition = FieldDefinition.from_annotation(list[Model | Model2])
     transfer_type = create_transfer_type(backend, field_definition)
     assert isinstance(transfer_type, CollectionType)
     assert transfer_type.has_nested is True

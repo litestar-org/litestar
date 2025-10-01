@@ -11,7 +11,6 @@ from typing import (
     Optional,
     TypedDict,
     TypeVar,
-    Union,
 )
 
 import annotated_types
@@ -413,9 +412,9 @@ C = TypeVar("C", int, str)
 class ConstrainedGenericDataclass(Generic[T, B, C]):
     bound: B
     constrained: C
-    union: Union[T, bool]
-    union_constrained: Union[C, bool]
-    union_bound: Union[B, bool]
+    union: T | bool
+    union_constrained: C | bool
+    union_bound: B | bool
 
 
 def test_schema_generation_with_generic_classes_constrained() -> None:
@@ -465,7 +464,7 @@ def test_schema_generation_with_ellipsis() -> None:
 
 
 def test_schema_tuple_with_union() -> None:
-    schema = get_schema_for_field_definition(FieldDefinition.from_annotation(tuple[int, Union[int, str]]))
+    schema = get_schema_for_field_definition(FieldDefinition.from_annotation(tuple[int, int | str]))
     assert schema.prefix_items == [
         Schema(type=OpenAPIType.INTEGER),
         Schema(one_of=[Schema(type=OpenAPIType.INTEGER), Schema(type=OpenAPIType.STRING)]),
@@ -620,9 +619,7 @@ def test_type_union(base_type: type) -> None:
         class ModelB(base_type):  # type: ignore[no-redef, misc]
             pass
 
-    schema = get_schema_for_field_definition(
-        FieldDefinition.from_kwarg(name="Lookup", annotation=Union[ModelA, ModelB])
-    )
+    schema = get_schema_for_field_definition(FieldDefinition.from_kwarg(name="Lookup", annotation=ModelA | ModelB))
     assert schema.one_of == [
         Reference(ref="#/components/schemas/tests_unit_test_openapi_test_schema_test_type_union.ModelA"),
         Reference(ref="#/components/schemas/tests_unit_test_openapi_test_schema_test_type_union.ModelB"),
@@ -651,7 +648,7 @@ def test_type_union_with_none(base_type: type) -> None:
             pass
 
     schema = get_schema_for_field_definition(
-        FieldDefinition.from_kwarg(name="Lookup", annotation=Union[ModelA, ModelB, None])
+        FieldDefinition.from_kwarg(name="Lookup", annotation=ModelA | ModelB | None)
     )
     assert schema.one_of == [
         Reference(ref="#/components/schemas/tests_unit_test_openapi_test_schema_test_type_union_with_none.ModelA"),

@@ -558,20 +558,20 @@ def test_create_struct_field_meta_for_field_definition(constraint_kwargs: Any) -
     [
         ("None", [{"value": "hello"}]),
         ("None", None),
-        ("None,int", None),
-        ("None,int", 1),
-        ("None,int", [{"value": "hello"}]),
+        ("None | int", None),
+        ("None | int", 1),
+        ("None | int", [{"value": "hello"}]),
         ("int", [{"value": "hello"}]),
         ("int", 1),
         ("bool", [{"value": "hello"}]),
         ("bool", True),
-        ("bool,str,int", True),
-        ("bool,str,int", 1),
-        ("bool,str,int", "hello"),
-        ("bool,str,int", [{"value": "hello"}]),
-        ("bool,Inner", {"value": "hello"}),
-        ("bool,Inner", [{"value": "hello"}]),
-        ("bool,Inner", True),
+        ("bool | str | int", True),
+        ("bool | str | int", 1),
+        ("bool | str | int", "hello"),
+        ("bool | str | int", [{"value": "hello"}]),
+        ("bool | Inner", {"value": "hello"}),
+        ("bool | Inner", [{"value": "hello"}]),
+        ("bool | Inner", True),
     ],
 )
 def test_transfer_nested_simple_type_union(
@@ -583,14 +583,13 @@ def test_transfer_nested_simple_type_union(
     # https://github.com/litestar-org/litestar/issues/4273
 
     module = create_module(f"""
-from typing import Union
 import msgspec
 
 class Inner(msgspec.Struct):
     value: str
 
 class Outer(msgspec.Struct):
-    some_field: Union[{simple_type}, list[Inner]]
+    some_field: {simple_type} | list[Inner]
 """)
 
     backend = DTOCodegenBackend(
@@ -617,7 +616,6 @@ def test_nested_union_with_multiple_composite_types_raises(
     create_module: Callable[[str], ModuleType],
 ) -> None:
     module = create_module("""
-from typing import Union
 import dataclasses
 
 @dataclasses.dataclass
@@ -627,7 +625,7 @@ class Inner:
 
 @dataclasses.dataclass
 class Outer:
-    some_field: Union[list[str], dict[str, str], Inner]
+    some_field: list[str] | dict[str, str] | Inner
 """)
 
     with pytest.raises(

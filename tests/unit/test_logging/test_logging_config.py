@@ -7,7 +7,7 @@ from collections.abc import Generator
 from importlib.util import find_spec
 from logging.handlers import QueueHandler
 from queue import Queue
-from typing import TYPE_CHECKING, Any, Optional, Union, cast
+from typing import TYPE_CHECKING, Any, Optional, cast
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -140,7 +140,7 @@ def test_dictconfig_on_startup(logging_module: str, dict_config_not_called: str)
 )
 def test_default_queue_listener_handler(
     logging_module_str: str,
-    expected_handler_class_str: Union[str, Any],
+    expected_handler_class_str: str | Any,
     expected_listener_class_str: str,
     capsys: "CaptureFixture[str]",
 ) -> None:
@@ -552,7 +552,7 @@ def test_excluded_fields(logging_module: str) -> None:
     ],
 )
 def test_disable_stack_trace(
-    disable_stack_trace: set[Union[int, type[Exception]]],
+    disable_stack_trace: set[int | type[Exception]],
     exception_to_raise: type[Exception],
     handler_called: bool,
 ) -> None:

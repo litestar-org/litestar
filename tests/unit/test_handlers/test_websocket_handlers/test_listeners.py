@@ -1,7 +1,7 @@
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 from dataclasses import dataclass, field
-from typing import Any, Optional, Union, cast
+from typing import Any, Optional, cast
 from unittest.mock import AsyncMock, MagicMock
 
 import pytest
@@ -55,9 +55,7 @@ def async_listener_callable(mock: MagicMock) -> WebsocketListenerRouteHandler:
         lf("listener_class"),
     ],
 )
-def test_basic_listener(
-    mock: MagicMock, listener: Union[WebsocketListenerRouteHandler, type[WebsocketListener]]
-) -> None:
+def test_basic_listener(mock: MagicMock, listener: WebsocketListenerRouteHandler | type[WebsocketListener]) -> None:
     client = create_test_client([listener])
     with client.websocket_connect("/") as ws:
         ws.send_text("foo")
@@ -224,7 +222,7 @@ def test_listener_pass_additional_dependencies(mock: MagicMock) -> None:
         return cast("int", state.foo)
 
     @websocket_listener("/", dependencies={"foo": Provide(foo_dependency)})
-    def handler(data: str, foo: int) -> dict[str, Union[str, int]]:
+    def handler(data: str, foo: int) -> dict[str, str | int]:
         return {"data": data, "foo": foo}
 
     client = create_test_client([handler])
