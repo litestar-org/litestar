@@ -48,6 +48,8 @@ TIMEOUT_INDICATORS = [
     "SIGTERM",
     "The job running on runner",
     "has exceeded the maximum execution time",
+    "The operation was canceled",
+    "Terminate orphan process",
     "ERROR: Job failed: execution took longer than",
     "pytest-timeout",
     "Timeout:",
