@@ -24,17 +24,26 @@ __all__ = (
 )
 
 
-def _model_dump(model: BaseModel | BaseModelV1, *, by_alias: bool = False) -> dict[str, Any]:
+def _model_dump(
+    model: BaseModel | BaseModelV1,
+    *,
+    by_alias: bool = False,
+    round_trip: bool = False,
+) -> dict[str, Any]:
     return (
-        model.model_dump(mode="json", by_alias=by_alias)  # pyright: ignore
+        model.model_dump(mode="json", by_alias=by_alias, round_trip=round_trip)  # pyright: ignore
         if hasattr(model, "model_dump")
         else {k: v.decode() if isinstance(v, bytes) else v for k, v in model.dict(by_alias=by_alias).items()}
     )
 
 
-def _model_dump_json(model: BaseModel | BaseModelV1, by_alias: bool = False) -> str:
+def _model_dump_json(
+    model: BaseModel | BaseModelV1,
+    by_alias: bool = False,
+    round_trip: bool = False,
+) -> str:
     return (
-        model.model_dump_json(by_alias=by_alias)  # pyright: ignore
+        model.model_dump_json(by_alias=by_alias, round_trip=round_trip)  # pyright: ignore
         if hasattr(model, "model_dump_json")
         else model.json(by_alias=by_alias)  # pyright: ignore
     )
@@ -50,6 +59,7 @@ class PydanticPlugin(InitPlugin):
         "exclude_unset",
         "include",
         "prefer_alias",
+        "round_trip",
         "validate_strict",
     )
 
@@ -62,6 +72,7 @@ class PydanticPlugin(InitPlugin):
         include: PydanticV1FieldsListType | PydanticV2FieldsListType | None = None,
         prefer_alias: bool = False,
         validate_strict: bool = False,
+        round_trip: bool = False,
     ) -> None:
         """Pydantic Plugin to support serialization / validation of Pydantic types / models
 
@@ -72,6 +83,8 @@ class PydanticPlugin(InitPlugin):
         :param include: Fields to exclude during serialization
         :param prefer_alias: Use the ``by_alias=True`` flag when dumping models
         :param validate_strict: Use ``strict=True`` when calling ``.model_validate`` on Pydantic 2.x models
+        :param round_trip: use ``round_trip=True`` when calling ``.model_dump``
+          and ``.model_dump_json`` on Pydantic 2.x models
         """
         self.exclude = exclude
         self.exclude_defaults = exclude_defaults
@@ -80,6 +93,7 @@ class PydanticPlugin(InitPlugin):
         self.include = include
         self.prefer_alias = prefer_alias
         self.validate_strict = validate_strict
+        self.round_trip = round_trip
 
     def on_app_init(self, app_config: AppConfig) -> AppConfig:
         """Configure application for use with Pydantic.
@@ -97,6 +111,7 @@ class PydanticPlugin(InitPlugin):
                     include=self.include,
                     prefer_alias=self.prefer_alias,
                     validate_strict=self.validate_strict,
+                    round_trip=self.round_trip,
                 ),
                 PydanticSchemaPlugin(prefer_alias=self.prefer_alias),
                 PydanticDIPlugin(),

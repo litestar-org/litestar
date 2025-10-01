@@ -266,7 +266,7 @@ Litestar supports typical ASGI middleware and ships with middlewares to handle t
 - CORS
 - CSRF
 - Rate limiting
-- GZip and Brotli compression
+- GZip, Brotli, and Zstd compression
 - Client- and server-side sessions
 
 ### Route Guards
@@ -601,6 +601,7 @@ see [the contribution guide](CONTRIBUTING.rst).
       <td align="center" valign="top" width="14.28%"><a href="https://jannchie.com"><img src="https://avatars.githubusercontent.com/u/29743310?v=4?s=100" width="100px;" alt="Jianqi Pan"/><br /><sub><b>Jianqi Pan</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=Jannchie" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/PokkaKiyo"><img src="https://avatars.githubusercontent.com/u/31039465?v=4?s=100" width="100px;" alt="PokkaKiyo"/><br /><sub><b>PokkaKiyo</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=PokkaKiyo" title="Tests">⚠️</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/s-aleshin"><img src="https://avatars.githubusercontent.com/u/66841202?v=4?s=100" width="100px;" alt="Sergei Aleshin"/><br /><sub><b>Sergei Aleshin</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=s-aleshin" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/IDrokin117"><img src="https://avatars.githubusercontent.com/u/41319097?v=4?s=100" width="100px;" alt="Igor Drokin"/><br /><sub><b>Igor Drokin</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=IDrokin117" title="Code">💻</a> <a href="https://github.com/litestar-org/litestar/commits?author=IDrokin117" title="Tests">⚠️</a> <a href="https://github.com/litestar-org/litestar/commits?author=IDrokin117" title="Documentation">📖</a></td>
     </tr>
   </tbody>
 </table>

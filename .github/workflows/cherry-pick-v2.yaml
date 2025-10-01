@@ -1,0 +1,99 @@
+name: Cherry-pick merged PRs into v2
+
+on:
+  pull_request:
+    types:
+      - closed
+      - labeled
+
+jobs:
+  cherry-pick:
+    if: >-
+      github.event.pull_request.merged == true &&
+      github.event.pull_request.base.ref == 'main' &&
+      contains(github.event.pull_request.labels.*.name, 'cherry-pick v2')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Get squash commit SHA
+        id: commit
+        run: |
+          echo "sha=${{ github.event.pull_request.merge_commit_sha }}" >> $GITHUB_OUTPUT
+
+      - name: Get commit message
+        id: message
+        run: |
+          msg=$(git show -s --format=%B ${{ steps.commit.outputs.sha }})
+          echo "message<<EOF" >> $GITHUB_OUTPUT
+          echo "$msg" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Check for breaking change
+        id: check
+        run: |
+          if cat <<'MSG' | grep -qE '^[a-z]+\(.*\)!:'
+          ${{ steps.message.outputs.message }}
+          MSG
+          then
+            echo "Commit message indicates breaking change. Skipping cherry-pick."
+            exit 1
+          fi
+
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Fetch v2 branch
+        run: git fetch origin v2:v2
+
+      - name: Create cherry-pick branch
+        id: branch
+        continue-on-error: true
+        run: |
+          branch_name="cherry-pick/pr-${{ github.event.pull_request.number }}"
+          git checkout -b "$branch_name" origin/v2
+          git cherry-pick ${{ steps.commit.outputs.sha }} || {
+            echo "Cherry-pick failed. Aborting.";
+            git cherry-pick --abort;
+            exit 1;
+          }
+          git push origin "$branch_name"
+          echo "name=$branch_name" >> $GITHUB_OUTPUT
+
+      - name: Create Pull Request with GH CLI
+        id: create_pr
+        if: steps.branch.outcome == 'success'
+        uses: actions/github-script@v8
+        env:
+          HEAD: ${{ steps.branch.outputs.name }}
+          COMMIT: ${{ steps.commit.outputs.sha }}
+        with:
+          github-token: ${{ github.token }}
+          script: |
+            const pr = await github.rest.pulls.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `${context.payload.pull_request.title} (cherry-picked from #${context.payload.pull_request.number})`,
+              head: `${ process.env.HEAD }`,
+              base: 'v2',
+              body: `This PR was automatically created to cherry-pick commit ${ process.env.COMMIT } from #${context.payload.pull_request.number} into v2.`
+            });
+            core.setOutput("pr_url", pr.data.html_url);
+
+      - name: Comment on original PR
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if [ "${{ steps.branch.outcome }}" = "success" ]; then
+            gh pr comment ${{ github.event.pull_request.number }} --body "A PR has been created to cherry pick these changes into the 'v2' branch: ${{ steps.create_pr.outputs.pr_url }}"
+          else
+            gh pr comment ${{ github.event.pull_request.number }} --body "⚠️ A PR could not be created to cherry pick these changes into the 'v2' due to conflicts. Cherry-pick must be performed manually."
+          fi
