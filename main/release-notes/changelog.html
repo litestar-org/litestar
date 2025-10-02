@@ -685,6 +685,33 @@ and <code class="docutils literal notranslate"><span class="pre">litestar_piccol
 <p>References: <span><a class="reference external" href="https://github.com/litestar-org/litestar/issues/4364">https://github.com/litestar-org/litestar/issues/4364</a></span>, <span><a class="reference external" href="https://github.com/litestar-org/litestar/pull/4363">https://github.com/litestar-org/litestar/pull/4363</a></span></p>
 </div>
 </dd>
+<dt>Zero cost excluded middlewares<a class="headerlink reference internal" href="#3.0.0-zero cost excluded middlewares" id="3.0.0-zero cost excluded middlewares">#</a><span class="breaking-change">breaking</span></dt><dd><div class="changelog-change docutils container">
+<p>Middlewares inheriting from <a class="reference internal" href="../reference/middleware/index.html#litestar.middleware.ASGIMiddleware" title="litestar.middleware.base.ASGIMiddleware"><code class="xref py py-class docutils literal notranslate"><span class="pre">ASGIMiddleware</span></code></a>
+will now have zero runtime cost when they are excluded e.g. via the <code class="docutils literal notranslate"><span class="pre">scope</span></code> or
+<code class="docutils literal notranslate"><span class="pre">exclude_opt_key</span></code> options.</p>
+<p>Previously, the base middleware was always being invoked for every request,
+evaluating the exclusion criteria, and then calling the user defined middleware
+functions. If a middleware had defined <code class="docutils literal notranslate"><span class="pre">scopes</span> <span class="pre">=</span> <span class="pre">(ScopeType.HTTP,)</span></code>, it would
+still be called for <em>every</em> request, regardless of the scope type. Only for
+requests with the type <code class="docutils literal notranslate"><span class="pre">HTTP</span></code>, it would then call the user’s function.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This behaviour is still true for the legacy <code class="docutils literal notranslate"><span class="pre">AbstractMiddleware</span></code></p>
+</div>
+<p>With <em>zero cost exclusion</em>, the exclusion is being evaluated statically. At app
+creation time, when route handlers are registered and their middleware stacks
+are being built, a middleware that is to be excluded will simply not be included
+in the stack.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Even though this change is marked as breaking, no runtime behaviour
+difference is expected. Some test cases may break though if they relied on
+the fact that the middleware wrapper created by <code class="docutils literal notranslate"><span class="pre">ASGIMiddleware</span></code> was
+always being called</p>
+</div>
+<p>References: </p>
+</div>
+</dd>
 </dl>
 </section>
 </section>
