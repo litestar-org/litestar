@@ -429,8 +429,7 @@ async def test_startup_shutdown_cycle(memory_backend: MemoryChannelsBackend) -> 
         await plugin._on_startup()
 
         subscriber = await plugin.subscribe("test_channel")
-        plugin.publish(b"test_message", "test_channel")
-        await asyncio.sleep(0.1)
+        await plugin.wait_published(b"test_message", "test_channel")
 
         messages = await get_from_stream(subscriber, 1)
         assert messages == [b"test_message"]
@@ -443,8 +442,7 @@ async def test_startup_shutdown_cycle(memory_backend: MemoryChannelsBackend) -> 
 
     await plugin._on_startup()
     subscriber = await plugin.subscribe("final_test")
-    plugin.publish(b"final_message", "final_test")
-    await asyncio.sleep(0.1)
+    await plugin.wait_published(b"final_message", "final_test")
 
     messages = await get_from_stream(subscriber, 1)
     assert messages == [b"final_message"]
