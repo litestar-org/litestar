@@ -6,6 +6,17 @@
 .. changelog:: 3.0.0
     :date: 2024-08-30
 
+
+    .. change:: Remove deprecated ``litestar.contrib.prometheus`` module
+        :type: feature
+        :breaking:
+        :pr: 4328
+        :issue: 4305
+
+        Remove the deprecated ``litestar.contrib.prometheus`` module. Code still using imports
+        from this module should switch to using ``litestar.plugins.prometheus``.
+
+
     .. change:: Make ``AsyncTestClient`` async-native
         :type: feature
         :pr: 4291
@@ -123,3 +134,104 @@
         :breaking:
 
         Remove the deprecated ``pydantic_get_unwrapped_annotation_and_type_hints`` function.
+
+    .. change:: Remove deprecated ``litestar.contrib.attrs`` module
+        :type: feature
+        :breaking:
+        :pr: 4322
+        :issue: 4302
+
+        Remove the deprecated ``litestar.contrib.attrs`` module. Code still using imports
+        from this module should switch to using ``litestar.plugins.attrs``.
+
+    .. change:: Remove deprecated ``litestar.contrib.jwt`` module
+        :type: feature
+        :breaking:
+        :pr: 4333
+        :issue: 4304
+
+        Remove the deprecated ``litestar.contrib.jwt`` module. Code still using imports
+        from this module should switch to using ``litestar.security.jwt``.
+
+    .. change:: Remove deprecated ``litestar.contrib.repository`` module
+        :type: feature
+        :breaking:
+        :pr: 4337
+        :issue: 4307
+
+        Remove the deprecated ``litestar.contrib.repository`` module. Code still using imports
+        from this module should switch to using ``litestar.repository``.
+
+    .. change:: Remove deprecated ``litestar.contrib.pydantic`` module
+        :type: feature
+        :breaking:
+        :pr: 4339
+        :issue: 4306
+
+        Remove the deprecated ``litestar.contrib.pydantic`` module. Code still using imports
+        from this module should switch to using ``litestar.plugins.pydantic``.
+
+    .. change:: Remove deprecated module ``litestar/contrib/minijnja``
+        :type: feature
+        :breaking:
+        :pr: 4357
+        :issue: 4357
+
+        Remove the deprecated module ``litestar.contrib.minijnja``. This module was created with a typo in its name
+        (`minijnja` instead of `minijinja`). Instead ``litestar.contrib.minijinja`` should be used.
+
+    .. change:: Add ``round_trip`` parameter to ``PydanticPlugin``
+        :type: feature
+        :pr: 4350
+        :issue: 4349
+
+        New ``round_trip: bool`` parameter
+        to :class:`~litestar.contrib.pydantic.PydanticPlugin` allows
+        serializing types like ``pydanctic.Json`` correctly.
+
+    .. change:: Remove deprecated ``litestar.contrib.minijinja.minijinja_from_state`` function
+        :type: feature
+        :breaking:
+        :pr: 4355
+        :issue: 4356
+
+        Remove the deprecated ``litestar.contrib.minijinja.minijinja_from_state`` function.
+        Instead use a callable that receives the minijinja ``State`` object as first argument.
+
+    .. change:: Remove deprecated ``litestar.contrib.piccolo`` module
+        :type: feature
+        :breaking:
+        :pr: 4363
+        :issue: 4364
+
+        Use ``litestar[piccolo]`` extra installation target
+        and ``litestar_piccolo`` plugin instead:
+        https://github.com/litestar-org/litestar-piccolo
+
+    .. change:: Zero cost excluded middlewares
+        :type: feature
+        :breaking:
+
+        Middlewares inheriting from :class:`~litestar.middleware.base.ASGIMiddleware`
+        will now have zero runtime cost when they are excluded e.g. via the ``scope`` or
+        ``exclude_opt_key`` options.
+
+        Previously, the base middleware was always being invoked for every request,
+        evaluating the exclusion criteria, and then calling the user defined middleware
+        functions. If a middleware had defined ``scopes = (ScopeType.HTTP,)``, it would
+        still be called for *every* request, regardless of the scope type. Only for
+        requests with the type ``HTTP``, it would then call the user's function.
+
+        .. note::
+            This behaviour is still true for the legacy ``AbstractMiddleware``
+
+        With *zero cost exclusion*, the exclusion is being evaluated statically. At app
+        creation time, when route handlers are registered and their middleware stacks
+        are being built, a middleware that is to be excluded will simply not be included
+        in the stack.
+
+        .. note::
+            Even though this change is marked as breaking, no runtime behaviour
+            difference is expected. Some test cases may break though if they relied on
+            the fact that the middleware wrapper created by ``ASGIMiddleware`` was
+            always being called

@@ -93,7 +93,6 @@ litestar run
 - [Life Cycle Hooks](#request-life-cycle-hooks)
 - [Route Guards based Authorization](#route-guards)
 - Support for `dataclasses`, `TypedDict`, [`msgspec`](https://jcristharif.com/msgspec/), [pydantic version 1 and version 2 (even within the same application)](https://docs.pydantic.dev/latest/) and [(c)attrs](https://catt.rs/en/stable/)
-  [msgspec](https://github.com/jcrist/msgspec) and [attrs](https://www.attrs.org/en/stable/)
 - Layered parameter declaration
 - Support for [RFC 9457](https://datatracker.ietf.org/doc/html/rfc9457) standardized "Problem Detail" error responses
 - [Automatic API documentation with](#redoc-swagger-ui-and-stoplight-elements-api-documentation):
@@ -130,7 +129,7 @@ A **huge** thanks to our sponsors:
 <a href="https://github.com/scalar/scalar/?utm_source=litestar&utm_medium=website&utm_campaign=main-badge" target="_blank" title="Scalar.com - Document, Discover and Test APIs with Scalar."><img src="https://raw.githubusercontent.com/litestar-org/branding/main/assets/sponsors/scalar.svg" width="180" alt="Scalar.com"></a>
 <a href="https://telemetrysports.com/" title="Telemetry Sports - Changing the way data influences the sports experience"><img src="https://raw.githubusercontent.com/litestar-org/branding/main/assets/sponsors/telemetry-sports/unofficial-telemetry-whitebg.svg" width="150" alt="Telemetry Sports"></a>
 
-<a href="https://docs.litestar.dev/dev/#sponsors" class="external-link" target="_blank">Check out our sponsors in the docs</a>
+<a href="https://docs.litestar.dev/latest/#sponsors" class="external-link" target="_blank">Check out our sponsors in the docs</a>
 
 If you would like to support the work that we do please consider [becoming a sponsor][sponsor-polar]
 via [Polar.sh][sponsor-polar] (preferred), [GitHub][sponsor-github] or [Open Collective][sponsor-oc].
@@ -263,7 +262,7 @@ Litestar supports typical ASGI middleware and ships with middlewares to handle t
 - CORS
 - CSRF
 - Rate limiting
-- GZip and Brotli compression
+- GZip, Brotli, and Zstd compression
 - Client- and server-side sessions
 
 ### Route Guards

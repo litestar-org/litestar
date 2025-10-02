@@ -2236,7 +2236,7 @@
         :pr: 1896
 
         Add support for piccolo ORM with the
-        :class:`~litestar.contrib.piccolo.PiccoloDTO`.
+        :class:`!litestar.contrib.piccolo.PiccoloDTO`.
 
     .. change:: OpenAPI: Allow setting ``OpenAPIController.path`` from ```OpenAPIConfig``
         :type: feature

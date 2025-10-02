@@ -117,7 +117,7 @@ jwt = ["cryptography", "pyjwt>=2.9.0"]
 mako = ["mako>=1.2.4"]
 minijinja = ["minijinja>=1.0.0"]
 opentelemetry = ["opentelemetry-instrumentation-asgi"]
-piccolo = ["piccolo"]
+piccolo = ["piccolo", "litestar-piccolo"]
 picologging = ["picologging; python_version < \"3.13\""]
 polyfactory = ["polyfactory>=2.6.3"]
 prometheus = ["prometheus-client"]
@@ -225,8 +225,6 @@ test = [
   "pytest-rerunfailures",
   "pytest-timeout",
   "pytest-xdist",
-  #  "rangehttpserver>=1.4.0", # until https://github.com/danvk/RangeHTTPServer/pull/42 is merged
-  "rangehttpserver @ git+https://github.com/provinzkraut/RangeHTTPServer@fix-unclosed-resource",
   "time-machine",
 ]
 
@@ -263,8 +261,8 @@ filterwarnings = [
   "ignore::DeprecationWarning:litestar.*",
   "ignore::pydantic.PydanticDeprecatedSince20::",
   "ignore:`general_plain_validator_function`:DeprecationWarning::",
-  "ignore: 'RichMultiCommand':DeprecationWarning::",                                          # this is coming from rich_click itself, nothing we can do about # that for now
-  "ignore: Dropping max_length:litestar.exceptions.LitestarWarning:litestar.contrib.piccolo",
+  # this is coming from rich_click itself, nothing we can do about that for now:
+  "ignore: 'RichMultiCommand':DeprecationWarning::",
   "ignore: Python Debugger on exception enabled:litestar.exceptions.LitestarWarning:",
   "ignore: datetime.datetime.utcnow:DeprecationWarning:time_machine",
   "ignore:Use of deprecated default '__check_model__':DeprecationWarning:polyfactory:",
@@ -429,6 +427,7 @@ lint.ignore = [
   "A005",    # Module shadows a built-in Python standard library module
   "PLC0415", # `import` should be at the top-level of a file
   "PLW1641", # Object does not implement `__hash__` method
+  "SIM103",  # 'Return the condition directly': This is a bit overzealous
 ]
 lint.select = [
   "A",   # flake8-builtins

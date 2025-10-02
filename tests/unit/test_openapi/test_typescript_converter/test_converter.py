@@ -67,17 +67,17 @@ def test_openapi_to_typescript_converter(person_controller: type[Controller], pe
 
 	export namespace Http201 {
 	export type ResponseBody = {
-	complex: {
+	complex?: {
 	
 };
-	first_name: string;
-	id: string;
-	last_name: string;
-	optional: null | string;
-	pets: null | {
-	age: number;
-	name: string;
-	species: "Cat" | "Dog" | "Monkey" | "Pig";
+	first_name?: string;
+	id?: string;
+	last_name?: string;
+	optional?: null | string;
+	pets?: null | {
+	age?: number;
+	name?: string;
+	species?: "Cat" | "Dog" | "Monkey" | "Pig";
 }[];
 }[];
 };
@@ -95,17 +95,17 @@ def test_openapi_to_typescript_converter(person_controller: type[Controller], pe
 };
 
 	export type RequestBody = {
-	complex: {
+	complex?: {
 	
 };
-	first_name: string;
-	id: string;
-	last_name: string;
-	optional: null | string;
-	pets: null | {
-	age: number;
-	name: string;
-	species: "Cat" | "Dog" | "Monkey" | "Pig";
+	first_name?: string;
+	id?: string;
+	last_name?: string;
+	optional?: null | string;
+	pets?: null | {
+	age?: number;
+	name?: string;
+	species?: "Cat" | "Dog" | "Monkey" | "Pig";
 }[];
 }[];
 };
@@ -117,17 +117,17 @@ def test_openapi_to_typescript_converter(person_controller: type[Controller], pe
 
 	export namespace Http200 {
 	export type ResponseBody = {
-	complex: {
+	complex?: {
 	
 };
-	first_name: string;
-	id: string;
-	last_name: string;
-	optional: null | string;
-	pets: null | {
-	age: number;
-	name: string;
-	species: "Cat" | "Dog" | "Monkey" | "Pig";
+	first_name?: string;
+	id?: string;
+	last_name?: string;
+	optional?: null | string;
+	pets?: null | {
+	age?: number;
+	name?: string;
+	species?: "Cat" | "Dog" | "Monkey" | "Pig";
 }[];
 }[];
 };
@@ -145,17 +145,17 @@ def test_openapi_to_typescript_converter(person_controller: type[Controller], pe
 };
 
 	export type RequestBody = {
-	complex: {
+	complex?: {
 	
 };
-	first_name: string;
-	id: string;
-	last_name: string;
-	optional: null | string;
-	pets: null | {
-	age: number;
-	name: string;
-	species: "Cat" | "Dog" | "Monkey" | "Pig";
+	first_name?: string;
+	id?: string;
+	last_name?: string;
+	optional?: null | string;
+	pets?: null | {
+	age?: number;
+	name?: string;
+	species?: "Cat" | "Dog" | "Monkey" | "Pig";
 }[];
 }[];
 };
@@ -394,17 +394,17 @@ def test_openapi_to_typescript_converter(person_controller: type[Controller], pe
 	export namespace ServiceIdPersonPersonIdPartialUpdatePerson {
 	export namespace Http200 {
 	export type ResponseBody = {
-	complex: {
+	complex?: {
 	
 };
-	first_name: string;
-	id: string;
-	last_name: string;
-	optional: null | string;
-	pets: null | {
-	age: number;
-	name: string;
-	species: "Cat" | "Dog" | "Monkey" | "Pig";
+	first_name?: string;
+	id?: string;
+	last_name?: string;
+	optional?: null | string;
+	pets?: null | {
+	age?: number;
+	name?: string;
+	species?: "Cat" | "Dog" | "Monkey" | "Pig";
 }[];
 };
 };
@@ -423,17 +423,17 @@ def test_openapi_to_typescript_converter(person_controller: type[Controller], pe
 };
 
 	export type RequestBody = {
-	complex: {
+	complex?: {
 	
 };
-	first_name: string;
-	id: string;
-	last_name: string;
-	optional: null | string;
-	pets: null | {
-	age: number;
-	name: string;
-	species: "Cat" | "Dog" | "Monkey" | "Pig";
+	first_name?: string;
+	id?: string;
+	last_name?: string;
+	optional?: null | string;
+	pets?: null | {
+	age?: number;
+	name?: string;
+	species?: "Cat" | "Dog" | "Monkey" | "Pig";
 }[];
 };
 };
