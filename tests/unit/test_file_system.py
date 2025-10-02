@@ -69,7 +69,7 @@ def setup_http_server(
     tmp_dir: pathlib.Path,
     file_path: pathlib.Path,
 ) -> Generator[None, None, None]:
-    server_file_path = pathlib.Path("tests/nginx_test_files").joinpath(file_path.name)
+    server_file_path = (pathlib.Path(__file__).parent.parent / "nginx_test_files").joinpath(file_path.name)
     server_file_path.write_bytes(file_path.read_bytes())
     yield
     server_file_path.unlink()
