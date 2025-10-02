@@ -122,7 +122,7 @@ class ResponseFactory:
             response = OpenAPIResponse(content=None, description=self.create_description())
         elif self.field_definition.is_subclass_of(Redirect):
             response = self.create_redirect_response()
-        elif self.field_definition.is_subclass_of((File, Stream)):
+        elif self.field_definition.is_subclass_of(File):
             response = self.create_file_response()
         else:
             media_type = self.route_handler.media_type

@@ -28,7 +28,7 @@ from litestar.exceptions import (
 from litestar.handlers import HTTPRouteHandler
 from litestar.openapi.config import OpenAPIConfig
 from litestar.openapi.datastructures import ResponseSpec
-from litestar.openapi.spec import Example, OpenAPIHeader, OpenAPIMediaType, Reference, Schema
+from litestar.openapi.spec import Example, OpenAPIHeader, OpenAPIMediaType, OpenAPIResponse, Reference, Schema
 from litestar.openapi.spec.enums import OpenAPIType
 from litestar.response import File, Redirect, Stream, Template
 from litestar.routes import HTTPRoute
@@ -251,8 +251,12 @@ def test_create_success_response_with_stream(create_factory: CreateFactoryFixtur
         return Stream(iter([]))
 
     handler = get_registered_route_handler(handler, "test")
-    response = create_factory(handler, True).create_success_response()
-    assert response.description == "Stream Response"
+    response = create_factory(handler, False).create_success_response()
+    assert response == OpenAPIResponse(
+        description="Stream Response",
+        headers={},
+        content={"application/json": OpenAPIMediaType(schema=Schema())},
+    )
 
 
 def test_create_success_response_redirect(create_factory: CreateFactoryFixture) -> None:
