@@ -217,10 +217,11 @@ def test_asgi_middleware_raises_exception() -> None:
     "allowed_scopes,expected_calls",
     [
         ((ScopeType.HTTP,), ["/http"]),
-        ((ScopeType.HTTP, ScopeType.ASGI), ["/http", "/asgi"]),
         ((ScopeType.ASGI,), ["/asgi"]),
-        ((ScopeType.ASGI, ScopeType.WEBSOCKET), ["/asgi", "/ws"]),
         ((ScopeType.WEBSOCKET,), ["/ws"]),
+        ((ScopeType.HTTP, ScopeType.ASGI), ["/http", "/asgi"]),
+        ((ScopeType.HTTP, ScopeType.WEBSOCKET), ["/http", "/ws"]),
+        ((ScopeType.ASGI, ScopeType.WEBSOCKET), ["/asgi", "/ws"]),
     ],
 )
 def test_asgi_middleware_exclude_by_scope_type(
