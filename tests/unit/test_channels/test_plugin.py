@@ -420,3 +420,31 @@ async def test_shutdown_idempotent(memory_backend: MemoryChannelsBackend) -> Non
 
     await plugin._on_shutdown()
     await plugin._on_shutdown()
+
+
+async def test_startup_shutdown_cycle(memory_backend: MemoryChannelsBackend) -> None:
+    plugin = ChannelsPlugin(backend=memory_backend, arbitrary_channels_allowed=True)
+
+    for _ in range(3):
+        await plugin._on_startup()
+
+        subscriber = await plugin.subscribe("test_channel")
+        await plugin.wait_published(b"test_message", "test_channel")
+
+        messages = await get_from_stream(subscriber, 1)
+        assert messages == [b"test_message"]
+
+        await plugin.unsubscribe(subscriber)
+        await plugin._on_shutdown()
+
+    await plugin._on_shutdown()
+    await plugin._on_shutdown()
+
+    await plugin._on_startup()
+    subscriber = await plugin.subscribe("final_test")
+    await plugin.wait_published(b"final_message", "final_test")
+
+    messages = await get_from_stream(subscriber, 1)
+    assert messages == [b"final_message"]
+
+    await plugin._on_shutdown()
