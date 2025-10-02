@@ -218,15 +218,43 @@ class ASGIMiddleware(abc.ABC):
     """Scope types this middleware should be applied to"""
     exclude_path_pattern: str | tuple[str, ...] | None = None
     r"""
-    Exclude this middleware for all route handlers that have at least one path
-    matching the provided RegEx patterns.
+    A regex pattern (or tuple of patterns) to exclude this middleware from route
+    handlers whose path matches any of the provided patterns.
 
-    The matching will be done against the path(s) defined on the *handler*, not the
-    resolved path of the request. This distinction is important, as they can differ for
-    dynamic paths. A handler with the path ``/user/{user_id:int}/`` would receive
-    requests with paths like ``/user/1234/``, so a pattern to exclude that handler would
-    have to be something like ``/user/.+?/``, and not ``/user/\d+/``, even if the latter
-    would match the path of an incoming request accepted by this handler.
+    .. important::
+        Pattern matching is performed against the **handler's path** (e.g.,
+        ``/user/{user_id:int}/``), NOT against the actual **request path** (e.g.,
+        ``/user/1234/``). This is a critical distinction for dynamic routes.
+
+    **Example 1: Static path**
+
+    Handler path::
+
+        /api/health
+
+    To exclude this handler, use a pattern like::
+
+        exclude_path_pattern = r"^/api/health$"
+
+    **Example 2: Dynamic path (path parameters)**
+
+    Handler path::
+
+        /user/{user_id:int}/profile
+             └─────┬──────┘
+                   └─ This is what the pattern matches against
+
+    Actual request paths that match this handler::
+
+        /user/1234/profile
+        /user/5678/profile
+        /user/9999/profile
+
+    To exclude this handler, the pattern must match the **handler**, not the actual
+    request path:
+
+        exclude_path_pattern = "/user/{user_id:int}/profile"
+        exclude_path_pattern = "/user/\{.+?\}/"
     """
     exclude_opt_key: str | None = None
     constraints: MiddlewareConstraints | None = None
