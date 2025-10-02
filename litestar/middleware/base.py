@@ -261,7 +261,7 @@ class ASGIMiddleware(abc.ABC):
 
     def should_bypass_for_handler(self, handler: RouteHandlerType) -> bool:
         """Return ``True`` if this middleware should be bypassed for ``handler``, according
-        to ``scopes``, ``exclude_path_pattern`` or ``exclude_opt_key``, otherwise 
+        to ``scopes``, ``exclude_path_pattern`` or ``exclude_opt_key``, otherwise
         ``False``.
         """
         from litestar.handlers import ASGIRouteHandler, HTTPRouteHandler, WebsocketRouteHandler
