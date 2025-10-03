@@ -8,5 +8,4 @@ contrib
     jinja
     mako
     opentelemetry
-    piccolo
     sqlalchemy/index

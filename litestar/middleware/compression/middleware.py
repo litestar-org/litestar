@@ -7,13 +7,11 @@ from litestar.datastructures import Headers, MutableScopeHeaders
 from litestar.enums import CompressionEncoding, ScopeType
 from litestar.middleware.base import AbstractMiddleware
 from litestar.middleware.compression.gzip_facade import GzipCompression
-from litestar.middleware.compression.zstd_facade import ZstdCompression
 from litestar.utils.empty import value_or_default
 from litestar.utils.scope.state import ScopeState
 
 if TYPE_CHECKING:
     from litestar.config.compression import CompressionConfig
-    from litestar.middleware.compression.facade import CompressionFacade
     from litestar.types import (
         ASGIApp,
         HTTPResponseStartEvent,
@@ -83,17 +81,6 @@ class CompressionMiddleware(AbstractMiddleware):
 
         await self.app(scope, receive, send)
 
-    def get_facade_cls(
-        self,
-        compression_encoding: Literal[CompressionEncoding.BROTLI, CompressionEncoding.GZIP, CompressionEncoding.ZSTD]
-        | str,
-    ) -> type[CompressionFacade]:
-        if compression_encoding == CompressionEncoding.GZIP:
-            return GzipCompression
-        if compression_encoding == CompressionEncoding.ZSTD:
-            return ZstdCompression
-        return self.config.compression_facade
-
     def create_compression_send_wrapper(
         self,
         send: Send,
@@ -115,8 +102,12 @@ class CompressionMiddleware(AbstractMiddleware):
 
         # We can't use `self.config.compression_facade` directly if the compression is `gzip` since
         # it may be being used as a fallback.
-        facade_cls: type[CompressionFacade] = self.get_facade_cls(compression_encoding)
-        facade = facade_cls(buffer=bytes_buffer, compression_encoding=compression_encoding, config=self.config)
+        if compression_encoding == CompressionEncoding.GZIP:
+            facade = GzipCompression(buffer=bytes_buffer, compression_encoding=compression_encoding, config=self.config)
+        else:
+            facade = self.config.compression_facade(  # type: ignore[assignment]
+                buffer=bytes_buffer, compression_encoding=compression_encoding, config=self.config
+            )
 
         initial_message: HTTPResponseStartEvent | None = None
         started = False
