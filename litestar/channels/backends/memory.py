@@ -59,7 +59,7 @@ class MemoryChannelsBackend(ChannelsBackend):
         """Unsubscribe from ``channels``"""
         self._channels -= set(channels)
         for channel in channels:
-            self._history.pop(channel, None)
+            self._history.pop(channel, None)  # https://github.com/litestar-org/litestar/issues/4386
 
     async def stream_events(self) -> AsyncGenerator[tuple[str, Any], None]:
         """Return a generator, iterating over events of subscribed channels as they become available"""
