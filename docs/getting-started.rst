@@ -57,7 +57,7 @@ Installation
         :code:`pip install litestar[mako]`
 
     :ref:`Polyfactory to generate OpenAPI examples <usage/openapi/schema_generation:Generating examples>`
-        :code:`pip install litestar[structlog]`
+        :code:`pip install litestar[polyfactory]`
 
     :doc:`HTMX plugin </usage/htmx>`
         :code:`pip install litestar[htmx]`
