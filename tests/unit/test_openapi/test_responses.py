@@ -27,7 +27,7 @@ from litestar.exceptions import (
 from litestar.handlers import HTTPRouteHandler
 from litestar.openapi.config import OpenAPIConfig
 from litestar.openapi.datastructures import ResponseSpec
-from litestar.openapi.spec import Example, OpenAPIHeader, OpenAPIMediaType, Reference, Schema
+from litestar.openapi.spec import Example, OpenAPIHeader, OpenAPIMediaType, OpenAPIResponse, Reference, Schema
 from litestar.openapi.spec.enums import OpenAPIType
 from litestar.response import File, Redirect, Stream, Template
 from litestar.routes import HTTPRoute
@@ -250,8 +250,12 @@ def test_create_success_response_with_stream(create_factory: CreateFactoryFixtur
         return Stream(iter([]))
 
     handler = get_registered_route_handler(handler, "test")
-    response = create_factory(handler, True).create_success_response()
-    assert response.description == "Stream Response"
+    response = create_factory(handler, False).create_success_response()
+    assert response == OpenAPIResponse(
+        description="Stream Response",
+        headers={},
+        content={"application/json": OpenAPIMediaType(schema=Schema())},
+    )
 
 
 def test_create_success_response_redirect(create_factory: CreateFactoryFixture) -> None:
@@ -574,25 +578,3 @@ def test_file_response_media_type(content_media_type: Any, expected: Any, create
 
     response = create_factory(handler).create_success_response()
     assert next(iter(response.content.values())).schema.content_media_type == expected  # type: ignore[union-attr]
-
-
-def test_response_header_deprecated_properties() -> None:
-    assert ResponseHeader(name="foo", value="bar").allow_empty_value is False
-    assert ResponseHeader(name="foo", value="bar").allow_reserved is False
-
-    with pytest.warns(DeprecationWarning, match="property is invalid for headers"):
-        ResponseHeader(name="foo", value="bar", allow_empty_value=True)
-
-    with pytest.warns(DeprecationWarning, match="property is invalid for headers"):
-        ResponseHeader(name="foo", value="bar", allow_reserved=True)
-
-
-def test_header_deprecated_properties() -> None:
-    assert OpenAPIHeader().allow_empty_value is False
-    assert OpenAPIHeader().allow_reserved is False
-
-    with pytest.warns(DeprecationWarning, match="property is invalid for headers"):
-        OpenAPIHeader(allow_empty_value=True)
-
-    with pytest.warns(DeprecationWarning, match="property is invalid for headers"):
-        OpenAPIHeader(allow_reserved=True)

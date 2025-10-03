@@ -12,7 +12,6 @@ from litestar.exceptions import ImproperlyConfiguredException
 from litestar.serialization import default_serializer, encode_json, encode_msgpack, get_serializer
 from litestar.status_codes import HTTP_200_OK, HTTP_204_NO_CONTENT, HTTP_304_NOT_MODIFIED
 from litestar.types.empty import Empty
-from litestar.utils.deprecation import deprecated, warn_deprecation
 from litestar.utils.helpers import get_enum_string_value
 
 if TYPE_CHECKING:
@@ -63,7 +62,6 @@ class ASGIResponse:
         body: bytes | str = b"",
         content_length: int | None = None,
         cookies: Iterable[Cookie] | None = None,
-        encoded_headers: Iterable[tuple[bytes, bytes]] | None = None,
         encoding: str = "utf-8",
         headers: dict[str, Any] | Iterable[tuple[str, str]] | None = None,
         is_head_response: bool = False,
@@ -77,7 +75,6 @@ class ASGIResponse:
             body: encoded content to send in the response body.
             content_length: The response content length.
             cookies: The response cookies.
-            encoded_headers: The response headers.
             encoding: The response encoding.
             headers: The response headers.
             is_head_response: A boolean indicating if the response is a HEAD response.
@@ -87,11 +84,6 @@ class ASGIResponse:
         body = body.encode() if isinstance(body, str) else body
         status_code = status_code or HTTP_200_OK
         self.headers = MutableScopeHeaders()
-
-        if encoded_headers is not None:
-            warn_deprecation("3.0", kind="parameter", deprecated_name="encoded_headers", alternative="headers")
-            for header_name, header_value in encoded_headers:
-                self.headers.add(header_name.decode("latin-1"), header_value.decode("latin-1"))
 
         if headers is not None:
             for k, v in headers.items() if isinstance(headers, dict) else headers:
@@ -131,12 +123,12 @@ class ASGIResponse:
         self.is_head_response = is_head_response
         self.status_code: int = status_code
 
-    @property
-    @deprecated("3.0", kind="property", alternative="encode_headers()")
-    def encoded_headers(self) -> list[tuple[bytes, bytes]]:
-        return self.encode_headers()
-
     def encode_headers(self) -> list[tuple[bytes, bytes]]:
+        """Return a list of headers for this response.
+
+        The list contains both headers and encoded cookies, as tuples, where each tuple
+        represents a single header key-value pair encoded as bytes.
+        """
         return [*self.headers.headers, *self._encoded_cookies]
 
     async def after_response(self) -> None:
@@ -401,7 +393,6 @@ class Response(Generic[T]):
         *,
         background: BackgroundTask | BackgroundTasks | None = None,
         cookies: Iterable[Cookie] | None = None,
-        encoded_headers: Iterable[tuple[bytes, bytes]] | None = None,
         headers: dict[str, str] | None = None,
         is_head_response: bool = False,
         media_type: MediaType | str | None = None,
@@ -413,7 +404,6 @@ class Response(Generic[T]):
         Args:
             background: Background task(s) to be executed after the response is sent.
             cookies: A list of cookies to be set on the response.
-            encoded_headers: A list of already encoded headers.
             headers: Additional headers to be merged with the response headers. Response headers take precedence.
             is_head_response: Whether the response is a HEAD response.
             media_type: Media type for the response. If ``media_type`` is already set on the response, this is ignored.
@@ -439,7 +429,6 @@ class Response(Generic[T]):
             background=self.background or background,
             body=self.render(self.content, media_type, get_serializer(type_encoders)),
             cookies=cookies,
-            encoded_headers=encoded_headers,
             encoding=self.encoding,
             headers=headers,
             is_head_response=is_head_response,

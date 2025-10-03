@@ -16,13 +16,14 @@ __all__ = ("litestar_group",)
 
 
 @click.group(cls=LitestarExtensionGroup, context_settings={"help_option_names": ["-h", "--help"]})
-@click.option("--app", "app_path", help="Module path to a Litestar application")
+@click.option("--app", "app_path", help="Module path to a Litestar application", is_eager=True)
 @click.option(
     "--app-dir",
     help="Look for APP in the specified directory, by adding this to the PYTHONPATH. Defaults to the current working directory.",
     default=None,
     type=ClickPath(dir_okay=True, file_okay=False, path_type=Path),
     show_default=False,
+    is_eager=True,
 )
 @click.pass_context
 def litestar_group(ctx: click.Context, app_path: str | None, app_dir: Path | None = None) -> None:

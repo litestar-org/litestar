@@ -40,7 +40,6 @@ class ASGIRedirectResponse(ASGIResponse):
         media_type: str | None = None,
         status_code: RedirectStatusType | None = None,
         headers: dict[str, Any] | None = None,
-        encoded_headers: Iterable[tuple[bytes, bytes]] | None = None,
         background: BackgroundTask | BackgroundTasks | None = None,
         body: bytes | str = b"",
         content_length: int | None = None,
@@ -76,7 +75,6 @@ class ASGIRedirectResponse(ASGIResponse):
             cookies=cookies,
             content_length=content_length,
             body=body,
-            encoded_headers=encoded_headers,
         )
 
 
@@ -145,7 +143,6 @@ class Redirect(Response[Any]):
         *,
         background: BackgroundTask | BackgroundTasks | None = None,
         cookies: Iterable[Cookie] | None = None,
-        encoded_headers: Iterable[tuple[bytes, bytes]] | None = None,
         headers: dict[str, str] | None = None,
         is_head_response: bool = False,
         media_type: MediaType | str | None = None,
@@ -162,7 +159,6 @@ class Redirect(Response[Any]):
             body=b"",
             content_length=None,
             cookies=cookies,
-            encoded_headers=encoded_headers,
             encoding=self.encoding,
             headers=headers,
             is_head_response=is_head_response,

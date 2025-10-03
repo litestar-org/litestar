@@ -1,19 +1,26 @@
 from __future__ import annotations
 
-from contextlib import ExitStack
-from queue import Queue
+import contextlib
+import math
 from typing import TYPE_CHECKING, Any, Literal, cast
 
-from anyio import sleep
+import anyio
+import anyio.abc
+from anyio.streams.stapled import StapledObjectStream
 
 from litestar.exceptions import WebSocketDisconnect
 from litestar.serialization import decode_json, decode_msgpack, encode_json, encode_msgpack
 from litestar.status_codes import WS_1000_NORMAL_CLOSURE
 
 if TYPE_CHECKING:
+    from collections.abc import AsyncGenerator
+    from types import TracebackType
+
+    from anyio.streams.memory import MemoryObjectReceiveStream
+
     from litestar.testing.client.sync_client import TestClient
     from litestar.types import (
-        WebSocketConnectEvent,
+        ASGIApp,
         WebSocketDisconnectEvent,
         WebSocketReceiveMessage,
         WebSocketScope,
@@ -21,77 +28,65 @@ if TYPE_CHECKING:
     )
 
 
-__all__ = ("WebSocketTestSession",)
+__all__ = ("AsyncWebSocketTestSession", "WebSocketTestSession")
 
 
 class WebSocketTestSession:
-    exit_stack: ExitStack
-
     def __init__(
         self,
         client: TestClient[Any],
         scope: WebSocketScope,
+        portal: anyio.abc.BlockingPortal,
+        connect_timeout: float | None = None,
     ) -> None:
-        self.client = client
-        self.scope = scope
-        self.accepted_subprotocol: str | None = None
-        self.receive_queue: Queue[WebSocketReceiveMessage] = Queue()
-        self.send_queue: Queue[WebSocketSendMessage | BaseException] = Queue()
-        self.extra_headers: list[tuple[bytes, bytes]] | None = None
+        self._exit_stack = contextlib.ExitStack()
+        self._portal = portal
+        self._client = client
+        self._scope = scope
+        self._connect_timeout = connect_timeout
+
+    @contextlib.asynccontextmanager
+    async def _run_session(self) -> AsyncGenerator[AsyncWebSocketTestSession]:
+        async with (
+            anyio.create_task_group() as tg,
+            AsyncWebSocketTestSession(
+                app=self._client.app,
+                scope=self._scope,
+                connect_timeout=self._connect_timeout,
+                tg=tg,
+            ) as session,
+        ):
+            yield session
 
     def __enter__(self) -> WebSocketTestSession:
-        self.exit_stack = ExitStack()
+        with contextlib.ExitStack() as exit_stack:
+            self._async_session = exit_stack.enter_context(
+                self._portal.wrap_async_context_manager(self._portal.call(self._run_session))
+            )
 
-        portal = self.exit_stack.enter_context(self.client.portal())
+            self._exit_stack = exit_stack.pop_all()
 
-        try:
-            portal.start_task_soon(self.do_asgi_call)
-            event: WebSocketConnectEvent = {"type": "websocket.connect"}
-            self.receive_queue.put(event)
-
-            message = self.receive(timeout=self.client.timeout.read)
-            self.accepted_subprotocol = cast("str | None", message.get("subprotocol", None))
-            self.extra_headers = cast("list[tuple[bytes, bytes]] | None", message.get("headers", None))
             return self
-        except Exception:
-            self.exit_stack.close()
-            raise
 
-    def __exit__(self, *args: Any) -> None:
-        try:
-            self.close()
-        finally:
-            self.exit_stack.close()
-        while not self.send_queue.empty():
-            message = self.send_queue.get()
-            if isinstance(message, BaseException):
-                raise message
+    def __exit__(
+        self,
+        exc_type: type[BaseException] | None = None,
+        exc_value: BaseException | None = None,
+        traceback: TracebackType | None = None,
+    ) -> None:
+        self._exit_stack.__exit__(exc_type, exc_value, traceback)
 
-    async def do_asgi_call(self) -> None:
-        """The sub-thread in which the websocket session runs."""
+    @property
+    def accepted_subprotocol(self) -> str | None:
+        return self._async_session.accepted_subprotocol
 
-        async def receive() -> WebSocketReceiveMessage:
-            while self.receive_queue.empty():
-                await sleep(0)
-            return self.receive_queue.get()
+    @property
+    def extra_headers(self) -> list[tuple[bytes, bytes]]:
+        return self._async_session.extra_headers
 
-        async def send(message: WebSocketSendMessage) -> None:
-            if message["type"] == "websocket.accept":
-                headers = message.get("headers", [])
-                if headers:  # type: ignore[truthy-iterable]
-                    headers_list = list(self.scope["headers"])
-                    headers_list.extend(headers)
-                    self.scope["headers"] = headers_list
-                subprotocols = cast("str | None", message.get("subprotocols"))
-                if subprotocols:  # pragma: no cover
-                    self.scope["subprotocols"].append(subprotocols)
-            self.send_queue.put(message)
-
-        try:
-            await self.client.app(self.scope, receive, send)
-        except BaseException as exc:
-            self.send_queue.put(exc)
-            raise
+    @property
+    def scope(self) -> WebSocketScope:
+        return self._async_session.scope
 
     def send(self, data: str | bytes, mode: Literal["text", "binary"] = "text", encoding: str = "utf-8") -> None:
         """Sends a "receive" event. This is the inverse of the ASGI send method.
@@ -104,14 +99,7 @@ class WebSocketTestSession:
         Returns:
             None.
         """
-        if mode == "text":
-            data = data.decode(encoding) if isinstance(data, bytes) else data
-            text_event: WebSocketReceiveMessage = {"type": "websocket.receive", "text": data}  # type: ignore[assignment]
-            self.receive_queue.put(text_event)
-        else:
-            data = data if isinstance(data, bytes) else data.encode(encoding)
-            binary_event: WebSocketReceiveMessage = {"type": "websocket.receive", "bytes": data}  # type: ignore[assignment]
-            self.receive_queue.put(binary_event)
+        self._portal.call(self._async_session.send, data, mode, encoding)
 
     def send_text(self, data: str, encoding: str = "utf-8") -> None:
         """Sends the data using the ``text`` key.
@@ -123,7 +111,7 @@ class WebSocketTestSession:
         Returns:
             None
         """
-        self.send(data=data, encoding=encoding)
+        self._portal.call(self._async_session.send_text, data, encoding)
 
     def send_bytes(self, data: bytes, encoding: str = "utf-8") -> None:
         """Sends the data using the ``bytes`` key.
@@ -135,7 +123,7 @@ class WebSocketTestSession:
         Returns:
             None
         """
-        self.send(data=data, mode="binary", encoding=encoding)
+        self._portal.call(self._async_session.send_bytes, data, encoding)
 
     def send_json(self, data: Any, mode: Literal["text", "binary"] = "text") -> None:
         """Sends the given data as JSON.
@@ -160,17 +148,17 @@ class WebSocketTestSession:
         """
         self.send(encode_msgpack(data), mode="binary")
 
-    def close(self, code: int = WS_1000_NORMAL_CLOSURE) -> None:
+    def close(self, code: int = WS_1000_NORMAL_CLOSURE, reason: str | None = None) -> None:
         """Sends an 'websocket.disconnect' event.
 
         Args:
             code: status code for closing the connection.
+            reason: Reason for closure
 
         Returns:
             None.
         """
-        event: WebSocketDisconnectEvent = {"type": "websocket.disconnect", "code": code}
-        self.receive_queue.put(event)
+        self._portal.call(self._async_session.close, code, reason)
 
     def receive(self, block: bool = True, timeout: float | None = None) -> WebSocketSendMessage:
         """This is the base receive method.
@@ -185,17 +173,7 @@ class WebSocketTestSession:
         Returns:
             A websocket message.
         """
-        message = cast("WebSocketSendMessage", self.send_queue.get(block=block, timeout=timeout))
-
-        if isinstance(message, BaseException):
-            raise message
-
-        if message["type"] == "websocket.close":
-            raise WebSocketDisconnect(
-                detail=cast("str", message.get("reason", "")),
-                code=message.get("code", WS_1000_NORMAL_CLOSURE),
-            )
-        return message
+        return self._portal.call(self._async_session.receive, block, timeout)
 
     def receive_text(self, block: bool = True, timeout: float | None = None) -> str:
         """Receive data in ``text`` mode and return a string
@@ -207,8 +185,7 @@ class WebSocketTestSession:
         Returns:
             A string value.
         """
-        message = self.receive(block=block, timeout=timeout)
-        return cast("str", message.get("text", ""))
+        return self._portal.call(self._async_session.receive_text, block, timeout)
 
     def receive_bytes(self, block: bool = True, timeout: float | None = None) -> bytes:
         """Receive data in ``binary`` mode and return bytes
@@ -220,8 +197,7 @@ class WebSocketTestSession:
         Returns:
             A string value.
         """
-        message = self.receive(block=block, timeout=timeout)
-        return cast("bytes", message.get("bytes", b""))
+        return self._portal.call(self._async_session.receive_bytes, block, timeout)
 
     def receive_json(
         self, mode: Literal["text", "binary"] = "text", block: bool = True, timeout: float | None = None
@@ -236,13 +212,235 @@ class WebSocketTestSession:
         Returns:
             An arbitrary value
         """
-        message = self.receive(block=block, timeout=timeout)
+        return self._portal.call(self._async_session.receive_json, mode, block, timeout)
+
+    def receive_msgpack(self, block: bool = True, timeout: float | None = None) -> Any:
+        return self._portal.call(self._async_session.receive_msgpack, block, timeout)
+
+
+class AsyncWebSocketTestSession:
+    def __init__(
+        self,
+        *,
+        app: ASGIApp,
+        scope: WebSocketScope,
+        connect_timeout: float | None = None,
+        tg: anyio.abc.TaskGroup,
+    ) -> None:
+        self.scope = scope
+        self.accepted_subprotocol: str | None = None
+        self.extra_headers: list[tuple[bytes, bytes]] = []
+        self.app = app
+
+        self._tg = tg
+        self._send_stream = StapledObjectStream(*anyio.create_memory_object_stream["WebSocketSendMessage"](math.inf))
+        self._receive_stream = StapledObjectStream(
+            *anyio.create_memory_object_stream["WebSocketReceiveMessage"](math.inf)
+        )
+        self._exit_stack = contextlib.AsyncExitStack()
+        self._connect_timeout = connect_timeout
+
+    async def __aenter__(self) -> AsyncWebSocketTestSession:
+        async with contextlib.AsyncExitStack() as exit_stack:
+            cancel_scope = anyio.CancelScope()
+            app_done = await self._tg.start(self._run, cancel_scope, self._receive_stream, self._send_stream)
+
+            exit_stack.callback(cancel_scope.cancel)
+            exit_stack.push_async_callback(app_done.wait)
+            exit_stack.push_async_callback(self.close)
+
+            await self._asgi_send({"type": "websocket.connect"})
+            message = await self.receive(timeout=self._connect_timeout)
+            if message["type"] != "websocket.accept":
+                raise RuntimeError(
+                    f"Unexpected ASGI message. Expected 'websocket.accept'. Received {message['type']!r}"
+                )
+
+            self.accepted_subprotocol = message.get("subprotocol")
+            self.extra_headers = list(message.get("headers", []))
+            self._exit_stack = exit_stack.pop_all()
+        return self
+
+    async def __aexit__(
+        self,
+        exc_type: type[BaseException] | None = None,
+        exc_value: BaseException | None = None,
+        traceback: TracebackType | None = None,
+    ) -> None:
+        await self._exit_stack.__aexit__(exc_type, exc_value, traceback)
+
+    async def _run(
+        self,
+        cancel_scope: anyio.CancelScope,
+        receive_stream: StapledObjectStream,
+        send_stream: StapledObjectStream,
+        *,
+        task_status: anyio.abc.TaskStatus,
+    ) -> None:
+        app_done = anyio.Event()
+        with cancel_scope:
+            async with send_stream, receive_stream:
+                task_status.started(app_done)
+                await self.app(self.scope, receive_stream.receive, send_stream.send)
+                app_done.set()
+                await anyio.sleep_forever()
+
+    async def _asgi_send(self, message: WebSocketReceiveMessage) -> None:
+        await self._receive_stream.send(message)
+
+    async def close(self, code: int = WS_1000_NORMAL_CLOSURE, reason: str | None = None) -> None:
+        """Sends an 'websocket.disconnect' event.
+
+        Args:
+            code: status code for closing the connection.
+            reason: Reason for closure
+
+        Returns:
+            None.
+        """
+        event: WebSocketDisconnectEvent = {"type": "websocket.disconnect", "code": code, "reason": reason}
+        await self._asgi_send(event)
+
+    async def send(self, data: str | bytes, mode: Literal["text", "binary"] = "text", encoding: str = "utf-8") -> None:
+        """Sends a "receive" event. This is the inverse of the ASGI send method.
+
+        Args:
+            data: Either a string or a byte string.
+            mode: The key to use - ``text`` or ``bytes``
+            encoding: The encoding to use when encoding or decoding data.
+
+        Returns:
+            None.
+        """
+        if mode == "text":
+            data = data.decode(encoding) if isinstance(data, bytes) else data
+            text_event: WebSocketReceiveMessage = {"type": "websocket.receive", "text": data}  # type: ignore[assignment]
+            await self._asgi_send(text_event)
+        else:
+            data = data if isinstance(data, bytes) else data.encode(encoding)
+            binary_event: WebSocketReceiveMessage = {"type": "websocket.receive", "bytes": data}  # type: ignore[assignment]
+            await self._asgi_send(binary_event)
+
+    async def send_text(self, data: str, encoding: str = "utf-8") -> None:
+        """Sends the data using the ``text`` key.
+
+        Args:
+            data: Data to send.
+            encoding: Encoding to use.
+
+        Returns:
+            None
+        """
+        await self.send(data=data, encoding=encoding)
+
+    async def send_bytes(self, data: bytes, encoding: str = "utf-8") -> None:
+        """Sends the data using the ``bytes`` key.
+
+        Args:
+            data: Data to send.
+            encoding: Encoding to use.
+
+        Returns:
+            None
+        """
+        await self.send(data=data, mode="binary", encoding=encoding)
+
+    async def send_json(self, data: Any, mode: Literal["text", "binary"] = "text") -> None:
+        """Sends the given data as JSON.
+
+        Args:
+            data: The data to send.
+            mode: Either ``text`` or ``binary``
+
+        Returns:
+            None
+        """
+        await self.send(encode_json(data), mode=mode)
+
+    async def send_msgpack(self, data: Any) -> None:
+        """Sends the given data as MessagePack.
+
+        Args:
+            data: The data to send.
+
+        Returns:
+            None
+        """
+        await self.send(encode_msgpack(data), mode="binary")
+
+    async def receive(self, block: bool = True, timeout: float | None = None) -> WebSocketSendMessage:
+        """This is the base receive method.
+
+        Args:
+            block: Block until a message is received
+            timeout: If ``block`` is ``True``, block at most ``timeout`` seconds
+
+        Notes:
+            - you can use one of the other receive methods to extract the data from the message.
+
+        Returns:
+            A websocket message.
+        """
+        message: WebSocketSendMessage
+        if not block:
+            message = cast("MemoryObjectReceiveStream", self._send_stream.receive_stream).receive_nowait()
+        else:
+            with anyio.fail_after(timeout):
+                message = await self._send_stream.receive()
+
+        if message["type"] == "websocket.close":
+            raise WebSocketDisconnect(
+                detail=cast("str", message.get("reason", "")),
+                code=message.get("code", WS_1000_NORMAL_CLOSURE),
+            )
+        return message
+
+    async def receive_text(self, block: bool = True, timeout: float | None = None) -> str:
+        """Receive data in ``text`` mode and return a string
+
+        Args:
+            block: Block until a message is received
+            timeout: If ``block`` is ``True``, block at most ``timeout`` seconds
+
+        Returns:
+            A string value.
+        """
+        message = await self.receive(block=block, timeout=timeout)
+        return cast("str", message.get("text", ""))
+
+    async def receive_bytes(self, block: bool = True, timeout: float | None = None) -> bytes:
+        """Receive data in ``binary`` mode and return bytes
+
+        Args:
+            block: Block until a message is received
+            timeout: If ``block`` is ``True``, block at most ``timeout`` seconds
+
+        Returns:
+            A string value.
+        """
+        message = await self.receive(block=block, timeout=timeout)
+        return cast("bytes", message.get("bytes", b""))
+
+    async def receive_json(
+        self, mode: Literal["text", "binary"] = "text", block: bool = True, timeout: float | None = None
+    ) -> Any:
+        """Receive data in either ``text`` or ``binary`` mode and decode it as JSON.
+
+        Args:
+            mode: Either ``text`` or ``binary``
+            block: Block until a message is received
+            timeout: If ``block`` is ``True``, block at most ``timeout`` seconds
+
+        Returns:
+            An arbitrary value
+        """
+        message = await self.receive(block=block, timeout=timeout)
 
         if mode == "text":
             return decode_json(cast("str", message.get("text", "")))
 
         return decode_json(cast("bytes", message.get("bytes", b"")))
 
-    def receive_msgpack(self, block: bool = True, timeout: float | None = None) -> Any:
-        message = self.receive(block=block, timeout=timeout)
+    async def receive_msgpack(self, block: bool = True, timeout: float | None = None) -> Any:
+        message = await self.receive(block=block, timeout=timeout)
         return decode_msgpack(cast("bytes", message.get("bytes", b"")))

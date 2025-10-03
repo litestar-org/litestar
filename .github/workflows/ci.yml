@@ -106,7 +106,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Report success or fail
-        run: exit ${{ needs.test.result == 'success' && '0' || '1' }}
+        run: |
+          echo "test workflow exited with ${{ needs.test.result }}"
+          exit ${{ needs.test.result == 'success' && '0' || '1' }}
 
   test_typing_extensions:
     runs-on: ubuntu-latest

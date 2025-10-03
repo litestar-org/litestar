@@ -100,7 +100,10 @@ async def websocket_route_handler(socket: WebSocket[User, Auth, Any]) -> None:
 def test_authentication_middleware_websocket_routes() -> None:
     token = "abc"
     client = create_test_client(route_handlers=websocket_route_handler, middleware=[AuthMiddleware])
-    with pytest.raises(WebSocketDisconnect), client.websocket_connect("/", headers={"Authorization": token}) as ws:
+    with (
+        pytest.RaisesGroup(pytest.RaisesExc(WebSocketDisconnect)),
+        client.websocket_connect("/", headers={"Authorization": token}) as ws,
+    ):
         assert ws.receive_json()
     state[token] = AuthenticationResult(user=user, auth=auth)
     with client.websocket_connect("/", headers={"Authorization": token}) as ws:
@@ -114,7 +117,10 @@ def test_authentication_middleware_not_installed_raises_for_user_scope_websocket
         assert isinstance(socket.user, User)
 
     client = create_test_client(route_handlers=route_handler)
-    with pytest.raises(WebSocketDisconnect), client.websocket_connect("/", headers={"Authorization": "yep"}) as ws:
+    with (
+        pytest.RaisesGroup(pytest.RaisesExc(WebSocketDisconnect)),
+        client.websocket_connect("/", headers={"Authorization": "yep"}) as ws,
+    ):
         ws.receive_json()
 
 
@@ -125,7 +131,10 @@ def test_authentication_middleware_not_installed_raises_for_auth_scope_websocket
         assert isinstance(socket.auth, Auth)
 
     client = create_test_client(route_handlers=route_handler)
-    with pytest.raises(WebSocketDisconnect), client.websocket_connect("/", headers={"Authorization": "yep"}) as ws:
+    with (
+        pytest.RaisesGroup(pytest.RaisesExc(WebSocketDisconnect)),
+        client.websocket_connect("/", headers={"Authorization": "yep"}) as ws,
+    ):
         ws.receive_json()
 
 

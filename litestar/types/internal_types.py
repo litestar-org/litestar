@@ -2,8 +2,6 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, Callable, Literal, NamedTuple
 
-from litestar.utils.deprecation import warn_deprecation
-
 __all__ = (
     "ControllerRouterHandler",
     "PathParameterDefinition",
@@ -16,7 +14,6 @@ __all__ = (
 if TYPE_CHECKING:
     from typing_extensions import TypeAlias
 
-    from litestar.app import Litestar
     from litestar.controller import Controller
     from litestar.handlers import BaseRouteHandler
     from litestar.handlers.asgi_handlers import ASGIRouteHandler
@@ -34,9 +31,6 @@ ControllerRouterHandler: TypeAlias = "type[Controller] | RouteHandlerType | Rout
 RouteHandlerMapItem: TypeAlias = 'dict[Method | Literal["websocket", "asgi"], BaseRouteHandler]'
 TemplateConfigType: TypeAlias = "TemplateConfig[EngineType]"
 
-# deprecated
-_LitestarType: TypeAlias = "Litestar"
-
 
 class PathParameterDefinition(NamedTuple):
     """Path parameter tuple."""
@@ -45,16 +39,3 @@ class PathParameterDefinition(NamedTuple):
     full: str
     type: type
     parser: Callable[[str], Any] | None
-
-
-def __getattr__(name: str) -> Any:
-    if name == "LitestarType":
-        warn_deprecation(
-            "2.2.1",
-            "LitestarType",
-            "import",
-            removal_in="3.0.0",
-            alternative="Litestar",
-        )
-        return _LitestarType
-    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")

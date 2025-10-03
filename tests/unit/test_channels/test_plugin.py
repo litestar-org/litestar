@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import asyncio
-import time
 from secrets import token_hex
 from typing import cast
 from unittest.mock import AsyncMock, MagicMock
@@ -15,7 +14,7 @@ from litestar.channels import ChannelsBackend, ChannelsPlugin
 from litestar.channels.backends.memory import MemoryChannelsBackend
 from litestar.channels.subscriber import BacklogStrategy
 from litestar.exceptions import ImproperlyConfiguredException, LitestarException
-from litestar.testing import TestClient, create_test_client
+from litestar.testing import AsyncTestClient, TestClient, create_test_client
 from litestar.types.asgi_types import WebSocketMode
 from tests.unit.test_channels.util import get_from_stream
 
@@ -154,8 +153,8 @@ async def test_ws_route_handlers_receive_arbitrary_message(channels_backend: Cha
         assert ws.receive_json(timeout=2) == ["foo"]
 
 
-@pytest.mark.flaky(reruns=15)
-def test_create_ws_route_handlers_arbitrary_channels_allowed(channels_backend: ChannelsBackend) -> None:
+@pytest.mark.flaky(reruns=5)
+async def test_create_ws_route_handlers_arbitrary_channels_allowed(channels_backend: ChannelsBackend) -> None:
     channels_plugin = ChannelsPlugin(
         backend=channels_backend,
         arbitrary_channels_allowed=True,
@@ -165,16 +164,17 @@ def test_create_ws_route_handlers_arbitrary_channels_allowed(channels_backend: C
 
     app = Litestar(plugins=[channels_plugin])
 
-    with TestClient(app) as client:
-        with client.websocket_connect("/ws/foo") as ws:
-            channels_plugin.publish("something", "foo")
-            assert ws.receive_text(timeout=2) == "something"
+    async with AsyncTestClient(app) as client:
+        async with await client.websocket_connect("/ws/foo") as ws:
+            await asyncio.sleep(0.1)
+            await channels_plugin.wait_published("something", "foo")
+            assert await ws.receive_text(timeout=2) == "something"
 
-        time.sleep(0.4)
+        async with await client.websocket_connect("/ws/bar") as ws:
+            await asyncio.sleep(0.1)
 
-        with client.websocket_connect("/ws/bar") as ws:
-            channels_plugin.publish("something else", "bar")
-            assert ws.receive_text(timeout=2) == "something else"
+            await channels_plugin.wait_published("something else", "bar")
+            assert await ws.receive_text(timeout=2) == "something else"
 
 
 @pytest.mark.parametrize("arbitrary_channels_allowed", [True, False])
@@ -419,4 +419,32 @@ async def test_shutdown_idempotent(memory_backend: MemoryChannelsBackend) -> Non
     await plugin._on_startup()
 
     await plugin._on_shutdown()
+    await plugin._on_shutdown()
+
+
+async def test_startup_shutdown_cycle(memory_backend: MemoryChannelsBackend) -> None:
+    plugin = ChannelsPlugin(backend=memory_backend, arbitrary_channels_allowed=True)
+
+    for _ in range(3):
+        await plugin._on_startup()
+
+        subscriber = await plugin.subscribe("test_channel")
+        await plugin.wait_published(b"test_message", "test_channel")
+
+        messages = await get_from_stream(subscriber, 1)
+        assert messages == [b"test_message"]
+
+        await plugin.unsubscribe(subscriber)
+        await plugin._on_shutdown()
+
+    await plugin._on_shutdown()
+    await plugin._on_shutdown()
+
+    await plugin._on_startup()
+    subscriber = await plugin.subscribe("final_test")
+    await plugin.wait_published(b"final_message", "final_test")
+
+    messages = await get_from_stream(subscriber, 1)
+    assert messages == [b"final_message"]
+
     await plugin._on_shutdown()

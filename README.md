@@ -96,7 +96,6 @@ litestar run
 - [Life Cycle Hooks](#request-life-cycle-hooks)
 - [Route Guards based Authorization](#route-guards)
 - Support for `dataclasses`, `TypedDict`, [`msgspec`](https://jcristharif.com/msgspec/), [pydantic version 1 and version 2 (even within the same application)](https://docs.pydantic.dev/latest/) and [(c)attrs](https://catt.rs/en/stable/)
-  [msgspec](https://github.com/jcrist/msgspec) and [attrs](https://www.attrs.org/en/stable/)
 - Layered parameter declaration
 - Support for [RFC 9457](https://datatracker.ietf.org/doc/html/rfc9457) standardized "Problem Detail" error responses
 - [Automatic API documentation with](#redoc-swagger-ui-and-stoplight-elements-api-documentation):
@@ -133,7 +132,7 @@ A **huge** thanks to our sponsors:
 <a href="https://github.com/scalar/scalar/?utm_source=litestar&utm_medium=website&utm_campaign=main-badge" target="_blank" title="Scalar.com - Document, Discover and Test APIs with Scalar."><img src="https://raw.githubusercontent.com/litestar-org/branding/main/assets/sponsors/scalar.svg" width="180" alt="Scalar.com"></a>
 <a href="https://telemetrysports.com/" title="Telemetry Sports - Changing the way data influences the sports experience"><img src="https://raw.githubusercontent.com/litestar-org/branding/main/assets/sponsors/telemetry-sports/unofficial-telemetry-whitebg.svg" width="150" alt="Telemetry Sports"></a>
 
-<a href="https://docs.litestar.dev/dev/#sponsors" class="external-link" target="_blank">Check out our sponsors in the docs</a>
+<a href="https://docs.litestar.dev/latest/#sponsors" class="external-link" target="_blank">Check out our sponsors in the docs</a>
 
 If you would like to support the work that we do please consider [becoming a sponsor][sponsor-polar]
 via [Polar.sh][sponsor-polar] (preferred), [GitHub][sponsor-github] or [Open Collective][sponsor-oc].
@@ -266,7 +265,7 @@ Litestar supports typical ASGI middleware and ships with middlewares to handle t
 - CORS
 - CSRF
 - Rate limiting
-- GZip and Brotli compression
+- GZip, Brotli, and Zstd compression
 - Client- and server-side sessions
 
 ### Route Guards
@@ -601,6 +600,7 @@ see [the contribution guide](CONTRIBUTING.rst).
       <td align="center" valign="top" width="14.28%"><a href="https://jannchie.com"><img src="https://avatars.githubusercontent.com/u/29743310?v=4?s=100" width="100px;" alt="Jianqi Pan"/><br /><sub><b>Jianqi Pan</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=Jannchie" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/PokkaKiyo"><img src="https://avatars.githubusercontent.com/u/31039465?v=4?s=100" width="100px;" alt="PokkaKiyo"/><br /><sub><b>PokkaKiyo</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=PokkaKiyo" title="Tests">⚠️</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/s-aleshin"><img src="https://avatars.githubusercontent.com/u/66841202?v=4?s=100" width="100px;" alt="Sergei Aleshin"/><br /><sub><b>Sergei Aleshin</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=s-aleshin" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/IDrokin117"><img src="https://avatars.githubusercontent.com/u/41319097?v=4?s=100" width="100px;" alt="Igor Drokin"/><br /><sub><b>Igor Drokin</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=IDrokin117" title="Code">💻</a> <a href="https://github.com/litestar-org/litestar/commits?author=IDrokin117" title="Tests">⚠️</a> <a href="https://github.com/litestar-org/litestar/commits?author=IDrokin117" title="Documentation">📖</a></td>
     </tr>
   </tbody>
 </table>

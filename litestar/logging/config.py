@@ -10,7 +10,7 @@ from typing import TYPE_CHECKING, Any, Callable, Literal, Union, cast
 from litestar.exceptions import ImproperlyConfiguredException, MissingDependencyException
 from litestar.serialization.msgspec_hooks import _msgspec_json_encoder
 from litestar.utils.dataclass import simple_asdict
-from litestar.utils.deprecation import deprecated, warn_deprecation
+from litestar.utils.deprecation import deprecated
 
 __all__ = ("BaseLoggingConfig", "LoggingConfig", "StructLoggingConfig")
 
@@ -107,29 +107,15 @@ def _get_default_handlers(logging_module: str) -> dict[str, dict[str, Any]]:
     return default_handlers
 
 
-def _default_exception_logging_handler_factory(
-    is_struct_logger: bool,
-    traceback_line_limit: int,
-) -> ExceptionLoggingHandler:
+def _default_exception_logging_handler_factory(is_struct_logger: bool) -> ExceptionLoggingHandler:
     """Create an exception logging handler function.
 
     Args:
         is_struct_logger: Whether the logger is a structlog instance.
-        traceback_line_limit: Maximal number of lines to log from the
-            traceback. This parameter is deprecated and ignored.
 
     Returns:
         An exception logging handler.
     """
-
-    if traceback_line_limit != -1:
-        warn_deprecation(
-            version="2.9.0",
-            deprecated_name="traceback_line_limit",
-            kind="parameter",
-            info="The value is ignored. Use a custom 'exception_logging_handler' instead.",
-            removal_in="3.0",
-        )
 
     if is_struct_logger:
 
@@ -155,16 +141,11 @@ def _default_exception_logging_handler_factory(
 class BaseLoggingConfig(ABC):
     """Abstract class that should be extended by logging configs."""
 
-    __slots__ = ("exception_logging_handler", "log_exceptions", "traceback_line_limit")
+    __slots__ = ("exception_logging_handler", "log_exceptions")
 
     log_exceptions: Literal["always", "debug", "never"]
     """Should exceptions be logged, defaults to log exceptions when ``app.debug == True``'"""
-    traceback_line_limit: int
-    """Max number of lines to print for exception traceback.
 
-    .. deprecated:: 2.9.0
-        This parameter is deprecated and ignored. It will be removed in a future release.
-    """
     exception_logging_handler: ExceptionLoggingHandler | None
     """Handler function for logging exceptions."""
     disable_stack_trace: set[Union[int, type[Exception]]]  # noqa: UP007
@@ -248,12 +229,6 @@ class LoggingConfig(BaseLoggingConfig):
     """Should exceptions be logged, defaults to log exceptions when 'app.debug == True'"""
     disable_stack_trace: set[Union[int, type[Exception]]] = field(default_factory=set)  # noqa: UP007
     """Set of http status codes and exceptions to disable stack trace logging for."""
-    traceback_line_limit: int = field(default=-1)
-    """Max number of lines to print for exception traceback.
-
-    .. deprecated:: 2.9.0
-        This parameter is deprecated and ignored. It will be removed in a future release.
-    """
     exception_logging_handler: ExceptionLoggingHandler | None = field(default=None)
     """Handler function for logging exceptions."""
 
@@ -271,9 +246,7 @@ class LoggingConfig(BaseLoggingConfig):
             self.loggers["litestar"] = _get_default_loggers()["litestar"]
 
         if self.log_exceptions != "never" and self.exception_logging_handler is None:
-            self.exception_logging_handler = _default_exception_logging_handler_factory(
-                is_struct_logger=False, traceback_line_limit=self.traceback_line_limit
-            )
+            self.exception_logging_handler = _default_exception_logging_handler_factory(is_struct_logger=False)
 
     def configure(self) -> GetLogger:
         """Return logger with the given configuration.
@@ -288,7 +261,6 @@ class LoggingConfig(BaseLoggingConfig):
             "exception_logging_handler",
             "log_exceptions",
             "propagate",
-            "traceback_line_limit",
             "disable_stack_trace",
         }
 
@@ -483,12 +455,6 @@ class StructLoggingConfig(BaseLoggingConfig):
     """Should exceptions be logged, defaults to log exceptions when 'app.debug == True'"""
     disable_stack_trace: set[Union[int, type[Exception]]] = field(default_factory=set)  # noqa: UP007
     """Set of http status codes and exceptions to disable stack trace logging for."""
-    traceback_line_limit: int = field(default=-1)
-    """Max number of lines to print for exception traceback.
-
-    .. deprecated:: 2.9.0
-        This parameter is deprecated and ignored. It will be removed in a future release.
-    """
     exception_logging_handler: ExceptionLoggingHandler | None = field(default=None)
     """Handler function for logging exceptions."""
     pretty_print_tty: bool = field(default=True)
@@ -500,9 +466,7 @@ class StructLoggingConfig(BaseLoggingConfig):
         if self.logger_factory is None:
             self.logger_factory = default_logger_factory(as_json=self.as_json())
         if self.log_exceptions != "never" and self.exception_logging_handler is None:
-            self.exception_logging_handler = _default_exception_logging_handler_factory(
-                is_struct_logger=True, traceback_line_limit=self.traceback_line_limit
-            )
+            self.exception_logging_handler = _default_exception_logging_handler_factory(is_struct_logger=True)
         try:
             import structlog
 
@@ -540,7 +504,6 @@ class StructLoggingConfig(BaseLoggingConfig):
                 not in (
                     "standard_lib_logging_config",
                     "log_exceptions",
-                    "traceback_line_limit",
                     "exception_logging_handler",
                     "pretty_print_tty",
                     "disable_stack_trace",

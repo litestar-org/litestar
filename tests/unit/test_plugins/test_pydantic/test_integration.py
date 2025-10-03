@@ -7,6 +7,7 @@ from pydantic import v1 as pydantic_v1
 
 from litestar import get, post
 from litestar.enums import RequestEncodingType
+from litestar.openapi.spec import Schema
 from litestar.params import Body, Parameter
 from litestar.plugins.pydantic import PydanticDTO, PydanticInitPlugin, PydanticPlugin
 from litestar.status_codes import HTTP_400_BAD_REQUEST
@@ -404,8 +405,8 @@ def test_model_defaults(pydantic_version: PydanticVersion) -> None:
         assert res.status_code == 201
         assert res.json() == {"a": 5, "b": 1, "c": 3}
         assert schema.required == ["a"]
-        assert schema.properties["b"].default == 1
-        assert schema.properties["c"].default is None
+        assert schema.properties["b"].default == 1  # type: ignore[union-attr, index]
+        assert schema.properties["c"].default is None  # type: ignore[index, union-attr]
 
 
 @pytest.mark.parametrize("with_dto", [True, False])
@@ -432,7 +433,26 @@ def test_v2_computed_fields(with_dto: bool) -> None:
     with create_test_client([handler]) as client:
         schema = client.app.openapi_schema.components.schemas[component_name]
         res = client.get("/")
-        assert list(schema.properties.keys()) == ["foo", "bar", "baz"]
-        assert schema.properties["baz"].title == "this is computed"
-        assert schema.properties["baz"].examples == [1]
+        assert isinstance(schema, Schema)
+        assert list(schema.properties.keys()) == ["foo", "bar", "baz"]  # type: ignore[union-attr]
+        assert schema.properties["baz"].title == "this is computed"  # type: ignore[union-attr, index]
+        assert schema.properties["baz"].examples == [1]  # type: ignore[union-attr, index]
         assert res.json() == {"foo": 1, "bar": 2, "baz": 3}
+
+
+def test_pydantic_v2_round_trip() -> None:
+    class Submodel(pydantic_v2.BaseModel):
+        bar: str
+        baz: list[int]
+
+    class Model(pydantic_v2.BaseModel):
+        foo: pydantic_v2.Json[Submodel]
+
+    resp = '{"bar":"abc","baz":[1,2,3]}'
+
+    @get("/")
+    async def handler() -> Model:
+        return Model(foo=resp)  # type: ignore[arg-type] # pyright: ignore[reportArgumentType]
+
+    with create_test_client([handler], plugins=[PydanticPlugin(round_trip=True)]) as client:
+        assert client.get("/").json() == {"foo": resp}
