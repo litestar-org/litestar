@@ -1,4 +1,4 @@
-# ruff: noqa: TC004, F401
+# ruff: noqa: F401, PLC0415
 # pyright: reportUnusedImport=false
 from __future__ import annotations
 
@@ -6,7 +6,6 @@ from typing import TYPE_CHECKING
 
 from litestar.utils import warn_deprecation
 
-# Module-level deprecation warning
 warn_deprecation(
     deprecated_name="litestar.plugins.sqlalchemy",
     version="2.18.0",
