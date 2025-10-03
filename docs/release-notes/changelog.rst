@@ -206,3 +206,31 @@
 
         Now, in the OpenAPI schema, ``pydantic`` fields with ``default_factory`` are displayed as non-null and not required.
         Previously, this fields was nullable and not required.
+
+    .. change:: Zero cost excluded middlewares
+        :type: feature
+        :breaking:
+
+        Middlewares inheriting from :class:`~litestar.middleware.base.ASGIMiddleware`
+        will now have zero runtime cost when they are excluded e.g. via the ``scope`` or
+        ``exclude_opt_key`` options.
+
+        Previously, the base middleware was always being invoked for every request,
+        evaluating the exclusion criteria, and then calling the user defined middleware
+        functions. If a middleware had defined ``scopes = (ScopeType.HTTP,)``, it would
+        still be called for *every* request, regardless of the scope type. Only for
+        requests with the type ``HTTP``, it would then call the user's function.
+
+        .. note::
+            This behaviour is still true for the legacy ``AbstractMiddleware``
+
+        With *zero cost exclusion*, the exclusion is being evaluated statically. At app
+        creation time, when route handlers are registered and their middleware stacks
+        are being built, a middleware that is to be excluded will simply not be included
+        in the stack.
+
+        .. note::
+            Even though this change is marked as breaking, no runtime behaviour
+            difference is expected. Some test cases may break though if they relied on
+            the fact that the middleware wrapper created by ``ASGIMiddleware`` was
+            always being called
