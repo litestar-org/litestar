@@ -17,7 +17,7 @@ You can use various tools to manage multiple Python versions on your system incl
 * `asdf <https://asdf-vm.com/>`_
 * `Building each version manually from source <https://www.build-python-from-source.com/>`_
 * Utilizing `GitHub Codespaces <https://codespaces.new/litestar-org/litestar?quickstart=1>`_
-* Using `uv <https://docs.astral.sh/uv/guides/install-python/>`_ built-in Python version management.
+* Using `uv built-in <https://docs.astral.sh/uv/guides/install-python/>`_ Python version management.
 
 We use the lowest supported version in our type-checking CI,
 this ensures that the changes you made are backward compatible.
