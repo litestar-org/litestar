@@ -95,6 +95,17 @@
 
         Existing code still using ``encoded_headers`` should be migrated to using the ``headers`` parameter instead.
 
+    .. change:: Remove deprecated ``litestar.contrib.htmx`` module
+        :type: feature
+        :breaking:
+        :pr: 4316
+        :issue: 4303
+
+        Remove the deprecated ``litestar.contrib.htmx`` module. Code still using imports
+        from this module should switch to using ``litestar_htmx``.
+
+        Install it via ``litestar[htmx]`` extra.
+
     .. change:: Remove deprecated ``LitestarType``
         :type: feature
         :pr: 4312
