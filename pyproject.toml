@@ -185,6 +185,7 @@ dev = [
   "daphne>=4.0.0",
   "opentelemetry-sdk",
   "httpx-sse",
+  "ipython",
 ]
 
 docs = [

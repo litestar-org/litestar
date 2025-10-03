@@ -51,3 +51,4 @@ litestar_group.add_command(core.routes_command)  # pyright: ignore
 litestar_group.add_command(core.version_command)  # pyright: ignore
 litestar_group.add_command(sessions.sessions_group)  # pyright: ignore
 litestar_group.add_command(schema.schema_group)  # pyright: ignore
+litestar_group.add_command(core.shell_command)  # pyright: ignore

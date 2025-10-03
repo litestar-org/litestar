@@ -1,12 +1,13 @@
 from __future__ import annotations
 
+import importlib.resources
 import inspect
 import multiprocessing
 import os
 import subprocess
 import sys
 from contextlib import AbstractContextManager, ExitStack, contextmanager
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Literal
 
 try:
     import rich_click as click
@@ -21,6 +22,7 @@ from litestar.cli._utils import (
     console,
     create_ssl_files,
     isatty,
+    populate_repl_globals,
     remove_default_schema_routes,
     remove_routes_with_patterns,
     show_app_info,
@@ -365,3 +367,86 @@ class _RouteTree(Tree):
                     branch.add(" ".join([f"[green]{path}[green]", *handler_info]))
             else:
                 branch.add(" ".join(handler_info))
+
+
+def _autoselect_repl_module() -> Literal["repl", "asyncio", "ipython"]:
+    import importlib.util
+
+    if importlib.util.find_spec("IPython"):
+        return "ipython"
+
+    if sys.version_info >= (3, 13):
+        return "asyncio"
+
+    return "repl"
+
+
+@click.command(name="shell")
+@click.option(
+    "--repl",
+    default=None,
+    type=click.Choice(("repl", "asyncio", "ipython")),
+    envvar="LITESTAR_REPL",
+    required=False,
+    help="Start a Python shell with the Litestar application and other values provided by plugins preloaded",
+)
+def shell_command(
+    app: Litestar,
+    repl: Literal["repl", "asyncio", "ipython"] | None = None,
+) -> None:  # pragma: no cover
+    if repl is None:
+        repl = _autoselect_repl_module()
+        click.secho(f"Starting Litestar shell using autoselected REPL {repl!r}", fg="blue")
+
+    if repl == "asyncio":
+        if sys.version_info < (3, 13):
+            click.secho("Litestar shell using the asyncio REPL requires Python 3.13 or greater", fg="red")
+            click.secho(
+                "To use the Litestar shell with an async REPL in this version of Python, y"
+                "ou can install Litestar with the 'ipython' extra (litestar[ipython]) "
+                "and then select ipython as the repl, either by starting he Litestar "
+                "shell with 'litestar shell --repl=ipython' or setting the "
+                "'LITESTAR_REPL=ipython' environment variable",
+                fg="blue",
+            )
+            quit(1)
+
+        # since it's currently not possible to customise e.g. the namespace of the
+        # asyncio REPL, we have to get a bit creative here
+
+        if "PYTHONSTARTUP" in os.environ:  # type: ignore[unreachable]
+            click.secho(
+                "Cannot run Litestar shell with asyncio REPL when PYTHONSTARTUP is "
+                "set. PYTHONSTARTUP is currently set to "
+                f"{os.environ['PYTHONSTARTUP']!r}. Either unset PYTHONSTARTUP or use a "
+                "different REPL ('repl' or 'ipython').",
+                fg="red",
+            )
+
+        subprocess.run(  # noqa: S603
+            [sys.executable, "-m", "asyncio"],
+            check=False,
+            env={
+                **os.environ,
+                "PYTHONSTARTUP": str(importlib.resources.files("litestar.cli").joinpath("_shell_startup")) + ".py",
+            },
+        )
+    elif repl == "repl":
+        import code
+
+        repl_locals, banner = populate_repl_globals(app=app)
+        interpreter = code.InteractiveConsole(locals=repl_locals)
+        interpreter.interact(banner=banner)
+    elif repl == "ipython":
+        import IPython
+        from traitlets.config.loader import Config
+
+        repl_locals, banner = populate_repl_globals(app=app)
+
+        config = Config()
+        config.TerminalInteractiveShell.banner2 = banner
+
+        IPython.start_ipython(argv=[], user_ns=repl_locals, config=config)  # type: ignore[no-untyped-call]
+    else:
+        click.secho(f"Unsupported REPL {repl!r}")  # type: ignore[unreachable]
+        quit(1)
