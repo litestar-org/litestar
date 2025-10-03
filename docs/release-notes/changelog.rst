@@ -103,7 +103,7 @@
 
         Remove the deprecated ``litestar.contrib.htmx`` module. Code still using imports
         from this module should switch to using ``litestar_htmx``.
-        
+
         Install it via ``litestar[htmx]`` extra.
 
     .. change:: Remove deprecated ``LitestarType``
