@@ -9,7 +9,7 @@ Installation
 
    pip install litestar
 
-.. tip:: ``litestar[standard]`` includes commonly used extras like CLI, ``uvicorn``, and ``jinja2`` (for templating).
+.. tip:: ``litestar[standard]`` includes commonly used extras like CLI, ``uvicorn`` and ``jinja2`` (for templating).
 
 .. dropdown:: Extras
     :icon: star
