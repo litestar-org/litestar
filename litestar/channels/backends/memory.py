@@ -55,11 +55,8 @@ class MemoryChannelsBackend(ChannelsBackend):
     async def unsubscribe(self, channels: Iterable[str]) -> None:
         """Unsubscribe from ``channels``"""
         self._channels -= set(channels)
-        try:
-            for channel in channels:
-                del self._history[channel]
-        except KeyError:
-            pass
+        for channel in channels:
+            self._history.pop(channel, None)
 
     async def stream_events(self) -> AsyncGenerator[tuple[str, Any], None]:
         """Return a generator, iterating over events of subscribed channels as they become available"""
