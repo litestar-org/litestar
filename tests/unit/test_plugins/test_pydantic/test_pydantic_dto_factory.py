@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import replace
-from typing import TYPE_CHECKING, Callable, Optional
+from typing import TYPE_CHECKING, Callable
 from unittest.mock import ANY
 
 import pydantic as pydantic_v2
@@ -84,14 +84,13 @@ def expected_field_defs(int_factory: Callable[[], int]) -> list[DTOFieldDefiniti
         replace(
             DTOFieldDefinition.from_field_definition(
                 field_definition=FieldDefinition.from_kwarg(
-                    annotation=Optional[int],
+                    annotation=int,
                     name="e",
                 ),
                 model_name=ANY,
                 default_factory=int_factory,
                 dto_field=DTOField(),
             ),
-            default=None,
             metadata=ANY,
             type_wrappers=ANY,
             raw=ANY,

@@ -10,6 +10,8 @@ from typing import TYPE_CHECKING, Any, Callable, Literal, Optional
 
 from typing_extensions import Annotated, get_type_hints
 
+from typing_extensions import NotRequired
+
 from litestar.openapi.spec import Example
 from litestar.params import KwargDefinition, ParameterKwarg
 from litestar.types import Empty
@@ -450,17 +452,19 @@ def get_model_info(
     if is_v2_model:
         # extract the annotations from the FieldInfo. This allows us to skip fields
         # which have been marked as private
-        # if there's a default factory, we wrap the field in 'Optional', to signal
+        # if there's a default factory, we wrap the field in 'NotRequired', to signal
         # that it is not required
         model_annotations = {
-            k: Optional[field_info.annotation] if field_info.default_factory else field_info.annotation  # type: ignore[union-attr]
+            k: NotRequired[field_info.annotation] if field_info.default_factory else field_info.annotation  # type: ignore[union-attr]
             for k, field_info in model_fields.items()
         }
 
     else:
         # pydantic v1 requires some workarounds here
         model_annotations = {
-            k: f.outer_type_ if f.required or f.default else Optional[f.outer_type_]
+            k: f.outer_type_  # type: ignore[union-attr]
+            if f.required or f.default  # type: ignore[union-attr]
+            else (NotRequired[f.outer_type_] if f.default_factory else Optional[f.outer_type_])  # type: ignore[union-attr]
             for k, f in model.__fields__.items()  # type: ignore[union-attr]
         }
 
