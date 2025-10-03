@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import dataclasses
+from collections.abc import Sequence  # noqa: TC003
 from dataclasses import asdict, dataclass, field
 from datetime import datetime, timezone
 from typing import TYPE_CHECKING, Any, TypedDict
@@ -11,8 +12,6 @@ import msgspec
 from litestar.exceptions import ImproperlyConfiguredException, NotAuthorizedException
 
 if TYPE_CHECKING:
-    from collections.abc import Sequence
-
     from typing_extensions import Self
 
 __all__ = (
@@ -59,8 +58,8 @@ class Token:
     """Issued at - should always be current now."""
     iss: str | None = field(default=None)
     """Issuer - optional unique identifier for the issuer."""
-    aud: str | None = field(default=None)
-    """Audience - intended audience."""
+    aud: str | Sequence[str] | None = field(default=None)
+    """Audience - intended audience(s)."""
     jti: str | None = field(default=None)
     """JWT ID - a unique identifier of the JWT between different issuers."""
     extras: dict[str, Any] = field(default_factory=dict)
