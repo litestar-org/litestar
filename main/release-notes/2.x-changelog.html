@@ -265,7 +265,6 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2"><a class="reference internal" href="../reference/config.html">config</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/connection.html">connection</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/contrib/index.html">contrib</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../reference/contrib/htmx.html">HTMX</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/contrib/jinja.html">jinja</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/contrib/mako.html">mako</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/contrib/opentelemetry.html">opentelemetry</a></li>
@@ -2505,7 +2504,7 @@ used by a route handler.</p>
 </dd>
 <dt>HTMX: Missing default values for <code class="docutils literal notranslate"><span class="pre">receive</span></code> and <code class="docutils literal notranslate"><span class="pre">send</span></code> parameters of <code class="docutils literal notranslate"><span class="pre">HTMXRequest</span></code><a class="headerlink reference internal" href="#2.0.0-htmx: missing default values for" id="2.0.0-htmx: missing default values for">#</a></dt><dd><div class="changelog-change docutils container">
 <p>Add missing default values for the <code class="docutils literal notranslate"><span class="pre">receive</span></code> and <code class="docutils literal notranslate"><span class="pre">send</span></code> parameters of
-<code class="xref py py-class docutils literal notranslate"><span class="pre">HTMXRequest</span></code>.</p>
+<code class="docutils literal notranslate"><span class="pre">litestar.contrib.htmx.request.HTMXRequest</span></code>.</p>
 <p>References: <span><a class="reference external" href="https://github.com/litestar-org/litestar/pull/2145">https://github.com/litestar-org/litestar/pull/2145</a></span></p>
 </div>
 </dd>
@@ -3850,8 +3849,8 @@ in a <code class="docutils literal notranslate"><span class="pre">Controller</sp
 <h3>Features<a class="headerlink" href="#2.0.0alpha5-feature" title="Link to this heading">¶</a></h3>
 <dl>
 <dt>Pass template context to HTMX template response<a class="headerlink reference internal" href="#2.0.0alpha5-pass template context to htmx template response" id="2.0.0alpha5-pass template context to htmx template response">#</a></dt><dd><div class="changelog-change docutils container">
-<p>Pass the template context to the <code class="xref py py-class docutils literal notranslate"><span class="pre">Template</span></code> returned by
-<a class="reference internal" href="../reference/contrib/htmx.html#module-litestar.contrib.htmx.response" title="litestar.contrib.htmx.response"><code class="xref py py-class docutils literal notranslate"><span class="pre">htmx.Response</span></code></a>.</p>
+<p>Pass the template context to the <code class="docutils literal notranslate"><span class="pre">Template</span></code> returned by
+<code class="docutils literal notranslate"><span class="pre">htmx.Response</span></code>.</p>
 <p>References: <span><a class="reference external" href="https://github.com/litestar-org/litestar/pull/1488">https://github.com/litestar-org/litestar/pull/1488</a></span></p>
 </div>
 </dd>

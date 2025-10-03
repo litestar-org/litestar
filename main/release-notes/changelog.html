@@ -265,7 +265,6 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2"><a class="reference internal" href="../reference/config.html">config</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/connection.html">connection</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/contrib/index.html">contrib</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../reference/contrib/htmx.html">HTMX</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/contrib/jinja.html">jinja</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/contrib/mako.html">mako</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/contrib/opentelemetry.html">opentelemetry</a></li>
@@ -611,6 +610,13 @@ configure the CORS middleware, use <a class="reference internal" href="../refere
 </ul>
 <p>Existing code still using <code class="docutils literal notranslate"><span class="pre">encoded_headers</span></code> should be migrated to using the <code class="docutils literal notranslate"><span class="pre">headers</span></code> parameter instead.</p>
 <p>References: <span><a class="reference external" href="https://github.com/litestar-org/litestar/pull/4311">https://github.com/litestar-org/litestar/pull/4311</a></span></p>
+</div>
+</dd>
+<dt>Remove deprecated <code class="docutils literal notranslate"><span class="pre">litestar.contrib.htmx</span></code> module<a class="headerlink reference internal" href="#3.0.0-remove deprecated" id="3.0.0-remove deprecated">#</a><span class="breaking-change">breaking</span></dt><dd><div class="changelog-change docutils container">
+<p>Remove the deprecated <code class="docutils literal notranslate"><span class="pre">litestar.contrib.htmx</span></code> module. Code still using imports
+from this module should switch to using <code class="docutils literal notranslate"><span class="pre">litestar_htmx</span></code>.</p>
+<p>Install it via <code class="docutils literal notranslate"><span class="pre">litestar[htmx]</span></code> extra.</p>
+<p>References: <span><a class="reference external" href="https://github.com/litestar-org/litestar/issues/4303">https://github.com/litestar-org/litestar/issues/4303</a></span>, <span><a class="reference external" href="https://github.com/litestar-org/litestar/pull/4316">https://github.com/litestar-org/litestar/pull/4316</a></span></p>
 </div>
 </dd>
 <dt>Remove deprecated <code class="docutils literal notranslate"><span class="pre">LitestarType</span></code><a class="headerlink reference internal" href="#3.0.0-remove deprecated" id="3.0.0-remove deprecated">#</a><span class="breaking-change">breaking</span></dt><dd><div class="changelog-change docutils container">
