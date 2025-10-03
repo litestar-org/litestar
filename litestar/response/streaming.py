@@ -11,7 +11,7 @@ from litestar.enums import MediaType
 from litestar.response.base import ASGIResponse, Response
 from litestar.types.helper_types import StreamType
 from litestar.utils.helpers import get_enum_string_value
-from litestar.utils.sync import AsyncIteratorWrapper
+from litestar.utils.sync import AsyncGeneratorWrapper
 
 if TYPE_CHECKING:
     from litestar.background_tasks import BackgroundTask, BackgroundTasks
@@ -71,7 +71,7 @@ class ASGIStreamingResponse(ASGIResponse):
             status_code=status_code,
         )
         self.iterator: AsyncIterable[str | bytes] | AsyncGenerator[str | bytes, None] = (
-            iterator if isinstance(iterator, (AsyncIterable, AsyncIterator)) else AsyncIteratorWrapper(iterator)
+            iterator if isinstance(iterator, (AsyncIterable, AsyncIterator)) else AsyncGeneratorWrapper(iterator)
         )
 
     async def _listen_for_disconnect(self, cancel_scope: CancelScope, receive: Receive) -> None:
