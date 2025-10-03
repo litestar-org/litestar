@@ -1,4 +1,4 @@
-# ruff: noqa: F401, PLC0415
+# ruff: noqa: F401, PLC0415, TC004, RUF100
 # pyright: reportUnusedImport=false
 from __future__ import annotations
 
@@ -12,7 +12,7 @@ warn_deprecation(
     kind="import",
     removal_in="3.0.0",
     info="The 'litestar.plugins.sqlalchemy' module is deprecated. "
-         "Please import directly from 'advanced_alchemy.extensions.litestar' instead.",
+    "Please import directly from 'advanced_alchemy.extensions.litestar' instead.",
 )
 
 __all__ = (
