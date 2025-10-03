@@ -1,13 +1,6 @@
 Contribution Guide
 ==================
 
-.. _pipx: https://pypa.github.io/pipx/
-.. |pipx| replace:: `pipx <https://pypa.github.io/pipx/>`__
-
-.. _homebrew: https://brew.sh/
-.. |homebrew| replace:: `Homebrew <https://brew.sh/>`__
-
-
 Getting Started
 ---------------
 
@@ -24,6 +17,7 @@ You can use various tools to manage multiple Python versions on your system incl
 * `asdf <https://asdf-vm.com/>`_
 * `Building each version manually from source <https://www.build-python-from-source.com/>`_
 * Utilizing `GitHub Codespaces <https://codespaces.new/litestar-org/litestar?quickstart=1>`_
+* Using `uv <https://docs.astral.sh/uv/guides/install-python/>`_ built-in Python version management.
 
 We use the lowest supported version in our type-checking CI,
 this ensures that the changes you made are backward compatible.
@@ -61,6 +55,14 @@ the environment will bootstrap itself automatically. The steps below are for loc
 
 Code contributions
 ------------------
+
+.. important::
+    * Documentation PRs are always welcome, it's often a very good entry point to get familiar with the project.
+    * Bug fixes and small improvements are also a good way to get started, there are no shortage of small things that can be improved.
+    * The project moves fast, we're humans and may forget about your particular PR. If you feel your PR has stalled, feel free to gently nudge us.
+    * Large features or refactors may take time, please be patient, we're all volunteers and want to ensure the best possible outcome.
+    * Use LLMs intelligently, most PR automatically generated look generally bad at the moment.
+
 
 Workflow
 ++++++++
@@ -107,6 +109,7 @@ Guidelines for writing code
 - When adding a new public interface, it has to be  included in the reference documentation located in
   ``docs/reference``. If applicable, add or modify examples in the docs related to the new functionality implemented,
   following the guidelines established in `Adding examples`_.
+
 
 Writing and running tests
 +++++++++++++++++++++++++
