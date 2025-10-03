@@ -4,12 +4,12 @@ import io
 import re
 from collections.abc import AsyncGenerator, AsyncIterable, AsyncIterator, Iterable, Iterator
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, TypeVar
 
 from litestar.concurrency import sync_to_thread
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.response.streaming import Stream
-from litestar.utils import AsyncIteratorWrapper
+from litestar.utils import AsyncGeneratorWrapper
 
 if TYPE_CHECKING:
     from litestar.background_tasks import BackgroundTask, BackgroundTasks
@@ -18,11 +18,28 @@ if TYPE_CHECKING:
 _LINE_BREAK_RE = re.compile(r"\r\n|\r|\n")
 DEFAULT_SEPARATOR = "\r\n"
 
+T = TypeVar("T")
 
-class _ServerSentEventIterator(AsyncIteratorWrapper[bytes]):
+
+async def async_iterator_to_generator(
+    async_iterator: AsyncIterable[T],
+) -> AsyncGenerator[T, None]:
+    """Convert an async iterable to an async generator.
+
+    Args:
+        async_iterator: An async iterable.
+
+    Returns:
+        An async generator.
+    """
+    async for item in async_iterator:
+        yield item
+
+
+class _ServerSentEventIterator(AsyncGeneratorWrapper[bytes, None]):
     __slots__ = ("comment_message", "content_async_iterator", "event_id", "event_type", "retry_duration")
 
-    content_async_iterator: AsyncIterable[SSEData]
+    content_async_iterator: AsyncGenerator[SSEData]
 
     def __init__(
         self,
@@ -51,15 +68,17 @@ class _ServerSentEventIterator(AsyncIteratorWrapper[bytes]):
 
         super().__init__(iterator=chunks)
 
-        if not isinstance(content, (Iterator, AsyncIterator, AsyncIteratorWrapper)) and callable(content):
+        if not isinstance(content, (Iterator, AsyncIterator, AsyncGeneratorWrapper)) and callable(content):
             content = content()  # type: ignore[unreachable]
 
         if isinstance(content, (str, bytes)):
-            self.content_async_iterator = AsyncIteratorWrapper([content])
+            self.content_async_iterator = AsyncGeneratorWrapper([content])
         elif isinstance(content, (Iterable, Iterator)):
-            self.content_async_iterator = AsyncIteratorWrapper(content)
-        elif isinstance(content, (AsyncIterable, AsyncIterator, AsyncIteratorWrapper)):
+            self.content_async_iterator = AsyncGeneratorWrapper(content)
+        elif isinstance(content, (AsyncGenerator, AsyncGeneratorWrapper)):
             self.content_async_iterator = content
+        elif isinstance(content, (AsyncIterable, AsyncIterator)):
+            self.content_async_iterator = async_iterator_to_generator(content)
         else:
             raise ImproperlyConfiguredException(f"Invalid type {type(content)} for ServerSentEvent")
 
@@ -81,13 +100,16 @@ class _ServerSentEventIterator(AsyncIteratorWrapper[bytes]):
             raise ValueError from e
 
     async def _async_generator(self) -> AsyncGenerator[bytes, None]:
-        while True:
-            try:
-                yield await sync_to_thread(self._call_next)
-            except ValueError:
-                async for value in self.content_async_iterator:
-                    yield self.ensure_bytes(value, DEFAULT_SEPARATOR)
-                break
+        try:
+            while True:
+                try:
+                    yield await sync_to_thread(self._call_next)
+                except ValueError:
+                    async for value in self.content_async_iterator:
+                        yield self.ensure_bytes(value, DEFAULT_SEPARATOR)
+                    break
+        finally:
+            await self.content_async_iterator.aclose()
 
 
 @dataclass

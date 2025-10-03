@@ -96,6 +96,30 @@ async def test_various_sse_inputs(input: str, expected_events: list[HTTPXServerS
                 assert events[i].retry == expected_events[i].retry
 
 
+async def test_sse_cleanup() -> None:
+    shared_state = []
+
+    @get("/testme")
+    async def handler() -> ServerSentEvent:
+        async def numbers() -> AsyncIterator[SSEData]:
+            try:
+                yield 0
+                await anyio.sleep(5)
+                yield 1
+            finally:
+                shared_state.append(42)
+
+        return ServerSentEvent(numbers(), event_type="special", event_id="123", retry_duration=1000)
+
+    async with create_async_test_client(handler) as client:
+        async with aconnect_sse(client, "GET", f"{client.base_url}/testme") as event_source:
+            async for sse in event_source.aiter_sse():
+                assert sse.data == "0"
+                break
+
+    assert shared_state.pop() == 42
+
+
 def test_invalid_content_type_raises() -> None:
     with pytest.raises(ImproperlyConfiguredException):
         ServerSentEvent(content=object())  # type: ignore[arg-type]

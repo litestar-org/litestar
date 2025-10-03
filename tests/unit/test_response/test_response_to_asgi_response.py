@@ -24,7 +24,7 @@ from litestar.status_codes import HTTP_200_OK, HTTP_308_PERMANENT_REDIRECT
 from litestar.template.config import TemplateConfig
 from litestar.testing import RequestFactory, create_test_client
 from litestar.types import StreamType
-from litestar.utils import AsyncIteratorWrapper
+from litestar.utils import AsyncGeneratorWrapper
 
 if TYPE_CHECKING:
     from collections.abc import AsyncGenerator
@@ -61,7 +61,7 @@ class MySyncIterator:
         return str(i)
 
 
-class MyAsyncIterator(AsyncIteratorWrapper[str]):
+class MyAsyncIterator(AsyncGeneratorWrapper[str]):
     def __init__(self) -> None:
         super().__init__(iterator=MySyncIterator())
 
