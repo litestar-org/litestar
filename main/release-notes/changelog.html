@@ -470,6 +470,7 @@ data-aria-dark="Switch to auto color mode">
     <div class="sy-scrollbar sy-rside-inner px-6 xl:top-16 xl:sticky xl:pl-0 pt-6 pb-4"><div class="localtoc"><h3>On this page</h3><ul>
 <li><a class="reference internal" href="#3.0.0">3.0.0</a><ul>
 <li><a class="reference internal" href="#3.0.0-feature">Features</a></li>
+<li><a class="reference internal" href="#3.0.0-bugfix">Bugfixes</a></li>
 </ul>
 </li>
 </ul>
@@ -710,6 +711,17 @@ the fact that the middleware wrapper created by <code class="docutils literal no
 always being called</p>
 </div>
 <p>References: </p>
+</div>
+</dd>
+</dl>
+</section>
+<section id="3.0.0-bugfix">
+<h3>Bugfixes<a class="headerlink" href="#3.0.0-bugfix" title="Link to this heading">¶</a></h3>
+<dl>
+<dt>Change <code class="docutils literal notranslate"><span class="pre">Optional</span></code> to <code class="docutils literal notranslate"><span class="pre">NotRequired</span></code> for pydantic fields with <code class="docutils literal notranslate"><span class="pre">default_factory</span></code><a class="headerlink reference internal" href="#3.0.0-change" id="3.0.0-change">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Now, in the OpenAPI schema, <code class="docutils literal notranslate"><span class="pre">pydantic</span></code> fields with <code class="docutils literal notranslate"><span class="pre">default_factory</span></code> are displayed as non-null and not required.
+Previously, this fields was nullable and not required.</p>
+<p>References: <span><a class="reference external" href="https://github.com/litestar-org/litestar/issues/4294">https://github.com/litestar-org/litestar/issues/4294</a></span>, <span><a class="reference external" href="https://github.com/litestar-org/litestar/pull/4347">https://github.com/litestar-org/litestar/pull/4347</a></span></p>
 </div>
 </dd>
 </dl>
