@@ -58,7 +58,7 @@ Code contributions
 
 .. important::
     * Documentation PRs are always welcome; it's often a very good entry point to get familiar with the project.
-    * Bug fixes and small improvements are also a good way to get started, there are no shortage of small things that can be improved.
+    * Bug fixes and small improvements are also a good way to get started. There is no shortage of small things that can be improved.
     * The project moves fast, we're humans and may forget about your particular PR. If you feel your PR has stalled, feel free to gently nudge us.
     * Large features or refactors may take time, please be patient, we're all volunteers and want to ensure the best possible outcome.
     * Use LLMs intelligently, most PR automatically generated look generally bad at the moment.
