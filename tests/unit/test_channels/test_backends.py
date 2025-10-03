@@ -222,7 +222,6 @@ async def test_memory_backend_stream_before_startup_raises() -> None:
 
 
 async def test_memory_backend_unsubscribe_clears_all_history() -> None:
-    # With the fix using pop(channel, None), all channels should have their history cleared
     # https://github.com/litestar-org/litestar/issues/4386
     backend = MemoryChannelsBackend(history=10)
     await backend.on_startup()
@@ -246,6 +245,7 @@ async def test_memory_backend_unsubscribe_clears_all_history() -> None:
     # del would raise KeyError and stop, leaving "bar" and "baz" history intact
     await backend.unsubscribe(["foo", "no_history", "bar", "baz"])
 
+    # With the fix using pop(channel, None), all channels should have their history cleared
     assert len(await backend.get_history("foo")) == 0
     assert len(await backend.get_history("bar")) == 0
     assert len(await backend.get_history("baz")) == 0
