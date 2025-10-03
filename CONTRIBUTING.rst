@@ -12,12 +12,12 @@ At a minimum you will need Python 3.9 for code changes and 3.13 if you plan on d
 
 You can use various tools to manage multiple Python versions on your system including:
 
+* Using `uv built-in <https://docs.astral.sh/uv/guides/install-python/>`_ Python version management.
 * `pyenv <https://github.com/pyenv/pyenv>`_ and `pyenv-win for Windows <https://github.com/pyenv-win/pyenv-win>`_
 * `rtx / mise <https://mise.jdx.dev/>`_
 * `asdf <https://asdf-vm.com/>`_
 * `Building each version manually from source <https://www.build-python-from-source.com/>`_
 * Utilizing `GitHub Codespaces <https://codespaces.new/litestar-org/litestar?quickstart=1>`_
-* Using `uv built-in <https://docs.astral.sh/uv/guides/install-python/>`_ Python version management.
 
 We use the lowest supported version in our type-checking CI,
 this ensures that the changes you made are backward compatible.
