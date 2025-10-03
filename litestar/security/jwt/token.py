@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import dataclasses
+from collections.abc import Sequence  # noqa: TC003
 from dataclasses import asdict, dataclass, field
 from datetime import datetime, timezone
 from typing import TYPE_CHECKING, Any, Dict, Optional, Sequence, TypedDict
@@ -57,9 +58,9 @@ class Token:
     """Issued at - should always be current now."""
     iss: Optional[str] = field(default=None)  # noqa: UP045
     """Issuer - optional unique identifier for the issuer."""
-    aud: Optional[str] = field(default=None)  # noqa: UP045
+    aud: Optional[str | Sequence[str]] = field(default=None)  # noqa: UP045
     """Audience - intended audience."""
-    jti: Optional[str] = field(default=None)  # noqa: UP045
+    jti: Optional[str | Sequence[str]] = field(default=None)  # noqa: UP045
     """JWT ID - a unique identifier of the JWT between different issuers."""
     extras: Dict[str, Any] = field(default_factory=dict)  # noqa: UP006
     """Extra fields that were found on the JWT token."""
