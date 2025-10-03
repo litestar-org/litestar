@@ -234,11 +234,9 @@ def test_deprecate_exception_response_content() -> None:
 
 def test_plugins_sqlalchemy_deprecation() -> None:
     """Test that importing from litestar.plugins.sqlalchemy raises deprecation warning."""
+    from litestar.plugins import sqlalchemy  # noqa: F401
 
-    # Remove the module from sys.modules if it's already been imported
-    if "litestar.plugins.sqlalchemy" in sys.modules:
-        del sys.modules["litestar.plugins.sqlalchemy"]
-
-    # Now import it fresh and catch the warning
     with pytest.warns(DeprecationWarning, match="litestar.plugins.sqlalchemy.*3.0.0"):
-        from litestar.plugins import sqlalchemy  # noqa: F401
+        importlib.reload(sqlalchemy)
+
+
