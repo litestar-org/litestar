@@ -50,15 +50,6 @@ Installation
     :doc:`SQLAlchemy </usage/databases/sqlalchemy/index>`
         :code:`pip install litestar[sqlalchemy]`
 
-    :doc:`CLI </usage/cli>`
-        .. deprecated:: 2.1.1
-           The ``litestar`` base installation now includes the CLI dependencies and this group is no longer required
-           to use the CLI.
-           If you need the optional CLI dependencies, install the ``standard`` group instead.
-           **Will be removed in 3.0**
-
-        :code:`pip install litestar[cli]`
-
     :doc:`Jinja Templating </usage/templating>`
         :code:`pip install litestar[jinja]`
 
@@ -66,7 +57,7 @@ Installation
         :code:`pip install litestar[mako]`
 
     :ref:`Polyfactory to generate OpenAPI examples <usage/openapi/schema_generation:Generating examples>`
-        :code:`pip install litestar[structlog]`
+        :code:`pip install litestar[polyfactory]`
 
     :doc:`HTMX plugin </usage/htmx>`
         :code:`pip install litestar[htmx]`
