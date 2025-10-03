@@ -146,7 +146,7 @@ def test_v1_constrained_str_with_default_factory_does_not_generate_title() -> No
         "title"
         not in schema["components"]["schemas"][
             "test_v1_constrained_str_with_default_factory_does_not_generate_title.Model"
-        ]["properties"]["test_str"]["oneOf"][1]
+        ]["properties"]["test_str"]
     )
 
 

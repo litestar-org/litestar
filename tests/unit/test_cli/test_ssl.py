@@ -320,6 +320,7 @@ def test_arguments_passed(
             "--host=127.0.0.1",
             "--port=8000",
             "--workers=2",
+            f"--app-dir={path.parent}",
         ]
         if ssl_certfile is not None:
             expected_args.append(f"--ssl-certfile={project_path / ssl_certfile}")

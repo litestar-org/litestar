@@ -219,3 +219,35 @@ async def test_memory_backend_stream_before_startup_raises() -> None:
 
     with pytest.raises(RuntimeError):
         await asyncio.wait_for(async_next(backend.stream_events()), timeout=0.01)
+
+
+async def test_memory_backend_unsubscribe_clears_all_history() -> None:
+    # https://github.com/litestar-org/litestar/issues/4386
+    backend = MemoryChannelsBackend(history=10)
+    await backend.on_startup()
+
+    # Publish messages to create history for some channels
+    await backend.subscribe(["foo", "bar", "baz"])
+    await backend.publish(b"message1", ["foo"])
+    await backend.publish(b"message2", ["bar"])
+    await backend.publish(b"message3", ["baz"])
+
+    # Verify history exists
+    assert len(await backend.get_history("foo")) == 1
+    assert len(await backend.get_history("bar")) == 1
+    assert len(await backend.get_history("baz")) == 1
+
+    # Verify that a channel without history doesn't exist in _history dict
+    assert "no_history" not in backend._history
+
+    # Unsubscribe from channels including one that doesn't exist in _history
+    # The order matters: "no_history" doesn't exist in _history, so old code with
+    # del would raise KeyError and stop, leaving "bar" and "baz" history intact
+    await backend.unsubscribe(["foo", "no_history", "bar", "baz"])
+
+    # With the fix using pop(channel, None), all channels should have their history cleared
+    assert len(await backend.get_history("foo")) == 0
+    assert len(await backend.get_history("bar")) == 0
+    assert len(await backend.get_history("baz")) == 0
+
+    await backend.on_shutdown()

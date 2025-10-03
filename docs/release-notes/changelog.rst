@@ -95,6 +95,17 @@
 
         Existing code still using ``encoded_headers`` should be migrated to using the ``headers`` parameter instead.
 
+    .. change:: Remove deprecated ``litestar.contrib.htmx`` module
+        :type: feature
+        :breaking:
+        :pr: 4316
+        :issue: 4303
+
+        Remove the deprecated ``litestar.contrib.htmx`` module. Code still using imports
+        from this module should switch to using ``litestar_htmx``.
+
+        Install it via ``litestar[htmx]`` extra.
+
     .. change:: Remove deprecated ``LitestarType``
         :type: feature
         :pr: 4312
@@ -198,6 +209,14 @@
         Use ``litestar[piccolo]`` extra installation target
         and ``litestar_piccolo`` plugin instead:
         https://github.com/litestar-org/litestar-piccolo
+
+    .. change:: Change ``Optional`` to ``NotRequired`` for pydantic fields with ``default_factory``
+        :type: bugfix
+        :pr: 4347
+        :issue: 4294
+
+        Now, in the OpenAPI schema, ``pydantic`` fields with ``default_factory`` are displayed as non-null and not required.
+        Previously, this fields was nullable and not required.
 
     .. change:: Zero cost excluded middlewares
         :type: feature
