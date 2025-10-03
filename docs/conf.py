@@ -57,7 +57,7 @@ intersphinx_mapping = {
     "anyio": ("https://anyio.readthedocs.io/en/stable/", None),
     "multidict": ("https://multidict.aio-libs.org/en/stable/", None),
     "cryptography": ("https://cryptography.io/en/latest/", None),
-    "sqlalchemy": ("https://docs.sqlalchemy.org/en/latest/", None),
+    "sqlalchemy": ("https://docs.sqlalchemy.org/en/20/", None),
     "alembic": ("https://alembic.sqlalchemy.org/en/latest/", None),
     "click": ("https://click.palletsprojects.com/en/latest/", None),
     "redis": ("https://redis.readthedocs.io/en/stable/", None),
