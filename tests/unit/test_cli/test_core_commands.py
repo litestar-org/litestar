@@ -176,6 +176,7 @@ def test_run_command(
             f"{path.stem}:app",
             f"--host={host}",
             f"--port={port}",
+            f"--app-dir={path.parent}",
         ]
         if fd is not None:
             expected_args.append(f"--fd={fd}")
