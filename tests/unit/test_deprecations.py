@@ -1,4 +1,5 @@
 import importlib
+import sys
 
 import pytest
 
@@ -233,8 +234,6 @@ def test_deprecate_exception_response_content() -> None:
 
 def test_plugins_sqlalchemy_deprecation() -> None:
     """Test that importing from litestar.plugins.sqlalchemy raises deprecation warning."""
-    import sys
-    import warnings
 
     # Remove the module from sys.modules if it's already been imported
     if "litestar.plugins.sqlalchemy" in sys.modules:
