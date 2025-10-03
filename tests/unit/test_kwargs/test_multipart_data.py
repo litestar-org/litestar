@@ -6,7 +6,7 @@ from dataclasses import asdict, dataclass
 from os import path
 from os.path import dirname, join, realpath
 from pathlib import Path
-from typing import Any, DefaultDict, Dict, List, Optional
+from typing import Any, DefaultDict, Dict, List, Optional, Type, Union
 
 import msgspec
 import pytest
@@ -432,7 +432,7 @@ class OptionalFiles:
 
 @pytest.mark.parametrize("file_model", (Files, OptionalFiles))
 @pytest.mark.parametrize("file_count", (1, 2))
-def test_upload_multiple_files_in_model(file_count: int, file_model: type[Files | OptionalFiles]) -> None:
+def test_upload_multiple_files_in_model(file_count: int, file_model: Type[Union[Files, OptionalFiles]]) -> None:
     @post("/", signature_namespace={"file_model": file_model})
     async def handler(data: file_model = Body(media_type=RequestEncodingType.MULTI_PART)) -> None:  # type: ignore[valid-type]
         assert len(data.file_list) == file_count  # type: ignore[attr-defined]
