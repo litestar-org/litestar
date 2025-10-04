@@ -7,5 +7,3 @@ contrib
     jinja
     mako
     opentelemetry
-    piccolo
-    pydantic
