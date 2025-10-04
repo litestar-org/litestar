@@ -3614,7 +3614,7 @@
         providing support for managed synchronous and asynchronous sessions.
 
         .. note::
-            SQLAlchemy documentation was available in v2 but SQLAlchemy support was removed in v3.
+            SQLAlchemy documentation was available in v2 but SQLAlchemy support was moved into a standalone library in v3.
 
     .. change:: Attrs signature modelling
         :type: feature
