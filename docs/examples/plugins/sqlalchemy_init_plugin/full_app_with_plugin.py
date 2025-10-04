@@ -1,6 +1,7 @@
 from collections.abc import AsyncGenerator
 from typing import Optional
 
+from advanced_alchemy.extensions.litestar import SQLAlchemyAsyncConfig, SQLAlchemyPlugin
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError, NoResultFound
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -8,11 +9,6 @@ from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 from litestar import Litestar, get, post, put
 from litestar.exceptions import ClientException, NotFoundException
-from litestar.plugins.sqlalchemy import (
-    SQLAlchemyAsyncConfig,
-    SQLAlchemyInitPlugin,
-    SQLAlchemySerializationPlugin,
-)
 from litestar.status_codes import HTTP_409_CONFLICT
 
 
@@ -75,14 +71,14 @@ async def update_item(item_title: str, data: TodoItem, transaction: AsyncSession
 
 
 db_config = SQLAlchemyAsyncConfig(
-    connection_string="sqlite+aiosqlite:///todo.sqlite", metadata=Base.metadata, create_all=True
+    connection_string="sqlite+aiosqlite:///todo.sqlite",
+    metadata=Base.metadata,
+    create_all=True,
+    before_send_handler="autocommit",
 )
 
 app = Litestar(
     [get_list, add_item, update_item],
     dependencies={"transaction": provide_transaction},
-    plugins=[
-        SQLAlchemySerializationPlugin(),
-        SQLAlchemyInitPlugin(db_config),
-    ],
+    plugins=[SQLAlchemyPlugin(db_config)],
 )
