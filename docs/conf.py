@@ -154,6 +154,8 @@ nitpick_ignore = [
     (PY_ATTR, "litestar.dto.factory.DTOConfig.underscore_fields_private"),
     (PY_CLASS, "anyio.abc.BlockingPortal"),
     (PY_CLASS, "litestar.contrib.msgspec.MsgspecDTO"),
+    (PY_CLASS, "litestar.contrib.sqlalchemy.types.JsonB"),
+    (PY_CLASS, "litestar.contrib.sqlalchemy.plugins.SQLAlchemyInitPlugin"),
     (PY_CLASS, "litestar.contrib.repository.filters.NotInCollectionFilter"),
     (PY_CLASS, "litestar.contrib.repository.filters.NotInSearchFilter"),
     (PY_CLASS, "litestar.contrib.repository.filters.OnBeforeAfter"),
@@ -202,6 +204,8 @@ nitpick_ignore = [
     (PY_CLASS, "advanced_alchemy.base.UUIDAuditBase"),
     (PY_CLASS, "advanced_alchemy.base.BigIntBase"),
     (PY_CLASS, "advanced_alchemy.base.BigIntAuditBase"),
+    (PY_CLASS, "advanced_alchemy.extensions.litestar.plugins.SQLAlchemySerializationPlugin"),
+    (PY_CLASS, "advanced_alchemy.extensions.litestar.plugins.SQLAlchemyInitPlugin"),
 ]
 
 nitpick_ignore_regex = [
