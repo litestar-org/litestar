@@ -158,9 +158,6 @@ HTTP_431_REQUEST_HEADER_FIELDS_TOO_LARGE: Final = 431
 HTTP_451_UNAVAILABLE_FOR_LEGAL_REASONS: Final = 451
 """HTTP status code 'Unavailable For Legal Reasons'"""
 
-HTTP_499_CLIENT_CLOSED_REQUEST: Final = 499
-"""HTTP status code 'Client Closed Request'"""
-
 HTTP_500_INTERNAL_SERVER_ERROR: Final = 500
 """HTTP status code 'Internal Server Error'"""
 

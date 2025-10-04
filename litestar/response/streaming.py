@@ -8,7 +8,6 @@ from typing import TYPE_CHECKING, Any, Callable, TypeVar, Union
 from anyio import Event, create_task_group
 
 from litestar.enums import MediaType
-from litestar.exceptions import ClientDisconnectException
 from litestar.response.base import ASGIResponse, Response
 from litestar.types.helper_types import StreamType
 from litestar.utils.helpers import get_enum_string_value
@@ -27,6 +26,10 @@ __all__ = (
 )
 
 T = TypeVar("T")
+
+
+class ClientDisconnectError(Exception):
+    """Exception raised when the client disconnects."""
 
 
 async def async_iterator_to_generator(
@@ -130,7 +133,7 @@ class ASGIStreamingResponse(ASGIResponse):
         async for chunk in self.iterator:
             if self.disconnect_event.is_set():
                 try:
-                    await self.iterator.athrow(ClientDisconnectException)
+                    await self.iterator.athrow(ClientDisconnectError)
                 except BaseException:  # noqa: BLE001, S110
                     pass
                 finally:

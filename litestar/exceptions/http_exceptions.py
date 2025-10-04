@@ -12,14 +12,12 @@ from litestar.status_codes import (
     HTTP_405_METHOD_NOT_ALLOWED,
     HTTP_413_REQUEST_ENTITY_TOO_LARGE,
     HTTP_429_TOO_MANY_REQUESTS,
-    HTTP_499_CLIENT_CLOSED_REQUEST,
     HTTP_500_INTERNAL_SERVER_ERROR,
     HTTP_503_SERVICE_UNAVAILABLE,
 )
 from litestar.types.empty import Empty, EmptyType
 
 __all__ = (
-    "ClientDisconnectException",
     "ClientException",
     "HTTPException",
     "ImproperlyConfiguredException",
@@ -97,12 +95,6 @@ class ClientException(HTTPException):
     """Client error."""
 
     status_code: int = HTTP_400_BAD_REQUEST
-
-
-class ClientDisconnectException(HTTPException):
-    """Client disconnected from the server."""
-
-    status_code: int = HTTP_499_CLIENT_CLOSED_REQUEST
 
 
 class ValidationException(ClientException, ValueError):
