@@ -3,9 +3,9 @@ from __future__ import annotations
 import itertools
 from collections.abc import AsyncGenerator, AsyncIterable, AsyncIterator, Iterable, Iterator
 from functools import partial
-from typing import TYPE_CHECKING, Any, Callable, Union
+from typing import TYPE_CHECKING, Any, Callable, TypeVar, Union
 
-from anyio import CancelScope, create_task_group
+from anyio import Event, create_task_group
 
 from litestar.enums import MediaType
 from litestar.response.base import ASGIResponse, Response
@@ -25,11 +25,32 @@ __all__ = (
     "Stream",
 )
 
+T = TypeVar("T")
+
+
+class ClientDisconnectError(Exception):
+    """Exception raised when the client disconnects."""
+
+
+async def async_iterator_to_generator(
+    async_iterator: AsyncIterable[T],
+) -> AsyncGenerator[T, None]:
+    """Convert an async iterator or iterable to an async generator.
+
+    Args:
+        async_iterator: An async iterator or iterable.
+
+    Returns:
+        An async generator.
+    """
+    async for item in async_iterator:
+        yield item
+
 
 class ASGIStreamingResponse(ASGIResponse):
     """A streaming response."""
 
-    __slots__ = ("iterator",)
+    __slots__ = ("_original_generator", "disconnect_event", "iterator")
 
     _should_set_content_length = False
 
@@ -70,28 +91,35 @@ class ASGIStreamingResponse(ASGIResponse):
             media_type=media_type,
             status_code=status_code,
         )
-        self.iterator: AsyncIterable[str | bytes] | AsyncGenerator[str | bytes, None] = (
-            iterator if isinstance(iterator, (AsyncIterable, AsyncIterator)) else AsyncIteratorWrapper(iterator)
+
+        self.disconnect_event = Event()
+        self.iterator: AsyncGenerator[str | bytes, None]
+
+        if isinstance(iterator, (AsyncIteratorWrapper, AsyncGenerator)):
+            self.iterator = iterator
+        elif isinstance(iterator, (Iterable, Iterator)):
+            self.iterator = AsyncIteratorWrapper(iterator)
+        elif isinstance(iterator, (AsyncIterable, AsyncIterator)):
+            self.iterator = async_iterator_to_generator(iterator)
+
+        self._original_generator = (
+            iterator.content_async_iterator if hasattr(iterator, "content_async_iterator") else self.iterator  # pyright: ignore[reportAttributeAccessIssue]
         )
 
-    async def _listen_for_disconnect(self, cancel_scope: CancelScope, receive: Receive) -> None:
+    async def _listen_for_disconnect(self, receive: Receive) -> None:
         """Listen for a cancellation message, and if received - call cancel on the cancel scope.
 
         Args:
-            cancel_scope: A task group cancel scope instance.
             receive: The ASGI receive function.
 
         Returns:
             None
         """
-        if not cancel_scope.cancel_called:
-            message = await receive()
-            if message["type"] == "http.disconnect":
-                # despite the IDE warning, this is not a coroutine because anyio 3+ changed this.
-                # therefore make sure not to await this.
-                cancel_scope.cancel()
-            else:
-                await self._listen_for_disconnect(cancel_scope=cancel_scope, receive=receive)
+        while message := await receive():
+            if message["type"].endswith(".disconnect"):
+                break
+
+        self.disconnect_event.set()
 
     async def _stream(self, send: Send) -> None:
         """Send the chunks from the iterator as a stream of ASGI 'http.response.body' events.
@@ -103,6 +131,13 @@ class ASGIStreamingResponse(ASGIResponse):
             None
         """
         async for chunk in self.iterator:
+            if self.disconnect_event.is_set():
+                try:
+                    await self.iterator.athrow(ClientDisconnectError)
+                except BaseException:  # noqa: BLE001, S110
+                    pass
+                finally:
+                    break  # noqa: B012
             stream_event: HTTPResponseBodyEvent = {
                 "type": "http.response.body",
                 "body": chunk if isinstance(chunk, bytes) else chunk.encode(self.encoding),
@@ -122,10 +157,9 @@ class ASGIStreamingResponse(ASGIResponse):
         Returns:
             None
         """
-
         async with create_task_group() as task_group:
-            task_group.start_soon(partial(self._stream, send))
-            await self._listen_for_disconnect(cancel_scope=task_group.cancel_scope, receive=receive)
+            task_group.start_soon(partial(self._listen_for_disconnect, receive))
+            await self._stream(send)
 
 
 class Stream(Response[StreamType[Union[str, bytes]]]):

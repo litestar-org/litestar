@@ -8,7 +8,7 @@ from typing import TYPE_CHECKING, Any
 
 from litestar.concurrency import sync_to_thread
 from litestar.exceptions import ImproperlyConfiguredException
-from litestar.response.streaming import Stream
+from litestar.response.streaming import Stream, async_iterator_to_generator
 from litestar.utils import AsyncIteratorWrapper
 
 if TYPE_CHECKING:
@@ -19,10 +19,10 @@ _LINE_BREAK_RE = re.compile(r"\r\n|\r|\n")
 DEFAULT_SEPARATOR = "\r\n"
 
 
-class _ServerSentEventIterator(AsyncIteratorWrapper[bytes]):
+class ServerSentEventIterator(AsyncIteratorWrapper[bytes, None]):
     __slots__ = ("comment_message", "content_async_iterator", "event_id", "event_type", "retry_duration")
 
-    content_async_iterator: AsyncIterable[SSEData]
+    content_async_iterator: AsyncGenerator[SSEData]
 
     def __init__(
         self,
@@ -49,7 +49,7 @@ class _ServerSentEventIterator(AsyncIteratorWrapper[bytes]):
         if retry_duration is not None:
             chunks.append(f"retry: {retry_duration}\r\n".encode())
 
-        super().__init__(iterator=chunks)
+        super().__init__(iterable=chunks)
 
         if not isinstance(content, (Iterator, AsyncIterator, AsyncIteratorWrapper)) and callable(content):
             content = content()  # type: ignore[unreachable]
@@ -58,8 +58,10 @@ class _ServerSentEventIterator(AsyncIteratorWrapper[bytes]):
             self.content_async_iterator = AsyncIteratorWrapper([content])
         elif isinstance(content, (Iterable, Iterator)):
             self.content_async_iterator = AsyncIteratorWrapper(content)
-        elif isinstance(content, (AsyncIterable, AsyncIterator, AsyncIteratorWrapper)):
+        elif isinstance(content, (AsyncGenerator, AsyncIteratorWrapper)):
             self.content_async_iterator = content
+        elif isinstance(content, (AsyncIterable, AsyncIterator)):
+            self.content_async_iterator = async_iterator_to_generator(content)
         else:
             raise ImproperlyConfiguredException(f"Invalid type {type(content)} for ServerSentEvent")
 
@@ -162,7 +164,7 @@ class ServerSentEvent(Stream):
             comment_message: A comment message. This value is ignored by clients and is used mostly for pinging.
         """
         super().__init__(
-            content=_ServerSentEventIterator(
+            content=ServerSentEventIterator(
                 content=content,
                 event_type=event_type,
                 event_id=event_id,
