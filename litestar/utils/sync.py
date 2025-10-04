@@ -77,9 +77,14 @@ class AsyncIteratorWrapper(AsyncGenerator[T, S]):
         Args:
             iterable: A sync iterable.
         """
-        self._original_generator: Generator[T, S, None] = (
-            iterable if isinstance(iterable, Generator) else iterable_to_generator(iterable)
-        )
+        self._original_generator: Generator[T, S, None]
+
+        if isinstance(iterable, Generator):
+            self._original_generator = iterable
+        elif isinstance(iterable, AsyncIteratorWrapper):
+            self._original_generator = iterable._original_generator
+        else:
+            self._original_generator = iterable_to_generator(iterable)
 
         self.iterator = iter(iterable)
         self.generator = self._async_generator()
