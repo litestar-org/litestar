@@ -1,7 +1,8 @@
-from typing import Annotated, Any, List, Optional, Type, cast
+from typing import Any, List, Optional, Type, cast
 
-import msgspec.json
+import msgspec
 import pytest
+from typing_extensions import Annotated
 
 from litestar import (
     Controller,

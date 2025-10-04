@@ -1,4 +1,4 @@
-# ruff: noqa: UP006, UP007
+# ruff: noqa: UP006, UP007, UP045
 from __future__ import annotations
 
 from collections import defaultdict
@@ -6,7 +6,7 @@ from dataclasses import asdict, dataclass
 from os import path
 from os.path import dirname, join, realpath
 from pathlib import Path
-from typing import Any, DefaultDict, Dict, List, Optional
+from typing import Any, DefaultDict, Dict, List, Optional, Type, Union
 
 import msgspec
 import pytest
@@ -406,7 +406,7 @@ def test_upload_multiple_files(file_count: int, optional: bool) -> None:
         annotation = Optional[annotation]  # type: ignore[misc, assignment]
 
     @post("/", signature_namespace={"annotation": annotation})
-    async def handler(data: annotation = Body(media_type=RequestEncodingType.MULTI_PART)) -> None:  # pyright: ignore[reportGeneralTypeIssues]
+    async def handler(data: annotation = Body(media_type=RequestEncodingType.MULTI_PART)) -> None:  # pyright: ignore
         assert len(data) == file_count
 
         for file in data:
@@ -432,7 +432,7 @@ class OptionalFiles:
 
 @pytest.mark.parametrize("file_model", (Files, OptionalFiles))
 @pytest.mark.parametrize("file_count", (1, 2))
-def test_upload_multiple_files_in_model(file_count: int, file_model: type[Files | OptionalFiles]) -> None:
+def test_upload_multiple_files_in_model(file_count: int, file_model: Type[Union[Files, OptionalFiles]]) -> None:
     @post("/", signature_namespace={"file_model": file_model})
     async def handler(data: file_model = Body(media_type=RequestEncodingType.MULTI_PART)) -> None:  # type: ignore[valid-type]
         assert len(data.file_list) == file_count  # type: ignore[attr-defined]
@@ -516,7 +516,7 @@ def test_multipart_handling_of_optional_values() -> None:
     @post("/", signature_types=[ProductForm])
     def handler(
         data: Annotated[ProductForm, Body(media_type=RequestEncodingType.MULTI_PART)],
-    ) -> dict[str, Any]:
+    ) -> Dict[str, Any]:
         return {
             "name": data.name,
             "int_field": data.int_field,
