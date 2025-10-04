@@ -516,7 +516,7 @@ def test_multipart_handling_of_optional_values() -> None:
     @post("/", signature_types=[ProductForm])
     def handler(
         data: Annotated[ProductForm, Body(media_type=RequestEncodingType.MULTI_PART)],
-    ) -> dict[str, Any]:
+    ) -> Dict[str, Any]:
         return {
             "name": data.name,
             "int_field": data.int_field,
