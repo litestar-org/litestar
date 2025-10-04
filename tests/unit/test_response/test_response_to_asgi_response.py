@@ -63,7 +63,7 @@ class MySyncIterator:
 
 class MyAsyncIterator(AsyncIteratorWrapper[str]):
     def __init__(self) -> None:
-        super().__init__(iterable=MySyncIterator())
+        super().__init__(iterator=MySyncIterator())
 
 
 async def test_to_response_returning_litestar_response() -> None:

@@ -8,7 +8,6 @@ from typing import TYPE_CHECKING, Any, Callable, TypeVar, Union
 from anyio import Event, create_task_group
 
 from litestar.enums import MediaType
-from litestar.exceptions import ClientDisconnectException
 from litestar.response.base import ASGIResponse, Response
 from litestar.types.helper_types import StreamType
 from litestar.utils.helpers import get_enum_string_value
@@ -29,6 +28,10 @@ __all__ = (
 T = TypeVar("T")
 
 
+class ClientDisconnectError(Exception):
+    """Exception raised when the client disconnects."""
+
+
 async def async_iterator_to_generator(
     async_iterator: AsyncIterable[T],
 ) -> AsyncGenerator[T, None]:
@@ -47,7 +50,7 @@ async def async_iterator_to_generator(
 class ASGIStreamingResponse(ASGIResponse):
     """A streaming response."""
 
-    __slots__ = ("_original_generator", "disconnect_event", "iterator")
+    __slots__ = ("disconnect_event", "iterator")
 
     _should_set_content_length = False
 
@@ -90,18 +93,7 @@ class ASGIStreamingResponse(ASGIResponse):
         )
 
         self.disconnect_event = Event()
-        self.iterator: AsyncGenerator[str | bytes, None]
-
-        if isinstance(iterator, (AsyncIteratorWrapper, AsyncGenerator)):
-            self.iterator = iterator
-        elif isinstance(iterator, (Iterable, Iterator)):
-            self.iterator = AsyncIteratorWrapper(iterator)
-        elif isinstance(iterator, (AsyncIterable, AsyncIterator)):
-            self.iterator = async_iterator_to_generator(iterator)
-
-        self._original_generator = (
-            iterator.content_async_iterator if hasattr(iterator, "content_async_iterator") else self.iterator  # pyright: ignore[reportAttributeAccessIssue]
-        )
+        self.iterator = iterator if isinstance(iterator, AsyncIterable) else AsyncIteratorWrapper(iterator)
 
     async def _listen_for_disconnect(self, receive: Receive) -> None:
         """Listen for a cancellation message, and if received - call cancel on the cancel scope.
@@ -130,8 +122,11 @@ class ASGIStreamingResponse(ASGIResponse):
         async for chunk in self.iterator:
             if self.disconnect_event.is_set():
                 try:
-                    await self.iterator.athrow(ClientDisconnectException)
-                except BaseException:  # noqa: BLE001, S110
+                    if hasattr(self.iterator, "content_async_iterator"):
+                        await self.iterator.content_async_iterator.athrow(ClientDisconnectError)  # pyright: ignore[reportAttributeAccessIssue]
+                    elif isinstance(self.iterator, AsyncGenerator):
+                        await self.iterator.athrow(ClientDisconnectError)
+                except (ClientDisconnectError, StopAsyncIteration):
                     pass
                 finally:
                     break  # noqa: B012

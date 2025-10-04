@@ -19,7 +19,7 @@ _LINE_BREAK_RE = re.compile(r"\r\n|\r|\n")
 DEFAULT_SEPARATOR = "\r\n"
 
 
-class ServerSentEventIterator(AsyncIteratorWrapper[bytes, None]):
+class _ServerSentEventIterator(AsyncIteratorWrapper[bytes, None]):
     __slots__ = ("comment_message", "content_async_iterator", "event_id", "event_type", "retry_duration")
 
     content_async_iterator: AsyncGenerator[SSEData]
@@ -49,7 +49,7 @@ class ServerSentEventIterator(AsyncIteratorWrapper[bytes, None]):
         if retry_duration is not None:
             chunks.append(f"retry: {retry_duration}\r\n".encode())
 
-        super().__init__(iterable=chunks)
+        super().__init__(iterator=chunks)
 
         if not isinstance(content, (Iterator, AsyncIterator, AsyncIteratorWrapper)) and callable(content):
             content = content()  # type: ignore[unreachable]
@@ -164,7 +164,7 @@ class ServerSentEvent(Stream):
             comment_message: A comment message. This value is ignored by clients and is used mostly for pinging.
         """
         super().__init__(
-            content=ServerSentEventIterator(
+            content=_ServerSentEventIterator(
                 content=content,
                 event_type=event_type,
                 event_id=event_id,
