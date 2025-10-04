@@ -10,7 +10,6 @@ from anyio import Event, create_task_group
 from litestar.enums import MediaType
 from litestar.exceptions import ClientDisconnectException
 from litestar.response.base import ASGIResponse, Response
-from litestar.response.sse import ServerSentEventIterator
 from litestar.types.helper_types import StreamType
 from litestar.utils.helpers import get_enum_string_value
 from litestar.utils.sync import AsyncIteratorWrapper
@@ -101,7 +100,7 @@ class ASGIStreamingResponse(ASGIResponse):
             self.iterator = async_iterator_to_generator(iterator)
 
         self._original_generator = (
-            iterator.content_async_iterator if isinstance(iterator, ServerSentEventIterator) else self.iterator
+            iterator.content_async_iterator if hasattr(iterator, "content_async_iterator") else self.iterator  # pyright: ignore[reportAttributeAccessIssue]
         )
 
     async def _listen_for_disconnect(self, receive: Receive) -> None:
@@ -132,6 +131,8 @@ class ASGIStreamingResponse(ASGIResponse):
             if self.disconnect_event.is_set():
                 try:
                     await self.iterator.athrow(ClientDisconnectException)
+                except BaseException:  # noqa: BLE001, S110
+                    pass
                 finally:
                     break  # noqa: B012
             stream_event: HTTPResponseBodyEvent = {
