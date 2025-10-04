@@ -48,7 +48,7 @@ async def async_iterator_to_generator(
 class ASGIStreamingResponse(ASGIResponse):
     """A streaming response."""
 
-    __slots__ = ("_original_generator", "iterator")
+    __slots__ = ("_original_generator", "disconnect_event", "iterator")
 
     _should_set_content_length = False
 
@@ -90,6 +90,7 @@ class ASGIStreamingResponse(ASGIResponse):
             status_code=status_code,
         )
 
+        self.disconnect_event = Event()
         self.iterator: AsyncGenerator[str | bytes, None]
 
         if isinstance(iterator, (AsyncIteratorWrapper, AsyncGenerator)):
@@ -103,11 +104,10 @@ class ASGIStreamingResponse(ASGIResponse):
             iterator.content_async_iterator if isinstance(iterator, ServerSentEventIterator) else self.iterator
         )
 
-    async def _listen_for_disconnect(self, disconnect_event: Event, receive: Receive) -> None:
+    async def _listen_for_disconnect(self, receive: Receive) -> None:
         """Listen for a cancellation message, and if received - call cancel on the cancel scope.
 
         Args:
-            disconnect_event: An event to set when a disconnect message is received.
             receive: The ASGI receive function.
 
         Returns:
@@ -117,20 +117,19 @@ class ASGIStreamingResponse(ASGIResponse):
             if message["type"].endswith(".disconnect"):
                 break
 
-        disconnect_event.set()
+        self.disconnect_event.set()
 
-    async def _stream(self, disconnect_event: Event, send: Send) -> None:
+    async def _stream(self, send: Send) -> None:
         """Send the chunks from the iterator as a stream of ASGI 'http.response.body' events.
 
         Args:
-            disconnect_event: An event to check for client disconnection.
             send: The ASGI Send function.
 
         Returns:
             None
         """
         async for chunk in self.iterator:
-            if disconnect_event.is_set():
+            if self.disconnect_event.is_set():
                 try:
                     await self.iterator.athrow(ClientDisconnectException)
                 except (ClientDisconnectException, StopAsyncIteration):
@@ -154,11 +153,9 @@ class ASGIStreamingResponse(ASGIResponse):
         Returns:
             None
         """
-        disconnect_event = Event()
-
         async with create_task_group() as task_group:
-            task_group.start_soon(partial(self._listen_for_disconnect, disconnect_event, receive))
-            await self._stream(disconnect_event, send)
+            task_group.start_soon(partial(self._listen_for_disconnect, receive))
+            await self._stream(send)
 
 
 class Stream(Response[StreamType[Union[str, bytes]]]):
