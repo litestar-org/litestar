@@ -132,8 +132,8 @@ class ASGIStreamingResponse(ASGIResponse):
             if self.disconnect_event.is_set():
                 try:
                     await self.iterator.athrow(ClientDisconnectException)
-                except (ClientDisconnectException, StopAsyncIteration):
-                    break
+                finally:
+                    break  # noqa: B012
             stream_event: HTTPResponseBodyEvent = {
                 "type": "http.response.body",
                 "body": chunk if isinstance(chunk, bytes) else chunk.encode(self.encoding),
