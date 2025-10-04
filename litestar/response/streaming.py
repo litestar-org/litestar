@@ -13,7 +13,7 @@ from litestar.response.base import ASGIResponse, Response
 from litestar.response.sse import ServerSentEventIterator
 from litestar.types.helper_types import StreamType
 from litestar.utils.helpers import get_enum_string_value
-from litestar.utils.sync import AsyncGeneratorWrapper
+from litestar.utils.sync import AsyncIteratorWrapper
 
 if TYPE_CHECKING:
     from litestar.background_tasks import BackgroundTask, BackgroundTasks
@@ -92,10 +92,10 @@ class ASGIStreamingResponse(ASGIResponse):
 
         self.iterator: AsyncGenerator[str | bytes, None]
 
-        if isinstance(iterator, (AsyncGeneratorWrapper, AsyncGenerator)):
+        if isinstance(iterator, (AsyncIteratorWrapper, AsyncGenerator)):
             self.iterator = iterator
         elif isinstance(iterator, (Iterable, Iterator)):
-            self.iterator = AsyncGeneratorWrapper(iterator)
+            self.iterator = AsyncIteratorWrapper(iterator)
         elif isinstance(iterator, (AsyncIterable, AsyncIterator)):
             self.iterator = async_iterator_to_generator(iterator)
 
@@ -113,8 +113,9 @@ class ASGIStreamingResponse(ASGIResponse):
         Returns:
             None
         """
-        while (message := await receive()) and not message["type"].endswith(".disconnect"):
-            pass
+        while message := await receive():
+            if message["type"].endswith(".disconnect"):
+                break
 
         disconnect_event.set()
 

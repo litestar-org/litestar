@@ -10,13 +10,12 @@ from typing import (
 from typing_extensions import ParamSpec, TypeVar
 
 from litestar.concurrency import sync_to_thread
-from litestar.exceptions import ClientDisconnectException
 from litestar.utils.predicates import is_async_callable
 
 if TYPE_CHECKING:
     from types import TracebackType
 
-__all__ = ("AsyncCallable", "AsyncGeneratorWrapper", "ensure_async_callable", "is_async_callable")
+__all__ = ("AsyncCallable", "AsyncIteratorWrapper", "ensure_async_callable", "is_async_callable")
 
 
 P = ParamSpec("P")
@@ -33,12 +32,7 @@ def iterable_to_generator(iterator: Iterable[T]) -> Generator[T, S, None]:
     Returns:
         A generator.
     """
-    for item in iterator:
-        try:
-            yield item
-
-        except ClientDisconnectException:
-            return
+    yield from iterator
 
 
 @overload
@@ -72,10 +66,10 @@ class AsyncCallable:
         return sync_to_thread(self.func, *args, **kwargs)  # type: ignore[arg-type]
 
 
-class AsyncGeneratorWrapper(AsyncGenerator[T, S]):
+class AsyncIteratorWrapper(AsyncGenerator[T, S]):
     """Asynchronous generator, wrapping an iterable or iterator."""
 
-    __slots__ = ("_is_in_thread", "_original_iterator", "generator", "iterator")
+    __slots__ = ("_original_iterator", "generator", "iterator")
 
     def __init__(self, iterable: Iterable[T]) -> None:
         """Take a sync iterator or iterable and yields values from it asynchronously.
@@ -83,7 +77,6 @@ class AsyncGeneratorWrapper(AsyncGenerator[T, S]):
         Args:
             iterable: A sync iterable.
         """
-        self._is_in_thread = False
         self._original_generator: Generator[T, S, None] = (
             iterable if isinstance(iterable, Generator) else iterable_to_generator(iterable)
         )
@@ -92,13 +85,10 @@ class AsyncGeneratorWrapper(AsyncGenerator[T, S]):
         self.generator = self._async_generator()
 
     def _call_next(self) -> T:
-        self._is_in_thread = True
         try:
             return next(self.iterator)
         except StopIteration as e:
             raise ValueError from e
-        finally:
-            self._is_in_thread = False
 
     async def _async_generator(self) -> AsyncGenerator[T, None]:
         while True:
@@ -107,23 +97,16 @@ class AsyncGeneratorWrapper(AsyncGenerator[T, S]):
             except ValueError:
                 return
 
-    def __aiter__(self) -> AsyncGeneratorWrapper[T, S]:
+    def __aiter__(self) -> AsyncIteratorWrapper[T, S]:
         return self
 
     async def __anext__(self) -> T:
         return await self.generator.__anext__()
 
     async def aclose(self) -> None:
-        if isinstance(self._original_generator, Generator):
-            while self._is_in_thread:
-                pass
-
-            self._original_generator.close()
+        self._original_generator.close()
 
     async def asend(self, value: S) -> T:
-        while self._is_in_thread:
-            pass
-
         return self._original_generator.send(value)
 
     async def athrow(
@@ -132,9 +115,6 @@ class AsyncGeneratorWrapper(AsyncGenerator[T, S]):
         val: BaseException | object = None,
         tb: TracebackType | None = None,
     ) -> T:
-        while self._is_in_thread:
-            pass
-
         try:
             return (
                 self._original_generator.throw(typ)
