@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from collections.abc import AsyncGenerator, Awaitable, Generator, Iterable, Iterator
+from collections.abc import AsyncGenerator, Awaitable, Generator, Iterable
 from typing import (
     TYPE_CHECKING,
     Callable,
@@ -10,6 +10,7 @@ from typing import (
 from typing_extensions import ParamSpec, TypeVar
 
 from litestar.concurrency import sync_to_thread
+from litestar.exceptions import ClientDisconnectException
 from litestar.utils.predicates import is_async_callable
 
 if TYPE_CHECKING:
@@ -21,6 +22,23 @@ __all__ = ("AsyncCallable", "AsyncGeneratorWrapper", "ensure_async_callable", "i
 P = ParamSpec("P")
 T = TypeVar("T")
 S = TypeVar("S", default=None)
+
+
+def iterable_to_generator(iterator: Iterable[T]) -> Generator[T, S, None]:
+    """Convert an iterable to a generator.
+
+    Args:
+        iterator: An iterable.
+
+    Returns:
+        A generator.
+    """
+    for item in iterator:
+        try:
+            yield item
+
+        except ClientDisconnectException:
+            return
 
 
 @overload
@@ -59,15 +77,18 @@ class AsyncGeneratorWrapper(AsyncGenerator[T, S]):
 
     __slots__ = ("_is_in_thread", "_original_iterator", "generator", "iterator")
 
-    def __init__(self, iterator: Iterator[T] | Iterable[T]) -> None:
+    def __init__(self, iterable: Iterable[T]) -> None:
         """Take a sync iterator or iterable and yields values from it asynchronously.
 
         Args:
-            iterator: A sync iterator or iterable.
+            iterable: A sync iterable.
         """
         self._is_in_thread = False
-        self._original_iterator = iterator
-        self.iterator = iter(iterator)
+        self._original_generator: Generator[T, S, None] = (
+            iterable if isinstance(iterable, Generator) else iterable_to_generator(iterable)
+        )
+
+        self.iterator = iter(iterable)
         self.generator = self._async_generator()
 
     def _call_next(self) -> T:
@@ -93,14 +114,17 @@ class AsyncGeneratorWrapper(AsyncGenerator[T, S]):
         return await self.generator.__anext__()
 
     async def aclose(self) -> None:
-        if isinstance(self._original_iterator, Generator):
+        if isinstance(self._original_generator, Generator):
             while self._is_in_thread:
                 pass
 
-            self._original_iterator.close()
+            self._original_generator.close()
 
     async def asend(self, value: S) -> T:
-        raise NotImplementedError
+        while self._is_in_thread:
+            pass
+
+        return self._original_generator.send(value)
 
     async def athrow(
         self,
@@ -108,4 +132,14 @@ class AsyncGeneratorWrapper(AsyncGenerator[T, S]):
         val: BaseException | object = None,
         tb: TracebackType | None = None,
     ) -> T:
-        raise NotImplementedError
+        while self._is_in_thread:
+            pass
+
+        try:
+            return (
+                self._original_generator.throw(typ)
+                if isinstance(typ, BaseException)
+                else self._original_generator.throw(typ, val, tb)
+            )
+        except StopIteration as e:
+            raise StopAsyncIteration from e

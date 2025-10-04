@@ -4,11 +4,11 @@ import io
 import re
 from collections.abc import AsyncGenerator, AsyncIterable, AsyncIterator, Iterable, Iterator
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Any, TypeVar
+from typing import TYPE_CHECKING, Any
 
 from litestar.concurrency import sync_to_thread
 from litestar.exceptions import ImproperlyConfiguredException
-from litestar.response.streaming import Stream
+from litestar.response.streaming import Stream, async_iterator_to_generator
 from litestar.utils import AsyncGeneratorWrapper
 
 if TYPE_CHECKING:
@@ -18,25 +18,8 @@ if TYPE_CHECKING:
 _LINE_BREAK_RE = re.compile(r"\r\n|\r|\n")
 DEFAULT_SEPARATOR = "\r\n"
 
-T = TypeVar("T")
 
-
-async def async_iterator_to_generator(
-    async_iterator: AsyncIterable[T],
-) -> AsyncGenerator[T, None]:
-    """Convert an async iterable to an async generator.
-
-    Args:
-        async_iterator: An async iterable.
-
-    Returns:
-        An async generator.
-    """
-    async for item in async_iterator:
-        yield item
-
-
-class _ServerSentEventIterator(AsyncGeneratorWrapper[bytes, None]):
+class ServerSentEventIterator(AsyncGeneratorWrapper[bytes, None]):
     __slots__ = ("comment_message", "content_async_iterator", "event_id", "event_type", "retry_duration")
 
     content_async_iterator: AsyncGenerator[SSEData]
@@ -66,7 +49,7 @@ class _ServerSentEventIterator(AsyncGeneratorWrapper[bytes, None]):
         if retry_duration is not None:
             chunks.append(f"retry: {retry_duration}\r\n".encode())
 
-        super().__init__(iterator=chunks)
+        super().__init__(iterable=chunks)
 
         if not isinstance(content, (Iterator, AsyncIterator, AsyncGeneratorWrapper)) and callable(content):
             content = content()  # type: ignore[unreachable]
@@ -100,16 +83,13 @@ class _ServerSentEventIterator(AsyncGeneratorWrapper[bytes, None]):
             raise ValueError from e
 
     async def _async_generator(self) -> AsyncGenerator[bytes, None]:
-        try:
-            while True:
-                try:
-                    yield await sync_to_thread(self._call_next)
-                except ValueError:
-                    async for value in self.content_async_iterator:
-                        yield self.ensure_bytes(value, DEFAULT_SEPARATOR)
-                    break
-        finally:
-            await self.content_async_iterator.aclose()
+        while True:
+            try:
+                yield await sync_to_thread(self._call_next)
+            except ValueError:
+                async for value in self.content_async_iterator:
+                    yield self.ensure_bytes(value, DEFAULT_SEPARATOR)
+                break
 
 
 @dataclass
@@ -184,7 +164,7 @@ class ServerSentEvent(Stream):
             comment_message: A comment message. This value is ignored by clients and is used mostly for pinging.
         """
         super().__init__(
-            content=_ServerSentEventIterator(
+            content=ServerSentEventIterator(
                 content=content,
                 event_type=event_type,
                 event_id=event_id,
