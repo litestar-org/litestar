@@ -1,4 +1,4 @@
-# ruff: noqa: UP006, UP007
+# ruff: noqa: UP006, UP007, UP045
 from __future__ import annotations
 
 from collections import defaultdict
@@ -406,7 +406,7 @@ def test_upload_multiple_files(file_count: int, optional: bool) -> None:
         annotation = Optional[annotation]  # type: ignore[misc, assignment]
 
     @post("/", signature_namespace={"annotation": annotation})
-    async def handler(data: annotation = Body(media_type=RequestEncodingType.MULTI_PART)) -> None:  # pyright: ignore[reportGeneralTypeIssues]
+    async def handler(data: annotation = Body(media_type=RequestEncodingType.MULTI_PART)) -> None:  # pyright: ignore
         assert len(data) == file_count
 
         for file in data:
