@@ -1,6 +1,7 @@
 from .base_exceptions import LitestarException, LitestarWarning, MissingDependencyException, SerializationException
 from .dto_exceptions import DTOFactoryException, InvalidAnnotationException
 from .http_exceptions import (
+    ClientDisconnectException,
     ClientException,
     HTTPException,
     ImproperlyConfiguredException,
@@ -18,6 +19,7 @@ from .http_exceptions import (
 from .websocket_exceptions import WebSocketDisconnect, WebSocketException
 
 __all__ = (
+    "ClientDisconnectException",
     "ClientException",
     "DTOFactoryException",
     "HTTPException",
