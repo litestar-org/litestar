@@ -244,6 +244,25 @@ The only required configuration kwarg is ``rate_limit``, which expects a tuple c
 ``"minute"``, ``"hour"``, ``"day"``\ ) and a value for the request quota (integer).
 
 
+Using behing a proxy
+^^^^^^^^^^^^^^^^^^^^
+
+The default mode for uniquely identifiying client uses the client's address. When an
+application is running behind a proxy, that address will be the proxy's, not the "real"
+address of the end-user.
+
+While there are special headers set by proxies to retrieve the remote client's actual
+address (``X-FORWARDED-FOR``), their values should not implicitly be trusted, as any
+client is free to set them to whatever value they want. A rate-limit could easily be
+circumvented by spoofing these, and simply attaching a new, random address to each
+request.
+
+The best way to handle applications running behind a proxy is to use a middleware that
+updates the client's address in a secure way, such as uvicorn's
+`ProxyHeaderMiddleware <https://github.com/encode/uvicorn/blob/master/uvicorn/middleware/proxy_headers.py>`_
+or hypercon's `ProxyFixMiddleware <https://hypercorn.readthedocs.io/en/latest/how_to_guides/proxy_fix.html>`_ .
+
+
 Logging Middleware
 ------------------
 

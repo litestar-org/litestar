@@ -257,3 +257,49 @@ async def test_rate_limiting_works_with_cache() -> None:
 
         response = client.get("/")
         assert response.status_code == HTTP_429_TOO_MANY_REQUESTS
+
+
+def test_ignore_x_forwarded_for() -> None:
+    @get("/")
+    def handler() -> None:
+        return None
+
+    app = Litestar(
+        route_handlers=[handler],
+        middleware=[RateLimitConfig(rate_limit=("minute", 2)).middleware],
+    )
+
+    with TestClient(app=app) as client:
+        response = client.get("/")
+        assert response.status_code == HTTP_200_OK
+        response = client.get("/")
+        assert response.status_code == HTTP_200_OK
+
+        # this shouldn't have any effect
+        response = client.get("/", headers={"x-forwarded-for": "1.2.3.4"})
+        assert response.status_code == HTTP_429_TOO_MANY_REQUESTS
+
+
+def test_custom_identity_function() -> None:
+    @get("/")
+    def handler() -> None:
+        return None
+
+    def get_id_from_random_header(request: Request[Any, Any, Any]) -> str:
+        return request.headers["x-private-header"]
+
+    app = Litestar(
+        route_handlers=[handler],
+        middleware=[
+            RateLimitConfig(rate_limit=("minute", 2), identifier_for_request=get_id_from_random_header).middleware
+        ],
+    )
+
+    with TestClient(app=app) as client:
+        response = client.get("/", headers={"x-private-header": "value"})
+        assert response.status_code == HTTP_200_OK
+        response = client.get("/", headers={"x-private-header": "value"})
+        assert response.status_code == HTTP_200_OK
+
+        response = client.get("/", headers={"x-private-header": "value"})
+        assert response.status_code == HTTP_429_TOO_MANY_REQUESTS
