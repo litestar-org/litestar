@@ -163,7 +163,7 @@ docs = [
 ]
 linting = [
   "ruff>=0.2.1",
-  "mypy",
+  "mypy<1.17.0", # 1.17.0 dropped support for Python 3.8
   "pre-commit",
   "slotscheck",
   "codecov-cli",
