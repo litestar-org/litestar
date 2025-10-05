@@ -1,4 +1,3 @@
-# ruff: noqa: TC004, F401
 from __future__ import annotations
 
 from typing import TYPE_CHECKING

@@ -1,4 +1,4 @@
-# ruff: noqa: UP006, UP007, UP045
+# ruff: noqa: UP006, UP007
 from __future__ import annotations
 
 from collections import defaultdict

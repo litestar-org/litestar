@@ -1,4 +1,4 @@
-# ruff: noqa: UP006,UP007
+# ruff: noqa: UP006
 from __future__ import annotations
 
 from abc import ABC, abstractmethod

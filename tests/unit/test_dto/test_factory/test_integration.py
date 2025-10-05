@@ -1,4 +1,4 @@
-# ruff: noqa: UP007, UP006
+# ruff: noqa: UP006
 from __future__ import annotations
 
 from dataclasses import dataclass, field

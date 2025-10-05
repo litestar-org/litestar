@@ -89,7 +89,7 @@ class ChangelogDirective(SphinxDirective):
 
         self.state.nested_parse(self.content, self.content_offset, changelog_node)
 
-        domain = cast(StandardDomain, self.env.get_domain("std"))
+        domain = cast("StandardDomain", self.env.get_domain("std"))
 
         change_group_lists = {
             "feature": nodes.definition_list(),
