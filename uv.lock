@@ -3025,7 +3025,7 @@ wheels = [
 
 [[package]]
 name = "litestar"
-version = "2.17.0"
+version = "2.18.0"
 source = { editable = "." }
 dependencies = [
     { name = "anyio", version = "4.5.2", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.9'" },

@@ -3,6 +3,158 @@
 Litestar 2 Changelog
 ====================
 
+.. changelog:: 2.18.0
+    :date: 2025-10-05
+
+    .. change:: Fix header spoofing vulnerability in ``RateLimitMiddleware`` that allowed bypassing client-specific rate limits
+        :type: bugfix
+
+        Fix a vulnerability in
+        :class:`~litestar.middleware.rate_limit.RateLimitMiddleware` that allowed
+        clients to bypass the limit by spoofing the ``X-FORWARDED-FOR`` header.
+
+        **Who is affected?**
+
+        All usages of the ``RateLimitMiddleware`` that did not customize
+        ``RateLimitMiddleware.cache_key_from_request``.
+
+        **What needs to be done?**
+
+        The middleware has been fixed to remove this particular vulnerability, by
+        ignoring the ``X-FORWARDED-FOR`` header when determining a client's identity.
+        If you are using ``litestar>=2.18.0``, nothing needs to be done.
+
+        .. note::
+
+            Applications operating behind a proxy should consult
+            :ref:`usage/middleware/builtin-middleware:Using behind a proxy` on how to
+            obtain reliable client identification in such cases.
+
+    .. change:: OpenAPI: Fix broken Typescript export for ``NotRequired``
+        :type: bugfix
+        :pr: 4318
+        :issue: 4198
+
+        Fix a bug that would result in broken Typescript type definition for a model
+        using ``NotRequired``
+
+    .. change:: CLI: Fix command registration
+        :type: bugfix
+        :pr: 4298
+
+        Fix an issue where CLI plugins no longer appear in the command help text
+        after recent updates to ``rich-click`` and ``click``.
+
+        Ensure plugins load before rendering the help text so they appear in the
+        formatted help output.
+
+    .. change:: Remove fix polyfactory deprecation warning
+        :type: bugfix
+        :pr: 4292
+
+        Fix a deprecation warning from polyfactory caused by a changed default value.
+
+    .. change:: Ensure ``MethodNotAllowedException`` properly sets ``Allow`` header during routing
+        :type: bugfix
+        :pr: 4289
+        :issue: 4277
+
+        Ensure :exc:`MethodNotAllowedException` exceptions raised during routing
+        always includes an ``Allow`` header.
+
+    .. change:: Preserve empty strings in ``multipart/form-data`` requests
+        :type: bugfix
+        :pr: 4271
+        :issue: 4204
+
+        Preserve empty strings in multipart forms instead of converting them to
+        :obj:`None`.
+
+    .. change:: OpenAPI: Regression - Fix missing constraints for ``msgspec.Struct``
+        :type: bugfix
+        :pr: 4282
+        :issue: 3999
+
+        Ensure constraints on set on an ``msgspec.Struct`` are always reflected in
+        the OpenAPI schema, for simple (non-union, non-optional, non-nested) fields.
+
+    .. change:: Fix ``KeyError`` when using ``data`` keyword argument in dependency function
+        :type: bugfix
+        :pr: 4270
+        :issue: 4230
+
+        Fix a ``KeyError`` that occured when a dependency function used the ``data``
+        keyword argument, if no ``data`` keyword argument was used in the handler
+        requesting this dependency.
+
+    .. change:: OpenAPI - Regression: Allow ``Parameter`` to set an Enum's schema fields
+        :type: bugfix
+        :pr: 4251
+        :issue: 4250
+
+        Fix a bug introduced in ``2.14.0`` that would prevent an Enum field's OpenAPI
+        schema to be modified via :func:`~litestar.params.Parameter`.
+
+    .. change:: CLI: Fix ``TypeError`` when passing ``--help`` and `--app-dir`` simultaneously
+        :type: bugfix
+        :pr: 4341
+        :issue: 4331
+
+        Fix a bug that would raise a :exc:`TypeError` when the CLI's ``--help`` option
+        was invoked, if the ``--app-dir`` option was also set.
+
+
+    .. change:: CLI: Fix ``--app-dir`` being ignore on subsequent reloads when used together with ``--reload`` option
+        :type: bugfix
+        :pr: 4352
+        :issue: 4329
+
+        Fix a bug that would cause the ``--app-dir`` option to be ignored after the first
+        reload, because it was not passed properly to uvicorn.
+
+    .. change:: OpenAPI: Use ``NotRequired`` instead of ``Optional`` for values with a ``default_factory``
+        :type: bugfix
+        :pr: 4347
+        :issue: 4294
+
+        Fix a bug that would consider fields with a ``default_factory`` set to be
+        ``Optional`` instead of ``NotRequired``.
+
+    .. change:: Fix ``Stream`` response being treated as ``File`` response in OpenAPI schema
+        :type: bugfix
+        :pr: 4371
+
+        Prevent handlers returning a ``Stream`` from falsely indicating a file
+        response in the OpenAPI schema with file-specific headers such as
+        ``content-length``, ``last-modified``, and ``etag``.
+
+    .. change:: Deprecate ``litestar.plugins.sqlalchemy`` module
+        :type: feature
+        :pr: 4343
+
+        Deprecate the ``litestar.plugins.sqlalchemy`` module, which is scheduled for
+        removal in v3.0.
+
+        This deprecation follows the migration to advanced-alchemy. Users should update their imports:
+
+        .. code-block:: python
+
+            # Old (deprecated)
+            from litestar.plugins.sqlalchemy import SQLAlchemyPlugin
+
+            # New
+            from advanced_alchemy.extensions.litestar import SQLAlchemyPlugin
+
+    .. change:: Add ``round_trip`` parameter to ``PydanticPlugin``
+        :type: feature
+        :pr: 4350
+        :issue: 4349
+
+        Add new ``round_trip`` parameter to
+        :class:`~litestar.contrib.pydantic.PydanticPlugin`, allowing correct
+        serialization of types like ``pydanctic.Json``.
+
+
 .. changelog:: 2.17.0
     :date: 2025-08-09
 

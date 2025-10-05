@@ -244,7 +244,7 @@ The only required configuration kwarg is ``rate_limit``, which expects a tuple c
 ``"minute"``, ``"hour"``, ``"day"``\ ) and a value for the request quota (integer).
 
 
-Using behing a proxy
+Using behind a proxy
 ^^^^^^^^^^^^^^^^^^^^
 
 The default mode for uniquely identifiying client uses the client's address. When an
