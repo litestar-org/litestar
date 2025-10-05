@@ -1,12 +1,14 @@
 from functools import partial
-from typing import Literal, cast
+from typing import TYPE_CHECKING, Literal, cast
 
 from docutils import nodes
 from docutils.parsers.rst import directives
 from sphinx.application import Sphinx
-from sphinx.domains.std import StandardDomain
 from sphinx.util.docutils import SphinxDirective
 from sphinx.util.nodes import clean_astext
+
+if TYPE_CHECKING:
+    from sphinx.domains.std import StandardDomain
 
 _GH_BASE_URL = "https://github.com/litestar-org/litestar"
 

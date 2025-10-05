@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import itertools
 import re
-from typing import TYPE_CHECKING, Any, ClassVar, Generic, Iterable, Literal, Mapping, TypeVar, overload
+from typing import TYPE_CHECKING, Any, ClassVar, Generic, Iterable, Literal, Mapping, Optional, TypeVar, overload
 
 from litestar.datastructures.cookie import Cookie
 from litestar.datastructures.headers import ETag, MutableScopeHeaders
@@ -15,8 +15,6 @@ from litestar.utils.deprecation import deprecated, warn_deprecation
 from litestar.utils.helpers import get_enum_string_value
 
 if TYPE_CHECKING:
-    from typing import Optional
-
     from litestar.app import Litestar
     from litestar.background_tasks import BackgroundTask, BackgroundTasks
     from litestar.connection import Request
@@ -217,7 +215,7 @@ class Response(Generic[T]):
     )
 
     content: T
-    type_encoders: Optional[TypeEncodersMap] = None
+    type_encoders: Optional[TypeEncodersMap] = None  # noqa: UP045
 
     def __init__(
         self,

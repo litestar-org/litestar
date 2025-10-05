@@ -55,11 +55,11 @@ class Token:
     """Subject - usually a unique identifier of the user or equivalent entity."""
     iat: datetime = field(default_factory=lambda: _normalize_datetime(datetime.now(timezone.utc)))
     """Issued at - should always be current now."""
-    iss: Optional[str] = field(default=None)
+    iss: Optional[str] = field(default=None)  # noqa: UP045
     """Issuer - optional unique identifier for the issuer."""
-    aud: Optional[str] = field(default=None)
+    aud: Optional[str] = field(default=None)  # noqa: UP045
     """Audience - intended audience."""
-    jti: Optional[str] = field(default=None)
+    jti: Optional[str] = field(default=None)  # noqa: UP045
     """JWT ID - a unique identifier of the JWT between different issuers."""
     extras: Dict[str, Any] = field(default_factory=dict)  # noqa: UP006
     """Extra fields that were found on the JWT token."""

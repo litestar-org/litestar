@@ -104,7 +104,7 @@ def _deserializer(target_type: Any, value: Any, default_deserializer: Callable[[
 class SignatureModel(Struct):
     """Model that represents a function signature that uses a msgspec specific type or types."""
 
-    _data_dto: ClassVar[Optional[Type[AbstractDTO]]]
+    _data_dto: ClassVar[Optional[Type[AbstractDTO]]]  # noqa: UP045
     _dependency_name_set: ClassVar[Set[str]]
     _fields: ClassVar[Dict[str, FieldDefinition]]
     _return_annotation: ClassVar[Any]
