@@ -47,6 +47,7 @@ extensions = [
     "sphinx_click",
     "sphinx_paramlinks",
     "sphinx_togglebutton",
+    "sphinx.ext.viewcode",
 ]
 
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
