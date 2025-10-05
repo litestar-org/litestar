@@ -11,7 +11,7 @@ This function will be used to inject a repository instance into our controller r
 Note that we are only passing in the database session in this example with no other
 parameters.
 
-.. literalinclude:: /examples/sqlalchemy/sqlalchemy_async_repository.py
+.. literalinclude:: /examples/sqla/sqlalchemy_async_repository.py
     :language: python
     :caption: ``app.py``
     :lines: 82-84
@@ -24,7 +24,7 @@ By default, the repository doesn't add any additional query options to your base
 statement, but provides the flexibility to override it, allowing you to pass your own
 statement:
 
-.. literalinclude:: /examples/sqlalchemy/sqlalchemy_async_repository.py
+.. literalinclude:: /examples/sqla/sqlalchemy_async_repository.py
     :language: python
     :caption: ``app.py``
     :lines: 87-94
@@ -39,7 +39,7 @@ interacting with the ``Author`` model:
 
 .. dropdown:: ``AuthorController`` (click to toggle)
 
-    .. literalinclude:: /examples/sqlalchemy/sqlalchemy_async_repository.py
+    .. literalinclude:: /examples/sqla/sqlalchemy_async_repository.py
         :language: python
         :caption: ``app.py``
         :lines: 120-199
@@ -54,7 +54,7 @@ Here's a corresponding synchronous version of the previous example:
 
 .. dropdown:: Synchronous Repository (click to toggle)
 
-    .. literalinclude:: /examples/sqlalchemy/sqlalchemy_sync_repository.py
+    .. literalinclude:: /examples/sqla/sqlalchemy_sync_repository.py
         :language: python
         :caption: ``app.py``
         :linenos:
@@ -70,7 +70,7 @@ Full Code
 
 .. dropdown:: Full Code (click to toggle)
 
-    .. literalinclude:: /examples/sqlalchemy/sqlalchemy_async_repository.py
+    .. literalinclude:: /examples/sqla/sqlalchemy_async_repository.py
         :language: python
         :caption: ``app.py``
         :emphasize-lines: 82-84, 87-94, 120-199

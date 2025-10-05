@@ -20,14 +20,14 @@ The plugin makes the engine and session available for injection.
 
    .. tab-item:: Async
 
-        .. literalinclude:: /examples/sqlalchemy/plugins/sqlalchemy_async_dependencies.py
+        .. literalinclude:: /examples/sqla/plugins/sqlalchemy_async_dependencies.py
             :caption: SQLAlchemy Async Dependencies
             :language: python
             :linenos:
 
    .. tab-item:: Sync
 
-        .. literalinclude:: /examples/sqlalchemy/plugins/sqlalchemy_sync_dependencies.py
+        .. literalinclude:: /examples/sqla/plugins/sqlalchemy_sync_dependencies.py
             :caption: SQLAlchemy Sync Dependencies
             :language: python
             :linenos:
@@ -58,14 +58,14 @@ on success and rollback upon failure.
 
    .. tab-item:: Async
 
-        .. literalinclude:: /examples/sqlalchemy/plugins/sqlalchemy_async_before_send_handler.py
+        .. literalinclude:: /examples/sqla/plugins/sqlalchemy_async_before_send_handler.py
             :caption: SQLAlchemy Async Before Send Handler
             :language: python
             :linenos:
 
    .. tab-item:: Sync
 
-        .. literalinclude:: /examples/sqlalchemy/plugins/sqlalchemy_sync_before_send_handler.py
+        .. literalinclude:: /examples/sqla/plugins/sqlalchemy_sync_before_send_handler.py
             :caption: SQLAlchemy Sync Before Send Handler
             :language: python
             :linenos:
@@ -104,14 +104,14 @@ handlers. Read on to see how this increased complexity is efficiently handled by
 
    .. tab-item:: Async
 
-        .. literalinclude:: /examples/sqlalchemy/plugins/sqlalchemy_async_init_plugin_example.py
+        .. literalinclude:: /examples/sqla/plugins/sqlalchemy_async_init_plugin_example.py
             :caption: SQLAlchemy Async Init Plugin Example
             :language: python
             :linenos:
 
    .. tab-item:: Sync
 
-        .. literalinclude:: /examples/sqlalchemy/plugins/sqlalchemy_sync_init_plugin_example.py
+        .. literalinclude:: /examples/sqla/plugins/sqlalchemy_sync_init_plugin_example.py
             :caption: SQLAlchemy Sync Init Plugin Example
             :language: python
             :linenos:

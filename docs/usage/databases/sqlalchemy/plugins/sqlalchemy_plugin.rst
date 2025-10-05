@@ -29,14 +29,14 @@ Example
 
    .. tab-item:: Async
 
-        .. literalinclude:: /examples/sqlalchemy/plugins/sqlalchemy_async_plugin_example.py
+        .. literalinclude:: /examples/sqla/plugins/sqlalchemy_async_plugin_example.py
             :caption: SQLAlchemy Async Plugin Example
             :language: python
             :linenos:
 
    .. tab-item:: Sync
 
-        .. literalinclude:: /examples/sqlalchemy/plugins/sqlalchemy_sync_plugin_example.py
+        .. literalinclude:: /examples/sqla/plugins/sqlalchemy_sync_plugin_example.py
             :caption: SQLAlchemy Sync Plugin Example
             :language: python
             :linenos:
@@ -51,14 +51,14 @@ represents a todo item in our SQLite database.
 
    .. tab-item:: Async
 
-        .. literalinclude:: /examples/sqlalchemy/plugins/sqlalchemy_async_plugin_example.py
+        .. literalinclude:: /examples/sqla/plugins/sqlalchemy_async_plugin_example.py
             :caption: SQLAlchemy Async Plugin Example
             :language: python
             :lines: 6,15-24
 
    .. tab-item:: Sync
 
-        .. literalinclude:: /examples/sqlalchemy/plugins/sqlalchemy_sync_plugin_example.py
+        .. literalinclude:: /examples/sqla/plugins/sqlalchemy_sync_plugin_example.py
             :caption: SQLAlchemy Sync Plugin Example
             :language: python
             :lines: 6,15-24
@@ -72,14 +72,14 @@ Next, we set up an API endpoint at the root  (``"/"``)  that allows adding a ``T
 
    .. tab-item:: Async
 
-        .. literalinclude:: /examples/sqlalchemy/plugins/sqlalchemy_async_plugin_example.py
+        .. literalinclude:: /examples/sqla/plugins/sqlalchemy_async_plugin_example.py
             :caption: SQLAlchemy Async Plugin Example
             :language: python
             :lines: 3-5,8,10-14,25-31
 
    .. tab-item:: Sync
 
-        .. literalinclude:: /examples/sqlalchemy/plugins/sqlalchemy_sync_plugin_example.py
+        .. literalinclude:: /examples/sqla/plugins/sqlalchemy_sync_plugin_example.py
             :caption: SQLAlchemy Sync Plugin Example
             :language: python
             :lines: 3-5,8,10-14,25-31
@@ -98,14 +98,14 @@ We create a function ``init_db`` that we'll use to initialize the database when 
 
    .. tab-item:: Async
 
-        .. literalinclude:: /examples/sqlalchemy/plugins/sqlalchemy_async_plugin_example.py
+        .. literalinclude:: /examples/sqla/plugins/sqlalchemy_async_plugin_example.py
             :caption: SQLAlchemy Async Plugin Example
             :language: python
             :lines: 9,31-35
 
    .. tab-item:: Sync
 
-        .. literalinclude:: /examples/sqlalchemy/plugins/sqlalchemy_sync_plugin_example.py
+        .. literalinclude:: /examples/sqla/plugins/sqlalchemy_sync_plugin_example.py
             :caption: SQLAlchemy Sync Plugin Example
             :language: python
             :lines: 9,31-33
@@ -119,14 +119,14 @@ Finally, we set up the SQLAlchemy Plugin and the Litestar app.
 
    .. tab-item:: Async
 
-        .. literalinclude:: /examples/sqlalchemy/plugins/sqlalchemy_async_plugin_example.py
+        .. literalinclude:: /examples/sqla/plugins/sqlalchemy_async_plugin_example.py
             :caption: SQLAlchemy Async Plugin Example
             :language: python
             :lines: 8,31-35
 
    .. tab-item:: Sync
 
-        .. literalinclude:: /examples/sqlalchemy/plugins/sqlalchemy_sync_plugin_example.py
+        .. literalinclude:: /examples/sqla/plugins/sqlalchemy_sync_plugin_example.py
             :caption: SQLAlchemy Sync Plugin Example
             :language: python
             :lines: 9,31-33

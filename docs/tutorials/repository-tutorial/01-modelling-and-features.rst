@@ -15,7 +15,7 @@ We'll start by creating the ``Author`` table, utilizing the
 :class:`UUIDBase <advanced_alchemy.base.UUIDBase>` class. To keep things
 simple, our first model will encompass only three fields: ``id``, ``name``, and ``dob``.
 
-.. literalinclude:: /examples/sqlalchemy/sqlalchemy_declarative_models.py
+.. literalinclude:: /examples/sqla/sqlalchemy_declarative_models.py
     :language: python
     :caption: ``app.py``
     :lines: 9, 11, 18-20
@@ -28,7 +28,7 @@ relationship. This allows each ``Author`` record to possess multiple ``Book`` re
 By configuring it this way, SQLAlchemy will automatically include the necessary foreign
 key constraints when using the ``author_id`` field in each ``Book`` record.
 
-.. literalinclude:: /examples/sqlalchemy/sqlalchemy_declarative_models.py
+.. literalinclude:: /examples/sqla/sqlalchemy_declarative_models.py
     :language: python
     :caption: ``app.py``
     :lines: 9, 11, 18-22, 27-30
@@ -85,7 +85,7 @@ Full Code
 
 .. dropdown:: Full Code (click to toggle)
 
-    .. literalinclude:: /examples/sqlalchemy/sqlalchemy_declarative_models.py
+    .. literalinclude:: /examples/sqla/sqlalchemy_declarative_models.py
         :language: python
         :caption: ``app.py``
         :emphasize-lines: 9, 18-21, 27-30
