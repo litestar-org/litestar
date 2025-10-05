@@ -1,0 +1,1182 @@
+<!DOCTYPE html>
+<html lang="en" data-accent-color="amber" data-content_root="../../">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>litestar.file_system - Litestar Framework</title><link rel="shortcut icon" href="../../_static/favicon.svg"/><link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><script>
+    function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
+    setColorMode(localStorage._theme||"auto");
+  </script><link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=397bb51e" />
+    <link rel="stylesheet" type="text/css" href="../../_static/shibuya.css?v=76b6f612" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx_paramlinks.css" />
+    <link media="print" rel="stylesheet" type="text/css" href="../../_static/print.css?v=20ff2c19" />
+    <link rel="stylesheet" type="text/css" href="../../_static/style.css?v=50ea2f63" />
+    <link rel="stylesheet" type="text/css" href="../../_static/litestar-sphinx-theme.css?v=f8f74789" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --sy-f-text: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
+  --sy-f-heading: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
+}
+</style>
+    <meta property="og:type" content="website"/><meta property="og:title" content="litestar.file_system"/>
+<meta name="twitter:card" content="summary"/>
+<meta property="og:image" content="_static/logo-light.png"/>
+  </head>
+<body><div class="announcement">
+    <div class="announcement-inner">
+      <p>You are viewing the <bold>local</bold> version of the documentation. Click here to go to the latest version.</p>
+      <button class="announcement-close" aria-label="Close announcement">
+        <i class="i-lucide close"></i>
+      </button>
+    </div>
+  </div><div class="sy-head">
+  <div class="sy-head-blur"></div>
+  <div class="sy-head-inner sy-container mx-auto">
+    <a class="sy-head-brand" href="/">
+      <img class="light-logo" src="../../_static/logo-light.png" alt="Litestar" height="28" loading="lazy" />
+      <img class="dark-logo" src="../../_static/logo-dark.png" alt="Litestar" height="28" loading="lazy" />
+      <strong>Litestar</strong>
+    </a>
+    <div class="sy-head-nav" id="head-nav">
+      <nav class="sy-head-links"><ul><li class="link"><a href="../../index.html">Home</a></li>
+      <li class="link"><button class="js-menu" type="button" id="nav-trigger-2" aria-controls="nav-children-2">
+            <span>Community</span>
+            <i class="i-lucide chevron-down"></i>
+          </button>
+        <ul id="nav-children-2" aria-labelledby="nav-trigger-2"><li><a href="../../contribution-guide.html">
+                <span>Contributing</span>
+                <small>Learn how to contribute to the Litestar project</small>
+              </a></li><li><a href="https://github.com/litestar-org/.github?tab=coc-ov-file">
+                <span>Code of Conduct</span>
+                <small>Review the etiquette for interacting with the Litestar community</small>
+              </a></li><li><a href="https://github.com/litestar-org/.github?tab=coc-ov-file#security-ov-file">
+                <span>Security</span>
+                <small>Overview of Litestar's security protocols</small>
+              </a></li></ul>
+      </li>
+      <li class="link"><button class="js-menu" type="button" id="nav-trigger-3" aria-controls="nav-children-3">
+            <span>About</span>
+            <i class="i-lucide chevron-down"></i>
+          </button>
+        <ul id="nav-children-3" aria-labelledby="nav-trigger-3"><li><a href="https://litestar.dev/about/organization">
+                <span>Litestar Organization</span>
+                <small>Details about the Litestar organization</small>
+              </a></li><li><a href="https://litestar.dev/about/litestar-releases">
+                <span>Releases</span>
+                <small>Explore the release process, versioning, and deprecation policy for Litestar</small>
+              </a></li></ul>
+      </li>
+      <li class="link"><button class="js-menu" type="button" id="nav-trigger-4" aria-controls="nav-children-4">
+            <span>Release notes</span>
+            <i class="i-lucide chevron-down"></i>
+          </button>
+        <ul id="nav-children-4" aria-labelledby="nav-trigger-4"><li><a href="../../release-notes/whats-new-3.html">
+                <span>What's new in 3.0</span>
+                <small>Explore the new features in Litestar 3.0</small>
+              </a></li><li><a href="../../release-notes/changelog.html">
+                <span>3.x Changelog</span>
+                <small>All changes in the 3.x series</small>
+              </a></li><li><a href="https://docs.litestar.dev/2/release-notes/changelog.html">
+                <span>2.x Changelog</span>
+                <small>All changes in the 2.x series</small>
+              </a></li></ul>
+      </li>
+      <li class="link"><button class="js-menu" type="button" id="nav-trigger-5" aria-controls="nav-children-5">
+            <span>Help</span>
+            <i class="i-lucide chevron-down"></i>
+          </button>
+        <ul id="nav-children-5" aria-labelledby="nav-trigger-5"><li><a href="https://discord.gg/litestar">
+                <span>Discord Help Forum</span>
+                <small>Dedicated Discord help forum</small>
+              </a></li><li><a href="https://github.com/orgs/litestar-org/discussions">
+                <span>GitHub Discussions</span>
+                <small>GitHub Discussions</small>
+              </a></li><li><a href="https://stackoverflow.com/questions/tagged/litestar">
+                <span>Stack Overflow</span>
+                <small>We monitor the <code><b>litestar</b></code> tag on Stack Overflow</small>
+              </a></li></ul>
+      </li><li class="link">
+          <a href="https://github.com/sponsors/Litestar-Org">
+            <span>Sponsor</span></a>
+        </li></ul></nav>
+      <div class="sy-head-extra flex items-center print:hidden"><form class="searchbox flex items-center" action="../../search.html" method="get">
+  <input type="text" name="q" placeholder="Search" />
+  <kbd>/</kbd>
+</form><div class="nav-versions">
+    <button type="button" aria-label="Versions">
+      <span class="md:hidden">Versions</span>
+      <span class="hidden md:inline">main</span>
+      <i class="i-lucide chevron-down"></i>
+    </button>
+    <div class="nav-versions-choices"><ul><li><a href="/latest">latest</a></li><li><a href="/main">v3 (development)</a></li><li><a href="/2">v2</a></li><li><a href="/1">v1</a></li></ul></div>
+  </div><div class="sy-head-socials">
+<a href="https://twitter.com/LitestarAPI" aria-label="X (Twitter)">
+  <iconify-icon icon="prime:twitter"></iconify-icon>
+</a>
+  <a href="https://discord.gg/litestar" aria-label="Discord">
+    <iconify-icon icon="simple-icons:discord"></iconify-icon>
+  </a></div></div>
+    </div>
+    <div class="sy-head-actions flex items-center shrink-0 print:hidden"><button class="js-theme theme-switch flex items-center"
+data-aria-auto="Switch to light color mode"
+data-aria-light="Switch to dark color mode"
+data-aria-dark="Switch to auto color mode">
+<i class="i-lucide theme-icon"></i>
+</button><button class="md:hidden flex items-center js-menu" aria-label="Menu" type="button" aria-controls="head-nav" aria-expanded="false">
+        <div class="hamburger">
+          <span class="hamburger_1"></span>
+          <span class="hamburger_2 -translate-x-2"></span>
+          <span class="hamburger_3 -translate-x-1"></span>
+        </div>
+      </button>
+    </div>
+  </div>
+</div>
+<div class="sy-page sy-container flex mx-auto">
+  <aside id="lside" class="sy-lside md:w-72 md:shrink-0 print:hidden">
+    <div class="sy-lside-inner md:sticky">
+      <div class="sy-scrollbar p-6"><div class="sidebar-links">
+  <ul>
+    <li><a class="icon-link" href="https://github.com/orgs/litestar-org/discussions">
+  <span class="icon">
+    <svg viewBox="0 0 24 24" fill="none">
+      <path fill="var(--accent-9)" fill-rule="evenodd" clip-rule="evenodd" d="M11 5a6 6 0 0 0-4.687 9.746c.215.27.315.62.231.954l-.514 2.058a1 1 0 0 0 1.485 1.1l2.848-1.71c.174-.104.374-.15.576-.148H13a6 6 0 0 0 0-12h-2Z"/>
+      <circle fill="white" cx="12" cy="11" r="1"/>
+      <circle fill="white" cx="9" cy="11" r="1"/>
+      <circle fill="white" cx="15" cy="11" r="1"/>
+    </svg>
+  </span>
+  <span class="text">Discussion</span>
+</a></li>
+  </ul>
+</div>
+        <div class="globaltoc" data-expand-depth="0"><p class="caption" role="heading" aria-level="3"><span class="caption-text">Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../getting-started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../usage/index.html">Usage</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../usage/applications.html">Applications</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../usage/routing/index.html">Routing</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../usage/routing/overview.html">Overview</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../usage/routing/handlers.html">Route handlers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../usage/routing/parameters.html">Parameters</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../usage/requests.html">Requests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../usage/caching.html">Caching</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../usage/channels.html">Channels</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../usage/cli.html">CLI</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../usage/databases/index.html">Databases</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../usage/databases/sqlalchemy/index.html">SQLAlchemy</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../usage/databases/sqlalchemy/models_and_repository.html">SQLAlchemy Models &amp; Repository</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../usage/databases/sqlalchemy/plugins/index.html">Plugins</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../usage/databases/piccolo.html">Piccolo ORM</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../usage/debugging.html">Debugging</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../usage/dependency-injection.html">Dependency Injection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../usage/dto/index.html">Data Transfer Object (DTO)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../usage/dto/0-basic-use.html">Basic Use</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../usage/dto/1-abstract-dto.html">AbstractDTO</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../usage/dto/2-creating-custom-dto-classes.html">Implementing Custom DTO Classes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../usage/events.html">Events</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../usage/exceptions.html">Exceptions and exception handling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../usage/file_systems.html">File Systems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../usage/htmx.html">HTMX</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../usage/lifecycle-hooks.html">Life Cycle Hooks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../usage/logging.html">Logging</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../usage/metrics/index.html">Metrics</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../usage/metrics/open-telemetry.html">OpenTelemetry</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../usage/metrics/prometheus.html">Prometheus</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../usage/middleware/index.html">Middleware</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../usage/middleware/using-middleware.html">Using Middleware</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../usage/middleware/builtin-middleware.html">Built-in middleware</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../usage/middleware/creating-middleware.html">Creating Middleware</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../usage/openapi/index.html">OpenAPI</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../usage/openapi/schema_generation.html">Configuring schema generation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../usage/openapi/schema_generation.html#configuring-schema-generation-on-a-route-handler">Configuring schema generation on a route handler</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../usage/openapi/schema_generation.html#accessing-the-openapi-schema-in-code">Accessing the OpenAPI schema in code</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../usage/openapi/schema_generation.html#customizing-pydantic-model-schemas">Customizing Pydantic model schemas</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../usage/openapi/schema_generation.html#customizing-operation-class">Customizing <code class="docutils literal notranslate"><span class="pre">Operation</span></code> class</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../usage/openapi/schema_generation.html#generating-examples">Generating examples</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../usage/openapi/ui_plugins.html">OpenAPI UI Plugins</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../usage/openapi/ui_plugins.html#using-openapi-ui-plugins">Using OpenAPI UI Plugins</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../usage/openapi/ui_plugins.html#configuring-openapi-ui-plugins">Configuring OpenAPI UI Plugins</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../usage/openapi/ui_plugins.html#configuring-the-openapi-root-path">Configuring the OpenAPI Root Path</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../usage/openapi/ui_plugins.html#building-your-own-openapi-ui-plugin">Building your own OpenAPI UI Plugin</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../usage/openapi/ui_plugins.html#interacting-with-the-router">Interacting with the <code class="docutils literal notranslate"><span class="pre">Router</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../usage/openapi/ui_plugins.html#oauth2-in-swagger-ui">OAuth2 in Swagger UI</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../usage/openapi/ui_plugins.html#customizing-the-openapi-ui">Customizing the OpenAPI UI</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../usage/openapi/ui_plugins.html#cdn-and-offline-file-support">CDN and offline file support</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../usage/plugins/index.html">Plugins</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../usage/plugins/flash_messages.html">Flash Messages</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../usage/plugins/problem_details.html">Problem Details</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../usage/responses.html">Responses</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../usage/security/index.html">Security</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../usage/security/abstract-authentication-middleware.html">Implementing Custom Authentication</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../usage/security/security-backends.html">Security Backends</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../usage/security/guards.html">Guards</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../usage/security/excluding-and-including-endpoints.html">Excluding and including endpoints</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../usage/security/jwt.html">JWT Security Backends</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../usage/security/secret-datastructures.html">Handling Secrets</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../usage/static-files.html">Static files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../usage/custom-types.html">Custom types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../usage/stores.html">Stores</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../usage/templating.html">Templating</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../usage/testing.html">Testing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../usage/websockets.html">WebSockets</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../reference/index.html">API reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/app.html">app</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/background_tasks.html">background_tasks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/channels/index.html">channels</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/channels/plugin.html">plugin</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/channels/subscriber.html">subscriber</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/channels/backends/index.html">backends</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../reference/channels/backends/base.html">base</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../reference/channels/backends/memory.html">memory</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../reference/channels/backends/redis.html">redis</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../reference/channels/backends/psycopg.html">psycopg</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../reference/channels/backends/asyncpg.html">asyncpg</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/cli.html">cli</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/config.html">config</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/connection.html">connection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/contrib/index.html">contrib</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/contrib/jinja.html">jinja</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/contrib/mako.html">mako</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/contrib/opentelemetry.html">opentelemetry</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/contrib/sqlalchemy/index.html">sqlalchemy</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../reference/contrib/sqlalchemy/plugins.html">plugins</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../reference/contrib/sqlalchemy/repository.html">repository</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../reference/contrib/sqlalchemy/types.html">types</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../reference/contrib/sqlalchemy/base.html">base</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../reference/contrib/sqlalchemy/dto.html">DTO</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/controller.html">controller</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/concurrency.html">concurrency</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/data_extractors.html">data_extractors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/datastructures/index.html">datastructures</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/datastructures/secret_values.html">secret_values</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/di.html">di</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/dto/index.html">dto</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/dto/config.html">config</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/dto/data_structures.html">data_structures</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/dto/field.html">field</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/dto/types.html">types</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/dto/base_dto.html">base_dto</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/dto/msgspec_dto.html">msgspec_dto</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/dto/dataclass_dto.html">dataclass_dto</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/enums.html">enums</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/events.html">events</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/exceptions.html">exceptions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/file_system.html">file_system</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/handlers.html">handlers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/logging/index.html">logging</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/logging/config.html">config</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/logging/picologging.html">picologging</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/logging/standard.html">standard</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/middleware/index.html">middleware</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/middleware/allowed_hosts.html">allowed_hosts</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/middleware/authentication.html">authentication</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/middleware/compression.html">compression</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/middleware/csrf.html">csrf</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/middleware/logging.html">logging</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/middleware/rate_limit.html">rate_limit</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/middleware/session/index.html">session</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../reference/middleware/session/base.html">base</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../reference/middleware/session/client_side.html">client_side</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../reference/middleware/session/server_side.html">server_side</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/middleware/constraints.html">constraints</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/openapi/index.html">openapi</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/openapi/openapi.html">openapi</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/openapi/plugins.html">plugins</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/openapi/spec.html">spec</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/pagination.html">pagination</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/params.html">params</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/plugins/index.html">plugins</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/attrs.html">attrs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/flash_messages.html">flash</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/htmx.html">htmx</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/problem_details.html">problem details</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/prometheus.html">prometheus</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/pydantic.html">pydantic</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/structlog.html">structlog</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/sqlalchemy.html">sqlalchemy</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/repository/index.html">repository</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/repository/abc.html">abc</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/repository/filters.html">filters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/repository/exceptions.html">exceptions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/repository/testing.html">testing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/repository/handlers.html">handlers</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/response/index.html">response</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/response/base.html">base</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/response/file.html">file</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/response/redirect.html">redirect</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/response/streaming.html">streaming</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/response/sse.html">SSE (Server Sent Events)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/response/template.html">template</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/router.html">router</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/routes.html">routes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/security/index.html">security</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/security/jwt.html">jwt</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/security/session_auth.html">session_auth</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/serialization.html">serialization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/static_files.html">static_files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/status_codes.html">status_code</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/stores/index.html">stores</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/stores/base.html">base</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/stores/file.html">file</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/stores/memory.html">memory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/stores/redis.html">redis</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/stores/registry.html">registry</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/stores/valkey.html">valkey</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/template.html">template</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/testing.html">testing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/types.html">types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/typing.html">typing</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../benchmarks.html">Benchmarks</a></li>
+</ul>
+<p class="caption" role="heading" aria-level="3"><span class="caption-text">Guides</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../migration/index.html">Migrating to Litestar</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../migration/flask.html">From Flask</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../migration/fastapi.html">From Starlette / FastAPI</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../topics/index.html">Topics</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../topics/sync-vs-async.html">Sync vs. Async</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../topics/deployment/index.html">Deployment</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../topics/deployment/nginx-unit.html">NGINX Unit</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../topics/deployment/manually-with-asgi-server.html">Manually with ASGI server</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../topics/deployment/docker.html">Docker</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../topics/deployment/supervisor.html">Supervisor (Linux)</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/index.html">Tutorials</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/todo-app/index.html">Developing a basic TODO application</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../tutorials/todo-app/0-application-basics.html">Application basics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../tutorials/todo-app/1-accessing-the-list.html">Accessing the list</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../tutorials/todo-app/2-interacting-with-the-list.html">Making the list interactive</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../tutorials/todo-app/3-assembling-the-app.html">Recap and assembling the final application</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/sqlalchemy/index.html">Improving the TODO app with SQLAlchemy</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../tutorials/sqlalchemy/0-introduction.html">Introduction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../tutorials/sqlalchemy/1-provide-session-with-di.html">Providing the session with DI</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../tutorials/sqlalchemy/2-serialization-plugin.html">Using the serialization plugin</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../tutorials/sqlalchemy/3-init-plugin.html">Using the init plugin</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../tutorials/sqlalchemy/4-final-touches-and-recap.html">Final touches and recap</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/dto-tutorial/index.html">Data Transfer Object Tutorial</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../tutorials/dto-tutorial/01-simple-dto-exclude.html">Our first DTO</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../tutorials/dto-tutorial/02-nested-exclude.html">Excluding from nested models</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../tutorials/dto-tutorial/03-nested-collection-exclude.html">Excluding from collections of nested models</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../tutorials/dto-tutorial/04-max-nested-depth.html">Max nested depth</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../tutorials/dto-tutorial/05-renaming-fields.html">Renaming fields</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../tutorials/dto-tutorial/06-receiving-data.html">Receiving data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../tutorials/dto-tutorial/07-read-only-fields.html">Read only fields</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../tutorials/dto-tutorial/08-dto-data.html">Accessing the data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../tutorials/dto-tutorial/09-updating.html">Updating instances</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../tutorials/dto-tutorial/10-layered-dto-declarations.html">Declaring DTOs on app layers</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/repository-tutorial/index.html">SQLAlchemy Repository Tutorial</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../tutorials/repository-tutorial/01-modelling-and-features.html">Introduction to Database Modelling and Repository Features</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../tutorials/repository-tutorial/01-modelling-and-features.html#modelling">Modelling</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../tutorials/repository-tutorial/01-modelling-and-features.html#full-code">Full Code</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../tutorials/repository-tutorial/02-repository-introduction.html">Interacting with repositories</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../tutorials/repository-tutorial/02-repository-introduction.html#working-with-bulk-data-operations">Working with Bulk Data Operations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../tutorials/repository-tutorial/02-repository-introduction.html#full-code">Full Code</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../tutorials/repository-tutorial/03-repository-controller.html">Working with Controllers and Repositories</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../tutorials/repository-tutorial/03-repository-controller.html#full-code">Full Code</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../tutorials/repository-tutorial/04-repository-other.html">Adding Additional Features to the Repository</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../tutorials/repository-tutorial/04-repository-other.html#slug-fields">Slug Fields</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../tutorials/repository-tutorial/04-repository-other.html#full-code">Full Code</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading" aria-level="3"><span class="caption-text">Contributing</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../contribution-guide.html">Contribution Guide</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/search?q=user%3Alitestar-org+state%3Aopen+label%3A%22good+first+issue%22+++no%3Aassignee+&amp;type=issues=">Available Issues</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/litestar-org/.github?tab=coc-ov-file#readme">Code of Conduct</a></li>
+</ul>
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="lside-overlay js-menu" role="button" aria-label="Close left sidebar" aria-controls="lside" aria-expanded="false"></div>
+  <aside id="rside" class="sy-rside pb-3 w-64 shrink-0 order-last">
+    <button class="rside-close js-menu xl:hidden" aria-label="Close Table of Contents" type="button" aria-controls="rside" aria-expanded="false">
+      <i class="i-lucide close"></i>
+    </button>
+    <div class="sy-scrollbar sy-rside-inner px-6 xl:top-16 xl:sticky xl:pl-0 pt-6 pb-4"><a class="js-repo-stats repo-stats flex items-center" href="https://github.com/litestar-org/litestar"
+  data-type="github" data-user="litestar-org" data-repo="litestar">
+  <span class="w-8 flex items-center justify-around shrink-0 text-3xl">
+    <iconify-icon icon="simple-icons:github"></iconify-icon>
+  </span>
+  <span class="flex-grow px-2 break-all">
+    <span>litestar-org/litestar</span>
+    <span class="flex text-sm repo-stats-count">
+      <span class="flex items-center pr-3">
+        <iconify-icon icon="lucide:star"></iconify-icon>
+        <strong class="js-repo-stars ml-1">0</strong>
+      </span>
+      <span class="flex items-center">
+        <iconify-icon icon="lucide:git-fork"></iconify-icon>
+        <strong class="js-repo-forks ml-1">0</strong>
+      </span>
+    </span>
+  </span>
+</a><div id="ethical-ad-placement" data-ea-publisher="readthedocs"></div></div>
+  </aside>
+  <div class="rside-overlay js-menu" role="button" aria-label="Close Table of Contents" aria-controls="rside" aria-expanded="false"></div>
+  <main class="sy-main w-full max-sm:max-w-full print:pt-6">
+<div class="sy-breadcrumbs" role="navigation">
+  <div class="sy-breadcrumbs-inner flex items-center">
+    <div class="md:hidden mr-3">
+      <button class="js-menu" aria-label="Menu" type="button" aria-controls="lside" aria-expanded="false">
+        <i class="i-lucide menu"></i>
+      </button>
+    </div>
+    <ol class="flex-1" itemscope itemtype="https://schema.org/BreadcrumbList"><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <a itemprop="item" href="../../index.html"><span itemprop="name">Litestar</span></a>
+        <span>/</span>
+        <meta itemprop="position" content="1" />
+      </li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <a itemprop="item" href="../index.html"><span itemprop="name">Module code</span></a>
+        <span>/</span>
+        <meta itemprop="position" content="2" />
+      </li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <strong itemprop="name">litestar.file_system</strong>
+        <meta itemprop="position" content="3" />
+      </li></ol>
+    <div class="xl:hidden ml-1">
+      <button class="js-menu" aria-label="Show table of contents" type="button" aria-controls="rside"
+        aria-expanded="false">
+        <i class="i-lucide outdent"></i>
+      </button>
+    </div>
+  </div>
+</div><div class="flex flex-col break-words justify-between">
+      <div class="min-w-0 max-w-6xl px-6 pb-6 pt-8 xl:px-12">
+        <article class="yue" role="main">
+          <h1>Source code for litestar.file_system</h1><div class="highlight"><pre>
+<span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+</span><span data-line="2">
+</span><span data-line="3"><span class="kn">import</span><span class="w"> </span><span class="nn">abc</span>
+</span><span data-line="4"><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+</span><span data-line="5"><span class="kn">import</span><span class="w"> </span><span class="nn">os.path</span>
+</span><span data-line="6"><span class="kn">import</span><span class="w"> </span><span class="nn">pathlib</span>
+</span><span data-line="7"><span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span>
+</span><span data-line="8"><span class="kn">from</span><span class="w"> </span><span class="nn">stat</span><span class="w"> </span><span class="kn">import</span> <span class="n">S_ISDIR</span>
+</span><span data-line="9"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">ClassVar</span><span class="p">,</span> <span class="n">Final</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">cast</span>
+</span><span data-line="10">
+</span><span data-line="11"><span class="kn">import</span><span class="w"> </span><span class="nn">anyio</span>
+</span><span data-line="12"><span class="kn">from</span><span class="w"> </span><span class="nn">typing_extensions</span><span class="w"> </span><span class="kn">import</span> <span class="n">NotRequired</span><span class="p">,</span> <span class="n">TypeAlias</span><span class="p">,</span> <span class="n">TypedDict</span>
+</span><span data-line="13">
+</span><span data-line="14"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.concurrency</span><span class="w"> </span><span class="kn">import</span> <span class="n">sync_to_thread</span>
+</span><span data-line="15"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.plugins</span><span class="w"> </span><span class="kn">import</span> <span class="n">InitPlugin</span>
+</span><span data-line="16">
+</span><span data-line="17"><span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span>
+</span><span data-line="18">    <span class="s2">&quot;AnyFileSystem&quot;</span><span class="p">,</span>
+</span><span data-line="19">    <span class="s2">&quot;BaseFileSystem&quot;</span><span class="p">,</span>
+</span><span data-line="20">    <span class="s2">&quot;BaseLocalFileSystem&quot;</span><span class="p">,</span>
+</span><span data-line="21">    <span class="s2">&quot;FileInfo&quot;</span><span class="p">,</span>
+</span><span data-line="22">    <span class="s2">&quot;FileSystemRegistry&quot;</span><span class="p">,</span>
+</span><span data-line="23">    <span class="s2">&quot;FsspecAsyncWrapper&quot;</span><span class="p">,</span>
+</span><span data-line="24">    <span class="s2">&quot;FsspecSyncWrapper&quot;</span><span class="p">,</span>
+</span><span data-line="25">    <span class="s2">&quot;LinkableFileSystem&quot;</span><span class="p">,</span>
+</span><span data-line="26">    <span class="s2">&quot;get_fsspec_mtime_equivalent&quot;</span><span class="p">,</span>
+</span><span data-line="27">    <span class="s2">&quot;maybe_wrap_fsspec_file_system&quot;</span><span class="p">,</span>
+</span><span data-line="28"><span class="p">)</span>
+</span><span data-line="29">
+</span><span data-line="30"><span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+</span><span data-line="31">    <span class="kn">import</span><span class="w"> </span><span class="nn">io</span>
+</span><span data-line="32">    <span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">AsyncGenerator</span><span class="p">,</span> <span class="n">Awaitable</span><span class="p">,</span> <span class="n">Mapping</span>
+</span><span data-line="33">
+</span><span data-line="34">    <span class="kn">from</span><span class="w"> </span><span class="nn">fsspec</span><span class="w"> </span><span class="kn">import</span> <span class="n">AbstractFileSystem</span> <span class="k">as</span> <span class="n">FsspecFileSystem</span>
+</span><span data-line="35">    <span class="kn">from</span><span class="w"> </span><span class="nn">fsspec.asyn</span><span class="w"> </span><span class="kn">import</span> <span class="n">AsyncFileSystem</span> <span class="k">as</span> <span class="n">FsspecAsyncFileSystem</span>
+</span><span data-line="36">
+</span><span data-line="37">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">PathType</span>
+</span><span data-line="38">
+</span><span data-line="39">
+</span><span data-line="40"><span class="n">AnyFileSystem</span><span class="p">:</span> <span class="n">TypeAlias</span> <span class="o">=</span> <span class="s2">&quot;Union[BaseFileSystem, FsspecFileSystem, FsspecAsyncFileSystem]&quot;</span>
+</span><span data-line="41"><span class="n">SymlinkResolver</span><span class="p">:</span> <span class="n">TypeAlias</span> <span class="o">=</span> <span class="s2">&quot;Callable[[AnyFileSystem, PathType], Awaitable[str]]&quot;</span>
+</span><span data-line="42">
+</span><span data-line="43">
+<div class="viewcode-block" id="FileInfo">
+<a class="viewcode-back" href="../../reference/file_system.html#litestar.file_system.FileInfo">[docs]</a>
+</span><span data-line="44"><span class="k">class</span><span class="w"> </span><span class="nc">FileInfo</span><span class="p">(</span><span class="n">TypedDict</span><span class="p">):</span>
+</span><span data-line="45"><span class="w">    </span><span class="sd">&quot;&quot;&quot;File information gathered from a file system.&quot;&quot;&quot;</span>
+</span><span data-line="46">
+</span><span data-line="47">    <span class="n">is_symlink</span><span class="p">:</span> <span class="n">NotRequired</span><span class="p">[</span><span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]</span>
+</span><span data-line="48"><span class="w">    </span><span class="sd">&quot;&quot;&quot;&#39;True&#39; if the file is a symbolic link. &#39;None&#39; if the file system does not support symlinks&quot;&quot;&quot;</span>
+</span><span data-line="49">    <span class="n">mtime</span><span class="p">:</span> <span class="n">NotRequired</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span>
+</span><span data-line="50"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Modified time stamp.&quot;&quot;&quot;</span>
+</span><span data-line="51">    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+</span><span data-line="52"><span class="w">    </span><span class="sd">&quot;&quot;&quot;The path of the file.&quot;&quot;&quot;</span>
+</span><span data-line="53">    <span class="n">size</span><span class="p">:</span> <span class="nb">int</span>
+</span><span data-line="54"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Total size, in bytes.&quot;&quot;&quot;</span>
+</span><span data-line="55">    <span class="nb">type</span><span class="p">:</span> <span class="nb">str</span>
+</span><span data-line="56"><span class="w">    </span><span class="sd">&quot;&quot;&quot;The type of the file system object.&quot;&quot;&quot;</span></div>
+
+</span><span data-line="57">
+</span><span data-line="58">
+<div class="viewcode-block" id="BaseFileSystem">
+<a class="viewcode-back" href="../../reference/file_system.html#litestar.file_system.BaseFileSystem">[docs]</a>
+</span><span data-line="59"><span class="k">class</span><span class="w"> </span><span class="nc">BaseFileSystem</span><span class="p">(</span><span class="n">abc</span><span class="o">.</span><span class="n">ABC</span><span class="p">):</span>
+<div class="viewcode-block" id="BaseFileSystem.info">
+<a class="viewcode-back" href="../../reference/file_system.html#litestar.file_system.BaseFileSystem.info">[docs]</a>
+</span><span data-line="60">    <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
+</span><span data-line="61">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">info</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">PathType</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FileInfo</span><span class="p">:</span>
+</span><span data-line="62"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a :class:`~litestar.file_system.FileInfo` for the given ``path``&quot;&quot;&quot;</span></div>
+
+</span><span data-line="63">
+<div class="viewcode-block" id="BaseFileSystem.read_bytes">
+<a class="viewcode-back" href="../../reference/file_system.html#litestar.file_system.BaseFileSystem.read_bytes">[docs]</a>
+</span><span data-line="64">    <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
+</span><span data-line="65">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">read_bytes</span><span class="p">(</span>
+</span><span data-line="66">        <span class="bp">self</span><span class="p">,</span>
+</span><span data-line="67">        <span class="n">path</span><span class="p">:</span> <span class="n">PathType</span><span class="p">,</span>
+</span><span data-line="68">        <span class="n">start</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+</span><span data-line="69">        <span class="n">end</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
+</span><span data-line="70">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
+</span><span data-line="71"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Read bytes from ``path``</span>
+</span><span data-line="72">
+</span><span data-line="73"><span class="sd">        Args:</span>
+</span><span data-line="74"><span class="sd">            path: File to read from</span>
+</span><span data-line="75"><span class="sd">            start: Offset to start reading from</span>
+</span><span data-line="76"><span class="sd">            end: Offset to stop reading at (inclusive)</span>
+</span><span data-line="77"><span class="sd">        &quot;&quot;&quot;</span></div>
+
+</span><span data-line="78">
+<div class="viewcode-block" id="BaseFileSystem.iter">
+<a class="viewcode-back" href="../../reference/file_system.html#litestar.file_system.BaseFileSystem.iter">[docs]</a>
+</span><span data-line="79">    <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
+</span><span data-line="80">    <span class="k">def</span><span class="w"> </span><span class="nf">iter</span><span class="p">(</span>
+</span><span data-line="81">        <span class="bp">self</span><span class="p">,</span>
+</span><span data-line="82">        <span class="n">path</span><span class="p">:</span> <span class="n">PathType</span><span class="p">,</span>
+</span><span data-line="83">        <span class="n">chunksize</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+</span><span data-line="84">        <span class="n">start</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+</span><span data-line="85">        <span class="n">end</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
+</span><span data-line="86">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AsyncGenerator</span><span class="p">[</span><span class="nb">bytes</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+</span><span data-line="87"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Stream bytes from ``path``</span>
+</span><span data-line="88">
+</span><span data-line="89"><span class="sd">        Args:</span>
+</span><span data-line="90"><span class="sd">            path: Path to read from</span>
+</span><span data-line="91"><span class="sd">            chunksize: Number of bytes to read per chunk</span>
+</span><span data-line="92"><span class="sd">            start: Offset to start reading from</span>
+</span><span data-line="93"><span class="sd">            end: Offset to stop reading at (inclusive)</span>
+</span><span data-line="94"><span class="sd">        &quot;&quot;&quot;</span></div>
+</div>
+
+</span><span data-line="95">
+</span><span data-line="96">
+<div class="viewcode-block" id="LinkableFileSystem">
+<a class="viewcode-back" href="../../reference/file_system.html#litestar.file_system.LinkableFileSystem">[docs]</a>
+</span><span data-line="97"><span class="k">class</span><span class="w"> </span><span class="nc">LinkableFileSystem</span><span class="p">(</span><span class="n">BaseFileSystem</span><span class="p">,</span> <span class="n">abc</span><span class="o">.</span><span class="n">ABC</span><span class="p">):</span>
+</span><span data-line="98"><span class="w">    </span><span class="sd">&quot;&quot;&quot;A file system that supports symlinks&quot;&quot;&quot;</span>
+</span><span data-line="99">
+</span><span data-line="100">    <span class="n">_registry</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">type</span><span class="p">[</span><span class="n">AnyFileSystem</span><span class="p">],</span> <span class="n">SymlinkResolver</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
+</span><span data-line="101">
+<div class="viewcode-block" id="LinkableFileSystem.resolve_symlinks">
+<a class="viewcode-back" href="../../reference/file_system.html#litestar.file_system.LinkableFileSystem.resolve_symlinks">[docs]</a>
+</span><span data-line="102">    <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
+</span><span data-line="103">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">resolve_symlinks</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">PathType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span data-line="104"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return ``path`` with all symlinks resolved&quot;&quot;&quot;</span></div>
+
+</span><span data-line="105">
+<div class="viewcode-block" id="LinkableFileSystem.register_as_linkable">
+<a class="viewcode-back" href="../../reference/file_system.html#litestar.file_system.LinkableFileSystem.register_as_linkable">[docs]</a>
+</span><span data-line="106">    <span class="nd">@classmethod</span>
+</span><span data-line="107">    <span class="k">def</span><span class="w"> </span><span class="nf">register_as_linkable</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">fs_type</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">AnyFileSystem</span><span class="p">],</span> <span class="n">resolver</span><span class="p">:</span> <span class="n">SymlinkResolver</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="108"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Register a file system as &#39;linkable&#39;, i.e. supporting symlinks,</span>
+</span><span data-line="109"><span class="sd">        that does not itself implement :class:`~litestar.file_system.LinkableFileSystem`.</span>
+</span><span data-line="110">
+</span><span data-line="111"><span class="sd">        By default, :class:`fsspec.implementations.local.LocalFileSystem` is registered.</span>
+</span><span data-line="112">
+</span><span data-line="113"><span class="sd">        Args:</span>
+</span><span data-line="114"><span class="sd">            fs_type: The file system type</span>
+</span><span data-line="115"><span class="sd">            resolver: A function that takes in a path and returns an absolute path</span>
+</span><span data-line="116"><span class="sd">                with all symlinks resolved</span>
+</span><span data-line="117">
+</span><span data-line="118"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="119">        <span class="bp">cls</span><span class="o">.</span><span class="n">_registry</span><span class="p">[</span><span class="n">fs_type</span><span class="p">]</span> <span class="o">=</span> <span class="n">resolver</span></div>
+
+</span><span data-line="120">
+<div class="viewcode-block" id="LinkableFileSystem.get_symlink_resolver">
+<a class="viewcode-back" href="../../reference/file_system.html#litestar.file_system.LinkableFileSystem.get_symlink_resolver">[docs]</a>
+</span><span data-line="121">    <span class="nd">@classmethod</span>
+</span><span data-line="122">    <span class="k">def</span><span class="w"> </span><span class="nf">get_symlink_resolver</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">fs</span><span class="p">:</span> <span class="n">AnyFileSystem</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SymlinkResolver</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="123"><span class="w">        </span><span class="sd">&quot;&quot;&quot;For a given file system, get a function to resolve potential symlinks in a path.</span>
+</span><span data-line="124">
+</span><span data-line="125"><span class="sd">        For classes implementing :class:`~litestar.file_system.LinkableFileSystem`,</span>
+</span><span data-line="126"><span class="sd">        their :meth:`~litestar.file_system.LinkableFileSystem.resolve_symlinks` is</span>
+</span><span data-line="127"><span class="sd">        returned. Otherwise, the ``resolver`` registered via</span>
+</span><span data-line="128"><span class="sd">        :class:`~litestar.file_system.LinkableFileSystem.register_as_linkable` will be</span>
+</span><span data-line="129"><span class="sd">        returned.</span>
+</span><span data-line="130"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="131">        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">fs</span><span class="p">,</span> <span class="n">LinkableFileSystem</span><span class="p">):</span>
+</span><span data-line="132">            <span class="k">return</span> <span class="nb">type</span><span class="p">(</span><span class="n">fs</span><span class="p">)</span><span class="o">.</span><span class="n">resolve_symlinks</span>  <span class="c1"># type: ignore[return-value]</span>
+</span><span data-line="133">
+</span><span data-line="134">        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">fs</span><span class="p">,</span> <span class="p">(</span><span class="n">FsspecAsyncWrapper</span><span class="p">,</span> <span class="n">FsspecSyncWrapper</span><span class="p">)):</span>
+</span><span data-line="135">            <span class="n">fs</span> <span class="o">=</span> <span class="n">fs</span><span class="o">.</span><span class="n">wrapped_fs</span>
+</span><span data-line="136">
+</span><span data-line="137">        <span class="k">for</span> <span class="n">fs_type</span><span class="p">,</span> <span class="n">resolver</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_registry</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+</span><span data-line="138">            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">fs</span><span class="p">,</span> <span class="n">fs_type</span><span class="p">):</span>
+</span><span data-line="139">                <span class="k">return</span> <span class="n">resolver</span>
+</span><span data-line="140">
+</span><span data-line="141">        <span class="k">return</span> <span class="kc">None</span></div>
+</div>
+
+</span><span data-line="142">
+</span><span data-line="143">
+</span><span data-line="144"><span class="k">try</span><span class="p">:</span>
+</span><span data-line="145">    <span class="kn">from</span><span class="w"> </span><span class="nn">fsspec.implementations.local</span><span class="w"> </span><span class="kn">import</span> <span class="n">LocalFileSystem</span> <span class="k">as</span> <span class="n">FsspecLocalFileSystem</span>
+</span><span data-line="146">
+</span><span data-line="147">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_resolve_symlink_fsspec_local</span><span class="p">(</span><span class="n">fs</span><span class="p">:</span> <span class="n">AnyFileSystem</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">PathType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span data-line="148">        <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+</span><span data-line="149">
+</span><span data-line="150">    <span class="n">LinkableFileSystem</span><span class="o">.</span><span class="n">register_as_linkable</span><span class="p">(</span><span class="n">FsspecLocalFileSystem</span><span class="p">,</span> <span class="n">_resolve_symlink_fsspec_local</span><span class="p">)</span>
+</span><span data-line="151"><span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+</span><span data-line="152">    <span class="k">pass</span>
+</span><span data-line="153">
+</span><span data-line="154">
+<div class="viewcode-block" id="BaseLocalFileSystem">
+<a class="viewcode-back" href="../../reference/file_system.html#litestar.file_system.BaseLocalFileSystem">[docs]</a>
+</span><span data-line="155"><span class="k">class</span><span class="w"> </span><span class="nc">BaseLocalFileSystem</span><span class="p">(</span><span class="n">LinkableFileSystem</span><span class="p">):</span>
+</span><span data-line="156"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Base class for a local file system.&quot;&quot;&quot;</span>
+</span><span data-line="157">
+</span><span data-line="158">    <span class="k">def</span><span class="w"> </span><span class="nf">_info</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">PathType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FileInfo</span><span class="p">:</span>
+</span><span data-line="159"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a :class:`~litestar.file_system.FileInfo` for the given ``path``&quot;&quot;&quot;</span>
+</span><span data-line="160">        <span class="n">path</span> <span class="o">=</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+</span><span data-line="161">        <span class="n">result</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">stat</span><span class="p">()</span>
+</span><span data-line="162">        <span class="k">return</span> <span class="p">{</span>
+</span><span data-line="163">            <span class="s2">&quot;is_symlink&quot;</span><span class="p">:</span> <span class="n">path</span><span class="o">.</span><span class="n">is_symlink</span><span class="p">(),</span>
+</span><span data-line="164">            <span class="s2">&quot;mtime&quot;</span><span class="p">:</span> <span class="n">result</span><span class="o">.</span><span class="n">st_mtime</span><span class="p">,</span>
+</span><span data-line="165">            <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">),</span>
+</span><span data-line="166">            <span class="s2">&quot;size&quot;</span><span class="p">:</span> <span class="n">result</span><span class="o">.</span><span class="n">st_size</span><span class="p">,</span>
+</span><span data-line="167">            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;directory&quot;</span> <span class="k">if</span> <span class="n">S_ISDIR</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">st_mode</span><span class="p">)</span> <span class="k">else</span> <span class="s2">&quot;file&quot;</span><span class="p">,</span>
+</span><span data-line="168">        <span class="p">}</span>
+</span><span data-line="169">
+<div class="viewcode-block" id="BaseLocalFileSystem.info">
+<a class="viewcode-back" href="../../reference/file_system.html#litestar.file_system.BaseLocalFileSystem.info">[docs]</a>
+</span><span data-line="170">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">info</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">PathType</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FileInfo</span><span class="p">:</span>
+</span><span data-line="171"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a :class:`~litestar.file_system.FileInfo` for the given ``path``&quot;&quot;&quot;</span>
+</span><span data-line="172">        <span class="k">return</span> <span class="k">await</span> <span class="n">sync_to_thread</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_info</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span></div>
+
+</span><span data-line="173">
+<div class="viewcode-block" id="BaseLocalFileSystem.read_bytes">
+<a class="viewcode-back" href="../../reference/file_system.html#litestar.file_system.BaseLocalFileSystem.read_bytes">[docs]</a>
+</span><span data-line="174">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">read_bytes</span><span class="p">(</span>
+</span><span data-line="175">        <span class="bp">self</span><span class="p">,</span>
+</span><span data-line="176">        <span class="n">path</span><span class="p">:</span> <span class="n">PathType</span><span class="p">,</span>
+</span><span data-line="177">        <span class="n">start</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+</span><span data-line="178">        <span class="n">end</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
+</span><span data-line="179">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
+</span><span data-line="180"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Read bytes from ``path``</span>
+</span><span data-line="181">
+</span><span data-line="182"><span class="sd">        Args:</span>
+</span><span data-line="183"><span class="sd">            path: File to read from</span>
+</span><span data-line="184"><span class="sd">            start: Offset to start reading from</span>
+</span><span data-line="185"><span class="sd">            end: Offset to stop reading at (inclusive)</span>
+</span><span data-line="186"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="187">        <span class="c1"># simple case; read the whole thing in one go</span>
+</span><span data-line="188">        <span class="k">if</span> <span class="n">start</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">end</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+</span><span data-line="189">            <span class="k">return</span> <span class="k">await</span> <span class="n">sync_to_thread</span><span class="p">(</span><span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">read_bytes</span><span class="p">)</span>
+</span><span data-line="190">
+</span><span data-line="191">        <span class="c1"># we have either a start or end set, so open explicitly and then seek / read</span>
+</span><span data-line="192">        <span class="n">fh</span><span class="p">:</span> <span class="n">anyio</span><span class="o">.</span><span class="n">AsyncFile</span>
+</span><span data-line="193">        <span class="k">if</span> <span class="n">end</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+</span><span data-line="194">            <span class="n">end</span> <span class="o">=</span> <span class="n">end</span> <span class="o">-</span> <span class="n">start</span>
+</span><span data-line="195">        <span class="k">async</span> <span class="k">with</span> <span class="k">await</span> <span class="n">anyio</span><span class="o">.</span><span class="n">open_file</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fh</span><span class="p">:</span>
+</span><span data-line="196">            <span class="k">if</span> <span class="n">start</span><span class="p">:</span>
+</span><span data-line="197">                <span class="k">await</span> <span class="n">fh</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="n">start</span><span class="p">)</span>
+</span><span data-line="198">            <span class="k">return</span> <span class="k">await</span> <span class="n">fh</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">end</span><span class="p">)</span></div>
+
+</span><span data-line="199">
+<div class="viewcode-block" id="BaseLocalFileSystem.iter">
+<a class="viewcode-back" href="../../reference/file_system.html#litestar.file_system.BaseLocalFileSystem.iter">[docs]</a>
+</span><span data-line="200">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">iter</span><span class="p">(</span>
+</span><span data-line="201">        <span class="bp">self</span><span class="p">,</span>
+</span><span data-line="202">        <span class="n">path</span><span class="p">:</span> <span class="n">PathType</span><span class="p">,</span>
+</span><span data-line="203">        <span class="n">chunksize</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+</span><span data-line="204">        <span class="n">start</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+</span><span data-line="205">        <span class="n">end</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
+</span><span data-line="206">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AsyncGenerator</span><span class="p">[</span><span class="nb">bytes</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+</span><span data-line="207"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Stream bytes from ``path``</span>
+</span><span data-line="208">
+</span><span data-line="209"><span class="sd">        Args:</span>
+</span><span data-line="210"><span class="sd">            path: Path to read from</span>
+</span><span data-line="211"><span class="sd">            chunksize: Number of bytes to read per chunk</span>
+</span><span data-line="212"><span class="sd">            start: Offset to start reading from</span>
+</span><span data-line="213"><span class="sd">            end: Offset to stop reading at (inclusive)</span>
+</span><span data-line="214"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="215">
+</span><span data-line="216">        <span class="n">fh</span><span class="p">:</span> <span class="n">anyio</span><span class="o">.</span><span class="n">AsyncFile</span>
+</span><span data-line="217">        <span class="k">async</span> <span class="k">with</span> <span class="k">await</span> <span class="n">anyio</span><span class="o">.</span><span class="n">open_file</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fh</span><span class="p">:</span>
+</span><span data-line="218">            <span class="k">if</span> <span class="n">start</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+</span><span data-line="219">                <span class="k">await</span> <span class="n">fh</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="n">start</span><span class="p">)</span>
+</span><span data-line="220">
+</span><span data-line="221">            <span class="n">current_pos</span> <span class="o">=</span> <span class="n">start</span>
+</span><span data-line="222">            <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+</span><span data-line="223">                <span class="n">to_read</span> <span class="o">=</span> <span class="n">chunksize</span>
+</span><span data-line="224">                <span class="k">if</span> <span class="n">end</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+</span><span data-line="225">                    <span class="k">if</span> <span class="n">current_pos</span> <span class="o">&gt;=</span> <span class="n">end</span><span class="p">:</span>
+</span><span data-line="226">                        <span class="k">break</span>
+</span><span data-line="227">
+</span><span data-line="228">                    <span class="n">to_read</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">chunksize</span><span class="p">,</span> <span class="n">end</span> <span class="o">-</span> <span class="n">current_pos</span><span class="p">)</span>
+</span><span data-line="229">
+</span><span data-line="230">                <span class="n">chunk</span> <span class="o">=</span> <span class="k">await</span> <span class="n">fh</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">to_read</span><span class="p">)</span>
+</span><span data-line="231">
+</span><span data-line="232">                <span class="k">if</span> <span class="ow">not</span> <span class="n">chunk</span><span class="p">:</span>
+</span><span data-line="233">                    <span class="k">break</span>
+</span><span data-line="234">
+</span><span data-line="235">                <span class="k">yield</span> <span class="n">chunk</span>
+</span><span data-line="236">
+</span><span data-line="237">                <span class="n">current_pos</span> <span class="o">=</span> <span class="k">await</span> <span class="n">fh</span><span class="o">.</span><span class="n">tell</span><span class="p">()</span></div>
+
+</span><span data-line="238">
+<div class="viewcode-block" id="BaseLocalFileSystem.resolve_symlinks">
+<a class="viewcode-back" href="../../reference/file_system.html#litestar.file_system.BaseLocalFileSystem.resolve_symlinks">[docs]</a>
+</span><span data-line="239">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">resolve_symlinks</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">PathType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span data-line="240">        <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="n">path</span><span class="p">)</span></div>
+</div>
+
+</span><span data-line="241">
+</span><span data-line="242">
+<div class="viewcode-block" id="FsspecSyncWrapper">
+<a class="viewcode-back" href="../../reference/file_system.html#litestar.file_system.FsspecSyncWrapper">[docs]</a>
+</span><span data-line="243"><span class="k">class</span><span class="w"> </span><span class="nc">FsspecSyncWrapper</span><span class="p">(</span><span class="n">BaseFileSystem</span><span class="p">):</span>
+<div class="viewcode-block" id="FsspecSyncWrapper.__init__">
+<a class="viewcode-back" href="../../reference/file_system.html#litestar.file_system.FsspecSyncWrapper.__init__">[docs]</a>
+</span><span data-line="244">    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fs</span><span class="p">:</span> <span class="n">FsspecFileSystem</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="245"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Wrap a :class:`fsspec.spec.AbstractFileSystem` to provide a</span>
+</span><span data-line="246"><span class="sd">        :class:`litestar.file_system.BaseFileSystem` compatible interface</span>
+</span><span data-line="247"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="248">        <span class="bp">self</span><span class="o">.</span><span class="n">wrapped_fs</span> <span class="o">=</span> <span class="n">fs</span></div>
+
+</span><span data-line="249">
+<div class="viewcode-block" id="FsspecSyncWrapper.info">
+<a class="viewcode-back" href="../../reference/file_system.html#litestar.file_system.FsspecSyncWrapper.info">[docs]</a>
+</span><span data-line="250">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">info</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">PathType</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FileInfo</span><span class="p">:</span>
+</span><span data-line="251"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a :class:`~litestar.file_system.FileInfo` for the given ``path``.</span>
+</span><span data-line="252">
+</span><span data-line="253"><span class="sd">        Return info verbatim from :meth:`fsspec.spec.AbstractFileSystem.info`, but try to</span>
+</span><span data-line="254"><span class="sd">        patch &#39;mtime&#39; using :func:`litestar.file_system.get_fsspec_mtime_equivalent`.</span>
+</span><span data-line="255"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="256">        <span class="n">result</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="k">await</span> <span class="n">sync_to_thread</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">wrapped_fs</span><span class="o">.</span><span class="n">info</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">),</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</span><span data-line="257">        <span class="n">result</span><span class="p">[</span><span class="s2">&quot;mtime&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">get_fsspec_mtime_equivalent</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+</span><span data-line="258">        <span class="n">result</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;is_symlink&quot;</span><span class="p">,</span> <span class="n">result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;islink&quot;</span><span class="p">))</span>
+</span><span data-line="259">        <span class="k">return</span> <span class="n">cast</span><span class="p">(</span><span class="s2">&quot;FileInfo&quot;</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span></div>
+
+</span><span data-line="260">
+<div class="viewcode-block" id="FsspecSyncWrapper.read_bytes">
+<a class="viewcode-back" href="../../reference/file_system.html#litestar.file_system.FsspecSyncWrapper.read_bytes">[docs]</a>
+</span><span data-line="261">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">read_bytes</span><span class="p">(</span>
+</span><span data-line="262">        <span class="bp">self</span><span class="p">,</span>
+</span><span data-line="263">        <span class="n">path</span><span class="p">:</span> <span class="n">PathType</span><span class="p">,</span>
+</span><span data-line="264">        <span class="n">start</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+</span><span data-line="265">        <span class="n">end</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
+</span><span data-line="266">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
+</span><span data-line="267"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Read bytes from ``path`` using :meth:`fsspec.spec.AbstractFileSystem.cat_file`</span>
+</span><span data-line="268">
+</span><span data-line="269"><span class="sd">        Args:</span>
+</span><span data-line="270"><span class="sd">            path: File to read from</span>
+</span><span data-line="271"><span class="sd">            start: Offset to start reading from</span>
+</span><span data-line="272"><span class="sd">            end: Offset to stop reading at (inclusive)</span>
+</span><span data-line="273"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="274">        <span class="k">return</span> <span class="k">await</span> <span class="n">sync_to_thread</span><span class="p">(</span>
+</span><span data-line="275">            <span class="bp">self</span><span class="o">.</span><span class="n">wrapped_fs</span><span class="o">.</span><span class="n">cat_file</span><span class="p">,</span>  <span class="c1"># pyright: ignore</span>
+</span><span data-line="276">            <span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">),</span>
+</span><span data-line="277">            <span class="n">start</span><span class="o">=</span><span class="n">start</span> <span class="ow">or</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="278">            <span class="n">end</span><span class="o">=</span><span class="n">end</span> <span class="k">if</span> <span class="n">end</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="279">        <span class="p">)</span></div>
+
+</span><span data-line="280">
+<div class="viewcode-block" id="FsspecSyncWrapper.iter">
+<a class="viewcode-back" href="../../reference/file_system.html#litestar.file_system.FsspecSyncWrapper.iter">[docs]</a>
+</span><span data-line="281">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">iter</span><span class="p">(</span>
+</span><span data-line="282">        <span class="bp">self</span><span class="p">,</span>
+</span><span data-line="283">        <span class="n">path</span><span class="p">:</span> <span class="n">PathType</span><span class="p">,</span>
+</span><span data-line="284">        <span class="n">chunksize</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+</span><span data-line="285">        <span class="n">start</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+</span><span data-line="286">        <span class="n">end</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
+</span><span data-line="287">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AsyncGenerator</span><span class="p">[</span><span class="nb">bytes</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+</span><span data-line="288"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Stream bytes from ``path`` using :meth:`fsspec.spec.AbstractFileSystem.open`</span>
+</span><span data-line="289">
+</span><span data-line="290"><span class="sd">        Args:</span>
+</span><span data-line="291"><span class="sd">            path: Path to read from</span>
+</span><span data-line="292"><span class="sd">            chunksize: Number of bytes to read per chunk</span>
+</span><span data-line="293"><span class="sd">            start: Offset to start reading from</span>
+</span><span data-line="294"><span class="sd">            end: Offset to stop reading at (inclusive)</span>
+</span><span data-line="295"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="296">
+</span><span data-line="297">        <span class="n">fh</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="s2">&quot;io.BytesIO&quot;</span><span class="p">,</span> <span class="k">await</span> <span class="n">sync_to_thread</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">wrapped_fs</span><span class="o">.</span><span class="n">open</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">),</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;rb&quot;</span><span class="p">))</span>
+</span><span data-line="298">        <span class="k">try</span><span class="p">:</span>
+</span><span data-line="299">            <span class="k">if</span> <span class="n">start</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+</span><span data-line="300">                <span class="k">await</span> <span class="n">sync_to_thread</span><span class="p">(</span><span class="n">fh</span><span class="o">.</span><span class="n">seek</span><span class="p">,</span> <span class="n">start</span><span class="p">)</span>
+</span><span data-line="301">
+</span><span data-line="302">            <span class="n">to_read</span> <span class="o">=</span> <span class="n">chunksize</span>
+</span><span data-line="303">            <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+</span><span data-line="304">                <span class="k">if</span> <span class="n">end</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+</span><span data-line="305">                    <span class="n">current_pos</span> <span class="o">=</span> <span class="k">await</span> <span class="n">sync_to_thread</span><span class="p">(</span><span class="n">fh</span><span class="o">.</span><span class="n">tell</span><span class="p">)</span>
+</span><span data-line="306">                    <span class="k">if</span> <span class="n">current_pos</span> <span class="o">&gt;=</span> <span class="n">end</span><span class="p">:</span>
+</span><span data-line="307">                        <span class="k">break</span>
+</span><span data-line="308">
+</span><span data-line="309">                    <span class="n">to_read</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">chunksize</span><span class="p">,</span> <span class="n">end</span> <span class="o">-</span> <span class="n">current_pos</span><span class="p">)</span>
+</span><span data-line="310">
+</span><span data-line="311">                <span class="n">chunk</span> <span class="o">=</span> <span class="k">await</span> <span class="n">sync_to_thread</span><span class="p">(</span><span class="n">fh</span><span class="o">.</span><span class="n">read</span><span class="p">,</span> <span class="n">to_read</span><span class="p">)</span>
+</span><span data-line="312">
+</span><span data-line="313">                <span class="k">if</span> <span class="ow">not</span> <span class="n">chunk</span><span class="p">:</span>
+</span><span data-line="314">                    <span class="k">break</span>
+</span><span data-line="315">
+</span><span data-line="316">                <span class="k">yield</span> <span class="n">chunk</span>
+</span><span data-line="317">        <span class="k">finally</span><span class="p">:</span>
+</span><span data-line="318">            <span class="k">await</span> <span class="n">sync_to_thread</span><span class="p">(</span><span class="n">fh</span><span class="o">.</span><span class="n">close</span><span class="p">)</span></div>
+</div>
+
+</span><span data-line="319">
+</span><span data-line="320">
+<div class="viewcode-block" id="FsspecAsyncWrapper">
+<a class="viewcode-back" href="../../reference/file_system.html#litestar.file_system.FsspecAsyncWrapper">[docs]</a>
+</span><span data-line="321"><span class="k">class</span><span class="w"> </span><span class="nc">FsspecAsyncWrapper</span><span class="p">(</span><span class="n">BaseFileSystem</span><span class="p">):</span>
+<div class="viewcode-block" id="FsspecAsyncWrapper.__init__">
+<a class="viewcode-back" href="../../reference/file_system.html#litestar.file_system.FsspecAsyncWrapper.__init__">[docs]</a>
+</span><span data-line="322">    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fs</span><span class="p">:</span> <span class="n">FsspecAsyncFileSystem</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="323"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Wrap a :class:`fsspec.asyn.AsyncFileSystem` to provide a</span>
+</span><span data-line="324"><span class="sd">        class:`litestar.file_system.BaseFileSystem` compatible interface</span>
+</span><span data-line="325">
+</span><span data-line="326"><span class="sd">        Args:</span>
+</span><span data-line="327"><span class="sd">            fs: An :class:`fsspec.asyn.AsyncFileSystem` instantiated with `</span>
+</span><span data-line="328"><span class="sd">                `asynchronous=True``</span>
+</span><span data-line="329"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="330">        <span class="kn">import</span><span class="w"> </span><span class="nn">fsspec.asyn</span>
+</span><span data-line="331">
+</span><span data-line="332">        <span class="bp">self</span><span class="o">.</span><span class="n">wrapped_fs</span> <span class="o">=</span> <span class="n">fs</span>
+</span><span data-line="333">        <span class="c1"># &#39;open_async&#39; may not be implemented</span>
+</span><span data-line="334">        <span class="bp">self</span><span class="o">.</span><span class="n">_supports_open_async</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">fs</span><span class="p">)</span><span class="o">.</span><span class="n">open_async</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">fsspec</span><span class="o">.</span><span class="n">asyn</span><span class="o">.</span><span class="n">AsyncFileSystem</span><span class="o">.</span><span class="n">open_async</span></div>
+
+</span><span data-line="335">
+<div class="viewcode-block" id="FsspecAsyncWrapper.info">
+<a class="viewcode-back" href="../../reference/file_system.html#litestar.file_system.FsspecAsyncWrapper.info">[docs]</a>
+</span><span data-line="336">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">info</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">PathType</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FileInfo</span><span class="p">:</span>
+</span><span data-line="337"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a :class:`~litestar.file_system.FileInfo` for the given ``path``.</span>
+</span><span data-line="338">
+</span><span data-line="339"><span class="sd">        Return info verbatim from ``fsspec.async.AsyncFileSystem._info``, but try</span>
+</span><span data-line="340"><span class="sd">        to patch &#39;mtime&#39; using :func:`litestar.file_system.get_fsspec_mtime_equivalent`.</span>
+</span><span data-line="341"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="342">        <span class="n">result</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">wrapped_fs</span><span class="o">.</span><span class="n">_info</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">),</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</span><span data-line="343">        <span class="n">result</span><span class="p">[</span><span class="s2">&quot;mtime&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">get_fsspec_mtime_equivalent</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+</span><span data-line="344">        <span class="n">result</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;is_symlink&quot;</span><span class="p">,</span> <span class="n">result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;islink&quot;</span><span class="p">))</span>
+</span><span data-line="345">        <span class="k">return</span> <span class="n">cast</span><span class="p">(</span><span class="s2">&quot;FileInfo&quot;</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span></div>
+
+</span><span data-line="346">
+<div class="viewcode-block" id="FsspecAsyncWrapper.read_bytes">
+<a class="viewcode-back" href="../../reference/file_system.html#litestar.file_system.FsspecAsyncWrapper.read_bytes">[docs]</a>
+</span><span data-line="347">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">read_bytes</span><span class="p">(</span>
+</span><span data-line="348">        <span class="bp">self</span><span class="p">,</span>
+</span><span data-line="349">        <span class="n">path</span><span class="p">:</span> <span class="n">PathType</span><span class="p">,</span>
+</span><span data-line="350">        <span class="n">start</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+</span><span data-line="351">        <span class="n">end</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
+</span><span data-line="352">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
+</span><span data-line="353"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Read bytes from ``path`` using ``fsspec.asyn.AsyncFileSystem._cat_file``</span>
+</span><span data-line="354">
+</span><span data-line="355"><span class="sd">        Args:</span>
+</span><span data-line="356"><span class="sd">            path: File to read from</span>
+</span><span data-line="357"><span class="sd">            start: Offset to start reading from</span>
+</span><span data-line="358"><span class="sd">            end: Offset to stop reading at (inclusive)</span>
+</span><span data-line="359"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="360">        <span class="k">return</span> <span class="n">cast</span><span class="p">(</span>
+</span><span data-line="361">            <span class="s2">&quot;bytes&quot;</span><span class="p">,</span>
+</span><span data-line="362">            <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">wrapped_fs</span><span class="o">.</span><span class="n">_cat_file</span><span class="p">(</span>
+</span><span data-line="363">                <span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">),</span>
+</span><span data-line="364">                <span class="n">start</span><span class="o">=</span><span class="n">start</span> <span class="ow">or</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="365">                <span class="n">end</span><span class="o">=</span><span class="n">end</span> <span class="k">if</span> <span class="n">end</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="366">            <span class="p">),</span>
+</span><span data-line="367">        <span class="p">)</span></div>
+
+</span><span data-line="368">
+<div class="viewcode-block" id="FsspecAsyncWrapper.iter">
+<a class="viewcode-back" href="../../reference/file_system.html#litestar.file_system.FsspecAsyncWrapper.iter">[docs]</a>
+</span><span data-line="369">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">iter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">PathType</span><span class="p">,</span> <span class="n">chunksize</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">start</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">end</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AsyncGenerator</span><span class="p">[</span><span class="nb">bytes</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+</span><span data-line="370"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Stream bytes from ``path``.</span>
+</span><span data-line="371">
+</span><span data-line="372"><span class="sd">        If no offsets are given and the file system implements</span>
+</span><span data-line="373"><span class="sd">        ``fsspec.async.AsyncFileSystem.async_open``, use ``async_open``, otherwise read</span>
+</span><span data-line="374"><span class="sd">        chunks manually using ``fsspec.async.AsyncFileSystem._cat_file``</span>
+</span><span data-line="375">
+</span><span data-line="376"><span class="sd">        Args:</span>
+</span><span data-line="377"><span class="sd">            path: Path to read from</span>
+</span><span data-line="378"><span class="sd">            chunksize: Number of bytes to read per chunk</span>
+</span><span data-line="379"><span class="sd">            start: Offset to start reading from</span>
+</span><span data-line="380"><span class="sd">            end: Offset to stop reading at (inclusive)</span>
+</span><span data-line="381"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="382">
+</span><span data-line="383">        <span class="n">path</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+</span><span data-line="384">
+</span><span data-line="385">        <span class="c1"># if we want to stream the whole thing we can use &#39;.open_async&#39; if it&#39;s</span>
+</span><span data-line="386">        <span class="c1"># implemented</span>
+</span><span data-line="387">        <span class="k">if</span> <span class="n">start</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">end</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_supports_open_async</span><span class="p">:</span>
+</span><span data-line="388">            <span class="k">async</span> <span class="k">with</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">wrapped_fs</span><span class="o">.</span><span class="n">open_async</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fh</span><span class="p">:</span>  <span class="c1"># pyright: ignore</span>
+</span><span data-line="389">                <span class="k">while</span> <span class="n">chunk</span> <span class="o">:=</span> <span class="k">await</span> <span class="n">fh</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">chunksize</span><span class="p">):</span>
+</span><span data-line="390">                    <span class="k">yield</span> <span class="n">chunk</span>
+</span><span data-line="391">            <span class="k">return</span>
+</span><span data-line="392">
+</span><span data-line="393">        <span class="c1"># if &#39;open_async&#39; is not implemented, or &#39;start&#39; or &#39;end&#39; are set, we have to do</span>
+</span><span data-line="394">        <span class="c1"># a bit more work.</span>
+</span><span data-line="395">        <span class="c1"># the object returned by open_async()&#39; does not support seek + tell or other</span>
+</span><span data-line="396">        <span class="c1"># mechanisms for reading specific ranges</span>
+</span><span data-line="397">        <span class="c1"># https://github.com/fsspec/filesystem_spec/issues/1772</span>
+</span><span data-line="398">        <span class="n">to_read</span> <span class="o">=</span> <span class="n">chunksize</span>
+</span><span data-line="399">        <span class="n">current_pos</span> <span class="o">=</span> <span class="n">start</span>
+</span><span data-line="400">        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+</span><span data-line="401">            <span class="k">if</span> <span class="n">end</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+</span><span data-line="402">                <span class="k">if</span> <span class="n">current_pos</span> <span class="o">&gt;=</span> <span class="n">end</span><span class="p">:</span>
+</span><span data-line="403">                    <span class="k">break</span>
+</span><span data-line="404">
+</span><span data-line="405">                <span class="n">to_read</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">chunksize</span><span class="p">,</span> <span class="n">end</span> <span class="o">-</span> <span class="n">current_pos</span><span class="p">)</span>
+</span><span data-line="406">
+</span><span data-line="407">            <span class="n">chunk</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_bytes</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="n">current_pos</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="n">current_pos</span> <span class="o">+</span> <span class="n">to_read</span><span class="p">)</span>
+</span><span data-line="408">
+</span><span data-line="409">            <span class="k">if</span> <span class="ow">not</span> <span class="n">chunk</span><span class="p">:</span>
+</span><span data-line="410">                <span class="k">break</span>
+</span><span data-line="411">
+</span><span data-line="412">            <span class="n">current_pos</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">chunk</span><span class="p">)</span>
+</span><span data-line="413">
+</span><span data-line="414">            <span class="k">yield</span> <span class="n">chunk</span></div>
+</div>
+
+</span><span data-line="415">
+</span><span data-line="416">
+<div class="viewcode-block" id="maybe_wrap_fsspec_file_system">
+<a class="viewcode-back" href="../../reference/file_system.html#litestar.file_system.maybe_wrap_fsspec_file_system">[docs]</a>
+</span><span data-line="417"><span class="k">def</span><span class="w"> </span><span class="nf">maybe_wrap_fsspec_file_system</span><span class="p">(</span><span class="n">file_system</span><span class="p">:</span> <span class="n">AnyFileSystem</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BaseFileSystem</span><span class="p">:</span>
+</span><span data-line="418"><span class="w">    </span><span class="sd">&quot;&quot;&quot;If ``file_system`` is an fsspec file system, wrap it in</span>
+</span><span data-line="419"><span class="sd">    :class:`~litestar.file_system.FsspecSyncWrapper` or</span>
+</span><span data-line="420"><span class="sd">    :class:`~litestar.file_system.FsspecAsyncWrapper` depending on its type. If fsspec</span>
+</span><span data-line="421"><span class="sd">    is not installed or ``file_system`` is not an fsspec file system, return</span>
+</span><span data-line="422"><span class="sd">    ``file_system``</span>
+</span><span data-line="423"><span class="sd">    &quot;&quot;&quot;</span>
+</span><span data-line="424">    <span class="k">try</span><span class="p">:</span>
+</span><span data-line="425">        <span class="kn">from</span><span class="w"> </span><span class="nn">fsspec</span><span class="w"> </span><span class="kn">import</span> <span class="n">AbstractFileSystem</span>
+</span><span data-line="426">        <span class="kn">from</span><span class="w"> </span><span class="nn">fsspec.asyn</span><span class="w"> </span><span class="kn">import</span> <span class="n">AsyncFileSystem</span>
+</span><span data-line="427">    <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+</span><span data-line="428">        <span class="k">return</span> <span class="n">cast</span><span class="p">(</span><span class="s2">&quot;BaseFileSystem&quot;</span><span class="p">,</span> <span class="n">file_system</span><span class="p">)</span>
+</span><span data-line="429">
+</span><span data-line="430">    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">file_system</span><span class="p">,</span> <span class="n">AsyncFileSystem</span><span class="p">):</span>
+</span><span data-line="431">        <span class="k">return</span> <span class="n">FsspecAsyncWrapper</span><span class="p">(</span><span class="n">file_system</span><span class="p">)</span>
+</span><span data-line="432">
+</span><span data-line="433">    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">file_system</span><span class="p">,</span> <span class="n">AbstractFileSystem</span><span class="p">):</span>
+</span><span data-line="434">        <span class="k">return</span> <span class="n">FsspecSyncWrapper</span><span class="p">(</span><span class="n">file_system</span><span class="p">)</span>
+</span><span data-line="435">
+</span><span data-line="436">    <span class="k">return</span> <span class="n">file_system</span></div>
+
+</span><span data-line="437">
+</span><span data-line="438">
+<div class="viewcode-block" id="FileSystemRegistry">
+<a class="viewcode-back" href="../../reference/file_system.html#litestar.file_system.FileSystemRegistry">[docs]</a>
+</span><span data-line="439"><span class="k">class</span><span class="w"> </span><span class="nc">FileSystemRegistry</span><span class="p">(</span><span class="n">InitPlugin</span><span class="p">):</span>
+<div class="viewcode-block" id="FileSystemRegistry.__init__">
+<a class="viewcode-back" href="../../reference/file_system.html#litestar.file_system.FileSystemRegistry.__init__">[docs]</a>
+</span><span data-line="440">    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+</span><span data-line="441">        <span class="bp">self</span><span class="p">,</span>
+</span><span data-line="442">        <span class="n">file_systems</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">AnyFileSystem</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="443">        <span class="n">default</span><span class="p">:</span> <span class="n">AnyFileSystem</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="444">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="445"><span class="w">        </span><span class="sd">&quot;&quot;&quot;File system registry</span>
+</span><span data-line="446">
+</span><span data-line="447"><span class="sd">        Args:</span>
+</span><span data-line="448"><span class="sd">            file_systems: A mapping of names to file systems</span>
+</span><span data-line="449"><span class="sd">            default: Default file system to use when no system is specified. If</span>
+</span><span data-line="450"><span class="sd">                ``None``, default to :class:`~litestar.file_system.BaseLocalFileSystem`</span>
+</span><span data-line="451"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="452">        <span class="bp">self</span><span class="o">.</span><span class="n">_adapters</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">BaseFileSystem</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+</span><span data-line="453">        <span class="bp">self</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s2">&quot;file&quot;</span><span class="p">,</span> <span class="n">BaseLocalFileSystem</span><span class="p">())</span>
+</span><span data-line="454">        <span class="k">if</span> <span class="n">file_systems</span><span class="p">:</span>
+</span><span data-line="455">            <span class="k">for</span> <span class="n">scheme</span><span class="p">,</span> <span class="n">fs</span> <span class="ow">in</span> <span class="n">file_systems</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+</span><span data-line="456">                <span class="bp">self</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">scheme</span><span class="p">,</span> <span class="n">fs</span><span class="p">)</span>
+</span><span data-line="457">
+</span><span data-line="458">        <span class="k">if</span> <span class="n">default</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="459">            <span class="bp">self</span><span class="o">.</span><span class="n">_default</span> <span class="o">=</span> <span class="n">maybe_wrap_fsspec_file_system</span><span class="p">(</span><span class="n">default</span><span class="p">)</span>
+</span><span data-line="460">        <span class="k">else</span><span class="p">:</span>
+</span><span data-line="461">            <span class="bp">self</span><span class="o">.</span><span class="n">_default</span> <span class="o">=</span> <span class="n">BaseLocalFileSystem</span><span class="p">()</span></div>
+
+</span><span data-line="462">
+</span><span data-line="463">    <span class="nd">@property</span>
+</span><span data-line="464">    <span class="k">def</span><span class="w"> </span><span class="nf">default</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BaseFileSystem</span><span class="p">:</span>
+</span><span data-line="465"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the default file system&quot;&quot;&quot;</span>
+</span><span data-line="466">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_default</span>
+</span><span data-line="467">
+</span><span data-line="468">    <span class="k">def</span><span class="w"> </span><span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BaseFileSystem</span><span class="p">:</span>
+</span><span data-line="469">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_adapters</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+</span><span data-line="470">
+<div class="viewcode-block" id="FileSystemRegistry.get">
+<a class="viewcode-back" href="../../reference/file_system.html#litestar.file_system.FileSystemRegistry.get">[docs]</a>
+</span><span data-line="471">    <span class="k">def</span><span class="w"> </span><span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BaseFileSystem</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="472"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the file system registered under ``name``. If no matching file system is</span>
+</span><span data-line="473"><span class="sd">        found, return ``None``</span>
+</span><span data-line="474"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="475">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_adapters</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">)</span></div>
+
+</span><span data-line="476">
+<div class="viewcode-block" id="FileSystemRegistry.register">
+<a class="viewcode-back" href="../../reference/file_system.html#litestar.file_system.FileSystemRegistry.register">[docs]</a>
+</span><span data-line="477">    <span class="k">def</span><span class="w"> </span><span class="nf">register</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">fs</span><span class="p">:</span> <span class="n">AnyFileSystem</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="478"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Register a file system ``fs`` under ``name``. If a file system was previously</span>
+</span><span data-line="479"><span class="sd">        registered under this name, it will be overwritten</span>
+</span><span data-line="480"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="481">        <span class="bp">self</span><span class="o">.</span><span class="n">_adapters</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">maybe_wrap_fsspec_file_system</span><span class="p">(</span><span class="n">fs</span><span class="p">)</span></div>
+</div>
+
+</span><span data-line="482">
+</span><span data-line="483">
+</span><span data-line="484"><span class="n">_MTIME_KEYS</span><span class="p">:</span> <span class="n">Final</span> <span class="o">=</span> <span class="p">(</span>
+</span><span data-line="485">    <span class="s2">&quot;mtime&quot;</span><span class="p">,</span>
+</span><span data-line="486">    <span class="s2">&quot;ctime&quot;</span><span class="p">,</span>
+</span><span data-line="487">    <span class="s2">&quot;Last-Modified&quot;</span><span class="p">,</span>
+</span><span data-line="488">    <span class="s2">&quot;updated_at&quot;</span><span class="p">,</span>
+</span><span data-line="489">    <span class="s2">&quot;modification_time&quot;</span><span class="p">,</span>
+</span><span data-line="490">    <span class="s2">&quot;last_changed&quot;</span><span class="p">,</span>
+</span><span data-line="491">    <span class="s2">&quot;change_time&quot;</span><span class="p">,</span>
+</span><span data-line="492">    <span class="s2">&quot;last_modified&quot;</span><span class="p">,</span>
+</span><span data-line="493">    <span class="s2">&quot;last_updated&quot;</span><span class="p">,</span>
+</span><span data-line="494">    <span class="s2">&quot;timestamp&quot;</span><span class="p">,</span>
+</span><span data-line="495"><span class="p">)</span>
+</span><span data-line="496">
+</span><span data-line="497">
+<div class="viewcode-block" id="get_fsspec_mtime_equivalent">
+<a class="viewcode-back" href="../../reference/file_system.html#litestar.file_system.get_fsspec_mtime_equivalent">[docs]</a>
+</span><span data-line="498"><span class="k">def</span><span class="w"> </span><span class="nf">get_fsspec_mtime_equivalent</span><span class="p">(</span><span class="n">info</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="499"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the &#39;mtime&#39; or equivalent for different fsspec implementations, since they</span>
+</span><span data-line="500"><span class="sd">    are not standardized.</span>
+</span><span data-line="501">
+</span><span data-line="502"><span class="sd">    See https://github.com/fsspec/filesystem_spec/issues/526.</span>
+</span><span data-line="503"><span class="sd">    &quot;&quot;&quot;</span>
+</span><span data-line="504">    <span class="c1"># inspired by https://github.com/mdshw5/pyfaidx/blob/cac82f24e9c4e334cf87a92e477b92d4615d260f/pyfaidx/__init__.py#L1318-L1345</span>
+</span><span data-line="505">    <span class="n">mtime</span><span class="p">:</span> <span class="n">Any</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="nb">next</span><span class="p">((</span><span class="n">info</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">_MTIME_KEYS</span> <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">info</span><span class="p">),</span> <span class="kc">None</span><span class="p">)</span>
+</span><span data-line="506">    <span class="k">if</span> <span class="n">mtime</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mtime</span><span class="p">,</span> <span class="nb">float</span><span class="p">):</span>
+</span><span data-line="507">        <span class="k">return</span> <span class="n">mtime</span>
+</span><span data-line="508">    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mtime</span><span class="p">,</span> <span class="n">datetime</span><span class="p">):</span>
+</span><span data-line="509">        <span class="k">return</span> <span class="n">mtime</span><span class="o">.</span><span class="n">timestamp</span><span class="p">()</span>
+</span><span data-line="510">    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mtime</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+</span><span data-line="511">        <span class="k">return</span> <span class="n">datetime</span><span class="o">.</span><span class="n">fromisoformat</span><span class="p">(</span><span class="n">mtime</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;Z&quot;</span><span class="p">,</span> <span class="s2">&quot;+00:00&quot;</span><span class="p">))</span><span class="o">.</span><span class="n">timestamp</span><span class="p">()</span>
+</span><span data-line="512">
+</span><span data-line="513">    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unsupported mtime-type value type </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">mtime</span><span class="p">)</span><span class="si">!r}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+</span></pre></div>
+        </article><button class="back-to-top" type="button">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+  </svg>
+  <span>Back to top</span>
+</button><div class="navigation flex print:hidden"></div></div>
+    </div>
+  </main>
+</div>
+<footer class="sy-foot">
+  <div class="sy-foot-inner sy-container mx-auto">
+    <div class="sy-foot-reserved md:flex justify-between items-center">
+      <div class="sy-foot-copyright"><p>2025, Litestar Organization</p>
+  
+  <p>
+    Made with
+    
+    <a href="https://www.sphinx-doc.org/">Sphinx</a> and
+    
+    <a href="https://shibuya.lepture.com">Shibuya theme</a>.
+  </p>
+</div>
+      <div class="sy-foot-socials">
+<a href="https://twitter.com/LitestarAPI" aria-label="X (Twitter)">
+  <iconify-icon icon="prime:twitter"></iconify-icon>
+</a>
+<a href="https://discord.gg/litestar" aria-label="Discord">
+  <iconify-icon icon="simple-icons:discord"></iconify-icon>
+</a>
+<a href="https://www.reddit.com/r/LitestarAPI" aria-label="Reddit">
+  <iconify-icon icon="simple-icons:reddit"></iconify-icon>
+</a></div>
+    </div>
+  </div>
+</footer>
+      <script src="../../_static/documentation_options.js?v=ad404a94"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../_static/copybutton.js?v=f281be69"></script>
+      <script src="../../_static/litestar-theme.js?v=ab2dcc9e"></script>
+      <script>let toggleHintShow = 'Click to show';</script>
+      <script>let toggleHintHide = 'Click to hide';</script>
+      <script>let toggleOpenOnPrint = 'true';</script>
+      <script src="../../_static/togglebutton.js?v=4a39c7ea"></script>
+      <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+      <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+      <script src="../../_static/shibuya.js?v=c477d091"></script>
+      <script type="module" src="https://cdn.jsdelivr.net/npm/mermaid@11.2.0/dist/mermaid.esm.min.mjs"></script>
+      <script type="module" src="https://cdn.jsdelivr.net/npm/@mermaid-js/layout-elk@0.1.4/dist/mermaid-layout-elk.esm.min.mjs"></script>
+      <script type="module">import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11.2.0/dist/mermaid.esm.min.mjs";import elkLayouts from "https://cdn.jsdelivr.net/npm/@mermaid-js/layout-elk@0.1.4/dist/mermaid-layout-elk.esm.min.mjs";mermaid.registerLayoutLoaders(elkLayouts);mermaid.initialize({startOnLoad:false});</script>
+      <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+      <script type="module">
+import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11.2.0/dist/mermaid.esm.min.mjs";
+window.addEventListener("load", () => mermaid.run());
+</script>
+      <script src="../../_static/versioning.js?v=9ab184b9"></script></body>
+</html>

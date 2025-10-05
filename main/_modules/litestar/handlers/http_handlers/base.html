@@ -1,0 +1,1415 @@
+<!DOCTYPE html>
+<html lang="en" data-accent-color="amber" data-content_root="../../../../">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>litestar.handlers.http_handlers.base - Litestar Framework</title><link rel="shortcut icon" href="../../../../_static/favicon.svg"/><link rel="index" title="Index" href="../../../../genindex.html" /><link rel="search" title="Search" href="../../../../search.html" /><script>
+    function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
+    setColorMode(localStorage._theme||"auto");
+  </script><link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=397bb51e" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/shibuya.css?v=76b6f612" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx_paramlinks.css" />
+    <link media="print" rel="stylesheet" type="text/css" href="../../../../_static/print.css?v=20ff2c19" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/style.css?v=50ea2f63" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/litestar-sphinx-theme.css?v=f8f74789" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --sy-f-text: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
+  --sy-f-heading: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
+}
+</style>
+    <meta property="og:type" content="website"/><meta property="og:title" content="litestar.handlers.http_handlers.base"/>
+<meta name="twitter:card" content="summary"/>
+<meta property="og:image" content="_static/logo-light.png"/>
+  </head>
+<body><div class="announcement">
+    <div class="announcement-inner">
+      <p>You are viewing the <bold>local</bold> version of the documentation. Click here to go to the latest version.</p>
+      <button class="announcement-close" aria-label="Close announcement">
+        <i class="i-lucide close"></i>
+      </button>
+    </div>
+  </div><div class="sy-head">
+  <div class="sy-head-blur"></div>
+  <div class="sy-head-inner sy-container mx-auto">
+    <a class="sy-head-brand" href="/">
+      <img class="light-logo" src="../../../../_static/logo-light.png" alt="Litestar" height="28" loading="lazy" />
+      <img class="dark-logo" src="../../../../_static/logo-dark.png" alt="Litestar" height="28" loading="lazy" />
+      <strong>Litestar</strong>
+    </a>
+    <div class="sy-head-nav" id="head-nav">
+      <nav class="sy-head-links"><ul><li class="link"><a href="../../../../index.html">Home</a></li>
+      <li class="link"><button class="js-menu" type="button" id="nav-trigger-2" aria-controls="nav-children-2">
+            <span>Community</span>
+            <i class="i-lucide chevron-down"></i>
+          </button>
+        <ul id="nav-children-2" aria-labelledby="nav-trigger-2"><li><a href="../../../../contribution-guide.html">
+                <span>Contributing</span>
+                <small>Learn how to contribute to the Litestar project</small>
+              </a></li><li><a href="https://github.com/litestar-org/.github?tab=coc-ov-file">
+                <span>Code of Conduct</span>
+                <small>Review the etiquette for interacting with the Litestar community</small>
+              </a></li><li><a href="https://github.com/litestar-org/.github?tab=coc-ov-file#security-ov-file">
+                <span>Security</span>
+                <small>Overview of Litestar's security protocols</small>
+              </a></li></ul>
+      </li>
+      <li class="link"><button class="js-menu" type="button" id="nav-trigger-3" aria-controls="nav-children-3">
+            <span>About</span>
+            <i class="i-lucide chevron-down"></i>
+          </button>
+        <ul id="nav-children-3" aria-labelledby="nav-trigger-3"><li><a href="https://litestar.dev/about/organization">
+                <span>Litestar Organization</span>
+                <small>Details about the Litestar organization</small>
+              </a></li><li><a href="https://litestar.dev/about/litestar-releases">
+                <span>Releases</span>
+                <small>Explore the release process, versioning, and deprecation policy for Litestar</small>
+              </a></li></ul>
+      </li>
+      <li class="link"><button class="js-menu" type="button" id="nav-trigger-4" aria-controls="nav-children-4">
+            <span>Release notes</span>
+            <i class="i-lucide chevron-down"></i>
+          </button>
+        <ul id="nav-children-4" aria-labelledby="nav-trigger-4"><li><a href="../../../../release-notes/whats-new-3.html">
+                <span>What's new in 3.0</span>
+                <small>Explore the new features in Litestar 3.0</small>
+              </a></li><li><a href="../../../../release-notes/changelog.html">
+                <span>3.x Changelog</span>
+                <small>All changes in the 3.x series</small>
+              </a></li><li><a href="https://docs.litestar.dev/2/release-notes/changelog.html">
+                <span>2.x Changelog</span>
+                <small>All changes in the 2.x series</small>
+              </a></li></ul>
+      </li>
+      <li class="link"><button class="js-menu" type="button" id="nav-trigger-5" aria-controls="nav-children-5">
+            <span>Help</span>
+            <i class="i-lucide chevron-down"></i>
+          </button>
+        <ul id="nav-children-5" aria-labelledby="nav-trigger-5"><li><a href="https://discord.gg/litestar">
+                <span>Discord Help Forum</span>
+                <small>Dedicated Discord help forum</small>
+              </a></li><li><a href="https://github.com/orgs/litestar-org/discussions">
+                <span>GitHub Discussions</span>
+                <small>GitHub Discussions</small>
+              </a></li><li><a href="https://stackoverflow.com/questions/tagged/litestar">
+                <span>Stack Overflow</span>
+                <small>We monitor the <code><b>litestar</b></code> tag on Stack Overflow</small>
+              </a></li></ul>
+      </li><li class="link">
+          <a href="https://github.com/sponsors/Litestar-Org">
+            <span>Sponsor</span></a>
+        </li></ul></nav>
+      <div class="sy-head-extra flex items-center print:hidden"><form class="searchbox flex items-center" action="../../../../search.html" method="get">
+  <input type="text" name="q" placeholder="Search" />
+  <kbd>/</kbd>
+</form><div class="nav-versions">
+    <button type="button" aria-label="Versions">
+      <span class="md:hidden">Versions</span>
+      <span class="hidden md:inline">main</span>
+      <i class="i-lucide chevron-down"></i>
+    </button>
+    <div class="nav-versions-choices"><ul><li><a href="/latest">latest</a></li><li><a href="/main">v3 (development)</a></li><li><a href="/2">v2</a></li><li><a href="/1">v1</a></li></ul></div>
+  </div><div class="sy-head-socials">
+<a href="https://twitter.com/LitestarAPI" aria-label="X (Twitter)">
+  <iconify-icon icon="prime:twitter"></iconify-icon>
+</a>
+  <a href="https://discord.gg/litestar" aria-label="Discord">
+    <iconify-icon icon="simple-icons:discord"></iconify-icon>
+  </a></div></div>
+    </div>
+    <div class="sy-head-actions flex items-center shrink-0 print:hidden"><button class="js-theme theme-switch flex items-center"
+data-aria-auto="Switch to light color mode"
+data-aria-light="Switch to dark color mode"
+data-aria-dark="Switch to auto color mode">
+<i class="i-lucide theme-icon"></i>
+</button><button class="md:hidden flex items-center js-menu" aria-label="Menu" type="button" aria-controls="head-nav" aria-expanded="false">
+        <div class="hamburger">
+          <span class="hamburger_1"></span>
+          <span class="hamburger_2 -translate-x-2"></span>
+          <span class="hamburger_3 -translate-x-1"></span>
+        </div>
+      </button>
+    </div>
+  </div>
+</div>
+<div class="sy-page sy-container flex mx-auto">
+  <aside id="lside" class="sy-lside md:w-72 md:shrink-0 print:hidden">
+    <div class="sy-lside-inner md:sticky">
+      <div class="sy-scrollbar p-6"><div class="sidebar-links">
+  <ul>
+    <li><a class="icon-link" href="https://github.com/orgs/litestar-org/discussions">
+  <span class="icon">
+    <svg viewBox="0 0 24 24" fill="none">
+      <path fill="var(--accent-9)" fill-rule="evenodd" clip-rule="evenodd" d="M11 5a6 6 0 0 0-4.687 9.746c.215.27.315.62.231.954l-.514 2.058a1 1 0 0 0 1.485 1.1l2.848-1.71c.174-.104.374-.15.576-.148H13a6 6 0 0 0 0-12h-2Z"/>
+      <circle fill="white" cx="12" cy="11" r="1"/>
+      <circle fill="white" cx="9" cy="11" r="1"/>
+      <circle fill="white" cx="15" cy="11" r="1"/>
+    </svg>
+  </span>
+  <span class="text">Discussion</span>
+</a></li>
+  </ul>
+</div>
+        <div class="globaltoc" data-expand-depth="0"><p class="caption" role="heading" aria-level="3"><span class="caption-text">Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../getting-started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../usage/index.html">Usage</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../usage/applications.html">Applications</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../usage/routing/index.html">Routing</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../usage/routing/overview.html">Overview</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../usage/routing/handlers.html">Route handlers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../usage/routing/parameters.html">Parameters</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../usage/requests.html">Requests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../usage/caching.html">Caching</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../usage/channels.html">Channels</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../usage/cli.html">CLI</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../usage/databases/index.html">Databases</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../usage/databases/sqlalchemy/index.html">SQLAlchemy</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../usage/databases/sqlalchemy/models_and_repository.html">SQLAlchemy Models &amp; Repository</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../usage/databases/sqlalchemy/plugins/index.html">Plugins</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../usage/databases/piccolo.html">Piccolo ORM</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../usage/debugging.html">Debugging</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../usage/dependency-injection.html">Dependency Injection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../usage/dto/index.html">Data Transfer Object (DTO)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../usage/dto/0-basic-use.html">Basic Use</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../usage/dto/1-abstract-dto.html">AbstractDTO</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../usage/dto/2-creating-custom-dto-classes.html">Implementing Custom DTO Classes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../usage/events.html">Events</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../usage/exceptions.html">Exceptions and exception handling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../usage/file_systems.html">File Systems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../usage/htmx.html">HTMX</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../usage/lifecycle-hooks.html">Life Cycle Hooks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../usage/logging.html">Logging</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../usage/metrics/index.html">Metrics</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../usage/metrics/open-telemetry.html">OpenTelemetry</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../usage/metrics/prometheus.html">Prometheus</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../usage/middleware/index.html">Middleware</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../usage/middleware/using-middleware.html">Using Middleware</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../usage/middleware/builtin-middleware.html">Built-in middleware</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../usage/middleware/creating-middleware.html">Creating Middleware</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../usage/openapi/index.html">OpenAPI</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../usage/openapi/schema_generation.html">Configuring schema generation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../usage/openapi/schema_generation.html#configuring-schema-generation-on-a-route-handler">Configuring schema generation on a route handler</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../usage/openapi/schema_generation.html#accessing-the-openapi-schema-in-code">Accessing the OpenAPI schema in code</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../usage/openapi/schema_generation.html#customizing-pydantic-model-schemas">Customizing Pydantic model schemas</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../usage/openapi/schema_generation.html#customizing-operation-class">Customizing <code class="docutils literal notranslate"><span class="pre">Operation</span></code> class</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../usage/openapi/schema_generation.html#generating-examples">Generating examples</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../usage/openapi/ui_plugins.html">OpenAPI UI Plugins</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../usage/openapi/ui_plugins.html#using-openapi-ui-plugins">Using OpenAPI UI Plugins</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../usage/openapi/ui_plugins.html#configuring-openapi-ui-plugins">Configuring OpenAPI UI Plugins</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../usage/openapi/ui_plugins.html#configuring-the-openapi-root-path">Configuring the OpenAPI Root Path</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../usage/openapi/ui_plugins.html#building-your-own-openapi-ui-plugin">Building your own OpenAPI UI Plugin</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../usage/openapi/ui_plugins.html#interacting-with-the-router">Interacting with the <code class="docutils literal notranslate"><span class="pre">Router</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../usage/openapi/ui_plugins.html#oauth2-in-swagger-ui">OAuth2 in Swagger UI</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../usage/openapi/ui_plugins.html#customizing-the-openapi-ui">Customizing the OpenAPI UI</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../usage/openapi/ui_plugins.html#cdn-and-offline-file-support">CDN and offline file support</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../usage/plugins/index.html">Plugins</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../usage/plugins/flash_messages.html">Flash Messages</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../usage/plugins/problem_details.html">Problem Details</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../usage/responses.html">Responses</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../usage/security/index.html">Security</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../usage/security/abstract-authentication-middleware.html">Implementing Custom Authentication</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../usage/security/security-backends.html">Security Backends</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../usage/security/guards.html">Guards</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../usage/security/excluding-and-including-endpoints.html">Excluding and including endpoints</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../usage/security/jwt.html">JWT Security Backends</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../usage/security/secret-datastructures.html">Handling Secrets</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../usage/static-files.html">Static files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../usage/custom-types.html">Custom types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../usage/stores.html">Stores</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../usage/templating.html">Templating</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../usage/testing.html">Testing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../usage/websockets.html">WebSockets</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../reference/index.html">API reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../reference/app.html">app</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../reference/background_tasks.html">background_tasks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../reference/channels/index.html">channels</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../reference/channels/plugin.html">plugin</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../reference/channels/subscriber.html">subscriber</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../reference/channels/backends/index.html">backends</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../reference/channels/backends/base.html">base</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../reference/channels/backends/memory.html">memory</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../reference/channels/backends/redis.html">redis</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../reference/channels/backends/psycopg.html">psycopg</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../reference/channels/backends/asyncpg.html">asyncpg</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../reference/cli.html">cli</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../reference/config.html">config</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../reference/connection.html">connection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../reference/contrib/index.html">contrib</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../reference/contrib/jinja.html">jinja</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../reference/contrib/mako.html">mako</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../reference/contrib/opentelemetry.html">opentelemetry</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../reference/contrib/sqlalchemy/index.html">sqlalchemy</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../reference/contrib/sqlalchemy/plugins.html">plugins</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../reference/contrib/sqlalchemy/repository.html">repository</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../reference/contrib/sqlalchemy/types.html">types</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../reference/contrib/sqlalchemy/base.html">base</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../reference/contrib/sqlalchemy/dto.html">DTO</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../reference/controller.html">controller</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../reference/concurrency.html">concurrency</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../reference/data_extractors.html">data_extractors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../reference/datastructures/index.html">datastructures</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../reference/datastructures/secret_values.html">secret_values</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../reference/di.html">di</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../reference/dto/index.html">dto</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../reference/dto/config.html">config</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../reference/dto/data_structures.html">data_structures</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../reference/dto/field.html">field</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../reference/dto/types.html">types</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../reference/dto/base_dto.html">base_dto</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../reference/dto/msgspec_dto.html">msgspec_dto</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../reference/dto/dataclass_dto.html">dataclass_dto</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../reference/enums.html">enums</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../reference/events.html">events</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../reference/exceptions.html">exceptions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../reference/file_system.html">file_system</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../reference/handlers.html">handlers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../reference/logging/index.html">logging</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../reference/logging/config.html">config</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../reference/logging/picologging.html">picologging</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../reference/logging/standard.html">standard</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../reference/middleware/index.html">middleware</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../reference/middleware/allowed_hosts.html">allowed_hosts</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../reference/middleware/authentication.html">authentication</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../reference/middleware/compression.html">compression</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../reference/middleware/csrf.html">csrf</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../reference/middleware/logging.html">logging</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../reference/middleware/rate_limit.html">rate_limit</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../reference/middleware/session/index.html">session</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../reference/middleware/session/base.html">base</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../reference/middleware/session/client_side.html">client_side</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../reference/middleware/session/server_side.html">server_side</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../reference/middleware/constraints.html">constraints</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../reference/openapi/index.html">openapi</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../reference/openapi/openapi.html">openapi</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../reference/openapi/plugins.html">plugins</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../reference/openapi/spec.html">spec</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../reference/pagination.html">pagination</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../reference/params.html">params</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../reference/plugins/index.html">plugins</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../reference/plugins/attrs.html">attrs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../reference/plugins/flash_messages.html">flash</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../reference/plugins/htmx.html">htmx</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../reference/plugins/problem_details.html">problem details</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../reference/plugins/prometheus.html">prometheus</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../reference/plugins/pydantic.html">pydantic</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../reference/plugins/structlog.html">structlog</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../reference/plugins/sqlalchemy.html">sqlalchemy</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../reference/repository/index.html">repository</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../reference/repository/abc.html">abc</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../reference/repository/filters.html">filters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../reference/repository/exceptions.html">exceptions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../reference/repository/testing.html">testing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../reference/repository/handlers.html">handlers</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../reference/response/index.html">response</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../reference/response/base.html">base</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../reference/response/file.html">file</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../reference/response/redirect.html">redirect</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../reference/response/streaming.html">streaming</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../reference/response/sse.html">SSE (Server Sent Events)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../reference/response/template.html">template</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../reference/router.html">router</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../reference/routes.html">routes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../reference/security/index.html">security</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../reference/security/jwt.html">jwt</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../reference/security/session_auth.html">session_auth</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../reference/serialization.html">serialization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../reference/static_files.html">static_files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../reference/status_codes.html">status_code</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../reference/stores/index.html">stores</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../reference/stores/base.html">base</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../reference/stores/file.html">file</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../reference/stores/memory.html">memory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../reference/stores/redis.html">redis</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../reference/stores/registry.html">registry</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../reference/stores/valkey.html">valkey</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../reference/template.html">template</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../reference/testing.html">testing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../reference/types.html">types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../reference/typing.html">typing</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../benchmarks.html">Benchmarks</a></li>
+</ul>
+<p class="caption" role="heading" aria-level="3"><span class="caption-text">Guides</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../migration/index.html">Migrating to Litestar</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../migration/flask.html">From Flask</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../migration/fastapi.html">From Starlette / FastAPI</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../topics/index.html">Topics</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../topics/sync-vs-async.html">Sync vs. Async</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../topics/deployment/index.html">Deployment</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../topics/deployment/nginx-unit.html">NGINX Unit</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../topics/deployment/manually-with-asgi-server.html">Manually with ASGI server</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../topics/deployment/docker.html">Docker</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../topics/deployment/supervisor.html">Supervisor (Linux)</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../tutorials/index.html">Tutorials</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../tutorials/todo-app/index.html">Developing a basic TODO application</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../tutorials/todo-app/0-application-basics.html">Application basics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../tutorials/todo-app/1-accessing-the-list.html">Accessing the list</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../tutorials/todo-app/2-interacting-with-the-list.html">Making the list interactive</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../tutorials/todo-app/3-assembling-the-app.html">Recap and assembling the final application</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../tutorials/sqlalchemy/index.html">Improving the TODO app with SQLAlchemy</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../tutorials/sqlalchemy/0-introduction.html">Introduction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../tutorials/sqlalchemy/1-provide-session-with-di.html">Providing the session with DI</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../tutorials/sqlalchemy/2-serialization-plugin.html">Using the serialization plugin</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../tutorials/sqlalchemy/3-init-plugin.html">Using the init plugin</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../tutorials/sqlalchemy/4-final-touches-and-recap.html">Final touches and recap</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../tutorials/dto-tutorial/index.html">Data Transfer Object Tutorial</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../tutorials/dto-tutorial/01-simple-dto-exclude.html">Our first DTO</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../tutorials/dto-tutorial/02-nested-exclude.html">Excluding from nested models</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../tutorials/dto-tutorial/03-nested-collection-exclude.html">Excluding from collections of nested models</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../tutorials/dto-tutorial/04-max-nested-depth.html">Max nested depth</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../tutorials/dto-tutorial/05-renaming-fields.html">Renaming fields</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../tutorials/dto-tutorial/06-receiving-data.html">Receiving data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../tutorials/dto-tutorial/07-read-only-fields.html">Read only fields</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../tutorials/dto-tutorial/08-dto-data.html">Accessing the data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../tutorials/dto-tutorial/09-updating.html">Updating instances</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../tutorials/dto-tutorial/10-layered-dto-declarations.html">Declaring DTOs on app layers</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../tutorials/repository-tutorial/index.html">SQLAlchemy Repository Tutorial</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../tutorials/repository-tutorial/01-modelling-and-features.html">Introduction to Database Modelling and Repository Features</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../tutorials/repository-tutorial/01-modelling-and-features.html#modelling">Modelling</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../tutorials/repository-tutorial/01-modelling-and-features.html#full-code">Full Code</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../tutorials/repository-tutorial/02-repository-introduction.html">Interacting with repositories</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../tutorials/repository-tutorial/02-repository-introduction.html#working-with-bulk-data-operations">Working with Bulk Data Operations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../tutorials/repository-tutorial/02-repository-introduction.html#full-code">Full Code</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../tutorials/repository-tutorial/03-repository-controller.html">Working with Controllers and Repositories</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../tutorials/repository-tutorial/03-repository-controller.html#full-code">Full Code</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../tutorials/repository-tutorial/04-repository-other.html">Adding Additional Features to the Repository</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../tutorials/repository-tutorial/04-repository-other.html#slug-fields">Slug Fields</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../tutorials/repository-tutorial/04-repository-other.html#full-code">Full Code</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading" aria-level="3"><span class="caption-text">Contributing</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../contribution-guide.html">Contribution Guide</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/search?q=user%3Alitestar-org+state%3Aopen+label%3A%22good+first+issue%22+++no%3Aassignee+&amp;type=issues=">Available Issues</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/litestar-org/.github?tab=coc-ov-file#readme">Code of Conduct</a></li>
+</ul>
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="lside-overlay js-menu" role="button" aria-label="Close left sidebar" aria-controls="lside" aria-expanded="false"></div>
+  <aside id="rside" class="sy-rside pb-3 w-64 shrink-0 order-last">
+    <button class="rside-close js-menu xl:hidden" aria-label="Close Table of Contents" type="button" aria-controls="rside" aria-expanded="false">
+      <i class="i-lucide close"></i>
+    </button>
+    <div class="sy-scrollbar sy-rside-inner px-6 xl:top-16 xl:sticky xl:pl-0 pt-6 pb-4"><a class="js-repo-stats repo-stats flex items-center" href="https://github.com/litestar-org/litestar"
+  data-type="github" data-user="litestar-org" data-repo="litestar">
+  <span class="w-8 flex items-center justify-around shrink-0 text-3xl">
+    <iconify-icon icon="simple-icons:github"></iconify-icon>
+  </span>
+  <span class="flex-grow px-2 break-all">
+    <span>litestar-org/litestar</span>
+    <span class="flex text-sm repo-stats-count">
+      <span class="flex items-center pr-3">
+        <iconify-icon icon="lucide:star"></iconify-icon>
+        <strong class="js-repo-stars ml-1">0</strong>
+      </span>
+      <span class="flex items-center">
+        <iconify-icon icon="lucide:git-fork"></iconify-icon>
+        <strong class="js-repo-forks ml-1">0</strong>
+      </span>
+    </span>
+  </span>
+</a><div id="ethical-ad-placement" data-ea-publisher="readthedocs"></div></div>
+  </aside>
+  <div class="rside-overlay js-menu" role="button" aria-label="Close Table of Contents" aria-controls="rside" aria-expanded="false"></div>
+  <main class="sy-main w-full max-sm:max-w-full print:pt-6">
+<div class="sy-breadcrumbs" role="navigation">
+  <div class="sy-breadcrumbs-inner flex items-center">
+    <div class="md:hidden mr-3">
+      <button class="js-menu" aria-label="Menu" type="button" aria-controls="lside" aria-expanded="false">
+        <i class="i-lucide menu"></i>
+      </button>
+    </div>
+    <ol class="flex-1" itemscope itemtype="https://schema.org/BreadcrumbList"><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <a itemprop="item" href="../../../../index.html"><span itemprop="name">Litestar</span></a>
+        <span>/</span>
+        <meta itemprop="position" content="1" />
+      </li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <a itemprop="item" href="../../../index.html"><span itemprop="name">Module code</span></a>
+        <span>/</span>
+        <meta itemprop="position" content="2" />
+      </li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <strong itemprop="name">litestar.handlers.http_handlers.base</strong>
+        <meta itemprop="position" content="3" />
+      </li></ol>
+    <div class="xl:hidden ml-1">
+      <button class="js-menu" aria-label="Show table of contents" type="button" aria-controls="rside"
+        aria-expanded="false">
+        <i class="i-lucide outdent"></i>
+      </button>
+    </div>
+  </div>
+</div><div class="flex flex-col break-words justify-between">
+      <div class="min-w-0 max-w-6xl px-6 pb-6 pt-8 xl:px-12">
+        <article class="yue" role="main">
+          <h1>Source code for litestar.handlers.http_handlers.base</h1><div class="highlight"><pre>
+<span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+</span><span data-line="2">
+</span><span data-line="3"><span class="kn">import</span><span class="w"> </span><span class="nn">contextlib</span>
+</span><span data-line="4"><span class="kn">from</span><span class="w"> </span><span class="nn">enum</span><span class="w"> </span><span class="kn">import</span> <span class="n">Enum</span>
+</span><span data-line="5"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">AnyStr</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">TypedDict</span><span class="p">,</span> <span class="n">cast</span>
+</span><span data-line="6">
+</span><span data-line="7"><span class="kn">from</span><span class="w"> </span><span class="nn">msgspec.msgpack</span><span class="w"> </span><span class="kn">import</span> <span class="n">decode</span> <span class="k">as</span> <span class="n">_decode_msgpack_plain</span>
+</span><span data-line="8">
+</span><span data-line="9"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar._layers.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">narrow_response_cookies</span><span class="p">,</span> <span class="n">narrow_response_headers</span>
+</span><span data-line="10"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.connection</span><span class="w"> </span><span class="kn">import</span> <span class="n">Request</span>
+</span><span data-line="11"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.datastructures</span><span class="w"> </span><span class="kn">import</span> <span class="n">CacheControlHeader</span><span class="p">,</span> <span class="n">ETag</span><span class="p">,</span> <span class="n">FormMultiDict</span><span class="p">,</span> <span class="n">Header</span>
+</span><span data-line="12"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.datastructures.response_header</span><span class="w"> </span><span class="kn">import</span> <span class="n">ResponseHeader</span>
+</span><span data-line="13"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.enums</span><span class="w"> </span><span class="kn">import</span> <span class="n">HttpMethod</span><span class="p">,</span> <span class="n">MediaType</span>
+</span><span data-line="14"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+</span><span data-line="15">    <span class="n">ClientException</span><span class="p">,</span>
+</span><span data-line="16">    <span class="n">HTTPException</span><span class="p">,</span>
+</span><span data-line="17">    <span class="n">ImproperlyConfiguredException</span><span class="p">,</span>
+</span><span data-line="18">    <span class="n">SerializationException</span><span class="p">,</span>
+</span><span data-line="19"><span class="p">)</span>
+</span><span data-line="20"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.handlers.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseRouteHandler</span>
+</span><span data-line="21"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.handlers.http_handlers._utils</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+</span><span data-line="22">    <span class="n">create_data_handler</span><span class="p">,</span>
+</span><span data-line="23">    <span class="n">create_generic_asgi_response_handler</span><span class="p">,</span>
+</span><span data-line="24">    <span class="n">create_response_handler</span><span class="p">,</span>
+</span><span data-line="25">    <span class="n">get_default_status_code</span><span class="p">,</span>
+</span><span data-line="26">    <span class="n">is_empty_response_annotation</span><span class="p">,</span>
+</span><span data-line="27">    <span class="n">normalize_http_method</span><span class="p">,</span>
+</span><span data-line="28"><span class="p">)</span>
+</span><span data-line="29"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.openapi.spec</span><span class="w"> </span><span class="kn">import</span> <span class="n">Operation</span>
+</span><span data-line="30"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.response</span><span class="w"> </span><span class="kn">import</span> <span class="n">File</span><span class="p">,</span> <span class="n">Response</span>
+</span><span data-line="31"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.response.file</span><span class="w"> </span><span class="kn">import</span> <span class="n">ASGIFileResponse</span>
+</span><span data-line="32"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.status_codes</span><span class="w"> </span><span class="kn">import</span> <span class="n">HTTP_204_NO_CONTENT</span><span class="p">,</span> <span class="n">HTTP_304_NOT_MODIFIED</span>
+</span><span data-line="33"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.types</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+</span><span data-line="34">    <span class="n">AfterRequestHookHandler</span><span class="p">,</span>
+</span><span data-line="35">    <span class="n">AfterResponseHookHandler</span><span class="p">,</span>
+</span><span data-line="36">    <span class="n">AnyCallable</span><span class="p">,</span>
+</span><span data-line="37">    <span class="n">ASGIApp</span><span class="p">,</span>
+</span><span data-line="38">    <span class="n">BeforeRequestHookHandler</span><span class="p">,</span>
+</span><span data-line="39">    <span class="n">CacheKeyBuilder</span><span class="p">,</span>
+</span><span data-line="40">    <span class="n">Dependencies</span><span class="p">,</span>
+</span><span data-line="41">    <span class="n">Empty</span><span class="p">,</span>
+</span><span data-line="42">    <span class="n">EmptyType</span><span class="p">,</span>
+</span><span data-line="43">    <span class="n">ExceptionHandlersMap</span><span class="p">,</span>
+</span><span data-line="44">    <span class="n">Guard</span><span class="p">,</span>
+</span><span data-line="45">    <span class="n">Method</span><span class="p">,</span>
+</span><span data-line="46">    <span class="n">Middleware</span><span class="p">,</span>
+</span><span data-line="47">    <span class="n">Receive</span><span class="p">,</span>
+</span><span data-line="48">    <span class="n">ResponseCookies</span><span class="p">,</span>
+</span><span data-line="49">    <span class="n">ResponseHeaders</span><span class="p">,</span>
+</span><span data-line="50">    <span class="n">Scope</span><span class="p">,</span>
+</span><span data-line="51">    <span class="n">Send</span><span class="p">,</span>
+</span><span data-line="52">    <span class="n">TypeEncodersMap</span><span class="p">,</span>
+</span><span data-line="53"><span class="p">)</span>
+</span><span data-line="54"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.types.builtin_types</span><span class="w"> </span><span class="kn">import</span> <span class="n">NoneType</span>
+</span><span data-line="55"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">deprecated</span> <span class="k">as</span> <span class="n">litestar_deprecated</span>
+</span><span data-line="56"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">ensure_async_callable</span>
+</span><span data-line="57"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.utils.empty</span><span class="w"> </span><span class="kn">import</span> <span class="n">value_or_default</span>
+</span><span data-line="58"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.utils.predicates</span><span class="w"> </span><span class="kn">import</span> <span class="n">is_async_callable</span><span class="p">,</span> <span class="n">is_class_and_subclass</span>
+</span><span data-line="59"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.utils.scope.state</span><span class="w"> </span><span class="kn">import</span> <span class="n">ScopeState</span>
+</span><span data-line="60"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.utils.warnings</span><span class="w"> </span><span class="kn">import</span> <span class="n">warn_implicit_sync_to_thread</span><span class="p">,</span> <span class="n">warn_sync_to_thread_with_async_callable</span>
+</span><span data-line="61">
+</span><span data-line="62"><span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+</span><span data-line="63">    <span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Awaitable</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">,</span> <span class="n">Sequence</span>
+</span><span data-line="64">    <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
+</span><span data-line="65">
+</span><span data-line="66">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">Router</span>
+</span><span data-line="67">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar._kwargs</span><span class="w"> </span><span class="kn">import</span> <span class="n">KwargsModel</span>
+</span><span data-line="68">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.background_tasks</span><span class="w"> </span><span class="kn">import</span> <span class="n">BackgroundTask</span><span class="p">,</span> <span class="n">BackgroundTasks</span>
+</span><span data-line="69">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.config.response_cache</span><span class="w"> </span><span class="kn">import</span> <span class="n">CACHE_FOREVER</span>
+</span><span data-line="70">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.datastructures.cookie</span><span class="w"> </span><span class="kn">import</span> <span class="n">Cookie</span>
+</span><span data-line="71">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.dto</span><span class="w"> </span><span class="kn">import</span> <span class="n">AbstractDTO</span>
+</span><span data-line="72">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.openapi.datastructures</span><span class="w"> </span><span class="kn">import</span> <span class="n">ResponseSpec</span>
+</span><span data-line="73">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.openapi.spec</span><span class="w"> </span><span class="kn">import</span> <span class="n">SecurityRequirement</span>
+</span><span data-line="74">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.routes</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseRoute</span>
+</span><span data-line="75">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.types.callable_types</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+</span><span data-line="76">        <span class="n">AsyncAfterRequestHookHandler</span><span class="p">,</span>
+</span><span data-line="77">        <span class="n">AsyncAfterResponseHookHandler</span><span class="p">,</span>
+</span><span data-line="78">        <span class="n">AsyncAnyCallable</span><span class="p">,</span>
+</span><span data-line="79">        <span class="n">AsyncBeforeRequestHookHandler</span><span class="p">,</span>
+</span><span data-line="80">        <span class="n">OperationIDCreator</span><span class="p">,</span>
+</span><span data-line="81">    <span class="p">)</span>
+</span><span data-line="82">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.types.composite_types</span><span class="w"> </span><span class="kn">import</span> <span class="n">ParametersMap</span><span class="p">,</span> <span class="n">TypeDecodersSequence</span>
+</span><span data-line="83">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">FieldDefinition</span>
+</span><span data-line="84">
+</span><span data-line="85"><span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;HTTPRouteHandler&quot;</span><span class="p">,)</span>
+</span><span data-line="86">
+</span><span data-line="87">
+</span><span data-line="88"><span class="k">class</span><span class="w"> </span><span class="nc">ResponseHandlerMap</span><span class="p">(</span><span class="n">TypedDict</span><span class="p">):</span>
+</span><span data-line="89">    <span class="n">default_handler</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Any</span><span class="p">],</span> <span class="n">Awaitable</span><span class="p">[</span><span class="n">ASGIApp</span><span class="p">]]</span> <span class="o">|</span> <span class="n">EmptyType</span>
+</span><span data-line="90">    <span class="n">response_type_handler</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Any</span><span class="p">],</span> <span class="n">Awaitable</span><span class="p">[</span><span class="n">ASGIApp</span><span class="p">]]</span> <span class="o">|</span> <span class="n">EmptyType</span>
+</span><span data-line="91">
+</span><span data-line="92">
+<div class="viewcode-block" id="HTTPRouteHandler">
+<a class="viewcode-back" href="../../../../reference/handlers.html#litestar.handlers.HTTPRouteHandler">[docs]</a>
+</span><span data-line="93"><span class="k">class</span><span class="w"> </span><span class="nc">HTTPRouteHandler</span><span class="p">(</span><span class="n">BaseRouteHandler</span><span class="p">):</span>
+</span><span data-line="94">    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span>
+</span><span data-line="95">        <span class="s2">&quot;_default_response_handler&quot;</span><span class="p">,</span>
+</span><span data-line="96">        <span class="s2">&quot;_include_in_schema&quot;</span><span class="p">,</span>
+</span><span data-line="97">        <span class="s2">&quot;_kwargs_models&quot;</span><span class="p">,</span>
+</span><span data-line="98">        <span class="s2">&quot;_request_class&quot;</span><span class="p">,</span>
+</span><span data-line="99">        <span class="s2">&quot;_request_max_body_size&quot;</span><span class="p">,</span>
+</span><span data-line="100">        <span class="s2">&quot;_response_class&quot;</span><span class="p">,</span>
+</span><span data-line="101">        <span class="s2">&quot;_response_type_handler&quot;</span><span class="p">,</span>
+</span><span data-line="102">        <span class="s2">&quot;_sync_to_thread&quot;</span><span class="p">,</span>
+</span><span data-line="103">        <span class="s2">&quot;after_request&quot;</span><span class="p">,</span>
+</span><span data-line="104">        <span class="s2">&quot;after_response&quot;</span><span class="p">,</span>
+</span><span data-line="105">        <span class="s2">&quot;background&quot;</span><span class="p">,</span>
+</span><span data-line="106">        <span class="s2">&quot;before_request&quot;</span><span class="p">,</span>
+</span><span data-line="107">        <span class="s2">&quot;cache&quot;</span><span class="p">,</span>
+</span><span data-line="108">        <span class="s2">&quot;cache_control&quot;</span><span class="p">,</span>
+</span><span data-line="109">        <span class="s2">&quot;cache_key_builder&quot;</span><span class="p">,</span>
+</span><span data-line="110">        <span class="s2">&quot;content_encoding&quot;</span><span class="p">,</span>
+</span><span data-line="111">        <span class="s2">&quot;content_media_type&quot;</span><span class="p">,</span>
+</span><span data-line="112">        <span class="s2">&quot;deprecated&quot;</span><span class="p">,</span>
+</span><span data-line="113">        <span class="s2">&quot;description&quot;</span><span class="p">,</span>
+</span><span data-line="114">        <span class="s2">&quot;etag&quot;</span><span class="p">,</span>
+</span><span data-line="115">        <span class="s2">&quot;has_sync_callable&quot;</span><span class="p">,</span>
+</span><span data-line="116">        <span class="s2">&quot;http_methods&quot;</span><span class="p">,</span>
+</span><span data-line="117">        <span class="s2">&quot;media_type&quot;</span><span class="p">,</span>
+</span><span data-line="118">        <span class="s2">&quot;operation_class&quot;</span><span class="p">,</span>
+</span><span data-line="119">        <span class="s2">&quot;operation_id&quot;</span><span class="p">,</span>
+</span><span data-line="120">        <span class="s2">&quot;raises&quot;</span><span class="p">,</span>
+</span><span data-line="121">        <span class="s2">&quot;response_cookies&quot;</span><span class="p">,</span>
+</span><span data-line="122">        <span class="s2">&quot;response_description&quot;</span><span class="p">,</span>
+</span><span data-line="123">        <span class="s2">&quot;response_headers&quot;</span><span class="p">,</span>
+</span><span data-line="124">        <span class="s2">&quot;responses&quot;</span><span class="p">,</span>
+</span><span data-line="125">        <span class="s2">&quot;security&quot;</span><span class="p">,</span>
+</span><span data-line="126">        <span class="s2">&quot;status_code&quot;</span><span class="p">,</span>
+</span><span data-line="127">        <span class="s2">&quot;summary&quot;</span><span class="p">,</span>
+</span><span data-line="128">        <span class="s2">&quot;tags&quot;</span><span class="p">,</span>
+</span><span data-line="129">    <span class="p">)</span>
+</span><span data-line="130">
+<div class="viewcode-block" id="HTTPRouteHandler.__init__">
+<a class="viewcode-back" href="../../../../reference/handlers.html#litestar.handlers.HTTPRouteHandler.__init__">[docs]</a>
+</span><span data-line="131">    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+</span><span data-line="132">        <span class="bp">self</span><span class="p">,</span>
+</span><span data-line="133">        <span class="n">path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="134">        <span class="o">*</span><span class="p">,</span>
+</span><span data-line="135">        <span class="n">fn</span><span class="p">:</span> <span class="n">AnyCallable</span><span class="p">,</span>
+</span><span data-line="136">        <span class="n">after_request</span><span class="p">:</span> <span class="n">AfterRequestHookHandler</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="137">        <span class="n">after_response</span><span class="p">:</span> <span class="n">AfterResponseHookHandler</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="138">        <span class="n">background</span><span class="p">:</span> <span class="n">BackgroundTask</span> <span class="o">|</span> <span class="n">BackgroundTasks</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="139">        <span class="n">before_request</span><span class="p">:</span> <span class="n">BeforeRequestHookHandler</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="140">        <span class="n">cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">type</span><span class="p">[</span><span class="n">CACHE_FOREVER</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+</span><span data-line="141">        <span class="n">cache_control</span><span class="p">:</span> <span class="n">CacheControlHeader</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="142">        <span class="n">cache_key_builder</span><span class="p">:</span> <span class="n">CacheKeyBuilder</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="143">        <span class="n">dependencies</span><span class="p">:</span> <span class="n">Dependencies</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="144">        <span class="n">dto</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">AbstractDTO</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">|</span> <span class="n">EmptyType</span> <span class="o">=</span> <span class="n">Empty</span><span class="p">,</span>
+</span><span data-line="145">        <span class="n">etag</span><span class="p">:</span> <span class="n">ETag</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="146">        <span class="n">exception_handlers</span><span class="p">:</span> <span class="n">ExceptionHandlersMap</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="147">        <span class="n">guards</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Guard</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="148">        <span class="n">http_method</span><span class="p">:</span> <span class="n">Method</span> <span class="o">|</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Method</span><span class="p">],</span>
+</span><span data-line="149">        <span class="n">media_type</span><span class="p">:</span> <span class="n">MediaType</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="150">        <span class="n">middleware</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Middleware</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="151">        <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="152">        <span class="n">opt</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="153">        <span class="n">request_class</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">Request</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="154">        <span class="n">request_max_body_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">|</span> <span class="n">EmptyType</span> <span class="o">=</span> <span class="n">Empty</span><span class="p">,</span>
+</span><span data-line="155">        <span class="n">response_class</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">Response</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="156">        <span class="n">response_cookies</span><span class="p">:</span> <span class="n">ResponseCookies</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="157">        <span class="n">response_headers</span><span class="p">:</span> <span class="n">ResponseHeaders</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="158">        <span class="n">return_dto</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">AbstractDTO</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">|</span> <span class="n">EmptyType</span> <span class="o">=</span> <span class="n">Empty</span><span class="p">,</span>
+</span><span data-line="159">        <span class="n">status_code</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="160">        <span class="n">sync_to_thread</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="161">        <span class="c1"># OpenAPI related attributes</span>
+</span><span data-line="162">        <span class="n">content_encoding</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="163">        <span class="n">content_media_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="164">        <span class="n">deprecated</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+</span><span data-line="165">        <span class="n">description</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="166">        <span class="n">include_in_schema</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="n">EmptyType</span> <span class="o">=</span> <span class="n">Empty</span><span class="p">,</span>
+</span><span data-line="167">        <span class="n">operation_class</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">Operation</span><span class="p">]</span> <span class="o">=</span> <span class="n">Operation</span><span class="p">,</span>
+</span><span data-line="168">        <span class="n">operation_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">OperationIDCreator</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="169">        <span class="n">raises</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">type</span><span class="p">[</span><span class="n">HTTPException</span><span class="p">]]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="170">        <span class="n">response_description</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="171">        <span class="n">responses</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">ResponseSpec</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="172">        <span class="n">signature_namespace</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="173">        <span class="n">security</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">SecurityRequirement</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="174">        <span class="n">summary</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="175">        <span class="n">tags</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="176">        <span class="n">type_decoders</span><span class="p">:</span> <span class="n">TypeDecodersSequence</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="177">        <span class="n">type_encoders</span><span class="p">:</span> <span class="n">TypeEncodersMap</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="178">        <span class="n">parameters</span><span class="p">:</span> <span class="n">ParametersMap</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="179">        <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+</span><span data-line="180">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="181"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Route handler for HTTP routes.</span>
+</span><span data-line="182">
+</span><span data-line="183"><span class="sd">        Args:</span>
+</span><span data-line="184"><span class="sd">            path: A path fragment for the route handler function or a sequence of path fragments.</span>
+</span><span data-line="185"><span class="sd">                If not given defaults to ``/``</span>
+</span><span data-line="186"><span class="sd">            fn: The handler function</span>
+</span><span data-line="187"><span class="sd">            after_request: A sync or async function executed before a :class:`Request &lt;.connection.Request&gt;` is passed</span>
+</span><span data-line="188"><span class="sd">                to any route handler. If this function returns a value, the request will not reach the route handler,</span>
+</span><span data-line="189"><span class="sd">                and instead this value will be used.</span>
+</span><span data-line="190"><span class="sd">            after_response: A sync or async function called after the response has been awaited. It receives the</span>
+</span><span data-line="191"><span class="sd">                :class:`Request &lt;.connection.Request&gt;` object and should not return any values.</span>
+</span><span data-line="192"><span class="sd">            background: A :class:`BackgroundTask &lt;.background_tasks.BackgroundTask&gt;` instance or</span>
+</span><span data-line="193"><span class="sd">                :class:`BackgroundTasks &lt;.background_tasks.BackgroundTasks&gt;` to execute after the response is finished.</span>
+</span><span data-line="194"><span class="sd">                Defaults to ``None``.</span>
+</span><span data-line="195"><span class="sd">            before_request: A sync or async function called immediately before calling the route handler. Receives</span>
+</span><span data-line="196"><span class="sd">                the :class:`Request &lt;.connection.Request&gt;` instance and any non-``None`` return value is used for the</span>
+</span><span data-line="197"><span class="sd">                response, bypassing the route handler.</span>
+</span><span data-line="198"><span class="sd">            cache: Enables response caching if configured on the application level. Valid values are ``True`` or a</span>
+</span><span data-line="199"><span class="sd">                number of seconds (e.g. ``120``) to cache the response.</span>
+</span><span data-line="200"><span class="sd">            cache_control: A ``cache-control`` header of type</span>
+</span><span data-line="201"><span class="sd">                :class:`CacheControlHeader &lt;.datastructures.CacheControlHeader&gt;` that will be added to the response.</span>
+</span><span data-line="202"><span class="sd">            cache_key_builder: A :class:`cache-key builder function &lt;.types.CacheKeyBuilder&gt;`. Allows for customization</span>
+</span><span data-line="203"><span class="sd">                of the cache key if caching is configured on the application level.</span>
+</span><span data-line="204"><span class="sd">            dependencies: A string keyed mapping of dependency :class:`Provider &lt;.di.Provide&gt;` instances.</span>
+</span><span data-line="205"><span class="sd">            dto: :class:`AbstractDTO &lt;.dto.base_dto.AbstractDTO&gt;` to use for (de)serializing and</span>
+</span><span data-line="206"><span class="sd">                validation of request data.</span>
+</span><span data-line="207"><span class="sd">            etag: An ``etag`` header of type :class:`ETag &lt;.datastructures.ETag&gt;` that will be added to the response.</span>
+</span><span data-line="208"><span class="sd">            exception_handlers: A mapping of status codes and/or exception types to handler functions.</span>
+</span><span data-line="209"><span class="sd">            guards: A sequence of :class:`Guard &lt;.types.Guard&gt;` callables.</span>
+</span><span data-line="210"><span class="sd">            http_method: An :class:`http method string &lt;.types.Method&gt;`, a member of the enum</span>
+</span><span data-line="211"><span class="sd">                :class:`HttpMethod &lt;.enums.HttpMethod&gt;` or a list of these that correlates to the methods the route</span>
+</span><span data-line="212"><span class="sd">                handler function should handle.</span>
+</span><span data-line="213"><span class="sd">            media_type: A member of the :class:`MediaType &lt;.enums.MediaType&gt;` enum or a string with a valid IANA</span>
+</span><span data-line="214"><span class="sd">                Media-Type.</span>
+</span><span data-line="215"><span class="sd">            middleware: A sequence of :class:`Middleware &lt;.types.Middleware&gt;`.</span>
+</span><span data-line="216"><span class="sd">            name: A string identifying the route handler.</span>
+</span><span data-line="217"><span class="sd">            opt: A string keyed mapping of arbitrary values that can be accessed in :class:`Guards &lt;.types.Guard&gt;` or</span>
+</span><span data-line="218"><span class="sd">                wherever you have access to :class:`Request &lt;.connection.Request&gt;` or</span>
+</span><span data-line="219"><span class="sd">                :class:`ASGI Scope &lt;.types.Scope&gt;`.</span>
+</span><span data-line="220"><span class="sd">            request_class: A custom subclass of :class:`Request &lt;.connection.Request&gt;` to be used as route handler&#39;s</span>
+</span><span data-line="221"><span class="sd">                default request.</span>
+</span><span data-line="222"><span class="sd">            request_max_body_size: Maximum allowed size of the request body in bytes. If this size is exceeded,</span>
+</span><span data-line="223"><span class="sd">                a &#39;413 - Request Entity Too Large&#39; error response is returned.</span>
+</span><span data-line="224"><span class="sd">            response_class: A custom subclass of :class:`Response &lt;.response.Response&gt;` to be used as route handler&#39;s</span>
+</span><span data-line="225"><span class="sd">                default response.</span>
+</span><span data-line="226"><span class="sd">            response_cookies: A sequence of :class:`Cookie &lt;.datastructures.Cookie&gt;` instances.</span>
+</span><span data-line="227"><span class="sd">            response_headers: A string keyed mapping of :class:`ResponseHeader &lt;.datastructures.ResponseHeader&gt;`</span>
+</span><span data-line="228"><span class="sd">                instances.</span>
+</span><span data-line="229"><span class="sd">            responses: A mapping of additional status codes and a description of their expected content.</span>
+</span><span data-line="230"><span class="sd">                This information will be included in the OpenAPI schema</span>
+</span><span data-line="231"><span class="sd">            return_dto: :class:`AbstractDTO &lt;.dto.base_dto.AbstractDTO&gt;` to use for serializing</span>
+</span><span data-line="232"><span class="sd">                outbound response data.</span>
+</span><span data-line="233"><span class="sd">            signature_namespace: A mapping of names to types for use in forward reference resolution during signature modelling.</span>
+</span><span data-line="234"><span class="sd">            status_code: An http status code for the response. Defaults to ``200`` for ``GET``, ``PUT`` and ``PATCH``,</span>
+</span><span data-line="235"><span class="sd">                ``201`` for ``POST`` and ``204`` for ``DELETE``. For mixed method requests it will check for ``POST`` and ``DELETE`` first</span>
+</span><span data-line="236"><span class="sd">                then defaults to ``200``.</span>
+</span><span data-line="237"><span class="sd">            sync_to_thread: A boolean dictating whether the handler function will be executed in a worker thread or the</span>
+</span><span data-line="238"><span class="sd">                main event loop. This has an effect only for sync handler functions. See using sync handler functions.</span>
+</span><span data-line="239"><span class="sd">            content_encoding: A string describing the encoding of the content, e.g. ``&quot;base64&quot;``.</span>
+</span><span data-line="240"><span class="sd">            content_media_type: A string designating the media-type of the content, e.g. ``&quot;image/png&quot;``.</span>
+</span><span data-line="241"><span class="sd">            deprecated:  A boolean dictating whether this route should be marked as deprecated in the OpenAPI schema.</span>
+</span><span data-line="242"><span class="sd">            description: Text used for the route&#39;s schema description section.</span>
+</span><span data-line="243"><span class="sd">            include_in_schema: A boolean flag dictating whether  the route handler should be documented in the OpenAPI schema.</span>
+</span><span data-line="244"><span class="sd">            operation_class: :class:`Operation &lt;.openapi.spec.operation.Operation&gt;` to be used with the route&#39;s OpenAPI schema.</span>
+</span><span data-line="245"><span class="sd">            operation_id: Either a string or a callable returning a string. An identifier used for the route&#39;s schema operationId.</span>
+</span><span data-line="246">
+</span><span data-line="247"><span class="sd">            raises:  A list of exception classes extending from litestar.HttpException that is used for the OpenAPI documentation.</span>
+</span><span data-line="248"><span class="sd">                This list should describe all exceptions raised within the route handler&#39;s function/method. The Litestar</span>
+</span><span data-line="249"><span class="sd">                ValidationException will be added automatically for the schema if any validation is involved.</span>
+</span><span data-line="250"><span class="sd">            response_description: Text used for the route&#39;s response schema description section.</span>
+</span><span data-line="251"><span class="sd">            security: A sequence of dictionaries that contain information about which security scheme can be used on the endpoint.</span>
+</span><span data-line="252"><span class="sd">            summary: Text used for the route&#39;s schema summary section.</span>
+</span><span data-line="253"><span class="sd">            tags: A sequence of string tags that will be appended to the OpenAPI schema.</span>
+</span><span data-line="254"><span class="sd">            type_decoders: A sequence of tuples, each composed of a predicate testing for type identity and a msgspec hook for deserialization.</span>
+</span><span data-line="255"><span class="sd">            type_encoders: A mapping of types to callables that transform them into types supported for serialization.</span>
+</span><span data-line="256"><span class="sd">            parameters: A mapping of :func:`Parameter &lt;.params.Parameter&gt;` definitions</span>
+</span><span data-line="257"><span class="sd">            **kwargs: Any additional kwarg - will be set in the opt dictionary.</span>
+</span><span data-line="258"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="259">        <span class="k">if</span> <span class="ow">not</span> <span class="n">http_method</span><span class="p">:</span>
+</span><span data-line="260">            <span class="k">raise</span> <span class="n">ImproperlyConfiguredException</span><span class="p">(</span><span class="s2">&quot;An http_method kwarg is required&quot;</span><span class="p">)</span>
+</span><span data-line="261">
+</span><span data-line="262">        <span class="bp">self</span><span class="o">.</span><span class="n">http_methods</span> <span class="o">=</span> <span class="n">normalize_http_method</span><span class="p">(</span><span class="n">http_methods</span><span class="o">=</span><span class="n">http_method</span><span class="p">)</span>
+</span><span data-line="263">        <span class="bp">self</span><span class="o">.</span><span class="n">status_code</span> <span class="o">=</span> <span class="n">status_code</span> <span class="ow">or</span> <span class="n">get_default_status_code</span><span class="p">(</span><span class="n">http_methods</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">http_methods</span><span class="p">)</span>
+</span><span data-line="264">        <span class="bp">self</span><span class="o">.</span><span class="n">_sync_to_thread</span> <span class="o">=</span> <span class="n">sync_to_thread</span>
+</span><span data-line="265">
+</span><span data-line="266">        <span class="k">if</span> <span class="ow">not</span> <span class="n">is_async_callable</span><span class="p">(</span><span class="n">fn</span><span class="p">):</span>
+</span><span data-line="267">            <span class="k">if</span> <span class="n">sync_to_thread</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="268">                <span class="n">warn_implicit_sync_to_thread</span><span class="p">(</span><span class="n">fn</span><span class="p">,</span> <span class="n">stacklevel</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+</span><span data-line="269">        <span class="k">elif</span> <span class="n">sync_to_thread</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="270">            <span class="n">warn_sync_to_thread_with_async_callable</span><span class="p">(</span><span class="n">fn</span><span class="p">,</span> <span class="n">stacklevel</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+</span><span data-line="271">
+</span><span data-line="272">        <span class="n">has_sync_callable</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">is_async_callable</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span>
+</span><span data-line="273">
+</span><span data-line="274">        <span class="k">if</span> <span class="n">has_sync_callable</span> <span class="ow">and</span> <span class="n">sync_to_thread</span><span class="p">:</span>
+</span><span data-line="275">            <span class="n">fn</span> <span class="o">=</span> <span class="n">ensure_async_callable</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span>
+</span><span data-line="276">            <span class="n">has_sync_callable</span> <span class="o">=</span> <span class="kc">False</span>
+</span><span data-line="277">        <span class="bp">self</span><span class="o">.</span><span class="n">has_sync_callable</span> <span class="o">=</span> <span class="n">has_sync_callable</span>
+</span><span data-line="278">
+</span><span data-line="279">        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+</span><span data-line="280">            <span class="n">fn</span><span class="o">=</span><span class="n">fn</span><span class="p">,</span>
+</span><span data-line="281">            <span class="n">path</span><span class="o">=</span><span class="n">path</span><span class="p">,</span>
+</span><span data-line="282">            <span class="n">dependencies</span><span class="o">=</span><span class="n">dependencies</span><span class="p">,</span>
+</span><span data-line="283">            <span class="n">dto</span><span class="o">=</span><span class="n">dto</span><span class="p">,</span>
+</span><span data-line="284">            <span class="n">exception_handlers</span><span class="o">=</span><span class="n">exception_handlers</span><span class="p">,</span>
+</span><span data-line="285">            <span class="n">guards</span><span class="o">=</span><span class="n">guards</span><span class="p">,</span>
+</span><span data-line="286">            <span class="n">middleware</span><span class="o">=</span><span class="n">middleware</span><span class="p">,</span>
+</span><span data-line="287">            <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
+</span><span data-line="288">            <span class="n">opt</span><span class="o">=</span><span class="n">opt</span><span class="p">,</span>
+</span><span data-line="289">            <span class="n">return_dto</span><span class="o">=</span><span class="n">return_dto</span><span class="p">,</span>
+</span><span data-line="290">            <span class="n">signature_namespace</span><span class="o">=</span><span class="n">signature_namespace</span><span class="p">,</span>
+</span><span data-line="291">            <span class="n">type_decoders</span><span class="o">=</span><span class="n">type_decoders</span><span class="p">,</span>
+</span><span data-line="292">            <span class="n">type_encoders</span><span class="o">=</span><span class="n">type_encoders</span><span class="p">,</span>
+</span><span data-line="293">            <span class="n">parameters</span><span class="o">=</span><span class="n">parameters</span><span class="p">,</span>
+</span><span data-line="294">            <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+</span><span data-line="295">        <span class="p">)</span>
+</span><span data-line="296">
+</span><span data-line="297">        <span class="bp">self</span><span class="o">.</span><span class="n">after_request</span><span class="p">:</span> <span class="n">AsyncAfterRequestHookHandler</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="p">(</span>
+</span><span data-line="298">            <span class="n">ensure_async_callable</span><span class="p">(</span><span class="n">after_request</span><span class="p">)</span> <span class="k">if</span> <span class="n">after_request</span> <span class="k">else</span> <span class="kc">None</span>  <span class="c1"># type: ignore[assignment]</span>
+</span><span data-line="299">        <span class="p">)</span>
+</span><span data-line="300">        <span class="bp">self</span><span class="o">.</span><span class="n">after_response</span><span class="p">:</span> <span class="n">AsyncAfterResponseHookHandler</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="p">(</span>  <span class="c1"># pyright: ignore</span>
+</span><span data-line="301">            <span class="n">ensure_async_callable</span><span class="p">(</span><span class="n">after_response</span><span class="p">)</span> <span class="k">if</span> <span class="n">after_response</span> <span class="k">else</span> <span class="kc">None</span>
+</span><span data-line="302">        <span class="p">)</span>
+</span><span data-line="303">        <span class="bp">self</span><span class="o">.</span><span class="n">background</span> <span class="o">=</span> <span class="n">background</span>
+</span><span data-line="304">        <span class="bp">self</span><span class="o">.</span><span class="n">before_request</span><span class="p">:</span> <span class="n">AsyncBeforeRequestHookHandler</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="p">(</span>
+</span><span data-line="305">            <span class="n">ensure_async_callable</span><span class="p">(</span><span class="n">before_request</span><span class="p">)</span> <span class="k">if</span> <span class="n">before_request</span> <span class="k">else</span> <span class="kc">None</span>
+</span><span data-line="306">        <span class="p">)</span>
+</span><span data-line="307">        <span class="bp">self</span><span class="o">.</span><span class="n">cache</span> <span class="o">=</span> <span class="n">cache</span>
+</span><span data-line="308">        <span class="bp">self</span><span class="o">.</span><span class="n">cache_control</span> <span class="o">=</span> <span class="n">cache_control</span>
+</span><span data-line="309">        <span class="bp">self</span><span class="o">.</span><span class="n">cache_key_builder</span> <span class="o">=</span> <span class="n">cache_key_builder</span>
+</span><span data-line="310">        <span class="bp">self</span><span class="o">.</span><span class="n">etag</span> <span class="o">=</span> <span class="n">etag</span>
+</span><span data-line="311">        <span class="bp">self</span><span class="o">.</span><span class="n">media_type</span><span class="p">:</span> <span class="n">MediaType</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">media_type</span> <span class="ow">or</span> <span class="s2">&quot;&quot;</span>
+</span><span data-line="312">        <span class="bp">self</span><span class="o">.</span><span class="n">_request_class</span> <span class="o">=</span> <span class="n">request_class</span>
+</span><span data-line="313">        <span class="bp">self</span><span class="o">.</span><span class="n">_response_class</span> <span class="o">=</span> <span class="n">response_class</span>
+</span><span data-line="314">        <span class="bp">self</span><span class="o">.</span><span class="n">response_cookies</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">(</span><span class="n">narrow_response_cookies</span><span class="p">(</span><span class="n">response_cookies</span> <span class="k">if</span> <span class="n">response_cookies</span> <span class="k">else</span> <span class="p">()))</span>
+</span><span data-line="315">        <span class="bp">self</span><span class="o">.</span><span class="n">response_headers</span><span class="p">:</span> <span class="nb">frozenset</span><span class="p">[</span><span class="n">ResponseHeader</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resolve_response_headers</span><span class="p">(</span>
+</span><span data-line="316">            <span class="n">response_headers</span><span class="p">,</span>
+</span><span data-line="317">            <span class="bp">self</span><span class="o">.</span><span class="n">etag</span><span class="p">,</span>
+</span><span data-line="318">            <span class="bp">self</span><span class="o">.</span><span class="n">cache_control</span><span class="p">,</span>
+</span><span data-line="319">        <span class="p">)</span>
+</span><span data-line="320">        <span class="bp">self</span><span class="o">.</span><span class="n">_request_max_body_size</span> <span class="o">=</span> <span class="n">request_max_body_size</span>
+</span><span data-line="321">
+</span><span data-line="322">        <span class="c1"># OpenAPI related attributes</span>
+</span><span data-line="323">        <span class="bp">self</span><span class="o">.</span><span class="n">content_encoding</span> <span class="o">=</span> <span class="n">content_encoding</span>
+</span><span data-line="324">        <span class="bp">self</span><span class="o">.</span><span class="n">content_media_type</span> <span class="o">=</span> <span class="n">content_media_type</span>
+</span><span data-line="325">        <span class="bp">self</span><span class="o">.</span><span class="n">deprecated</span> <span class="o">=</span> <span class="n">deprecated</span>
+</span><span data-line="326">        <span class="bp">self</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="n">description</span>
+</span><span data-line="327">        <span class="bp">self</span><span class="o">.</span><span class="n">_include_in_schema</span> <span class="o">=</span> <span class="n">include_in_schema</span>
+</span><span data-line="328">        <span class="bp">self</span><span class="o">.</span><span class="n">operation_class</span> <span class="o">=</span> <span class="n">operation_class</span>
+</span><span data-line="329">        <span class="bp">self</span><span class="o">.</span><span class="n">operation_id</span> <span class="o">=</span> <span class="n">operation_id</span>
+</span><span data-line="330">        <span class="bp">self</span><span class="o">.</span><span class="n">raises</span> <span class="o">=</span> <span class="n">raises</span>
+</span><span data-line="331">        <span class="bp">self</span><span class="o">.</span><span class="n">response_description</span> <span class="o">=</span> <span class="n">response_description</span>
+</span><span data-line="332">        <span class="bp">self</span><span class="o">.</span><span class="n">summary</span> <span class="o">=</span> <span class="n">summary</span>
+</span><span data-line="333">        <span class="bp">self</span><span class="o">.</span><span class="n">tags</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">(</span><span class="n">tags</span><span class="p">)</span> <span class="k">if</span> <span class="n">tags</span> <span class="k">else</span> <span class="nb">frozenset</span><span class="p">()</span>
+</span><span data-line="334">        <span class="bp">self</span><span class="o">.</span><span class="n">security</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">security</span><span class="p">)</span> <span class="k">if</span> <span class="n">security</span> <span class="k">else</span> <span class="p">()</span>
+</span><span data-line="335">        <span class="bp">self</span><span class="o">.</span><span class="n">responses</span> <span class="o">=</span> <span class="n">responses</span>
+</span><span data-line="336">        <span class="c1"># memoized attributes, defaulted to Empty</span>
+</span><span data-line="337">        <span class="bp">self</span><span class="o">.</span><span class="n">_kwargs_models</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span> <span class="n">KwargsModel</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+</span><span data-line="338">        <span class="bp">self</span><span class="o">.</span><span class="n">_default_response_handler</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Any</span><span class="p">],</span> <span class="n">Awaitable</span><span class="p">[</span><span class="n">ASGIApp</span><span class="p">]]</span> <span class="o">|</span> <span class="n">EmptyType</span> <span class="o">=</span> <span class="n">Empty</span>
+</span><span data-line="339">        <span class="bp">self</span><span class="o">.</span><span class="n">_response_type_handler</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Any</span><span class="p">],</span> <span class="n">Awaitable</span><span class="p">[</span><span class="n">ASGIApp</span><span class="p">]]</span> <span class="o">|</span> <span class="n">EmptyType</span> <span class="o">=</span> <span class="n">Empty</span></div>
+
+</span><span data-line="340">
+</span><span data-line="341">    <span class="k">def</span><span class="w"> </span><span class="nf">_get_merge_opts</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">others</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">Router</span><span class="p">,</span> <span class="o">...</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+</span><span data-line="342">        <span class="n">merge_opts</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_get_merge_opts</span><span class="p">(</span><span class="n">others</span><span class="p">)</span>
+</span><span data-line="343">
+</span><span data-line="344">        <span class="c1"># these only exist on the handler, and therefore don&#39;t need merging</span>
+</span><span data-line="345">        <span class="n">merge_opts</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+</span><span data-line="346">            <span class="n">background</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">background</span><span class="p">,</span>
+</span><span data-line="347">            <span class="n">http_method</span><span class="o">=</span><span class="nb">tuple</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">http_methods</span><span class="p">),</span>
+</span><span data-line="348">            <span class="n">cache</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="p">,</span>
+</span><span data-line="349">            <span class="n">media_type</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">media_type</span><span class="p">,</span>
+</span><span data-line="350">            <span class="n">status_code</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">status_code</span><span class="p">,</span>
+</span><span data-line="351">            <span class="c1"># OpenAPI related attributes</span>
+</span><span data-line="352">            <span class="n">content_encoding</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">content_encoding</span><span class="p">,</span>
+</span><span data-line="353">            <span class="n">content_media_type</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">content_media_type</span><span class="p">,</span>
+</span><span data-line="354">            <span class="n">deprecated</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">deprecated</span><span class="p">,</span>
+</span><span data-line="355">            <span class="n">description</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">description</span><span class="p">,</span>
+</span><span data-line="356">            <span class="n">operation_class</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">operation_class</span><span class="p">,</span>
+</span><span data-line="357">            <span class="n">operation_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">operation_id</span><span class="p">,</span>
+</span><span data-line="358">            <span class="n">raises</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">raises</span><span class="p">,</span>
+</span><span data-line="359">            <span class="n">response_description</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">response_description</span><span class="p">,</span>
+</span><span data-line="360">            <span class="n">responses</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">responses</span><span class="p">,</span>
+</span><span data-line="361">            <span class="n">summary</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">summary</span><span class="p">,</span>
+</span><span data-line="362">            <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_sync_callable</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="363">            <span class="n">cache_key_builder</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cache_key_builder</span><span class="p">,</span>
+</span><span data-line="364">        <span class="p">)</span>
+</span><span data-line="365">
+</span><span data-line="366">        <span class="n">other</span><span class="p">:</span> <span class="n">HTTPRouteHandler</span> <span class="o">|</span> <span class="n">Router</span>
+</span><span data-line="367">        <span class="k">for</span> <span class="n">other</span> <span class="ow">in</span> <span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">others</span><span class="p">):</span>  <span class="c1"># type: ignore[assignment]</span>
+</span><span data-line="368">            <span class="n">merge_opts</span><span class="p">[</span><span class="s2">&quot;after_response&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">merge_opts</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;after_response&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">other</span><span class="o">.</span><span class="n">after_response</span>
+</span><span data-line="369">            <span class="n">merge_opts</span><span class="p">[</span><span class="s2">&quot;after_request&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">merge_opts</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;after_request&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">other</span><span class="o">.</span><span class="n">after_request</span>
+</span><span data-line="370">            <span class="n">merge_opts</span><span class="p">[</span><span class="s2">&quot;before_request&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">merge_opts</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;before_request&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">other</span><span class="o">.</span><span class="n">before_request</span>
+</span><span data-line="371">            <span class="n">merge_opts</span><span class="p">[</span><span class="s2">&quot;cache_control&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">merge_opts</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;cache_control&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">other</span><span class="o">.</span><span class="n">cache_control</span>
+</span><span data-line="372">            <span class="n">merge_opts</span><span class="p">[</span><span class="s2">&quot;etag&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">merge_opts</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;etag&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">other</span><span class="o">.</span><span class="n">etag</span>
+</span><span data-line="373">            <span class="n">merge_opts</span><span class="p">[</span><span class="s2">&quot;response_cookies&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="o">*</span><span class="n">merge_opts</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;response_cookies&quot;</span><span class="p">,</span> <span class="p">()),</span> <span class="o">*</span><span class="n">other</span><span class="o">.</span><span class="n">response_cookies</span><span class="p">)</span>
+</span><span data-line="374">            <span class="n">merge_opts</span><span class="p">[</span><span class="s2">&quot;response_headers&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="o">*</span><span class="n">other</span><span class="o">.</span><span class="n">response_headers</span><span class="p">,</span> <span class="o">*</span><span class="n">merge_opts</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;response_headers&quot;</span><span class="p">,</span> <span class="p">()))</span>
+</span><span data-line="375">            <span class="n">merge_opts</span><span class="p">[</span><span class="s2">&quot;security&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="o">*</span><span class="n">other</span><span class="o">.</span><span class="n">security</span><span class="p">,</span> <span class="o">*</span><span class="n">merge_opts</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;security&quot;</span><span class="p">,</span> <span class="p">()))</span>
+</span><span data-line="376">            <span class="n">merge_opts</span><span class="p">[</span><span class="s2">&quot;tags&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="o">*</span><span class="n">other</span><span class="o">.</span><span class="n">tags</span><span class="p">,</span> <span class="o">*</span><span class="n">merge_opts</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;tags&quot;</span><span class="p">,</span> <span class="p">()))</span>
+</span><span data-line="377">
+</span><span data-line="378">            <span class="c1"># these are all properties which return a safe default if the corresponding</span>
+</span><span data-line="379">            <span class="c1"># config value is not set, so we only merge the router configs and determine</span>
+</span><span data-line="380">            <span class="c1"># the final value after that.</span>
+</span><span data-line="381">            <span class="c1"># ideally, a route handler wouldn&#39;t be able to take these in as optional,</span>
+</span><span data-line="382">            <span class="c1"># but that would require another &#39;finalized&#39; route handler, which differs</span>
+</span><span data-line="383">            <span class="c1"># from the config object. this is planned for version 4</span>
+</span><span data-line="384">            <span class="k">if</span> <span class="n">other</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">self</span><span class="p">:</span>
+</span><span data-line="385">                <span class="n">merge_opts</span><span class="p">[</span><span class="s2">&quot;request_class&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">merge_opts</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;request_class&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">other</span><span class="o">.</span><span class="n">request_class</span>
+</span><span data-line="386">                <span class="n">merge_opts</span><span class="p">[</span><span class="s2">&quot;response_class&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">merge_opts</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;response_class&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">other</span><span class="o">.</span><span class="n">response_class</span>
+</span><span data-line="387">                <span class="n">merge_opts</span><span class="p">[</span><span class="s2">&quot;include_in_schema&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">value_or_default</span><span class="p">(</span>
+</span><span data-line="388">                    <span class="n">merge_opts</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;include_in_schema&quot;</span><span class="p">,</span> <span class="n">Empty</span><span class="p">),</span> <span class="n">other</span><span class="o">.</span><span class="n">include_in_schema</span>
+</span><span data-line="389">                <span class="p">)</span>
+</span><span data-line="390">
+</span><span data-line="391">        <span class="n">merge_opts</span><span class="p">[</span><span class="s2">&quot;request_class&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_request_class</span> <span class="ow">or</span> <span class="n">merge_opts</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;request_class&quot;</span><span class="p">)</span>
+</span><span data-line="392">        <span class="n">merge_opts</span><span class="p">[</span><span class="s2">&quot;response_class&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_response_class</span> <span class="ow">or</span> <span class="n">merge_opts</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;response_class&quot;</span><span class="p">)</span>
+</span><span data-line="393">        <span class="n">merge_opts</span><span class="p">[</span><span class="s2">&quot;request_max_body_size&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">value_or_default</span><span class="p">(</span>
+</span><span data-line="394">            <span class="bp">self</span><span class="o">.</span><span class="n">_request_max_body_size</span><span class="p">,</span>
+</span><span data-line="395">            <span class="nb">next</span><span class="p">((</span><span class="n">o</span><span class="o">.</span><span class="n">request_max_body_size</span> <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">others</span> <span class="k">if</span> <span class="n">o</span><span class="o">.</span><span class="n">request_max_body_size</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">Empty</span><span class="p">),</span> <span class="n">Empty</span><span class="p">),</span>
+</span><span data-line="396">        <span class="p">)</span>
+</span><span data-line="397">        <span class="n">merge_opts</span><span class="p">[</span><span class="s2">&quot;include_in_schema&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">value_or_default</span><span class="p">(</span>
+</span><span data-line="398">            <span class="bp">self</span><span class="o">.</span><span class="n">_include_in_schema</span><span class="p">,</span> <span class="n">merge_opts</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;include_in_schema&quot;</span><span class="p">,</span> <span class="n">Empty</span><span class="p">)</span>
+</span><span data-line="399">        <span class="p">)</span>
+</span><span data-line="400">
+</span><span data-line="401">        <span class="k">return</span> <span class="n">merge_opts</span>
+</span><span data-line="402">
+<div class="viewcode-block" id="HTTPRouteHandler.resolve_request_class">
+<a class="viewcode-back" href="../../../../reference/handlers.html#litestar.handlers.HTTPRouteHandler.resolve_request_class">[docs]</a>
+</span><span data-line="403">    <span class="k">def</span><span class="w"> </span><span class="nf">resolve_request_class</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">type</span><span class="p">[</span><span class="n">Request</span><span class="p">]:</span>
+</span><span data-line="404"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the closest custom Request class in the owner graph or the default Request class.</span>
+</span><span data-line="405">
+</span><span data-line="406"><span class="sd">        This method is memoized so the computation occurs only once.</span>
+</span><span data-line="407">
+</span><span data-line="408"><span class="sd">        Returns:</span>
+</span><span data-line="409"><span class="sd">            The default :class:`Request &lt;.connection.Request&gt;` class for the route handler.</span>
+</span><span data-line="410"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="411">
+</span><span data-line="412">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">request_class</span></div>
+
+</span><span data-line="413">
+</span><span data-line="414">    <span class="nd">@property</span>
+</span><span data-line="415">    <span class="k">def</span><span class="w"> </span><span class="nf">request_class</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">type</span><span class="p">[</span><span class="n">Request</span><span class="p">]:</span>
+</span><span data-line="416">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_request_class</span> <span class="ow">or</span> <span class="n">Request</span>
+</span><span data-line="417">
+<div class="viewcode-block" id="HTTPRouteHandler.resolve_response_class">
+<a class="viewcode-back" href="../../../../reference/handlers.html#litestar.handlers.HTTPRouteHandler.resolve_response_class">[docs]</a>
+</span><span data-line="418">    <span class="nd">@litestar_deprecated</span><span class="p">(</span><span class="s2">&quot;3.0&quot;</span><span class="p">,</span> <span class="n">removal_in</span><span class="o">=</span><span class="s2">&quot;4.0&quot;</span><span class="p">,</span> <span class="n">alternative</span><span class="o">=</span><span class="s2">&quot;.response_class property&quot;</span><span class="p">)</span>
+</span><span data-line="419">    <span class="k">def</span><span class="w"> </span><span class="nf">resolve_response_class</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">type</span><span class="p">[</span><span class="n">Response</span><span class="p">]:</span>
+</span><span data-line="420"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the closest custom Response class in the owner graph or the default Response class.</span>
+</span><span data-line="421">
+</span><span data-line="422"><span class="sd">        This method is memoized so the computation occurs only once.</span>
+</span><span data-line="423">
+</span><span data-line="424"><span class="sd">        Returns:</span>
+</span><span data-line="425"><span class="sd">            The default :class:`Response &lt;.response.Response&gt;` class for the route handler.</span>
+</span><span data-line="426"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="427">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">response_class</span></div>
+
+</span><span data-line="428">
+</span><span data-line="429">    <span class="nd">@property</span>
+</span><span data-line="430">    <span class="k">def</span><span class="w"> </span><span class="nf">response_class</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">type</span><span class="p">[</span><span class="n">Response</span><span class="p">]:</span>
+</span><span data-line="431">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_response_class</span> <span class="ow">or</span> <span class="n">Response</span>
+</span><span data-line="432">
+</span><span data-line="433">    <span class="nd">@litestar_deprecated</span><span class="p">(</span><span class="s2">&quot;3.0&quot;</span><span class="p">,</span> <span class="n">removal_in</span><span class="o">=</span><span class="s2">&quot;4.0&quot;</span><span class="p">,</span> <span class="n">alternative</span><span class="o">=</span><span class="s2">&quot;.response_headers attribute&quot;</span><span class="p">)</span>
+</span><span data-line="434">    <span class="k">def</span><span class="w"> </span><span class="nf">resolve_response_headers</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">frozenset</span><span class="p">[</span><span class="n">ResponseHeader</span><span class="p">]:</span>
+</span><span data-line="435">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">response_headers</span>
+</span><span data-line="436">
+</span><span data-line="437">    <span class="nd">@staticmethod</span>
+</span><span data-line="438">    <span class="k">def</span><span class="w"> </span><span class="nf">_resolve_response_headers</span><span class="p">(</span>
+</span><span data-line="439">        <span class="n">response_headers</span><span class="p">:</span> <span class="n">ResponseHeaders</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="440">        <span class="o">*</span><span class="n">extra_headers</span><span class="p">:</span> <span class="n">Header</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="441">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">frozenset</span><span class="p">[</span><span class="n">ResponseHeader</span><span class="p">]:</span>
+</span><span data-line="442"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return all header parameters in the scope of the handler function.</span>
+</span><span data-line="443">
+</span><span data-line="444"><span class="sd">        Returns:</span>
+</span><span data-line="445"><span class="sd">            A dictionary mapping keys to :class:`ResponseHeader &lt;.datastructures.ResponseHeader&gt;` instances.</span>
+</span><span data-line="446"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="447">        <span class="n">resolved_response_headers</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">ResponseHeader</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+</span><span data-line="448">            <span class="p">{</span><span class="n">h</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="n">h</span> <span class="k">for</span> <span class="n">h</span> <span class="ow">in</span> <span class="n">narrow_response_headers</span><span class="p">(</span><span class="n">response_headers</span><span class="p">)}</span> <span class="k">if</span> <span class="n">response_headers</span> <span class="k">else</span> <span class="p">{}</span>
+</span><span data-line="449">        <span class="p">)</span>
+</span><span data-line="450">
+</span><span data-line="451">        <span class="k">for</span> <span class="n">extra_header</span> <span class="ow">in</span> <span class="n">extra_headers</span><span class="p">:</span>
+</span><span data-line="452">            <span class="k">if</span> <span class="n">extra_header</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="453">                <span class="k">continue</span>
+</span><span data-line="454">            <span class="n">resolved_response_headers</span><span class="p">[</span><span class="n">extra_header</span><span class="o">.</span><span class="n">HEADER_NAME</span><span class="p">]</span> <span class="o">=</span> <span class="n">ResponseHeader</span><span class="p">(</span>
+</span><span data-line="455">                <span class="n">name</span><span class="o">=</span><span class="n">extra_header</span><span class="o">.</span><span class="n">HEADER_NAME</span><span class="p">,</span>
+</span><span data-line="456">                <span class="n">value</span><span class="o">=</span><span class="n">extra_header</span><span class="o">.</span><span class="n">to_header</span><span class="p">(),</span>
+</span><span data-line="457">                <span class="n">documentation_only</span><span class="o">=</span><span class="n">extra_header</span><span class="o">.</span><span class="n">documentation_only</span><span class="p">,</span>
+</span><span data-line="458">            <span class="p">)</span>
+</span><span data-line="459">
+</span><span data-line="460">        <span class="k">return</span> <span class="nb">frozenset</span><span class="p">(</span><span class="n">resolved_response_headers</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+</span><span data-line="461">
+</span><span data-line="462">    <span class="nd">@litestar_deprecated</span><span class="p">(</span><span class="s2">&quot;3.0&quot;</span><span class="p">,</span> <span class="n">removal_in</span><span class="o">=</span><span class="s2">&quot;4.0&quot;</span><span class="p">,</span> <span class="n">alternative</span><span class="o">=</span><span class="s2">&quot;.response_cookies attribute&quot;</span><span class="p">)</span>
+</span><span data-line="463">    <span class="k">def</span><span class="w"> </span><span class="nf">resolve_response_cookies</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">frozenset</span><span class="p">[</span><span class="n">Cookie</span><span class="p">]:</span>
+</span><span data-line="464">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">response_cookies</span>
+</span><span data-line="465">
+<div class="viewcode-block" id="HTTPRouteHandler.resolve_before_request">
+<a class="viewcode-back" href="../../../../reference/handlers.html#litestar.handlers.HTTPRouteHandler.resolve_before_request">[docs]</a>
+</span><span data-line="466">    <span class="nd">@litestar_deprecated</span><span class="p">(</span><span class="s2">&quot;3.0&quot;</span><span class="p">,</span> <span class="n">removal_in</span><span class="o">=</span><span class="s2">&quot;4.0&quot;</span><span class="p">,</span> <span class="n">alternative</span><span class="o">=</span><span class="s2">&quot;.before_request attribute&quot;</span><span class="p">)</span>
+</span><span data-line="467">    <span class="k">def</span><span class="w"> </span><span class="nf">resolve_before_request</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AsyncAnyCallable</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="468"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Resolve the before_handler handler by starting from the route handler and moving up.</span>
+</span><span data-line="469">
+</span><span data-line="470"><span class="sd">        If a handler is found it is returned, otherwise None is set.</span>
+</span><span data-line="471"><span class="sd">        This method is memoized so the computation occurs only once.</span>
+</span><span data-line="472">
+</span><span data-line="473"><span class="sd">        Returns:</span>
+</span><span data-line="474"><span class="sd">            An optional :class:`before request lifecycle hook handler &lt;.types.BeforeRequestHookHandler&gt;`</span>
+</span><span data-line="475"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="476">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">before_request</span></div>
+
+</span><span data-line="477">
+<div class="viewcode-block" id="HTTPRouteHandler.resolve_after_response">
+<a class="viewcode-back" href="../../../../reference/handlers.html#litestar.handlers.HTTPRouteHandler.resolve_after_response">[docs]</a>
+</span><span data-line="478">    <span class="nd">@litestar_deprecated</span><span class="p">(</span><span class="s2">&quot;3.0&quot;</span><span class="p">,</span> <span class="n">removal_in</span><span class="o">=</span><span class="s2">&quot;4.0&quot;</span><span class="p">,</span> <span class="n">alternative</span><span class="o">=</span><span class="s2">&quot;.after_response attribute&quot;</span><span class="p">)</span>
+</span><span data-line="479">    <span class="k">def</span><span class="w"> </span><span class="nf">resolve_after_response</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AsyncAnyCallable</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="480"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Resolve the after_response handler by starting from the route handler and moving up.</span>
+</span><span data-line="481">
+</span><span data-line="482"><span class="sd">        If a handler is found it is returned, otherwise None is set.</span>
+</span><span data-line="483"><span class="sd">        This method is memoized so the computation occurs only once.</span>
+</span><span data-line="484">
+</span><span data-line="485"><span class="sd">        Returns:</span>
+</span><span data-line="486"><span class="sd">            An optional :class:`after response lifecycle hook handler &lt;.types.AfterResponseHookHandler&gt;`</span>
+</span><span data-line="487"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="488">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">after_response</span></div>
+
+</span><span data-line="489">
+<div class="viewcode-block" id="HTTPRouteHandler.resolve_include_in_schema">
+<a class="viewcode-back" href="../../../../reference/handlers.html#litestar.handlers.HTTPRouteHandler.resolve_include_in_schema">[docs]</a>
+</span><span data-line="490">    <span class="nd">@litestar_deprecated</span><span class="p">(</span><span class="s2">&quot;3.0&quot;</span><span class="p">,</span> <span class="n">removal_in</span><span class="o">=</span><span class="s2">&quot;4.0&quot;</span><span class="p">,</span> <span class="n">alternative</span><span class="o">=</span><span class="s2">&quot;.include_in_schema property&quot;</span><span class="p">)</span>
+</span><span data-line="491">    <span class="k">def</span><span class="w"> </span><span class="nf">resolve_include_in_schema</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+</span><span data-line="492"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Resolve the &#39;include_in_schema&#39; property by starting from the route handler and moving up.</span>
+</span><span data-line="493">
+</span><span data-line="494"><span class="sd">        If &#39;include_in_schema&#39; is found in any of the ownership layers, the last value found is returned.</span>
+</span><span data-line="495"><span class="sd">        If not found in any layer, the default value ``True`` is returned.</span>
+</span><span data-line="496">
+</span><span data-line="497"><span class="sd">        Returns:</span>
+</span><span data-line="498"><span class="sd">            bool: The resolved &#39;include_in_schema&#39; property.</span>
+</span><span data-line="499"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="500">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">include_in_schema</span></div>
+
+</span><span data-line="501">
+</span><span data-line="502">    <span class="nd">@property</span>
+</span><span data-line="503">    <span class="k">def</span><span class="w"> </span><span class="nf">include_in_schema</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+</span><span data-line="504">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_include_in_schema</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_include_in_schema</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">Empty</span> <span class="k">else</span> <span class="kc">True</span>
+</span><span data-line="505">
+<div class="viewcode-block" id="HTTPRouteHandler.resolve_security">
+<a class="viewcode-back" href="../../../../reference/handlers.html#litestar.handlers.HTTPRouteHandler.resolve_security">[docs]</a>
+</span><span data-line="506">    <span class="nd">@litestar_deprecated</span><span class="p">(</span><span class="s2">&quot;3.0&quot;</span><span class="p">,</span> <span class="n">removal_in</span><span class="o">=</span><span class="s2">&quot;4.0&quot;</span><span class="p">,</span> <span class="n">alternative</span><span class="o">=</span><span class="s2">&quot;.security attribute&quot;</span><span class="p">)</span>
+</span><span data-line="507">    <span class="k">def</span><span class="w"> </span><span class="nf">resolve_security</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">SecurityRequirement</span><span class="p">,</span> <span class="o">...</span><span class="p">]:</span>
+</span><span data-line="508"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Resolve the security property by starting from the route handler and moving up.</span>
+</span><span data-line="509">
+</span><span data-line="510"><span class="sd">        Security requirements are additive, so the security requirements of the route handler are the sum of all</span>
+</span><span data-line="511"><span class="sd">        security requirements of the ownership layers.</span>
+</span><span data-line="512">
+</span><span data-line="513"><span class="sd">        Returns:</span>
+</span><span data-line="514"><span class="sd">            list[SecurityRequirement]: The resolved security property.</span>
+</span><span data-line="515"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="516">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">security</span></div>
+
+</span><span data-line="517">
+<div class="viewcode-block" id="HTTPRouteHandler.resolve_tags">
+<a class="viewcode-back" href="../../../../reference/handlers.html#litestar.handlers.HTTPRouteHandler.resolve_tags">[docs]</a>
+</span><span data-line="518">    <span class="nd">@litestar_deprecated</span><span class="p">(</span><span class="s2">&quot;3.0&quot;</span><span class="p">,</span> <span class="n">removal_in</span><span class="o">=</span><span class="s2">&quot;4.0&quot;</span><span class="p">,</span> <span class="n">alternative</span><span class="o">=</span><span class="s2">&quot;.tags attribute&quot;</span><span class="p">)</span>
+</span><span data-line="519">    <span class="k">def</span><span class="w"> </span><span class="nf">resolve_tags</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">frozenset</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+</span><span data-line="520"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Resolve the tags property by starting from the route handler and moving up.</span>
+</span><span data-line="521">
+</span><span data-line="522"><span class="sd">        Tags are additive, so the tags of the route handler are the sum of all tags of the ownership layers.</span>
+</span><span data-line="523"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="524">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">tags</span></div>
+
+</span><span data-line="525">
+</span><span data-line="526">    <span class="nd">@litestar_deprecated</span><span class="p">(</span><span class="s2">&quot;3.0&quot;</span><span class="p">,</span> <span class="n">removal_in</span><span class="o">=</span><span class="s2">&quot;4.0&quot;</span><span class="p">,</span> <span class="n">alternative</span><span class="o">=</span><span class="s2">&quot;.request_max_body_size property&quot;</span><span class="p">)</span>
+</span><span data-line="527">    <span class="k">def</span><span class="w"> </span><span class="nf">resolve_request_max_body_size</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="528">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">request_max_body_size</span>
+</span><span data-line="529">
+</span><span data-line="530">    <span class="nd">@property</span>
+</span><span data-line="531">    <span class="k">def</span><span class="w"> </span><span class="nf">request_max_body_size</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="532">        <span class="k">return</span> <span class="n">value_or_default</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_request_max_body_size</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>  <span class="c1"># pyright: ignore</span>
+</span><span data-line="533">
+<div class="viewcode-block" id="HTTPRouteHandler.on_registration">
+<a class="viewcode-back" href="../../../../reference/handlers.html#litestar.handlers.HTTPRouteHandler.on_registration">[docs]</a>
+</span><span data-line="534">    <span class="k">def</span><span class="w"> </span><span class="nf">on_registration</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">route</span><span class="p">:</span> <span class="n">BaseRoute</span><span class="p">,</span> <span class="n">app</span><span class="p">:</span> <span class="n">Litestar</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="535">        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">on_registration</span><span class="p">(</span><span class="n">route</span><span class="o">=</span><span class="n">route</span><span class="p">,</span> <span class="n">app</span><span class="o">=</span><span class="n">app</span><span class="p">)</span>
+</span><span data-line="536">
+</span><span data-line="537">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_request_max_body_size</span> <span class="ow">is</span> <span class="n">Empty</span><span class="p">:</span>
+</span><span data-line="538">            <span class="k">raise</span> <span class="n">ImproperlyConfiguredException</span><span class="p">(</span>
+</span><span data-line="539">                <span class="s2">&quot;&#39;request_max_body_size&#39; set to &#39;Empty&#39; on all layers. To omit a limit, &quot;</span>
+</span><span data-line="540">                <span class="s2">&quot;set &#39;request_max_body_size=None&#39;&quot;</span>
+</span><span data-line="541">            <span class="p">)</span>
+</span><span data-line="542">
+</span><span data-line="543">        <span class="bp">self</span><span class="o">.</span><span class="n">_get_kwargs_model_for_route</span><span class="p">(</span><span class="n">route</span><span class="o">.</span><span class="n">path_parameters</span><span class="p">)</span>
+</span><span data-line="544">        <span class="bp">self</span><span class="o">.</span><span class="n">_default_response_handler</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_response_type_handler</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_response_handlers</span><span class="p">(</span>
+</span><span data-line="545">            <span class="n">media_type</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">media_type</span><span class="p">,</span>
+</span><span data-line="546">            <span class="n">response_class</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">response_class</span><span class="p">,</span>
+</span><span data-line="547">            <span class="n">cookies</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">response_cookies</span><span class="p">,</span>
+</span><span data-line="548">            <span class="n">headers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">response_headers</span><span class="p">,</span>
+</span><span data-line="549">            <span class="n">type_encoders</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">type_encoders</span><span class="p">,</span>
+</span><span data-line="550">            <span class="n">return_type</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">parsed_fn_signature</span><span class="o">.</span><span class="n">return_type</span><span class="p">,</span>
+</span><span data-line="551">            <span class="n">status_code</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">status_code</span><span class="p">,</span>
+</span><span data-line="552">            <span class="n">background</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">background</span><span class="p">,</span>
+</span><span data-line="553">            <span class="n">after_request</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">after_request</span><span class="p">,</span>
+</span><span data-line="554">        <span class="p">)</span></div>
+
+</span><span data-line="555">
+</span><span data-line="556">    <span class="k">def</span><span class="w"> </span><span class="nf">_get_kwargs_model_for_route</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path_parameters</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">KwargsModel</span><span class="p">:</span>
+</span><span data-line="557">        <span class="n">key</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">path_parameters</span><span class="p">)</span>
+</span><span data-line="558">        <span class="k">if</span> <span class="p">(</span><span class="n">model</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_kwargs_models</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">))</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="559">            <span class="n">model</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_kwargs_models</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_kwargs_model</span><span class="p">(</span><span class="n">path_parameters</span><span class="p">)</span>
+</span><span data-line="560">        <span class="k">return</span> <span class="n">model</span>
+</span><span data-line="561">
+</span><span data-line="562">    <span class="k">def</span><span class="w"> </span><span class="nf">_validate_handler_function</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="563"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Validate the route handler function once it is set by inspecting its return annotations.&quot;&quot;&quot;</span>
+</span><span data-line="564">        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_validate_handler_function</span><span class="p">()</span>
+</span><span data-line="565">
+</span><span data-line="566">        <span class="n">return_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parsed_fn_signature</span><span class="o">.</span><span class="n">return_type</span>
+</span><span data-line="567">
+</span><span data-line="568">        <span class="k">if</span> <span class="n">return_type</span><span class="o">.</span><span class="n">annotation</span> <span class="ow">is</span> <span class="n">Empty</span><span class="p">:</span>
+</span><span data-line="569">            <span class="k">raise</span> <span class="n">ImproperlyConfiguredException</span><span class="p">(</span>
+</span><span data-line="570">                <span class="sa">f</span><span class="s2">&quot;Missing return type annotation for route handler function </span><span class="si">{</span><span class="bp">self</span><span class="si">!r}</span><span class="s2">. &quot;</span>
+</span><span data-line="571">                <span class="s2">&quot;If your function doesn&#39;t return a value, annotate it as returning &#39;None&#39;.&quot;</span>
+</span><span data-line="572">            <span class="p">)</span>
+</span><span data-line="573">
+</span><span data-line="574">        <span class="k">if</span> <span class="p">(</span>
+</span><span data-line="575">            <span class="bp">self</span><span class="o">.</span><span class="n">status_code</span> <span class="o">&lt;</span> <span class="mi">200</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">status_code</span> <span class="ow">in</span> <span class="p">{</span><span class="n">HTTP_204_NO_CONTENT</span><span class="p">,</span> <span class="n">HTTP_304_NOT_MODIFIED</span><span class="p">}</span>
+</span><span data-line="576">        <span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">is_empty_response_annotation</span><span class="p">(</span><span class="n">return_type</span><span class="p">):</span>
+</span><span data-line="577">            <span class="k">raise</span> <span class="n">ImproperlyConfiguredException</span><span class="p">(</span>
+</span><span data-line="578">                <span class="s2">&quot;A status code 204, 304 or in the range below 200 does not support a response body. &quot;</span>
+</span><span data-line="579">                <span class="sa">f</span><span class="s2">&quot;If </span><span class="si">{</span><span class="bp">self</span><span class="si">}</span><span class="s2"> should return a value, change the route handler status code to an appropriate value.&quot;</span><span class="p">,</span>
+</span><span data-line="580">            <span class="p">)</span>
+</span><span data-line="581">
+</span><span data-line="582">        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">media_type</span><span class="p">:</span>
+</span><span data-line="583">            <span class="k">if</span> <span class="n">return_type</span><span class="o">.</span><span class="n">is_subclass_of</span><span class="p">((</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">))</span> <span class="ow">or</span> <span class="n">return_type</span><span class="o">.</span><span class="n">annotation</span> <span class="ow">is</span> <span class="n">AnyStr</span><span class="p">:</span>
+</span><span data-line="584">                <span class="bp">self</span><span class="o">.</span><span class="n">media_type</span> <span class="o">=</span> <span class="n">MediaType</span><span class="o">.</span><span class="n">TEXT</span>
+</span><span data-line="585">            <span class="k">elif</span> <span class="ow">not</span> <span class="n">return_type</span><span class="o">.</span><span class="n">is_subclass_of</span><span class="p">(</span><span class="n">Response</span><span class="p">):</span>
+</span><span data-line="586">                <span class="bp">self</span><span class="o">.</span><span class="n">media_type</span> <span class="o">=</span> <span class="n">MediaType</span><span class="o">.</span><span class="n">JSON</span>
+</span><span data-line="587">
+</span><span data-line="588">        <span class="k">if</span> <span class="s2">&quot;socket&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">parsed_fn_signature</span><span class="o">.</span><span class="n">parameters</span><span class="p">:</span>
+</span><span data-line="589">            <span class="k">raise</span> <span class="n">ImproperlyConfiguredException</span><span class="p">(</span><span class="s2">&quot;The &#39;socket&#39; kwarg is not supported with http handlers&quot;</span><span class="p">)</span>
+</span><span data-line="590">
+</span><span data-line="591">        <span class="k">if</span> <span class="s2">&quot;data&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">parsed_fn_signature</span><span class="o">.</span><span class="n">parameters</span> <span class="ow">and</span> <span class="s2">&quot;GET&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">http_methods</span><span class="p">:</span>
+</span><span data-line="592">            <span class="k">raise</span> <span class="n">ImproperlyConfiguredException</span><span class="p">(</span><span class="s2">&quot;&#39;data&#39; kwarg is unsupported for &#39;GET&#39; request handlers&quot;</span><span class="p">)</span>
+</span><span data-line="593">
+</span><span data-line="594">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">http_methods</span> <span class="o">==</span> <span class="p">{</span><span class="n">HttpMethod</span><span class="o">.</span><span class="n">HEAD</span><span class="p">}</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">parsed_fn_signature</span><span class="o">.</span><span class="n">return_type</span><span class="o">.</span><span class="n">is_subclass_of</span><span class="p">(</span>
+</span><span data-line="595">            <span class="p">(</span>
+</span><span data-line="596">                <span class="n">NoneType</span><span class="p">,</span>
+</span><span data-line="597">                <span class="n">File</span><span class="p">,</span>
+</span><span data-line="598">                <span class="n">ASGIFileResponse</span><span class="p">,</span>
+</span><span data-line="599">            <span class="p">)</span>
+</span><span data-line="600">        <span class="p">):</span>
+</span><span data-line="601">            <span class="n">field_definition</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parsed_fn_signature</span><span class="o">.</span><span class="n">return_type</span>
+</span><span data-line="602">            <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span>
+</span><span data-line="603">                <span class="n">is_empty_response_annotation</span><span class="p">(</span><span class="n">field_definition</span><span class="p">)</span>
+</span><span data-line="604">                <span class="ow">or</span> <span class="n">is_class_and_subclass</span><span class="p">(</span><span class="n">field_definition</span><span class="o">.</span><span class="n">annotation</span><span class="p">,</span> <span class="n">File</span><span class="p">)</span>
+</span><span data-line="605">                <span class="ow">or</span> <span class="n">is_class_and_subclass</span><span class="p">(</span><span class="n">field_definition</span><span class="o">.</span><span class="n">annotation</span><span class="p">,</span> <span class="n">ASGIFileResponse</span><span class="p">)</span>
+</span><span data-line="606">            <span class="p">):</span>
+</span><span data-line="607">                <span class="k">raise</span> <span class="n">ImproperlyConfiguredException</span><span class="p">(</span>
+</span><span data-line="608">                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="si">}</span><span class="s2">: Handlers for &#39;HEAD&#39; requests must not return a value. Either return &#39;None&#39; or a response type without a body.&quot;</span>
+</span><span data-line="609">                <span class="p">)</span>
+</span><span data-line="610">
+</span><span data-line="611">        <span class="k">if</span> <span class="p">(</span><span class="n">body_param</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parsed_fn_signature</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;body&quot;</span><span class="p">))</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">body_param</span><span class="o">.</span><span class="n">is_subclass_of</span><span class="p">(</span><span class="nb">bytes</span><span class="p">):</span>
+</span><span data-line="612">            <span class="k">raise</span> <span class="n">ImproperlyConfiguredException</span><span class="p">(</span>
+</span><span data-line="613">                <span class="sa">f</span><span class="s2">&quot;Invalid type annotation for &#39;body&#39; parameter in route handler </span><span class="si">{</span><span class="bp">self</span><span class="si">}</span><span class="s2">. &#39;body&#39; will always receive the &quot;</span>
+</span><span data-line="614">                <span class="sa">f</span><span class="s2">&quot;raw request body as bytes but was annotated with &#39;</span><span class="si">{</span><span class="n">body_param</span><span class="o">.</span><span class="n">raw</span><span class="si">!r}</span><span class="s2">&#39;. If you want to receive &quot;</span>
+</span><span data-line="615">                <span class="s2">&quot;processed request data, use the &#39;data&#39; parameter.&quot;</span>
+</span><span data-line="616">            <span class="p">)</span>
+</span><span data-line="617">
+</span><span data-line="618">    <span class="nd">@staticmethod</span>
+</span><span data-line="619">    <span class="k">def</span><span class="w"> </span><span class="nf">_create_response_handlers</span><span class="p">(</span>
+</span><span data-line="620">        <span class="o">*</span><span class="p">,</span>
+</span><span data-line="621">        <span class="n">media_type</span><span class="p">:</span> <span class="n">MediaType</span> <span class="o">|</span> <span class="nb">str</span><span class="p">,</span>
+</span><span data-line="622">        <span class="n">response_class</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">Response</span><span class="p">],</span>
+</span><span data-line="623">        <span class="n">headers</span><span class="p">:</span> <span class="nb">frozenset</span><span class="p">[</span><span class="n">ResponseHeader</span><span class="p">],</span>
+</span><span data-line="624">        <span class="n">cookies</span><span class="p">:</span> <span class="nb">frozenset</span><span class="p">[</span><span class="n">Cookie</span><span class="p">],</span>
+</span><span data-line="625">        <span class="n">type_encoders</span><span class="p">:</span> <span class="n">TypeEncodersMap</span><span class="p">,</span>
+</span><span data-line="626">        <span class="n">return_type</span><span class="p">:</span> <span class="n">FieldDefinition</span><span class="p">,</span>
+</span><span data-line="627">        <span class="n">status_code</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+</span><span data-line="628">        <span class="n">background</span><span class="p">:</span> <span class="n">BackgroundTask</span> <span class="o">|</span> <span class="n">BackgroundTasks</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="629">        <span class="n">after_request</span><span class="p">:</span> <span class="n">AfterRequestHookHandler</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="630">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">Awaitable</span><span class="p">[</span><span class="n">ASGIApp</span><span class="p">]],</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">Awaitable</span><span class="p">[</span><span class="n">ASGIApp</span><span class="p">]]]:</span>
+</span><span data-line="631">        <span class="n">media_type</span> <span class="o">=</span> <span class="n">media_type</span><span class="o">.</span><span class="n">value</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">media_type</span><span class="p">,</span> <span class="n">Enum</span><span class="p">)</span> <span class="k">else</span> <span class="n">media_type</span>
+</span><span data-line="632">        <span class="n">return_annotation</span> <span class="o">=</span> <span class="n">return_type</span><span class="o">.</span><span class="n">annotation</span>
+</span><span data-line="633">
+</span><span data-line="634">        <span class="n">response_type_handler</span> <span class="o">=</span> <span class="n">create_response_handler</span><span class="p">(</span>
+</span><span data-line="635">            <span class="n">after_request</span><span class="o">=</span><span class="n">after_request</span><span class="p">,</span>
+</span><span data-line="636">            <span class="n">background</span><span class="o">=</span><span class="n">background</span><span class="p">,</span>
+</span><span data-line="637">            <span class="n">cookies</span><span class="o">=</span><span class="n">cookies</span><span class="p">,</span>
+</span><span data-line="638">            <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span>
+</span><span data-line="639">            <span class="n">media_type</span><span class="o">=</span><span class="n">media_type</span><span class="p">,</span>
+</span><span data-line="640">            <span class="n">status_code</span><span class="o">=</span><span class="n">status_code</span><span class="p">,</span>
+</span><span data-line="641">            <span class="n">type_encoders</span><span class="o">=</span><span class="n">type_encoders</span><span class="p">,</span>
+</span><span data-line="642">        <span class="p">)</span>
+</span><span data-line="643">
+</span><span data-line="644">        <span class="k">if</span> <span class="n">is_async_callable</span><span class="p">(</span><span class="n">return_annotation</span><span class="p">)</span> <span class="ow">or</span> <span class="n">return_annotation</span> <span class="ow">is</span> <span class="n">ASGIApp</span><span class="p">:</span>
+</span><span data-line="645">            <span class="n">default_handler</span> <span class="o">=</span> <span class="n">create_generic_asgi_response_handler</span><span class="p">(</span><span class="n">after_request</span><span class="o">=</span><span class="n">after_request</span><span class="p">)</span>
+</span><span data-line="646">        <span class="k">else</span><span class="p">:</span>
+</span><span data-line="647">            <span class="n">default_handler</span> <span class="o">=</span> <span class="n">create_data_handler</span><span class="p">(</span>
+</span><span data-line="648">                <span class="n">after_request</span><span class="o">=</span><span class="n">after_request</span><span class="p">,</span>
+</span><span data-line="649">                <span class="n">background</span><span class="o">=</span><span class="n">background</span><span class="p">,</span>
+</span><span data-line="650">                <span class="n">cookies</span><span class="o">=</span><span class="n">cookies</span><span class="p">,</span>
+</span><span data-line="651">                <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span>
+</span><span data-line="652">                <span class="n">media_type</span><span class="o">=</span><span class="n">media_type</span><span class="p">,</span>
+</span><span data-line="653">                <span class="n">response_class</span><span class="o">=</span><span class="n">response_class</span><span class="p">,</span>
+</span><span data-line="654">                <span class="n">status_code</span><span class="o">=</span><span class="n">status_code</span><span class="p">,</span>
+</span><span data-line="655">                <span class="n">type_encoders</span><span class="o">=</span><span class="n">type_encoders</span><span class="p">,</span>
+</span><span data-line="656">            <span class="p">)</span>
+</span><span data-line="657">
+</span><span data-line="658">        <span class="k">return</span> <span class="n">default_handler</span><span class="p">,</span> <span class="n">response_type_handler</span>
+</span><span data-line="659">
+<div class="viewcode-block" id="HTTPRouteHandler.handle">
+<a class="viewcode-back" href="../../../../reference/handlers.html#litestar.handlers.HTTPRouteHandler.handle">[docs]</a>
+</span><span data-line="660">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">handle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">connection</span><span class="p">:</span> <span class="n">Request</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="661"><span class="w">        </span><span class="sd">&quot;&quot;&quot;ASGI app that creates a :class:`~.connection.Request` from the passed in args, determines which handler function to call and then</span>
+</span><span data-line="662"><span class="sd">            handles the call.</span>
+</span><span data-line="663">
+</span><span data-line="664"><span class="sd">        .. versionadded: 3.0</span>
+</span><span data-line="665">
+</span><span data-line="666"><span class="sd">        Args:</span>
+</span><span data-line="667"><span class="sd">                connection: The request</span>
+</span><span data-line="668">
+</span><span data-line="669"><span class="sd">        Returns:</span>
+</span><span data-line="670"><span class="sd">                None</span>
+</span><span data-line="671"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="672">
+</span><span data-line="673">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">guards</span><span class="p">:</span>
+</span><span data-line="674">            <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">authorize_connection</span><span class="p">(</span><span class="n">connection</span><span class="o">=</span><span class="n">connection</span><span class="p">)</span>
+</span><span data-line="675">
+</span><span data-line="676">        <span class="k">try</span><span class="p">:</span>
+</span><span data-line="677">            <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_response_for_request</span><span class="p">(</span><span class="n">request</span><span class="o">=</span><span class="n">connection</span><span class="p">)</span>
+</span><span data-line="678">
+</span><span data-line="679">            <span class="k">await</span> <span class="n">response</span><span class="p">(</span><span class="n">connection</span><span class="o">.</span><span class="n">scope</span><span class="p">,</span> <span class="n">connection</span><span class="o">.</span><span class="n">receive</span><span class="p">,</span> <span class="n">connection</span><span class="o">.</span><span class="n">send</span><span class="p">)</span>
+</span><span data-line="680">
+</span><span data-line="681">            <span class="k">if</span> <span class="n">after_response_handler</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">after_response</span><span class="p">:</span>
+</span><span data-line="682">                <span class="k">await</span> <span class="n">after_response_handler</span><span class="p">(</span><span class="n">connection</span><span class="p">)</span>
+</span><span data-line="683">        <span class="k">finally</span><span class="p">:</span>
+</span><span data-line="684">            <span class="k">if</span> <span class="p">(</span><span class="n">form_data</span> <span class="o">:=</span> <span class="n">ScopeState</span><span class="o">.</span><span class="n">from_scope</span><span class="p">(</span><span class="n">connection</span><span class="o">.</span><span class="n">scope</span><span class="p">)</span><span class="o">.</span><span class="n">form</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">Empty</span><span class="p">:</span>
+</span><span data-line="685">                <span class="k">await</span> <span class="n">FormMultiDict</span><span class="o">.</span><span class="n">from_form_data</span><span class="p">(</span><span class="n">form_data</span><span class="p">)</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+</span><span data-line="686">
+</span><span data-line="687">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_get_response_for_request</span><span class="p">(</span>
+</span><span data-line="688">        <span class="bp">self</span><span class="p">,</span>
+</span><span data-line="689">        <span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
+</span><span data-line="690">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ASGIApp</span><span class="p">:</span>
+</span><span data-line="691"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a response for the request.</span>
+</span><span data-line="692">
+</span><span data-line="693"><span class="sd">        If caching is enabled and a response exist in the cache, the cached response will be returned.</span>
+</span><span data-line="694"><span class="sd">        If caching is enabled and a response does not exist in the cache, the newly created</span>
+</span><span data-line="695"><span class="sd">        response will be cached.</span>
+</span><span data-line="696">
+</span><span data-line="697"><span class="sd">        Args:</span>
+</span><span data-line="698"><span class="sd">            request: The Request instance</span>
+</span><span data-line="699">
+</span><span data-line="700"><span class="sd">        Returns:</span>
+</span><span data-line="701"><span class="sd">            An instance of Response or a compatible ASGIApp or a subclass of it</span>
+</span><span data-line="702"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="703">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cache</span> <span class="ow">and</span> <span class="p">(</span><span class="n">response</span> <span class="o">:=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_cached_response</span><span class="p">(</span><span class="n">request</span><span class="o">=</span><span class="n">request</span><span class="p">)):</span>
+</span><span data-line="704">            <span class="k">return</span> <span class="n">response</span>
+</span><span data-line="705">
+</span><span data-line="706">        <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_call_handler_function</span><span class="p">(</span><span class="n">request</span><span class="o">=</span><span class="n">request</span><span class="p">)</span>
+</span><span data-line="707">
+</span><span data-line="708">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_call_handler_function</span><span class="p">(</span>
+</span><span data-line="709">        <span class="bp">self</span><span class="p">,</span>
+</span><span data-line="710">        <span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">,</span>
+</span><span data-line="711">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ASGIApp</span><span class="p">:</span>  <span class="c1"># pyright: ignore[reportGeneralTypeIssues]</span>
+</span><span data-line="712"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Call the before request handlers, retrieve any data required for the route handler, and call the route</span>
+</span><span data-line="713"><span class="sd">        handler&#39;s ``to_response`` method.</span>
+</span><span data-line="714">
+</span><span data-line="715"><span class="sd">        This is wrapped in a try except block - and if an exception is raised,</span>
+</span><span data-line="716"><span class="sd">        it tries to pass it to an appropriate exception handler - if defined.</span>
+</span><span data-line="717"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="718">        <span class="n">response_data</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span>
+</span><span data-line="719">        <span class="n">parameter_model</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_kwargs_model_for_route</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">scope</span><span class="p">[</span><span class="s2">&quot;path_params&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+</span><span data-line="720">
+</span><span data-line="721">        <span class="k">if</span> <span class="n">before_request_handler</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">resolve_before_request</span><span class="p">():</span>
+</span><span data-line="722">            <span class="n">response_data</span> <span class="o">=</span> <span class="k">await</span> <span class="n">before_request_handler</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
+</span><span data-line="723">
+</span><span data-line="724">        <span class="c1"># create and enter an AsyncExit stack as we may or may not have a</span>
+</span><span data-line="725">        <span class="c1"># &#39;DependencyCleanupGroup&#39; to enter and exit</span>
+</span><span data-line="726">        <span class="n">stack</span> <span class="o">=</span> <span class="n">contextlib</span><span class="o">.</span><span class="n">AsyncExitStack</span><span class="p">()</span>
+</span><span data-line="727">
+</span><span data-line="728">        <span class="k">async</span> <span class="k">with</span> <span class="n">stack</span><span class="p">:</span>
+</span><span data-line="729">            <span class="k">if</span> <span class="ow">not</span> <span class="n">response_data</span><span class="p">:</span>
+</span><span data-line="730">                <span class="n">parsed_kwargs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+</span><span data-line="731">
+</span><span data-line="732">                <span class="k">if</span> <span class="n">parameter_model</span><span class="o">.</span><span class="n">has_kwargs</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">signature_model</span><span class="p">:</span>
+</span><span data-line="733">                    <span class="k">try</span><span class="p">:</span>
+</span><span data-line="734">                        <span class="n">kwargs</span> <span class="o">=</span> <span class="k">await</span> <span class="n">parameter_model</span><span class="o">.</span><span class="n">to_kwargs</span><span class="p">(</span><span class="n">connection</span><span class="o">=</span><span class="n">request</span><span class="p">)</span>
+</span><span data-line="735">                    <span class="k">except</span> <span class="n">SerializationException</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+</span><span data-line="736">                        <span class="k">raise</span> <span class="n">ClientException</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
+</span><span data-line="737">
+</span><span data-line="738">                    <span class="k">if</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;data&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="n">Empty</span><span class="p">:</span>
+</span><span data-line="739">                        <span class="k">del</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;data&quot;</span><span class="p">]</span>
+</span><span data-line="740">
+</span><span data-line="741">                    <span class="k">if</span> <span class="n">parameter_model</span><span class="o">.</span><span class="n">dependency_batches</span><span class="p">:</span>
+</span><span data-line="742">                        <span class="n">cleanup_group</span> <span class="o">=</span> <span class="k">await</span> <span class="n">parameter_model</span><span class="o">.</span><span class="n">resolve_dependencies</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span>
+</span><span data-line="743">                        <span class="k">await</span> <span class="n">stack</span><span class="o">.</span><span class="n">enter_async_context</span><span class="p">(</span><span class="n">cleanup_group</span><span class="p">)</span>
+</span><span data-line="744">
+</span><span data-line="745">                    <span class="n">parsed_kwargs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">signature_model</span><span class="o">.</span><span class="n">parse_values_from_connection_kwargs</span><span class="p">(</span>
+</span><span data-line="746">                        <span class="n">connection</span><span class="o">=</span><span class="n">request</span><span class="p">,</span> <span class="n">kwargs</span><span class="o">=</span><span class="n">kwargs</span>
+</span><span data-line="747">                    <span class="p">)</span>
+</span><span data-line="748">
+</span><span data-line="749">                <span class="n">response_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fn</span><span class="p">(</span><span class="o">**</span><span class="n">parsed_kwargs</span><span class="p">)</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_sync_callable</span> <span class="k">else</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">fn</span><span class="p">(</span><span class="o">**</span><span class="n">parsed_kwargs</span><span class="p">)</span>
+</span><span data-line="750">
+</span><span data-line="751">            <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_response</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">response_data</span><span class="p">,</span> <span class="n">request</span><span class="o">=</span><span class="n">request</span><span class="p">)</span>
+</span><span data-line="752">
+</span><span data-line="753">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_get_cached_response</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ASGIApp</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="754"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Retrieve and un-pickle the cached response, if existing.</span>
+</span><span data-line="755">
+</span><span data-line="756"><span class="sd">        Args:</span>
+</span><span data-line="757"><span class="sd">            request: The :class:`Request &lt;litestar.connection.Request&gt;` instance</span>
+</span><span data-line="758">
+</span><span data-line="759"><span class="sd">        Returns:</span>
+</span><span data-line="760"><span class="sd">            A cached response instance, if existing.</span>
+</span><span data-line="761"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="762">
+</span><span data-line="763">        <span class="n">cache_config</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">response_cache_config</span>
+</span><span data-line="764">        <span class="n">cache_key</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cache_key_builder</span> <span class="ow">or</span> <span class="n">cache_config</span><span class="o">.</span><span class="n">key_builder</span><span class="p">)(</span><span class="n">request</span><span class="p">)</span>
+</span><span data-line="765">        <span class="n">store</span> <span class="o">=</span> <span class="n">cache_config</span><span class="o">.</span><span class="n">get_store_from_app</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">app</span><span class="p">)</span>
+</span><span data-line="766">
+</span><span data-line="767">        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">cached_response_data</span> <span class="o">:=</span> <span class="k">await</span> <span class="n">store</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">cache_key</span><span class="p">)):</span>
+</span><span data-line="768">            <span class="k">return</span> <span class="kc">None</span>
+</span><span data-line="769">
+</span><span data-line="770">        <span class="c1"># we use the regular msgspec.msgpack.decode here since we don&#39;t need any of</span>
+</span><span data-line="771">        <span class="c1"># the added decoders</span>
+</span><span data-line="772">        <span class="n">messages</span> <span class="o">=</span> <span class="n">_decode_msgpack_plain</span><span class="p">(</span><span class="n">cached_response_data</span><span class="p">)</span>
+</span><span data-line="773">
+</span><span data-line="774">        <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">cached_response</span><span class="p">(</span><span class="n">scope</span><span class="p">:</span> <span class="n">Scope</span><span class="p">,</span> <span class="n">receive</span><span class="p">:</span> <span class="n">Receive</span><span class="p">,</span> <span class="n">send</span><span class="p">:</span> <span class="n">Send</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="775">            <span class="n">ScopeState</span><span class="o">.</span><span class="n">from_scope</span><span class="p">(</span><span class="n">scope</span><span class="p">)</span><span class="o">.</span><span class="n">is_cached</span> <span class="o">=</span> <span class="kc">True</span>
+</span><span data-line="776">            <span class="k">for</span> <span class="n">message</span> <span class="ow">in</span> <span class="n">messages</span><span class="p">:</span>
+</span><span data-line="777">                <span class="k">await</span> <span class="n">send</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+</span><span data-line="778">
+</span><span data-line="779">        <span class="k">return</span> <span class="n">cached_response</span>
+</span><span data-line="780">
+<div class="viewcode-block" id="HTTPRouteHandler.to_response">
+<a class="viewcode-back" href="../../../../reference/handlers.html#litestar.handlers.HTTPRouteHandler.to_response">[docs]</a>
+</span><span data-line="781">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">to_response</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ASGIApp</span><span class="p">:</span>
+</span><span data-line="782"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a :class:`Response &lt;.response.Response&gt;` from the handler by resolving and calling it.</span>
+</span><span data-line="783">
+</span><span data-line="784"><span class="sd">        Args:</span>
+</span><span data-line="785"><span class="sd">            data: Either an instance of a :class:`Response &lt;.response.Response&gt;`,</span>
+</span><span data-line="786"><span class="sd">                a Response instance or an arbitrary value.</span>
+</span><span data-line="787"><span class="sd">            request: A :class:`Request &lt;.connection.Request&gt;` instance</span>
+</span><span data-line="788">
+</span><span data-line="789"><span class="sd">        Returns:</span>
+</span><span data-line="790"><span class="sd">            A Response instance</span>
+</span><span data-line="791"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="792">        <span class="k">if</span> <span class="n">return_dto_type</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">return_dto</span><span class="p">:</span>
+</span><span data-line="793">            <span class="n">data</span> <span class="o">=</span> <span class="n">return_dto_type</span><span class="p">(</span><span class="n">request</span><span class="p">)</span><span class="o">.</span><span class="n">data_to_encodable_type</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+</span><span data-line="794">
+</span><span data-line="795">        <span class="n">handler</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span>
+</span><span data-line="796">            <span class="s2">&quot;Callable[..., Awaitable[ASGIApp]]&quot;</span><span class="p">,</span>
+</span><span data-line="797">            <span class="bp">self</span><span class="o">.</span><span class="n">_response_type_handler</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">Response</span><span class="p">)</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">_default_response_handler</span><span class="p">,</span>
+</span><span data-line="798">        <span class="p">)</span>
+</span><span data-line="799">
+</span><span data-line="800">        <span class="k">return</span> <span class="k">await</span> <span class="n">handler</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">request</span><span class="o">=</span><span class="n">request</span><span class="p">)</span></div>
+</div>
+
+</span></pre></div>
+        </article><button class="back-to-top" type="button">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+  </svg>
+  <span>Back to top</span>
+</button><div class="navigation flex print:hidden"></div></div>
+    </div>
+  </main>
+</div>
+<footer class="sy-foot">
+  <div class="sy-foot-inner sy-container mx-auto">
+    <div class="sy-foot-reserved md:flex justify-between items-center">
+      <div class="sy-foot-copyright"><p>2025, Litestar Organization</p>
+  
+  <p>
+    Made with
+    
+    <a href="https://www.sphinx-doc.org/">Sphinx</a> and
+    
+    <a href="https://shibuya.lepture.com">Shibuya theme</a>.
+  </p>
+</div>
+      <div class="sy-foot-socials">
+<a href="https://twitter.com/LitestarAPI" aria-label="X (Twitter)">
+  <iconify-icon icon="prime:twitter"></iconify-icon>
+</a>
+<a href="https://discord.gg/litestar" aria-label="Discord">
+  <iconify-icon icon="simple-icons:discord"></iconify-icon>
+</a>
+<a href="https://www.reddit.com/r/LitestarAPI" aria-label="Reddit">
+  <iconify-icon icon="simple-icons:reddit"></iconify-icon>
+</a></div>
+    </div>
+  </div>
+</footer>
+      <script src="../../../../_static/documentation_options.js?v=ad404a94"></script>
+      <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../../../_static/copybutton.js?v=f281be69"></script>
+      <script src="../../../../_static/litestar-theme.js?v=ab2dcc9e"></script>
+      <script>let toggleHintShow = 'Click to show';</script>
+      <script>let toggleHintHide = 'Click to hide';</script>
+      <script>let toggleOpenOnPrint = 'true';</script>
+      <script src="../../../../_static/togglebutton.js?v=4a39c7ea"></script>
+      <script src="../../../../_static/design-tabs.js?v=f930bc37"></script>
+      <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+      <script src="../../../../_static/shibuya.js?v=c477d091"></script>
+      <script type="module" src="https://cdn.jsdelivr.net/npm/mermaid@11.2.0/dist/mermaid.esm.min.mjs"></script>
+      <script type="module" src="https://cdn.jsdelivr.net/npm/@mermaid-js/layout-elk@0.1.4/dist/mermaid-layout-elk.esm.min.mjs"></script>
+      <script type="module">import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11.2.0/dist/mermaid.esm.min.mjs";import elkLayouts from "https://cdn.jsdelivr.net/npm/@mermaid-js/layout-elk@0.1.4/dist/mermaid-layout-elk.esm.min.mjs";mermaid.registerLayoutLoaders(elkLayouts);mermaid.initialize({startOnLoad:false});</script>
+      <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+      <script type="module">
+import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11.2.0/dist/mermaid.esm.min.mjs";
+window.addEventListener("load", () => mermaid.run());
+</script>
+      <script src="../../../../_static/versioning.js?v=9ab184b9"></script></body>
+</html>

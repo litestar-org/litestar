@@ -1,0 +1,1141 @@
+<!DOCTYPE html>
+<html lang="en" data-accent-color="amber" data-content_root="../../../">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>litestar.logging.config - Litestar Framework</title><link rel="shortcut icon" href="../../../_static/favicon.svg"/><link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" /><script>
+    function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
+    setColorMode(localStorage._theme||"auto");
+  </script><link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=397bb51e" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/shibuya.css?v=76b6f612" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx_paramlinks.css" />
+    <link media="print" rel="stylesheet" type="text/css" href="../../../_static/print.css?v=20ff2c19" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/style.css?v=50ea2f63" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/litestar-sphinx-theme.css?v=f8f74789" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --sy-f-text: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
+  --sy-f-heading: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
+}
+</style>
+    <meta property="og:type" content="website"/><meta property="og:title" content="litestar.logging.config"/>
+<meta name="twitter:card" content="summary"/>
+<meta property="og:image" content="_static/logo-light.png"/>
+  </head>
+<body><div class="announcement">
+    <div class="announcement-inner">
+      <p>You are viewing the <bold>local</bold> version of the documentation. Click here to go to the latest version.</p>
+      <button class="announcement-close" aria-label="Close announcement">
+        <i class="i-lucide close"></i>
+      </button>
+    </div>
+  </div><div class="sy-head">
+  <div class="sy-head-blur"></div>
+  <div class="sy-head-inner sy-container mx-auto">
+    <a class="sy-head-brand" href="/">
+      <img class="light-logo" src="../../../_static/logo-light.png" alt="Litestar" height="28" loading="lazy" />
+      <img class="dark-logo" src="../../../_static/logo-dark.png" alt="Litestar" height="28" loading="lazy" />
+      <strong>Litestar</strong>
+    </a>
+    <div class="sy-head-nav" id="head-nav">
+      <nav class="sy-head-links"><ul><li class="link"><a href="../../../index.html">Home</a></li>
+      <li class="link"><button class="js-menu" type="button" id="nav-trigger-2" aria-controls="nav-children-2">
+            <span>Community</span>
+            <i class="i-lucide chevron-down"></i>
+          </button>
+        <ul id="nav-children-2" aria-labelledby="nav-trigger-2"><li><a href="../../../contribution-guide.html">
+                <span>Contributing</span>
+                <small>Learn how to contribute to the Litestar project</small>
+              </a></li><li><a href="https://github.com/litestar-org/.github?tab=coc-ov-file">
+                <span>Code of Conduct</span>
+                <small>Review the etiquette for interacting with the Litestar community</small>
+              </a></li><li><a href="https://github.com/litestar-org/.github?tab=coc-ov-file#security-ov-file">
+                <span>Security</span>
+                <small>Overview of Litestar's security protocols</small>
+              </a></li></ul>
+      </li>
+      <li class="link"><button class="js-menu" type="button" id="nav-trigger-3" aria-controls="nav-children-3">
+            <span>About</span>
+            <i class="i-lucide chevron-down"></i>
+          </button>
+        <ul id="nav-children-3" aria-labelledby="nav-trigger-3"><li><a href="https://litestar.dev/about/organization">
+                <span>Litestar Organization</span>
+                <small>Details about the Litestar organization</small>
+              </a></li><li><a href="https://litestar.dev/about/litestar-releases">
+                <span>Releases</span>
+                <small>Explore the release process, versioning, and deprecation policy for Litestar</small>
+              </a></li></ul>
+      </li>
+      <li class="link"><button class="js-menu" type="button" id="nav-trigger-4" aria-controls="nav-children-4">
+            <span>Release notes</span>
+            <i class="i-lucide chevron-down"></i>
+          </button>
+        <ul id="nav-children-4" aria-labelledby="nav-trigger-4"><li><a href="../../../release-notes/whats-new-3.html">
+                <span>What's new in 3.0</span>
+                <small>Explore the new features in Litestar 3.0</small>
+              </a></li><li><a href="../../../release-notes/changelog.html">
+                <span>3.x Changelog</span>
+                <small>All changes in the 3.x series</small>
+              </a></li><li><a href="https://docs.litestar.dev/2/release-notes/changelog.html">
+                <span>2.x Changelog</span>
+                <small>All changes in the 2.x series</small>
+              </a></li></ul>
+      </li>
+      <li class="link"><button class="js-menu" type="button" id="nav-trigger-5" aria-controls="nav-children-5">
+            <span>Help</span>
+            <i class="i-lucide chevron-down"></i>
+          </button>
+        <ul id="nav-children-5" aria-labelledby="nav-trigger-5"><li><a href="https://discord.gg/litestar">
+                <span>Discord Help Forum</span>
+                <small>Dedicated Discord help forum</small>
+              </a></li><li><a href="https://github.com/orgs/litestar-org/discussions">
+                <span>GitHub Discussions</span>
+                <small>GitHub Discussions</small>
+              </a></li><li><a href="https://stackoverflow.com/questions/tagged/litestar">
+                <span>Stack Overflow</span>
+                <small>We monitor the <code><b>litestar</b></code> tag on Stack Overflow</small>
+              </a></li></ul>
+      </li><li class="link">
+          <a href="https://github.com/sponsors/Litestar-Org">
+            <span>Sponsor</span></a>
+        </li></ul></nav>
+      <div class="sy-head-extra flex items-center print:hidden"><form class="searchbox flex items-center" action="../../../search.html" method="get">
+  <input type="text" name="q" placeholder="Search" />
+  <kbd>/</kbd>
+</form><div class="nav-versions">
+    <button type="button" aria-label="Versions">
+      <span class="md:hidden">Versions</span>
+      <span class="hidden md:inline">main</span>
+      <i class="i-lucide chevron-down"></i>
+    </button>
+    <div class="nav-versions-choices"><ul><li><a href="/latest">latest</a></li><li><a href="/main">v3 (development)</a></li><li><a href="/2">v2</a></li><li><a href="/1">v1</a></li></ul></div>
+  </div><div class="sy-head-socials">
+<a href="https://twitter.com/LitestarAPI" aria-label="X (Twitter)">
+  <iconify-icon icon="prime:twitter"></iconify-icon>
+</a>
+  <a href="https://discord.gg/litestar" aria-label="Discord">
+    <iconify-icon icon="simple-icons:discord"></iconify-icon>
+  </a></div></div>
+    </div>
+    <div class="sy-head-actions flex items-center shrink-0 print:hidden"><button class="js-theme theme-switch flex items-center"
+data-aria-auto="Switch to light color mode"
+data-aria-light="Switch to dark color mode"
+data-aria-dark="Switch to auto color mode">
+<i class="i-lucide theme-icon"></i>
+</button><button class="md:hidden flex items-center js-menu" aria-label="Menu" type="button" aria-controls="head-nav" aria-expanded="false">
+        <div class="hamburger">
+          <span class="hamburger_1"></span>
+          <span class="hamburger_2 -translate-x-2"></span>
+          <span class="hamburger_3 -translate-x-1"></span>
+        </div>
+      </button>
+    </div>
+  </div>
+</div>
+<div class="sy-page sy-container flex mx-auto">
+  <aside id="lside" class="sy-lside md:w-72 md:shrink-0 print:hidden">
+    <div class="sy-lside-inner md:sticky">
+      <div class="sy-scrollbar p-6"><div class="sidebar-links">
+  <ul>
+    <li><a class="icon-link" href="https://github.com/orgs/litestar-org/discussions">
+  <span class="icon">
+    <svg viewBox="0 0 24 24" fill="none">
+      <path fill="var(--accent-9)" fill-rule="evenodd" clip-rule="evenodd" d="M11 5a6 6 0 0 0-4.687 9.746c.215.27.315.62.231.954l-.514 2.058a1 1 0 0 0 1.485 1.1l2.848-1.71c.174-.104.374-.15.576-.148H13a6 6 0 0 0 0-12h-2Z"/>
+      <circle fill="white" cx="12" cy="11" r="1"/>
+      <circle fill="white" cx="9" cy="11" r="1"/>
+      <circle fill="white" cx="15" cy="11" r="1"/>
+    </svg>
+  </span>
+  <span class="text">Discussion</span>
+</a></li>
+  </ul>
+</div>
+        <div class="globaltoc" data-expand-depth="0"><p class="caption" role="heading" aria-level="3"><span class="caption-text">Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting-started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../usage/index.html">Usage</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage/applications.html">Applications</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage/routing/index.html">Routing</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../usage/routing/overview.html">Overview</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../usage/routing/handlers.html">Route handlers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../usage/routing/parameters.html">Parameters</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage/requests.html">Requests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage/caching.html">Caching</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage/channels.html">Channels</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage/cli.html">CLI</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage/databases/index.html">Databases</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../usage/databases/sqlalchemy/index.html">SQLAlchemy</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../usage/databases/sqlalchemy/models_and_repository.html">SQLAlchemy Models &amp; Repository</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../usage/databases/sqlalchemy/plugins/index.html">Plugins</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../usage/databases/piccolo.html">Piccolo ORM</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage/debugging.html">Debugging</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage/dependency-injection.html">Dependency Injection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage/dto/index.html">Data Transfer Object (DTO)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../usage/dto/0-basic-use.html">Basic Use</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../usage/dto/1-abstract-dto.html">AbstractDTO</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../usage/dto/2-creating-custom-dto-classes.html">Implementing Custom DTO Classes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage/events.html">Events</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage/exceptions.html">Exceptions and exception handling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage/file_systems.html">File Systems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage/htmx.html">HTMX</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage/lifecycle-hooks.html">Life Cycle Hooks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage/logging.html">Logging</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage/metrics/index.html">Metrics</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../usage/metrics/open-telemetry.html">OpenTelemetry</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../usage/metrics/prometheus.html">Prometheus</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage/middleware/index.html">Middleware</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../usage/middleware/using-middleware.html">Using Middleware</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../usage/middleware/builtin-middleware.html">Built-in middleware</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../usage/middleware/creating-middleware.html">Creating Middleware</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage/openapi/index.html">OpenAPI</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../usage/openapi/schema_generation.html">Configuring schema generation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../usage/openapi/schema_generation.html#configuring-schema-generation-on-a-route-handler">Configuring schema generation on a route handler</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../usage/openapi/schema_generation.html#accessing-the-openapi-schema-in-code">Accessing the OpenAPI schema in code</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../usage/openapi/schema_generation.html#customizing-pydantic-model-schemas">Customizing Pydantic model schemas</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../usage/openapi/schema_generation.html#customizing-operation-class">Customizing <code class="docutils literal notranslate"><span class="pre">Operation</span></code> class</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../usage/openapi/schema_generation.html#generating-examples">Generating examples</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../usage/openapi/ui_plugins.html">OpenAPI UI Plugins</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../usage/openapi/ui_plugins.html#using-openapi-ui-plugins">Using OpenAPI UI Plugins</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../usage/openapi/ui_plugins.html#configuring-openapi-ui-plugins">Configuring OpenAPI UI Plugins</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../usage/openapi/ui_plugins.html#configuring-the-openapi-root-path">Configuring the OpenAPI Root Path</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../usage/openapi/ui_plugins.html#building-your-own-openapi-ui-plugin">Building your own OpenAPI UI Plugin</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../usage/openapi/ui_plugins.html#interacting-with-the-router">Interacting with the <code class="docutils literal notranslate"><span class="pre">Router</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../usage/openapi/ui_plugins.html#oauth2-in-swagger-ui">OAuth2 in Swagger UI</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../usage/openapi/ui_plugins.html#customizing-the-openapi-ui">Customizing the OpenAPI UI</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../usage/openapi/ui_plugins.html#cdn-and-offline-file-support">CDN and offline file support</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage/plugins/index.html">Plugins</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../usage/plugins/flash_messages.html">Flash Messages</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../usage/plugins/problem_details.html">Problem Details</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage/responses.html">Responses</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage/security/index.html">Security</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../usage/security/abstract-authentication-middleware.html">Implementing Custom Authentication</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../usage/security/security-backends.html">Security Backends</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../usage/security/guards.html">Guards</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../usage/security/excluding-and-including-endpoints.html">Excluding and including endpoints</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../usage/security/jwt.html">JWT Security Backends</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../usage/security/secret-datastructures.html">Handling Secrets</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage/static-files.html">Static files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage/custom-types.html">Custom types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage/stores.html">Stores</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage/templating.html">Templating</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage/testing.html">Testing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage/websockets.html">WebSockets</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference/index.html">API reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/app.html">app</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/background_tasks.html">background_tasks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/channels/index.html">channels</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/channels/plugin.html">plugin</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/channels/subscriber.html">subscriber</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/channels/backends/index.html">backends</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/channels/backends/base.html">base</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/channels/backends/memory.html">memory</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/channels/backends/redis.html">redis</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/channels/backends/psycopg.html">psycopg</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/channels/backends/asyncpg.html">asyncpg</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/cli.html">cli</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/config.html">config</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/connection.html">connection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/contrib/index.html">contrib</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/contrib/jinja.html">jinja</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/contrib/mako.html">mako</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/contrib/opentelemetry.html">opentelemetry</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/contrib/sqlalchemy/index.html">sqlalchemy</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/contrib/sqlalchemy/plugins.html">plugins</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/contrib/sqlalchemy/repository.html">repository</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/contrib/sqlalchemy/types.html">types</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/contrib/sqlalchemy/base.html">base</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/contrib/sqlalchemy/dto.html">DTO</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/controller.html">controller</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/concurrency.html">concurrency</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/data_extractors.html">data_extractors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/datastructures/index.html">datastructures</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/datastructures/secret_values.html">secret_values</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/di.html">di</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/dto/index.html">dto</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/dto/config.html">config</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/dto/data_structures.html">data_structures</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/dto/field.html">field</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/dto/types.html">types</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/dto/base_dto.html">base_dto</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/dto/msgspec_dto.html">msgspec_dto</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/dto/dataclass_dto.html">dataclass_dto</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/enums.html">enums</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/events.html">events</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/exceptions.html">exceptions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/file_system.html">file_system</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/handlers.html">handlers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/logging/index.html">logging</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/logging/config.html">config</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/logging/picologging.html">picologging</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/logging/standard.html">standard</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/middleware/index.html">middleware</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/middleware/allowed_hosts.html">allowed_hosts</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/middleware/authentication.html">authentication</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/middleware/compression.html">compression</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/middleware/csrf.html">csrf</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/middleware/logging.html">logging</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/middleware/rate_limit.html">rate_limit</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/middleware/session/index.html">session</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/middleware/session/base.html">base</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/middleware/session/client_side.html">client_side</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/middleware/session/server_side.html">server_side</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/middleware/constraints.html">constraints</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/openapi/index.html">openapi</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/openapi/openapi.html">openapi</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/openapi/plugins.html">plugins</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/openapi/spec.html">spec</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/pagination.html">pagination</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/params.html">params</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/plugins/index.html">plugins</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/plugins/attrs.html">attrs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/plugins/flash_messages.html">flash</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/plugins/htmx.html">htmx</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/plugins/problem_details.html">problem details</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/plugins/prometheus.html">prometheus</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/plugins/pydantic.html">pydantic</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/plugins/structlog.html">structlog</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/plugins/sqlalchemy.html">sqlalchemy</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/repository/index.html">repository</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/repository/abc.html">abc</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/repository/filters.html">filters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/repository/exceptions.html">exceptions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/repository/testing.html">testing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/repository/handlers.html">handlers</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/response/index.html">response</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/response/base.html">base</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/response/file.html">file</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/response/redirect.html">redirect</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/response/streaming.html">streaming</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/response/sse.html">SSE (Server Sent Events)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/response/template.html">template</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/router.html">router</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/routes.html">routes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/security/index.html">security</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/security/jwt.html">jwt</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/security/session_auth.html">session_auth</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/serialization.html">serialization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/static_files.html">static_files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/status_codes.html">status_code</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/stores/index.html">stores</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/stores/base.html">base</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/stores/file.html">file</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/stores/memory.html">memory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/stores/redis.html">redis</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/stores/registry.html">registry</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/stores/valkey.html">valkey</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/template.html">template</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/testing.html">testing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/types.html">types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/typing.html">typing</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../benchmarks.html">Benchmarks</a></li>
+</ul>
+<p class="caption" role="heading" aria-level="3"><span class="caption-text">Guides</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../migration/index.html">Migrating to Litestar</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../migration/flask.html">From Flask</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../migration/fastapi.html">From Starlette / FastAPI</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../topics/index.html">Topics</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../topics/sync-vs-async.html">Sync vs. Async</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../topics/deployment/index.html">Deployment</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../topics/deployment/nginx-unit.html">NGINX Unit</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../topics/deployment/manually-with-asgi-server.html">Manually with ASGI server</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../topics/deployment/docker.html">Docker</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../topics/deployment/supervisor.html">Supervisor (Linux)</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorials/index.html">Tutorials</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/todo-app/index.html">Developing a basic TODO application</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../tutorials/todo-app/0-application-basics.html">Application basics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../tutorials/todo-app/1-accessing-the-list.html">Accessing the list</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../tutorials/todo-app/2-interacting-with-the-list.html">Making the list interactive</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../tutorials/todo-app/3-assembling-the-app.html">Recap and assembling the final application</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/sqlalchemy/index.html">Improving the TODO app with SQLAlchemy</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../tutorials/sqlalchemy/0-introduction.html">Introduction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../tutorials/sqlalchemy/1-provide-session-with-di.html">Providing the session with DI</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../tutorials/sqlalchemy/2-serialization-plugin.html">Using the serialization plugin</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../tutorials/sqlalchemy/3-init-plugin.html">Using the init plugin</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../tutorials/sqlalchemy/4-final-touches-and-recap.html">Final touches and recap</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/dto-tutorial/index.html">Data Transfer Object Tutorial</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../tutorials/dto-tutorial/01-simple-dto-exclude.html">Our first DTO</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../tutorials/dto-tutorial/02-nested-exclude.html">Excluding from nested models</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../tutorials/dto-tutorial/03-nested-collection-exclude.html">Excluding from collections of nested models</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../tutorials/dto-tutorial/04-max-nested-depth.html">Max nested depth</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../tutorials/dto-tutorial/05-renaming-fields.html">Renaming fields</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../tutorials/dto-tutorial/06-receiving-data.html">Receiving data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../tutorials/dto-tutorial/07-read-only-fields.html">Read only fields</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../tutorials/dto-tutorial/08-dto-data.html">Accessing the data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../tutorials/dto-tutorial/09-updating.html">Updating instances</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../tutorials/dto-tutorial/10-layered-dto-declarations.html">Declaring DTOs on app layers</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/repository-tutorial/index.html">SQLAlchemy Repository Tutorial</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../tutorials/repository-tutorial/01-modelling-and-features.html">Introduction to Database Modelling and Repository Features</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../tutorials/repository-tutorial/01-modelling-and-features.html#modelling">Modelling</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../tutorials/repository-tutorial/01-modelling-and-features.html#full-code">Full Code</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../tutorials/repository-tutorial/02-repository-introduction.html">Interacting with repositories</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../tutorials/repository-tutorial/02-repository-introduction.html#working-with-bulk-data-operations">Working with Bulk Data Operations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../tutorials/repository-tutorial/02-repository-introduction.html#full-code">Full Code</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../tutorials/repository-tutorial/03-repository-controller.html">Working with Controllers and Repositories</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../tutorials/repository-tutorial/03-repository-controller.html#full-code">Full Code</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../tutorials/repository-tutorial/04-repository-other.html">Adding Additional Features to the Repository</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../tutorials/repository-tutorial/04-repository-other.html#slug-fields">Slug Fields</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../tutorials/repository-tutorial/04-repository-other.html#full-code">Full Code</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading" aria-level="3"><span class="caption-text">Contributing</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../contribution-guide.html">Contribution Guide</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/search?q=user%3Alitestar-org+state%3Aopen+label%3A%22good+first+issue%22+++no%3Aassignee+&amp;type=issues=">Available Issues</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/litestar-org/.github?tab=coc-ov-file#readme">Code of Conduct</a></li>
+</ul>
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="lside-overlay js-menu" role="button" aria-label="Close left sidebar" aria-controls="lside" aria-expanded="false"></div>
+  <aside id="rside" class="sy-rside pb-3 w-64 shrink-0 order-last">
+    <button class="rside-close js-menu xl:hidden" aria-label="Close Table of Contents" type="button" aria-controls="rside" aria-expanded="false">
+      <i class="i-lucide close"></i>
+    </button>
+    <div class="sy-scrollbar sy-rside-inner px-6 xl:top-16 xl:sticky xl:pl-0 pt-6 pb-4"><a class="js-repo-stats repo-stats flex items-center" href="https://github.com/litestar-org/litestar"
+  data-type="github" data-user="litestar-org" data-repo="litestar">
+  <span class="w-8 flex items-center justify-around shrink-0 text-3xl">
+    <iconify-icon icon="simple-icons:github"></iconify-icon>
+  </span>
+  <span class="flex-grow px-2 break-all">
+    <span>litestar-org/litestar</span>
+    <span class="flex text-sm repo-stats-count">
+      <span class="flex items-center pr-3">
+        <iconify-icon icon="lucide:star"></iconify-icon>
+        <strong class="js-repo-stars ml-1">0</strong>
+      </span>
+      <span class="flex items-center">
+        <iconify-icon icon="lucide:git-fork"></iconify-icon>
+        <strong class="js-repo-forks ml-1">0</strong>
+      </span>
+    </span>
+  </span>
+</a><div id="ethical-ad-placement" data-ea-publisher="readthedocs"></div></div>
+  </aside>
+  <div class="rside-overlay js-menu" role="button" aria-label="Close Table of Contents" aria-controls="rside" aria-expanded="false"></div>
+  <main class="sy-main w-full max-sm:max-w-full print:pt-6">
+<div class="sy-breadcrumbs" role="navigation">
+  <div class="sy-breadcrumbs-inner flex items-center">
+    <div class="md:hidden mr-3">
+      <button class="js-menu" aria-label="Menu" type="button" aria-controls="lside" aria-expanded="false">
+        <i class="i-lucide menu"></i>
+      </button>
+    </div>
+    <ol class="flex-1" itemscope itemtype="https://schema.org/BreadcrumbList"><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <a itemprop="item" href="../../../index.html"><span itemprop="name">Litestar</span></a>
+        <span>/</span>
+        <meta itemprop="position" content="1" />
+      </li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <a itemprop="item" href="../../index.html"><span itemprop="name">Module code</span></a>
+        <span>/</span>
+        <meta itemprop="position" content="2" />
+      </li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <strong itemprop="name">litestar.logging.config</strong>
+        <meta itemprop="position" content="3" />
+      </li></ol>
+    <div class="xl:hidden ml-1">
+      <button class="js-menu" aria-label="Show table of contents" type="button" aria-controls="rside"
+        aria-expanded="false">
+        <i class="i-lucide outdent"></i>
+      </button>
+    </div>
+  </div>
+</div><div class="flex flex-col break-words justify-between">
+      <div class="min-w-0 max-w-6xl px-6 pb-6 pt-8 xl:px-12">
+        <article class="yue" role="main">
+          <h1>Source code for litestar.logging.config</h1><div class="highlight"><pre>
+<span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+</span><span data-line="2">
+</span><span data-line="3"><span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+</span><span data-line="4"><span class="kn">from</span><span class="w"> </span><span class="nn">abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">ABC</span><span class="p">,</span> <span class="n">abstractmethod</span>
+</span><span data-line="5"><span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span><span class="p">,</span> <span class="n">fields</span>
+</span><span data-line="6"><span class="kn">from</span><span class="w"> </span><span class="nn">importlib.util</span><span class="w"> </span><span class="kn">import</span> <span class="n">find_spec</span>
+</span><span data-line="7"><span class="kn">from</span><span class="w"> </span><span class="nn">logging</span><span class="w"> </span><span class="kn">import</span> <span class="n">INFO</span>
+</span><span data-line="8"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">cast</span>
+</span><span data-line="9">
+</span><span data-line="10"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">ImproperlyConfiguredException</span><span class="p">,</span> <span class="n">MissingDependencyException</span>
+</span><span data-line="11"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.serialization.msgspec_hooks</span><span class="w"> </span><span class="kn">import</span> <span class="n">_msgspec_json_encoder</span>
+</span><span data-line="12"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.utils.dataclass</span><span class="w"> </span><span class="kn">import</span> <span class="n">simple_asdict</span>
+</span><span data-line="13"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.utils.deprecation</span><span class="w"> </span><span class="kn">import</span> <span class="n">deprecated</span>
+</span><span data-line="14">
+</span><span data-line="15"><span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;BaseLoggingConfig&quot;</span><span class="p">,</span> <span class="s2">&quot;LoggingConfig&quot;</span><span class="p">,</span> <span class="s2">&quot;StructLoggingConfig&quot;</span><span class="p">)</span>
+</span><span data-line="16">
+</span><span data-line="17">
+</span><span data-line="18"><span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+</span><span data-line="19">    <span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Iterable</span>
+</span><span data-line="20">    <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">NoReturn</span>
+</span><span data-line="21">
+</span><span data-line="22">    <span class="c1"># these imports are duplicated on purpose so sphinx autodoc can find and link them</span>
+</span><span data-line="23">    <span class="kn">from</span><span class="w"> </span><span class="nn">structlog.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">BindableLogger</span><span class="p">,</span> <span class="n">Processor</span><span class="p">,</span> <span class="n">WrappedLogger</span>
+</span><span data-line="24">    <span class="kn">from</span><span class="w"> </span><span class="nn">structlog.typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">EventDict</span>
+</span><span data-line="25">
+</span><span data-line="26">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">Logger</span><span class="p">,</span> <span class="n">Scope</span>
+</span><span data-line="27">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.types.callable_types</span><span class="w"> </span><span class="kn">import</span> <span class="n">ExceptionLoggingHandler</span><span class="p">,</span> <span class="n">GetLogger</span>
+</span><span data-line="28">
+</span><span data-line="29">
+</span><span data-line="30"><span class="n">default_handlers</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{</span>
+</span><span data-line="31">    <span class="s2">&quot;console&quot;</span><span class="p">:</span> <span class="p">{</span>
+</span><span data-line="32">        <span class="s2">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;logging.StreamHandler&quot;</span><span class="p">,</span>
+</span><span data-line="33">        <span class="s2">&quot;level&quot;</span><span class="p">:</span> <span class="s2">&quot;DEBUG&quot;</span><span class="p">,</span>
+</span><span data-line="34">        <span class="s2">&quot;formatter&quot;</span><span class="p">:</span> <span class="s2">&quot;standard&quot;</span><span class="p">,</span>
+</span><span data-line="35">    <span class="p">},</span>
+</span><span data-line="36">    <span class="s2">&quot;queue_listener&quot;</span><span class="p">:</span> <span class="p">{</span>
+</span><span data-line="37">        <span class="s2">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;litestar.logging.standard.QueueListenerHandler&quot;</span><span class="p">,</span>
+</span><span data-line="38">        <span class="s2">&quot;level&quot;</span><span class="p">:</span> <span class="s2">&quot;DEBUG&quot;</span><span class="p">,</span>
+</span><span data-line="39">        <span class="s2">&quot;formatter&quot;</span><span class="p">:</span> <span class="s2">&quot;standard&quot;</span><span class="p">,</span>
+</span><span data-line="40">    <span class="p">},</span>
+</span><span data-line="41"><span class="p">}</span>
+</span><span data-line="42">
+</span><span data-line="43"><span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">version_info</span> <span class="o">&gt;=</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">0</span><span class="p">):</span>
+</span><span data-line="44">    <span class="n">default_handlers</span><span class="p">[</span><span class="s2">&quot;queue_listener&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+</span><span data-line="45">        <span class="p">{</span>
+</span><span data-line="46">            <span class="s2">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;logging.handlers.QueueHandler&quot;</span><span class="p">,</span>
+</span><span data-line="47">            <span class="s2">&quot;queue&quot;</span><span class="p">:</span> <span class="p">{</span>
+</span><span data-line="48">                <span class="s2">&quot;()&quot;</span><span class="p">:</span> <span class="s2">&quot;queue.Queue&quot;</span><span class="p">,</span>
+</span><span data-line="49">                <span class="s2">&quot;maxsize&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
+</span><span data-line="50">            <span class="p">},</span>
+</span><span data-line="51">            <span class="s2">&quot;listener&quot;</span><span class="p">:</span> <span class="s2">&quot;litestar.logging.standard.LoggingQueueListener&quot;</span><span class="p">,</span>
+</span><span data-line="52">            <span class="s2">&quot;handlers&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;console&quot;</span><span class="p">],</span>
+</span><span data-line="53">        <span class="p">}</span>
+</span><span data-line="54">    <span class="p">)</span>
+</span><span data-line="55">
+</span><span data-line="56">    <span class="c1"># do not format twice, the console handler will do the job</span>
+</span><span data-line="57">    <span class="k">del</span> <span class="n">default_handlers</span><span class="p">[</span><span class="s2">&quot;queue_listener&quot;</span><span class="p">][</span><span class="s2">&quot;formatter&quot;</span><span class="p">]</span>
+</span><span data-line="58">
+</span><span data-line="59">
+</span><span data-line="60"><span class="n">default_picologging_handlers</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{</span>
+</span><span data-line="61">    <span class="s2">&quot;console&quot;</span><span class="p">:</span> <span class="p">{</span>
+</span><span data-line="62">        <span class="s2">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;picologging.StreamHandler&quot;</span><span class="p">,</span>
+</span><span data-line="63">        <span class="s2">&quot;level&quot;</span><span class="p">:</span> <span class="s2">&quot;DEBUG&quot;</span><span class="p">,</span>
+</span><span data-line="64">        <span class="s2">&quot;formatter&quot;</span><span class="p">:</span> <span class="s2">&quot;standard&quot;</span><span class="p">,</span>
+</span><span data-line="65">    <span class="p">},</span>
+</span><span data-line="66">    <span class="s2">&quot;queue_listener&quot;</span><span class="p">:</span> <span class="p">{</span>
+</span><span data-line="67">        <span class="s2">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;litestar.logging.picologging.QueueListenerHandler&quot;</span><span class="p">,</span>
+</span><span data-line="68">        <span class="s2">&quot;level&quot;</span><span class="p">:</span> <span class="s2">&quot;DEBUG&quot;</span><span class="p">,</span>
+</span><span data-line="69">        <span class="s2">&quot;formatter&quot;</span><span class="p">:</span> <span class="s2">&quot;standard&quot;</span><span class="p">,</span>
+</span><span data-line="70">    <span class="p">},</span>
+</span><span data-line="71"><span class="p">}</span>
+</span><span data-line="72">
+</span><span data-line="73">
+</span><span data-line="74"><span class="k">def</span><span class="w"> </span><span class="nf">_get_default_formatters</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
+</span><span data-line="75">    <span class="k">return</span> <span class="p">{</span>
+</span><span data-line="76">        <span class="s2">&quot;standard&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;format&quot;</span><span class="p">:</span> <span class="s2">&quot;</span><span class="si">%(levelname)s</span><span class="s2"> - </span><span class="si">%(asctime)s</span><span class="s2"> - </span><span class="si">%(name)s</span><span class="s2"> - </span><span class="si">%(module)s</span><span class="s2"> - </span><span class="si">%(message)s</span><span class="s2">&quot;</span><span class="p">},</span>
+</span><span data-line="77">    <span class="p">}</span>
+</span><span data-line="78">
+</span><span data-line="79">
+</span><span data-line="80"><span class="k">def</span><span class="w"> </span><span class="nf">_get_default_loggers</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
+</span><span data-line="81">    <span class="k">return</span> <span class="p">{</span>
+</span><span data-line="82">        <span class="s2">&quot;litestar&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;level&quot;</span><span class="p">:</span> <span class="s2">&quot;INFO&quot;</span><span class="p">,</span> <span class="s2">&quot;handlers&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;queue_listener&quot;</span><span class="p">],</span> <span class="s2">&quot;propagate&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">},</span>
+</span><span data-line="83">    <span class="p">}</span>
+</span><span data-line="84">
+</span><span data-line="85">
+</span><span data-line="86"><span class="k">def</span><span class="w"> </span><span class="nf">get_logger_placeholder</span><span class="p">(</span><span class="n">_</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NoReturn</span><span class="p">:</span>
+</span><span data-line="87"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Raise: An :class:`ImproperlyConfiguredException &lt;.exceptions.ImproperlyConfiguredException&gt;`&quot;&quot;&quot;</span>
+</span><span data-line="88">    <span class="k">raise</span> <span class="n">ImproperlyConfiguredException</span><span class="p">(</span>
+</span><span data-line="89">        <span class="s2">&quot;cannot call &#39;.get_logger&#39; without passing &#39;logging_config&#39; to the Litestar constructor first&quot;</span>
+</span><span data-line="90">    <span class="p">)</span>
+</span><span data-line="91">
+</span><span data-line="92">
+</span><span data-line="93"><span class="k">def</span><span class="w"> </span><span class="nf">_get_default_logging_module</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span data-line="94">    <span class="k">if</span> <span class="n">find_spec</span><span class="p">(</span><span class="s2">&quot;picologging&quot;</span><span class="p">):</span>
+</span><span data-line="95">        <span class="k">return</span> <span class="s2">&quot;picologging&quot;</span>
+</span><span data-line="96">    <span class="k">return</span> <span class="s2">&quot;logging&quot;</span>
+</span><span data-line="97">
+</span><span data-line="98">
+</span><span data-line="99"><span class="k">def</span><span class="w"> </span><span class="nf">_get_default_handlers</span><span class="p">(</span><span class="n">logging_module</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
+</span><span data-line="100"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the default logging handlers for the config.</span>
+</span><span data-line="101">
+</span><span data-line="102"><span class="sd">    Returns:</span>
+</span><span data-line="103"><span class="sd">        A dictionary of logging handlers</span>
+</span><span data-line="104"><span class="sd">    &quot;&quot;&quot;</span>
+</span><span data-line="105">    <span class="k">if</span> <span class="n">logging_module</span> <span class="o">==</span> <span class="s2">&quot;picologging&quot;</span><span class="p">:</span>
+</span><span data-line="106">        <span class="k">return</span> <span class="n">default_picologging_handlers</span>
+</span><span data-line="107">    <span class="k">return</span> <span class="n">default_handlers</span>
+</span><span data-line="108">
+</span><span data-line="109">
+</span><span data-line="110"><span class="k">def</span><span class="w"> </span><span class="nf">_default_exception_logging_handler_factory</span><span class="p">(</span><span class="n">is_struct_logger</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ExceptionLoggingHandler</span><span class="p">:</span>
+</span><span data-line="111"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Create an exception logging handler function.</span>
+</span><span data-line="112">
+</span><span data-line="113"><span class="sd">    Args:</span>
+</span><span data-line="114"><span class="sd">        is_struct_logger: Whether the logger is a structlog instance.</span>
+</span><span data-line="115">
+</span><span data-line="116"><span class="sd">    Returns:</span>
+</span><span data-line="117"><span class="sd">        An exception logging handler.</span>
+</span><span data-line="118"><span class="sd">    &quot;&quot;&quot;</span>
+</span><span data-line="119">
+</span><span data-line="120">    <span class="k">if</span> <span class="n">is_struct_logger</span><span class="p">:</span>
+</span><span data-line="121">
+</span><span data-line="122">        <span class="k">def</span><span class="w"> </span><span class="nf">_default_exception_logging_handler</span><span class="p">(</span><span class="n">logger</span><span class="p">:</span> <span class="n">Logger</span><span class="p">,</span> <span class="n">scope</span><span class="p">:</span> <span class="n">Scope</span><span class="p">,</span> <span class="n">tb</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="123">            <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span>
+</span><span data-line="124">                <span class="s2">&quot;Uncaught exception&quot;</span><span class="p">,</span>
+</span><span data-line="125">                <span class="n">connection_type</span><span class="o">=</span><span class="n">scope</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">],</span>
+</span><span data-line="126">                <span class="n">path</span><span class="o">=</span><span class="n">scope</span><span class="p">[</span><span class="s2">&quot;path&quot;</span><span class="p">],</span>
+</span><span data-line="127">            <span class="p">)</span>
+</span><span data-line="128">
+</span><span data-line="129">    <span class="k">else</span><span class="p">:</span>
+</span><span data-line="130">
+</span><span data-line="131">        <span class="k">def</span><span class="w"> </span><span class="nf">_default_exception_logging_handler</span><span class="p">(</span><span class="n">logger</span><span class="p">:</span> <span class="n">Logger</span><span class="p">,</span> <span class="n">scope</span><span class="p">:</span> <span class="n">Scope</span><span class="p">,</span> <span class="n">tb</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="132">            <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span>
+</span><span data-line="133">                <span class="s2">&quot;Uncaught exception (connection_type=</span><span class="si">%s</span><span class="s2">, path=</span><span class="si">%r</span><span class="s2">):&quot;</span><span class="p">,</span>
+</span><span data-line="134">                <span class="n">scope</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">],</span>
+</span><span data-line="135">                <span class="n">scope</span><span class="p">[</span><span class="s2">&quot;path&quot;</span><span class="p">],</span>
+</span><span data-line="136">            <span class="p">)</span>
+</span><span data-line="137">
+</span><span data-line="138">    <span class="k">return</span> <span class="n">_default_exception_logging_handler</span>
+</span><span data-line="139">
+</span><span data-line="140">
+<div class="viewcode-block" id="BaseLoggingConfig">
+<a class="viewcode-back" href="../../../reference/logging/config.html#litestar.logging.config.BaseLoggingConfig">[docs]</a>
+</span><span data-line="141"><span class="k">class</span><span class="w"> </span><span class="nc">BaseLoggingConfig</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
+</span><span data-line="142"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Abstract class that should be extended by logging configs.&quot;&quot;&quot;</span>
+</span><span data-line="143">
+</span><span data-line="144">    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;exception_logging_handler&quot;</span><span class="p">,</span> <span class="s2">&quot;log_exceptions&quot;</span><span class="p">)</span>
+</span><span data-line="145">
+</span><span data-line="146">    <span class="n">log_exceptions</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;always&quot;</span><span class="p">,</span> <span class="s2">&quot;debug&quot;</span><span class="p">,</span> <span class="s2">&quot;never&quot;</span><span class="p">]</span>
+</span><span data-line="147"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Should exceptions be logged, defaults to log exceptions when ``app.debug == True``&#39;&quot;&quot;&quot;</span>
+</span><span data-line="148">
+</span><span data-line="149">    <span class="n">exception_logging_handler</span><span class="p">:</span> <span class="n">ExceptionLoggingHandler</span> <span class="o">|</span> <span class="kc">None</span>
+</span><span data-line="150"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Handler function for logging exceptions.&quot;&quot;&quot;</span>
+</span><span data-line="151">    <span class="n">disable_stack_trace</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">type</span><span class="p">[</span><span class="ne">Exception</span><span class="p">]]]</span>  <span class="c1"># noqa: UP007</span>
+</span><span data-line="152"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Set of http status codes and exceptions to disable stack trace logging for.&quot;&quot;&quot;</span>
+</span><span data-line="153">
+<div class="viewcode-block" id="BaseLoggingConfig.configure">
+<a class="viewcode-back" href="../../../reference/logging/config.html#litestar.logging.config.BaseLoggingConfig.configure">[docs]</a>
+</span><span data-line="154">    <span class="nd">@abstractmethod</span>
+</span><span data-line="155">    <span class="k">def</span><span class="w"> </span><span class="nf">configure</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">GetLogger</span><span class="p">:</span>
+</span><span data-line="156"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return logger with the given configuration.</span>
+</span><span data-line="157">
+</span><span data-line="158"><span class="sd">        Returns:</span>
+</span><span data-line="159"><span class="sd">            A &#39;logging.getLogger&#39; like function.</span>
+</span><span data-line="160"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="161">        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;abstract method&quot;</span><span class="p">)</span></div>
+
+</span><span data-line="162">
+<div class="viewcode-block" id="BaseLoggingConfig.set_level">
+<a class="viewcode-back" href="../../../reference/logging/config.html#litestar.logging.config.BaseLoggingConfig.set_level">[docs]</a>
+</span><span data-line="163">    <span class="nd">@staticmethod</span>
+</span><span data-line="164">    <span class="k">def</span><span class="w"> </span><span class="nf">set_level</span><span class="p">(</span><span class="n">logger</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">level</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="165"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Provides a consistent interface to call `setLevel` for all loggers.&quot;&quot;&quot;</span>
+</span><span data-line="166">        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;abstract method&quot;</span><span class="p">)</span></div>
+</div>
+
+</span><span data-line="167">
+</span><span data-line="168">
+<div class="viewcode-block" id="LoggingConfig">
+<a class="viewcode-back" href="../../../reference/logging/config.html#litestar.logging.config.LoggingConfig">[docs]</a>
+</span><span data-line="169"><span class="nd">@dataclass</span>
+</span><span data-line="170"><span class="k">class</span><span class="w"> </span><span class="nc">LoggingConfig</span><span class="p">(</span><span class="n">BaseLoggingConfig</span><span class="p">):</span>
+</span><span data-line="171"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Configuration class for standard logging.&quot;&quot;&quot;</span>
+</span><span data-line="172">
+</span><span data-line="173">    <span class="n">logging_module</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="n">_get_default_logging_module</span><span class="p">)</span>
+</span><span data-line="174"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Logging module. ``logging`` and ``picologging`` are supported. ``picologging`` will be used by default if</span>
+</span><span data-line="175"><span class="sd">    installed.&quot;&quot;&quot;</span>
+</span><span data-line="176">    <span class="n">version</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</span><span data-line="177"><span class="w">    </span><span class="sd">&quot;&quot;&quot;The only valid value at present is 1.&quot;&quot;&quot;</span>
+</span><span data-line="178">    <span class="n">incremental</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</span><span data-line="179"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Whether the configuration is to be interpreted as incremental to the existing configuration.</span>
+</span><span data-line="180">
+</span><span data-line="181"><span class="sd">    Notes:</span>
+</span><span data-line="182"><span class="sd">        - This option is ignored for &#39;picologging&#39;</span>
+</span><span data-line="183"><span class="sd">    &quot;&quot;&quot;</span>
+</span><span data-line="184">    <span class="n">disable_existing_loggers</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</span><span data-line="185"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Whether any existing non-root loggers are to be disabled.&quot;&quot;&quot;</span>
+</span><span data-line="186">    <span class="n">filters</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+</span><span data-line="187"><span class="w">    </span><span class="sd">&quot;&quot;&quot;A dict in which each key is a filter id and each value is a dict describing how to configure the</span>
+</span><span data-line="188"><span class="sd">    corresponding Filter_ instance.</span>
+</span><span data-line="189">
+</span><span data-line="190"><span class="sd">    .. _Filter: https://docs.python.org/3/library/logging.html#filter-objects</span>
+</span><span data-line="191"><span class="sd">    &quot;&quot;&quot;</span>
+</span><span data-line="192">    <span class="n">propagate</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span data-line="193"><span class="w">    </span><span class="sd">&quot;&quot;&quot;If messages must propagate to handlers higher up the logger hierarchy from this logger.</span>
+</span><span data-line="194">
+</span><span data-line="195"><span class="sd">    .. deprecated:: 2.10.0</span>
+</span><span data-line="196"><span class="sd">        This parameter is deprecated. It will be removed in a future release. Use ``propagate`` at the logger level.</span>
+</span><span data-line="197"><span class="sd">    &quot;&quot;&quot;</span>
+</span><span data-line="198">    <span class="n">formatters</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="n">_get_default_formatters</span><span class="p">)</span>
+</span><span data-line="199"><span class="w">    </span><span class="sd">&quot;&quot;&quot;A dict in which each key is a formatter and each value is a dict describing how to configure the</span>
+</span><span data-line="200"><span class="sd">    corresponding Formatter_ instance. A ``standard`` formatter is provided.</span>
+</span><span data-line="201">
+</span><span data-line="202"><span class="sd">    .. _Formatter: https://docs.python.org/3/library/logging.html#formatter-objects</span>
+</span><span data-line="203"><span class="sd">    &quot;&quot;&quot;</span>
+</span><span data-line="204">    <span class="n">handlers</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">dict</span><span class="p">)</span>
+</span><span data-line="205"><span class="w">    </span><span class="sd">&quot;&quot;&quot;A dict in which each key is a handler id and each value is a dict describing how to configure the</span>
+</span><span data-line="206"><span class="sd">    corresponding Handler_ instance. Two handlers are provided, ``console`` and ``queue_listener``.</span>
+</span><span data-line="207">
+</span><span data-line="208"><span class="sd">    .. _Handler: https://docs.python.org/3/library/logging.html#handler-objects</span>
+</span><span data-line="209"><span class="sd">    &quot;&quot;&quot;</span>
+</span><span data-line="210">    <span class="n">loggers</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="n">_get_default_loggers</span><span class="p">)</span>
+</span><span data-line="211"><span class="w">    </span><span class="sd">&quot;&quot;&quot;A dict in which each key is a logger name and each value is a dict describing how to configure the</span>
+</span><span data-line="212"><span class="sd">    corresponding Logger_ instance. A ``litestar`` logger is mandatory and will be configured as required.</span>
+</span><span data-line="213">
+</span><span data-line="214"><span class="sd">    .. _Logger: https://docs.python.org/3/library/logging.html#logger-objects</span>
+</span><span data-line="215"><span class="sd">    &quot;&quot;&quot;</span>
+</span><span data-line="216">    <span class="n">root</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+</span><span data-line="217">        <span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="p">{</span>
+</span><span data-line="218">            <span class="s2">&quot;handlers&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;queue_listener&quot;</span><span class="p">],</span>
+</span><span data-line="219">            <span class="s2">&quot;level&quot;</span><span class="p">:</span> <span class="s2">&quot;INFO&quot;</span><span class="p">,</span>
+</span><span data-line="220">        <span class="p">}</span>
+</span><span data-line="221">    <span class="p">)</span>
+</span><span data-line="222"><span class="w">    </span><span class="sd">&quot;&quot;&quot;This will be the configuration for the root logger.</span>
+</span><span data-line="223">
+</span><span data-line="224"><span class="sd">    Processing of the configuration will be as for any logger, except that the propagate setting will not be applicable.</span>
+</span><span data-line="225"><span class="sd">    &quot;&quot;&quot;</span>
+</span><span data-line="226">    <span class="n">configure_root_logger</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span data-line="227"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Should the root logger be configured, defaults to True for ease of configuration.&quot;&quot;&quot;</span>
+</span><span data-line="228">    <span class="n">log_exceptions</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;always&quot;</span><span class="p">,</span> <span class="s2">&quot;debug&quot;</span><span class="p">,</span> <span class="s2">&quot;never&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;always&quot;</span><span class="p">)</span>
+</span><span data-line="229"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Should exceptions be logged, defaults to log exceptions when &#39;app.debug == True&#39;&quot;&quot;&quot;</span>
+</span><span data-line="230">    <span class="n">disable_stack_trace</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">type</span><span class="p">[</span><span class="ne">Exception</span><span class="p">]]]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">set</span><span class="p">)</span>  <span class="c1"># noqa: UP007</span>
+</span><span data-line="231"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Set of http status codes and exceptions to disable stack trace logging for.&quot;&quot;&quot;</span>
+</span><span data-line="232">    <span class="n">exception_logging_handler</span><span class="p">:</span> <span class="n">ExceptionLoggingHandler</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+</span><span data-line="233"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Handler function for logging exceptions.&quot;&quot;&quot;</span>
+</span><span data-line="234">
+</span><span data-line="235">    <span class="k">def</span><span class="w"> </span><span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="236">        <span class="k">if</span> <span class="s2">&quot;standard&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">formatters</span><span class="p">:</span>
+</span><span data-line="237">            <span class="bp">self</span><span class="o">.</span><span class="n">formatters</span><span class="p">[</span><span class="s2">&quot;standard&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_get_default_formatters</span><span class="p">()[</span><span class="s2">&quot;standard&quot;</span><span class="p">]</span>
+</span><span data-line="238">
+</span><span data-line="239">        <span class="k">if</span> <span class="s2">&quot;console&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">handlers</span><span class="p">:</span>
+</span><span data-line="240">            <span class="bp">self</span><span class="o">.</span><span class="n">handlers</span><span class="p">[</span><span class="s2">&quot;console&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_get_default_handlers</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">logging_module</span><span class="p">)[</span><span class="s2">&quot;console&quot;</span><span class="p">]</span>
+</span><span data-line="241">
+</span><span data-line="242">        <span class="k">if</span> <span class="s2">&quot;queue_listener&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">handlers</span><span class="p">:</span>
+</span><span data-line="243">            <span class="bp">self</span><span class="o">.</span><span class="n">handlers</span><span class="p">[</span><span class="s2">&quot;queue_listener&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_get_default_handlers</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">logging_module</span><span class="p">)[</span><span class="s2">&quot;queue_listener&quot;</span><span class="p">]</span>
+</span><span data-line="244">
+</span><span data-line="245">        <span class="k">if</span> <span class="s2">&quot;litestar&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">loggers</span><span class="p">:</span>
+</span><span data-line="246">            <span class="bp">self</span><span class="o">.</span><span class="n">loggers</span><span class="p">[</span><span class="s2">&quot;litestar&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_get_default_loggers</span><span class="p">()[</span><span class="s2">&quot;litestar&quot;</span><span class="p">]</span>
+</span><span data-line="247">
+</span><span data-line="248">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">log_exceptions</span> <span class="o">!=</span> <span class="s2">&quot;never&quot;</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">exception_logging_handler</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="249">            <span class="bp">self</span><span class="o">.</span><span class="n">exception_logging_handler</span> <span class="o">=</span> <span class="n">_default_exception_logging_handler_factory</span><span class="p">(</span><span class="n">is_struct_logger</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</span><span data-line="250">
+<div class="viewcode-block" id="LoggingConfig.configure">
+<a class="viewcode-back" href="../../../reference/logging/config.html#litestar.logging.config.LoggingConfig.configure">[docs]</a>
+</span><span data-line="251">    <span class="k">def</span><span class="w"> </span><span class="nf">configure</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">GetLogger</span><span class="p">:</span>
+</span><span data-line="252"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return logger with the given configuration.</span>
+</span><span data-line="253">
+</span><span data-line="254"><span class="sd">        Returns:</span>
+</span><span data-line="255"><span class="sd">            A &#39;logging.getLogger&#39; like function.</span>
+</span><span data-line="256"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="257">
+</span><span data-line="258">        <span class="n">excluded_fields</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+</span><span data-line="259">            <span class="s2">&quot;logging_module&quot;</span><span class="p">,</span>
+</span><span data-line="260">            <span class="s2">&quot;configure_root_logger&quot;</span><span class="p">,</span>
+</span><span data-line="261">            <span class="s2">&quot;exception_logging_handler&quot;</span><span class="p">,</span>
+</span><span data-line="262">            <span class="s2">&quot;log_exceptions&quot;</span><span class="p">,</span>
+</span><span data-line="263">            <span class="s2">&quot;propagate&quot;</span><span class="p">,</span>
+</span><span data-line="264">            <span class="s2">&quot;disable_stack_trace&quot;</span><span class="p">,</span>
+</span><span data-line="265">        <span class="p">}</span>
+</span><span data-line="266">
+</span><span data-line="267">        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">configure_root_logger</span><span class="p">:</span>
+</span><span data-line="268">            <span class="n">excluded_fields</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;root&quot;</span><span class="p">)</span>
+</span><span data-line="269">
+</span><span data-line="270">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">logging_module</span> <span class="o">==</span> <span class="s2">&quot;picologging&quot;</span><span class="p">:</span>
+</span><span data-line="271">            <span class="k">try</span><span class="p">:</span>
+</span><span data-line="272">                <span class="kn">from</span><span class="w"> </span><span class="nn">picologging</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>  <span class="c1"># pyright: ignore[reportMissingImports,reportGeneralTypeIssues]</span>
+</span><span data-line="273">                    <span class="n">config</span><span class="p">,</span>  <span class="c1"># pyright: ignore[reportMissingImports,reportGeneralTypeIssues]</span>
+</span><span data-line="274">                    <span class="n">getLogger</span><span class="p">,</span>  <span class="c1"># pyright: ignore[reportMissingImports,reportGeneralTypeIssues]</span>
+</span><span data-line="275">                <span class="p">)</span>
+</span><span data-line="276">            <span class="k">except</span> <span class="ne">ImportError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+</span><span data-line="277">                <span class="k">raise</span> <span class="n">MissingDependencyException</span><span class="p">(</span><span class="s2">&quot;picologging&quot;</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
+</span><span data-line="278">
+</span><span data-line="279">            <span class="n">excluded_fields</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;incremental&quot;</span><span class="p">)</span>
+</span><span data-line="280">        <span class="k">else</span><span class="p">:</span>
+</span><span data-line="281">            <span class="kn">from</span><span class="w"> </span><span class="nn">logging</span><span class="w"> </span><span class="kn">import</span> <span class="n">config</span><span class="p">,</span> <span class="n">getLogger</span>  <span class="c1"># type: ignore[no-redef,assignment,unused-ignore]</span>
+</span><span data-line="282">
+</span><span data-line="283">        <span class="n">values</span> <span class="o">=</span> <span class="p">{</span>
+</span><span data-line="284">            <span class="n">_field</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_field</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+</span><span data-line="285">            <span class="k">for</span> <span class="n">_field</span> <span class="ow">in</span> <span class="n">fields</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+</span><span data-line="286">            <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_field</span><span class="o">.</span><span class="n">name</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">_field</span><span class="o">.</span><span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">excluded_fields</span>
+</span><span data-line="287">        <span class="p">}</span>
+</span><span data-line="288">
+</span><span data-line="289">        <span class="n">config</span><span class="o">.</span><span class="n">dictConfig</span><span class="p">(</span><span class="n">values</span><span class="p">)</span>
+</span><span data-line="290">        <span class="k">return</span> <span class="n">cast</span><span class="p">(</span><span class="s2">&quot;Callable[[str], Logger]&quot;</span><span class="p">,</span> <span class="n">getLogger</span><span class="p">)</span></div>
+
+</span><span data-line="291">
+<div class="viewcode-block" id="LoggingConfig.set_level">
+<a class="viewcode-back" href="../../../reference/logging/config.html#litestar.logging.config.LoggingConfig.set_level">[docs]</a>
+</span><span data-line="292">    <span class="nd">@staticmethod</span>
+</span><span data-line="293">    <span class="k">def</span><span class="w"> </span><span class="nf">set_level</span><span class="p">(</span><span class="n">logger</span><span class="p">:</span> <span class="n">Logger</span><span class="p">,</span> <span class="n">level</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="294"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Provides a consistent interface to call `setLevel` for all loggers.&quot;&quot;&quot;</span>
+</span><span data-line="295">        <span class="n">logger</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">level</span><span class="p">)</span></div>
+</div>
+
+</span><span data-line="296">
+</span><span data-line="297">
+</span><span data-line="298"><span class="k">class</span><span class="w"> </span><span class="nc">StructlogEventFilter</span><span class="p">:</span>
+</span><span data-line="299"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Remove keys from the log event.</span>
+</span><span data-line="300">
+</span><span data-line="301"><span class="sd">    Add an instance to the processor chain.</span>
+</span><span data-line="302">
+</span><span data-line="303"><span class="sd">    .. code-block:: python</span>
+</span><span data-line="304"><span class="sd">        :caption: Examples</span>
+</span><span data-line="305">
+</span><span data-line="306"><span class="sd">        structlog.configure(</span>
+</span><span data-line="307"><span class="sd">            ...,</span>
+</span><span data-line="308"><span class="sd">            processors=[</span>
+</span><span data-line="309"><span class="sd">                ...,</span>
+</span><span data-line="310"><span class="sd">                EventFilter([&quot;color_message&quot;]),</span>
+</span><span data-line="311"><span class="sd">                ...,</span>
+</span><span data-line="312"><span class="sd">            ],</span>
+</span><span data-line="313"><span class="sd">        )</span>
+</span><span data-line="314">
+</span><span data-line="315"><span class="sd">    &quot;&quot;&quot;</span>
+</span><span data-line="316">
+</span><span data-line="317">    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filter_keys</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="318"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize the EventFilter.</span>
+</span><span data-line="319">
+</span><span data-line="320"><span class="sd">        Args:</span>
+</span><span data-line="321"><span class="sd">            filter_keys: Iterable of string keys to be excluded from the log event.</span>
+</span><span data-line="322"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="323">        <span class="bp">self</span><span class="o">.</span><span class="n">filter_keys</span> <span class="o">=</span> <span class="n">filter_keys</span>
+</span><span data-line="324">
+</span><span data-line="325">    <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_</span><span class="p">:</span> <span class="n">WrappedLogger</span><span class="p">,</span> <span class="n">__</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">event_dict</span><span class="p">:</span> <span class="n">EventDict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">EventDict</span><span class="p">:</span>
+</span><span data-line="326"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Receive the log event, and filter keys.</span>
+</span><span data-line="327">
+</span><span data-line="328"><span class="sd">        Args:</span>
+</span><span data-line="329"><span class="sd">            _ ():</span>
+</span><span data-line="330"><span class="sd">            __ ():</span>
+</span><span data-line="331"><span class="sd">            event_dict (): The data to be logged.</span>
+</span><span data-line="332">
+</span><span data-line="333"><span class="sd">        Returns:</span>
+</span><span data-line="334"><span class="sd">            The log event with any key in `self.filter_keys` removed.</span>
+</span><span data-line="335"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="336">        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter_keys</span><span class="p">:</span>
+</span><span data-line="337">            <span class="n">event_dict</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+</span><span data-line="338">        <span class="k">return</span> <span class="n">event_dict</span>
+</span><span data-line="339">
+</span><span data-line="340">
+</span><span data-line="341"><span class="k">def</span><span class="w"> </span><span class="nf">default_json_serializer</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="n">EventDict</span><span class="p">,</span> <span class="o">**</span><span class="n">_</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
+</span><span data-line="342">    <span class="k">return</span> <span class="n">_msgspec_json_encoder</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+</span><span data-line="343">
+</span><span data-line="344">
+</span><span data-line="345"><span class="k">def</span><span class="w"> </span><span class="nf">stdlib_json_serializer</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="n">EventDict</span><span class="p">,</span> <span class="o">**</span><span class="n">_</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
+</span><span data-line="346">    <span class="k">return</span> <span class="n">_msgspec_json_encoder</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
+</span><span data-line="347">
+</span><span data-line="348">
+</span><span data-line="349"><span class="k">def</span><span class="w"> </span><span class="nf">default_structlog_processors</span><span class="p">(</span>
+</span><span data-line="350">    <span class="n">as_json</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">json_serializer</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Any</span><span class="p">],</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="n">default_json_serializer</span>
+</span><span data-line="351"><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Processor</span><span class="p">]:</span>  <span class="c1"># pyright: ignore</span>
+</span><span data-line="352"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Set the default processors for structlog.</span>
+</span><span data-line="353">
+</span><span data-line="354"><span class="sd">    Returns:</span>
+</span><span data-line="355"><span class="sd">        An optional list of processors.</span>
+</span><span data-line="356"><span class="sd">    &quot;&quot;&quot;</span>
+</span><span data-line="357">    <span class="k">try</span><span class="p">:</span>
+</span><span data-line="358">        <span class="kn">import</span><span class="w"> </span><span class="nn">structlog</span>
+</span><span data-line="359">        <span class="kn">from</span><span class="w"> </span><span class="nn">structlog.dev</span><span class="w"> </span><span class="kn">import</span> <span class="n">RichTracebackFormatter</span>
+</span><span data-line="360">
+</span><span data-line="361">        <span class="k">if</span> <span class="n">as_json</span><span class="p">:</span>
+</span><span data-line="362">            <span class="k">return</span> <span class="p">[</span>
+</span><span data-line="363">                <span class="n">structlog</span><span class="o">.</span><span class="n">contextvars</span><span class="o">.</span><span class="n">merge_contextvars</span><span class="p">,</span>
+</span><span data-line="364">                <span class="n">structlog</span><span class="o">.</span><span class="n">processors</span><span class="o">.</span><span class="n">add_log_level</span><span class="p">,</span>
+</span><span data-line="365">                <span class="n">structlog</span><span class="o">.</span><span class="n">processors</span><span class="o">.</span><span class="n">format_exc_info</span><span class="p">,</span>
+</span><span data-line="366">                <span class="n">structlog</span><span class="o">.</span><span class="n">processors</span><span class="o">.</span><span class="n">TimeStamper</span><span class="p">(</span><span class="n">fmt</span><span class="o">=</span><span class="s2">&quot;iso&quot;</span><span class="p">),</span>
+</span><span data-line="367">                <span class="n">structlog</span><span class="o">.</span><span class="n">processors</span><span class="o">.</span><span class="n">JSONRenderer</span><span class="p">(</span><span class="n">serializer</span><span class="o">=</span><span class="n">json_serializer</span><span class="p">),</span>
+</span><span data-line="368">            <span class="p">]</span>
+</span><span data-line="369">        <span class="k">return</span> <span class="p">[</span>
+</span><span data-line="370">            <span class="n">structlog</span><span class="o">.</span><span class="n">contextvars</span><span class="o">.</span><span class="n">merge_contextvars</span><span class="p">,</span>
+</span><span data-line="371">            <span class="n">structlog</span><span class="o">.</span><span class="n">processors</span><span class="o">.</span><span class="n">add_log_level</span><span class="p">,</span>
+</span><span data-line="372">            <span class="n">structlog</span><span class="o">.</span><span class="n">processors</span><span class="o">.</span><span class="n">TimeStamper</span><span class="p">(</span><span class="n">fmt</span><span class="o">=</span><span class="s2">&quot;iso&quot;</span><span class="p">),</span>
+</span><span data-line="373">            <span class="n">structlog</span><span class="o">.</span><span class="n">dev</span><span class="o">.</span><span class="n">ConsoleRenderer</span><span class="p">(</span>
+</span><span data-line="374">                <span class="n">colors</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exception_formatter</span><span class="o">=</span><span class="n">RichTracebackFormatter</span><span class="p">(</span><span class="n">max_frames</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">show_locals</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">80</span><span class="p">)</span>
+</span><span data-line="375">            <span class="p">),</span>
+</span><span data-line="376">        <span class="p">]</span>
+</span><span data-line="377">
+</span><span data-line="378">    <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+</span><span data-line="379">        <span class="k">return</span> <span class="p">[]</span>
+</span><span data-line="380">
+</span><span data-line="381">
+</span><span data-line="382"><span class="k">def</span><span class="w"> </span><span class="nf">default_structlog_standard_lib_processors</span><span class="p">(</span><span class="n">as_json</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Processor</span><span class="p">]:</span>  <span class="c1"># pyright: ignore</span>
+</span><span data-line="383"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Set the default processors for structlog stdlib.</span>
+</span><span data-line="384">
+</span><span data-line="385"><span class="sd">    Returns:</span>
+</span><span data-line="386"><span class="sd">        An optional list of processors.</span>
+</span><span data-line="387"><span class="sd">    &quot;&quot;&quot;</span>
+</span><span data-line="388">    <span class="k">try</span><span class="p">:</span>
+</span><span data-line="389">        <span class="kn">import</span><span class="w"> </span><span class="nn">structlog</span>
+</span><span data-line="390">        <span class="kn">from</span><span class="w"> </span><span class="nn">structlog.dev</span><span class="w"> </span><span class="kn">import</span> <span class="n">RichTracebackFormatter</span>
+</span><span data-line="391">
+</span><span data-line="392">        <span class="k">if</span> <span class="n">as_json</span><span class="p">:</span>
+</span><span data-line="393">            <span class="k">return</span> <span class="p">[</span>
+</span><span data-line="394">                <span class="n">structlog</span><span class="o">.</span><span class="n">processors</span><span class="o">.</span><span class="n">TimeStamper</span><span class="p">(</span><span class="n">fmt</span><span class="o">=</span><span class="s2">&quot;iso&quot;</span><span class="p">),</span>
+</span><span data-line="395">                <span class="n">structlog</span><span class="o">.</span><span class="n">stdlib</span><span class="o">.</span><span class="n">add_log_level</span><span class="p">,</span>
+</span><span data-line="396">                <span class="n">structlog</span><span class="o">.</span><span class="n">stdlib</span><span class="o">.</span><span class="n">ExtraAdder</span><span class="p">(),</span>
+</span><span data-line="397">                <span class="n">StructlogEventFilter</span><span class="p">([</span><span class="s2">&quot;color_message&quot;</span><span class="p">]),</span>
+</span><span data-line="398">                <span class="n">structlog</span><span class="o">.</span><span class="n">stdlib</span><span class="o">.</span><span class="n">ProcessorFormatter</span><span class="o">.</span><span class="n">remove_processors_meta</span><span class="p">,</span>
+</span><span data-line="399">                <span class="n">structlog</span><span class="o">.</span><span class="n">processors</span><span class="o">.</span><span class="n">JSONRenderer</span><span class="p">(</span><span class="n">serializer</span><span class="o">=</span><span class="n">stdlib_json_serializer</span><span class="p">),</span>
+</span><span data-line="400">            <span class="p">]</span>
+</span><span data-line="401">        <span class="k">return</span> <span class="p">[</span>
+</span><span data-line="402">            <span class="n">structlog</span><span class="o">.</span><span class="n">processors</span><span class="o">.</span><span class="n">TimeStamper</span><span class="p">(</span><span class="n">fmt</span><span class="o">=</span><span class="s2">&quot;iso&quot;</span><span class="p">),</span>
+</span><span data-line="403">            <span class="n">structlog</span><span class="o">.</span><span class="n">stdlib</span><span class="o">.</span><span class="n">add_log_level</span><span class="p">,</span>
+</span><span data-line="404">            <span class="n">structlog</span><span class="o">.</span><span class="n">stdlib</span><span class="o">.</span><span class="n">ExtraAdder</span><span class="p">(),</span>
+</span><span data-line="405">            <span class="n">StructlogEventFilter</span><span class="p">([</span><span class="s2">&quot;color_message&quot;</span><span class="p">]),</span>
+</span><span data-line="406">            <span class="n">structlog</span><span class="o">.</span><span class="n">stdlib</span><span class="o">.</span><span class="n">ProcessorFormatter</span><span class="o">.</span><span class="n">remove_processors_meta</span><span class="p">,</span>
+</span><span data-line="407">            <span class="n">structlog</span><span class="o">.</span><span class="n">dev</span><span class="o">.</span><span class="n">ConsoleRenderer</span><span class="p">(</span>
+</span><span data-line="408">                <span class="n">colors</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exception_formatter</span><span class="o">=</span><span class="n">RichTracebackFormatter</span><span class="p">(</span><span class="n">max_frames</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">show_locals</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">80</span><span class="p">)</span>
+</span><span data-line="409">            <span class="p">),</span>
+</span><span data-line="410">        <span class="p">]</span>
+</span><span data-line="411">    <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+</span><span data-line="412">        <span class="k">return</span> <span class="p">[]</span>
+</span><span data-line="413">
+</span><span data-line="414">
+</span><span data-line="415"><span class="k">def</span><span class="w"> </span><span class="nf">default_logger_factory</span><span class="p">(</span><span class="n">as_json</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">WrappedLogger</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="416"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Set the default logger factory for structlog.</span>
+</span><span data-line="417">
+</span><span data-line="418"><span class="sd">    Returns:</span>
+</span><span data-line="419"><span class="sd">        An optional logger factory.</span>
+</span><span data-line="420"><span class="sd">    &quot;&quot;&quot;</span>
+</span><span data-line="421">    <span class="k">try</span><span class="p">:</span>
+</span><span data-line="422">        <span class="kn">import</span><span class="w"> </span><span class="nn">structlog</span>
+</span><span data-line="423">
+</span><span data-line="424">        <span class="k">if</span> <span class="n">as_json</span><span class="p">:</span>
+</span><span data-line="425">            <span class="k">return</span> <span class="n">structlog</span><span class="o">.</span><span class="n">BytesLoggerFactory</span><span class="p">()</span>
+</span><span data-line="426">        <span class="k">return</span> <span class="n">structlog</span><span class="o">.</span><span class="n">WriteLoggerFactory</span><span class="p">()</span>
+</span><span data-line="427">    <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+</span><span data-line="428">        <span class="k">return</span> <span class="kc">None</span>
+</span><span data-line="429">
+</span><span data-line="430">
+<div class="viewcode-block" id="StructLoggingConfig">
+<a class="viewcode-back" href="../../../reference/logging/config.html#litestar.logging.config.StructLoggingConfig">[docs]</a>
+</span><span data-line="431"><span class="nd">@dataclass</span>
+</span><span data-line="432"><span class="k">class</span><span class="w"> </span><span class="nc">StructLoggingConfig</span><span class="p">(</span><span class="n">BaseLoggingConfig</span><span class="p">):</span>
+</span><span data-line="433"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Configuration class for structlog.</span>
+</span><span data-line="434">
+</span><span data-line="435"><span class="sd">    Notes:</span>
+</span><span data-line="436"><span class="sd">        - requires ``structlog`` to be installed.</span>
+</span><span data-line="437"><span class="sd">    &quot;&quot;&quot;</span>
+</span><span data-line="438">
+</span><span data-line="439">    <span class="n">processors</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Processor</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>  <span class="c1"># pyright: ignore</span>
+</span><span data-line="440"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Iterable of structlog logging processors.&quot;&quot;&quot;</span>
+</span><span data-line="441">    <span class="n">standard_lib_logging_config</span><span class="p">:</span> <span class="n">LoggingConfig</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>  <span class="c1"># pyright: ignore</span>
+</span><span data-line="442"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Optional customized standard logging configuration.</span>
+</span><span data-line="443">
+</span><span data-line="444"><span class="sd">    Use this when you need to modify the standard library outside of the Structlog pre-configured implementation.</span>
+</span><span data-line="445"><span class="sd">    &quot;&quot;&quot;</span>
+</span><span data-line="446">    <span class="n">wrapper_class</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">BindableLogger</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>  <span class="c1"># pyright: ignore</span>
+</span><span data-line="447"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Structlog bindable logger.&quot;&quot;&quot;</span>
+</span><span data-line="448">    <span class="n">context_class</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+</span><span data-line="449"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Context class (a &#39;contextvar&#39; context) for the logger.&quot;&quot;&quot;</span>
+</span><span data-line="450">    <span class="n">logger_factory</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">WrappedLogger</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>  <span class="c1"># pyright: ignore</span>
+</span><span data-line="451"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Logger factory to use.&quot;&quot;&quot;</span>
+</span><span data-line="452">    <span class="n">cache_logger_on_first_use</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span data-line="453"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Whether to cache the logger configuration and reuse.&quot;&quot;&quot;</span>
+</span><span data-line="454">    <span class="n">log_exceptions</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;always&quot;</span><span class="p">,</span> <span class="s2">&quot;debug&quot;</span><span class="p">,</span> <span class="s2">&quot;never&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;always&quot;</span><span class="p">)</span>
+</span><span data-line="455"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Should exceptions be logged, defaults to log exceptions when &#39;app.debug == True&#39;&quot;&quot;&quot;</span>
+</span><span data-line="456">    <span class="n">disable_stack_trace</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">type</span><span class="p">[</span><span class="ne">Exception</span><span class="p">]]]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">set</span><span class="p">)</span>  <span class="c1"># noqa: UP007</span>
+</span><span data-line="457"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Set of http status codes and exceptions to disable stack trace logging for.&quot;&quot;&quot;</span>
+</span><span data-line="458">    <span class="n">exception_logging_handler</span><span class="p">:</span> <span class="n">ExceptionLoggingHandler</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+</span><span data-line="459"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Handler function for logging exceptions.&quot;&quot;&quot;</span>
+</span><span data-line="460">    <span class="n">pretty_print_tty</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span data-line="461"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Pretty print log output when run from an interactive terminal.&quot;&quot;&quot;</span>
+</span><span data-line="462">
+</span><span data-line="463">    <span class="k">def</span><span class="w"> </span><span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="464">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">processors</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="465">            <span class="bp">self</span><span class="o">.</span><span class="n">processors</span> <span class="o">=</span> <span class="n">default_structlog_processors</span><span class="p">(</span><span class="n">as_json</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">as_json</span><span class="p">())</span>
+</span><span data-line="466">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger_factory</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="467">            <span class="bp">self</span><span class="o">.</span><span class="n">logger_factory</span> <span class="o">=</span> <span class="n">default_logger_factory</span><span class="p">(</span><span class="n">as_json</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">as_json</span><span class="p">())</span>
+</span><span data-line="468">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">log_exceptions</span> <span class="o">!=</span> <span class="s2">&quot;never&quot;</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">exception_logging_handler</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="469">            <span class="bp">self</span><span class="o">.</span><span class="n">exception_logging_handler</span> <span class="o">=</span> <span class="n">_default_exception_logging_handler_factory</span><span class="p">(</span><span class="n">is_struct_logger</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span data-line="470">        <span class="k">try</span><span class="p">:</span>
+</span><span data-line="471">            <span class="kn">import</span><span class="w"> </span><span class="nn">structlog</span>
+</span><span data-line="472">
+</span><span data-line="473">            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">standard_lib_logging_config</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="474">                <span class="bp">self</span><span class="o">.</span><span class="n">standard_lib_logging_config</span> <span class="o">=</span> <span class="n">LoggingConfig</span><span class="p">(</span>
+</span><span data-line="475">                    <span class="n">formatters</span><span class="o">=</span><span class="p">{</span>
+</span><span data-line="476">                        <span class="s2">&quot;standard&quot;</span><span class="p">:</span> <span class="p">{</span>
+</span><span data-line="477">                            <span class="s2">&quot;()&quot;</span><span class="p">:</span> <span class="n">structlog</span><span class="o">.</span><span class="n">stdlib</span><span class="o">.</span><span class="n">ProcessorFormatter</span><span class="p">,</span>
+</span><span data-line="478">                            <span class="s2">&quot;processors&quot;</span><span class="p">:</span> <span class="n">default_structlog_standard_lib_processors</span><span class="p">(</span><span class="n">as_json</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">as_json</span><span class="p">()),</span>
+</span><span data-line="479">                        <span class="p">}</span>
+</span><span data-line="480">                    <span class="p">}</span>
+</span><span data-line="481">                <span class="p">)</span>
+</span><span data-line="482">        <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+</span><span data-line="483">            <span class="bp">self</span><span class="o">.</span><span class="n">standard_lib_logging_config</span> <span class="o">=</span> <span class="n">LoggingConfig</span><span class="p">()</span>
+</span><span data-line="484">
+</span><span data-line="485">    <span class="k">def</span><span class="w"> </span><span class="nf">as_json</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+</span><span data-line="486">        <span class="k">return</span> <span class="ow">not</span> <span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="o">.</span><span class="n">isatty</span><span class="p">()</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">pretty_print_tty</span><span class="p">)</span>
+</span><span data-line="487">
+<div class="viewcode-block" id="StructLoggingConfig.configure">
+<a class="viewcode-back" href="../../../reference/logging/config.html#litestar.logging.config.StructLoggingConfig.configure">[docs]</a>
+</span><span data-line="488">    <span class="k">def</span><span class="w"> </span><span class="nf">configure</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">GetLogger</span><span class="p">:</span>
+</span><span data-line="489"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return logger with the given configuration.</span>
+</span><span data-line="490">
+</span><span data-line="491"><span class="sd">        Returns:</span>
+</span><span data-line="492"><span class="sd">            A &#39;logging.getLogger&#39; like function.</span>
+</span><span data-line="493"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="494">        <span class="k">try</span><span class="p">:</span>
+</span><span data-line="495">            <span class="kn">import</span><span class="w"> </span><span class="nn">structlog</span>
+</span><span data-line="496">        <span class="k">except</span> <span class="ne">ImportError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+</span><span data-line="497">            <span class="k">raise</span> <span class="n">MissingDependencyException</span><span class="p">(</span><span class="s2">&quot;structlog&quot;</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
+</span><span data-line="498">
+</span><span data-line="499">        <span class="n">structlog</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span>
+</span><span data-line="500">            <span class="o">**</span><span class="p">{</span>
+</span><span data-line="501">                <span class="n">k</span><span class="p">:</span> <span class="n">v</span>
+</span><span data-line="502">                <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">simple_asdict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+</span><span data-line="503">                <span class="k">if</span> <span class="n">k</span>
+</span><span data-line="504">                <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span>
+</span><span data-line="505">                    <span class="s2">&quot;standard_lib_logging_config&quot;</span><span class="p">,</span>
+</span><span data-line="506">                    <span class="s2">&quot;log_exceptions&quot;</span><span class="p">,</span>
+</span><span data-line="507">                    <span class="s2">&quot;exception_logging_handler&quot;</span><span class="p">,</span>
+</span><span data-line="508">                    <span class="s2">&quot;pretty_print_tty&quot;</span><span class="p">,</span>
+</span><span data-line="509">                    <span class="s2">&quot;disable_stack_trace&quot;</span><span class="p">,</span>
+</span><span data-line="510">                <span class="p">)</span>
+</span><span data-line="511">            <span class="p">}</span>
+</span><span data-line="512">        <span class="p">)</span>
+</span><span data-line="513">        <span class="k">return</span> <span class="n">structlog</span><span class="o">.</span><span class="n">get_logger</span></div>
+
+</span><span data-line="514">
+<div class="viewcode-block" id="StructLoggingConfig.set_level">
+<a class="viewcode-back" href="../../../reference/logging/config.html#litestar.logging.config.StructLoggingConfig.set_level">[docs]</a>
+</span><span data-line="515">    <span class="nd">@staticmethod</span>
+</span><span data-line="516">    <span class="k">def</span><span class="w"> </span><span class="nf">set_level</span><span class="p">(</span><span class="n">logger</span><span class="p">:</span> <span class="n">Logger</span><span class="p">,</span> <span class="n">level</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="517"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Provides a consistent interface to call `setLevel` for all loggers.&quot;&quot;&quot;</span>
+</span><span data-line="518">
+</span><span data-line="519">        <span class="k">try</span><span class="p">:</span>
+</span><span data-line="520">            <span class="kn">import</span><span class="w"> </span><span class="nn">structlog</span>
+</span><span data-line="521">
+</span><span data-line="522">            <span class="n">structlog</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="n">wrapper_class</span><span class="o">=</span><span class="n">structlog</span><span class="o">.</span><span class="n">make_filtering_bound_logger</span><span class="p">(</span><span class="n">level</span><span class="p">))</span>
+</span><span data-line="523">        <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+</span><span data-line="524"><span class="w">            </span><span class="sd">&quot;&quot;&quot;&quot;&quot;&quot;</span>
+</span><span data-line="525">            <span class="k">return</span></div>
+</div>
+
+</span><span data-line="526">
+</span><span data-line="527">
+</span><span data-line="528"><span class="nd">@deprecated</span><span class="p">(</span><span class="n">version</span><span class="o">=</span><span class="s2">&quot;2.6.0&quot;</span><span class="p">,</span> <span class="n">removal_in</span><span class="o">=</span><span class="s2">&quot;3.0.0&quot;</span><span class="p">,</span> <span class="n">alternative</span><span class="o">=</span><span class="s2">&quot;`StructLoggingConfig.set_level`&quot;</span><span class="p">)</span>
+</span><span data-line="529"><span class="k">def</span><span class="w"> </span><span class="nf">default_wrapper_class</span><span class="p">(</span><span class="n">log_level</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">INFO</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">type</span><span class="p">[</span><span class="n">BindableLogger</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># pragma: no cover  # pyright: ignore</span>
+</span><span data-line="530">    <span class="k">try</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
+</span><span data-line="531">        <span class="kn">import</span><span class="w"> </span><span class="nn">structlog</span>
+</span><span data-line="532">
+</span><span data-line="533">        <span class="k">return</span> <span class="n">structlog</span><span class="o">.</span><span class="n">make_filtering_bound_logger</span><span class="p">(</span><span class="n">log_level</span><span class="p">)</span>
+</span><span data-line="534">    <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+</span><span data-line="535">        <span class="k">return</span> <span class="kc">None</span>
+</span></pre></div>
+        </article><button class="back-to-top" type="button">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+  </svg>
+  <span>Back to top</span>
+</button><div class="navigation flex print:hidden"></div></div>
+    </div>
+  </main>
+</div>
+<footer class="sy-foot">
+  <div class="sy-foot-inner sy-container mx-auto">
+    <div class="sy-foot-reserved md:flex justify-between items-center">
+      <div class="sy-foot-copyright"><p>2025, Litestar Organization</p>
+  
+  <p>
+    Made with
+    
+    <a href="https://www.sphinx-doc.org/">Sphinx</a> and
+    
+    <a href="https://shibuya.lepture.com">Shibuya theme</a>.
+  </p>
+</div>
+      <div class="sy-foot-socials">
+<a href="https://twitter.com/LitestarAPI" aria-label="X (Twitter)">
+  <iconify-icon icon="prime:twitter"></iconify-icon>
+</a>
+<a href="https://discord.gg/litestar" aria-label="Discord">
+  <iconify-icon icon="simple-icons:discord"></iconify-icon>
+</a>
+<a href="https://www.reddit.com/r/LitestarAPI" aria-label="Reddit">
+  <iconify-icon icon="simple-icons:reddit"></iconify-icon>
+</a></div>
+    </div>
+  </div>
+</footer>
+      <script src="../../../_static/documentation_options.js?v=ad404a94"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../../_static/copybutton.js?v=f281be69"></script>
+      <script src="../../../_static/litestar-theme.js?v=ab2dcc9e"></script>
+      <script>let toggleHintShow = 'Click to show';</script>
+      <script>let toggleHintHide = 'Click to hide';</script>
+      <script>let toggleOpenOnPrint = 'true';</script>
+      <script src="../../../_static/togglebutton.js?v=4a39c7ea"></script>
+      <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
+      <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+      <script src="../../../_static/shibuya.js?v=c477d091"></script>
+      <script type="module" src="https://cdn.jsdelivr.net/npm/mermaid@11.2.0/dist/mermaid.esm.min.mjs"></script>
+      <script type="module" src="https://cdn.jsdelivr.net/npm/@mermaid-js/layout-elk@0.1.4/dist/mermaid-layout-elk.esm.min.mjs"></script>
+      <script type="module">import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11.2.0/dist/mermaid.esm.min.mjs";import elkLayouts from "https://cdn.jsdelivr.net/npm/@mermaid-js/layout-elk@0.1.4/dist/mermaid-layout-elk.esm.min.mjs";mermaid.registerLayoutLoaders(elkLayouts);mermaid.initialize({startOnLoad:false});</script>
+      <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+      <script type="module">
+import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11.2.0/dist/mermaid.esm.min.mjs";
+window.addEventListener("load", () => mermaid.run());
+</script>
+      <script src="../../../_static/versioning.js?v=9ab184b9"></script></body>
+</html>
