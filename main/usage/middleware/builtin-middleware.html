@@ -468,7 +468,7 @@ data-aria-dark="Switch to auto color mode">
 </ul>
 </li>
 <li><a class="reference internal" href="#rate-limit-middleware">Rate-Limit Middleware</a><ul>
-<li><a class="reference internal" href="#using-behing-a-proxy">Using behing a proxy</a></li>
+<li><a class="reference internal" href="#using-behind-a-proxy">Using behind a proxy</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#logging-middleware">Logging Middleware</a><ul>
@@ -805,8 +805,8 @@ the <a class="reference external" href="https://datatracker.ietf.org/doc/draft-i
 </div>
 <p>The only required configuration kwarg is <code class="docutils literal notranslate"><span class="pre">rate_limit</span></code>, which expects a tuple containing a time-unit (<code class="docutils literal notranslate"><span class="pre">&quot;second&quot;</span></code>,
 <code class="docutils literal notranslate"><span class="pre">&quot;minute&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;hour&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;day&quot;</span></code>) and a value for the request quota (integer).</p>
-<section id="using-behing-a-proxy">
-<h3>Using behing a proxy<a class="headerlink" href="#using-behing-a-proxy" title="Link to this heading">¶</a></h3>
+<section id="using-behind-a-proxy">
+<h3>Using behind a proxy<a class="headerlink" href="#using-behind-a-proxy" title="Link to this heading">¶</a></h3>
 <p>The default mode for uniquely identifiying client uses the client’s address. When an
 application is running behind a proxy, that address will be the proxy’s, not the “real”
 address of the end-user.</p>

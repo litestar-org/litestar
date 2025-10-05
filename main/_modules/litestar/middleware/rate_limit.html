@@ -560,13 +560,13 @@ data-aria-dark="Switch to auto color mode">
 <div class="viewcode-block" id="get_remote_address">
 <a class="viewcode-back" href="../../../reference/middleware/rate_limit.html#litestar.middleware.rate_limit.get_remote_address">[docs]</a>
 </span><span data-line="46"><span class="k">def</span><span class="w"> </span><span class="nf">get_remote_address</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-</span><span data-line="47"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Get a cache-key from a ``Request``</span>
+</span><span data-line="47"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Get a client&#39;s remote address from a ``Request``</span>
 </span><span data-line="48">
 </span><span data-line="49"><span class="sd">    Args:</span>
 </span><span data-line="50"><span class="sd">        request: A :class:`Request &lt;.connection.Request&gt;` instance.</span>
 </span><span data-line="51">
 </span><span data-line="52"><span class="sd">    Returns:</span>
-</span><span data-line="53"><span class="sd">        A cache key.</span>
+</span><span data-line="53"><span class="sd">        An address, uniquely identifying this client</span>
 </span><span data-line="54"><span class="sd">    &quot;&quot;&quot;</span>
 </span><span data-line="55">    <span class="k">return</span> <span class="n">request</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">host</span> <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">client</span> <span class="k">else</span> <span class="s2">&quot;127.0.0.1&quot;</span></div>
 
@@ -611,7 +611,7 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="89">        <span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">request_class</span><span class="p">(</span><span class="n">scope</span><span class="p">)</span>
 </span><span data-line="90">        <span class="n">store</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get_store_from_app</span><span class="p">(</span><span class="n">app</span><span class="p">)</span>
 </span><span data-line="91">        <span class="k">if</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">should_check_request</span><span class="p">(</span><span class="n">request</span><span class="o">=</span><span class="n">request</span><span class="p">):</span>
-</span><span data-line="92">            <span class="n">identifier</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_identifier_for_request</span><span class="p">(</span><span class="n">request</span><span class="o">=</span><span class="n">request</span><span class="p">)</span>
+</span><span data-line="92">            <span class="n">identifier</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_identifier_for_request</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
 </span><span data-line="93">            <span class="n">key</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">::</span><span class="si">{</span><span class="n">identifier</span><span class="si">}</span><span class="s2">&quot;</span>
 </span><span data-line="94">            <span class="n">route_handler</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">scope</span><span class="p">[</span><span class="s2">&quot;route_handler&quot;</span><span class="p">]</span>
 </span><span data-line="95">            <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">route_handler</span><span class="p">,</span> <span class="s2">&quot;is_mount&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
@@ -764,14 +764,14 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="224"><span class="w">    </span><span class="sd">&quot;&quot;&quot;An identifier to use on routes to disable rate limiting for a particular route.&quot;&quot;&quot;</span>
 </span><span data-line="225">    <span class="n">identifier_for_request</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Request</span><span class="p">],</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">get_remote_address</span>
 </span><span data-line="226"><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-</span><span data-line="227"><span class="sd">    A callable that receives the request and returns an identifier for which the limit </span>
-</span><span data-line="228"><span class="sd">    should be applied. Defaults to :func:`~litestar.middleware.rate_limit.get_remote_address`, which returns the client&#39;s </span>
+</span><span data-line="227"><span class="sd">    A callable that receives the request and returns an identifier for which the limit</span>
+</span><span data-line="228"><span class="sd">    should be applied. Defaults to :func:`~litestar.middleware.rate_limit.get_remote_address`, which returns the client&#39;s</span>
 </span><span data-line="229"><span class="sd">    address.</span>
-</span><span data-line="230"><span class="sd">    </span>
-</span><span data-line="231"><span class="sd">    Note that :func:`~litestar.middleware.rate_limit.get_remote_address` does *NOT* honour ``X-FORWARDED-FOR`` headers, as these cannot be </span>
+</span><span data-line="230">
+</span><span data-line="231"><span class="sd">    Note that :func:`~litestar.middleware.rate_limit.get_remote_address` does *NOT* honour ``X-FORWARDED-FOR`` headers, as these cannot be</span>
 </span><span data-line="232"><span class="sd">    trusted implicitly. If running behind a proxy, a secure way of updating the client&#39;s</span>
-</span><span data-line="233"><span class="sd">    address should be implemented, such as uvicorn&#39;s </span>
-</span><span data-line="234"><span class="sd">    `ProxyHeaderMiddleware &lt;https://github.com/encode/uvicorn/blob/master/uvicorn/middleware/proxy_headers.py&gt;`_ </span>
+</span><span data-line="233"><span class="sd">    address should be implemented, such as uvicorn&#39;s</span>
+</span><span data-line="234"><span class="sd">    `ProxyHeaderMiddleware &lt;https://github.com/encode/uvicorn/blob/master/uvicorn/middleware/proxy_headers.py&gt;`_</span>
 </span><span data-line="235"><span class="sd">    or hypercon&#39;s `ProxyFixMiddleware &lt;https://hypercorn.readthedocs.io/en/latest/how_to_guides/proxy_fix.html&gt;`_ .</span>
 </span><span data-line="236"><span class="sd">    &quot;&quot;&quot;</span>
 </span><span data-line="237">    <span class="n">check_throttle_handler</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Request</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">]],</span> <span class="n">SyncOrAsyncUnion</span><span class="p">[</span><span class="nb">bool</span><span class="p">]]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>

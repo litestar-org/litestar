@@ -801,13 +801,13 @@ config kwarg value.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="litestar.middleware.rate_limit.get_remote_address">
 <span class="sig-prename descclassname"><span class="pre">litestar.middleware.rate_limit.</span></span><span class="sig-name descname"><span class="pre">get_remote_address</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../connection.html#litestar.connection.Request" title="litestar.connection.Request"><span class="pre">Request</span></a><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></span><a class="reference internal" href="../../_modules/litestar/middleware/rate_limit.html#get_remote_address"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#litestar.middleware.rate_limit.get_remote_address" title="Link to this definition">¶</a></dt>
-<dd><p>Get a cache-key from a <code class="docutils literal notranslate"><span class="pre">Request</span></code></p>
+<dd><p>Get a client’s remote address from a <code class="docutils literal notranslate"><span class="pre">Request</span></code></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><span class="target" id="litestar.middleware.rate_limit.get_remote_address.params.request"></span><strong>request</strong><a class="paramlink headerlink reference internal" href="#litestar.middleware.rate_limit.get_remote_address.params.request">¶</a> – A <a class="reference internal" href="../connection.html#litestar.connection.Request" title="litestar.connection.Request"><code class="xref py py-class docutils literal notranslate"><span class="pre">Request</span></code></a> instance.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>A cache key.</p>
+<dd class="field-even"><p>An address, uniquely identifying this client</p>
 </dd>
 </dl>
 </dd></dl>
