@@ -268,14 +268,6 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l3"><a class="reference internal" href="../reference/contrib/jinja.html">jinja</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/contrib/mako.html">mako</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/contrib/opentelemetry.html">opentelemetry</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../reference/contrib/sqlalchemy/index.html">sqlalchemy</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../reference/contrib/sqlalchemy/plugins.html">plugins</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../reference/contrib/sqlalchemy/repository.html">repository</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../reference/contrib/sqlalchemy/types.html">types</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../reference/contrib/sqlalchemy/base.html">base</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../reference/contrib/sqlalchemy/dto.html">DTO</a></li>
-</ul>
-</li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/controller.html">controller</a></li>
@@ -339,7 +331,6 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l3"><a class="reference internal" href="../reference/plugins/prometheus.html">prometheus</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/plugins/pydantic.html">pydantic</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/plugins/structlog.html">structlog</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../reference/plugins/sqlalchemy.html">sqlalchemy</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/repository/index.html">repository</a><ul>
@@ -2276,8 +2267,8 @@ This was fixed by leaving the default value as <a class="reference external" hre
 <p>References: <span><a class="reference external" href="https://github.com/litestar-org/litestar/issues/2138">https://github.com/litestar-org/litestar/issues/2138</a></span>, <span><a class="reference external" href="https://github.com/litestar-org/litestar/pull/2189">https://github.com/litestar-org/litestar/pull/2189</a></span></p>
 </div>
 </dd>
-<dt>Add <a class="reference internal" href="../reference/controller.html#litestar.controller.Controller.include_in_schema" title="litestar.controller.Controller.include_in_schema"><code class="xref py py-meth docutils literal notranslate"><span class="pre">include_in_schema()</span></code></a> option for all layers<a class="headerlink reference internal" href="#2.1.0-add" id="2.1.0-add">#</a></dt><dd><div class="changelog-change docutils container">
-<p>Adds the <a class="reference internal" href="../reference/controller.html#litestar.controller.Controller.include_in_schema" title="litestar.controller.Controller.include_in_schema"><code class="xref py py-meth docutils literal notranslate"><span class="pre">include_in_schema()</span></code></a> option to all layers, allowing to include/exclude
+<dt>Add <a class="reference internal" href="../reference/app.html#litestar.app.Litestar.params.include_in_schema" title="litestar.app.Litestar.params.include_in_schema"><code class="xref py py-meth docutils literal notranslate"><span class="pre">include_in_schema()</span></code></a> option for all layers<a class="headerlink reference internal" href="#2.1.0-add" id="2.1.0-add">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Adds the <a class="reference internal" href="../reference/app.html#litestar.app.Litestar.params.include_in_schema" title="litestar.app.Litestar.params.include_in_schema"><code class="xref py py-meth docutils literal notranslate"><span class="pre">include_in_schema()</span></code></a> option to all layers, allowing to include/exclude
 specific routes from the generated OpenAPI schema.</p>
 <p>References: <span><a class="reference external" href="https://github.com/litestar-org/litestar/issues/2267">https://github.com/litestar-org/litestar/issues/2267</a></span>, <span><a class="reference external" href="https://github.com/litestar-org/litestar/pull/2295">https://github.com/litestar-org/litestar/pull/2295</a></span></p>
 </div>
@@ -4105,9 +4096,9 @@ desired affect, as loggers would still be on the <code class="docutils literal n
 <dt>SQLAlchemy 2.0 Plugin<a class="headerlink reference internal" href="#2.0.0alpha3-sqlalchemy 2.0 plugin" id="2.0.0alpha3-sqlalchemy 2.0 plugin">#</a></dt><dd><div class="changelog-change docutils container">
 <p>A <code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyInitPlugin</span></code> was added,
 providing support for managed synchronous and asynchronous sessions.</p>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<p><a class="reference internal" href="../usage/databases/sqlalchemy/index.html"><span class="doc">SQLAlchemy</span></a></p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>SQLAlchemy documentation was available in v2 but SQLAlchemy support was moved into a standalone library in v3.</p>
 </div>
 <p>References: <span><a class="reference external" href="https://github.com/litestar-org/litestar/pull/1395">https://github.com/litestar-org/litestar/pull/1395</a></span></p>
 </div>

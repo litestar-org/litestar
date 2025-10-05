@@ -268,14 +268,6 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l3"><a class="reference internal" href="../../../reference/contrib/jinja.html">jinja</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../reference/contrib/mako.html">mako</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../reference/contrib/opentelemetry.html">opentelemetry</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../reference/contrib/sqlalchemy/index.html">sqlalchemy</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../../../reference/contrib/sqlalchemy/plugins.html">plugins</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../reference/contrib/sqlalchemy/repository.html">repository</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../reference/contrib/sqlalchemy/types.html">types</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../reference/contrib/sqlalchemy/base.html">base</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../reference/contrib/sqlalchemy/dto.html">DTO</a></li>
-</ul>
-</li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../../reference/controller.html">controller</a></li>
@@ -339,7 +331,6 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l3"><a class="reference internal" href="../../../reference/plugins/prometheus.html">prometheus</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../reference/plugins/pydantic.html">pydantic</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../reference/plugins/structlog.html">structlog</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../reference/plugins/sqlalchemy.html">sqlalchemy</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../../reference/repository/index.html">repository</a><ul>
@@ -605,14 +596,14 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="79">
 </span><span data-line="80">
 <div class="viewcode-block" id="Redirect">
-<a class="viewcode-back" href="../../../reference/response/index.html#litestar.response.Redirect">[docs]</a>
+<a class="viewcode-back" href="../../../reference/response/redirect.html#litestar.response.Redirect">[docs]</a>
 </span><span data-line="81"><span class="k">class</span><span class="w"> </span><span class="nc">Redirect</span><span class="p">(</span><span class="n">Response</span><span class="p">[</span><span class="n">Any</span><span class="p">]):</span>
 </span><span data-line="82"><span class="w">    </span><span class="sd">&quot;&quot;&quot;A redirect response.&quot;&quot;&quot;</span>
 </span><span data-line="83">
 </span><span data-line="84">    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;url&quot;</span><span class="p">,)</span>
 </span><span data-line="85">
 <div class="viewcode-block" id="Redirect.__init__">
-<a class="viewcode-back" href="../../../reference/response/index.html#litestar.response.Redirect.__init__">[docs]</a>
+<a class="viewcode-back" href="../../../reference/response/redirect.html#litestar.response.Redirect.__init__">[docs]</a>
 </span><span data-line="86">    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
 </span><span data-line="87">        <span class="bp">self</span><span class="p">,</span>
 </span><span data-line="88">        <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
@@ -669,7 +660,7 @@ data-aria-dark="Switch to auto color mode">
 
 </span><span data-line="139">
 <div class="viewcode-block" id="Redirect.to_asgi_response">
-<a class="viewcode-back" href="../../../reference/response/index.html#litestar.response.Redirect.to_asgi_response">[docs]</a>
+<a class="viewcode-back" href="../../../reference/response/redirect.html#litestar.response.Redirect.to_asgi_response">[docs]</a>
 </span><span data-line="140">    <span class="k">def</span><span class="w"> </span><span class="nf">to_asgi_response</span><span class="p">(</span>
 </span><span data-line="141">        <span class="bp">self</span><span class="p">,</span>
 </span><span data-line="142">        <span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">,</span>

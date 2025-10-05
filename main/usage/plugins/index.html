@@ -268,14 +268,6 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l3"><a class="reference internal" href="../../reference/contrib/jinja.html">jinja</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/contrib/mako.html">mako</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/contrib/opentelemetry.html">opentelemetry</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../reference/contrib/sqlalchemy/index.html">sqlalchemy</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../../reference/contrib/sqlalchemy/plugins.html">plugins</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../reference/contrib/sqlalchemy/repository.html">repository</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../reference/contrib/sqlalchemy/types.html">types</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../reference/contrib/sqlalchemy/base.html">base</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../reference/contrib/sqlalchemy/dto.html">DTO</a></li>
-</ul>
-</li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/controller.html">controller</a></li>
@@ -339,7 +331,6 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/prometheus.html">prometheus</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/pydantic.html">pydantic</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/structlog.html">structlog</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/sqlalchemy.html">sqlalchemy</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/repository/index.html">repository</a><ul>
@@ -537,12 +528,6 @@ data-aria-dark="Switch to auto color mode">
           <section id="plugins">
 <span id="id1"></span><h1>Plugins<a class="headerlink" href="#plugins" title="Link to this heading">¶</a></h1>
 <p>Litestar supports a plugin system that allows you to extend the functionality of the framework.</p>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<ul class="simple">
-<li><p><a class="reference internal" href="../databases/sqlalchemy/plugins/index.html"><span class="doc">Plugins</span></a></p></li>
-</ul>
-</div>
 <p>Plugins are defined by protocols, and any type that satisfies a protocol can be included in the <code class="docutils literal notranslate"><span class="pre">plugins</span></code> argument of
 the <a class="reference internal" href="../../reference/app.html#litestar.app.Litestar" title="litestar.app.Litestar"><code class="xref py py-class docutils literal notranslate"><span class="pre">app</span></code></a>.</p>
 <section id="initplugin">
@@ -624,42 +609,9 @@ the plugin, and doesn’t otherwise have a <code class="docutils literal notrans
 that annotation.</p>
 <section id="id2">
 <h3>Example<a class="headerlink" href="#id2" title="Link to this heading">¶</a></h3>
-<p>The following example shows the actual implementation of the <code class="docutils literal notranslate"><span class="pre">SerializationPlugin</span></code> for
-<a class="reference external" href="https://www.sqlalchemy.org/">SQLAlchemy</a> models that is is provided in <code class="docutils literal notranslate"><span class="pre">advanced_alchemy</span></code>.</p>
-<div class="literal-block-wrapper docutils container" id="id5">
-<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">SerializationPlugin</span></code> implementation example</span><a class="headerlink" href="#id5" title="Link to this code">¶</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
-</span><span data-line="2">
-</span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
-</span><span data-line="4">
-</span><span data-line="5"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">warn_deprecation</span>
-</span><span data-line="6">
-</span><span data-line="7"><span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;SQLAlchemySerializationPlugin&quot;</span><span class="p">,)</span>
-</span><span data-line="8">
-</span><span data-line="9">
-</span><span data-line="10"><span class="k">def</span><span class="w"> </span><span class="fm">__getattr__</span><span class="p">(</span><span class="n">attr_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">object</span><span class="p">:</span>
-</span><span data-line="11">    <span class="k">if</span> <span class="n">attr_name</span> <span class="ow">in</span> <span class="n">__all__</span><span class="p">:</span>
-</span><span data-line="12">        <span class="n">warn_deprecation</span><span class="p">(</span>
-</span><span data-line="13">            <span class="n">deprecated_name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;litestar.contrib.sqlalchemy.plugins.serialization.</span><span class="si">{</span><span class="n">attr_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
-</span><span data-line="14">            <span class="n">version</span><span class="o">=</span><span class="s2">&quot;2.12&quot;</span><span class="p">,</span>
-</span><span data-line="15">            <span class="n">kind</span><span class="o">=</span><span class="s2">&quot;import&quot;</span><span class="p">,</span>
-</span><span data-line="16">            <span class="n">removal_in</span><span class="o">=</span><span class="s2">&quot;3.0&quot;</span><span class="p">,</span>
-</span><span data-line="17">            <span class="n">info</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;importing </span><span class="si">{</span><span class="n">attr_name</span><span class="si">}</span><span class="s2"> from &#39;litestar.contrib.sqlalchemy.plugins.serialization&#39; is deprecated, please &quot;</span>
-</span><span data-line="18">            <span class="s2">&quot;import it from &#39;litestar.plugins.sqlalchemy&#39; instead&quot;</span><span class="p">,</span>
-</span><span data-line="19">        <span class="p">)</span>
-</span><span data-line="20">        <span class="kn">from</span><span class="w"> </span><span class="nn">advanced_alchemy.extensions.litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">SQLAlchemySerializationPlugin</span>
-</span><span data-line="21">
-</span><span data-line="22">        <span class="n">value</span> <span class="o">=</span> <span class="nb">globals</span><span class="p">()[</span><span class="n">attr_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">SQLAlchemySerializationPlugin</span>
-</span><span data-line="23">        <span class="k">return</span> <span class="n">value</span>
-</span><span data-line="24">
-</span><span data-line="25">    <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;module </span><span class="si">{</span><span class="vm">__name__</span><span class="si">!r}</span><span class="s2"> has no attribute </span><span class="si">{</span><span class="n">attr_name</span><span class="si">!r}</span><span class="s2">&quot;</span><span class="p">)</span>  <span class="c1"># pragma: no cover</span>
-</span><span data-line="26">
-</span><span data-line="27">
-</span><span data-line="28"><span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
-</span><span data-line="29">    <span class="kn">from</span><span class="w"> </span><span class="nn">advanced_alchemy.extensions.litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">SQLAlchemySerializationPlugin</span>
-</span></pre></div>
-</div>
-</div>
+<p>The following example shows the implementation pattern of a <code class="docutils literal notranslate"><span class="pre">SerializationPlugin</span></code> for
+<a class="reference external" href="https://www.sqlalchemy.org/">SQLAlchemy</a> models. For the actual implementation, see the
+<code class="docutils literal notranslate"><span class="pre">advanced_alchemy</span></code> library documentation.</p>
 <p><a class="reference external" href="https://docs.advanced-alchemy.litestar.dev/latest/reference/extensions/litestar/index.html#advanced_alchemy.extensions.litestar.SQLAlchemySerializationPlugin.supports_type" title="(in advanced_alchemy)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">supports_type(self,</span> <span class="pre">field_definition:</span> <span class="pre">FieldDefinition)</span> <span class="pre">-&gt;</span> <span class="pre">bool:</span></code></a>
 returns a <a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a> indicating whether the plugin supports serialization for the given type. Specifically, we return
 <code class="docutils literal notranslate"><span class="pre">True</span></code> if the parsed type is either a collection of SQLAlchemy models or a single SQLAlchemy model.</p>
@@ -683,9 +635,9 @@ injection by providing information about injectable types.</p>
 <p>Its main purpose it to facilitate the injection of callables with unknown signatures,
 for example Pydantic’s <code class="docutils literal notranslate"><span class="pre">BaseModel</span></code> classes; These are not supported natively since,
 while they are callables, their type information is not contained within their callable
-signature (their <a class="reference internal" href="../../reference/contrib/jinja.html#litestar.contrib.jinja.JinjaTemplateEngine.__init__" title="litestar.contrib.jinja.JinjaTemplateEngine.__init__"><code class="xref py py-func docutils literal notranslate"><span class="pre">__init__()</span></code></a> method).</p>
-<div class="literal-block-wrapper docutils container" id="id6">
-<div class="code-block-caption"><span class="caption-text">Dynamically generating signature information for a custom type</span><a class="headerlink" href="#id6" title="Link to this code">¶</a></div>
+signature (their <a class="reference internal" href="../../reference/app.html#litestar.app.Litestar.__init__" title="litestar.app.Litestar.__init__"><code class="xref py py-func docutils literal notranslate"><span class="pre">__init__()</span></code></a> method).</p>
+<div class="literal-block-wrapper docutils container" id="id5">
+<div class="code-block-caption"><span class="caption-text">Dynamically generating signature information for a custom type</span><a class="headerlink" href="#id5" title="Link to this code">¶</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">inspect</span><span class="w"> </span><span class="kn">import</span> <span class="n">Parameter</span><span class="p">,</span> <span class="n">Signature</span>
 </span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
 </span><span data-line="3">

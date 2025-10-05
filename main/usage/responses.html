@@ -268,14 +268,6 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l3"><a class="reference internal" href="../reference/contrib/jinja.html">jinja</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/contrib/mako.html">mako</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/contrib/opentelemetry.html">opentelemetry</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../reference/contrib/sqlalchemy/index.html">sqlalchemy</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../reference/contrib/sqlalchemy/plugins.html">plugins</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../reference/contrib/sqlalchemy/repository.html">repository</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../reference/contrib/sqlalchemy/types.html">types</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../reference/contrib/sqlalchemy/base.html">base</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../reference/contrib/sqlalchemy/dto.html">DTO</a></li>
-</ul>
-</li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/controller.html">controller</a></li>
@@ -339,7 +331,6 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l3"><a class="reference internal" href="../reference/plugins/prometheus.html">prometheus</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/plugins/pydantic.html">pydantic</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/plugins/structlog.html">structlog</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../reference/plugins/sqlalchemy.html">sqlalchemy</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/repository/index.html">repository</a><ul>
@@ -2120,63 +2111,6 @@ the <a class="reference internal" href="../reference/pagination.html#litestar.pa
 <h4>Offset Pagination With SQLAlchemy<a class="headerlink" href="#offset-pagination-with-sqlalchemy" title="Link to this heading">¶</a></h4>
 <p>When retrieving paginated data from the database using SQLAlchemy, the Paginator instance requires an SQLAlchemy session
 instance to make queries. This can be achieved with <a class="reference internal" href="dependency-injection.html"><span class="doc">Dependency Injection</span></a></p>
-<div class="literal-block-wrapper docutils container" id="id14">
-<div class="code-block-caption"><span class="caption-text">Offset Pagination With SQLAlchemy</span><a class="headerlink" href="#id14" title="Link to this code">¶</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">cast</span>
-</span><span data-line="2">
-</span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy</span><span class="w"> </span><span class="kn">import</span> <span class="n">func</span><span class="p">,</span> <span class="n">select</span>
-</span><span data-line="4"><span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy.orm</span><span class="w"> </span><span class="kn">import</span> <span class="n">Mapped</span>
-</span><span data-line="5">
-</span><span data-line="6"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
-</span><span data-line="7"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.di</span><span class="w"> </span><span class="kn">import</span> <span class="n">Provide</span>
-</span><span data-line="8"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.pagination</span><span class="w"> </span><span class="kn">import</span> <span class="n">AbstractAsyncOffsetPaginator</span><span class="p">,</span> <span class="n">OffsetPagination</span>
-</span><span data-line="9"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.plugins.sqlalchemy</span><span class="w"> </span><span class="kn">import</span> <span class="n">SQLAlchemyAsyncConfig</span><span class="p">,</span> <span class="n">SQLAlchemyInitPlugin</span><span class="p">,</span> <span class="n">base</span>
-</span><span data-line="10">
-</span><span data-line="11"><span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
-</span><span data-line="12">    <span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy.engine.result</span><span class="w"> </span><span class="kn">import</span> <span class="n">ScalarResult</span>
-</span><span data-line="13">    <span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy.ext.asyncio</span><span class="w"> </span><span class="kn">import</span> <span class="n">AsyncSession</span>
-</span><span data-line="14">
-</span><span data-line="15">
-</span><span data-line="16"><span class="k">class</span><span class="w"> </span><span class="nc">Person</span><span class="p">(</span><span class="n">base</span><span class="o">.</span><span class="n">UUIDBase</span><span class="p">):</span>
-</span><span data-line="17">    <span class="n">name</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
-</span><span data-line="18">
-</span><span data-line="19">
-</span><span data-line="20"><span class="k">class</span><span class="w"> </span><span class="nc">PersonOffsetPaginator</span><span class="p">(</span><span class="n">AbstractAsyncOffsetPaginator</span><span class="p">[</span><span class="n">Person</span><span class="p">]):</span>
-</span><span data-line="21">    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">async_session</span><span class="p">:</span> <span class="n">AsyncSession</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># &#39;async_session&#39; dependency will be injected here.</span>
-</span><span data-line="22">        <span class="bp">self</span><span class="o">.</span><span class="n">async_session</span> <span class="o">=</span> <span class="n">async_session</span>
-</span><span data-line="23">
-</span><span data-line="24">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_total</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-</span><span data-line="25">        <span class="k">return</span> <span class="n">cast</span><span class="p">(</span><span class="s2">&quot;int&quot;</span><span class="p">,</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">async_session</span><span class="o">.</span><span class="n">scalar</span><span class="p">(</span><span class="n">select</span><span class="p">(</span><span class="n">func</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="n">Person</span><span class="o">.</span><span class="n">id</span><span class="p">))))</span>
-</span><span data-line="26">
-</span><span data-line="27">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_items</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">limit</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">offset</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Person</span><span class="p">]:</span>
-</span><span data-line="28">        <span class="n">people</span><span class="p">:</span> <span class="n">ScalarResult</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">async_session</span><span class="o">.</span><span class="n">scalars</span><span class="p">(</span><span class="n">select</span><span class="p">(</span><span class="n">Person</span><span class="p">)</span><span class="o">.</span><span class="n">slice</span><span class="p">(</span><span class="n">offset</span><span class="p">,</span> <span class="n">limit</span><span class="p">))</span>
-</span><span data-line="29">        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">people</span><span class="o">.</span><span class="n">all</span><span class="p">())</span>
-</span><span data-line="30">
-</span><span data-line="31">
-</span><span data-line="32"><span class="c1"># Create a route handler. The handler will receive two query parameters - &#39;limit&#39; and &#39;offset&#39;, which is passed</span>
-</span><span data-line="33"><span class="c1"># to the paginator instance. Also create a dependency &#39;paginator&#39; which will be injected into the handler.</span>
-</span><span data-line="34"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/people&quot;</span><span class="p">,</span> <span class="n">dependencies</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;paginator&quot;</span><span class="p">:</span> <span class="n">Provide</span><span class="p">(</span><span class="n">PersonOffsetPaginator</span><span class="p">)})</span>
-</span><span data-line="35"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">people_handler</span><span class="p">(</span><span class="n">paginator</span><span class="p">:</span> <span class="n">PersonOffsetPaginator</span><span class="p">,</span> <span class="n">limit</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">offset</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">OffsetPagination</span><span class="p">[</span><span class="n">Person</span><span class="p">]:</span>
-</span><span data-line="36">    <span class="k">return</span> <span class="k">await</span> <span class="n">paginator</span><span class="p">(</span><span class="n">limit</span><span class="o">=</span><span class="n">limit</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="n">offset</span><span class="p">)</span>
-</span><span data-line="37">
-</span><span data-line="38">
-</span><span data-line="39"><span class="n">sqlalchemy_config</span> <span class="o">=</span> <span class="n">SQLAlchemyAsyncConfig</span><span class="p">(</span>
-</span><span data-line="40">    <span class="n">connection_string</span><span class="o">=</span><span class="s2">&quot;sqlite+aiosqlite:///test.sqlite&quot;</span><span class="p">,</span> <span class="n">session_dependency_key</span><span class="o">=</span><span class="s2">&quot;async_session&quot;</span>
-</span><span data-line="41"><span class="p">)</span>  <span class="c1"># Create &#39;async_session&#39; dependency.</span>
-</span><span data-line="42"><span class="n">sqlalchemy_plugin</span> <span class="o">=</span> <span class="n">SQLAlchemyInitPlugin</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">sqlalchemy_config</span><span class="p">)</span>
-</span><span data-line="43">
-</span><span data-line="44">
-</span><span data-line="45"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">on_startup</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="46"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Initializes the database.&quot;&quot;&quot;</span>
-</span><span data-line="47">    <span class="k">async</span> <span class="k">with</span> <span class="n">sqlalchemy_config</span><span class="o">.</span><span class="n">get_engine</span><span class="p">()</span><span class="o">.</span><span class="n">begin</span><span class="p">()</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
-</span><span data-line="48">        <span class="k">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">run_sync</span><span class="p">(</span><span class="n">base</span><span class="o">.</span><span class="n">UUIDBase</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">create_all</span><span class="p">)</span>
-</span><span data-line="49">
-</span><span data-line="50">
-</span><span data-line="51"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">people_handler</span><span class="p">],</span> <span class="n">on_startup</span><span class="o">=</span><span class="p">[</span><span class="n">on_startup</span><span class="p">],</span> <span class="n">plugins</span><span class="o">=</span><span class="p">[</span><span class="n">sqlalchemy_plugin</span><span class="p">])</span>
-</span></pre></div>
-</div>
-</div>
-<p>See <a class="reference internal" href="databases/sqlalchemy/plugins/index.html#plugins"><span class="std std-ref">SQLAlchemy plugin</span></a> for sqlalchemy integration.</p>
 </section>
 </section>
 <section id="cursor-pagination">
@@ -2187,8 +2121,8 @@ Cursor is unique identifier within the dataset that serves as a way to point the
 <input id="sd-tab-item-2" name="sd-tab-set-1" type="radio">
 <label class="sd-tab-label" data-sync-group="tab" data-sync-id="3.8" for="sd-tab-item-2">
 Python 3.8+</label><div class="sd-tab-content docutils">
-<div class="literal-block-wrapper docutils container" id="id15">
-<div class="code-block-caption"><span class="caption-text">Cursor Pagination</span><a class="headerlink" href="#id15" title="Link to this code">¶</a></div>
+<div class="literal-block-wrapper docutils container" id="id14">
+<div class="code-block-caption"><span class="caption-text">Cursor Pagination</span><a class="headerlink" href="#id14" title="Link to this code">¶</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span>
 </span><span data-line="2">
 </span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">polyfactory.factories.pydantic_factory</span><span class="w"> </span><span class="kn">import</span> <span class="n">ModelFactory</span>
@@ -2237,8 +2171,8 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 <input checked="checked" id="sd-tab-item-3" name="sd-tab-set-1" type="radio">
 <label class="sd-tab-label" data-sync-group="tab" data-sync-id="3.10" for="sd-tab-item-3">
 Python 3.10+</label><div class="sd-tab-content docutils">
-<div class="literal-block-wrapper docutils container" id="id16">
-<div class="code-block-caption"><span class="caption-text">Cursor Pagination</span><a class="headerlink" href="#id16" title="Link to this code">¶</a></div>
+<div class="literal-block-wrapper docutils container" id="id15">
+<div class="code-block-caption"><span class="caption-text">Cursor Pagination</span><a class="headerlink" href="#id15" title="Link to this code">¶</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">polyfactory.factories.pydantic_factory</span><span class="w"> </span><span class="kn">import</span> <span class="n">ModelFactory</span>
 </span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseModel</span>
 </span><span data-line="3">

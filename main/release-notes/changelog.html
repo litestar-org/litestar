@@ -268,14 +268,6 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l3"><a class="reference internal" href="../reference/contrib/jinja.html">jinja</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/contrib/mako.html">mako</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/contrib/opentelemetry.html">opentelemetry</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../reference/contrib/sqlalchemy/index.html">sqlalchemy</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../reference/contrib/sqlalchemy/plugins.html">plugins</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../reference/contrib/sqlalchemy/repository.html">repository</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../reference/contrib/sqlalchemy/types.html">types</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../reference/contrib/sqlalchemy/base.html">base</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../reference/contrib/sqlalchemy/dto.html">DTO</a></li>
-</ul>
-</li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/controller.html">controller</a></li>
@@ -339,7 +331,6 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l3"><a class="reference internal" href="../reference/plugins/prometheus.html">prometheus</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/plugins/pydantic.html">pydantic</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/plugins/structlog.html">structlog</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../reference/plugins/sqlalchemy.html">sqlalchemy</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/repository/index.html">repository</a><ul>
@@ -529,6 +520,18 @@ data-aria-dark="Switch to auto color mode">
 <strong>Released: </strong>2024-08-30<section id="3.0.0-feature">
 <h3>Features<a class="headerlink" href="#3.0.0-feature" title="Link to this heading">¶</a></h3>
 <dl>
+<dt>Remove all SQLAlchemy modules in favor of direct advanced-alchemy imports<a class="headerlink reference internal" href="#3.0.0-remove all sqlalchemy modules in favor of direct advanced-alchemy imports" id="3.0.0-remove all sqlalchemy modules in favor of direct advanced-alchemy imports">#</a><span class="breaking-change">breaking</span></dt><dd><div class="changelog-change docutils container">
+<p>Remove all SQLAlchemy functionality from Litestar. Both <code class="docutils literal notranslate"><span class="pre">litestar.contrib.sqlalchemy</span></code>
+and <code class="docutils literal notranslate"><span class="pre">litestar.plugins.sqlalchemy</span></code> modules have been completely removed. Users must now
+import directly from <code class="docutils literal notranslate"><span class="pre">advanced_alchemy.extensions.litestar</span></code>.</p>
+<p>Migration:
+- <code class="docutils literal notranslate"><span class="pre">from</span> <span class="pre">litestar.contrib.sqlalchemy</span> <span class="pre">import</span> <span class="pre">X</span></code> → <code class="docutils literal notranslate"><span class="pre">from</span> <span class="pre">advanced_alchemy.extensions.litestar</span> <span class="pre">import</span> <span class="pre">X</span></code>
+- <code class="docutils literal notranslate"><span class="pre">from</span> <span class="pre">litestar.plugins.sqlalchemy</span> <span class="pre">import</span> <span class="pre">Y</span></code> → <code class="docutils literal notranslate"><span class="pre">from</span> <span class="pre">advanced_alchemy.extensions.litestar</span> <span class="pre">import</span> <span class="pre">Y</span></code></p>
+<p>This completes the separation of concerns, with advanced-alchemy being the sole provider
+of SQLAlchemy integration for Litestar.</p>
+<p>References: <span><a class="reference external" href="https://github.com/litestar-org/litestar/pull/TBD">https://github.com/litestar-org/litestar/pull/TBD</a></span></p>
+</div>
+</dd>
 <dt>Remove deprecated <code class="docutils literal notranslate"><span class="pre">litestar.contrib.prometheus</span></code> module<a class="headerlink reference internal" href="#3.0.0-remove deprecated" id="3.0.0-remove deprecated">#</a><span class="breaking-change">breaking</span></dt><dd><div class="changelog-change docutils container">
 <p>Remove the deprecated <code class="docutils literal notranslate"><span class="pre">litestar.contrib.prometheus</span></code> module. Code still using imports
 from this module should switch to using <code class="docutils literal notranslate"><span class="pre">litestar.plugins.prometheus</span></code>.</p>

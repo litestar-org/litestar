@@ -268,14 +268,6 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l3"><a class="reference internal" href="../../reference/contrib/jinja.html">jinja</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/contrib/mako.html">mako</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/contrib/opentelemetry.html">opentelemetry</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../reference/contrib/sqlalchemy/index.html">sqlalchemy</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../../reference/contrib/sqlalchemy/plugins.html">plugins</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../reference/contrib/sqlalchemy/repository.html">repository</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../reference/contrib/sqlalchemy/types.html">types</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../reference/contrib/sqlalchemy/base.html">base</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../reference/contrib/sqlalchemy/dto.html">DTO</a></li>
-</ul>
-</li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/controller.html">controller</a></li>
@@ -339,7 +331,6 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/prometheus.html">prometheus</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/pydantic.html">pydantic</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/structlog.html">structlog</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/sqlalchemy.html">sqlalchemy</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/repository/index.html">repository</a><ul>
@@ -562,10 +553,10 @@ a DTO for use with a SQLAlchemy model:</p>
 <div class="code-block-caption"><span class="caption-text">A SQLAlchemy model DTO</span><a class="headerlink" href="#id2" title="Link to this code">¶</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span>
 </span><span data-line="2">
-</span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy.orm</span><span class="w"> </span><span class="kn">import</span> <span class="n">Mapped</span>
-</span><span data-line="4">
-</span><span data-line="5"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">post</span>
-</span><span data-line="6"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.plugins.sqlalchemy</span><span class="w"> </span><span class="kn">import</span> <span class="n">SQLAlchemyDTO</span>
+</span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">advanced_alchemy.extensions.litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">SQLAlchemyDTO</span>
+</span><span data-line="4"><span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy.orm</span><span class="w"> </span><span class="kn">import</span> <span class="n">Mapped</span>
+</span><span data-line="5">
+</span><span data-line="6"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">post</span>
 </span><span data-line="7">
 </span><span data-line="8"><span class="kn">from</span><span class="w"> </span><span class="nn">.my_lib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Base</span>
 </span><span data-line="9">
@@ -593,7 +584,7 @@ a DTO for use with a SQLAlchemy model:</p>
 <div class="admonition">
 <p class="admonition-title">Run it</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span data-line="1">&gt;<span class="w"> </span>curl<span class="w"> </span>http://127.0.0.1:8000/users<span class="w"> </span>-H<span class="w"> </span>Content-Type:<span class="w"> </span>application/json<span class="w"> </span>-d<span class="w"> </span><span class="o">{</span><span class="s2">&quot;name&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span>,<span class="s2">&quot;password&quot;</span>:<span class="s2">&quot;xyz&quot;</span>,<span class="s2">&quot;created_at&quot;</span>:<span class="s2">&quot;2023-04-24T00:00:00Z&quot;</span><span class="o">}</span>
-</span><span data-line="2"><span class="o">{</span><span class="s2">&quot;id&quot;</span>:<span class="s2">&quot;718d3fe0-f177-4a3d-abfa-457eeec07675&quot;</span>,<span class="s2">&quot;name&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span>,<span class="s2">&quot;password&quot;</span>:<span class="s2">&quot;xyz&quot;</span>,<span class="s2">&quot;created_at&quot;</span>:<span class="s2">&quot;2023-04-24T00:00:00Z&quot;</span><span class="o">}</span>
+</span><span data-line="2"><span class="o">{</span><span class="s2">&quot;id&quot;</span>:<span class="s2">&quot;581542be-0f79-4536-83b2-7478aad6f5b1&quot;</span>,<span class="s2">&quot;name&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span>,<span class="s2">&quot;password&quot;</span>:<span class="s2">&quot;xyz&quot;</span>,<span class="s2">&quot;created_at&quot;</span>:<span class="s2">&quot;2023-04-24T00:00:00Z&quot;</span><span class="o">}</span>
 </span></pre></div>
 </div>
 </div>
@@ -615,11 +606,11 @@ configuration.</p>
 <div class="code-block-caption"><span class="caption-text">Marking fields</span><a class="headerlink" href="#id3" title="Link to this code">¶</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="linenos"> 1</span><span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span>
 </span><span data-line="2"><span class="linenos"> 2</span>
-</span><span data-line="3"><span class="linenos"> 3</span><span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy.orm</span><span class="w"> </span><span class="kn">import</span> <span class="n">Mapped</span><span class="p">,</span> <span class="n">mapped_column</span>
-</span><span data-line="4"><span class="linenos"> 4</span>
-</span><span data-line="5"><span class="linenos"> 5</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">post</span>
-</span><span data-line="6"><span class="hll"><span class="linenos"> 6</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.dto</span><span class="w"> </span><span class="kn">import</span> <span class="n">dto_field</span>
-</span></span><span data-line="7"><span class="linenos"> 7</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.plugins.sqlalchemy</span><span class="w"> </span><span class="kn">import</span> <span class="n">SQLAlchemyDTO</span>
+</span><span data-line="3"><span class="linenos"> 3</span><span class="kn">from</span><span class="w"> </span><span class="nn">advanced_alchemy.extensions.litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">SQLAlchemyDTO</span>
+</span><span data-line="4"><span class="linenos"> 4</span><span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy.orm</span><span class="w"> </span><span class="kn">import</span> <span class="n">Mapped</span><span class="p">,</span> <span class="n">mapped_column</span>
+</span><span data-line="5"><span class="linenos"> 5</span>
+</span><span data-line="6"><span class="hll"><span class="linenos"> 6</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">post</span>
+</span></span><span data-line="7"><span class="linenos"> 7</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.dto</span><span class="w"> </span><span class="kn">import</span> <span class="n">dto_field</span>
 </span><span data-line="8"><span class="linenos"> 8</span>
 </span><span data-line="9"><span class="linenos"> 9</span><span class="kn">from</span><span class="w"> </span><span class="nn">.my_lib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Base</span>
 </span><span data-line="10"><span class="linenos">10</span>
@@ -655,7 +646,7 @@ configuration.</p>
 <div class="admonition">
 <p class="admonition-title">Run it</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span data-line="1">&gt;<span class="w"> </span>curl<span class="w"> </span>http://127.0.0.1:8000/users<span class="w"> </span>-H<span class="w"> </span>Content-Type:<span class="w"> </span>application/json<span class="w"> </span>-d<span class="w"> </span><span class="o">{</span><span class="s2">&quot;name&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span>,<span class="s2">&quot;password&quot;</span>:<span class="s2">&quot;xyz&quot;</span>,<span class="s2">&quot;created_at&quot;</span>:<span class="s2">&quot;2023-04-24T00:00:00Z&quot;</span><span class="o">}</span>
-</span><span data-line="2"><span class="o">{</span><span class="s2">&quot;created_at&quot;</span>:<span class="s2">&quot;0001-01-01T00:00:00&quot;</span>,<span class="s2">&quot;id&quot;</span>:<span class="s2">&quot;bfe9d8de-578b-4dfd-af95-c135ae21136c&quot;</span>,<span class="s2">&quot;name&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span><span class="o">}</span>
+</span><span data-line="2"><span class="o">{</span><span class="s2">&quot;created_at&quot;</span>:<span class="s2">&quot;0001-01-01T00:00:00&quot;</span>,<span class="s2">&quot;id&quot;</span>:<span class="s2">&quot;c2403b50-8a0f-4ae1-895b-a581ebaeaeb6&quot;</span>,<span class="s2">&quot;name&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span><span class="o">}</span>
 </span></pre></div>
 </div>
 </div>
@@ -672,12 +663,12 @@ nested models.</p>
 </span><span data-line="2"><span class="linenos"> 2</span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Annotated</span>
 </span><span data-line="3"><span class="linenos"> 3</span><span class="kn">from</span><span class="w"> </span><span class="nn">uuid</span><span class="w"> </span><span class="kn">import</span> <span class="n">UUID</span>
 </span><span data-line="4"><span class="linenos"> 4</span>
-</span><span data-line="5"><span class="linenos"> 5</span><span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy</span><span class="w"> </span><span class="kn">import</span> <span class="n">ForeignKey</span>
-</span><span data-line="6"><span class="hll"><span class="linenos"> 6</span><span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy.orm</span><span class="w"> </span><span class="kn">import</span> <span class="n">Mapped</span><span class="p">,</span> <span class="n">mapped_column</span><span class="p">,</span> <span class="n">relationship</span>
-</span></span><span data-line="7"><span class="linenos"> 7</span>
-</span><span data-line="8"><span class="linenos"> 8</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">post</span>
-</span><span data-line="9"><span class="linenos"> 9</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.dto</span><span class="w"> </span><span class="kn">import</span> <span class="n">DTOConfig</span><span class="p">,</span> <span class="n">dto_field</span>
-</span><span data-line="10"><span class="hll"><span class="linenos">10</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.plugins.sqlalchemy</span><span class="w"> </span><span class="kn">import</span> <span class="n">SQLAlchemyDTO</span>
+</span><span data-line="5"><span class="linenos"> 5</span><span class="kn">from</span><span class="w"> </span><span class="nn">advanced_alchemy.extensions.litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">SQLAlchemyDTO</span>
+</span><span data-line="6"><span class="hll"><span class="linenos"> 6</span><span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy</span><span class="w"> </span><span class="kn">import</span> <span class="n">ForeignKey</span>
+</span></span><span data-line="7"><span class="linenos"> 7</span><span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy.orm</span><span class="w"> </span><span class="kn">import</span> <span class="n">Mapped</span><span class="p">,</span> <span class="n">mapped_column</span><span class="p">,</span> <span class="n">relationship</span>
+</span><span data-line="8"><span class="linenos"> 8</span>
+</span><span data-line="9"><span class="linenos"> 9</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">post</span>
+</span><span data-line="10"><span class="hll"><span class="linenos">10</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.dto</span><span class="w"> </span><span class="kn">import</span> <span class="n">DTOConfig</span><span class="p">,</span> <span class="n">dto_field</span>
 </span></span><span data-line="11"><span class="linenos">11</span>
 </span><span data-line="12"><span class="linenos">12</span><span class="kn">from</span><span class="w"> </span><span class="nn">.my_lib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Base</span>
 </span><span data-line="13"><span class="linenos">13</span>
@@ -768,11 +759,11 @@ type parameter of <code class="docutils literal notranslate"><span class="pre">a
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="linenos"> 1</span><span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span>
 </span><span data-line="2"><span class="linenos"> 2</span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Annotated</span>
 </span><span data-line="3"><span class="linenos"> 3</span>
-</span><span data-line="4"><span class="hll"><span class="linenos"> 4</span><span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy.orm</span><span class="w"> </span><span class="kn">import</span> <span class="n">Mapped</span><span class="p">,</span> <span class="n">mapped_column</span>
-</span></span><span data-line="5"><span class="linenos"> 5</span>
-</span><span data-line="6"><span class="linenos"> 6</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">post</span>
-</span><span data-line="7"><span class="linenos"> 7</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.dto</span><span class="w"> </span><span class="kn">import</span> <span class="n">DTOConfig</span><span class="p">,</span> <span class="n">dto_field</span>
-</span><span data-line="8"><span class="hll"><span class="linenos"> 8</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.plugins.sqlalchemy</span><span class="w"> </span><span class="kn">import</span> <span class="n">SQLAlchemyDTO</span>
+</span><span data-line="4"><span class="hll"><span class="linenos"> 4</span><span class="kn">from</span><span class="w"> </span><span class="nn">advanced_alchemy.extensions.litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">SQLAlchemyDTO</span>
+</span></span><span data-line="5"><span class="linenos"> 5</span><span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy.orm</span><span class="w"> </span><span class="kn">import</span> <span class="n">Mapped</span><span class="p">,</span> <span class="n">mapped_column</span>
+</span><span data-line="6"><span class="linenos"> 6</span>
+</span><span data-line="7"><span class="linenos"> 7</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">post</span>
+</span><span data-line="8"><span class="hll"><span class="linenos"> 8</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.dto</span><span class="w"> </span><span class="kn">import</span> <span class="n">DTOConfig</span><span class="p">,</span> <span class="n">dto_field</span>
 </span></span><span data-line="9"><span class="linenos"> 9</span>
 </span><span data-line="10"><span class="linenos">10</span><span class="kn">from</span><span class="w"> </span><span class="nn">.my_lib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Base</span>
 </span><span data-line="11"><span class="linenos">11</span>
@@ -801,7 +792,7 @@ type parameter of <code class="docutils literal notranslate"><span class="pre">a
 <div class="admonition">
 <p class="admonition-title">Run it</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span data-line="1">&gt;<span class="w"> </span>curl<span class="w"> </span>http://127.0.0.1:8000/users<span class="w"> </span>-H<span class="w"> </span>Content-Type:<span class="w"> </span>application/json<span class="w"> </span>-d<span class="w"> </span><span class="o">{</span><span class="s2">&quot;userName&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span>,<span class="s2">&quot;password&quot;</span>:<span class="s2">&quot;xyz&quot;</span>,<span class="s2">&quot;created_at&quot;</span>:<span class="s2">&quot;2023-04-24T00:00:00Z&quot;</span><span class="o">}</span>
-</span><span data-line="2"><span class="o">{</span><span class="s2">&quot;created_at&quot;</span>:<span class="s2">&quot;0001-01-01T00:00:00&quot;</span>,<span class="s2">&quot;id&quot;</span>:<span class="s2">&quot;8e2d9a9d-2a0d-4835-b89f-35eebd0e05a4&quot;</span>,<span class="s2">&quot;userName&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span><span class="o">}</span>
+</span><span data-line="2"><span class="o">{</span><span class="s2">&quot;created_at&quot;</span>:<span class="s2">&quot;0001-01-01T00:00:00&quot;</span>,<span class="s2">&quot;id&quot;</span>:<span class="s2">&quot;dd90c7e6-7ff8-47c9-aa0f-83cd21b87c38&quot;</span>,<span class="s2">&quot;userName&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span><span class="o">}</span>
 </span></pre></div>
 </div>
 </div>
@@ -811,11 +802,11 @@ type parameter of <code class="docutils literal notranslate"><span class="pre">a
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="linenos"> 1</span><span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span>
 </span><span data-line="2"><span class="linenos"> 2</span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Annotated</span>
 </span><span data-line="3"><span class="linenos"> 3</span>
-</span><span data-line="4"><span class="hll"><span class="linenos"> 4</span><span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy.orm</span><span class="w"> </span><span class="kn">import</span> <span class="n">Mapped</span><span class="p">,</span> <span class="n">mapped_column</span>
-</span></span><span data-line="5"><span class="linenos"> 5</span>
-</span><span data-line="6"><span class="linenos"> 6</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">post</span>
-</span><span data-line="7"><span class="linenos"> 7</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.dto</span><span class="w"> </span><span class="kn">import</span> <span class="n">DTOConfig</span><span class="p">,</span> <span class="n">dto_field</span>
-</span><span data-line="8"><span class="hll"><span class="linenos"> 8</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.plugins.sqlalchemy</span><span class="w"> </span><span class="kn">import</span> <span class="n">SQLAlchemyDTO</span>
+</span><span data-line="4"><span class="hll"><span class="linenos"> 4</span><span class="kn">from</span><span class="w"> </span><span class="nn">advanced_alchemy.extensions.litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">SQLAlchemyDTO</span>
+</span></span><span data-line="5"><span class="linenos"> 5</span><span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy.orm</span><span class="w"> </span><span class="kn">import</span> <span class="n">Mapped</span><span class="p">,</span> <span class="n">mapped_column</span>
+</span><span data-line="6"><span class="linenos"> 6</span>
+</span><span data-line="7"><span class="linenos"> 7</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">post</span>
+</span><span data-line="8"><span class="hll"><span class="linenos"> 8</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.dto</span><span class="w"> </span><span class="kn">import</span> <span class="n">DTOConfig</span><span class="p">,</span> <span class="n">dto_field</span>
 </span></span><span data-line="9"><span class="linenos"> 9</span>
 </span><span data-line="10"><span class="linenos">10</span><span class="kn">from</span><span class="w"> </span><span class="nn">.my_lib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Base</span>
 </span><span data-line="11"><span class="linenos">11</span>
@@ -846,7 +837,7 @@ type parameter of <code class="docutils literal notranslate"><span class="pre">a
 <div class="admonition">
 <p class="admonition-title">Run it</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span data-line="1">&gt;<span class="w"> </span>curl<span class="w"> </span>http://127.0.0.1:8000/users<span class="w"> </span>-H<span class="w"> </span>Content-Type:<span class="w"> </span>application/json<span class="w"> </span>-d<span class="w"> </span><span class="o">{</span><span class="s2">&quot;firstName&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span>,<span class="s2">&quot;password&quot;</span>:<span class="s2">&quot;xyz&quot;</span>,<span class="s2">&quot;createdAt&quot;</span>:<span class="s2">&quot;2023-04-24T00:00:00Z&quot;</span><span class="o">}</span>
-</span><span data-line="2"><span class="o">{</span><span class="s2">&quot;createdAt&quot;</span>:<span class="s2">&quot;0001-01-01T00:00:00&quot;</span>,<span class="s2">&quot;id&quot;</span>:<span class="s2">&quot;ef4e886f-5d72-4f11-950a-1aa41edfb0c0&quot;</span>,<span class="s2">&quot;firstName&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span><span class="o">}</span>
+</span><span data-line="2"><span class="o">{</span><span class="s2">&quot;createdAt&quot;</span>:<span class="s2">&quot;0001-01-01T00:00:00&quot;</span>,<span class="s2">&quot;id&quot;</span>:<span class="s2">&quot;b6f609f7-2bc7-47ed-bea8-77bcd5a057bf&quot;</span>,<span class="s2">&quot;firstName&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span><span class="o">}</span>
 </span></pre></div>
 </div>
 </div>
@@ -862,11 +853,11 @@ to it, the DTO will only accept <code class="docutils literal notranslate"><span
 <div class="code-block-caption"><span class="caption-text">Type checking</span><a class="headerlink" href="#id7" title="Link to this code">¶</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="linenos"> 1</span><span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span>
 </span><span data-line="2"><span class="linenos"> 2</span>
-</span><span data-line="3"><span class="linenos"> 3</span><span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy.orm</span><span class="w"> </span><span class="kn">import</span> <span class="n">Mapped</span><span class="p">,</span> <span class="n">mapped_column</span>
-</span><span data-line="4"><span class="linenos"> 4</span>
-</span><span data-line="5"><span class="linenos"> 5</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">post</span>
-</span><span data-line="6"><span class="linenos"> 6</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.dto</span><span class="w"> </span><span class="kn">import</span> <span class="n">dto_field</span>
-</span><span data-line="7"><span class="linenos"> 7</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.plugins.sqlalchemy</span><span class="w"> </span><span class="kn">import</span> <span class="n">SQLAlchemyDTO</span>
+</span><span data-line="3"><span class="linenos"> 3</span><span class="kn">from</span><span class="w"> </span><span class="nn">advanced_alchemy.extensions.litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">SQLAlchemyDTO</span>
+</span><span data-line="4"><span class="linenos"> 4</span><span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy.orm</span><span class="w"> </span><span class="kn">import</span> <span class="n">Mapped</span><span class="p">,</span> <span class="n">mapped_column</span>
+</span><span data-line="5"><span class="linenos"> 5</span>
+</span><span data-line="6"><span class="linenos"> 6</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">post</span>
+</span><span data-line="7"><span class="linenos"> 7</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.dto</span><span class="w"> </span><span class="kn">import</span> <span class="n">dto_field</span>
 </span><span data-line="8"><span class="linenos"> 8</span>
 </span><span data-line="9"><span class="linenos"> 9</span><span class="kn">from</span><span class="w"> </span><span class="nn">.my_lib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Base</span>
 </span><span data-line="10"><span class="linenos">10</span>
@@ -915,12 +906,12 @@ of <code class="docutils literal notranslate"><span class="pre">1</span></code> 
 </span><span data-line="3"><span class="linenos"> 3</span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Annotated</span>
 </span><span data-line="4"><span class="linenos"> 4</span><span class="kn">from</span><span class="w"> </span><span class="nn">uuid</span><span class="w"> </span><span class="kn">import</span> <span class="n">UUID</span>
 </span><span data-line="5"><span class="linenos"> 5</span>
-</span><span data-line="6"><span class="linenos"> 6</span><span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy</span><span class="w"> </span><span class="kn">import</span> <span class="n">ForeignKey</span>
-</span><span data-line="7"><span class="linenos"> 7</span><span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy.orm</span><span class="w"> </span><span class="kn">import</span> <span class="n">Mapped</span><span class="p">,</span> <span class="n">mapped_column</span><span class="p">,</span> <span class="n">relationship</span>
-</span><span data-line="8"><span class="linenos"> 8</span>
-</span><span data-line="9"><span class="linenos"> 9</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">put</span>
-</span><span data-line="10"><span class="linenos">10</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.dto</span><span class="w"> </span><span class="kn">import</span> <span class="n">DTOConfig</span>
-</span><span data-line="11"><span class="linenos">11</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.plugins.sqlalchemy</span><span class="w"> </span><span class="kn">import</span> <span class="n">SQLAlchemyDTO</span>
+</span><span data-line="6"><span class="linenos"> 6</span><span class="kn">from</span><span class="w"> </span><span class="nn">advanced_alchemy.extensions.litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">SQLAlchemyDTO</span>
+</span><span data-line="7"><span class="linenos"> 7</span><span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy</span><span class="w"> </span><span class="kn">import</span> <span class="n">ForeignKey</span>
+</span><span data-line="8"><span class="linenos"> 8</span><span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy.orm</span><span class="w"> </span><span class="kn">import</span> <span class="n">Mapped</span><span class="p">,</span> <span class="n">mapped_column</span><span class="p">,</span> <span class="n">relationship</span>
+</span><span data-line="9"><span class="linenos"> 9</span>
+</span><span data-line="10"><span class="linenos">10</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">put</span>
+</span><span data-line="11"><span class="linenos">11</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.dto</span><span class="w"> </span><span class="kn">import</span> <span class="n">DTOConfig</span>
 </span><span data-line="12"><span class="linenos">12</span>
 </span><span data-line="13"><span class="linenos">13</span><span class="kn">from</span><span class="w"> </span><span class="nn">.my_lib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Base</span>
 </span><span data-line="14"><span class="linenos">14</span>
@@ -1057,7 +1048,7 @@ handler.</p>
 <div class="admonition">
 <p class="admonition-title">Run it</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span data-line="1">&gt;<span class="w"> </span>curl<span class="w"> </span>http://127.0.0.1:8000/users<span class="w"> </span>-H<span class="w"> </span>Content-Type:<span class="w"> </span>application/json<span class="w"> </span>-d<span class="w"> </span><span class="o">{</span><span class="s2">&quot;name&quot;</span>:<span class="s2">&quot;Peter&quot;</span>,<span class="s2">&quot;email&quot;</span>:<span class="w"> </span><span class="s2">&quot;peter@example.com&quot;</span>,<span class="w"> </span><span class="s2">&quot;age&quot;</span>:41<span class="o">}</span>
-</span><span data-line="2"><span class="o">{</span><span class="s2">&quot;name&quot;</span>:<span class="s2">&quot;Peter&quot;</span>,<span class="s2">&quot;email&quot;</span>:<span class="s2">&quot;peter@example.com&quot;</span>,<span class="s2">&quot;age&quot;</span>:41,<span class="s2">&quot;id&quot;</span>:<span class="s2">&quot;dd491adb-dcdd-4c35-8167-05573f7b09fa&quot;</span><span class="o">}</span>
+</span><span data-line="2"><span class="o">{</span><span class="s2">&quot;name&quot;</span>:<span class="s2">&quot;Peter&quot;</span>,<span class="s2">&quot;email&quot;</span>:<span class="s2">&quot;peter@example.com&quot;</span>,<span class="s2">&quot;age&quot;</span>:41,<span class="s2">&quot;id&quot;</span>:<span class="s2">&quot;fc68ec05-eee7-4447-9e6f-927eee3ea476&quot;</span><span class="o">}</span>
 </span></pre></div>
 </div>
 </div>
@@ -1103,7 +1094,7 @@ type of the data that it will contain, and provides useful methods for interacti
 <div class="admonition">
 <p class="admonition-title">Run it</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span data-line="1">&gt;<span class="w"> </span>curl<span class="w"> </span>http://127.0.0.1:8000/users<span class="w"> </span>-H<span class="w"> </span>Content-Type:<span class="w"> </span>application/json<span class="w"> </span>-d<span class="w"> </span><span class="o">{</span><span class="s2">&quot;name&quot;</span>:<span class="s2">&quot;Peter&quot;</span>,<span class="w"> </span><span class="s2">&quot;email&quot;</span>:<span class="w"> </span><span class="s2">&quot;peter@example.com&quot;</span>,<span class="w"> </span><span class="s2">&quot;age&quot;</span>:41<span class="o">}</span>
-</span><span data-line="2"><span class="o">{</span><span class="s2">&quot;name&quot;</span>:<span class="s2">&quot;Peter&quot;</span>,<span class="s2">&quot;email&quot;</span>:<span class="s2">&quot;peter@example.com&quot;</span>,<span class="s2">&quot;age&quot;</span>:41,<span class="s2">&quot;id&quot;</span>:<span class="s2">&quot;811134ea-dab6-499f-9667-03d8cc6ec3e0&quot;</span><span class="o">}</span>
+</span><span data-line="2"><span class="o">{</span><span class="s2">&quot;name&quot;</span>:<span class="s2">&quot;Peter&quot;</span>,<span class="s2">&quot;email&quot;</span>:<span class="s2">&quot;peter@example.com&quot;</span>,<span class="s2">&quot;age&quot;</span>:41,<span class="s2">&quot;id&quot;</span>:<span class="s2">&quot;0db4ab07-c925-478d-85d9-bf4a5e451923&quot;</span><span class="o">}</span>
 </span></pre></div>
 </div>
 </div>
@@ -1310,11 +1301,11 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 </span><span data-line="2"><span class="linenos"> 2</span><span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span>
 </span><span data-line="3"><span class="linenos"> 3</span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Generic</span><span class="p">,</span> <span class="n">TypeVar</span>
 </span><span data-line="4"><span class="linenos"> 4</span>
-</span><span data-line="5"><span class="linenos"> 5</span><span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy.orm</span><span class="w"> </span><span class="kn">import</span> <span class="n">Mapped</span>
-</span><span data-line="6"><span class="linenos"> 6</span>
-</span><span data-line="7"><span class="linenos"> 7</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
-</span><span data-line="8"><span class="linenos"> 8</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.dto</span><span class="w"> </span><span class="kn">import</span> <span class="n">DTOConfig</span>
-</span><span data-line="9"><span class="linenos"> 9</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.plugins.sqlalchemy</span><span class="w"> </span><span class="kn">import</span> <span class="n">SQLAlchemyDTO</span>
+</span><span data-line="5"><span class="linenos"> 5</span><span class="kn">from</span><span class="w"> </span><span class="nn">advanced_alchemy.extensions.litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">SQLAlchemyDTO</span>
+</span><span data-line="6"><span class="linenos"> 6</span><span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy.orm</span><span class="w"> </span><span class="kn">import</span> <span class="n">Mapped</span>
+</span><span data-line="7"><span class="linenos"> 7</span>
+</span><span data-line="8"><span class="linenos"> 8</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
+</span><span data-line="9"><span class="linenos"> 9</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.dto</span><span class="w"> </span><span class="kn">import</span> <span class="n">DTOConfig</span>
 </span><span data-line="10"><span class="linenos">10</span>
 </span><span data-line="11"><span class="linenos">11</span><span class="kn">from</span><span class="w"> </span><span class="nn">.my_lib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Base</span>
 </span><span data-line="12"><span class="linenos">12</span>
@@ -1366,11 +1357,11 @@ Python 3.12+</label><div class="sd-tab-content docutils">
 </span><span data-line="2"><span class="linenos"> 2</span><span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span>
 </span><span data-line="3"><span class="linenos"> 3</span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TypeVar</span>
 </span><span data-line="4"><span class="linenos"> 4</span>
-</span><span data-line="5"><span class="linenos"> 5</span><span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy.orm</span><span class="w"> </span><span class="kn">import</span> <span class="n">Mapped</span>
-</span><span data-line="6"><span class="linenos"> 6</span>
-</span><span data-line="7"><span class="linenos"> 7</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
-</span><span data-line="8"><span class="linenos"> 8</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.dto</span><span class="w"> </span><span class="kn">import</span> <span class="n">DTOConfig</span>
-</span><span data-line="9"><span class="linenos"> 9</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.plugins.sqlalchemy</span><span class="w"> </span><span class="kn">import</span> <span class="n">SQLAlchemyDTO</span>
+</span><span data-line="5"><span class="linenos"> 5</span><span class="kn">from</span><span class="w"> </span><span class="nn">advanced_alchemy.extensions.litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">SQLAlchemyDTO</span>
+</span><span data-line="6"><span class="linenos"> 6</span><span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy.orm</span><span class="w"> </span><span class="kn">import</span> <span class="n">Mapped</span>
+</span><span data-line="7"><span class="linenos"> 7</span>
+</span><span data-line="8"><span class="linenos"> 8</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
+</span><span data-line="9"><span class="linenos"> 9</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.dto</span><span class="w"> </span><span class="kn">import</span> <span class="n">DTOConfig</span>
 </span><span data-line="10"><span class="linenos">10</span>
 </span><span data-line="11"><span class="linenos">11</span><span class="kn">from</span><span class="w"> </span><span class="nn">.my_lib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Base</span>
 </span><span data-line="12"><span class="linenos">12</span>
@@ -1505,12 +1496,12 @@ generic wrapper that is a type supported by the DTO.</p></li>
 <div class="code-block-caption"><span class="caption-text">Paginated Return Data</span><a class="headerlink" href="#id12" title="Link to this code">¶</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="linenos"> 1</span><span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span>
 </span><span data-line="2"><span class="linenos"> 2</span>
-</span><span data-line="3"><span class="linenos"> 3</span><span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy.orm</span><span class="w"> </span><span class="kn">import</span> <span class="n">Mapped</span>
-</span><span data-line="4"><span class="linenos"> 4</span>
-</span><span data-line="5"><span class="linenos"> 5</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
-</span><span data-line="6"><span class="linenos"> 6</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.dto</span><span class="w"> </span><span class="kn">import</span> <span class="n">DTOConfig</span>
-</span><span data-line="7"><span class="linenos"> 7</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.pagination</span><span class="w"> </span><span class="kn">import</span> <span class="n">ClassicPagination</span>
-</span><span data-line="8"><span class="linenos"> 8</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.plugins.sqlalchemy</span><span class="w"> </span><span class="kn">import</span> <span class="n">SQLAlchemyDTO</span>
+</span><span data-line="3"><span class="linenos"> 3</span><span class="kn">from</span><span class="w"> </span><span class="nn">advanced_alchemy.extensions.litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">SQLAlchemyDTO</span>
+</span><span data-line="4"><span class="linenos"> 4</span><span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy.orm</span><span class="w"> </span><span class="kn">import</span> <span class="n">Mapped</span>
+</span><span data-line="5"><span class="linenos"> 5</span>
+</span><span data-line="6"><span class="linenos"> 6</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
+</span><span data-line="7"><span class="linenos"> 7</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.dto</span><span class="w"> </span><span class="kn">import</span> <span class="n">DTOConfig</span>
+</span><span data-line="8"><span class="linenos"> 8</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.pagination</span><span class="w"> </span><span class="kn">import</span> <span class="n">ClassicPagination</span>
 </span><span data-line="9"><span class="linenos"> 9</span>
 </span><span data-line="10"><span class="linenos">10</span><span class="kn">from</span><span class="w"> </span><span class="nn">.my_lib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Base</span>
 </span><span data-line="11"><span class="linenos">11</span>
@@ -1599,11 +1590,11 @@ by Litestar’s serialization process.</p>
 <div class="code-block-caption"><span class="caption-text">Response Wrapped Return Data</span><a class="headerlink" href="#id13" title="Link to this code">¶</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="linenos"> 1</span><span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span>
 </span><span data-line="2"><span class="linenos"> 2</span>
-</span><span data-line="3"><span class="linenos"> 3</span><span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy.orm</span><span class="w"> </span><span class="kn">import</span> <span class="n">Mapped</span>
-</span><span data-line="4"><span class="linenos"> 4</span>
-</span><span data-line="5"><span class="linenos"> 5</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">Response</span><span class="p">,</span> <span class="n">get</span>
-</span><span data-line="6"><span class="linenos"> 6</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.dto</span><span class="w"> </span><span class="kn">import</span> <span class="n">DTOConfig</span>
-</span><span data-line="7"><span class="linenos"> 7</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.plugins.sqlalchemy</span><span class="w"> </span><span class="kn">import</span> <span class="n">SQLAlchemyDTO</span>
+</span><span data-line="3"><span class="linenos"> 3</span><span class="kn">from</span><span class="w"> </span><span class="nn">advanced_alchemy.extensions.litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">SQLAlchemyDTO</span>
+</span><span data-line="4"><span class="linenos"> 4</span><span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy.orm</span><span class="w"> </span><span class="kn">import</span> <span class="n">Mapped</span>
+</span><span data-line="5"><span class="linenos"> 5</span>
+</span><span data-line="6"><span class="linenos"> 6</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">Response</span><span class="p">,</span> <span class="n">get</span>
+</span><span data-line="7"><span class="linenos"> 7</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.dto</span><span class="w"> </span><span class="kn">import</span> <span class="n">DTOConfig</span>
 </span><span data-line="8"><span class="linenos"> 8</span>
 </span><span data-line="9"><span class="linenos"> 9</span><span class="kn">from</span><span class="w"> </span><span class="nn">.my_lib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Base</span>
 </span><span data-line="10"><span class="linenos">10</span>

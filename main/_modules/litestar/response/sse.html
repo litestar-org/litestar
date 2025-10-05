@@ -268,14 +268,6 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l3"><a class="reference internal" href="../../../reference/contrib/jinja.html">jinja</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../reference/contrib/mako.html">mako</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../reference/contrib/opentelemetry.html">opentelemetry</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../reference/contrib/sqlalchemy/index.html">sqlalchemy</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../../../reference/contrib/sqlalchemy/plugins.html">plugins</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../reference/contrib/sqlalchemy/repository.html">repository</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../reference/contrib/sqlalchemy/types.html">types</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../reference/contrib/sqlalchemy/base.html">base</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../reference/contrib/sqlalchemy/dto.html">DTO</a></li>
-</ul>
-</li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../../reference/controller.html">controller</a></li>
@@ -339,7 +331,6 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l3"><a class="reference internal" href="../../../reference/plugins/prometheus.html">prometheus</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../reference/plugins/pydantic.html">pydantic</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../reference/plugins/structlog.html">structlog</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../reference/plugins/sqlalchemy.html">sqlalchemy</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../../reference/repository/index.html">repository</a><ul>
@@ -611,7 +602,7 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="91">
 </span><span data-line="92">
 <div class="viewcode-block" id="ServerSentEventMessage">
-<a class="viewcode-back" href="../../../reference/response/index.html#litestar.response.ServerSentEventMessage">[docs]</a>
+<a class="viewcode-back" href="../../../reference/response/sse.html#litestar.response.ServerSentEventMessage">[docs]</a>
 </span><span data-line="93"><span class="nd">@dataclass</span>
 </span><span data-line="94"><span class="k">class</span><span class="w"> </span><span class="nc">ServerSentEventMessage</span><span class="p">:</span>
 </span><span data-line="95">    <span class="n">data</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">bytes</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
@@ -652,10 +643,10 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="129">
 </span><span data-line="130">
 <div class="viewcode-block" id="ServerSentEvent">
-<a class="viewcode-back" href="../../../reference/response/index.html#litestar.response.ServerSentEvent">[docs]</a>
+<a class="viewcode-back" href="../../../reference/response/sse.html#litestar.response.ServerSentEvent">[docs]</a>
 </span><span data-line="131"><span class="k">class</span><span class="w"> </span><span class="nc">ServerSentEvent</span><span class="p">(</span><span class="n">Stream</span><span class="p">):</span>
 <div class="viewcode-block" id="ServerSentEvent.__init__">
-<a class="viewcode-back" href="../../../reference/response/index.html#litestar.response.ServerSentEvent.__init__">[docs]</a>
+<a class="viewcode-back" href="../../../reference/response/sse.html#litestar.response.ServerSentEvent.__init__">[docs]</a>
 </span><span data-line="132">    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
 </span><span data-line="133">        <span class="bp">self</span><span class="p">,</span>
 </span><span data-line="134">        <span class="n">content</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">bytes</span> <span class="o">|</span> <span class="n">StreamType</span><span class="p">[</span><span class="n">SSEData</span><span class="p">],</span>

@@ -268,14 +268,6 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l3"><a class="reference internal" href="../../reference/contrib/jinja.html">jinja</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/contrib/mako.html">mako</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/contrib/opentelemetry.html">opentelemetry</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../reference/contrib/sqlalchemy/index.html">sqlalchemy</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../../reference/contrib/sqlalchemy/plugins.html">plugins</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../reference/contrib/sqlalchemy/repository.html">repository</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../reference/contrib/sqlalchemy/types.html">types</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../reference/contrib/sqlalchemy/base.html">base</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../reference/contrib/sqlalchemy/dto.html">DTO</a></li>
-</ul>
-</li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/controller.html">controller</a></li>
@@ -339,7 +331,6 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/prometheus.html">prometheus</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/pydantic.html">pydantic</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/structlog.html">structlog</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/sqlalchemy.html">sqlalchemy</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/repository/index.html">repository</a><ul>
@@ -467,7 +458,7 @@ data-aria-dark="Switch to auto color mode">
       <i class="i-lucide close"></i>
     </button>
     <div class="sy-scrollbar sy-rside-inner px-6 xl:top-16 xl:sticky xl:pl-0 pt-6 pb-4"><div class="localtoc"><h3>On this page</h3><ul>
-<li><a class="reference internal" href="#install-sqlalchemy">Install SQLAlchemy</a></li>
+<li><a class="reference internal" href="#install-sqlalchemy-via-advanced-alchemy">Install SQLAlchemy via Advanced Alchemy</a></li>
 <li><a class="reference internal" href="#what-s-in-this-tutorial">What&#8217;s in this tutorial?</a></li>
 <li><a class="reference internal" href="#contents">Contents</a></li>
 </ul>
@@ -533,15 +524,21 @@ handlers and dependency injection.</p>
 <p>If you are new to Litestar, it is recommended to first follow the
 <a class="reference external" href="../todo-app">Developing a basic TODO application</a> tutorial.</p>
 </div>
-<section id="install-sqlalchemy">
-<h2>Install SQLAlchemy<a class="headerlink" href="#install-sqlalchemy" title="Link to this heading">¶</a></h2>
-<p>To follow this tutorial, you will need SQLAlchemy installed. You can install it with <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">'sqlalchemy[aiosqlite]'</span></code>, or let
+<section id="install-sqlalchemy-via-advanced-alchemy">
+<h2>Install SQLAlchemy via Advanced Alchemy<a class="headerlink" href="#install-sqlalchemy-via-advanced-alchemy" title="Link to this heading">¶</a></h2>
+<p>To follow this tutorial, you will need Advanced Alchemy installed. You can install it with <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">advanced-alchemy[aiosqlite]'</span></code>, or let
 Litestar install it for you by installing the <code class="docutils literal notranslate"><span class="pre">sqlalchemy</span></code> extra (e.g., <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">'litestar[standard,sqlalchemy]'</span> <span class="pre">aiosqlite</span></code>).</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>SQLAlchemy support in Litestar is now provided by <a class="reference external" href="https://docs.advanced-alchemy.litestar.dev/">Advanced Alchemy</a>,
+a first-party library. All imports should use <code class="docutils literal notranslate"><span class="pre">advanced_alchemy.extensions.litestar</span></code> instead of the deprecated
+<code class="docutils literal notranslate"><span class="pre">litestar.contrib.sqlalchemy</span></code> or <code class="docutils literal notranslate"><span class="pre">litestar.plugins.sqlalchemy</span></code> modules.</p>
+</div>
 </section>
 <section id="what-s-in-this-tutorial">
 <h2>What’s in this tutorial?<a class="headerlink" href="#what-s-in-this-tutorial" title="Link to this heading">¶</a></h2>
 <p>This tutorial builds on the <a class="reference external" href="../todo-app">TODO app tutorial</a> by adding a database backend using
-<a class="reference external" href="https://www.sqlalchemy.org/">SQLAlchemy</a>.</p>
+<a class="reference external" href="https://www.sqlalchemy.org/">SQLAlchemy</a> via Advanced Alchemy.</p>
 <p>We start by comparing a refactored TODO app that leverages SQLAlchemy for data persistence to the TODO app from the
 <a class="reference external" href="../todo-app">TODO app tutorial</a>.</p>
 <p>We will then gradually improve on the design of our app by utilising more of Litestar’s features, such as dependency
