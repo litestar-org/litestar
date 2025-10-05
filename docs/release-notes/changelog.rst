@@ -7,6 +7,22 @@
     :date: 2024-08-30
 
 
+    .. change:: Remove all SQLAlchemy modules in favor of direct advanced-alchemy imports
+        :type: feature
+        :breaking:
+        :pr: TBD
+
+        Remove all SQLAlchemy functionality from Litestar. Both ``litestar.contrib.sqlalchemy``
+        and ``litestar.plugins.sqlalchemy`` modules have been completely removed. Users must now
+        import directly from ``advanced_alchemy.extensions.litestar``.
+
+        Migration:
+        - ``from litestar.contrib.sqlalchemy import X`` → ``from advanced_alchemy.extensions.litestar import X``
+        - ``from litestar.plugins.sqlalchemy import Y`` → ``from advanced_alchemy.extensions.litestar import Y``
+
+        This completes the separation of concerns, with advanced-alchemy being the sole provider
+        of SQLAlchemy integration for Litestar.
+
     .. change:: Remove deprecated ``litestar.contrib.prometheus`` module
         :type: feature
         :breaking:

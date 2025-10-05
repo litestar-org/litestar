@@ -47,7 +47,7 @@ Installation
     :doc:`Open Telemetry Instrumentation </usage/metrics/open-telemetry>`
         :code:`pip install 'litestar[opentelemetry]'`
 
-    :doc:`SQLAlchemy </usage/databases/sqlalchemy/index>`
+    :doc:`SQLAlchemy </usage/databases/sqlalchemy/index>` (via `Advanced-Alchemy <https://docs.advanced-alchemy.litestar.dev/latest/>`_)
         :code:`pip install 'litestar[sqlalchemy]'`
 
     :doc:`Jinja Templating </usage/templating>`

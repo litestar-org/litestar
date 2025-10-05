@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 import pytest
+from advanced_alchemy.extensions.litestar import SQLAlchemySerializationPlugin
 from click import Group
 
 from litestar import Litestar, MediaType, get
@@ -12,7 +13,6 @@ from litestar.plugins import CLIPlugin, InitPlugin, OpenAPISchemaPlugin, PluginR
 from litestar.plugins.attrs import AttrsSchemaPlugin
 from litestar.plugins.core import MsgspecDIPlugin
 from litestar.plugins.pydantic import PydanticDIPlugin, PydanticInitPlugin, PydanticPlugin, PydanticSchemaPlugin
-from litestar.plugins.sqlalchemy import SQLAlchemySerializationPlugin
 from litestar.testing import create_test_client
 from litestar.typing import FieldDefinition
 

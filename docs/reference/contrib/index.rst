@@ -7,4 +7,3 @@ contrib
     jinja
     mako
     opentelemetry
-    sqlalchemy/index

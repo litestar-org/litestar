@@ -10,17 +10,22 @@ Improving the TODO app with SQLAlchemy
     If you are new to Litestar, it is recommended to first follow the
     `Developing a basic TODO application <../todo-app>`_ tutorial.
 
-Install SQLAlchemy
-==================
+Install SQLAlchemy via Advanced Alchemy
+========================================
 
-To follow this tutorial, you will need SQLAlchemy installed. You can install it with ``pip install 'sqlalchemy[aiosqlite]'``, or let
+To follow this tutorial, you will need Advanced Alchemy installed. You can install it with ``pip install advanced-alchemy[aiosqlite]'``, or let
 Litestar install it for you by installing the ``sqlalchemy`` extra (e.g., ``pip install 'litestar[standard,sqlalchemy]' aiosqlite``).
+
+.. note::
+    SQLAlchemy support in Litestar is now provided by `Advanced Alchemy <https://docs.advanced-alchemy.litestar.dev/>`_,
+    a first-party library. All imports should use ``advanced_alchemy.extensions.litestar`` instead of the deprecated
+    ``litestar.contrib.sqlalchemy`` or ``litestar.plugins.sqlalchemy`` modules.
 
 What's in this tutorial?
 ========================
 
 This tutorial builds on the `TODO app tutorial <../todo-app>`_ by adding a database backend using
-`SQLAlchemy <https://www.sqlalchemy.org/>`_.
+`SQLAlchemy <https://www.sqlalchemy.org/>`_ via Advanced Alchemy.
 
 We start by comparing a refactored TODO app that leverages SQLAlchemy for data persistence to the TODO app from the
 `TODO app tutorial <../todo-app>`_.
