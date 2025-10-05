@@ -1784,6 +1784,21 @@ the <a class="reference external" href="https://datatracker.ietf.org/doc/draft-i
 </div>
 <p>The only required configuration kwarg is <code class="docutils literal notranslate"><span class="pre">rate_limit</span></code>, which expects a tuple containing a time-unit (<code class="docutils literal notranslate"><span class="pre">&quot;second&quot;</span></code>,
 <code class="docutils literal notranslate"><span class="pre">&quot;minute&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;hour&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;day&quot;</span></code>) and a value for the request quota (integer).</p>
+<section id="using-behind-a-proxy">
+<h3>Using behind a proxy<a class="headerlink" href="#using-behind-a-proxy" title="Link to this heading">#</a></h3>
+<p>The default mode for uniquely identifiying client uses the client’s address. When an
+application is running behind a proxy, that address will be the proxy’s, not the “real”
+address of the end-user.</p>
+<p>While there are special headers set by proxies to retrieve the remote client’s actual
+address (<code class="docutils literal notranslate"><span class="pre">X-FORWARDED-FOR</span></code>), their values should not implicitly be trusted, as any
+client is free to set them to whatever value they want. A rate-limit could easily be
+circumvented by spoofing these, and simply attaching a new, random address to each
+request.</p>
+<p>The best way to handle applications running behind a proxy is to use a middleware that
+updates the client’s address in a secure way, such as uvicorn’s
+<a class="reference external" href="https://github.com/encode/uvicorn/blob/master/uvicorn/middleware/proxy_headers.py">ProxyHeaderMiddleware</a>
+or hypercon’s <a class="reference external" href="https://hypercorn.readthedocs.io/en/latest/how_to_guides/proxy_fix.html">ProxyFixMiddleware</a> .</p>
+</section>
 </section>
 <section id="logging-middleware">
 <h2>Logging Middleware<a class="headerlink" href="#logging-middleware" title="Link to this heading">#</a></h2>
@@ -1877,6 +1892,8 @@ offering client- and server-side sessions. Server-side sessions are backed by Li
 <li><p>In memory sessions</p></li>
 <li><p>File based sessions</p></li>
 <li><p>Redis based sessions</p></li>
+<li><p>Valkey based sessions</p></li>
+<li><p>Database based <a class="reference external" href="https://docs.advanced-alchemy.litestar.dev/latest/usage/frameworks/litestar.html#session-middleware" title="(in advanced_alchemy)"><span>Session Middleware</span></a></p></li>
 </ul>
 <section id="setting-up-the-middleware">
 <h3>Setting up the middleware<a class="headerlink" href="#setting-up-the-middleware" title="Link to this heading">#</a></h3>
@@ -2090,7 +2107,10 @@ and load the appropriate data from the store</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#brotli">Brotli</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#rate-limit-middleware">Rate-Limit Middleware</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#rate-limit-middleware">Rate-Limit Middleware</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#using-behind-a-proxy">Using behind a proxy</a></li>
+</ul>
+</li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#logging-middleware">Logging Middleware</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#obfuscating-logging-output">Obfuscating Logging Output</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#compression-and-logging-of-response-body">Compression and Logging of Response Body</a></li>

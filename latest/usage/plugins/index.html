@@ -1674,8 +1674,7 @@ that annotation.</p>
 <a class="reference external" href="https://www.sqlalchemy.org/">SQLAlchemy</a> models that is is provided in <code class="docutils literal notranslate"><span class="pre">advanced_alchemy</span></code>.</p>
 <div class="literal-block-wrapper docutils container" id="id6">
 <div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">SerializationPluginProtocol</span></code> implementation example</span><a class="headerlink" href="#id6" title="Link to this code">#</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># ruff: noqa: TC004</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
 
@@ -1840,7 +1839,7 @@ This happens during the application initialization process, after routes are cre
 
 <span class="k">class</span><span class="w"> </span><span class="nc">RouteLoggerPlugin</span><span class="p">(</span><span class="n">ReceiveRoutePlugin</span><span class="p">):</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">receive_route</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">route</span><span class="p">:</span> <span class="n">BaseRoute</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Route registered: </span><span class="si">{</span><span class="n">route</span><span class="o">.</span><span class="n">path</span><span class="si">}</span><span class="s2"> [</span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">route</span><span class="o">.</span><span class="n">http_methods</span><span class="p">)</span><span class="si">}</span><span class="s2">]&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Route registered: </span><span class="si">{</span><span class="n">route</span><span class="o">.</span><span class="n">path</span><span class="si">}</span><span class="s2"> [</span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">route</span><span class="o">.</span><span class="n">methods</span><span class="p">)</span><span class="si">}</span><span class="s2">]&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>

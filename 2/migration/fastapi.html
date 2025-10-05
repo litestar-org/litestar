@@ -1665,7 +1665,8 @@ FastAPI</label><div class="sd-tab-content docutils">
 <input id="sd-tab-item-4" name="sd-tab-set-1" type="radio">
 <label class="sd-tab-label" data-sync-group="tab" data-sync-id="litestar" for="sd-tab-item-4">
 Litestar</label><div class="sd-tab-content docutils">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">Provide</span><span class="p">,</span> <span class="n">get</span><span class="p">,</span> <span class="n">Router</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span><span class="p">,</span> <span class="n">Router</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">litestar.di</span><span class="w"> </span><span class="kn">import</span> <span class="n">Provide</span>
 
 
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">route_dependency</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span> <span class="o">...</span>
@@ -1709,15 +1710,14 @@ in the documentation:</p>
 </section>
 <section id="lifespan">
 <h2>Lifespan<a class="headerlink" href="#lifespan" title="Link to this heading">#</a></h2>
-<p>If you’re using an async context manager and pass parameters to it, most likely the order of parameters is inversed between FastAPI and Litestar.</p>
+<p>Litestar uses the same async context manager style as FastAPI, so the code does not need to be changed:</p>
 <div class="sd-tab-set docutils">
 <input checked="checked" id="sd-tab-item-5" name="sd-tab-set-2" type="radio">
 <label class="sd-tab-label" data-sync-group="tab" data-sync-id="fastapi" for="sd-tab-item-5">
 FastAPI</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@asynccontextmanager</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">lifespan</span><span class="p">(</span>
-    <span class="n">_app</span><span class="p">:</span> <span class="n">FastAPI</span><span class="p">,</span>
-    <span class="n">app_settings</span><span class="p">:</span> <span class="n">AppSettings</span><span class="p">,</span>
+    <span class="n">app</span><span class="p">:</span> <span class="n">FastAPI</span>
 <span class="p">):</span>
     <span class="c1"># Setup code here</span>
     <span class="k">yield</span>
@@ -1730,8 +1730,7 @@ FastAPI</label><div class="sd-tab-content docutils">
 Litestar</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@asynccontextmanager</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">lifespan</span><span class="p">(</span>
-    <span class="n">app_settings</span><span class="p">:</span> <span class="n">AppSettings</span><span class="p">,</span>
-    <span class="n">_app</span><span class="p">:</span> <span class="n">Litestar</span><span class="p">,</span>
+    <span class="n">app</span><span class="p">:</span> <span class="n">Litestar</span>
 <span class="p">):</span>
     <span class="c1"># Setup code here</span>
     <span class="k">yield</span>

@@ -1538,6 +1538,133 @@ document.write(`
                   
   <section id="litestar-2-changelog">
 <h1>Litestar 2 Changelog<a class="headerlink" href="#litestar-2-changelog" title="Link to this heading">#</a></h1>
+<section id="2.18.0">
+<h2>2.18.0<a class="headerlink" href="#2.18.0" title="Link to this heading">#</a></h2>
+<strong>Released: </strong>2025-10-05<section id="2.18.0-feature">
+<h3>Features<a class="headerlink" href="#2.18.0-feature" title="Link to this heading">#</a></h3>
+<dl>
+<dt>Deprecate <code class="docutils literal notranslate"><span class="pre">litestar.plugins.sqlalchemy</span></code> module<a class="headerlink reference internal" href="#2.18.0-deprecate" id="2.18.0-deprecate">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Deprecate the <code class="docutils literal notranslate"><span class="pre">litestar.plugins.sqlalchemy</span></code> module, which is scheduled for
+removal in v3.0.</p>
+<p>This deprecation follows the migration to advanced-alchemy. Users should update their imports:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Old (deprecated)</span>
+
+<span class="c1"># New</span>
+</pre></div>
+</div>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/4343">litestar-org/litestar#4343</a></span></p>
+</div>
+</dd>
+<dt>Add <code class="docutils literal notranslate"><span class="pre">round_trip</span></code> parameter to <code class="docutils literal notranslate"><span class="pre">PydanticPlugin</span></code><a class="headerlink reference internal" href="#2.18.0-add" id="2.18.0-add">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Add new <code class="docutils literal notranslate"><span class="pre">round_trip</span></code> parameter to
+<code class="xref py py-class docutils literal notranslate"><span class="pre">PydanticPlugin</span></code>, allowing correct
+serialization of types like <code class="docutils literal notranslate"><span class="pre">pydanctic.Json</span></code>.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/4349">litestar-org/litestar#4349</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/4350">litestar-org/litestar#4350</a></span></p>
+</div>
+</dd>
+</dl>
+</section>
+<section id="2.18.0-bugfix">
+<h3>Bugfixes<a class="headerlink" href="#2.18.0-bugfix" title="Link to this heading">#</a></h3>
+<dl>
+<dt>Fix header spoofing vulnerability in <code class="docutils literal notranslate"><span class="pre">RateLimitMiddleware</span></code> that allowed bypassing client-specific rate limits<a class="headerlink reference internal" href="#2.18.0-fix header spoofing vulnerability in" id="2.18.0-fix header spoofing vulnerability in">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Fix a vulnerability in
+<a class="reference internal" href="../reference/middleware/rate_limit.html#litestar.middleware.rate_limit.RateLimitMiddleware" title="litestar.middleware.rate_limit.RateLimitMiddleware"><code class="xref py py-class docutils literal notranslate"><span class="pre">RateLimitMiddleware</span></code></a> that allowed
+clients to bypass the limit by spoofing the <code class="docutils literal notranslate"><span class="pre">X-FORWARDED-FOR</span></code> header.</p>
+<p><strong>Who is affected?</strong></p>
+<p>All usages of the <code class="docutils literal notranslate"><span class="pre">RateLimitMiddleware</span></code> that did not customize
+<code class="docutils literal notranslate"><span class="pre">RateLimitMiddleware.cache_key_from_request</span></code>.</p>
+<p><strong>What needs to be done?</strong></p>
+<p>The middleware has been fixed to remove this particular vulnerability, by
+ignoring the <code class="docutils literal notranslate"><span class="pre">X-FORWARDED-FOR</span></code> header when determining a client’s identity.
+If you are using <code class="docutils literal notranslate"><span class="pre">litestar&gt;=2.18.0</span></code>, nothing needs to be done.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Applications operating behind a proxy should consult
+<a class="reference internal" href="../usage/middleware/builtin-middleware.html#using-behind-a-proxy"><span class="std std-ref">Using behind a proxy</span></a> on how to
+obtain reliable client identification in such cases.</p>
+</div>
+<p>References: </p>
+</div>
+</dd>
+<dt>OpenAPI: Fix broken Typescript export for <code class="docutils literal notranslate"><span class="pre">NotRequired</span></code><a class="headerlink reference internal" href="#2.18.0-openapi: fix broken typescript export for" id="2.18.0-openapi: fix broken typescript export for">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Fix a bug that would result in broken Typescript type definition for a model
+using <code class="docutils literal notranslate"><span class="pre">NotRequired</span></code></p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/4198">litestar-org/litestar#4198</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/4318">litestar-org/litestar#4318</a></span></p>
+</div>
+</dd>
+<dt>CLI: Fix command registration<a class="headerlink reference internal" href="#2.18.0-cli: fix command registration" id="2.18.0-cli: fix command registration">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Fix an issue where CLI plugins no longer appear in the command help text
+after recent updates to <code class="docutils literal notranslate"><span class="pre">rich-click</span></code> and <code class="docutils literal notranslate"><span class="pre">click</span></code>.</p>
+<p>Ensure plugins load before rendering the help text so they appear in the
+formatted help output.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/4298">litestar-org/litestar#4298</a></span></p>
+</div>
+</dd>
+<dt>Remove fix polyfactory deprecation warning<a class="headerlink reference internal" href="#2.18.0-remove fix polyfactory deprecation warning" id="2.18.0-remove fix polyfactory deprecation warning">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Fix a deprecation warning from polyfactory caused by a changed default value.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/4292">litestar-org/litestar#4292</a></span></p>
+</div>
+</dd>
+<dt>Ensure <code class="docutils literal notranslate"><span class="pre">MethodNotAllowedException</span></code> properly sets <code class="docutils literal notranslate"><span class="pre">Allow</span></code> header during routing<a class="headerlink reference internal" href="#2.18.0-ensure" id="2.18.0-ensure">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Ensure <a class="reference internal" href="../reference/exceptions.html#litestar.exceptions.MethodNotAllowedException" title="litestar.exceptions.MethodNotAllowedException"><code class="xref py py-exc docutils literal notranslate"><span class="pre">MethodNotAllowedException</span></code></a> exceptions raised during routing
+always includes an <code class="docutils literal notranslate"><span class="pre">Allow</span></code> header.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/4277">litestar-org/litestar#4277</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/4289">litestar-org/litestar#4289</a></span></p>
+</div>
+</dd>
+<dt>Preserve empty strings in <code class="docutils literal notranslate"><span class="pre">multipart/form-data</span></code> requests<a class="headerlink reference internal" href="#2.18.0-preserve empty strings in" id="2.18.0-preserve empty strings in">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Preserve empty strings in multipart forms instead of converting them to
+<a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a>.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/4204">litestar-org/litestar#4204</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/4271">litestar-org/litestar#4271</a></span></p>
+</div>
+</dd>
+<dt>OpenAPI: Regression - Fix missing constraints for <code class="docutils literal notranslate"><span class="pre">msgspec.Struct</span></code><a class="headerlink reference internal" href="#2.18.0-openapi: regression - fix missing constraints for" id="2.18.0-openapi: regression - fix missing constraints for">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Ensure constraints on set on an <code class="docutils literal notranslate"><span class="pre">msgspec.Struct</span></code> are always reflected in
+the OpenAPI schema, for simple (non-union, non-optional, non-nested) fields.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/3999">litestar-org/litestar#3999</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/4282">litestar-org/litestar#4282</a></span></p>
+</div>
+</dd>
+<dt>Fix <code class="docutils literal notranslate"><span class="pre">KeyError</span></code> when using <code class="docutils literal notranslate"><span class="pre">data</span></code> keyword argument in dependency function<a class="headerlink reference internal" href="#2.18.0-fix" id="2.18.0-fix">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Fix a <code class="docutils literal notranslate"><span class="pre">KeyError</span></code> that occured when a dependency function used the <code class="docutils literal notranslate"><span class="pre">data</span></code>
+keyword argument, if no <code class="docutils literal notranslate"><span class="pre">data</span></code> keyword argument was used in the handler
+requesting this dependency.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/4230">litestar-org/litestar#4230</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/4270">litestar-org/litestar#4270</a></span></p>
+</div>
+</dd>
+<dt>OpenAPI - Regression: Allow <code class="docutils literal notranslate"><span class="pre">Parameter</span></code> to set an Enum’s schema fields<a class="headerlink reference internal" href="#2.18.0-openapi - regression: allow" id="2.18.0-openapi - regression: allow">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Fix a bug introduced in <code class="docutils literal notranslate"><span class="pre">2.14.0</span></code> that would prevent an Enum field’s OpenAPI
+schema to be modified via <a class="reference internal" href="../reference/params.html#litestar.params.Parameter" title="litestar.params.Parameter"><code class="xref py py-func docutils literal notranslate"><span class="pre">Parameter()</span></code></a>.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/4250">litestar-org/litestar#4250</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/4251">litestar-org/litestar#4251</a></span></p>
+</div>
+</dd>
+<dt>CLI: Fix <code class="docutils literal notranslate"><span class="pre">TypeError</span></code> when passing <code class="docutils literal notranslate"><span class="pre">--help</span></code> and <cite>–app-dir`</cite> simultaneously<a class="headerlink reference internal" href="#2.18.0-cli: fix" id="2.18.0-cli: fix">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Fix a bug that would raise a <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.13)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">TypeError</span></code></a> when the CLI’s <code class="docutils literal notranslate"><span class="pre">--help</span></code> option
+was invoked, if the <code class="docutils literal notranslate"><span class="pre">--app-dir</span></code> option was also set.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/4331">litestar-org/litestar#4331</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/4341">litestar-org/litestar#4341</a></span></p>
+</div>
+</dd>
+<dt>CLI: Fix <code class="docutils literal notranslate"><span class="pre">--app-dir</span></code> being ignore on subsequent reloads when used together with <code class="docutils literal notranslate"><span class="pre">--reload</span></code> option<a class="headerlink reference internal" href="#2.18.0-cli: fix" id="2.18.0-cli: fix">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Fix a bug that would cause the <code class="docutils literal notranslate"><span class="pre">--app-dir</span></code> option to be ignored after the first
+reload, because it was not passed properly to uvicorn.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/4329">litestar-org/litestar#4329</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/4352">litestar-org/litestar#4352</a></span></p>
+</div>
+</dd>
+<dt>OpenAPI: Use <code class="docutils literal notranslate"><span class="pre">NotRequired</span></code> instead of <code class="docutils literal notranslate"><span class="pre">Optional</span></code> for values with a <code class="docutils literal notranslate"><span class="pre">default_factory</span></code><a class="headerlink reference internal" href="#2.18.0-openapi: use" id="2.18.0-openapi: use">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Fix a bug that would consider fields with a <code class="docutils literal notranslate"><span class="pre">default_factory</span></code> set to be
+<code class="docutils literal notranslate"><span class="pre">Optional</span></code> instead of <code class="docutils literal notranslate"><span class="pre">NotRequired</span></code>.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/4294">litestar-org/litestar#4294</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/4347">litestar-org/litestar#4347</a></span></p>
+</div>
+</dd>
+<dt>Fix <code class="docutils literal notranslate"><span class="pre">Stream</span></code> response being treated as <code class="docutils literal notranslate"><span class="pre">File</span></code> response in OpenAPI schema<a class="headerlink reference internal" href="#2.18.0-fix" id="2.18.0-fix">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Prevent handlers returning a <code class="docutils literal notranslate"><span class="pre">Stream</span></code> from falsely indicating a file
+response in the OpenAPI schema with file-specific headers such as
+<code class="docutils literal notranslate"><span class="pre">content-length</span></code>, <code class="docutils literal notranslate"><span class="pre">last-modified</span></code>, and <code class="docutils literal notranslate"><span class="pre">etag</span></code>.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/4371">litestar-org/litestar#4371</a></span></p>
+</div>
+</dd>
+</dl>
+</section>
+</section>
 <section id="2.17.0">
 <h2>2.17.0<a class="headerlink" href="#2.17.0" title="Link to this heading">#</a></h2>
 <strong>Released: </strong>2025-08-09<section id="2.17.0-feature">
@@ -4024,7 +4151,7 @@ stream and psycopg backends were not affected.</p>
 <p>Performance of threaded synchronous code was improved by using the async
 library’s native threading helpers instead of anyio. On asyncio,
 <a class="reference external" href="https://docs.python.org/3/library/asyncio-eventloop.html#asyncio.loop.run_in_executor" title="(in Python v3.13)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">asyncio.loop.run_in_executor()</span></code></a> is now used and on trio
-<a class="reference external" href="https://trio.readthedocs.io/en/stable/reference-core.html#trio.to_thread.run_sync" title="(in Trio v0.30.0)"><code class="xref py py-func docutils literal notranslate"><span class="pre">trio.to_thread.run_sync()</span></code></a>.</p>
+<a class="reference external" href="https://trio.readthedocs.io/en/stable/reference-core.html#trio.to_thread.run_sync" title="(in Trio v0.31.0)"><code class="xref py py-func docutils literal notranslate"><span class="pre">trio.to_thread.run_sync()</span></code></a>.</p>
 <p>Beneficiaries of these performance improvements are:</p>
 <ul class="simple">
 <li><p>Synchronous route handlers making use of <code class="docutils literal notranslate"><span class="pre">sync_to_thread=True</span></code></p></li>
@@ -7285,6 +7412,11 @@ the time it takes to <code class="docutils literal notranslate"><span class="pre
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#2.18.0">2.18.0</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#2.18.0-feature">Features</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#2.18.0-bugfix">Bugfixes</a></li>
+</ul>
+</li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#2.17.0">2.17.0</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#2.17.0-feature">Features</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#2.17.0-bugfix">Bugfixes</a></li>
