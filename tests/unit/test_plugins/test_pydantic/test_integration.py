@@ -442,7 +442,7 @@ def test_v2_computed_fields(with_dto: bool) -> None:
 def test_pydantic_v2_round_trip() -> None:
     class Submodel(pydantic_v2.BaseModel):
         bar: str
-        baz: list[int]
+        baz: List[int]
 
     class Model(pydantic_v2.BaseModel):
         foo: pydantic_v2.Json[Submodel]

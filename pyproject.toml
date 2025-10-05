@@ -163,7 +163,7 @@ docs = [
 ]
 linting = [
   "ruff>=0.2.1",
-  "mypy",
+  "mypy<1.17.0", # 1.17.0 dropped support for Python 3.8
   "pre-commit",
   "slotscheck",
   "codecov-cli",
@@ -417,6 +417,11 @@ lint.ignore = [
   "RUF012",  # Ruff-specific rule - annotated with classvar
   "ISC001",  # Ruff formatter incompatible
   "CPY001",  # ruff - copyright notice at the top of the file
+  "SIM108",  # Use ternary operator
+  "A005",    # Module shadows a built-in Python standard library module
+  "PLC0415", # `import` should be at the top-level of a file
+  "PLW1641", # Object does not implement `__hash__` method
+  "SIM103",  # 'Return the condition directly': This is a bit overzealous
 ]
 
 line-length = 120
@@ -454,6 +459,8 @@ known-first-party = ["litestar", "tests", "examples"]
 "litestar/handlers/**/*.*" = ["N801"]
 "litestar/handlers/websocket_handlers/listener.py" = ["B027"]
 "litestar/params.py" = ["N802"]
+"litestar/utils/predicates.py" = ["UP006", "UP035"]
+"litestar/utils/typing.py" = ["UP006", "UP035"]
 "test_apps/**/*.*" = ["D", "TRY", "EM", "S", "PTH"]
 "tests/**/*.*" = [
   "A",
@@ -482,8 +489,10 @@ known-first-party = ["litestar", "tests", "examples"]
 ]
 "tests/unit/test_contrib/test_sqlalchemy/**/*.*" = ["UP006"]
 "tests/unit/test_openapi/test_typescript_converter/test_converter.py" = ["W293"]
+"tests/unit/test_typing.py" = ["UP006", "UP035"]
 "tools/**/*.*" = ["D", "ARG", "EM", "TRY", "G", "FBT"]
 "tools/prepare_release.py" = ["S603", "S607"]
+"tests/*" = ["PLC0415", "UP045"]
 
 [tool.ruff.format]
 docstring-code-format = true

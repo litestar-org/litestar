@@ -1,4 +1,4 @@
-# ruff: noqa: UP006, UP007
+# ruff: noqa: UP006
 from __future__ import annotations
 
 import re
@@ -104,7 +104,7 @@ def _deserializer(target_type: Any, value: Any, default_deserializer: Callable[[
 class SignatureModel(Struct):
     """Model that represents a function signature that uses a msgspec specific type or types."""
 
-    _data_dto: ClassVar[Optional[Type[AbstractDTO]]]
+    _data_dto: ClassVar[Optional[Type[AbstractDTO]]]  # noqa: UP045
     _dependency_name_set: ClassVar[Set[str]]
     _fields: ClassVar[Dict[str, FieldDefinition]]
     _return_annotation: ClassVar[Any]
@@ -160,9 +160,9 @@ class SignatureModel(Struct):
                 message["source"] = ParamType.PATH
 
             elif key in cls._fields and isinstance(cls._fields[key].kwarg_definition, ParameterKwarg):
-                if cast(ParameterKwarg, cls._fields[key].kwarg_definition).cookie:
+                if cast("ParameterKwarg", cls._fields[key].kwarg_definition).cookie:
                     message["source"] = ParamType.COOKIE
-                elif cast(ParameterKwarg, cls._fields[key].kwarg_definition).header:
+                elif cast("ParameterKwarg", cls._fields[key].kwarg_definition).header:
                     message["source"] = ParamType.HEADER
                 else:
                     message["source"] = ParamType.QUERY

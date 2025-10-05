@@ -1,4 +1,3 @@
-# ruff: noqa: UP006
 from __future__ import annotations
 
 from typing import Any, Collection, Generator, TypeVar, get_type_hints

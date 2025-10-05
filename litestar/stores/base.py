@@ -112,7 +112,7 @@ class NamespacedStore(Store):
 class StorageObject(Struct):
     """:class:`msgspec.Struct` to store serialized data alongside with their expiry time."""
 
-    expires_at: Optional[datetime]  # noqa: UP007
+    expires_at: Optional[datetime]  # noqa: UP045
     data: bytes
 
     @classmethod
