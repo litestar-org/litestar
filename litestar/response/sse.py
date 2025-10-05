@@ -8,7 +8,7 @@ from typing import TYPE_CHECKING, Any
 
 from litestar.concurrency import sync_to_thread
 from litestar.exceptions import ImproperlyConfiguredException
-from litestar.response.streaming import Stream, async_iterator_to_generator
+from litestar.response.streaming import Stream
 from litestar.utils import AsyncIteratorWrapper
 
 if TYPE_CHECKING:
@@ -19,10 +19,10 @@ _LINE_BREAK_RE = re.compile(r"\r\n|\r|\n")
 DEFAULT_SEPARATOR = "\r\n"
 
 
-class _ServerSentEventIterator(AsyncIteratorWrapper[bytes, None]):
+class _ServerSentEventIterator(AsyncIteratorWrapper[bytes]):
     __slots__ = ("comment_message", "content_async_iterator", "event_id", "event_type", "retry_duration")
 
-    content_async_iterator: AsyncGenerator[SSEData]
+    content_async_iterator: AsyncIterable[SSEData]
 
     def __init__(
         self,
@@ -58,10 +58,8 @@ class _ServerSentEventIterator(AsyncIteratorWrapper[bytes, None]):
             self.content_async_iterator = AsyncIteratorWrapper([content])
         elif isinstance(content, (Iterable, Iterator)):
             self.content_async_iterator = AsyncIteratorWrapper(content)
-        elif isinstance(content, (AsyncGenerator, AsyncIteratorWrapper)):
+        elif isinstance(content, AsyncIterable):
             self.content_async_iterator = content
-        elif isinstance(content, (AsyncIterable, AsyncIterator)):
-            self.content_async_iterator = async_iterator_to_generator(content)
         else:
             raise ImproperlyConfiguredException(f"Invalid type {type(content)} for ServerSentEvent")
 

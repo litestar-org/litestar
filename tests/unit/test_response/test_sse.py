@@ -1,6 +1,8 @@
+import pathlib
 from collections.abc import AsyncIterator, Iterator
 
 import anyio
+import httpx
 import pytest
 from httpx_sse import ServerSentEvent as HTTPXServerSentEvent
 from httpx_sse import aconnect_sse
@@ -9,8 +11,17 @@ from litestar import get
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.response import ServerSentEvent
 from litestar.response.sse import ServerSentEventMessage
-from litestar.testing import create_async_test_client
+from litestar.testing import create_async_test_client, subprocess_async_client
 from litestar.types import SSEData
+
+ROOT = pathlib.Path(__file__).parent
+APP = "demo:app"
+
+
+@pytest.fixture(name="async_client")
+async def fx_async_client() -> AsyncIterator[httpx.AsyncClient]:
+    async with subprocess_async_client(workdir=ROOT, app=APP) as client:
+        yield client
 
 
 async def test_sse_steaming_response() -> None:
@@ -96,28 +107,25 @@ async def test_various_sse_inputs(input: str, expected_events: list[HTTPXServerS
                 assert events[i].retry == expected_events[i].retry
 
 
-async def test_sse_cleanup() -> None:
-    shared_state = []
+async def test_sse_cleanup(async_client: httpx.AsyncClient, tmp_path: pathlib.Path) -> None:
+    file_content = "cleanup"
+    file_path = tmp_path / "cleanup_file.txt"
+    data = {
+        "file_path": str(file_path),
+        "file_content": file_content,
+    }
 
-    @get("/testme")
-    async def handler() -> ServerSentEvent:
-        async def numbers() -> AsyncIterator[SSEData]:
-            try:
-                yield 0
-                await anyio.sleep(5)
-                yield 1
-            finally:
-                shared_state.append(42)
+    assert not file_path.exists()
 
-        return ServerSentEvent(numbers(), event_type="special", event_id="123", retry_duration=1000)
-
-    async with create_async_test_client(handler) as client:
-        async with aconnect_sse(client, "GET", f"{client.base_url}/testme") as event_source:
-            async for sse in event_source.aiter_sse():
-                assert sse.data == "0"
+    async with aconnect_sse(async_client, "POST", "/cleanup", json=data) as event_source:
+        async for sse in event_source.aiter_sse():
+            async with await anyio.open_file(file_path, "r") as file:
+                assert sse.data == file_content
+                assert await file.read() == file_content
                 break
 
-    assert shared_state.pop() == 42
+    await anyio.sleep(3)
+    assert not file_path.exists()
 
 
 def test_invalid_content_type_raises() -> None:

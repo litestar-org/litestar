@@ -32,21 +32,6 @@ class ClientDisconnectError(Exception):
     """Exception raised when the client disconnects."""
 
 
-async def async_iterator_to_generator(
-    async_iterator: AsyncIterable[T],
-) -> AsyncGenerator[T, None]:
-    """Convert an async iterator or iterable to an async generator.
-
-    Args:
-        async_iterator: An async iterator or iterable.
-
-    Returns:
-        An async generator.
-    """
-    async for item in async_iterator:
-        yield item
-
-
 class ASGIStreamingResponse(ASGIResponse):
     """A streaming response."""
 
@@ -122,8 +107,8 @@ class ASGIStreamingResponse(ASGIResponse):
         async for chunk in self.iterator:
             if self.disconnect_event.is_set():
                 try:
-                    if hasattr(self.iterator, "content_async_iterator"):
-                        await self.iterator.content_async_iterator.athrow(ClientDisconnectError)  # pyright: ignore[reportAttributeAccessIssue]
+                    if isinstance(self.iterator.content_async_iterator, AsyncGenerator):  # type: ignore[attr-defined]
+                        await self.iterator.content_async_iterator.athrow(ClientDisconnectError)  # type: ignore[attr-defined]
                     elif isinstance(self.iterator, AsyncGenerator):
                         await self.iterator.athrow(ClientDisconnectError)
                 except (ClientDisconnectError, StopAsyncIteration):
