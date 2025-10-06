@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from asyncio import iscoroutinefunction
+import sys
 from collections import defaultdict, deque
 from collections.abc import Iterable as CollectionsIterable
 from dataclasses import is_dataclass
@@ -40,6 +40,13 @@ from litestar.utils.deprecation import warn_deprecation
 from litestar.utils.helpers import unwrap_partial
 from litestar.utils.typing import get_origin_or_inner_type
 
+if sys.version_info >= (3, 10):
+    from inspect import iscoroutinefunction
+else:  # pragma: no cover
+    # In Python 3.9, AsyncMock is not detected
+    # as a coroutine function, so one test was failing.
+    from asyncio import iscoroutinefunction
+
 if TYPE_CHECKING:
     from litestar.types.callable_types import AnyGenerator
     from litestar.types.protocols import DataclassProtocol
@@ -67,7 +74,7 @@ T = TypeVar("T")
 
 
 def is_async_callable(value: Callable[P, T]) -> TypeGuard[Callable[P, Awaitable[T]]]:
-    """Extend :func:`asyncio.iscoroutinefunction` to additionally detect async :func:`functools.partial` objects and
+    """Extend :func:`inspect.iscoroutinefunction` to additionally detect async :func:`functools.partial` objects and
     class instances with ``async def __call__()`` defined.
 
     Args:
