@@ -25,11 +25,18 @@ def test_format_is_enabled() -> None:
 
 def test_strtobool() -> None:
     assert strtobool("true") is True
+    assert strtobool("TRUE") is True
+    assert strtobool("True") is True
     assert strtobool("1") is True
     assert strtobool("yes") is True
+    assert strtobool("YES") is True
+    assert strtobool("Yes") is True
+
     assert strtobool("false") is False
     assert strtobool("0") is False
+    assert strtobool("no") is False
     assert strtobool("other") is False
+    assert strtobool("") is False
     assert strtobool(None) is False
 
 
