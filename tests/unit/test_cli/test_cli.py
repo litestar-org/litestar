@@ -2,7 +2,7 @@ from typing import TYPE_CHECKING
 
 import pytest
 
-from litestar.cli._utils import _format_is_enabled
+from litestar.cli._utils import _format_is_enabled, strtobool
 from litestar.cli.main import litestar_group as cli_command
 from tests.unit.test_cli import CREATE_APP_FILE_CONTENT
 from tests.unit.test_cli.conftest import CreateAppFileFixture
@@ -21,6 +21,16 @@ def test_format_is_enabled() -> None:
     assert _format_is_enabled(1) == "[green]Enabled[/]"
     assert _format_is_enabled(True) == "[green]Enabled[/]"
     assert _format_is_enabled("a") == "[green]Enabled[/]"
+
+
+def test_strtobool() -> None:
+    assert strtobool("true") is True
+    assert strtobool("1") is True
+    assert strtobool("yes") is True
+    assert strtobool("false") is False
+    assert strtobool("0") is False
+    assert strtobool("other") is False
+    assert strtobool(None) is False
 
 
 @pytest.mark.xdist_group("cli_autodiscovery")
