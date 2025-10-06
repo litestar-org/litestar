@@ -113,7 +113,7 @@ class LitestarEnv:
             dotenv.load_dotenv()
         app_path = app_path or getenv("LITESTAR_APP")
         app_name = getenv("LITESTAR_APP_NAME") or "Litestar"
-        quiet_console = getenv("LITESTAR_QUIET_CONSOLE") or False
+        quiet_console = strtobool(getenv("LITESTAR_QUIET_CONSOLE"))
         if app_path and getenv("LITESTAR_APP") is None:
             os.environ["LITESTAR_APP"] = app_path
         if app_path:
@@ -345,7 +345,7 @@ def _autodiscovery_paths(base_dir: Path, arbitrary: bool = True) -> Generator[Pa
 
 def _autodiscover_app(cwd: Path) -> LoadedApp:
     app_name = getenv("LITESTAR_APP_NAME") or "Litestar"
-    quiet_console = getenv("LITESTAR_QUIET_CONSOLE") or False
+    quiet_console = strtobool(getenv("LITESTAR_QUIET_CONSOLE"))
     for file_path in _autodiscovery_paths(cwd):
         import_path = _path_to_dotted_path(file_path.relative_to(cwd))
         module = importlib.import_module(import_path)
@@ -427,6 +427,14 @@ def show_app_info(app: Litestar) -> None:  # pragma: no cover
         table.add_row("Middlewares", ", ".join(middlewares))
 
     console.print(table)
+
+
+def strtobool(value: str | None) -> bool:
+    """Convert a string representation of truth to a boolean.
+
+    True values are: `1`, `true`, `yes`, `on` (case-insensitive).\n
+    Returns `False` for any other value or if value is None."""
+    return (value or "").lower() in ("1", "true", "yes")
 
 
 def validate_ssl_file_paths(certfile_arg: str | None, keyfile_arg: str | None) -> tuple[str, str] | tuple[None, None]:

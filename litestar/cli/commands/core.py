@@ -24,6 +24,7 @@ from litestar.cli._utils import (
     remove_default_schema_routes,
     remove_routes_with_patterns,
     show_app_info,
+    strtobool,
     validate_ssl_file_paths,
 )
 from litestar.routes import ASGIRoute, HTTPRoute, WebSocketRoute
@@ -234,7 +235,7 @@ def run_command(
 
     if pdb:
         os.environ["LITESTAR_PDB"] = "1"
-    quiet_console = os.getenv("LITESTAR_QUIET_CONSOLE") or False
+    quiet_console = strtobool(os.getenv("LITESTAR_QUIET_CONSOLE"))
     if not UVICORN_INSTALLED:
         console.print(
             r"uvicorn is not installed. Please install the standard group, litestar\[standard], to use this command."
