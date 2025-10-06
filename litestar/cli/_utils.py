@@ -432,8 +432,9 @@ def show_app_info(app: Litestar) -> None:  # pragma: no cover
 def strtobool(value: str | None) -> bool:
     """Convert a string representation of truth to a boolean.
 
-    True values are: `1`, `true`, `yes`, `on` (case-insensitive).\n
-    Returns `False` for any other value or if value is None."""
+    True values are: `1`, `true`, `yes`, `on` (case-insensitive).
+    Returns `False` for any other value or if value is None.
+    """
     return (value or "").lower() in ("1", "true", "yes")
 
 
