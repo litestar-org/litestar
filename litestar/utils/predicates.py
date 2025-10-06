@@ -41,7 +41,7 @@ from litestar.utils.typing import get_origin_or_inner_type
 
 if sys.version_info >= (3, 10):
     from inspect import iscoroutinefunction
-else:
+else:  # pragma: no cover
     from asyncio import iscoroutinefunction
 
 if TYPE_CHECKING:
