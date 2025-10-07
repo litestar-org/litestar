@@ -264,7 +264,7 @@
 
     .. change:: Fix Litestar init() and AppConfig defaults inconsistency
         :type: bugfix
-        :pr: TBD
+        :pr: 4296
         :issue: 4296
 
         Fixed inconsistency between :class:`Litestar` direct initialization and
