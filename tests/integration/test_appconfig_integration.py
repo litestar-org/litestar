@@ -1,11 +1,12 @@
 from __future__ import annotations
 
+from typing import Any
+
 from litestar import Litestar, get, post
 from litestar.config.app import AppConfig
 from litestar.config.response_cache import ResponseCacheConfig
 from litestar.openapi.config import OpenAPIConfig
 from litestar.testing import TestClient
-from litestar.types import Scope
 
 
 class TestAppConfigIntegration:
@@ -127,8 +128,6 @@ class TestAppConfigIntegration:
         # Test that both apps can be created with middleware
         # Using a simple middleware that doesn't modify headers to avoid complexity
         from litestar.middleware.base import DefineMiddleware
-
-        from typing import Any
 
         class SimpleMiddleware:
             def __init__(self, app: Any) -> None:
