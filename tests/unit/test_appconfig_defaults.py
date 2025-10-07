@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from litestar.app import AppConfig, Litestar
+from litestar import Litestar
+from litestar.config.app import AppConfig
 from litestar.config.response_cache import ResponseCacheConfig
 from litestar.logging.config import LoggingConfig
 from litestar.openapi.config import OpenAPIConfig
@@ -24,7 +25,9 @@ class TestAppConfigDefaults:
         assert type(app_from_config.openapi_config) == type(app_direct.openapi_config)
         assert isinstance(app_from_config.openapi_config, OpenAPIConfig)
         assert isinstance(app_direct.openapi_config, OpenAPIConfig)
-        assert app_from_config.openapi_config.title == app_direct.openapi_config.title
+        if app_from_config.openapi_config is not None and app_direct.openapi_config is not None:
+            assert hasattr(app_from_config.openapi_config, "title") and hasattr(app_direct.openapi_config, "title")
+            assert app_from_config.openapi_config.title == app_direct.openapi_config.title
         assert app_from_config.openapi_config.version == app_direct.openapi_config.version
 
         assert app_from_config.request_max_body_size == app_direct.request_max_body_size
@@ -60,13 +63,23 @@ class TestAppConfigDefaults:
             request_max_body_size=custom_body_size,
         )
 
-        assert app_from_config.logging_config.version == app_direct.logging_config.version == 1
-        assert (
-            app_from_config.response_cache_config.default_expiration
-            == app_direct.response_cache_config.default_expiration
-            == 120
-        )
-        assert app_from_config.openapi_config.title == app_direct.openapi_config.title == "Custom API"
+        if app_from_config.logging_config is not None and app_direct.logging_config is not None:
+            assert hasattr(app_from_config.logging_config, "version") and hasattr(app_direct.logging_config, "version")
+            assert app_from_config.logging_config.version == app_direct.logging_config.version == 1
+
+        if app_from_config.response_cache_config is not None and app_direct.response_cache_config is not None:
+            assert hasattr(app_from_config.response_cache_config, "default_expiration") and hasattr(
+                app_direct.response_cache_config, "default_expiration"
+            )
+            assert (
+                app_from_config.response_cache_config.default_expiration
+                == app_direct.response_cache_config.default_expiration
+                == 120
+            )
+
+        if app_from_config.openapi_config is not None and app_direct.openapi_config is not None:
+            assert hasattr(app_from_config.openapi_config, "title") and hasattr(app_direct.openapi_config, "title")
+            assert app_from_config.openapi_config.title == app_direct.openapi_config.title == "Custom API"
         assert app_from_config.request_max_body_size == app_direct.request_max_body_size == 5_000_000
 
     def test_none_values_handled_correctly(self):

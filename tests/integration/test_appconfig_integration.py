@@ -1,10 +1,11 @@
 from __future__ import annotations
 
-from litestar import get, post
-from litestar.app import AppConfig, Litestar
+from litestar import Litestar, get, post
+from litestar.config.app import AppConfig
 from litestar.config.response_cache import ResponseCacheConfig
 from litestar.openapi.config import OpenAPIConfig
 from litestar.testing import TestClient
+from litestar.types import Scope
 
 
 class TestAppConfigIntegration:
@@ -127,7 +128,7 @@ class TestAppConfigIntegration:
             def __init__(self, app: Callable) -> None:
                 self.app = app
 
-            async def __call__(self, scope: dict, receive: Callable, send: Callable) -> None:
+            async def __call__(self, scope: Scope, receive: Callable, send: Callable) -> None:
                 if scope["type"] == "http":
                     # Add custom header
                     async def send_wrapper(message):
@@ -215,7 +216,7 @@ class TestAppConfigRealWorldScenarios:
                 return {"id": user_id, "name": f"User {user_id}"}
 
             @post("/users")
-            async def create_user(self, data: dict) -> dict[str, int]:
+            async def create_user(self, data: dict) -> dict[str, int | str]:
                 return {"id": 1, **data}
 
         config = AppConfig(
