@@ -6,9 +6,9 @@ from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Any, Callable
 
 from litestar.config.allowed_hosts import AllowedHostsConfig
-from litestar.config.response_cache import ResponseCacheConfig
 from litestar.datastructures import State
 from litestar.events.emitter import SimpleEventEmitter
+from litestar.openapi.config import OpenAPIConfig
 from litestar.types.empty import Empty
 
 if TYPE_CHECKING:
@@ -18,6 +18,7 @@ if TYPE_CHECKING:
     from litestar.config.compression import CompressionConfig
     from litestar.config.cors import CORSConfig
     from litestar.config.csrf import CSRFConfig
+    from litestar.config.response_cache import ResponseCacheConfig
     from litestar.connection import Request, WebSocket
     from litestar.datastructures import CacheControlHeader, ETag
     from litestar.di import Provide
@@ -25,7 +26,6 @@ if TYPE_CHECKING:
     from litestar.events.emitter import BaseEventEmitterBackend
     from litestar.events.listener import EventListener
     from litestar.logging.config import BaseLoggingConfig
-    from litestar.openapi.config import OpenAPIConfig
     from litestar.openapi.spec import SecurityRequirement
     from litestar.plugins import PluginProtocol
     from litestar.stores.base import Store
@@ -134,7 +134,7 @@ class AppConfig:
     """A list of callables returning async context managers, wrapping the lifespan of the ASGI application"""
     listeners: list[EventListener] = field(default_factory=list)
     """A list of :class:`EventListener <.events.listener.EventListener>`."""
-    logging_config: BaseLoggingConfig | None = field(default=None)
+    logging_config: BaseLoggingConfig | EmptyType | None = field(default=Empty)
     """An instance of :class:`BaseLoggingConfig <.logging.config.BaseLoggingConfig>` subclass."""
     middleware: list[Middleware] = field(default_factory=list)
     """A list of :class:`Middleware <.types.Middleware>`."""
@@ -142,7 +142,9 @@ class AppConfig:
     """A list of :class:`LifespanHook <.types.LifespanHook>` called during application shutdown."""
     on_startup: list[LifespanHook] = field(default_factory=list)
     """A list of :class:`LifespanHook <.types.LifespanHook>` called during application startup."""
-    openapi_config: OpenAPIConfig | None = field(default=None)
+    openapi_config: OpenAPIConfig | None = field(
+        default_factory=lambda: OpenAPIConfig(title="Litestar API", version="1.0.0")
+    )
     """Defaults to :data:`DEFAULT_OPENAPI_CONFIG <litestar.app.DEFAULT_OPENAPI_CONFIG>`"""
     opt: dict[str, Any] = field(default_factory=dict)
     """A string keyed dictionary of arbitrary values that can be accessed in :class:`Guards <.types.Guard>` or
@@ -167,7 +169,7 @@ class AppConfig:
     """List of plugins"""
     request_class: type[Request] | None = field(default=None)
     """An optional subclass of :class:`Request <.connection.Request>` to use for http connections."""
-    request_max_body_size: int | None | EmptyType = Empty
+    request_max_body_size: int | None = field(default=10_000_000)
     """Maximum allowed size of the request body in bytes. If this size is exceeded, a '413 - Request Entity Too Large'
     error response is returned."""
     response_class: type[Response] | None = field(default=None)
@@ -176,7 +178,7 @@ class AppConfig:
     """A list of :class:`Cookie <.datastructures.Cookie>`."""
     response_headers: ResponseHeaders = field(default_factory=list)
     """A string keyed dictionary mapping :class:`ResponseHeader <.datastructures.ResponseHeader>`."""
-    response_cache_config: ResponseCacheConfig = field(default_factory=ResponseCacheConfig)
+    response_cache_config: ResponseCacheConfig | None = field(default=None)
     """Configures caching behavior of the application."""
     return_dto: type[AbstractDTO] | None | EmptyType = field(default=Empty)
     """:class:`AbstractDTO <.dto.base_dto.AbstractDTO>` to use for serializing outbound response

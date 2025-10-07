@@ -261,3 +261,23 @@
             difference is expected. Some test cases may break though if they relied on
             the fact that the middleware wrapper created by ``ASGIMiddleware`` was
             always being called
+
+    .. change:: Fix Litestar init() and AppConfig defaults inconsistency
+        :type: bugfix
+        :pr: TBD
+        :issue: 4296
+
+        Fixed inconsistency between :class:`Litestar` direct initialization and
+        :class:`~litestar.config.app.AppConfig` defaults. Previously, certain
+        configuration parameters behaved differently when passed directly to
+        ``Litestar()`` versus when using ``AppConfig`` with ``Litestar.from_config()``.
+
+        Key changes:
+        - ``logging_config`` with ``Empty`` now properly defaults to ``LoggingConfig`` in both initialization methods
+        - ``response_cache_config`` with ``None`` now properly defaults to ``ResponseCacheConfig`` in both methods
+        - ``request_max_body_size`` type annotation corrected to remove ``EmptyType`` since ``Empty`` is not allowed for this parameter
+        - All default values are now consistent between ``Litestar()`` and ``AppConfig`` initialization
+
+        This ensures that applications using ``AppConfig`` behave identically to those
+        using direct ``Litestar`` initialization, maintaining backwards compatibility
+        and predictable behavior.
