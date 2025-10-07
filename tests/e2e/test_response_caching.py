@@ -246,7 +246,10 @@ async def test_compression_applies_before_cache() -> None:
     with TestClient(app) as client:
         client.get("/", headers={"Accept-Encoding": str(CompressionEncoding.GZIP.value)})
 
-    stored_value = await app.response_cache_config.get_store_from_app(app).get("GET/")
+    if app.response_cache_config is not None:
+        stored_value = await app.response_cache_config.get_store_from_app(app).get("GET/")
+    else:
+        stored_value = None
     assert stored_value
     stored_messages = msgspec.msgpack.decode(stored_value)
     assert gzip.decompress(stored_messages[1]["body"]).decode() == return_value

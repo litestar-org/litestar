@@ -761,6 +761,8 @@ class HTTPRouteHandler(BaseRouteHandler):
         """
 
         cache_config = request.app.response_cache_config
+        if cache_config is None:
+            return None
         cache_key = (self.cache_key_builder or cache_config.key_builder)(request)
         store = cache_config.get_store_from_app(request.app)
 

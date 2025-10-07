@@ -178,7 +178,8 @@ def test_app_debug_create_logger() -> None:
     app = Litestar([], debug=True)
 
     assert app.logging_config
-    assert app.logging_config.loggers["litestar"]["level"] == "DEBUG"  # type: ignore[attr-defined]
+    assert isinstance(app.logging_config, LoggingConfig)
+    assert app.logging_config.loggers["litestar"]["level"] == "DEBUG"
 
 
 def test_app_debug_explicitly_disable_logging() -> None:
@@ -192,7 +193,8 @@ def test_app_debug_update_logging_config() -> None:
     app = Litestar([], logging_config=logging_config, debug=True)
 
     assert app.logging_config is logging_config
-    assert app.logging_config.loggers["litestar"]["level"] == "DEBUG"  # type: ignore[attr-defined]
+    assert isinstance(app.logging_config, LoggingConfig)
+    assert app.logging_config.loggers["litestar"]["level"] == "DEBUG"
 
 
 def test_set_state() -> None:

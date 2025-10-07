@@ -12,6 +12,7 @@ from litestar.exceptions.responses._debug_response import (
     create_debug_response,
 )
 from litestar.status_codes import HTTP_500_INTERNAL_SERVER_ERROR
+from litestar.types import Empty
 from litestar.utils.empty import value_or_raise
 from litestar.utils.scope.state import ScopeState
 
@@ -129,7 +130,7 @@ class ExceptionHandlerMiddleware:
 
             litestar_app = scope["litestar_app"]
 
-            if litestar_app.logging_config and (logger := litestar_app.logger):
+            if litestar_app.logging_config and litestar_app.logging_config is not Empty and (logger := litestar_app.logger):
                 self.handle_exception_logging(logger=logger, logging_config=litestar_app.logging_config, scope=scope)
 
             for hook in litestar_app.after_exception:
