@@ -216,7 +216,7 @@ class TestAppConfigRealWorldScenarios:
                 return {"id": user_id, "name": f"User {user_id}"}
 
             @post("/users")
-            async def create_user(self, data: dict) -> dict[str, int | str]:
+            async def create_user(self, data: dict[str, str]) -> dict[str, int | str]:
                 return {"id": 1, **data}
 
         config = AppConfig(

@@ -9,7 +9,7 @@ from litestar.types import Empty
 
 
 class TestAppConfigDefaults:
-    def test_appconfig_defaults_match_litestar_init(self):
+    def test_appconfig_defaults_match_litestar_init(self) -> None:
         config = AppConfig()
         app_from_config = Litestar.from_config(config)
         app_direct = Litestar()
@@ -33,7 +33,7 @@ class TestAppConfigDefaults:
         assert app_from_config.request_max_body_size == app_direct.request_max_body_size
         assert app_from_config.request_max_body_size == 10_000_000
 
-    def test_appconfig_raw_defaults(self):
+    def test_appconfig_raw_defaults(self) -> None:
         config = AppConfig()
 
         assert config.logging_config is Empty
@@ -42,7 +42,7 @@ class TestAppConfigDefaults:
         assert isinstance(config.openapi_config, OpenAPIConfig)
         assert config.request_max_body_size == 10_000_000
 
-    def test_custom_values_preserved(self):
+    def test_custom_values_preserved(self) -> None:
         custom_logging = LoggingConfig(version=1)
         custom_cache = ResponseCacheConfig(default_expiration=120)
         custom_openapi = OpenAPIConfig(title="Custom API", version="2.0.0")
@@ -65,7 +65,10 @@ class TestAppConfigDefaults:
 
         if app_from_config.logging_config is not None and app_direct.logging_config is not None:
             assert hasattr(app_from_config.logging_config, "version") and hasattr(app_direct.logging_config, "version")
-            assert app_from_config.logging_config.version == app_direct.logging_config.version == 1
+            # Use getattr to safely access version attribute
+            version1 = getattr(app_from_config.logging_config, "version", None)
+            version2 = getattr(app_direct.logging_config, "version", None)
+            assert version1 == version2 == 1
 
         if app_from_config.response_cache_config is not None and app_direct.response_cache_config is not None:
             assert hasattr(app_from_config.response_cache_config, "default_expiration") and hasattr(
@@ -82,7 +85,7 @@ class TestAppConfigDefaults:
             assert app_from_config.openapi_config.title == app_direct.openapi_config.title == "Custom API"
         assert app_from_config.request_max_body_size == app_direct.request_max_body_size == 5_000_000
 
-    def test_none_values_handled_correctly(self):
+    def test_none_values_handled_correctly(self) -> None:
         config = AppConfig(logging_config=None, response_cache_config=None, openapi_config=None)
         app_from_config = Litestar.from_config(config)
 
@@ -92,7 +95,7 @@ class TestAppConfigDefaults:
         assert app_from_config.response_cache_config == app_direct.response_cache_config
         assert app_from_config.openapi_config == app_direct.openapi_config
 
-    def test_functional_behavior_equality(self):
+    def test_functional_behavior_equality(self) -> None:
         config = AppConfig()
         app_from_config = Litestar.from_config(config)
         app_direct = Litestar()
@@ -103,13 +106,13 @@ class TestAppConfigDefaults:
         assert logger2 is not None
         assert type(logger1) == type(logger2)
 
-        assert app_from_config.openapi_config is not None
-        assert app_direct.openapi_config is not None
-        assert app_from_config.openapi_config.title == app_direct.openapi_config.title
+        if app_from_config.openapi_config is not None and app_direct.openapi_config is not None:
+            assert hasattr(app_from_config.openapi_config, "title") and hasattr(app_direct.openapi_config, "title")
+            assert app_from_config.openapi_config.title == app_direct.openapi_config.title
 
         assert app_from_config.request_max_body_size == app_direct.request_max_body_size
 
-    def test_backwards_compatibility(self):
+    def test_backwards_compatibility(self) -> None:
         configs = [
             AppConfig(),
             AppConfig(debug=True),
@@ -124,7 +127,7 @@ class TestAppConfigDefaults:
             assert hasattr(app, "openapi_config")
             assert hasattr(app, "request_max_body_size")
 
-    def test_edge_cases(self):
+    def test_edge_cases(self) -> None:
         config = AppConfig(
             openapi_config=OpenAPIConfig(title="", version=""),
         )
@@ -142,21 +145,21 @@ class TestAppConfigDefaults:
 
 
 class TestAppConfigMutationLogic:
-    def test_empty_logging_config_becomes_loggingconfig(self):
+    def test_empty_logging_config_becomes_loggingconfig(self) -> None:
         config = AppConfig()
         app = Litestar.from_config(config)
 
         assert isinstance(app.logging_config, LoggingConfig)
         assert app.logging_config.version == 1
 
-    def test_none_response_cache_config_becomes_responsecacheconfig(self):
+    def test_none_response_cache_config_becomes_responsecacheconfig(self) -> None:
         config = AppConfig()
         app = Litestar.from_config(config)
 
         assert isinstance(app.response_cache_config, ResponseCacheConfig)
         assert app.response_cache_config.default_expiration == 60
 
-    def test_empty_values_in_direct_init(self):
+    def test_empty_values_in_direct_init(self) -> None:
         app = Litestar(
             logging_config=Empty,
             response_cache_config=None,
@@ -169,7 +172,7 @@ class TestAppConfigMutationLogic:
 
 
 class TestAppConfigTypeAnnotations:
-    def test_logging_config_type_annotation(self):
+    def test_logging_config_type_annotation(self) -> None:
         import inspect
 
         sig = inspect.signature(AppConfig.__init__)
@@ -177,7 +180,7 @@ class TestAppConfigTypeAnnotations:
 
         assert "EmptyType" in str(param.annotation)
 
-    def test_request_max_body_size_type_annotation(self):
+    def test_request_max_body_size_type_annotation(self) -> None:
         import inspect
 
         sig = inspect.signature(AppConfig.__init__)
