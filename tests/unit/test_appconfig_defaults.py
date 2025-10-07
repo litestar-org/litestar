@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-import pytest
-
 from litestar.app import AppConfig, Litestar
 from litestar.config.response_cache import ResponseCacheConfig
 from litestar.logging.config import LoggingConfig

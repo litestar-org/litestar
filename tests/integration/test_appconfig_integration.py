@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-import pytest
-
 from litestar import get, post
 from litestar.app import AppConfig, Litestar
 from litestar.config.response_cache import ResponseCacheConfig
