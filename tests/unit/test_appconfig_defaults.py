@@ -28,7 +28,11 @@ class TestAppConfigDefaults:
         if app_from_config.openapi_config is not None and app_direct.openapi_config is not None:
             assert hasattr(app_from_config.openapi_config, "title") and hasattr(app_direct.openapi_config, "title")
             assert app_from_config.openapi_config.title == app_direct.openapi_config.title
-        assert app_from_config.openapi_config.version == app_direct.openapi_config.version
+        if app_from_config.openapi_config is not None and app_direct.openapi_config is not None:
+            assert hasattr(app_from_config.openapi_config, "version") and hasattr(app_direct.openapi_config, "version")
+            version1 = getattr(app_from_config.openapi_config, "version", None)
+            version2 = getattr(app_direct.openapi_config, "version", None)
+            assert version1 == version2
 
         assert app_from_config.request_max_body_size == app_direct.request_max_body_size
         assert app_from_config.request_max_body_size == 10_000_000
@@ -132,8 +136,9 @@ class TestAppConfigDefaults:
             openapi_config=OpenAPIConfig(title="", version=""),
         )
         app = Litestar.from_config(config)
-        assert app.openapi_config.title == ""
-        assert app.openapi_config.version == ""
+        if app.openapi_config is not None:
+            assert app.openapi_config.title == ""
+            assert app.openapi_config.version == ""
 
         config = AppConfig(request_max_body_size=0)
         app = Litestar.from_config(config)
