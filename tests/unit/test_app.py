@@ -512,3 +512,34 @@ def test_app_logging_config_empty_during_init_bypass() -> None:
         app.debug = False
     finally:
         app.logging_config = original_config
+
+
+def test_handler_get_cached_response_with_none_config() -> None:
+    @get("/", cache=True)
+    async def handler() -> str:
+        return "test"
+
+    app = Litestar(route_handlers=[handler], response_cache_config=None)
+
+    route_handler = None
+    for route in app.routes:
+        if hasattr(route, "route_handlers"):  # pyright: ignore[reportAttributeAccessIssue]
+            for rh in route.route_handlers:  # pyright: ignore[reportAttributeAccessIssue]
+                if hasattr(rh, "_get_cached_response"):
+                    route_handler = rh
+                    break
+
+    if route_handler:
+        scope: dict[str, object] = {
+            "type": "http",
+            "method": "GET",
+            "path": "/",
+            "headers": [],
+            "query_string": b"",
+            "litestar_app": app,
+        }
+        request: Request[Any, Any, Any] = Request(scope=scope)  # type: ignore[arg-type]
+
+        import asyncio
+        result = asyncio.run(route_handler._get_cached_response(request))
+        assert result is None
