@@ -790,7 +790,7 @@ file system’s symlink capabilities:</p>
 <dl class="simple">
 <dt><strong>File systems that do not support symlinks</strong></dt><dd><p>If the configured <code class="docutils literal notranslate"><span class="pre">file_system</span></code> does not inherit from <a class="reference internal" href="../reference/file_system.html#litestar.file_system.LinkableFileSystem" title="litestar.file_system.LinkableFileSystem"><code class="xref py py-class docutils literal notranslate"><span class="pre">LinkableFileSystem</span></code></a>,
 setting <code class="docutils literal notranslate"><span class="pre">allow_symlinks_outside_directory</span></code> to any value other than <code class="docutils literal notranslate"><span class="pre">None</span></code>
-will raise a <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.13)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">TypeError</span></code></a>. This ensures that unsupported file systems
+will raise a <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.14)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">TypeError</span></code></a>. This ensures that unsupported file systems
 do not inadvertently allow symlink traversal.</p>
 </dd>
 <dt><strong>File systems that support symlinks</strong></dt><dd><p>If the file system supports symlinking, the default value is <code class="docutils literal notranslate"><span class="pre">False</span></code>.
