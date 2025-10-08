@@ -541,5 +541,6 @@ def test_handler_get_cached_response_with_none_config() -> None:
         request: Request[Any, Any, Any] = Request(scope=scope)  # type: ignore[arg-type]
 
         import asyncio
+
         result = asyncio.run(route_handler._get_cached_response(request))
         assert result is None
