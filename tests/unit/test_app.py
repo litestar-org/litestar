@@ -27,6 +27,7 @@ from litestar.logging.config import LoggingConfig
 from litestar.plugins import CLIPlugin
 from litestar.status_codes import HTTP_200_OK, HTTP_400_BAD_REQUEST, HTTP_500_INTERNAL_SERVER_ERROR
 from litestar.testing import TestClient, create_test_client
+from litestar.types import Empty
 
 if TYPE_CHECKING:
     from litestar.types import Message, Scope
@@ -463,3 +464,51 @@ def test_from_scope() -> None:
         client.get("/")
 
     mock.assert_called_once_with(app)
+
+
+def test_app_with_empty_logging_config() -> None:
+    app = Litestar([], logging_config=Empty)
+
+    assert isinstance(app.logging_config, LoggingConfig)
+    assert app.get_logger is not None
+
+
+def test_app_debug_with_empty_logging_config() -> None:
+    app = Litestar([], logging_config=Empty)
+
+    app.debug = True
+    assert app.debug is True
+
+    app.debug = False
+    assert app.debug is False
+
+
+def test_app_logging_config_empty_vs_none() -> None:
+    app_empty = Litestar([], logging_config=Empty)
+    app_none = Litestar([], logging_config=None)
+
+    assert isinstance(app_empty.logging_config, LoggingConfig)
+    assert app_none.logging_config is None
+
+
+def test_app_logging_config_set_to_empty_after_init() -> None:
+    app = Litestar([], logging_config=None)
+
+    app.logging_config = Empty
+    app.logger = None
+
+    app.debug = True
+    assert app.debug is True
+
+
+def test_app_logging_config_empty_during_init_bypass() -> None:
+    app = Litestar([], logging_config=None)
+
+    original_config = app.logging_config
+    app.logging_config = Empty
+
+    try:
+        app.debug = True
+        app.debug = False
+    finally:
+        app.logging_config = original_config
