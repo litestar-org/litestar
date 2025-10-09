@@ -1,7 +1,7 @@
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 from dataclasses import dataclass, field
-from typing import Any, Optional, Union, cast
+from typing import TYPE_CHECKING, Any, Optional, Union, cast
 from unittest.mock import AsyncMock, MagicMock
 
 import pytest
@@ -17,6 +17,10 @@ from litestar.handlers.websocket_handlers import WebsocketListener, websocket_li
 from litestar.routes import WebSocketRoute
 from litestar.testing import create_test_client
 from litestar.types.asgi_types import WebSocketMode
+
+if TYPE_CHECKING:
+    from litestar.connection import ASGIConnection
+    from litestar.handlers.base import BaseRouteHandler
 
 
 @pytest.fixture
@@ -441,3 +445,22 @@ def test_listeners_lifespan_hooks_and_manager_raises(hook_name: str) -> None:
         @websocket_listener("/", **{hook_name: hook_callback}, connection_lifespan=lifespan)  # pyright: ignore
         def handler(data: bytes) -> None:
             pass
+
+
+def test_websocket_listener_applies_guards() -> None:
+    guard_called = False
+
+    async def custom_guard(connection: ASGIConnection, _: BaseRouteHandler) -> None:
+        nonlocal guard_called
+        guard_called = True
+
+    @websocket_listener("/", guards=[custom_guard])
+    async def handler(data: str) -> str:
+        return data
+
+    client = create_test_client([handler])
+    with client.websocket_connect("/") as ws:
+        ws.send_text("test")
+
+        assert ws.receive_text() == "test"
+        assert guard_called is True
