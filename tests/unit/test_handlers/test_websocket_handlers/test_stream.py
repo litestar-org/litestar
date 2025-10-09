@@ -169,8 +169,7 @@ def test_websocket_stream_applies_guards() -> None:
         yield {"Urfaust": "Gespinnst"}
         yield {"Des": "Verderbens"}
 
-    client = create_test_client([handler])
-    with client.websocket_connect("/") as ws:
+    with create_test_client([handler]) as client, client.websocket_connect("/") as ws:
         assert ws.receive_json(timeout=0.1) == {"Urfaust": "Gespinnst"}
         assert ws.receive_json(timeout=0.1) == {"Des": "Verderbens"}
         assert guard_called is True

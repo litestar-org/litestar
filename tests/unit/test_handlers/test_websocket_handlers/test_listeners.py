@@ -61,9 +61,7 @@ def async_listener_callable(mock: MagicMock) -> WebsocketListenerRouteHandler:
         lf("listener_class"),
     ],
 )
-def test_basic_listener(
-    mock: MagicMock, listener: WebsocketListenerRouteHandler | type[WebsocketListener]
-) -> None:
+def test_basic_listener(mock: MagicMock, listener: WebsocketListenerRouteHandler | type[WebsocketListener]) -> None:
     client = create_test_client([listener])
     with client.websocket_connect("/") as ws:
         ws.send_text("foo")
@@ -460,8 +458,7 @@ def test_websocket_listener_applies_guards() -> None:
     async def handler(data: str) -> str:
         return data
 
-    client = create_test_client([handler])
-    with client.websocket_connect("/") as ws:
+    with create_test_client([handler]) as client, client.websocket_connect("/") as ws:
         ws.send_text("test")
 
         assert ws.receive_text() == "test"
