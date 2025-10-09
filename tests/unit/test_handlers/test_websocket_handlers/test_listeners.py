@@ -1,28 +1,24 @@
-from __future__ import annotations
-
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, Any, Optional, cast
+from typing import Any, Optional, Union, cast
 from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 from pytest_lazy_fixtures import lf
 
 from litestar import Controller, Litestar, Request, WebSocket
+from litestar.connection import ASGIConnection
 from litestar.datastructures import State
 from litestar.di import Provide
 from litestar.dto import DataclassDTO, dto_field
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.handlers import WebsocketListenerRouteHandler
+from litestar.handlers.base import BaseRouteHandler
 from litestar.handlers.websocket_handlers import WebsocketListener, websocket_listener
 from litestar.routes import WebSocketRoute
 from litestar.testing import create_test_client
 from litestar.types.asgi_types import WebSocketMode
-
-if TYPE_CHECKING:
-    from litestar.connection import ASGIConnection
-    from litestar.handlers.base import BaseRouteHandler
 
 
 @pytest.fixture
@@ -61,7 +57,9 @@ def async_listener_callable(mock: MagicMock) -> WebsocketListenerRouteHandler:
         lf("listener_class"),
     ],
 )
-def test_basic_listener(mock: MagicMock, listener: WebsocketListenerRouteHandler | type[WebsocketListener]) -> None:
+def test_basic_listener(
+    mock: MagicMock, listener: Union[WebsocketListenerRouteHandler, type[WebsocketListener]]
+) -> None:
     client = create_test_client([listener])
     with client.websocket_connect("/") as ws:
         ws.send_text("foo")
@@ -219,7 +217,7 @@ def test_listener_pass_additional_dependencies(mock: MagicMock) -> None:
         return cast("int", state.foo)
 
     @websocket_listener("/", dependencies={"foo": Provide(foo_dependency)})
-    def handler(data: str, foo: int) -> dict[str, str | int]:
+    def handler(data: str, foo: int) -> dict[str, Union[str, int]]:
         return {"data": data, "foo": foo}
 
     with create_test_client([handler]) as client, client.websocket_connect("/") as ws:
