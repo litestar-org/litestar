@@ -14,7 +14,7 @@ T = TypeVar("T")
 CollectionT = TypeVar("CollectionT")
 
 
-class AbstractAsyncRepository(Generic[T], metaclass=ABCMeta):
+class AbstractSyncRepository(Generic[T], metaclass=ABCMeta):
     """Interface for persistent data interaction."""
 
     model_type: type[T]
