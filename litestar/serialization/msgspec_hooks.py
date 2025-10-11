@@ -85,11 +85,10 @@ def default_serializer(value: Any, type_encoders: Mapping[Any, Callable[[Any], A
     type_encoders = {**DEFAULT_TYPE_ENCODERS, **(type_encoders or {})}
 
     for base in value.__class__.__mro__[:-1]:
-        try:
-            encoder = type_encoders[base]
-            return encoder(value)
-        except KeyError:
+        encoder = type_encoders.get(base)
+        if encoder is None:
             continue
+        return encoder(value)
 
     raise TypeError(f"Unsupported type: {type(value)!r}")
 
