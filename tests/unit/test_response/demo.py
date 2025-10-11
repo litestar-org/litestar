@@ -20,7 +20,7 @@ async def get_notified(data: CleanupRequest) -> ServerSentEvent:
 
     async def generator() -> AsyncIterator[str]:
         try:
-            while True:
+            for _ in range(10):
                 yield data.file_content
                 await sleep(0.1)
         except ClientDisconnectError:
