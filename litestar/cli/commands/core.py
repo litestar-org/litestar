@@ -324,11 +324,11 @@ def routes_command(app: Litestar, exclude: tuple[str, ...], schema: bool, as_jso
         import json
         routes_list = []
         for route in sorted_routes:
-            route_info = {
+            route_info : dict[str, Any]= {
                 "path": route.path,
                 "type": route.__class__.__name__,
             }
-            if hasattr(route, "route_handlers"):
+            if isinstance(route, HTTPRoute):
                 route_info["handlers"] = [
                     {
                         "name": h.name,
@@ -340,7 +340,7 @@ def routes_command(app: Litestar, exclude: tuple[str, ...], schema: bool, as_jso
                     for h in route.route_handlers
                 ]
             routes_list.append(route_info)
-        click.echo(json.dumps(routes_list, indent=4))
+        click.echo(json.dumps(routes_list, indent=4, default=lambda o: list(o) if isinstance(o, set) else o))
     else:
         console.print(_RouteTree(sorted_routes))
 
