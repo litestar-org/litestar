@@ -84,7 +84,7 @@ Twitter = "https://twitter.com/LitestarAPI"
 annotated-types = ["annotated-types"]
 attrs = ["attrs"]
 brotli = ["brotli"]
-cli = ["jsbeautifier", "uvicorn[standard]", "uvloop>=0.18.0; sys_platform != 'win32'"]
+cli = ["jsbeautifier", "uvicorn[standard]"]
 cryptography = ["cryptography"]
 full = [
   "litestar[annotated-types,attrs,brotli,cli,cryptography,jinja,jwt,mako,minijinja,opentelemetry,piccolo,picologging,prometheus,pydantic,redis,sqlalchemy,standard,structlog,valkey]; python_version < \"3.13\"",
@@ -110,7 +110,6 @@ standard = [
   "jinja2",
   "jsbeautifier",
   "uvicorn[standard]",
-  "uvloop>=0.18.0; sys_platform != 'win32'",
   "fast-query-parsers>=1.0.2",
 ]
 structlog = ["structlog"]
