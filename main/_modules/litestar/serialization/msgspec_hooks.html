@@ -600,238 +600,239 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="87">    <span class="k">for</span> <span class="n">base</span> <span class="ow">in</span> <span class="n">value</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__mro__</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
 </span><span data-line="88">        <span class="k">try</span><span class="p">:</span>
 </span><span data-line="89">            <span class="n">encoder</span> <span class="o">=</span> <span class="n">type_encoders</span><span class="p">[</span><span class="n">base</span><span class="p">]</span>
-</span><span data-line="90">            <span class="k">return</span> <span class="n">encoder</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
-</span><span data-line="91">        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
-</span><span data-line="92">            <span class="k">continue</span>
-</span><span data-line="93">
-</span><span data-line="94">    <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unsupported type: </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="si">!r}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+</span><span data-line="90">        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+</span><span data-line="91">            <span class="k">continue</span>
+</span><span data-line="92">        <span class="k">else</span><span class="p">:</span>
+</span><span data-line="93">            <span class="k">return</span> <span class="n">encoder</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+</span><span data-line="94">
+</span><span data-line="95">    <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unsupported type: </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="si">!r}</span><span class="s2">&quot;</span><span class="p">)</span></div>
 
-</span><span data-line="95">
 </span><span data-line="96">
+</span><span data-line="97">
 <div class="viewcode-block" id="default_deserializer">
 <a class="viewcode-back" href="../../../reference/serialization.html#litestar.serialization.default_deserializer">[docs]</a>
-</span><span data-line="97"><span class="k">def</span><span class="w"> </span><span class="nf">default_deserializer</span><span class="p">(</span>
-</span><span data-line="98">    <span class="n">target_type</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">type_decoders</span><span class="p">:</span> <span class="n">TypeDecodersSequence</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
-</span><span data-line="99"><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
-</span><span data-line="100"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Transform values non-natively supported by ``msgspec``</span>
-</span><span data-line="101">
-</span><span data-line="102"><span class="sd">    Args:</span>
-</span><span data-line="103"><span class="sd">        target_type: Encountered type</span>
-</span><span data-line="104"><span class="sd">        value: Value to coerce</span>
-</span><span data-line="105"><span class="sd">        type_decoders: Optional sequence of type decoders</span>
-</span><span data-line="106">
-</span><span data-line="107"><span class="sd">    Returns:</span>
-</span><span data-line="108"><span class="sd">        A ``msgspec``-supported type</span>
-</span><span data-line="109"><span class="sd">    &quot;&quot;&quot;</span>
-</span><span data-line="110">
-</span><span data-line="111">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.datastructures.state</span><span class="w"> </span><span class="kn">import</span> <span class="n">ImmutableState</span>
-</span><span data-line="112">
-</span><span data-line="113">    <span class="k">try</span><span class="p">:</span>
-</span><span data-line="114">        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">target_type</span><span class="p">):</span>
-</span><span data-line="115">            <span class="k">return</span> <span class="n">value</span>
-</span><span data-line="116">    <span class="k">except</span> <span class="ne">TypeError</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
-</span><span data-line="117">        <span class="c1"># we might get a TypeError here if target_type is a subscribed generic. For</span>
-</span><span data-line="118">        <span class="c1"># performance reasons, we let this happen and only unwrap this when we&#39;re</span>
-</span><span data-line="119">        <span class="c1"># certain this might be the case</span>
-</span><span data-line="120">        <span class="k">if</span> <span class="p">(</span><span class="n">origin</span> <span class="o">:=</span> <span class="n">get_origin_or_inner_type</span><span class="p">(</span><span class="n">target_type</span><span class="p">))</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="121">            <span class="n">target_type</span> <span class="o">=</span> <span class="n">origin</span>
-</span><span data-line="122">            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">target_type</span><span class="p">):</span>
-</span><span data-line="123">                <span class="k">return</span> <span class="n">value</span>
-</span><span data-line="124">        <span class="k">else</span><span class="p">:</span>
-</span><span data-line="125">            <span class="k">raise</span> <span class="n">exc</span>
-</span><span data-line="126">
-</span><span data-line="127">    <span class="k">if</span> <span class="n">type_decoders</span><span class="p">:</span>
-</span><span data-line="128">        <span class="k">for</span> <span class="n">predicate</span><span class="p">,</span> <span class="n">decoder</span> <span class="ow">in</span> <span class="n">type_decoders</span><span class="p">:</span>
-</span><span data-line="129">            <span class="k">if</span> <span class="n">predicate</span><span class="p">(</span><span class="n">target_type</span><span class="p">):</span>
-</span><span data-line="130">                <span class="k">return</span> <span class="n">decoder</span><span class="p">(</span><span class="n">target_type</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
-</span><span data-line="131">
-</span><span data-line="132">    <span class="k">if</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">target_type</span><span class="p">,</span> <span class="p">(</span><span class="n">PurePath</span><span class="p">,</span> <span class="n">ImmutableState</span><span class="p">,</span> <span class="n">UUID</span><span class="p">)):</span>
-</span><span data-line="133">        <span class="k">return</span> <span class="n">target_type</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
-</span><span data-line="134">
-</span><span data-line="135">    <span class="k">if</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">target_type</span><span class="p">,</span> <span class="n">SecretBytes</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="p">(</span><span class="nb">bytes</span><span class="p">,</span> <span class="nb">str</span><span class="p">)):</span>
-</span><span data-line="136">        <span class="k">return</span> <span class="n">SecretBytes</span><span class="p">(</span><span class="n">value</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="k">else</span> <span class="n">value</span><span class="p">)</span>
-</span><span data-line="137">
-</span><span data-line="138">    <span class="k">if</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">target_type</span><span class="p">,</span> <span class="n">SecretString</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-</span><span data-line="139">        <span class="k">return</span> <span class="n">SecretString</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
-</span><span data-line="140">
-</span><span data-line="141">    <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unsupported type: </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="si">!r}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+</span><span data-line="98"><span class="k">def</span><span class="w"> </span><span class="nf">default_deserializer</span><span class="p">(</span>
+</span><span data-line="99">    <span class="n">target_type</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">type_decoders</span><span class="p">:</span> <span class="n">TypeDecodersSequence</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+</span><span data-line="100"><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
+</span><span data-line="101"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Transform values non-natively supported by ``msgspec``</span>
+</span><span data-line="102">
+</span><span data-line="103"><span class="sd">    Args:</span>
+</span><span data-line="104"><span class="sd">        target_type: Encountered type</span>
+</span><span data-line="105"><span class="sd">        value: Value to coerce</span>
+</span><span data-line="106"><span class="sd">        type_decoders: Optional sequence of type decoders</span>
+</span><span data-line="107">
+</span><span data-line="108"><span class="sd">    Returns:</span>
+</span><span data-line="109"><span class="sd">        A ``msgspec``-supported type</span>
+</span><span data-line="110"><span class="sd">    &quot;&quot;&quot;</span>
+</span><span data-line="111">
+</span><span data-line="112">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.datastructures.state</span><span class="w"> </span><span class="kn">import</span> <span class="n">ImmutableState</span>
+</span><span data-line="113">
+</span><span data-line="114">    <span class="k">try</span><span class="p">:</span>
+</span><span data-line="115">        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">target_type</span><span class="p">):</span>
+</span><span data-line="116">            <span class="k">return</span> <span class="n">value</span>
+</span><span data-line="117">    <span class="k">except</span> <span class="ne">TypeError</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+</span><span data-line="118">        <span class="c1"># we might get a TypeError here if target_type is a subscribed generic. For</span>
+</span><span data-line="119">        <span class="c1"># performance reasons, we let this happen and only unwrap this when we&#39;re</span>
+</span><span data-line="120">        <span class="c1"># certain this might be the case</span>
+</span><span data-line="121">        <span class="k">if</span> <span class="p">(</span><span class="n">origin</span> <span class="o">:=</span> <span class="n">get_origin_or_inner_type</span><span class="p">(</span><span class="n">target_type</span><span class="p">))</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="122">            <span class="n">target_type</span> <span class="o">=</span> <span class="n">origin</span>
+</span><span data-line="123">            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">target_type</span><span class="p">):</span>
+</span><span data-line="124">                <span class="k">return</span> <span class="n">value</span>
+</span><span data-line="125">        <span class="k">else</span><span class="p">:</span>
+</span><span data-line="126">            <span class="k">raise</span> <span class="n">exc</span>
+</span><span data-line="127">
+</span><span data-line="128">    <span class="k">if</span> <span class="n">type_decoders</span><span class="p">:</span>
+</span><span data-line="129">        <span class="k">for</span> <span class="n">predicate</span><span class="p">,</span> <span class="n">decoder</span> <span class="ow">in</span> <span class="n">type_decoders</span><span class="p">:</span>
+</span><span data-line="130">            <span class="k">if</span> <span class="n">predicate</span><span class="p">(</span><span class="n">target_type</span><span class="p">):</span>
+</span><span data-line="131">                <span class="k">return</span> <span class="n">decoder</span><span class="p">(</span><span class="n">target_type</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+</span><span data-line="132">
+</span><span data-line="133">    <span class="k">if</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">target_type</span><span class="p">,</span> <span class="p">(</span><span class="n">PurePath</span><span class="p">,</span> <span class="n">ImmutableState</span><span class="p">,</span> <span class="n">UUID</span><span class="p">)):</span>
+</span><span data-line="134">        <span class="k">return</span> <span class="n">target_type</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+</span><span data-line="135">
+</span><span data-line="136">    <span class="k">if</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">target_type</span><span class="p">,</span> <span class="n">SecretBytes</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="p">(</span><span class="nb">bytes</span><span class="p">,</span> <span class="nb">str</span><span class="p">)):</span>
+</span><span data-line="137">        <span class="k">return</span> <span class="n">SecretBytes</span><span class="p">(</span><span class="n">value</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="k">else</span> <span class="n">value</span><span class="p">)</span>
+</span><span data-line="138">
+</span><span data-line="139">    <span class="k">if</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">target_type</span><span class="p">,</span> <span class="n">SecretString</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+</span><span data-line="140">        <span class="k">return</span> <span class="n">SecretString</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+</span><span data-line="141">
+</span><span data-line="142">    <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unsupported type: </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="si">!r}</span><span class="s2">&quot;</span><span class="p">)</span></div>
 
-</span><span data-line="142">
 </span><span data-line="143">
-</span><span data-line="144"><span class="n">_msgspec_json_encoder</span> <span class="o">=</span> <span class="n">msgspec</span><span class="o">.</span><span class="n">json</span><span class="o">.</span><span class="n">Encoder</span><span class="p">(</span><span class="n">enc_hook</span><span class="o">=</span><span class="n">default_serializer</span><span class="p">)</span>
-</span><span data-line="145"><span class="n">_msgspec_json_decoder</span> <span class="o">=</span> <span class="n">msgspec</span><span class="o">.</span><span class="n">json</span><span class="o">.</span><span class="n">Decoder</span><span class="p">(</span><span class="n">dec_hook</span><span class="o">=</span><span class="n">default_deserializer</span><span class="p">)</span>
-</span><span data-line="146"><span class="n">_msgspec_msgpack_encoder</span> <span class="o">=</span> <span class="n">msgspec</span><span class="o">.</span><span class="n">msgpack</span><span class="o">.</span><span class="n">Encoder</span><span class="p">(</span><span class="n">enc_hook</span><span class="o">=</span><span class="n">default_serializer</span><span class="p">)</span>
-</span><span data-line="147"><span class="n">_msgspec_msgpack_decoder</span> <span class="o">=</span> <span class="n">msgspec</span><span class="o">.</span><span class="n">msgpack</span><span class="o">.</span><span class="n">Decoder</span><span class="p">(</span><span class="n">dec_hook</span><span class="o">=</span><span class="n">default_deserializer</span><span class="p">)</span>
-</span><span data-line="148">
+</span><span data-line="144">
+</span><span data-line="145"><span class="n">_msgspec_json_encoder</span> <span class="o">=</span> <span class="n">msgspec</span><span class="o">.</span><span class="n">json</span><span class="o">.</span><span class="n">Encoder</span><span class="p">(</span><span class="n">enc_hook</span><span class="o">=</span><span class="n">default_serializer</span><span class="p">)</span>
+</span><span data-line="146"><span class="n">_msgspec_json_decoder</span> <span class="o">=</span> <span class="n">msgspec</span><span class="o">.</span><span class="n">json</span><span class="o">.</span><span class="n">Decoder</span><span class="p">(</span><span class="n">dec_hook</span><span class="o">=</span><span class="n">default_deserializer</span><span class="p">)</span>
+</span><span data-line="147"><span class="n">_msgspec_msgpack_encoder</span> <span class="o">=</span> <span class="n">msgspec</span><span class="o">.</span><span class="n">msgpack</span><span class="o">.</span><span class="n">Encoder</span><span class="p">(</span><span class="n">enc_hook</span><span class="o">=</span><span class="n">default_serializer</span><span class="p">)</span>
+</span><span data-line="148"><span class="n">_msgspec_msgpack_decoder</span> <span class="o">=</span> <span class="n">msgspec</span><span class="o">.</span><span class="n">msgpack</span><span class="o">.</span><span class="n">Decoder</span><span class="p">(</span><span class="n">dec_hook</span><span class="o">=</span><span class="n">default_deserializer</span><span class="p">)</span>
 </span><span data-line="149">
+</span><span data-line="150">
 <div class="viewcode-block" id="encode_json">
 <a class="viewcode-back" href="../../../reference/serialization.html#litestar.serialization.encode_json">[docs]</a>
-</span><span data-line="150"><span class="k">def</span><span class="w"> </span><span class="nf">encode_json</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">serializer</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Any</span><span class="p">],</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
-</span><span data-line="151"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Encode a value into JSON.</span>
-</span><span data-line="152">
-</span><span data-line="153"><span class="sd">    Args:</span>
-</span><span data-line="154"><span class="sd">        value: Value to encode</span>
-</span><span data-line="155"><span class="sd">        serializer: Optional callable to support non-natively supported types.</span>
-</span><span data-line="156">
-</span><span data-line="157"><span class="sd">    Returns:</span>
-</span><span data-line="158"><span class="sd">        JSON as bytes</span>
-</span><span data-line="159">
-</span><span data-line="160"><span class="sd">    Raises:</span>
-</span><span data-line="161"><span class="sd">        SerializationException: If error encoding ``obj``.</span>
-</span><span data-line="162"><span class="sd">    &quot;&quot;&quot;</span>
-</span><span data-line="163">    <span class="k">try</span><span class="p">:</span>
-</span><span data-line="164">        <span class="k">return</span> <span class="n">msgspec</span><span class="o">.</span><span class="n">json</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">enc_hook</span><span class="o">=</span><span class="n">serializer</span><span class="p">)</span> <span class="k">if</span> <span class="n">serializer</span> <span class="k">else</span> <span class="n">_msgspec_json_encoder</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
-</span><span data-line="165">    <span class="k">except</span> <span class="p">(</span><span class="ne">TypeError</span><span class="p">,</span> <span class="n">msgspec</span><span class="o">.</span><span class="n">EncodeError</span><span class="p">)</span> <span class="k">as</span> <span class="n">msgspec_error</span><span class="p">:</span>
-</span><span data-line="166">        <span class="k">raise</span> <span class="n">SerializationException</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">msgspec_error</span><span class="p">))</span> <span class="kn">from</span><span class="w"> </span><span class="nn">msgspec_error</span></div>
+</span><span data-line="151"><span class="k">def</span><span class="w"> </span><span class="nf">encode_json</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">serializer</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Any</span><span class="p">],</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
+</span><span data-line="152"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Encode a value into JSON.</span>
+</span><span data-line="153">
+</span><span data-line="154"><span class="sd">    Args:</span>
+</span><span data-line="155"><span class="sd">        value: Value to encode</span>
+</span><span data-line="156"><span class="sd">        serializer: Optional callable to support non-natively supported types.</span>
+</span><span data-line="157">
+</span><span data-line="158"><span class="sd">    Returns:</span>
+</span><span data-line="159"><span class="sd">        JSON as bytes</span>
+</span><span data-line="160">
+</span><span data-line="161"><span class="sd">    Raises:</span>
+</span><span data-line="162"><span class="sd">        SerializationException: If error encoding ``obj``.</span>
+</span><span data-line="163"><span class="sd">    &quot;&quot;&quot;</span>
+</span><span data-line="164">    <span class="k">try</span><span class="p">:</span>
+</span><span data-line="165">        <span class="k">return</span> <span class="n">msgspec</span><span class="o">.</span><span class="n">json</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">enc_hook</span><span class="o">=</span><span class="n">serializer</span><span class="p">)</span> <span class="k">if</span> <span class="n">serializer</span> <span class="k">else</span> <span class="n">_msgspec_json_encoder</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+</span><span data-line="166">    <span class="k">except</span> <span class="p">(</span><span class="ne">TypeError</span><span class="p">,</span> <span class="n">msgspec</span><span class="o">.</span><span class="n">EncodeError</span><span class="p">)</span> <span class="k">as</span> <span class="n">msgspec_error</span><span class="p">:</span>
+</span><span data-line="167">        <span class="k">raise</span> <span class="n">SerializationException</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">msgspec_error</span><span class="p">))</span> <span class="kn">from</span><span class="w"> </span><span class="nn">msgspec_error</span></div>
 
-</span><span data-line="167">
 </span><span data-line="168">
-</span><span data-line="169"><span class="nd">@overload</span>
-</span><span data-line="170"><span class="k">def</span><span class="w"> </span><span class="nf">decode_json</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">strict</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="o">...</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span> <span class="o">...</span>
-</span><span data-line="171">
+</span><span data-line="169">
+</span><span data-line="170"><span class="nd">@overload</span>
+</span><span data-line="171"><span class="k">def</span><span class="w"> </span><span class="nf">decode_json</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">strict</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="o">...</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span> <span class="o">...</span>
 </span><span data-line="172">
-</span><span data-line="173"><span class="nd">@overload</span>
-</span><span data-line="174"><span class="k">def</span><span class="w"> </span><span class="nf">decode_json</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">type_decoders</span><span class="p">:</span> <span class="n">TypeDecodersSequence</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="n">strict</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="o">...</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span> <span class="o">...</span>
-</span><span data-line="175">
+</span><span data-line="173">
+</span><span data-line="174"><span class="nd">@overload</span>
+</span><span data-line="175"><span class="k">def</span><span class="w"> </span><span class="nf">decode_json</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">type_decoders</span><span class="p">:</span> <span class="n">TypeDecodersSequence</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="n">strict</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="o">...</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span> <span class="o">...</span>
 </span><span data-line="176">
-</span><span data-line="177"><span class="nd">@overload</span>
-</span><span data-line="178"><span class="k">def</span><span class="w"> </span><span class="nf">decode_json</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">target_type</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">T</span><span class="p">],</span> <span class="n">strict</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="o">...</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">T</span><span class="p">:</span> <span class="o">...</span>
-</span><span data-line="179">
+</span><span data-line="177">
+</span><span data-line="178"><span class="nd">@overload</span>
+</span><span data-line="179"><span class="k">def</span><span class="w"> </span><span class="nf">decode_json</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">target_type</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">T</span><span class="p">],</span> <span class="n">strict</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="o">...</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">T</span><span class="p">:</span> <span class="o">...</span>
 </span><span data-line="180">
-</span><span data-line="181"><span class="nd">@overload</span>
-</span><span data-line="182"><span class="k">def</span><span class="w"> </span><span class="nf">decode_json</span><span class="p">(</span>
-</span><span data-line="183">    <span class="n">value</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">target_type</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">T</span><span class="p">],</span> <span class="n">type_decoders</span><span class="p">:</span> <span class="n">TypeDecodersSequence</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="n">strict</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="o">...</span>
-</span><span data-line="184"><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">T</span><span class="p">:</span> <span class="o">...</span>
-</span><span data-line="185">
+</span><span data-line="181">
+</span><span data-line="182"><span class="nd">@overload</span>
+</span><span data-line="183"><span class="k">def</span><span class="w"> </span><span class="nf">decode_json</span><span class="p">(</span>
+</span><span data-line="184">    <span class="n">value</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">target_type</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">T</span><span class="p">],</span> <span class="n">type_decoders</span><span class="p">:</span> <span class="n">TypeDecodersSequence</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="n">strict</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="o">...</span>
+</span><span data-line="185"><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">T</span><span class="p">:</span> <span class="o">...</span>
 </span><span data-line="186">
+</span><span data-line="187">
 <div class="viewcode-block" id="decode_json">
 <a class="viewcode-back" href="../../../reference/serialization.html#litestar.serialization.decode_json">[docs]</a>
-</span><span data-line="187"><span class="k">def</span><span class="w"> </span><span class="nf">decode_json</span><span class="p">(</span>  <span class="c1"># type: ignore[misc]</span>
-</span><span data-line="188">    <span class="n">value</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">bytes</span><span class="p">,</span>
-</span><span data-line="189">    <span class="n">target_type</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">T</span><span class="p">]</span> <span class="o">|</span> <span class="n">EmptyType</span> <span class="o">=</span> <span class="n">Empty</span><span class="p">,</span>  <span class="c1"># pyright: ignore</span>
-</span><span data-line="190">    <span class="n">type_decoders</span><span class="p">:</span> <span class="n">TypeDecodersSequence</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="191">    <span class="n">strict</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-</span><span data-line="192"><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
-</span><span data-line="193"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Decode a JSON string/bytes into an object.</span>
-</span><span data-line="194">
-</span><span data-line="195"><span class="sd">    Args:</span>
-</span><span data-line="196"><span class="sd">        value: Value to decode</span>
-</span><span data-line="197"><span class="sd">        target_type: An optional type to decode the data into</span>
-</span><span data-line="198"><span class="sd">        type_decoders: Optional sequence of type decoders</span>
-</span><span data-line="199"><span class="sd">        strict: Whether type coercion rules should be strict. Setting to False enables</span>
-</span><span data-line="200"><span class="sd">            a wider set of coercion rules from string to non-string types for all values</span>
-</span><span data-line="201">
-</span><span data-line="202"><span class="sd">    Returns:</span>
-</span><span data-line="203"><span class="sd">        An object</span>
-</span><span data-line="204">
-</span><span data-line="205"><span class="sd">    Raises:</span>
-</span><span data-line="206"><span class="sd">        SerializationException: If error decoding ``value``.</span>
-</span><span data-line="207"><span class="sd">    &quot;&quot;&quot;</span>
-</span><span data-line="208">    <span class="k">try</span><span class="p">:</span>
-</span><span data-line="209">        <span class="k">if</span> <span class="n">target_type</span> <span class="ow">is</span> <span class="n">Empty</span><span class="p">:</span>
-</span><span data-line="210">            <span class="k">return</span> <span class="n">_msgspec_json_decoder</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
-</span><span data-line="211">        <span class="k">return</span> <span class="n">msgspec</span><span class="o">.</span><span class="n">json</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span>
-</span><span data-line="212">            <span class="n">value</span><span class="p">,</span>
-</span><span data-line="213">            <span class="n">dec_hook</span><span class="o">=</span><span class="n">partial</span><span class="p">(</span>
-</span><span data-line="214">                <span class="n">default_deserializer</span><span class="p">,</span>
-</span><span data-line="215">                <span class="n">type_decoders</span><span class="o">=</span><span class="n">type_decoders</span><span class="p">,</span>
-</span><span data-line="216">            <span class="p">),</span>
-</span><span data-line="217">            <span class="nb">type</span><span class="o">=</span><span class="n">target_type</span><span class="p">,</span>
-</span><span data-line="218">            <span class="n">strict</span><span class="o">=</span><span class="n">strict</span><span class="p">,</span>
-</span><span data-line="219">        <span class="p">)</span>
-</span><span data-line="220">    <span class="k">except</span> <span class="n">msgspec</span><span class="o">.</span><span class="n">DecodeError</span> <span class="k">as</span> <span class="n">msgspec_error</span><span class="p">:</span>
-</span><span data-line="221">        <span class="k">raise</span> <span class="n">SerializationException</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">msgspec_error</span><span class="p">))</span> <span class="kn">from</span><span class="w"> </span><span class="nn">msgspec_error</span></div>
+</span><span data-line="188"><span class="k">def</span><span class="w"> </span><span class="nf">decode_json</span><span class="p">(</span>  <span class="c1"># type: ignore[misc]</span>
+</span><span data-line="189">    <span class="n">value</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">bytes</span><span class="p">,</span>
+</span><span data-line="190">    <span class="n">target_type</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">T</span><span class="p">]</span> <span class="o">|</span> <span class="n">EmptyType</span> <span class="o">=</span> <span class="n">Empty</span><span class="p">,</span>  <span class="c1"># pyright: ignore</span>
+</span><span data-line="191">    <span class="n">type_decoders</span><span class="p">:</span> <span class="n">TypeDecodersSequence</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="192">    <span class="n">strict</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+</span><span data-line="193"><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+</span><span data-line="194"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Decode a JSON string/bytes into an object.</span>
+</span><span data-line="195">
+</span><span data-line="196"><span class="sd">    Args:</span>
+</span><span data-line="197"><span class="sd">        value: Value to decode</span>
+</span><span data-line="198"><span class="sd">        target_type: An optional type to decode the data into</span>
+</span><span data-line="199"><span class="sd">        type_decoders: Optional sequence of type decoders</span>
+</span><span data-line="200"><span class="sd">        strict: Whether type coercion rules should be strict. Setting to False enables</span>
+</span><span data-line="201"><span class="sd">            a wider set of coercion rules from string to non-string types for all values</span>
+</span><span data-line="202">
+</span><span data-line="203"><span class="sd">    Returns:</span>
+</span><span data-line="204"><span class="sd">        An object</span>
+</span><span data-line="205">
+</span><span data-line="206"><span class="sd">    Raises:</span>
+</span><span data-line="207"><span class="sd">        SerializationException: If error decoding ``value``.</span>
+</span><span data-line="208"><span class="sd">    &quot;&quot;&quot;</span>
+</span><span data-line="209">    <span class="k">try</span><span class="p">:</span>
+</span><span data-line="210">        <span class="k">if</span> <span class="n">target_type</span> <span class="ow">is</span> <span class="n">Empty</span><span class="p">:</span>
+</span><span data-line="211">            <span class="k">return</span> <span class="n">_msgspec_json_decoder</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+</span><span data-line="212">        <span class="k">return</span> <span class="n">msgspec</span><span class="o">.</span><span class="n">json</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span>
+</span><span data-line="213">            <span class="n">value</span><span class="p">,</span>
+</span><span data-line="214">            <span class="n">dec_hook</span><span class="o">=</span><span class="n">partial</span><span class="p">(</span>
+</span><span data-line="215">                <span class="n">default_deserializer</span><span class="p">,</span>
+</span><span data-line="216">                <span class="n">type_decoders</span><span class="o">=</span><span class="n">type_decoders</span><span class="p">,</span>
+</span><span data-line="217">            <span class="p">),</span>
+</span><span data-line="218">            <span class="nb">type</span><span class="o">=</span><span class="n">target_type</span><span class="p">,</span>
+</span><span data-line="219">            <span class="n">strict</span><span class="o">=</span><span class="n">strict</span><span class="p">,</span>
+</span><span data-line="220">        <span class="p">)</span>
+</span><span data-line="221">    <span class="k">except</span> <span class="n">msgspec</span><span class="o">.</span><span class="n">DecodeError</span> <span class="k">as</span> <span class="n">msgspec_error</span><span class="p">:</span>
+</span><span data-line="222">        <span class="k">raise</span> <span class="n">SerializationException</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">msgspec_error</span><span class="p">))</span> <span class="kn">from</span><span class="w"> </span><span class="nn">msgspec_error</span></div>
 
-</span><span data-line="222">
 </span><span data-line="223">
+</span><span data-line="224">
 <div class="viewcode-block" id="encode_msgpack">
 <a class="viewcode-back" href="../../../reference/serialization.html#litestar.serialization.encode_msgpack">[docs]</a>
-</span><span data-line="224"><span class="k">def</span><span class="w"> </span><span class="nf">encode_msgpack</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">serializer</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Any</span><span class="p">],</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">default_serializer</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
-</span><span data-line="225"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Encode a value into MessagePack.</span>
-</span><span data-line="226">
-</span><span data-line="227"><span class="sd">    Args:</span>
-</span><span data-line="228"><span class="sd">        value: Value to encode</span>
-</span><span data-line="229"><span class="sd">        serializer: Optional callable to support non-natively supported types</span>
-</span><span data-line="230">
-</span><span data-line="231"><span class="sd">    Returns:</span>
-</span><span data-line="232"><span class="sd">        MessagePack as bytes</span>
-</span><span data-line="233">
-</span><span data-line="234"><span class="sd">    Raises:</span>
-</span><span data-line="235"><span class="sd">        SerializationException: If error encoding ``obj``.</span>
-</span><span data-line="236"><span class="sd">    &quot;&quot;&quot;</span>
-</span><span data-line="237">    <span class="k">try</span><span class="p">:</span>
-</span><span data-line="238">        <span class="k">if</span> <span class="n">serializer</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">serializer</span> <span class="ow">is</span> <span class="n">default_serializer</span><span class="p">:</span>
-</span><span data-line="239">            <span class="k">return</span> <span class="n">_msgspec_msgpack_encoder</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
-</span><span data-line="240">        <span class="k">return</span> <span class="n">msgspec</span><span class="o">.</span><span class="n">msgpack</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">enc_hook</span><span class="o">=</span><span class="n">serializer</span><span class="p">)</span>
-</span><span data-line="241">    <span class="k">except</span> <span class="p">(</span><span class="ne">TypeError</span><span class="p">,</span> <span class="n">msgspec</span><span class="o">.</span><span class="n">EncodeError</span><span class="p">)</span> <span class="k">as</span> <span class="n">msgspec_error</span><span class="p">:</span>
-</span><span data-line="242">        <span class="k">raise</span> <span class="n">SerializationException</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">msgspec_error</span><span class="p">))</span> <span class="kn">from</span><span class="w"> </span><span class="nn">msgspec_error</span></div>
+</span><span data-line="225"><span class="k">def</span><span class="w"> </span><span class="nf">encode_msgpack</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">serializer</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Any</span><span class="p">],</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">default_serializer</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
+</span><span data-line="226"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Encode a value into MessagePack.</span>
+</span><span data-line="227">
+</span><span data-line="228"><span class="sd">    Args:</span>
+</span><span data-line="229"><span class="sd">        value: Value to encode</span>
+</span><span data-line="230"><span class="sd">        serializer: Optional callable to support non-natively supported types</span>
+</span><span data-line="231">
+</span><span data-line="232"><span class="sd">    Returns:</span>
+</span><span data-line="233"><span class="sd">        MessagePack as bytes</span>
+</span><span data-line="234">
+</span><span data-line="235"><span class="sd">    Raises:</span>
+</span><span data-line="236"><span class="sd">        SerializationException: If error encoding ``obj``.</span>
+</span><span data-line="237"><span class="sd">    &quot;&quot;&quot;</span>
+</span><span data-line="238">    <span class="k">try</span><span class="p">:</span>
+</span><span data-line="239">        <span class="k">if</span> <span class="n">serializer</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">serializer</span> <span class="ow">is</span> <span class="n">default_serializer</span><span class="p">:</span>
+</span><span data-line="240">            <span class="k">return</span> <span class="n">_msgspec_msgpack_encoder</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+</span><span data-line="241">        <span class="k">return</span> <span class="n">msgspec</span><span class="o">.</span><span class="n">msgpack</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">enc_hook</span><span class="o">=</span><span class="n">serializer</span><span class="p">)</span>
+</span><span data-line="242">    <span class="k">except</span> <span class="p">(</span><span class="ne">TypeError</span><span class="p">,</span> <span class="n">msgspec</span><span class="o">.</span><span class="n">EncodeError</span><span class="p">)</span> <span class="k">as</span> <span class="n">msgspec_error</span><span class="p">:</span>
+</span><span data-line="243">        <span class="k">raise</span> <span class="n">SerializationException</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">msgspec_error</span><span class="p">))</span> <span class="kn">from</span><span class="w"> </span><span class="nn">msgspec_error</span></div>
 
-</span><span data-line="243">
 </span><span data-line="244">
-</span><span data-line="245"><span class="nd">@overload</span>
-</span><span data-line="246"><span class="k">def</span><span class="w"> </span><span class="nf">decode_msgpack</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">strict</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="o">...</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span> <span class="o">...</span>
-</span><span data-line="247">
+</span><span data-line="245">
+</span><span data-line="246"><span class="nd">@overload</span>
+</span><span data-line="247"><span class="k">def</span><span class="w"> </span><span class="nf">decode_msgpack</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">strict</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="o">...</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span> <span class="o">...</span>
 </span><span data-line="248">
-</span><span data-line="249"><span class="nd">@overload</span>
-</span><span data-line="250"><span class="k">def</span><span class="w"> </span><span class="nf">decode_msgpack</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">type_decoders</span><span class="p">:</span> <span class="n">TypeDecodersSequence</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="n">strict</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="o">...</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span> <span class="o">...</span>
-</span><span data-line="251">
+</span><span data-line="249">
+</span><span data-line="250"><span class="nd">@overload</span>
+</span><span data-line="251"><span class="k">def</span><span class="w"> </span><span class="nf">decode_msgpack</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">type_decoders</span><span class="p">:</span> <span class="n">TypeDecodersSequence</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="n">strict</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="o">...</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span> <span class="o">...</span>
 </span><span data-line="252">
-</span><span data-line="253"><span class="nd">@overload</span>
-</span><span data-line="254"><span class="k">def</span><span class="w"> </span><span class="nf">decode_msgpack</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">target_type</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">T</span><span class="p">],</span> <span class="n">strict</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="o">...</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">T</span><span class="p">:</span> <span class="o">...</span>
-</span><span data-line="255">
+</span><span data-line="253">
+</span><span data-line="254"><span class="nd">@overload</span>
+</span><span data-line="255"><span class="k">def</span><span class="w"> </span><span class="nf">decode_msgpack</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">target_type</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">T</span><span class="p">],</span> <span class="n">strict</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="o">...</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">T</span><span class="p">:</span> <span class="o">...</span>
 </span><span data-line="256">
-</span><span data-line="257"><span class="nd">@overload</span>
-</span><span data-line="258"><span class="k">def</span><span class="w"> </span><span class="nf">decode_msgpack</span><span class="p">(</span>
-</span><span data-line="259">    <span class="n">value</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">target_type</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">T</span><span class="p">],</span> <span class="n">type_decoders</span><span class="p">:</span> <span class="n">TypeDecodersSequence</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="n">strict</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="o">...</span>
-</span><span data-line="260"><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">T</span><span class="p">:</span> <span class="o">...</span>
-</span><span data-line="261">
+</span><span data-line="257">
+</span><span data-line="258"><span class="nd">@overload</span>
+</span><span data-line="259"><span class="k">def</span><span class="w"> </span><span class="nf">decode_msgpack</span><span class="p">(</span>
+</span><span data-line="260">    <span class="n">value</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">target_type</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">T</span><span class="p">],</span> <span class="n">type_decoders</span><span class="p">:</span> <span class="n">TypeDecodersSequence</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="n">strict</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="o">...</span>
+</span><span data-line="261"><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">T</span><span class="p">:</span> <span class="o">...</span>
 </span><span data-line="262">
+</span><span data-line="263">
 <div class="viewcode-block" id="decode_msgpack">
 <a class="viewcode-back" href="../../../reference/serialization.html#litestar.serialization.decode_msgpack">[docs]</a>
-</span><span data-line="263"><span class="k">def</span><span class="w"> </span><span class="nf">decode_msgpack</span><span class="p">(</span>  <span class="c1"># type: ignore[misc]</span>
-</span><span data-line="264">    <span class="n">value</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">,</span>
-</span><span data-line="265">    <span class="n">target_type</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">T</span><span class="p">]</span> <span class="o">|</span> <span class="n">EmptyType</span> <span class="o">=</span> <span class="n">Empty</span><span class="p">,</span>  <span class="c1"># pyright: ignore[reportInvalidTypeVarUse]</span>
-</span><span data-line="266">    <span class="n">type_decoders</span><span class="p">:</span> <span class="n">TypeDecodersSequence</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="267">    <span class="n">strict</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-</span><span data-line="268"><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
-</span><span data-line="269"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Decode a MessagePack string/bytes into an object.</span>
-</span><span data-line="270">
-</span><span data-line="271"><span class="sd">    Args:</span>
-</span><span data-line="272"><span class="sd">        value: Value to decode</span>
-</span><span data-line="273"><span class="sd">        target_type: An optional type to decode the data into</span>
-</span><span data-line="274"><span class="sd">        type_decoders: Optional sequence of type decoders</span>
-</span><span data-line="275"><span class="sd">        strict: Whether type coercion rules should be strict. Setting to False enables</span>
-</span><span data-line="276"><span class="sd">            a wider set of coercion rules from string to non-string types for all values</span>
-</span><span data-line="277">
-</span><span data-line="278"><span class="sd">    Returns:</span>
-</span><span data-line="279"><span class="sd">        An object</span>
-</span><span data-line="280">
-</span><span data-line="281"><span class="sd">    Raises:</span>
-</span><span data-line="282"><span class="sd">        SerializationException: If error decoding ``value``.</span>
-</span><span data-line="283"><span class="sd">    &quot;&quot;&quot;</span>
-</span><span data-line="284">    <span class="k">try</span><span class="p">:</span>
-</span><span data-line="285">        <span class="k">if</span> <span class="n">target_type</span> <span class="ow">is</span> <span class="n">Empty</span><span class="p">:</span>
-</span><span data-line="286">            <span class="k">return</span> <span class="n">_msgspec_msgpack_decoder</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
-</span><span data-line="287">        <span class="k">return</span> <span class="n">msgspec</span><span class="o">.</span><span class="n">msgpack</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span>
-</span><span data-line="288">            <span class="n">value</span><span class="p">,</span>
-</span><span data-line="289">            <span class="n">dec_hook</span><span class="o">=</span><span class="n">partial</span><span class="p">(</span><span class="n">default_deserializer</span><span class="p">,</span> <span class="n">type_decoders</span><span class="o">=</span><span class="n">type_decoders</span><span class="p">),</span>
-</span><span data-line="290">            <span class="nb">type</span><span class="o">=</span><span class="n">target_type</span><span class="p">,</span>
-</span><span data-line="291">            <span class="n">strict</span><span class="o">=</span><span class="n">strict</span><span class="p">,</span>
-</span><span data-line="292">        <span class="p">)</span>
-</span><span data-line="293">    <span class="k">except</span> <span class="n">msgspec</span><span class="o">.</span><span class="n">DecodeError</span> <span class="k">as</span> <span class="n">msgspec_error</span><span class="p">:</span>
-</span><span data-line="294">        <span class="k">raise</span> <span class="n">SerializationException</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">msgspec_error</span><span class="p">))</span> <span class="kn">from</span><span class="w"> </span><span class="nn">msgspec_error</span></div>
+</span><span data-line="264"><span class="k">def</span><span class="w"> </span><span class="nf">decode_msgpack</span><span class="p">(</span>  <span class="c1"># type: ignore[misc]</span>
+</span><span data-line="265">    <span class="n">value</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">,</span>
+</span><span data-line="266">    <span class="n">target_type</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">T</span><span class="p">]</span> <span class="o">|</span> <span class="n">EmptyType</span> <span class="o">=</span> <span class="n">Empty</span><span class="p">,</span>  <span class="c1"># pyright: ignore[reportInvalidTypeVarUse]</span>
+</span><span data-line="267">    <span class="n">type_decoders</span><span class="p">:</span> <span class="n">TypeDecodersSequence</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="268">    <span class="n">strict</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+</span><span data-line="269"><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+</span><span data-line="270"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Decode a MessagePack string/bytes into an object.</span>
+</span><span data-line="271">
+</span><span data-line="272"><span class="sd">    Args:</span>
+</span><span data-line="273"><span class="sd">        value: Value to decode</span>
+</span><span data-line="274"><span class="sd">        target_type: An optional type to decode the data into</span>
+</span><span data-line="275"><span class="sd">        type_decoders: Optional sequence of type decoders</span>
+</span><span data-line="276"><span class="sd">        strict: Whether type coercion rules should be strict. Setting to False enables</span>
+</span><span data-line="277"><span class="sd">            a wider set of coercion rules from string to non-string types for all values</span>
+</span><span data-line="278">
+</span><span data-line="279"><span class="sd">    Returns:</span>
+</span><span data-line="280"><span class="sd">        An object</span>
+</span><span data-line="281">
+</span><span data-line="282"><span class="sd">    Raises:</span>
+</span><span data-line="283"><span class="sd">        SerializationException: If error decoding ``value``.</span>
+</span><span data-line="284"><span class="sd">    &quot;&quot;&quot;</span>
+</span><span data-line="285">    <span class="k">try</span><span class="p">:</span>
+</span><span data-line="286">        <span class="k">if</span> <span class="n">target_type</span> <span class="ow">is</span> <span class="n">Empty</span><span class="p">:</span>
+</span><span data-line="287">            <span class="k">return</span> <span class="n">_msgspec_msgpack_decoder</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+</span><span data-line="288">        <span class="k">return</span> <span class="n">msgspec</span><span class="o">.</span><span class="n">msgpack</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span>
+</span><span data-line="289">            <span class="n">value</span><span class="p">,</span>
+</span><span data-line="290">            <span class="n">dec_hook</span><span class="o">=</span><span class="n">partial</span><span class="p">(</span><span class="n">default_deserializer</span><span class="p">,</span> <span class="n">type_decoders</span><span class="o">=</span><span class="n">type_decoders</span><span class="p">),</span>
+</span><span data-line="291">            <span class="nb">type</span><span class="o">=</span><span class="n">target_type</span><span class="p">,</span>
+</span><span data-line="292">            <span class="n">strict</span><span class="o">=</span><span class="n">strict</span><span class="p">,</span>
+</span><span data-line="293">        <span class="p">)</span>
+</span><span data-line="294">    <span class="k">except</span> <span class="n">msgspec</span><span class="o">.</span><span class="n">DecodeError</span> <span class="k">as</span> <span class="n">msgspec_error</span><span class="p">:</span>
+</span><span data-line="295">        <span class="k">raise</span> <span class="n">SerializationException</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">msgspec_error</span><span class="p">))</span> <span class="kn">from</span><span class="w"> </span><span class="nn">msgspec_error</span></div>
 
-</span><span data-line="295">
 </span><span data-line="296">
+</span><span data-line="297">
 <div class="viewcode-block" id="get_serializer">
 <a class="viewcode-back" href="../../../reference/serialization.html#litestar.serialization.get_serializer">[docs]</a>
-</span><span data-line="297"><span class="k">def</span><span class="w"> </span><span class="nf">get_serializer</span><span class="p">(</span><span class="n">type_encoders</span><span class="p">:</span> <span class="n">TypeEncodersMap</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Serializer</span><span class="p">:</span>
-</span><span data-line="298"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Get the serializer for the given type encoders.&quot;&quot;&quot;</span>
-</span><span data-line="299">
-</span><span data-line="300">    <span class="k">if</span> <span class="n">type_encoders</span><span class="p">:</span>
-</span><span data-line="301">        <span class="k">return</span> <span class="n">partial</span><span class="p">(</span><span class="n">default_serializer</span><span class="p">,</span> <span class="n">type_encoders</span><span class="o">=</span><span class="n">type_encoders</span><span class="p">)</span>
-</span><span data-line="302">
-</span><span data-line="303">    <span class="k">return</span> <span class="n">default_serializer</span></div>
+</span><span data-line="298"><span class="k">def</span><span class="w"> </span><span class="nf">get_serializer</span><span class="p">(</span><span class="n">type_encoders</span><span class="p">:</span> <span class="n">TypeEncodersMap</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Serializer</span><span class="p">:</span>
+</span><span data-line="299"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Get the serializer for the given type encoders.&quot;&quot;&quot;</span>
+</span><span data-line="300">
+</span><span data-line="301">    <span class="k">if</span> <span class="n">type_encoders</span><span class="p">:</span>
+</span><span data-line="302">        <span class="k">return</span> <span class="n">partial</span><span class="p">(</span><span class="n">default_serializer</span><span class="p">,</span> <span class="n">type_encoders</span><span class="o">=</span><span class="n">type_encoders</span><span class="p">)</span>
+</span><span data-line="303">
+</span><span data-line="304">    <span class="k">return</span> <span class="n">default_serializer</span></div>
 
 </span></pre></div>
         </article><button class="back-to-top" type="button">
