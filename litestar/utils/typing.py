@@ -55,13 +55,6 @@ __all__ = (
 T = TypeVar("T")
 UnionT = TypeVar("UnionT", bound="Union")  # pyright: ignore
 
-tuple_types_regex = re.compile(
-    "^"
-    + "|".join(
-        [*[repr(x) for x in (List, Sequence, Iterable, Iterator, Tuple, Deque)], "tuple", "list", "collections.deque"]
-    )
-)
-
 instantiable_type_mapping = {
     AbstractSet: set,
     DefaultDict: defaultdict,
