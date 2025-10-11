@@ -193,7 +193,7 @@ def test_unwrap_read_only() -> None:
     async def handler(
         data: SchemaDict,
     ) -> SchemaDict:
-        return {'id': data['id'], 'email': 'new@example.com'}
+        return {"id": data["id"], "email": "new@example.com"}
 
     app = Litestar([handler])
     schema = app.openapi_schema.to_schema()
