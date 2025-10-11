@@ -504,7 +504,7 @@ class Litestar(Router):
 
         self.asgi_router.construct_routing_trie()
 
-        if self.logging_config:
+        if self.logging_config and self.logging_config is not Empty:
             self.get_logger = self.logging_config.configure()
             self.logger = self.get_logger("litestar")
 
@@ -577,7 +577,7 @@ class Litestar(Router):
 
         When possible, it calls the `self.logging_config.set_level` method.  This allows for implementation specific code and APIs to be called.
         """
-        if self.logger and self.logging_config:
+        if self.logger and self.logging_config and self.logging_config is not Empty:
             self.logging_config.set_level(self.logger, logging.DEBUG if value else logging.INFO)
         elif self.logger and hasattr(self.logger, "setLevel"):  # pragma: no cover
             self.logger.setLevel(logging.DEBUG if value else logging.INFO)  # pragma: no cover

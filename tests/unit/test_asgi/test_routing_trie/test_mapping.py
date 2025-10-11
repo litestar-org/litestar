@@ -45,3 +45,16 @@ def test_build_route_middleware_stack_with_middleware(monkeypatch: pytest.Monkey
     assert len(call_args.args) == 1
     assert isinstance(call_args.args[0], ExceptionHandlerMiddleware)
     assert not call_args.kwargs
+
+
+def test_build_route_middleware_stack_with_cached_route_and_none_response_cache() -> None:
+    @get("/", cache=True)
+    async def handler() -> None:
+        pass
+
+    app = Litestar(route_handlers=[handler], response_cache_config=None, openapi_config=None)
+    route = app.routes[0]
+
+    asgi_app = build_route_middleware_stack(app=app, route=route, route_handler=handler)
+
+    assert asgi_app is not route.handle

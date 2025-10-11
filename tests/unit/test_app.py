@@ -27,6 +27,7 @@ from litestar.logging.config import LoggingConfig
 from litestar.plugins import CLIPlugin
 from litestar.status_codes import HTTP_200_OK, HTTP_400_BAD_REQUEST, HTTP_500_INTERNAL_SERVER_ERROR
 from litestar.testing import TestClient, create_test_client
+from litestar.types import Empty
 
 if TYPE_CHECKING:
     from litestar.types import Message, Scope
@@ -178,7 +179,8 @@ def test_app_debug_create_logger() -> None:
     app = Litestar([], debug=True)
 
     assert app.logging_config
-    assert app.logging_config.loggers["litestar"]["level"] == "DEBUG"  # type: ignore[attr-defined]
+    assert isinstance(app.logging_config, LoggingConfig)
+    assert app.logging_config.loggers["litestar"]["level"] == "DEBUG"
 
 
 def test_app_debug_explicitly_disable_logging() -> None:
@@ -192,7 +194,8 @@ def test_app_debug_update_logging_config() -> None:
     app = Litestar([], logging_config=logging_config, debug=True)
 
     assert app.logging_config is logging_config
-    assert app.logging_config.loggers["litestar"]["level"] == "DEBUG"  # type: ignore[attr-defined]
+    assert isinstance(app.logging_config, LoggingConfig)
+    assert app.logging_config.loggers["litestar"]["level"] == "DEBUG"
 
 
 def test_set_state() -> None:
@@ -461,3 +464,83 @@ def test_from_scope() -> None:
         client.get("/")
 
     mock.assert_called_once_with(app)
+
+
+def test_app_with_empty_logging_config() -> None:
+    app = Litestar([], logging_config=Empty)
+
+    assert isinstance(app.logging_config, LoggingConfig)
+    assert app.get_logger is not None
+
+
+def test_app_debug_with_empty_logging_config() -> None:
+    app = Litestar([], logging_config=Empty)
+
+    app.debug = True
+    assert app.debug is True
+
+    app.debug = False
+    assert app.debug is False
+
+
+def test_app_logging_config_empty_vs_none() -> None:
+    app_empty = Litestar([], logging_config=Empty)
+    app_none = Litestar([], logging_config=None)
+
+    assert isinstance(app_empty.logging_config, LoggingConfig)
+    assert app_none.logging_config is None
+
+
+def test_app_logging_config_set_to_empty_after_init() -> None:
+    app = Litestar([], logging_config=None)
+
+    app.logging_config = Empty
+    app.logger = None
+
+    app.debug = True
+    assert app.debug is True
+
+
+def test_app_logging_config_empty_during_init_bypass() -> None:
+    app = Litestar([], logging_config=None)
+
+    original_config = app.logging_config
+    app.logging_config = Empty
+
+    try:
+        app.debug = True
+        app.debug = False
+    finally:
+        app.logging_config = original_config
+
+
+def test_handler_get_cached_response_with_none_config() -> None:
+    @get("/", cache=True)
+    async def handler() -> str:
+        return "test"
+
+    app = Litestar(route_handlers=[handler], response_cache_config=None)
+
+    route_handler = None
+    for route in app.routes:
+        if hasattr(route, "route_handlers"):  # pyright: ignore[reportAttributeAccessIssue]
+            for rh in route.route_handlers:  # pyright: ignore[reportAttributeAccessIssue]
+                if hasattr(rh, "_get_cached_response"):
+                    route_handler = rh
+                    break
+
+    if route_handler:
+        scope: dict[str, object] = {
+            "type": "http",
+            "method": "GET",
+            "path": "/",
+            "headers": [],
+            "query_string": b"",
+            "litestar_app": app,
+        }
+        request: Request[Any, Any, Any] = Request(scope=scope)  # type: ignore[arg-type]
+
+        import asyncio
+
+        result = asyncio.run(route_handler._get_cached_response(request))
+        assert result is None
