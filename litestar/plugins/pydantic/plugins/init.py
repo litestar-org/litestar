@@ -67,7 +67,7 @@ def _dec_pydantic_uuid(
     uuid_type: type[pydantic_v1.UUID1] | type[pydantic_v1.UUID3] | type[pydantic_v1.UUID4] | type[pydantic_v1.UUID5],
     value: Any,
 ) -> (
-    type[pydantic_v1.UUID1] | type[pydantic_v1.UUID3] | type[pydantic_v1.UUID4] | type[pydantic_v1.UUID5]
+    pydantic_v1.UUID1 | pydantic_v1.UUID3 | pydantic_v1.UUID4 | pydantic_v1.UUID5
 ):  # pragma: no cover
     if isinstance(value, str):
         value = uuid_type(value)
@@ -90,7 +90,7 @@ def _dec_pydantic_uuid(
         raise ValidationError(f"Invalid UUID version: {value!r}")
 
     return cast(
-        "type[pydantic_v1.UUID1] | type[pydantic_v1.UUID3] | type[pydantic_v1.UUID4] | type[pydantic_v1.UUID5]", value
+        "pydantic_v1.UUID1 | pydantic_v1.UUID3 | pydantic_v1.UUID4 | pydantic_v1.UUID5", value
     )
 
 
