@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-import io
 import re
-from collections.abc import AsyncGenerator, AsyncIterable, AsyncIterator, Iterable, Iterator
+from collections.abc import AsyncGenerator, AsyncIterable, AsyncIterator, Callable, Iterable, Iterator
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Any
+from io import StringIO
+from typing import TYPE_CHECKING
 
 from litestar.concurrency import sync_to_thread
 from litestar.exceptions import ImproperlyConfiguredException
@@ -26,7 +26,7 @@ class _ServerSentEventIterator(AsyncIteratorWrapper[bytes]):
 
     def __init__(
         self,
-        content: str | bytes | StreamType[SSEData],
+        content: str | bytes | StreamType[SSEData] | Callable[[], str | bytes | StreamType[SSEData]],
         event_type: str | None = None,
         event_id: int | str | None = None,
         retry_duration: int | None = None,
@@ -52,18 +52,18 @@ class _ServerSentEventIterator(AsyncIteratorWrapper[bytes]):
         super().__init__(iterator=chunks)
 
         if not isinstance(content, (Iterator, AsyncIterator, AsyncIteratorWrapper)) and callable(content):
-            content = content()  # type: ignore[unreachable]
+            content = content()
 
         if isinstance(content, (str, bytes)):
             self.content_async_iterator = AsyncIteratorWrapper([content])
-        elif isinstance(content, (Iterable, Iterator)):
+        elif isinstance(content, Iterable):
             self.content_async_iterator = AsyncIteratorWrapper(content)
-        elif isinstance(content, (AsyncIterable, AsyncIterator, AsyncIteratorWrapper)):
+        elif isinstance(content, (AsyncIterable, AsyncIteratorWrapper)):
             self.content_async_iterator = content
         else:
             raise ImproperlyConfiguredException(f"Invalid type {type(content)} for ServerSentEvent")
 
-    def ensure_bytes(self, data: str | int | bytes | dict | ServerSentEventMessage | Any, sep: str) -> bytes:
+    def ensure_bytes(self, data: str | int | bytes | dict | ServerSentEventMessage, sep: str) -> bytes:
         if isinstance(data, ServerSentEventMessage):
             return data.encode()
         if isinstance(data, dict):
@@ -100,7 +100,7 @@ class ServerSentEventMessage:
     sep: str = DEFAULT_SEPARATOR
 
     def encode(self) -> bytes:
-        buffer = io.StringIO()
+        buffer = StringIO()
         if self.comment is not None:
             for chunk in _LINE_BREAK_RE.split(str(self.comment)):
                 buffer.write(f": {chunk}")
