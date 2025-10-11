@@ -309,7 +309,8 @@ def run_command(
 @click.command(name="routes")
 @click.option("--schema", help="Include schema routes", is_flag=True, default=False)
 @click.option("--exclude", help="routes to exclude via regex", type=str, is_flag=False, multiple=True)
-def routes_command(app: Litestar, exclude: tuple[str, ...], schema: bool) -> None:  # pragma: no cover
+@click.option("--json", "as_json", is_flag=True, help="Output routes as JSON instead of tree")
+def routes_command(app: Litestar, exclude: tuple[str, ...], schema: bool, as_json: bool) -> None:
     """Display information about the application's routes."""
 
     sorted_routes = sorted(app.routes, key=lambda r: r.path)
@@ -319,7 +320,35 @@ def routes_command(app: Litestar, exclude: tuple[str, ...], schema: bool) -> Non
     if exclude is not None:
         sorted_routes = remove_routes_with_patterns(sorted_routes, exclude)
 
-    console.print(_RouteTree(sorted_routes))
+    if as_json:
+        import inspect
+        import json
+
+        routes_list = []
+        for route in sorted_routes:
+            route_info: dict[str, Any] = {
+                "path": route.path,
+                "type": route.__class__.__name__,
+                "methods": sorted(getattr(route, "http_methods", [])),
+            }
+
+            if isinstance(route, HTTPRoute):
+                route_info["handlers"] = [
+                    {
+                        "name": h.name,
+                        "path": h.paths,
+                        "handler": h.handler_name,
+                        "methods": sorted(h.http_methods),
+                        "async": inspect.iscoroutinefunction(unwrap_partial(h.fn)),
+                    }
+                    for h in route.route_handlers
+                ]
+
+            routes_list.append(route_info)
+
+        click.echo(json.dumps(routes_list, indent=4, default=lambda o: list(o) if isinstance(o, set) else o))
+    else:
+        console.print(_RouteTree(sorted_routes))
 
 
 class _RouteTree(Tree):

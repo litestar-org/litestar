@@ -1,4 +1,5 @@
 import io
+import json
 import os
 import re
 import sys
@@ -668,3 +669,23 @@ def test_remove_routes_with_patterns() -> None:
     assert len(paths) == 2
     for route in ["/", "/foo"]:
         assert route in paths
+
+
+@pytest.mark.usefixtures("unset_env")
+def test_routes_command_json_output(runner: CliRunner, create_app_file: CreateAppFileFixture) -> None:
+    """Test that the routes command supports --json output."""
+    create_app_file("app.py", content=APP_FILE_CONTENT_ROUTES_EXAMPLE)
+
+    result = runner.invoke(cli_command, ["routes", "--json"])
+
+    assert result.exit_code == 0
+    assert result.exception is None
+
+    try:
+        data = json.loads(result.output)
+    except json.JSONDecodeError:
+        pytest.fail("Output is not valid JSON")
+
+    assert isinstance(data, list)
+    assert all("path" in route and "methods" in route for route in data)
+    assert len(data) > 0
