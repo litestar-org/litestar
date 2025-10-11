@@ -37,17 +37,18 @@ class _ServerSentEventIterator(AsyncIteratorWrapper[bytes]):
         self.event_type = event_type
         self.retry_duration = retry_duration
         chunks: list[bytes] = []
+
         if comment_message is not None:
-            chunks.extend([f": {chunk}\r\n".encode() for chunk in _LINE_BREAK_RE.split(comment_message)])
+            chunks.extend(f": {chunk}{DEFAULT_SEPARATOR}".encode() for chunk in _LINE_BREAK_RE.split(comment_message))
 
         if event_id is not None:
-            chunks.append(f"id: {event_id}\r\n".encode())
+            chunks.append(f"id: {event_id}{DEFAULT_SEPARATOR}".encode())
 
         if event_type is not None:
-            chunks.append(f"event: {event_type}\r\n".encode())
+            chunks.append(f"event: {event_type}{DEFAULT_SEPARATOR}".encode())
 
         if retry_duration is not None:
-            chunks.append(f"retry: {retry_duration}\r\n".encode())
+            chunks.append(f"retry: {retry_duration}{DEFAULT_SEPARATOR}".encode())
 
         super().__init__(iterator=chunks)
 
