@@ -261,3 +261,17 @@
             difference is expected. Some test cases may break though if they relied on
             the fact that the middleware wrapper created by ``ASGIMiddleware`` was
             always being called
+
+    .. change:: Support for :class:`typing.ReadOnly` in typed dict schemas
+        :type: feature
+        :issue: 4423
+        :pr: 4424
+
+        Support unwrapping ``ReadOnly`` type in schemas like:
+
+        .. code:: python
+
+          from typing import ReadOnly, TypedDict
+
+          class User(TypedDict):
+              id: ReadOnly[int]

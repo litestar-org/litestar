@@ -1,8 +1,9 @@
 from dataclasses import dataclass
-from typing import Annotated, Any, Callable
+from typing import Annotated, Any, Callable, TypedDict
 from unittest.mock import ANY, MagicMock
 
 import pytest
+from typing_extensions import ReadOnly
 
 from litestar import Controller, Litestar, get, post
 from litestar._openapi.datastructures import OpenAPIContext
@@ -181,3 +182,38 @@ def test_request_body_generation_with_dto(create_request: RequestBodyFactory) ->
     mock_dto.create_openapi_schema.assert_called_once_with(
         field_definition=field_definition, handler_id=resolved_handler.handler_id, schema_creator=ANY
     )
+
+
+def test_unwrap_read_only() -> None:
+    class SchemaDict(TypedDict):
+        id: ReadOnly[int]
+        email: str
+
+    @post("/")
+    async def handler(
+        data: SchemaDict,
+    ) -> SchemaDict:
+        return {'id': data['id'], 'email': 'new@example.com'}
+
+    app = Litestar([handler])
+    schema = app.openapi_schema.to_schema()
+
+    assert schema["paths"]["/"]["post"]["requestBody"]["content"]["application/json"] == {
+        "schema": {"$ref": "#/components/schemas/test_unwrap_read_only.SchemaDict"}
+    }
+    assert schema["paths"]["/"]["post"]["responses"]["201"]["content"]["application/json"] == {
+        "schema": {"$ref": "#/components/schemas/test_unwrap_read_only.SchemaDict"}
+    }
+    assert schema["components"] == {
+        "schemas": {
+            "test_unwrap_read_only.SchemaDict": {
+                "properties": {
+                    "id": {"type": "integer"},
+                    "email": {"type": "string"},
+                },
+                "type": "object",
+                "required": ["email", "id"],
+                "title": "SchemaDict",
+            }
+        }
+    }
