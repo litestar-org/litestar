@@ -37,7 +37,16 @@ from typing import (
     cast,
 )
 
-from typing_extensions import Annotated, NewType, NotRequired, Required, get_args, get_origin, get_type_hints
+from typing_extensions import (
+    Annotated,
+    NewType,
+    NotRequired,
+    ReadOnly,
+    Required,
+    get_args,
+    get_origin,
+    get_type_hints,
+)
 
 from litestar.types.builtin_types import NoneType, UnionTypes
 
@@ -130,7 +139,7 @@ This is necessary because occasionally we want to rebuild a generic outer type w
 different args, and types.
 """
 
-wrapper_type_set = {Annotated, Required, NotRequired}
+wrapper_type_set = {Annotated, Required, NotRequired, ReadOnly}
 """Types that always contain a wrapped type annotation as their first arg."""
 
 
@@ -153,7 +162,9 @@ def make_non_optional_union(annotation: UnionT | None) -> UnionT:
 
 
 def unwrap_annotation(annotation: Any) -> tuple[Any, tuple[Any, ...], set[Any]]:
-    """Remove "wrapper" annotation types, such as ``Annotated``, ``Required``, and ``NotRequired``.
+    """Remove "wrapper" annotation types.
+
+    Such as ``Annotated``, ``ReadOnly``, ``Required``, and ``NotRequired``.
 
     Note:
         ``annotation`` should have been retrieved from :func:`get_type_hints()` with ``include_extras=True``. This
