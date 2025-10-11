@@ -23,7 +23,7 @@ T = TypeVar("T")
 S = TypeVar("S", default=None)
 
 
-def iterable_to_generator(iterable: Iterable[T]) -> Generator[T, S, None]:
+def _iterable_to_generator(iterable: Iterable[T]) -> Generator[T, S, None]:
     """Convert an iterable to a generator.
 
     Args:
@@ -84,7 +84,7 @@ class AsyncIteratorWrapper(AsyncGenerator[T, S]):
         elif isinstance(iterator, AsyncIteratorWrapper):
             self._original_generator = iterator._original_generator
         else:
-            self._original_generator = iterable_to_generator(iterator)
+            self._original_generator = _iterable_to_generator(iterator)
 
         self.iterator = iter(iterator)
         self.generator = self._async_generator()
@@ -121,10 +121,9 @@ class AsyncIteratorWrapper(AsyncGenerator[T, S]):
         tb: TracebackType | None = None,
     ) -> T:
         try:
-            return (
-                await sync_to_thread(self._original_generator.throw, typ)
-                if isinstance(typ, BaseException)
-                else await sync_to_thread(self._original_generator.throw, typ, val, tb)
+            return await sync_to_thread(
+                self._original_generator.throw,
+                typ if isinstance(typ, BaseException) else typ(val, tb),
             )
         except StopIteration as e:
             raise StopAsyncIteration from e
