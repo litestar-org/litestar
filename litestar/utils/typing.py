@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import re
 from collections import abc, defaultdict, deque
 from typing import (
     AbstractSet,
