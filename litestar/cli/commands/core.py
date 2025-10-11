@@ -331,7 +331,9 @@ def routes_command(app: Litestar, exclude: tuple[str, ...], schema: bool, as_jso
             if hasattr(route, "route_handlers"):
                 route_info["handlers"] = [
                     {
-                        "name": h.name or h.handler_name,
+                        "name": h.name,
+                        "path": h.paths,
+                        "handler": h.handler_name,
                         "methods": sorted(h.http_methods),
                         "async": inspect.iscoroutinefunction(unwrap_partial(h.fn))
                     }
