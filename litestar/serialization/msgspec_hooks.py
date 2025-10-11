@@ -129,7 +129,7 @@ def default_deserializer(
             if predicate(target_type):
                 return decoder(target_type, value)
 
-    if issubclass(target_type, (Path, PurePath, ImmutableState, UUID)):
+    if issubclass(target_type, (PurePath, ImmutableState, UUID)):
         return target_type(value)
 
     if issubclass(target_type, SecretBytes) and isinstance(value, (bytes, str)):
