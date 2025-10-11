@@ -12,7 +12,7 @@ from ipaddress import (
     IPv6Interface,
     IPv6Network,
 )
-from pathlib import Path, PurePath
+from pathlib import PurePath
 from re import Pattern
 from typing import TYPE_CHECKING, Any, Callable, TypeVar, overload
 from uuid import UUID
@@ -129,7 +129,7 @@ def default_deserializer(
             if predicate(target_type):
                 return decoder(target_type, value)
 
-    if issubclass(target_type, (Path, PurePath, ImmutableState, UUID)):
+    if issubclass(target_type, (PurePath, ImmutableState, UUID)):
         return target_type(value)
 
     if issubclass(target_type, SecretBytes) and isinstance(value, (bytes, str)):
