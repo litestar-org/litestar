@@ -12,7 +12,7 @@ from ipaddress import (
     IPv6Interface,
     IPv6Network,
 )
-from pathlib import PurePath
+from pathlib import Path, PurePath
 from re import Pattern
 from typing import TYPE_CHECKING, Any, Callable, TypeVar, overload
 from uuid import UUID
