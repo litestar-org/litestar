@@ -1,8 +1,8 @@
 import io
+import json
 import os
 import re
 import sys
-import json
 from collections.abc import Generator
 from pathlib import Path
 from typing import Callable, Literal, Optional, Union
@@ -670,6 +670,7 @@ def test_remove_routes_with_patterns() -> None:
     for route in ["/", "/foo"]:
         assert route in paths
 
+
 @pytest.mark.usefixtures("unset_env")
 def test_routes_command_json_output(runner: CliRunner, create_app_file: CreateAppFileFixture) -> None:
     """Test that the routes command supports --json output."""
@@ -679,7 +680,7 @@ def test_routes_command_json_output(runner: CliRunner, create_app_file: CreateAp
 
     assert result.exit_code == 0
     assert result.exception is None
-    
+
     try:
         data = json.loads(result.output)
     except json.JSONDecodeError:
