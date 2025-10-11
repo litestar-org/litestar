@@ -8,11 +8,13 @@ import pytest
 from pytest_lazy_fixtures import lf
 
 from litestar import Controller, Litestar, Request, WebSocket
+from litestar.connection import ASGIConnection
 from litestar.datastructures import State
 from litestar.di import Provide
 from litestar.dto import DataclassDTO, dto_field
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.handlers import WebsocketListenerRouteHandler
+from litestar.handlers.base import BaseRouteHandler
 from litestar.handlers.websocket_handlers import WebsocketListener, websocket_listener
 from litestar.routes import WebSocketRoute
 from litestar.testing import create_test_client
@@ -76,8 +78,7 @@ def test_listener_receive_bytes(receive_mode: WebSocketMode, mock: MagicMock) ->
     def handler(data: bytes) -> None:
         mock(data)
 
-    client = create_test_client([handler])
-    with client.websocket_connect("/") as ws:
+    with create_test_client([handler]) as client, client.websocket_connect("/") as ws:
         ws.send("foo", mode=receive_mode)
 
     mock.assert_called_once_with(b"foo")
@@ -89,8 +90,7 @@ def test_listener_receive_string(receive_mode: WebSocketMode, mock: MagicMock) -
     def handler(data: str) -> None:
         mock(data)
 
-    client = create_test_client([handler])
-    with client.websocket_connect("/") as ws:
+    with create_test_client([handler]) as client, client.websocket_connect("/") as ws:
         ws.send("foo", mode=receive_mode)
 
     mock.assert_called_once_with("foo")
@@ -102,8 +102,7 @@ def test_listener_receive_json(receive_mode: WebSocketMode, mock: MagicMock) -> 
     def handler(data: list[str]) -> None:
         mock(data)
 
-    client = create_test_client([handler])
-    with client.websocket_connect("/") as ws:
+    with create_test_client([handler]) as client, client.websocket_connect("/") as ws:
         ws.send_json(["foo", "bar"], mode=receive_mode)
 
     mock.assert_called_once_with(["foo", "bar"])
@@ -140,8 +139,7 @@ def test_listener_return_bytes(send_mode: WebSocketMode) -> None:
     def handler(data: str) -> bytes:
         return data.encode("utf-8")
 
-    client = create_test_client([handler])
-    with client.websocket_connect("/") as ws:
+    with create_test_client([handler]) as client, client.websocket_connect("/") as ws:
         ws.send_text("foo")
         if send_mode == "text":
             assert ws.receive_text() == "foo"
@@ -155,8 +153,7 @@ def test_listener_send_json(send_mode: WebSocketMode) -> None:
     def handler(data: str) -> dict[str, str]:
         return {"data": data}
 
-    client = create_test_client([handler])
-    with client.websocket_connect("/") as ws:
+    with create_test_client([handler]) as client, client.websocket_connect("/") as ws:
         ws.send_text("foo")
         assert ws.receive_json(mode=send_mode) == {"data": "foo"}
 
@@ -174,8 +171,7 @@ def test_listener_send_with_dto(send_mode: WebSocketMode, mock: MagicMock) -> No
     def handler(data: User) -> User:
         return data
 
-    client = create_test_client([handler])
-    with client.websocket_connect("/") as ws:
+    with create_test_client([handler]) as client, client.websocket_connect("/") as ws:
         ws.send_json({"name": "litestar user"})
         assert ws.receive_json(mode=send_mode) == {"name": "litestar user"}
 
@@ -185,8 +181,7 @@ def test_listener_return_none() -> None:
     def handler(data: str) -> None:
         return data  # type: ignore[return-value]
 
-    client = create_test_client([handler])
-    with client.websocket_connect("/") as ws:
+    with create_test_client([handler]) as client, client.websocket_connect("/") as ws:
         ws.send_text("foo")
 
 
@@ -195,8 +190,7 @@ def test_listener_return_optional_none() -> None:
     def handler(data: str) -> Optional[str]:
         return "world" if data == "hello" else None
 
-    client = create_test_client([handler])
-    with client.websocket_connect("/") as ws:
+    with create_test_client([handler]) as client, client.websocket_connect("/") as ws:
         ws.send_text("hello")
         assert ws.receive_text() == "world"
         ws.send_text("goodbye")
@@ -208,8 +202,7 @@ def test_listener_pass_socket(mock: MagicMock) -> None:
         mock(socket=socket)
         return {"data": data}
 
-    client = create_test_client([handler])
-    with client.websocket_connect("/") as ws:
+    with create_test_client([handler]) as client, client.websocket_connect("/") as ws:
         ws.send_text("foo")
         assert ws.receive_json() == {"data": "foo"}
 
@@ -227,8 +220,7 @@ def test_listener_pass_additional_dependencies(mock: MagicMock) -> None:
     def handler(data: str, foo: int) -> dict[str, Union[str, int]]:
         return {"data": data, "foo": foo}
 
-    client = create_test_client([handler])
-    with client.websocket_connect("/") as ws:
+    with create_test_client([handler]) as client, client.websocket_connect("/") as ws:
         ws.send_text("something")
         ws.send_text("something")
         assert ws.receive_json() == {"data": "something", "foo": 1}
@@ -267,8 +259,7 @@ def test_listener_accept_connection_callback() -> None:
     def handler(data: bytes) -> None:
         return None
 
-    client = create_test_client([handler])
-    with client.websocket_connect("/") as ws:
+    with create_test_client([handler]) as client, client.websocket_connect("/") as ws:
         assert ws.extra_headers == [(b"cookie", b"custom-cookie")]
 
 
@@ -441,3 +432,21 @@ def test_listeners_lifespan_hooks_and_manager_raises(hook_name: str) -> None:
         @websocket_listener("/", **{hook_name: hook_callback}, connection_lifespan=lifespan)  # pyright: ignore
         def handler(data: bytes) -> None:
             pass
+
+
+def test_websocket_listener_applies_guards() -> None:
+    guard_called = False
+
+    async def custom_guard(connection: ASGIConnection, _: BaseRouteHandler) -> None:
+        nonlocal guard_called
+        guard_called = True
+
+    @websocket_listener("/", guards=[custom_guard])
+    async def handler(data: str) -> str:
+        return data
+
+    with create_test_client([handler]) as client, client.websocket_connect("/") as ws:
+        ws.send_text("test")
+
+        assert ws.receive_text() == "test"
+        assert guard_called is True
