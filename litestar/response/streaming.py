@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-import itertools
-from collections.abc import AsyncGenerator, AsyncIterable, AsyncIterator, Iterable, Iterator
+from collections.abc import AsyncGenerator, AsyncIterable, Iterable
 from functools import partial
+from itertools import chain
 from typing import TYPE_CHECKING, Any, Callable, Union
 
 from anyio import Event, create_task_group
@@ -200,12 +200,6 @@ class Stream(Response[StreamType[Union[str, bytes]]]):
         Returns:
             An ASGIStreamingResponse instance.
         """
-
-        headers = {**headers, **self.headers} if headers is not None else self.headers
-        cookies = self.cookies if cookies is None else itertools.chain(self.cookies, cookies)
-
-        media_type = get_enum_string_value(media_type or self.media_type or MediaType.JSON)
-
         iterator = self.iterator
 
         if not isinstance(iterator, (Iterable, AsyncIterable)) and callable(iterator):
@@ -214,11 +208,11 @@ class Stream(Response[StreamType[Union[str, bytes]]]):
         return ASGIStreamingResponse(
             background=self.background or background,
             content_length=0,
-            cookies=cookies,
+            cookies=chain(self.cookies, cookies or ()),
             encoding=self.encoding,
-            headers=headers,
+            headers={**headers, **self.headers} if headers is not None else self.headers,
             is_head_response=is_head_response,
             iterator=iterator,
-            media_type=media_type,
+            media_type=get_enum_string_value(media_type or self.media_type or MediaType.JSON),
             status_code=self.status_code or status_code,
         )
