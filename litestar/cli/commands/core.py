@@ -332,7 +332,7 @@ def routes_command(app: Litestar, exclude: tuple[str, ...], schema: bool, as_jso
                 "methods": sorted(getattr(route, "http_methods", [])),
             }
 
-            if isinstance(route, HTTPRoute):
+            if isinstance(route, HTTPRoute):  # pragma: no cover
                 route_info["handlers"] = [
                     {
                         "name": h.name,
