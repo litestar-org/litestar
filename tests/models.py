@@ -5,7 +5,7 @@ from uuid import UUID
 
 import msgspec
 from polyfactory.factories import DataclassFactory
-from typing_extensions import NotRequired, Required, TypedDict
+from typing_extensions import NotRequired, ReadOnly, Required, TypedDict
 
 
 class Species(str, Enum):
@@ -35,7 +35,7 @@ class DataclassPerson:
 class TypedDictPerson(TypedDict):
     first_name: Required[str]
     last_name: Required[str]
-    id: Required[str]
+    id: Required[ReadOnly[str]]
     optional: NotRequired[Optional[str]]
     complex: Required[Dict[str, List[Dict[str, str]]]]
     pets: NotRequired[Optional[List[DataclassPet]]]
