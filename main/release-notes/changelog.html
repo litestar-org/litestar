@@ -722,6 +722,18 @@ always being called</p>
 <p>References: </p>
 </div>
 </dd>
+<dt>Support for <code class="docutils literal notranslate"><span class="pre">typing.ReadOnly</span></code> in typed dict schemas<a class="headerlink reference internal" href="#3.0.0-support for" id="3.0.0-support for">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Support unwrapping <code class="docutils literal notranslate"><span class="pre">ReadOnly</span></code> type in schemas like:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">ReadOnly</span><span class="p">,</span> <span class="n">TypedDict</span>
+</span><span data-line="2">
+</span><span data-line="3"><span class="k">class</span><span class="w"> </span><span class="nc">User</span><span class="p">(</span><span class="n">TypedDict</span><span class="p">):</span>
+</span><span data-line="4">    <span class="nb">id</span><span class="p">:</span> <span class="n">ReadOnly</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span>
+</span></pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">typing_extensions.ReadOnly</span></code> should be used for python versions &lt;3.13.</p>
+<p>References: <span><a class="reference external" href="https://github.com/litestar-org/litestar/issues/4423">https://github.com/litestar-org/litestar/issues/4423</a></span>, <span><a class="reference external" href="https://github.com/litestar-org/litestar/pull/4424">https://github.com/litestar-org/litestar/pull/4424</a></span></p>
+</div>
+</dd>
 </dl>
 </section>
 <section id="3.0.0-bugfix">
