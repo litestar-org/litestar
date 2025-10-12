@@ -162,7 +162,7 @@ def encode_json(value: Any, serializer: Callable[[Any], Any] | None = None) -> b
         SerializationException: If error encoding ``obj``.
     """
     try:
-        return msgspec.json.encode(value, enc_hook=serializer) if serializer else _msgspec_json_encoder.encode(value)
+        return msgspec.json.encode(value, enc_hook=serializer)
     except (TypeError, msgspec.EncodeError) as msgspec_error:
         raise SerializationException(str(msgspec_error)) from msgspec_error
 
