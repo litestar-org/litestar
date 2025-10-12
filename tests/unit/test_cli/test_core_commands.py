@@ -689,3 +689,27 @@ def test_routes_command_json_output(runner: CliRunner, create_app_file: CreateAp
     assert isinstance(data, list)
     assert all("path" in route and "methods" in route for route in data)
     assert len(data) > 0
+
+
+@pytest.mark.usefixtures("unset_env")
+def test_routes_command_json_output_with_non_http_route(runner, create_app_file):
+    create_app_file(
+        "app.py",
+        content="""
+        from litestar import Litestar, get, websocket
+
+        @websocket("/ws")
+        async def ws(socket): pass
+
+        @get("/x")
+        def x(): return "ok"
+
+        app = Litestar(route_handlers=[ws, x])
+        """,
+    )
+
+    result = runner.invoke(cli_command, ["routes", "--json"])
+    data = json.loads(result.output)
+
+    assert result.exit_code == 0
+    assert any(r.get("type") != "HTTPRoute" for r in data)
