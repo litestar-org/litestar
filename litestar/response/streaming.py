@@ -73,7 +73,7 @@ class ASGIStreamingResponse(ASGIResponse):
 
         self.disconnect_event = Event()
         self.iterator: AsyncIterable[str | bytes] | AsyncGenerator[str | bytes, None] = (
-            iterator if isinstance(iterator, (AsyncIterable, AsyncIterator)) else AsyncIteratorWrapper(iterator)
+            iterator if isinstance(iterator, AsyncIterable) else AsyncIteratorWrapper(iterator)
         )
 
     async def _listen_for_disconnect(self, receive: Receive) -> None:
@@ -207,7 +207,8 @@ class Stream(Response[StreamType[Union[str, bytes]]]):
         media_type = get_enum_string_value(media_type or self.media_type or MediaType.JSON)
 
         iterator = self.iterator
-        if not isinstance(iterator, (Iterable, Iterator, AsyncIterable, AsyncIterator)) and callable(iterator):
+
+        if not isinstance(iterator, (Iterable, AsyncIterable)) and callable(iterator):
             iterator = iterator()
 
         return ASGIStreamingResponse(
