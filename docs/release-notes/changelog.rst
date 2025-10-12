@@ -262,7 +262,7 @@
             the fact that the middleware wrapper created by ``ASGIMiddleware`` was
             always being called
 
-    .. change:: Support for :class:`typing.ReadOnly` in typed dict schemas
+    .. change:: Support for ``typing.ReadOnly`` in typed dict schemas
         :type: feature
         :issue: 4423
         :pr: 4424
@@ -275,3 +275,5 @@
 
           class User(TypedDict):
               id: ReadOnly[int]
+
+        ``typing_extensions.ReadOnly`` should be used for python versions <3.13.
