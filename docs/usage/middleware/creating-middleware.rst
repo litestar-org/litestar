@@ -130,6 +130,20 @@ be the *last* middleware on the *last* layer (i.e. the route handler).
         ]
     )
 
+Constraints and plugins
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+When using plugins that add middleware(s), it is important to understand that these
+middleware(s) are added *before* any user-defined middleware.
+
+This means that if you add in a plugin a middleware that has a constraint, the constraint has to be satisfied
+or an error will be raised.
+
+Most of the time in a plugin you would do ``app_config.middleware.append(MyCustomMiddleware)`` which will be
+ok if it has no constraints attached.
+
+Now suppose that ``MyCustomMiddleware`` has the constraint ``first=True`` then the correct way to add it is to do
+``app_config.middleware.insert(0, MyCustomMiddleware())`` so that it is the first middleware in the stack.
 
 
 Migrating from ``MiddlewareProtocol`` / ``AbstractMiddleware``
