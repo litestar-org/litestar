@@ -459,10 +459,12 @@ data-aria-dark="Switch to auto color mode">
     <div class="sy-scrollbar sy-rside-inner px-6 xl:top-16 xl:sticky xl:pl-0 pt-6 pb-4"><div class="localtoc"><h3>On this page</h3><ul>
 <li><a class="reference internal" href="#litestar.middleware.ASGIMiddleware"><code class="docutils literal notranslate"><span class="pre">ASGIMiddleware</span></code></a><ul>
 <li><a class="reference internal" href="#litestar.middleware.ASGIMiddleware.__call__"><code class="docutils literal notranslate">__call__()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.middleware.ASGIMiddleware.exclude_opt_key"><code class="docutils literal notranslate">exclude_opt_key</span></code></a></li>
 <li><a class="reference internal" href="#litestar.middleware.ASGIMiddleware.exclude_path_pattern"><code class="docutils literal notranslate">exclude_path_pattern</span></code></a></li>
 <li><a class="reference internal" href="#litestar.middleware.ASGIMiddleware.handle"><code class="docutils literal notranslate">handle()</span></code></a></li>
 <li><a class="reference internal" href="#litestar.middleware.ASGIMiddleware.scopes"><code class="docutils literal notranslate">scopes</span></code></a></li>
 <li><a class="reference internal" href="#litestar.middleware.ASGIMiddleware.should_bypass_for_handler"><code class="docutils literal notranslate">should_bypass_for_handler()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.middleware.ASGIMiddleware.should_bypass_for_scope"><code class="docutils literal notranslate">should_bypass_for_scope</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#litestar.middleware.AbstractAuthenticationMiddleware"><code class="docutils literal notranslate"><span class="pre">AbstractAuthenticationMiddleware</span></code></a><ul>
@@ -596,6 +598,12 @@ requests, and - most likely - bugs.</p>
 </dd></dl>
 
 <dl class="py attribute">
+<dt class="sig sig-object py" id="litestar.middleware.ASGIMiddleware.exclude_opt_key">
+<span class="sig-name descname"><span class="pre">exclude_opt_key</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#litestar.middleware.ASGIMiddleware.exclude_opt_key" title="Link to this definition">¶</a></dt>
+<dd><p>Exclude this middleware for handlers with an opt-key of this name that is truthy</p>
+</dd></dl>
+
+<dl class="py attribute">
 <dt class="sig sig-object py" id="litestar.middleware.ASGIMiddleware.exclude_path_pattern">
 <span class="sig-name descname"><span class="pre">exclude_path_pattern</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#litestar.middleware.ASGIMiddleware.exclude_path_pattern" title="Link to this definition">¶</a></dt>
 <dd><p>A regex pattern (or tuple of patterns) to exclude this middleware from route
@@ -605,6 +613,9 @@ handlers whose path matches any of the provided patterns.</p>
 <p>Pattern matching is performed against the <strong>handler’s path</strong> (e.g.,
 <code class="docutils literal notranslate"><span class="pre">/user/{user_id:int}/</span></code>), NOT against the actual <strong>request path</strong> (e.g.,
 <code class="docutils literal notranslate"><span class="pre">/user/1234/</span></code>). This is a critical distinction for dynamic routes.</p>
+<p>If you need to exclude based on paths dynamically, use
+<a class="reference internal" href="#litestar.middleware.ASGIMiddleware.should_bypass_for_scope" title="litestar.middleware.ASGIMiddleware.should_bypass_for_scope"><code class="xref py py-attr docutils literal notranslate"><span class="pre">should_bypass_for_scope</span></code></a>
+instead, matching on <code class="docutils literal notranslate"><span class="pre">scope[&quot;path&quot;]</span></code>.</p>
 </div>
 <p><strong>Example 1: Static path</strong></p>
 <p>Handler path:</p>
@@ -628,12 +639,11 @@ handlers whose path matches any of the provided patterns.</p>
 </span><span data-line="3"><span class="o">/</span><span class="n">user</span><span class="o">/</span><span class="mi">9999</span><span class="o">/</span><span class="n">profile</span>
 </span></pre></div>
 </div>
-<p>To exclude this handler, the pattern must match the <strong>handler</strong>, not the actual
-request path:</p>
-<blockquote>
-<div><p>exclude_path_pattern = “/user/{user_id:int}/profile”
-exclude_path_pattern = “/user/{.+?}/”</p>
-</div></blockquote>
+<p>To exclude this handler, the pattern must match the <strong>handler</strong>, not the actual request path:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="n">exclude_path_pattern</span> <span class="o">=</span> <span class="s2">&quot;/user/{user_id:int}/profile&quot;</span>
+</span><span data-line="2"><span class="n">exclude_path_pattern</span> <span class="o">=</span> <span class="s2">&quot;/user/\{.+?\}/&quot;</span>
+</span></pre></div>
+</div>
 </dd></dl>
 
 <dl class="py method">
@@ -662,8 +672,33 @@ exclude_path_pattern = “/user/{.+?}/”</p>
 <dt class="sig sig-object py" id="litestar.middleware.ASGIMiddleware.should_bypass_for_handler">
 <span class="sig-name descname"><span class="pre">should_bypass_for_handler</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">handler</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">RouteHandlerType</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span></span><a class="reference internal" href="../../_modules/litestar/middleware/base.html#ASGIMiddleware.should_bypass_for_handler"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#litestar.middleware.ASGIMiddleware.should_bypass_for_handler" title="Link to this definition">¶</a></dt>
 <dd><p>Return <code class="docutils literal notranslate"><span class="pre">True</span></code> if this middleware should be bypassed for <code class="docutils literal notranslate"><span class="pre">handler</span></code>, according
-to <code class="docutils literal notranslate"><span class="pre">scopes</span></code>, <code class="docutils literal notranslate"><span class="pre">exclude_path_pattern</span></code> or <code class="docutils literal notranslate"><span class="pre">exclude_opt_key</span></code>, otherwise
-<code class="docutils literal notranslate"><span class="pre">False</span></code>.</p>
+to <a class="reference internal" href="#litestar.middleware.ASGIMiddleware.scopes" title="litestar.middleware.ASGIMiddleware.scopes"><code class="xref py py-attr docutils literal notranslate"><span class="pre">scopes</span></code></a>,
+<a class="reference internal" href="#litestar.middleware.ASGIMiddleware.exclude_path_pattern" title="litestar.middleware.ASGIMiddleware.exclude_path_pattern"><code class="xref py py-attr docutils literal notranslate"><span class="pre">exclude_path_pattern</span></code></a> or
+<a class="reference internal" href="#litestar.middleware.ASGIMiddleware.exclude_opt_key" title="litestar.middleware.ASGIMiddleware.exclude_opt_key"><code class="xref py py-attr docutils literal notranslate"><span class="pre">exclude_opt_key</span></code></a>, otherwise <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="litestar.middleware.ASGIMiddleware.should_bypass_for_scope">
+<span class="sig-name descname"><span class="pre">should_bypass_for_scope</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../types.html#litestar.types.Scope" title="litestar.types.Scope"><span class="pre">Scope</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#litestar.middleware.ASGIMiddleware.should_bypass_for_scope" title="Link to this definition">¶</a></dt>
+<dd><p>A callable that takes in the <a class="reference internal" href="../types.html#litestar.types.Scope" title="litestar.types.Scope"><code class="xref py py-class docutils literal notranslate"><span class="pre">Scope</span></code></a> of the current
+connection and returns a boolean, indicating if the middleware should be skipped for
+the current request.</p>
+<p>This can for example be used to exclude a middleware based on a dynamic path:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="n">should_bypass_for_scope</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">scope</span><span class="p">:</span> <span class="n">scope</span><span class="p">[</span><span class="s2">&quot;path&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.jpg&quot;</span><span class="p">)</span>
+</span></pre></div>
+</div>
+<p>Applied to a route with a dynamic path like <code class="docutils literal notranslate"><span class="pre">/static/{file_name:str}</span></code>, it would
+be skipped <em>only</em> if <code class="docutils literal notranslate"><span class="pre">file_name</span></code> has a <code class="docutils literal notranslate"><span class="pre">.jpg</span></code> extension.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If it is not required to dynamically match the path of a request,
+<a class="reference internal" href="#litestar.middleware.ASGIMiddleware.exclude_path_pattern" title="litestar.middleware.ASGIMiddleware.exclude_path_pattern"><code class="xref py py-attr docutils literal notranslate"><span class="pre">exclude_path_pattern</span></code></a> should be
+used instead. Since its exclusion is done statically at startup time, it has no
+performance cost at runtime.</p>
+</div>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 3.0.</span></p>
+</div>
 </dd></dl>
 
 </dd></dl>

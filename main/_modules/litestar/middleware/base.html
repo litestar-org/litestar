@@ -762,91 +762,130 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="226"><span class="sd">        ``/user/{user_id:int}/``), NOT against the actual **request path** (e.g.,</span>
 </span><span data-line="227"><span class="sd">        ``/user/1234/``). This is a critical distinction for dynamic routes.</span>
 </span><span data-line="228">
-</span><span data-line="229"><span class="sd">    **Example 1: Static path**</span>
-</span><span data-line="230">
-</span><span data-line="231"><span class="sd">    Handler path::</span>
+</span><span data-line="229"><span class="sd">        If you need to exclude based on paths dynamically, use</span>
+</span><span data-line="230"><span class="sd">        :attr:`~litestar.middleware.ASGIMiddleware.should_bypass_for_scope`</span>
+</span><span data-line="231"><span class="sd">        instead, matching on ``scope[&quot;path&quot;]``.</span>
 </span><span data-line="232">
-</span><span data-line="233"><span class="sd">        /api/health</span>
+</span><span data-line="233"><span class="sd">    **Example 1: Static path**</span>
 </span><span data-line="234">
-</span><span data-line="235"><span class="sd">    To exclude this handler, use a pattern like::</span>
+</span><span data-line="235"><span class="sd">    Handler path::</span>
 </span><span data-line="236">
-</span><span data-line="237"><span class="sd">        exclude_path_pattern = r&quot;^/api/health$&quot;</span>
+</span><span data-line="237"><span class="sd">        /api/health</span>
 </span><span data-line="238">
-</span><span data-line="239"><span class="sd">    **Example 2: Dynamic path (path parameters)**</span>
+</span><span data-line="239"><span class="sd">    To exclude this handler, use a pattern like::</span>
 </span><span data-line="240">
-</span><span data-line="241"><span class="sd">    Handler path::</span>
+</span><span data-line="241"><span class="sd">        exclude_path_pattern = r&quot;^/api/health$&quot;</span>
 </span><span data-line="242">
-</span><span data-line="243"><span class="sd">        /user/{user_id:int}/profile</span>
-</span><span data-line="244"><span class="sd">             └─────┬──────┘</span>
-</span><span data-line="245"><span class="sd">                   └─ This is what the pattern matches against</span>
+</span><span data-line="243"><span class="sd">    **Example 2: Dynamic path (path parameters)**</span>
+</span><span data-line="244">
+</span><span data-line="245"><span class="sd">    Handler path::</span>
 </span><span data-line="246">
-</span><span data-line="247"><span class="sd">    Actual request paths that match this handler::</span>
-</span><span data-line="248">
-</span><span data-line="249"><span class="sd">        /user/1234/profile</span>
-</span><span data-line="250"><span class="sd">        /user/5678/profile</span>
-</span><span data-line="251"><span class="sd">        /user/9999/profile</span>
+</span><span data-line="247"><span class="sd">        /user/{user_id:int}/profile</span>
+</span><span data-line="248"><span class="sd">             └─────┬──────┘</span>
+</span><span data-line="249"><span class="sd">                   └─ This is what the pattern matches against</span>
+</span><span data-line="250">
+</span><span data-line="251"><span class="sd">    Actual request paths that match this handler::</span>
 </span><span data-line="252">
-</span><span data-line="253"><span class="sd">    To exclude this handler, the pattern must match the **handler**, not the actual</span>
-</span><span data-line="254"><span class="sd">    request path:</span>
-</span><span data-line="255">
-</span><span data-line="256"><span class="sd">        exclude_path_pattern = &quot;/user/{user_id:int}/profile&quot;</span>
-</span><span data-line="257"><span class="sd">        exclude_path_pattern = &quot;/user/\{.+?\}/&quot;</span>
-</span><span data-line="258"><span class="sd">    &quot;&quot;&quot;</span>
-</span><span data-line="259">    <span class="n">exclude_opt_key</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
-</span><span data-line="260">    <span class="n">constraints</span><span class="p">:</span> <span class="n">MiddlewareConstraints</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
-</span><span data-line="261">
+</span><span data-line="253"><span class="sd">        /user/1234/profile</span>
+</span><span data-line="254"><span class="sd">        /user/5678/profile</span>
+</span><span data-line="255"><span class="sd">        /user/9999/profile</span>
+</span><span data-line="256">
+</span><span data-line="257"><span class="sd">    To exclude this handler, the pattern must match the **handler**, not the actual request path::</span>
+</span><span data-line="258">
+</span><span data-line="259"><span class="sd">        exclude_path_pattern = &quot;/user/{user_id:int}/profile&quot;</span>
+</span><span data-line="260"><span class="sd">        exclude_path_pattern = &quot;/user/\{.+?\}/&quot;</span>
+</span><span data-line="261"><span class="sd">    &quot;&quot;&quot;</span>
+</span><span data-line="262">    <span class="n">exclude_opt_key</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+</span><span data-line="263"><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+</span><span data-line="264"><span class="sd">    Exclude this middleware for handlers with an opt-key of this name that is truthy</span>
+</span><span data-line="265"><span class="sd">    &quot;&quot;&quot;</span>
+</span><span data-line="266">    <span class="n">should_bypass_for_scope</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Scope</span><span class="p">],</span> <span class="nb">bool</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+</span><span data-line="267"><span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+</span><span data-line="268"><span class="sd">    A callable that takes in the :class:`~litestar.types.Scope` of the current</span>
+</span><span data-line="269"><span class="sd">    connection and returns a boolean, indicating if the middleware should be skipped for</span>
+</span><span data-line="270"><span class="sd">    the current request.</span>
+</span><span data-line="271">
+</span><span data-line="272"><span class="sd">    This can for example be used to exclude a middleware based on a dynamic path::</span>
+</span><span data-line="273">
+</span><span data-line="274"><span class="sd">        should_bypass_for_scope = lambda scope: scope[&quot;path&quot;].endswith(&quot;.jpg&quot;)</span>
+</span><span data-line="275">
+</span><span data-line="276"><span class="sd">    Applied to a route with a dynamic path like ``/static/{file_name:str}``, it would</span>
+</span><span data-line="277"><span class="sd">    be skipped *only* if ``file_name`` has a ``.jpg`` extension.</span>
+</span><span data-line="278">
+</span><span data-line="279"><span class="sd">    .. note::</span>
+</span><span data-line="280">
+</span><span data-line="281"><span class="sd">        If it is not required to dynamically match the path of a request,</span>
+</span><span data-line="282"><span class="sd">        :attr:`~litestar.middleware.ASGIMiddleware.exclude_path_pattern` should be</span>
+</span><span data-line="283"><span class="sd">        used instead. Since its exclusion is done statically at startup time, it has no</span>
+</span><span data-line="284"><span class="sd">        performance cost at runtime.</span>
+</span><span data-line="285">
+</span><span data-line="286"><span class="sd">    .. versionadded:: 3.0</span>
+</span><span data-line="287"><span class="sd">    &quot;&quot;&quot;</span>
+</span><span data-line="288">    <span class="n">constraints</span><span class="p">:</span> <span class="n">MiddlewareConstraints</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+</span><span data-line="289">
 <div class="viewcode-block" id="ASGIMiddleware.should_bypass_for_handler">
 <a class="viewcode-back" href="../../../reference/middleware/index.html#litestar.middleware.ASGIMiddleware.should_bypass_for_handler">[docs]</a>
-</span><span data-line="262">    <span class="k">def</span><span class="w"> </span><span class="nf">should_bypass_for_handler</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">handler</span><span class="p">:</span> <span class="n">RouteHandlerType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-</span><span data-line="263"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return ``True`` if this middleware should be bypassed for ``handler``, according</span>
-</span><span data-line="264"><span class="sd">        to ``scopes``, ``exclude_path_pattern`` or ``exclude_opt_key``, otherwise</span>
-</span><span data-line="265"><span class="sd">        ``False``.</span>
-</span><span data-line="266"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="267">        <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.handlers</span><span class="w"> </span><span class="kn">import</span> <span class="n">ASGIRouteHandler</span><span class="p">,</span> <span class="n">HTTPRouteHandler</span><span class="p">,</span> <span class="n">WebsocketRouteHandler</span>
-</span><span data-line="268">
-</span><span data-line="269">        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">handler</span><span class="p">,</span> <span class="n">HTTPRouteHandler</span><span class="p">)</span> <span class="ow">and</span> <span class="n">ScopeType</span><span class="o">.</span><span class="n">HTTP</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">scopes</span><span class="p">:</span>
-</span><span data-line="270">            <span class="k">return</span> <span class="kc">True</span>
-</span><span data-line="271">        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">handler</span><span class="p">,</span> <span class="n">WebsocketRouteHandler</span><span class="p">)</span> <span class="ow">and</span> <span class="n">ScopeType</span><span class="o">.</span><span class="n">WEBSOCKET</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">scopes</span><span class="p">:</span>
-</span><span data-line="272">            <span class="k">return</span> <span class="kc">True</span>
-</span><span data-line="273">        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">handler</span><span class="p">,</span> <span class="n">ASGIRouteHandler</span><span class="p">)</span> <span class="ow">and</span> <span class="n">ScopeType</span><span class="o">.</span><span class="n">ASGI</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">scopes</span><span class="p">:</span>
-</span><span data-line="274">            <span class="k">return</span> <span class="kc">True</span>
-</span><span data-line="275">
-</span><span data-line="276">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">exclude_opt_key</span> <span class="ow">and</span> <span class="n">handler</span><span class="o">.</span><span class="n">opt</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">exclude_opt_key</span><span class="p">):</span>
-</span><span data-line="277">            <span class="k">return</span> <span class="kc">True</span>
-</span><span data-line="278">
-</span><span data-line="279">        <span class="n">pattern</span> <span class="o">=</span> <span class="n">build_exclude_path_pattern</span><span class="p">(</span><span class="n">exclude</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">exclude_path_pattern</span><span class="p">,</span> <span class="n">middleware_cls</span><span class="o">=</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
-</span><span data-line="280">        <span class="k">if</span> <span class="n">pattern</span> <span class="ow">and</span> <span class="nb">any</span><span class="p">(</span><span class="n">pattern</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">handler</span><span class="o">.</span><span class="n">paths</span><span class="p">):</span>
-</span><span data-line="281">            <span class="k">return</span> <span class="kc">True</span>
-</span><span data-line="282">
-</span><span data-line="283">        <span class="k">return</span> <span class="kc">False</span></div>
+</span><span data-line="290">    <span class="k">def</span><span class="w"> </span><span class="nf">should_bypass_for_handler</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">handler</span><span class="p">:</span> <span class="n">RouteHandlerType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+</span><span data-line="291"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return ``True`` if this middleware should be bypassed for ``handler``, according</span>
+</span><span data-line="292"><span class="sd">        to :attr:`~litestar.middleware.ASGIMiddleware.scopes`,</span>
+</span><span data-line="293"><span class="sd">        :attr:`~litestar.middleware.ASGIMiddleware.exclude_path_pattern` or</span>
+</span><span data-line="294"><span class="sd">        :attr:`~litestar.middleware.ASGIMiddleware.exclude_opt_key`, otherwise ``False``.</span>
+</span><span data-line="295"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="296">        <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.handlers</span><span class="w"> </span><span class="kn">import</span> <span class="n">ASGIRouteHandler</span><span class="p">,</span> <span class="n">HTTPRouteHandler</span><span class="p">,</span> <span class="n">WebsocketRouteHandler</span>
+</span><span data-line="297">
+</span><span data-line="298">        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">handler</span><span class="p">,</span> <span class="n">HTTPRouteHandler</span><span class="p">)</span> <span class="ow">and</span> <span class="n">ScopeType</span><span class="o">.</span><span class="n">HTTP</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">scopes</span><span class="p">:</span>
+</span><span data-line="299">            <span class="k">return</span> <span class="kc">True</span>
+</span><span data-line="300">        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">handler</span><span class="p">,</span> <span class="n">WebsocketRouteHandler</span><span class="p">)</span> <span class="ow">and</span> <span class="n">ScopeType</span><span class="o">.</span><span class="n">WEBSOCKET</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">scopes</span><span class="p">:</span>
+</span><span data-line="301">            <span class="k">return</span> <span class="kc">True</span>
+</span><span data-line="302">        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">handler</span><span class="p">,</span> <span class="n">ASGIRouteHandler</span><span class="p">)</span> <span class="ow">and</span> <span class="n">ScopeType</span><span class="o">.</span><span class="n">ASGI</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">scopes</span><span class="p">:</span>
+</span><span data-line="303">            <span class="k">return</span> <span class="kc">True</span>
+</span><span data-line="304">
+</span><span data-line="305">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">exclude_opt_key</span> <span class="ow">and</span> <span class="n">handler</span><span class="o">.</span><span class="n">opt</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">exclude_opt_key</span><span class="p">):</span>
+</span><span data-line="306">            <span class="k">return</span> <span class="kc">True</span>
+</span><span data-line="307">
+</span><span data-line="308">        <span class="n">pattern</span> <span class="o">=</span> <span class="n">build_exclude_path_pattern</span><span class="p">(</span><span class="n">exclude</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">exclude_path_pattern</span><span class="p">,</span> <span class="n">middleware_cls</span><span class="o">=</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
+</span><span data-line="309">        <span class="k">if</span> <span class="n">pattern</span> <span class="ow">and</span> <span class="nb">any</span><span class="p">(</span><span class="n">pattern</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">handler</span><span class="o">.</span><span class="n">paths</span><span class="p">):</span>
+</span><span data-line="310">            <span class="k">return</span> <span class="kc">True</span>
+</span><span data-line="311">
+</span><span data-line="312">        <span class="k">return</span> <span class="kc">False</span></div>
 
-</span><span data-line="284">
+</span><span data-line="313">
 <div class="viewcode-block" id="ASGIMiddleware.__call__">
 <a class="viewcode-back" href="../../../reference/middleware/index.html#litestar.middleware.ASGIMiddleware.__call__">[docs]</a>
-</span><span data-line="285">    <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">app</span><span class="p">:</span> <span class="n">ASGIApp</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ASGIApp</span><span class="p">:</span>
-</span><span data-line="286"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Create the actual middleware callable&quot;&quot;&quot;</span>
-</span><span data-line="287">        <span class="n">handle</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">handle</span>
-</span><span data-line="288">
-</span><span data-line="289">        <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">middleware</span><span class="p">(</span><span class="n">scope</span><span class="p">:</span> <span class="n">Scope</span><span class="p">,</span> <span class="n">receive</span><span class="p">:</span> <span class="n">Receive</span><span class="p">,</span> <span class="n">send</span><span class="p">:</span> <span class="n">Send</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="290">            <span class="k">await</span> <span class="n">handle</span><span class="p">(</span><span class="n">scope</span><span class="o">=</span><span class="n">scope</span><span class="p">,</span> <span class="n">receive</span><span class="o">=</span><span class="n">receive</span><span class="p">,</span> <span class="n">send</span><span class="o">=</span><span class="n">send</span><span class="p">,</span> <span class="n">next_app</span><span class="o">=</span><span class="n">app</span><span class="p">)</span>
-</span><span data-line="291">
-</span><span data-line="292">        <span class="k">return</span> <span class="n">middleware</span></div>
+</span><span data-line="314">    <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">app</span><span class="p">:</span> <span class="n">ASGIApp</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ASGIApp</span><span class="p">:</span>
+</span><span data-line="315"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Create the actual middleware callable&quot;&quot;&quot;</span>
+</span><span data-line="316">        <span class="n">handle</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">handle</span>
+</span><span data-line="317">
+</span><span data-line="318">        <span class="n">should_bypass_for_scope</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">should_bypass_for_scope</span>
+</span><span data-line="319">        <span class="k">if</span> <span class="n">should_bypass_for_scope</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="320">
+</span><span data-line="321">            <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">middleware</span><span class="p">(</span><span class="n">scope</span><span class="p">:</span> <span class="n">Scope</span><span class="p">,</span> <span class="n">receive</span><span class="p">:</span> <span class="n">Receive</span><span class="p">,</span> <span class="n">send</span><span class="p">:</span> <span class="n">Send</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="322">                <span class="k">await</span> <span class="n">handle</span><span class="p">(</span><span class="n">scope</span><span class="o">=</span><span class="n">scope</span><span class="p">,</span> <span class="n">receive</span><span class="o">=</span><span class="n">receive</span><span class="p">,</span> <span class="n">send</span><span class="o">=</span><span class="n">send</span><span class="p">,</span> <span class="n">next_app</span><span class="o">=</span><span class="n">app</span><span class="p">)</span>
+</span><span data-line="323">        <span class="k">else</span><span class="p">:</span>
+</span><span data-line="324">
+</span><span data-line="325">            <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">middleware</span><span class="p">(</span><span class="n">scope</span><span class="p">:</span> <span class="n">Scope</span><span class="p">,</span> <span class="n">receive</span><span class="p">:</span> <span class="n">Receive</span><span class="p">,</span> <span class="n">send</span><span class="p">:</span> <span class="n">Send</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="326">                <span class="k">if</span> <span class="n">should_bypass_for_scope</span><span class="p">(</span><span class="n">scope</span><span class="p">):</span>
+</span><span data-line="327">                    <span class="k">await</span> <span class="n">app</span><span class="p">(</span><span class="n">scope</span><span class="p">,</span> <span class="n">receive</span><span class="p">,</span> <span class="n">send</span><span class="p">)</span>
+</span><span data-line="328">                <span class="k">else</span><span class="p">:</span>
+</span><span data-line="329">                    <span class="k">await</span> <span class="n">handle</span><span class="p">(</span><span class="n">scope</span><span class="o">=</span><span class="n">scope</span><span class="p">,</span> <span class="n">receive</span><span class="o">=</span><span class="n">receive</span><span class="p">,</span> <span class="n">send</span><span class="o">=</span><span class="n">send</span><span class="p">,</span> <span class="n">next_app</span><span class="o">=</span><span class="n">app</span><span class="p">)</span>
+</span><span data-line="330">
+</span><span data-line="331">        <span class="k">return</span> <span class="n">middleware</span></div>
 
-</span><span data-line="293">
+</span><span data-line="332">
 <div class="viewcode-block" id="ASGIMiddleware.handle">
 <a class="viewcode-back" href="../../../reference/middleware/index.html#litestar.middleware.ASGIMiddleware.handle">[docs]</a>
-</span><span data-line="294">    <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
-</span><span data-line="295">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">handle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scope</span><span class="p">:</span> <span class="n">Scope</span><span class="p">,</span> <span class="n">receive</span><span class="p">:</span> <span class="n">Receive</span><span class="p">,</span> <span class="n">send</span><span class="p">:</span> <span class="n">Send</span><span class="p">,</span> <span class="n">next_app</span><span class="p">:</span> <span class="n">ASGIApp</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="296"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Handle ASGI call.</span>
-</span><span data-line="297">
-</span><span data-line="298"><span class="sd">        Args:</span>
-</span><span data-line="299"><span class="sd">            scope: The ASGI connection scope.</span>
-</span><span data-line="300"><span class="sd">            receive: The ASGI receive function.</span>
-</span><span data-line="301"><span class="sd">            send: The ASGI send function</span>
-</span><span data-line="302"><span class="sd">            next_app: The next ASGI application in the middleware stack to call</span>
-</span><span data-line="303"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="304">
-</span><span data-line="305">        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+</span><span data-line="333">    <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
+</span><span data-line="334">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">handle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scope</span><span class="p">:</span> <span class="n">Scope</span><span class="p">,</span> <span class="n">receive</span><span class="p">:</span> <span class="n">Receive</span><span class="p">,</span> <span class="n">send</span><span class="p">:</span> <span class="n">Send</span><span class="p">,</span> <span class="n">next_app</span><span class="p">:</span> <span class="n">ASGIApp</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="335"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Handle ASGI call.</span>
+</span><span data-line="336">
+</span><span data-line="337"><span class="sd">        Args:</span>
+</span><span data-line="338"><span class="sd">            scope: The ASGI connection scope.</span>
+</span><span data-line="339"><span class="sd">            receive: The ASGI receive function.</span>
+</span><span data-line="340"><span class="sd">            send: The ASGI send function</span>
+</span><span data-line="341"><span class="sd">            next_app: The next ASGI application in the middleware stack to call</span>
+</span><span data-line="342"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="343">
+</span><span data-line="344">        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 </div>
 
 </span></pre></div>

@@ -733,6 +733,13 @@ always being called</p>
 <p>References: <span><a class="reference external" href="https://github.com/litestar-org/litestar/issues/4423">https://github.com/litestar-org/litestar/issues/4423</a></span>, <span><a class="reference external" href="https://github.com/litestar-org/litestar/pull/4424">https://github.com/litestar-org/litestar/pull/4424</a></span></p>
 </div>
 </dd>
+<dt>Add <code class="docutils literal notranslate"><span class="pre">should_bypass_for_scope</span></code> to <code class="docutils literal notranslate"><span class="pre">ASGIMiddleware</span></code> to allow excluding middlewares dynamically<a class="headerlink reference internal" href="#3.0.0-add" id="3.0.0-add">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Add a new attribute <a class="reference internal" href="../reference/middleware/index.html#litestar.middleware.ASGIMiddleware.should_bypass_for_scope" title="litestar.middleware.ASGIMiddleware.should_bypass_for_scope"><code class="xref py py-attr docutils literal notranslate"><span class="pre">should_bypass_for_scope</span></code></a>;
+A callable which takes in a <a class="reference internal" href="../reference/types.html#litestar.types.Scope" title="litestar.types.Scope"><code class="xref py py-class docutils literal notranslate"><span class="pre">Scope</span></code></a> and returns a boolean
+to indicate whether to bypass the middleware for the current request.</p>
+<p>References: <span><a class="reference external" href="https://github.com/litestar-org/litestar/pull/4441">https://github.com/litestar-org/litestar/pull/4441</a></span></p>
+</div>
+</dd>
 </dl>
 </section>
 <section id="3.0.0-bugfix">
