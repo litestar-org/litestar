@@ -186,7 +186,7 @@ def websocket_stream(
             path=path,
             dependencies=dependencies,
             exception_handlers=exception_handlers,
-            guard=guards,
+            guards=guards,
             middleware=middleware,
             name=name,
             opt=opt,
