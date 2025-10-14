@@ -217,6 +217,29 @@ class ASGIMiddleware(abc.ABC):
     exclude_path_pattern: str | tuple[str, ...] | None = None
     exclude_opt_key: str | None = None
 
+    should_bypass_for_scope: Callable[[Scope], bool] | None = None
+    r"""
+    A callable that takes in the :class:`~litestar.types.Scope` of the current
+    connection and returns a boolean, indicating if the middleware should be skipped for
+    the current request.
+
+    This can for example be used to exclude a middleware based on a dynamic path::
+
+        should_bypass_for_scope = lambda scope: scope["path"].endswith(".jpg")
+
+    Applied to a route with a dynamic path like ``/static/{file_name:str}``, it would
+    be skipped *only* if ``file_name`` has a ``.jpg`` extension.
+
+    .. note::
+
+        If it is not required to dynamically match the path of a request,
+        :attr:`~litestar.middleware.ASGIMiddleware.exclude_path_pattern` should be
+        used instead. Since its exclusion is done statically at startup time, it has no
+        performance cost at runtime.
+
+    .. versionadded:: 2.19
+    """
+
     def __call__(self, app: ASGIApp) -> ASGIApp:
         """Create the actual middleware callable"""
         handle = self.handle
