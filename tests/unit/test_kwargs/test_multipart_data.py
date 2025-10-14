@@ -14,7 +14,7 @@ from litestar import Request, post
 from litestar.datastructures.upload_file import UploadFile
 from litestar.enums import RequestEncodingType
 from litestar.params import Body
-from litestar.status_codes import HTTP_201_CREATED, HTTP_400_BAD_REQUEST
+from litestar.status_codes import HTTP_201_CREATED, HTTP_413_REQUEST_ENTITY_TOO_LARGE
 from litestar.testing import create_test_client
 
 from . import Form
@@ -472,7 +472,7 @@ def test_multipart_form_part_limit(limit: int) -> None:
         data = {str(i): "a" for i in range(limit)}
         data[str(limit + 1)] = "b"
         response = client.post("/", files=data)
-        assert response.status_code == HTTP_400_BAD_REQUEST
+        assert response.status_code == HTTP_413_REQUEST_ENTITY_TOO_LARGE
 
 
 def test_multipart_form_part_limit_body_param_precedence() -> None:
@@ -492,7 +492,7 @@ def test_multipart_form_part_limit_body_param_precedence() -> None:
 
         data = {str(i): "a" for i in range(route_limit + 1)}
         response = client.post("/", files=data)
-        assert response.status_code == HTTP_400_BAD_REQUEST
+        assert response.status_code == HTTP_413_REQUEST_ENTITY_TOO_LARGE
 
 
 @dataclass

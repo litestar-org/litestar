@@ -12,7 +12,7 @@ from multipart import (  # type: ignore[import-untyped]
 )
 
 from litestar.datastructures.upload_file import UploadFile
-from litestar.exceptions import ClientException
+from litestar.exceptions import ClientException, RequestEntityTooLarge
 
 __all__ = ("parse_content_header", "parse_multipart_form")
 
@@ -90,11 +90,11 @@ async def parse_multipart_form(  # noqa: C901
                 for form_part in parser.parse(chunk):
                     if isinstance(form_part, MultipartSegment):
                         segment = form_part
-                        if segment.filename:
+                        if form_part.filename:
                             data = UploadFile(
-                                content_type=segment.content_type or "text/plain",
-                                filename=segment.filename,
-                                headers=dict(segment.headerlist),
+                                content_type=form_part.content_type or "text/plain",
+                                filename=form_part.filename,
+                                headers=dict(form_part.headerlist),
                             )
                     elif form_part:
                         if isinstance(data, UploadFile):
@@ -133,8 +133,6 @@ async def parse_multipart_form(  # noqa: C901
             await data.close()
         await _close_upload_files(fields)
 
-        # FIXME (3.0): This should raise a '413 - Request Entity Too Large', but for
-        # backwards compatibility, we keep it as a 400 for now
-        raise ClientException("Request Entity Too Large") from None
+        raise RequestEntityTooLarge() from None
 
     return {k: v if len(v) > 1 else v[0] for k, v in fields.items()}

@@ -27,6 +27,7 @@ __all__ = (
     "NotAuthorizedException",
     "NotFoundException",
     "PermissionDeniedException",
+    "RequestEntityTooLarge",
     "ServiceUnavailableException",
     "TemplateNotFoundException",
     "TooManyRequestsException",
