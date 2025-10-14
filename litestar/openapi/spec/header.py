@@ -81,7 +81,7 @@ class OpenAPIHeader(BaseSchemaObject):
     """When this is true, parameter values of type ``array`` or ``object`` generate separate parameters for each value
     of the array or key-value pair of the map.
 
-    For other types of parameters this property has no effect.When
+    For other types of parameters this property has no effect. When
     `style <https://spec.openapis.org/oas/v3.1.0#parameterStyle>`__ is ``form``, the default value is ``True``. For all
     other styles, the default value is ``False``.
     """
