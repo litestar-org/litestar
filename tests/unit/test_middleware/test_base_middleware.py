@@ -285,6 +285,29 @@ def test_asgi_middleware_exclude_by_pattern_tuple() -> None:
         assert "test" in response.headers
 
 
+def test_asgi_middleware_should_exclude_scope() -> None:
+    mock = MagicMock()
+
+    class SubclassMiddleware(ASGIMiddleware):
+        @staticmethod
+        def should_bypass_for_scope(scope: "Scope") -> bool:
+            return scope["path"].endswith(".jpg")
+
+        async def handle(self, scope: "Scope", receive: "Receive", send: "Send", next_app: "ASGIApp") -> None:
+            mock(scope["path"])
+            await next_app(scope, receive, send)
+
+    @get("/{file_name:str}")
+    def handler(file_name: str) -> str:
+        return file_name
+
+    with create_test_client([handler], middleware=[SubclassMiddleware()]) as client:
+        assert client.get("/test.txt").status_code == 200
+        assert client.get("/test.jpg").status_code == 200
+
+        mock.assert_called_once_with("/test.txt")
+
+
 @pytest.mark.parametrize("excludes", ["/", ("/", "/foo"), "/*", "/.*"])
 def test_asgi_middleware_exclude_by_pattern_warns_if_exclude_all(excludes: Union[str, Tuple[str, ...]]) -> None:
     class SubclassMiddleware(ASGIMiddleware):
