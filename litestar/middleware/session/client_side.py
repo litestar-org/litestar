@@ -16,11 +16,10 @@ from litestar.exceptions import (
     ImproperlyConfiguredException,
     MissingDependencyException,
 )
+from litestar.middleware.session.base import ONE_DAY_IN_SECONDS, BaseBackendConfig, BaseSessionBackend
 from litestar.serialization import decode_json, encode_json
 from litestar.types import Empty, Scopes
 from litestar.utils.dataclass import extract_dataclass_items
-
-from .base import ONE_DAY_IN_SECONDS, BaseBackendConfig, BaseSessionBackend
 
 __all__ = ("ClientSideSessionBackend", "CookieBackendConfig")
 

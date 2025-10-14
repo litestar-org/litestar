@@ -96,9 +96,8 @@ if TYPE_CHECKING:
     from litestar.app import Litestar
     from litestar.enums import ScopeType
     from litestar.types.empty import EmptyType
-
-    from .internal_types import RouteHandlerType
-    from .serialization import DataContainerType
+    from litestar.types.internal_types import RouteHandlerType
+    from litestar.types.serialization import DataContainerType
 
 HttpMethodName: TypeAlias = Literal["GET", "POST", "DELETE", "PATCH", "PUT", "HEAD", "TRACE", "OPTIONS"]
 Method: TypeAlias = Union[HttpMethodName, HttpMethod]

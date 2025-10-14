@@ -34,9 +34,8 @@ if TYPE_CHECKING:
     from litestar.di import Provide
     from litestar.enums import ScopeType
     from litestar.params import ParameterKwarg
-
-    from .asgi_types import ASGIApp
-    from .callable_types import AnyCallable, ExceptionHandler
+    from litestar.types.asgi_types import ASGIApp
+    from litestar.types.callable_types import AnyCallable, ExceptionHandler
 
 Dependencies: TypeAlias = "Mapping[str, Union[Provide, AnyCallable]]"
 ExceptionHandlersMap: TypeAlias = "MutableMapping[Union[int, type[Exception]], ExceptionHandler]"

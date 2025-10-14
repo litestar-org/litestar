@@ -3,10 +3,10 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Callable
 
 if TYPE_CHECKING:
-    from .base import Store
+    from litestar.stores.base import Store
 
 
-from .memory import MemoryStore
+from litestar.stores.memory import MemoryStore
 
 __all__ = ("StoreRegistry",)
 

@@ -12,6 +12,14 @@ from typing import (
 
 from litestar.connection import WebSocket
 from litestar.exceptions import ImproperlyConfiguredException, WebSocketDisconnect
+from litestar.handlers.websocket_handlers._utils import (
+    ListenerHandler,
+    create_handle_receive,
+    create_handle_send,
+    create_handler_signature,
+    create_stub_dependency,
+)
+from litestar.handlers.websocket_handlers.route_handler import WebsocketRouteHandler
 from litestar.types import (
     AnyCallable,
     Dependencies,
@@ -24,15 +32,6 @@ from litestar.types import (
 )
 from litestar.utils import ensure_async_callable
 from litestar.utils.signature import ParsedSignature, get_fn_type_hints
-
-from ._utils import (
-    ListenerHandler,
-    create_handle_receive,
-    create_handle_send,
-    create_handler_signature,
-    create_stub_dependency,
-)
-from .route_handler import WebsocketRouteHandler
 
 if TYPE_CHECKING:
     from collections.abc import AsyncGenerator, Coroutine, Mapping, Sequence

@@ -7,10 +7,9 @@ from msgspec.msgpack import encode as encode_msgpack
 from litestar import Request
 from litestar.constants import HTTP_RESPONSE_BODY, HTTP_RESPONSE_START
 from litestar.enums import ScopeType
+from litestar.middleware.base import AbstractMiddleware
 from litestar.utils.empty import value_or_default
 from litestar.utils.scope.state import ScopeState
-
-from .base import AbstractMiddleware
 
 if TYPE_CHECKING:
     from litestar.config.response_cache import ResponseCacheConfig

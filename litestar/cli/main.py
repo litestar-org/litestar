@@ -9,8 +9,8 @@ except ImportError:
 
 from click import Path as ClickPath
 
-from ._utils import LitestarEnv, LitestarExtensionGroup
-from .commands import core, schema, sessions
+from litestar.cli._utils import LitestarEnv, LitestarExtensionGroup
+from litestar.cli.commands import core, schema, sessions
 
 __all__ = ("litestar_group",)
 

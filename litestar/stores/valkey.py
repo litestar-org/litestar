@@ -7,10 +7,9 @@ from valkey.asyncio import Valkey
 from valkey.asyncio.connection import ConnectionPool
 
 from litestar.exceptions import ImproperlyConfiguredException
+from litestar.stores.base import NamespacedStore
 from litestar.types import Empty, EmptyType
 from litestar.utils.empty import value_or_default
-
-from .base import NamespacedStore
 
 if TYPE_CHECKING:
     from types import TracebackType

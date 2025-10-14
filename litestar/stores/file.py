@@ -9,8 +9,7 @@ from typing import TYPE_CHECKING
 from anyio import Path
 
 from litestar.concurrency import sync_to_thread
-
-from .base import NamespacedStore, StorageObject
+from litestar.stores.base import NamespacedStore, StorageObject
 
 __all__ = ("FileStore",)
 

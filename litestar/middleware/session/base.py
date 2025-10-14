@@ -17,7 +17,7 @@ from litestar.middleware.base import AbstractMiddleware, DefineMiddleware
 from litestar.serialization import decode_json, encode_json
 from litestar.utils import get_serializer_from_scope
 
-__all__ = ("BaseBackendConfig", "BaseSessionBackend", "SessionMiddleware")
+__all__ = ("ONE_DAY_IN_SECONDS", "BaseBackendConfig", "BaseSessionBackend", "SessionMiddleware")
 
 
 if TYPE_CHECKING:

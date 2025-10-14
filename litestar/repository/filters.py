@@ -11,7 +11,7 @@ try:
         SearchFilter,
     )
 except ImportError:
-    from ._filters import (  # type: ignore[assignment]
+    from litestar.repository._filters import (  # type: ignore[assignment]
         BeforeAfter,
         CollectionFilter,
         FilterTypes,
