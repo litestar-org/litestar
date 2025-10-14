@@ -529,7 +529,7 @@ def websocket_listener(
             dependencies=dependencies,
             dto=dto,
             exception_handlers=exception_handlers,
-            guard=guards,
+            guards=guards,
             middleware=middleware,
             receive_mode=receive_mode,
             send_mode=send_mode,

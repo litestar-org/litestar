@@ -3,6 +3,7 @@ from __future__ import annotations
 import asyncio
 import dataclasses
 from collections.abc import AsyncGenerator, Generator
+from typing import TYPE_CHECKING
 from unittest.mock import MagicMock
 
 import pytest
@@ -12,6 +13,10 @@ from litestar.dto import DataclassDTO, dto_field
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.handlers.websocket_handlers import websocket_stream
 from litestar.testing import create_test_client
+
+if TYPE_CHECKING:
+    from litestar.connection import ASGIConnection
+    from litestar.handlers.base import BaseRouteHandler
 
 
 def test_websocket_stream() -> None:
@@ -150,3 +155,21 @@ def test_raises_if_stream_fn_does_not_return_async_generator() -> None:
             return b""
 
         Litestar([foo])
+
+
+def test_websocket_stream_applies_guards() -> None:
+    guard_called = False
+
+    async def custom_guard(connection: ASGIConnection, _: BaseRouteHandler) -> None:
+        nonlocal guard_called
+        guard_called = True
+
+    @websocket_stream("/", guards=[custom_guard])
+    async def handler() -> AsyncGenerator[dict[str, str], None]:
+        yield {"Urfaust": "Gespinnst"}
+        yield {"Des": "Verderbens"}
+
+    with create_test_client([handler]) as client, client.websocket_connect("/") as ws:
+        assert ws.receive_json(timeout=0.1) == {"Urfaust": "Gespinnst"}
+        assert ws.receive_json(timeout=0.1) == {"Des": "Verderbens"}
+        assert guard_called is True
