@@ -66,9 +66,7 @@ def _dec_pydantic_v2(
 def _dec_pydantic_uuid(
     uuid_type: type[pydantic_v1.UUID1] | type[pydantic_v1.UUID3] | type[pydantic_v1.UUID4] | type[pydantic_v1.UUID5],
     value: Any,
-) -> (
-    type[pydantic_v1.UUID1] | type[pydantic_v1.UUID3] | type[pydantic_v1.UUID4] | type[pydantic_v1.UUID5]
-):  # pragma: no cover
+) -> pydantic_v1.UUID1 | pydantic_v1.UUID3 | pydantic_v1.UUID4 | pydantic_v1.UUID5:  # pragma: no cover
     if isinstance(value, str):
         value = uuid_type(value)
 
@@ -89,9 +87,7 @@ def _dec_pydantic_uuid(
     if value._required_version != value.version:  # pyright: ignore[reportAttributeAccessIssue]
         raise ValidationError(f"Invalid UUID version: {value!r}")
 
-    return cast(
-        "type[pydantic_v1.UUID1] | type[pydantic_v1.UUID3] | type[pydantic_v1.UUID4] | type[pydantic_v1.UUID5]", value
-    )
+    return cast("pydantic_v1.UUID1 | pydantic_v1.UUID3 | pydantic_v1.UUID4 | pydantic_v1.UUID5", value)
 
 
 def _is_pydantic_v1_uuid(value: Any) -> bool:  # pragma: no cover

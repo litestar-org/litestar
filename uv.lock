@@ -1,5 +1,5 @@
 version = 1
-revision = 3
+revision = 2
 requires-python = ">=3.9, <4.0"
 resolution-markers = [
     "python_full_version >= '3.13' and sys_platform == 'linux'",
@@ -1968,7 +1968,6 @@ brotli = [
 cli = [
     { name = "jsbeautifier" },
     { name = "uvicorn", extra = ["standard"] },
-    { name = "uvloop", marker = "sys_platform != 'win32'" },
 ]
 cryptography = [
     { name = "cryptography" },
@@ -1999,7 +1998,6 @@ full = [
     { name = "redis", extra = ["hiredis"] },
     { name = "structlog" },
     { name = "uvicorn", extra = ["standard"] },
-    { name = "uvloop", marker = "sys_platform != 'win32'" },
     { name = "valkey", extra = ["libvalkey"] },
     { name = "zstandard", marker = "python_full_version < '3.14'" },
 ]
@@ -2051,7 +2049,6 @@ standard = [
     { name = "jinja2" },
     { name = "jsbeautifier" },
     { name = "uvicorn", extra = ["standard"] },
-    { name = "uvloop", marker = "sys_platform != 'win32'" },
 ]
 structlog = [
     { name = "structlog" },
@@ -2177,8 +2174,6 @@ requires-dist = [
     { name = "typing-extensions" },
     { name = "uvicorn", extras = ["standard"], marker = "extra == 'cli'" },
     { name = "uvicorn", extras = ["standard"], marker = "extra == 'standard'" },
-    { name = "uvloop", marker = "sys_platform != 'win32' and extra == 'cli'", specifier = ">=0.18.0" },
-    { name = "uvloop", marker = "sys_platform != 'win32' and extra == 'standard'", specifier = ">=0.18.0" },
     { name = "valkey", extras = ["libvalkey"], marker = "extra == 'valkey'", specifier = ">=6.0.2" },
     { name = "zstandard", marker = "python_full_version < '3.14' and extra == 'zstd'", specifier = ">=0.24.0" },
 ]

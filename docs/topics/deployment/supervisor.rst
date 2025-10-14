@@ -23,8 +23,6 @@ For different deployment scenarios, consider these alternatives:
 
 - :doc:`Docker <docker>`:
     Ideal for containerized environments, offering isolation and scalability.
-- :doc:`NGINX Unit <nginx-unit>`:
-    A dynamic web and application server, suitable for running and managing multiple applications.
 - `systemd <https://www.freedesktop.org/wiki/Software/systemd/>`_:
     A system and service manager, integrated into many Linux distributions for managing system processes.
 
