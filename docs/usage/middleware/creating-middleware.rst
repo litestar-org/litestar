@@ -134,7 +134,7 @@ Constraints and plugins
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 When using plugins that add middleware(s), it is important to understand that these
-middleware(s) are added *before* any user-defined middleware.
+middleware(s) are added *after* middlewares defined on the application and *before* middlewares defined on the other layers.
 
 This means that if you add in a plugin a middleware that has a constraint, the constraint has to be satisfied
 or an error will be raised.
