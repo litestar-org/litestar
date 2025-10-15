@@ -136,8 +136,8 @@ Constraints and plugins
 When using plugins that add middleware(s), it is important to understand that these
 middleware(s) are added *after* middlewares defined on the application and *before* middlewares defined on the other layers.
 
-This means that even for middlewares added through a plugin, the constraint has to be satisfied
-or an error will be raised.
+Constraints are evaluated after all middlewares have been added though, so an order constraint on a middleware added by
+a plugin, has to take into account the position it is being added to.
 
 Most of the time in a plugin you would do ``app_config.middleware.append(MyCustomMiddleware)`` which will be
 ok if it has no constraints attached.
