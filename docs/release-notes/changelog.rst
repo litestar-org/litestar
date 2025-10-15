@@ -277,3 +277,12 @@
               id: ReadOnly[int]
 
         ``typing_extensions.ReadOnly`` should be used for python versions <3.13.
+
+
+    .. change:: Add ``should_bypass_for_scope`` to ``ASGIMiddleware`` to allow excluding middlewares dynamically
+        :type: feature
+        :pr: 4441
+
+        Add a new attribute :attr:`~litestar.middleware.ASGIMiddleware.should_bypass_for_scope`;
+        A callable which takes in a :class:`~litestar.types.Scope` and returns a boolean
+        to indicate whether to bypass the middleware for the current request.

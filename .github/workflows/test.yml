@@ -50,7 +50,7 @@ jobs:
 
       # Windows Source
       - name: Install Build Dependencies
-        uses: ikalnytskyi/action-setup-postgres@v7
+        uses: ikalnytskyi/action-setup-postgres@v8
         if: startsWith(inputs.os, 'windows')
 
       - name: Install uv
