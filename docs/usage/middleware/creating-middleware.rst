@@ -131,7 +131,7 @@ be the *last* middleware on the *last* layer (i.e. the route handler).
     )
 
 Constraints and plugins
-~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~
 
 When using plugins that add middleware(s), it is important to understand that these
 middleware(s) are added *after* middlewares defined on the application and *before* middlewares defined on the other layers.
