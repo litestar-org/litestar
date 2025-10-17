@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from enum import Enum
 from functools import partial
+from os import getenv
 from typing import TYPE_CHECKING, TypeVar, cast
 from urllib.parse import quote
 
@@ -102,3 +103,22 @@ def get_exception_group() -> type[BaseException]:
         from exceptiongroup import ExceptionGroup as _ExceptionGroup  # pyright: ignore
 
         return cast("type[BaseException]", _ExceptionGroup)
+
+
+def envflag(varname: str) -> bool:
+    """Get the boolean value of an environment variable.
+
+    Determines whether an environment variable is set to a truthy value.
+    Returns True if the variable exists and its value matches one of:
+    "1", "true", "t", "yes", "on", or "y" (case-insensitive).
+    Otherwise, including when the variable is not set, returns False.
+
+    Args:
+        varname (str): The name of the environment variable to check.
+
+    Returns:
+        bool: True if the environment variable is set to a truthy value,
+        otherwise False.
+    """
+    envvar = getenv(varname)
+    return bool(envvar and envvar.lower() in ("1", "true", "t", "yes", "on", "y"))

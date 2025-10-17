@@ -4,7 +4,6 @@ import collections
 import inspect
 import itertools
 import logging
-import os
 import pdb  # noqa: T100
 import warnings
 from collections import defaultdict
@@ -53,7 +52,7 @@ from litestar.routes import ASGIRoute, HTTPRoute, WebSocketRoute
 from litestar.stores.registry import StoreRegistry
 from litestar.types import Empty, TypeDecodersSequence
 from litestar.types.internal_types import PathParameterDefinition, RouteHandlerMapItem, TemplateConfigType
-from litestar.utils import ensure_async_callable, join_paths, unique
+from litestar.utils import ensure_async_callable, envflag, join_paths, unique
 from litestar.utils.dataclass import extract_dataclass_items
 from litestar.utils.predicates import is_async_callable, is_class_and_subclass
 from litestar.utils.warnings import warn_pdb_on_exception
@@ -334,10 +333,10 @@ class Litestar(Router):
             logging_config = LoggingConfig()
 
         if debug is None:
-            debug = os.getenv("LITESTAR_DEBUG", "0") == "1"
+            debug = envflag("LITESTAR_DEBUG")
 
         if pdb_on_exception is None:
-            pdb_on_exception = os.getenv("LITESTAR_PDB", "0") == "1"
+            pdb_on_exception = envflag("LITESTAR_PDB")
 
         config = AppConfig(
             after_exception=list(after_exception or []),

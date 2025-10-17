@@ -1,6 +1,6 @@
 from litestar.utils.deprecation import deprecated, warn_deprecation
 
-from .helpers import get_enum_string_value, get_name, unique_name_for_scope, url_quote
+from .helpers import envflag, get_enum_string_value, get_name, unique_name_for_scope, url_quote
 from .path import join_paths, normalize_path
 from .predicates import (
     is_annotated_type,
@@ -29,6 +29,7 @@ __all__ = (
     "AsyncIteratorWrapper",
     "deprecated",
     "ensure_async_callable",
+    "envflag",
     "find_index",
     "get_enum_string_value",
     "get_name",

@@ -205,6 +205,13 @@ def info_command(app: Litestar) -> None:
     is_flag=True,
     envvar="LITESTAR_CREATE_SELF_SIGNED_CERT",
 )
+@click.option(
+    "-q",
+    "--quiet-console",
+    envvar="LITESTAR_QUIET_CONSOLE",
+    is_flag=True,
+    default=False,
+)
 def run_command(
     reload: bool,
     port: int,
@@ -220,6 +227,7 @@ def run_command(
     ssl_certfile: str | None,
     ssl_keyfile: str | None,
     create_self_signed_cert: bool,
+    quiet_console: bool,
     ctx: click.Context,
 ) -> None:
     """Run a Litestar app. (requires 'uvicorn' to be installed).
@@ -234,7 +242,7 @@ def run_command(
 
     if pdb:
         os.environ["LITESTAR_PDB"] = "1"
-    quiet_console = os.getenv("LITESTAR_QUIET_CONSOLE") or False
+
     if not UVICORN_INSTALLED:
         console.print(
             r"uvicorn is not installed. Please install the standard group, litestar\[standard], to use this command."
