@@ -61,6 +61,8 @@ EncodableStdLibIPType: TypeAlias = (
 )
 EncodableMsgSpecType: TypeAlias = "Ext | Raw | Struct"
 LitestarEncodableType: TypeAlias = "EncodableBuiltinType | EncodableBuiltinCollectionType | EncodableStdLibType | EncodableStdLibIPType | EncodableMsgSpecType | BaseModel | AttrsInstance"  # pyright: ignore
-DataContainerType: TypeAlias = "Struct | BaseModel | AttrsInstance | TypedDictClass | DataclassProtocol"  # pyright: ignore
+DataContainerType: TypeAlias = (  # pyright: ignore
+    "type[Struct] | type[BaseModel] | type[AttrsInstance] | TypedDictClass | DataclassProtocol"
+)
 PydanticV2FieldsListType: TypeAlias = "set[int] | set[str] | dict[int, Any] | dict[str, Any]"
 PydanticV1FieldsListType: TypeAlias = "IncEx | AbstractSetIntStr | MappingIntStrAny"  # pyright: ignore
