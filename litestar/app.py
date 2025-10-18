@@ -491,6 +491,52 @@ class Litestar(Router):
             websocket_class=self.websocket_class,
         )
 
+        # Validate that users didn't accidentally import the stdlib http.client.HTTPException
+        # (or another class named "HTTPException") instead of Litestar's HTTPException.
+        # This common auto-import gotcha causes exceptions to be treated as plain exceptions
+        # and serialized (for example) as JSON instead of being handled by user-provided
+        # HTTPException handlers. Raise early with a clear message.
+        try:  # import locally to avoid import cycles
+            from litestar.exceptions import HTTPException as _LitestarHTTPException
+        except Exception:  # pragma: no cover - defensive
+            _LitestarHTTPException = None
+
+        def _looks_like_stdlib_http_exception(key: object) -> bool:
+            """Return True if `key` is a type named 'HTTPException' but not Litestar's.
+
+            We check by name to catch the common accidental import of
+            http.client.HTTPException (or other collisions), and ensure it's not
+            the Litestar class.
+            """
+            return (
+                isinstance(key, type)
+                and getattr(key, "__name__", "") == "HTTPException"
+                and key is not _LitestarHTTPException
+            )
+
+        # check app-level exception handlers
+        for key in (config.exception_handlers or {}).keys():
+            if _looks_like_stdlib_http_exception(key):
+                raise ImproperlyConfiguredException(
+                    "Detected use of a non-Litestar 'HTTPException' in the application's `exception_handlers`. "
+                    "This commonly happens when `HTTPException` is imported from the stdlib (e.g. `http.client`). "
+                    "Import the Litestar exception instead: `from litestar.exceptions import HTTPException`."
+                )
+
+        # check exception handlers defined on route handlers (decorated handlers / routers)
+        # iterate through reduced handlers to find any user-provided mappings
+        for handler, _bases in self._iter_handlers(self.route_handlers, bases=[self]):
+            eh_map = getattr(handler, "exception_handlers", None)
+            if not eh_map:
+                continue
+            for key in eh_map.keys():
+                if _looks_like_stdlib_http_exception(key):
+                    raise ImproperlyConfiguredException(
+                        "Detected use of a non-Litestar 'HTTPException' in a route handler's `exception_handlers`. "
+                        "This commonly happens when `HTTPException` is imported from the stdlib (e.g. `http.client`). "
+                        "Import the Litestar exception instead: `from litestar.exceptions import HTTPException`."
+                    )
+
         self.asgi_router = ASGIRouter(app=self)
 
         self.routes: list[HTTPRoute | ASGIRoute | WebSocketRoute] = self._build_routes(
