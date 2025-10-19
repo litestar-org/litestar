@@ -105,20 +105,23 @@ def get_exception_group() -> type[BaseException]:
         return cast("type[BaseException]", _ExceptionGroup)
 
 
-def envflag(varname: str) -> bool:
+def envflag(varname: str, default: bool = False) -> bool:
     """Get the boolean value of an environment variable.
 
     Determines whether an environment variable is set to a truthy value.
     Returns True if the variable exists and its value matches one of:
-    "1", "true", "t", "yes", "on", or "y" (case-insensitive).
+    "1", "true", "t", "yes", "on", "y" (case-insensitive).
     Otherwise, including when the variable is not set, returns False.
 
     Args:
         varname (str): The name of the environment variable to check.
+        default (bool): Value to return if the variable is not set OR empty.
 
     Returns:
         bool: True if the environment variable is set to a truthy value,
         otherwise False.
     """
     envvar = getenv(varname)
-    return bool(envvar and envvar.lower() in ("1", "true", "t", "yes", "on", "y"))
+    if not envvar:
+        return default
+    return envvar.lower() in ("1", "true", "t", "yes", "on", "y")
