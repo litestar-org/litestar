@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-import os
 import warnings
 from typing import TYPE_CHECKING
 
 from litestar.exceptions import LitestarWarning
+from litestar.utils import envflag
 
 if TYPE_CHECKING:
     import re
@@ -13,7 +13,7 @@ if TYPE_CHECKING:
 
 
 def warn_implicit_sync_to_thread(source: AnyCallable, stacklevel: int = 2) -> None:
-    if os.getenv("LITESTAR_WARN_IMPLICIT_SYNC_TO_THREAD") == "0":
+    if envflag("LITESTAR_WARN_IMPLICIT_SYNC_TO_THREAD") is False:
         return
 
     warnings.warn(
@@ -29,7 +29,7 @@ def warn_implicit_sync_to_thread(source: AnyCallable, stacklevel: int = 2) -> No
 
 
 def warn_sync_to_thread_with_async_callable(source: AnyCallable, stacklevel: int = 2) -> None:
-    if os.getenv("LITESTAR_WARN_SYNC_TO_THREAD_WITH_ASYNC") == "0":
+    if envflag("LITESTAR_WARN_SYNC_TO_THREAD_WITH_ASYNC") is False:
         return
 
     warnings.warn(
@@ -42,7 +42,7 @@ def warn_sync_to_thread_with_async_callable(source: AnyCallable, stacklevel: int
 
 
 def warn_sync_to_thread_with_generator(source: AnyGenerator, stacklevel: int = 2) -> None:
-    if os.getenv("LITESTAR_WARN_SYNC_TO_THREAD_WITH_GENERATOR") == "0":
+    if envflag("LITESTAR_WARN_SYNC_TO_THREAD_WITH_GENERATOR") is False:
         return
 
     warnings.warn(
@@ -73,7 +73,7 @@ def warn_middleware_excluded_on_all_routes(
 
 
 def warn_signature_namespace_override(signature_key: str, stacklevel: int = 2) -> None:
-    if os.getenv("LITESTAR_WARN_SIGNATURE_NAMESPACE_OVERRIDE") == "0":
+    if envflag("LITESTAR_WARN_SIGNATURE_NAMESPACE_OVERRIDE") is False:
         return
 
     warnings.warn(
