@@ -209,6 +209,7 @@ def info_command(app: Litestar) -> None:
     "-q",
     "--quiet-console",
     envvar="LITESTAR_QUIET_CONSOLE",
+    help="Suppress formatted console output (useful for non-TTY environments, logs, and CI/CD",
     is_flag=True,
     default=False,
 )
