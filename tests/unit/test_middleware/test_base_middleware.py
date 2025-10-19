@@ -1,4 +1,5 @@
 from typing import TYPE_CHECKING, List, Tuple, Union
+from unittest.mock import MagicMock
 from warnings import catch_warnings
 
 import pytest
@@ -306,6 +307,38 @@ def test_asgi_middleware_should_exclude_scope() -> None:
         assert client.get("/test.jpg").status_code == 200
 
         mock.assert_called_once_with("/test.txt")
+
+
+def test_asgi_middleware_path_exclude_warns_future_use() -> None:
+    mock = MagicMock()
+
+    class SubclassMiddleware(ASGIMiddleware):
+        def __init__(self, pattern: str) -> None:
+            self.exclude_path_pattern = pattern
+
+        async def handle(self, scope: "Scope", receive: "Receive", send: "Send", next_app: "ASGIApp") -> None:
+            mock(scope["path"])
+            await next_app(scope, receive, send)
+
+    @get("/{file_name:str}")
+    def handler(file_name: str) -> str:
+        return file_name
+
+    # this configuration would NOT be excluded in the future
+    with create_test_client([handler], middleware=[SubclassMiddleware(".jpg")]) as client:
+        with pytest.warns(DeprecationWarning, match=".*exclude_path_pattern.* did match the request path"):
+            assert client.get("/test.jpg").status_code == 200
+
+        assert client.get("/test.txt").status_code == 200
+        mock.assert_called_once_with("/test.txt")
+
+    mock.reset_mock()
+
+    # this configuration WOULD be excluded in the future
+    with create_test_client([handler], middleware=[SubclassMiddleware("str")]) as client:
+        with pytest.warns(DeprecationWarning, match=".*exclude_path_pattern.* did not match the request path"):
+            assert client.get("/test.jpg").status_code == 200
+            mock.assert_called_once_with("/test.jpg")
 
 
 @pytest.mark.parametrize("excludes", ["/", ("/", "/foo"), "/*", "/.*"])
