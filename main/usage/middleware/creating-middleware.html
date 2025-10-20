@@ -462,6 +462,7 @@ data-aria-dark="Switch to auto color mode">
 <li><a class="reference internal" href="#configuration-constraints">Configuration constraints</a><ul>
 <li><a class="reference internal" href="#forward-references">Forward references</a></li>
 <li><a class="reference internal" href="#middleware-order">Middleware order</a></li>
+<li><a class="reference internal" href="#constraints-and-plugins">Constraints and plugins</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#migrating-from-middlewareprotocol-abstractmiddleware">Migrating from <code class="docutils literal notranslate"><span class="pre">MiddlewareProtocol</span></code> / <code class="docutils literal notranslate"><span class="pre">AbstractMiddleware</span></code></a></li>
@@ -673,6 +674,17 @@ be the <em>last</em> middleware on the <em>last</em> layer (i.e. the route handl
 </span><span data-line="19"><span class="p">)</span>
 </span></pre></div>
 </div>
+</section>
+<section id="constraints-and-plugins">
+<h4>Constraints and plugins<a class="headerlink" href="#constraints-and-plugins" title="Link to this heading">¶</a></h4>
+<p>When using plugins that add middleware(s), it is important to understand that these
+middleware(s) are added <em>after</em> middlewares defined on the application and <em>before</em> middlewares defined on the other layers.</p>
+<p>Constraints are evaluated after all middlewares have been added though, so an order constraint on a middleware added by
+a plugin has to take into account the position it is being added to.</p>
+<p>Most of the time in a plugin you would do <code class="docutils literal notranslate"><span class="pre">app_config.middleware.append(MyCustomMiddleware)</span></code> which will be
+ok if it has no constraints attached.</p>
+<p>Now suppose that <code class="docutils literal notranslate"><span class="pre">MyCustomMiddleware</span></code> has the constraint <code class="docutils literal notranslate"><span class="pre">first=True</span></code> then the correct way to add it is to do
+<code class="docutils literal notranslate"><span class="pre">app_config.middleware.insert(0,</span> <span class="pre">MyCustomMiddleware())</span></code> so that it is the first middleware in the stack.</p>
 </section>
 </section>
 <section id="migrating-from-middlewareprotocol-abstractmiddleware">
