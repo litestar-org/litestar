@@ -676,7 +676,7 @@ def test_routes_command_json_output(runner: CliRunner, create_app_file: CreateAp
     """Test that the routes command supports --json output."""
     create_app_file("app.py", content=APP_FILE_CONTENT_ROUTES_EXAMPLE)
 
-    result = runner.invoke(cli_command, ["routes", "--json"])
+    result = runner.invoke(cli_command, ["routes", "--format=json"])
 
     assert result.exit_code == 0
     assert result.exception is None
