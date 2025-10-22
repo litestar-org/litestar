@@ -226,6 +226,10 @@ class ASGIMiddleware(abc.ABC):
         ``/user/{user_id:int}/``), NOT against the actual **request path** (e.g.,
         ``/user/1234/``). This is a critical distinction for dynamic routes.
 
+        If you need to exclude based on paths dynamically, use
+        :attr:`~litestar.middleware.ASGIMiddleware.should_bypass_for_scope`
+        instead, matching on ``scope["path"]``.
+
     **Example 1: Static path**
 
     Handler path::
@@ -250,19 +254,44 @@ class ASGIMiddleware(abc.ABC):
         /user/5678/profile
         /user/9999/profile
 
-    To exclude this handler, the pattern must match the **handler**, not the actual
-    request path:
+    To exclude this handler, the pattern must match the **handler**, not the actual request path::
 
         exclude_path_pattern = "/user/{user_id:int}/profile"
         exclude_path_pattern = "/user/\{.+?\}/"
     """
     exclude_opt_key: str | None = None
+    """
+    Exclude this middleware for handlers with an opt-key of this name that is truthy
+    """
+    should_bypass_for_scope: Callable[[Scope], bool] | None = None
+    r"""
+    A callable that takes in the :class:`~litestar.types.Scope` of the current
+    connection and returns a boolean, indicating if the middleware should be skipped for
+    the current request.
+
+    This can for example be used to exclude a middleware based on a dynamic path::
+
+        should_bypass_for_scope = lambda scope: scope["path"].endswith(".jpg")
+
+    Applied to a route with a dynamic path like ``/static/{file_name:str}``, it would
+    be skipped *only* if ``file_name`` has a ``.jpg`` extension.
+
+    .. note::
+
+        If it is not required to dynamically match the path of a request,
+        :attr:`~litestar.middleware.ASGIMiddleware.exclude_path_pattern` should be
+        used instead. Since its exclusion is done statically at startup time, it has no
+        performance cost at runtime.
+
+    .. versionadded:: 3.0
+    """
     constraints: MiddlewareConstraints | None = None
 
     def should_bypass_for_handler(self, handler: RouteHandlerType) -> bool:
         """Return ``True`` if this middleware should be bypassed for ``handler``, according
-        to ``scopes``, ``exclude_path_pattern`` or ``exclude_opt_key``, otherwise
-        ``False``.
+        to :attr:`~litestar.middleware.ASGIMiddleware.scopes`,
+        :attr:`~litestar.middleware.ASGIMiddleware.exclude_path_pattern` or
+        :attr:`~litestar.middleware.ASGIMiddleware.exclude_opt_key`, otherwise ``False``.
         """
         from litestar.handlers import ASGIRouteHandler, HTTPRouteHandler, WebsocketRouteHandler
 
@@ -286,8 +315,18 @@ class ASGIMiddleware(abc.ABC):
         """Create the actual middleware callable"""
         handle = self.handle
 
-        async def middleware(scope: Scope, receive: Receive, send: Send) -> None:
-            await handle(scope=scope, receive=receive, send=send, next_app=app)
+        should_bypass_for_scope = self.should_bypass_for_scope
+        if should_bypass_for_scope is None:
+
+            async def middleware(scope: Scope, receive: Receive, send: Send) -> None:
+                await handle(scope=scope, receive=receive, send=send, next_app=app)
+        else:
+
+            async def middleware(scope: Scope, receive: Receive, send: Send) -> None:
+                if should_bypass_for_scope(scope):
+                    await app(scope, receive, send)
+                else:
+                    await handle(scope=scope, receive=receive, send=send, next_app=app)
 
         return middleware
 
