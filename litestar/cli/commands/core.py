@@ -308,9 +308,9 @@ def run_command(
 
 @click.command(name="routes")
 @click.option("--schema", help="Include schema routes", is_flag=True, default=False)
-@click.option("--exclude", help="routes to exclude via regex", type=str, is_flag=False, multiple=True)
-@click.option("--json", "as_json", is_flag=True, help="Output routes as JSON instead of tree")
-def routes_command(app: Litestar, exclude: tuple[str, ...], schema: bool, as_json: bool) -> None:
+@click.option("--exclude", help="Routes to exclude via regex", type=str, is_flag=False, multiple=True)
+@click.option("--format", "output_format", help="Output format (e.g., json, text)", default="text")
+def routes_command(app: Litestar, exclude: tuple[str, ...], schema: bool, output_format: str) -> None:
     """Display information about the application's routes."""
 
     sorted_routes = sorted(app.routes, key=lambda r: r.path)
@@ -320,7 +320,7 @@ def routes_command(app: Litestar, exclude: tuple[str, ...], schema: bool, as_jso
     if exclude is not None:
         sorted_routes = remove_routes_with_patterns(sorted_routes, exclude)
 
-    if as_json:
+    if output_format == "json":
         import inspect
         import json
 
@@ -347,8 +347,11 @@ def routes_command(app: Litestar, exclude: tuple[str, ...], schema: bool, as_jso
             routes_list.append(route_info)
 
         click.echo(json.dumps(routes_list, indent=4, default=lambda o: list(o) if isinstance(o, set) else o))
-    else:
+
+    elif output_format == "text":
         console.print(_RouteTree(sorted_routes))
+    else:
+        click.echo(f"Unsupported format: {output_format}")
 
 
 class _RouteTree(Tree):
