@@ -689,3 +689,4 @@ def test_routes_command_json_output(runner: CliRunner, create_app_file: CreateAp
     assert isinstance(data, list)
     assert all("path" in route and "methods" in route for route in data)
     assert len(data) > 0
+    return
