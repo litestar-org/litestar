@@ -673,7 +673,7 @@ def test_remove_routes_with_patterns() -> None:
 
 @pytest.mark.usefixtures("unset_env")
 def test_routes_command_json_output(runner: CliRunner, create_app_file: CreateAppFileFixture) -> None:
-    """Test that the routes command supports --json output."""
+    """Test that the routes command supports --format=json output."""
     create_app_file("app.py", content=APP_FILE_CONTENT_ROUTES_EXAMPLE)
 
     result = runner.invoke(cli_command, ["routes", "--format=json"])
