@@ -187,11 +187,11 @@ Imports
 +----------------------------------------------------+------------------------------------------------------------------------+
 | ``starlite.AuthenticationResult``                  | :class:`.middleware.authentication.AuthenticationResult`               |
 +----------------------------------------------------+------------------------------------------------------------------------+
-| ``starlite.AbstractMiddleware``                    | :class:`.middleware.AbstractMiddleware`                                |
+| ``starlite.AbstractMiddleware``                    | :class:`.middleware.base.AbstractMiddleware`                           |
 +----------------------------------------------------+------------------------------------------------------------------------+
-| ``starlite.DefineMiddleware``                      | :class:`.middleware.DefineMiddleware`                                  |
+| ``starlite.DefineMiddleware``                      | :class:`.middleware.base.DefineMiddleware`                             |
 +----------------------------------------------------+------------------------------------------------------------------------+
-| ``starlite.MiddlewareProtocol``                    | :class:`.middleware.MiddlewareProtocol`                                |
+| ``starlite.MiddlewareProtocol``                    | :class:`.middleware.base.MiddlewareProtocol`                           |
 +----------------------------------------------------+------------------------------------------------------------------------+
 | **Security**                                                                                                                |
 +----------------------------------------------------+------------------------------------------------------------------------+
