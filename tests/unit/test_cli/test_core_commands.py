@@ -689,4 +689,28 @@ def test_routes_command_json_output(runner: CliRunner, create_app_file: CreateAp
     assert isinstance(data, list)
     assert all("path" in route and "methods" in route for route in data)
     assert len(data) > 0
+
+
+@pytest.mark.usefixtures("unset_env")
+def test_routes_command_text_output(runner: CliRunner, create_app_file: CreateAppFileFixture) -> None:
+    """Test that the routes command supports --format=text output."""
+    create_app_file("app.py", content=APP_FILE_CONTENT_ROUTES_EXAMPLE)
+
+    result = runner.invoke(cli_command, ["routes", "--format=text"])
+
+    assert result.exit_code == 0
+    assert result.exception is None
+    assert "└──" in result.output or "/" in result.output
+    assert "path" not in result.output.lower()
+
+
+@pytest.mark.usefixtures("unset_env")
+def test_routes_command_unsupported_format(runner: CliRunner, create_app_file: CreateAppFileFixture) -> None:
+    """Test that unsupported formats are handled gracefully."""
+    create_app_file("app.py", content=APP_FILE_CONTENT_ROUTES_EXAMPLE)
+
+    result = runner.invoke(cli_command, ["routes", "--format=yaml"])
+
+    assert result.exit_code == 0
+    assert "Unsupported format" in result.output
     return
