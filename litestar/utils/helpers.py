@@ -1,11 +1,12 @@
 from __future__ import annotations
 
+import os
 from enum import Enum
 from functools import partial
-from os import getenv
 from typing import TYPE_CHECKING, TypeVar, cast
 from urllib.parse import quote
 
+from litestar.exceptions import LitestarException
 from litestar.utils.typing import get_origin_or_inner_type
 
 if TYPE_CHECKING:
@@ -105,23 +106,31 @@ def get_exception_group() -> type[BaseException]:
         return cast("type[BaseException]", _ExceptionGroup)
 
 
-def envflag(varname: str, default: bool = False) -> bool:
-    """Get the boolean value of an environment variable.
-
-    Determines whether an environment variable is set to a truthy value.
-    Returns True if the variable exists and its value matches one of:
-    "1", "true", "t", "yes", "on", "y" (case-insensitive).
-    Otherwise, including when the variable is not set, returns False.
+def envflag(varname: str) -> bool | None:
+    """Parse an environment variable as a boolean flag.
 
     Args:
-        varname (str): The name of the environment variable to check.
-        default (bool): Value to return if the variable is not set OR empty.
+        varname: The name of the environment variable to check.
 
     Returns:
-        bool: True if the environment variable is set to a truthy value,
-        otherwise False.
+        True for truthy values (1, true, t, yes, y, on),
+        False for falsy values (0, false, f, no, n, off),
+        or empty string, None if not set.
+
+    Raises:
+        LitestarException: If the value is not a recognized boolean.
     """
-    envvar = getenv(varname)
+    if varname not in os.environ:
+        return None
+
+    envvar = os.environ.get(varname)
     if not envvar:
-        return default
-    return envvar.lower() in ("1", "true", "t", "yes", "on", "y")
+        return False
+
+    norm = envvar.strip().lower()
+    if norm in {"1", "true", "t", "yes", "y", "on"}:
+        return True
+    if norm in {"0", "false", "f", "no", "n", "off"}:
+        return False
+
+    raise LitestarException(f"Invalid value for {varname}: '{norm}' is not a valid boolean.")
