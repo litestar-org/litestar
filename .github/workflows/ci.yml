@@ -246,7 +246,7 @@ jobs:
           echo "${{ github.event.number }}" > .pr_number
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: docs-preview
           path: |
@@ -317,7 +317,7 @@ jobs:
       - name: Rename coverage file
         run: mv .coverage* .coverage.pydantic_v1
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         with:
           name: coverage-data-pydantic_v1-${{ inputs.python-version }}
           path: .coverage.pydantic_v1
@@ -335,7 +335,7 @@ jobs:
           python-version: "3.12"
 
       - name: Download Artifacts
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v6
         with:
           pattern: coverage-data*
           merge-multiple: true
