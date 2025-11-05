@@ -18,11 +18,11 @@ async def async_generator_func() -> AsyncGenerator[float, None]:
 
 
 class SyncGeneratorCallable:
-    def __init__(self):
+    def __init__(self) -> None:
         self.call_count = 0
         self.cleanup_count = 0
 
-    def __call__(self) -> Generator[int, None, None]:
+    def __call__(self) -> Generator[int, None]:
         self.call_count += 1
 
         try:
@@ -33,11 +33,11 @@ class SyncGeneratorCallable:
 
 
 class AsyncGeneratorCallable:
-    def __init__(self):
+    def __init__(self) -> None:
         self.call_count = 0
         self.cleanup_count = 0
 
-    async def __call__(self) -> AsyncGenerator[int, None, None]:
+    async def __call__(self) -> AsyncGenerator[int, None]:
         self.call_count += 1
 
         try:
@@ -238,69 +238,79 @@ def test_provide_raises_on_unsafe_signature_access() -> None:
         provide.parsed_fn_signature
 
 
-@pytest.mark.parametrize(
-    ("factory_class", "is_async"),
-    [
-        (SyncGeneratorCallable, False),
-        (AsyncGeneratorCallable, True),
-    ],
-)
 @pytest.mark.asyncio
-async def test_stateful_generator_with_cleanup(
-    factory_class: type[SyncGeneratorCallable] | type[AsyncGeneratorCallable],
-    is_async: bool,
-) -> None:
-    """Verify that stateful callable instances maintain state and execute cleanup."""
-    factory = factory_class()
+async def test_stateful_sync_generator_with_cleanup() -> None:
+    """Verify that sync stateful callable instances maintain state and execute cleanup."""
+    factory = SyncGeneratorCallable()
     provide = Provide(factory, sync_to_thread=None)
 
-    # Verify it's detected as the correct generator type
-    assert provide.has_sync_generator_dependency is not is_async
-    assert provide.has_async_generator_dependency is is_async
+    # Sanity check for detection
+    assert provide.has_sync_generator_dependency is True
+    assert provide.has_async_generator_dependency is False
 
-    # First call - await the Provide call
+    # First call
     gen1 = await provide()
+    assert isinstance(gen1, Generator)
 
-    # Get first value (sync or async)
-    if is_async:
-        assert isinstance(gen1, AsyncGenerator)
-        session1 = await gen1.__anext__()
-    else:
-        assert isinstance(gen1, Generator)
-        session1 = next(gen1)
-
+    session1 = next(gen1)
     assert session1 == 1
     assert factory.call_count == 1
     assert factory.cleanup_count == 0
 
     # Second call (state should be maintained)
     gen2 = await provide()
+    assert isinstance(gen2, Generator)
 
-    if is_async:
-        session2 = await gen2.__anext__()
-    else:
-        session2 = next(gen2)
-
+    session2 = next(gen2)
     assert session2 == 2
     assert factory.call_count == 2
     assert factory.cleanup_count == 0
 
     # Cleanup first generator
-    if is_async:
-        with pytest.raises(StopAsyncIteration):
-            await gen1.__anext__()
-    else:
-        with pytest.raises(StopIteration):
-            next(gen1)
-
+    with pytest.raises(StopIteration):
+        next(gen1)
     assert factory.cleanup_count == 1
 
     # Cleanup second generator
-    if is_async:
-        with pytest.raises(StopAsyncIteration):
-            await gen2.__anext__()
-    else:
-        with pytest.raises(StopIteration):
-            next(gen2)
+    with pytest.raises(StopIteration):
+        next(gen2)
+    assert factory.cleanup_count == 2
 
+
+@pytest.mark.asyncio
+async def test_stateful_async_generator_with_cleanup() -> None:
+    """Verify that async stateful callable instances maintain state and execute cleanup."""
+    factory = AsyncGeneratorCallable()
+    provide = Provide(factory, sync_to_thread=None)
+
+    # Sanity check for detection
+    assert provide.has_sync_generator_dependency is False
+    assert provide.has_async_generator_dependency is True
+
+    # First call
+    gen1 = await provide()
+    assert isinstance(gen1, AsyncGenerator)
+
+    session1 = await gen1.__anext__()
+    assert session1 == 1
+    assert factory.call_count == 1
+    assert factory.cleanup_count == 0
+
+    # Second call (state should be maintained)
+    gen2 = await provide()
+    assert isinstance(gen2, AsyncGenerator)
+
+    session2 = await gen2.__anext__()
+    assert session2 == 2
+    assert factory.call_count == 2
+    assert factory.cleanup_count == 0
+
+    # Cleanup first generator
+    with pytest.raises(StopAsyncIteration):
+        await gen1.__anext__()
+    assert factory.cleanup_count == 1
+
+    # Cleanup second generator
+    with pytest.raises(StopAsyncIteration):
+        await gen2.__anext__()
     assert factory.cleanup_count == 2
