@@ -59,7 +59,7 @@ class Provide:
 
         is_class_dependency = isclass(dependency)
         is_function = isfunction(dependency)
-        is_callable_instance = not is_class_dependency and not is_function and callable(dependency)
+        is_callable_instance = not is_class_dependency and not is_function
         if is_class_dependency or is_callable_instance:
             check_target = dependency.__call__  # type: ignore[operator]
         else:
