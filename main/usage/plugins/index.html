@@ -634,7 +634,7 @@ injection by providing information about injectable types.</p>
 <p>Its main purpose it to facilitate the injection of callables with unknown signatures,
 for example Pydantic’s <code class="docutils literal notranslate"><span class="pre">BaseModel</span></code> classes; These are not supported natively since,
 while they are callables, their type information is not contained within their callable
-signature (their <a class="reference internal" href="../../reference/app.html#litestar.app.Litestar.__init__" title="litestar.app.Litestar.__init__"><code class="xref py py-func docutils literal notranslate"><span class="pre">__init__()</span></code></a> method).</p>
+signature (their <a class="reference internal" href="../../reference/connection.html#litestar.connection.ASGIConnection.__init__" title="litestar.connection.ASGIConnection.__init__"><code class="xref py py-func docutils literal notranslate"><span class="pre">__init__()</span></code></a> method).</p>
 <div class="literal-block-wrapper docutils container" id="id5">
 <div class="code-block-caption"><span class="caption-text">Dynamically generating signature information for a custom type</span><a class="headerlink" href="#id5" title="Link to this code">¶</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">inspect</span><span class="w"> </span><span class="kn">import</span> <span class="n">Parameter</span><span class="p">,</span> <span class="n">Signature</span>

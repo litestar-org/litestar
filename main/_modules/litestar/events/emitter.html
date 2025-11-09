@@ -534,7 +534,7 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="24">
 </span><span data-line="25">
 <div class="viewcode-block" id="BaseEventEmitterBackend">
-<a class="viewcode-back" href="../../../reference/events.html#litestar.config.app.BaseEventEmitterBackend">[docs]</a>
+<a class="viewcode-back" href="../../../reference/events.html#litestar.events.BaseEventEmitterBackend">[docs]</a>
 </span><span data-line="26"><span class="k">class</span><span class="w"> </span><span class="nc">BaseEventEmitterBackend</span><span class="p">(</span><span class="n">AsyncContextManager</span><span class="p">[</span><span class="s2">&quot;BaseEventEmitterBackend&quot;</span><span class="p">],</span> <span class="n">ABC</span><span class="p">):</span>
 </span><span data-line="27"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Abstract class used to define event emitter backends.&quot;&quot;&quot;</span>
 </span><span data-line="28">
@@ -543,7 +543,7 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="31">    <span class="n">listeners</span><span class="p">:</span> <span class="n">defaultdict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">set</span><span class="p">[</span><span class="n">EventListener</span><span class="p">]]</span>
 </span><span data-line="32">
 <div class="viewcode-block" id="BaseEventEmitterBackend.__init__">
-<a class="viewcode-back" href="../../../reference/events.html#litestar.config.app.BaseEventEmitterBackend.__init__">[docs]</a>
+<a class="viewcode-back" href="../../../reference/events.html#litestar.events.BaseEventEmitterBackend.__init__">[docs]</a>
 </span><span data-line="33">    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">listeners</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">EventListener</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 </span><span data-line="34"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Create an event emitter instance.</span>
 </span><span data-line="35">
@@ -557,7 +557,7 @@ data-aria-dark="Switch to auto color mode">
 
 </span><span data-line="43">
 <div class="viewcode-block" id="BaseEventEmitterBackend.emit">
-<a class="viewcode-back" href="../../../reference/events.html#litestar.config.app.BaseEventEmitterBackend.emit">[docs]</a>
+<a class="viewcode-back" href="../../../reference/events.html#litestar.events.BaseEventEmitterBackend.emit">[docs]</a>
 </span><span data-line="44">    <span class="nd">@abstractmethod</span>
 </span><span data-line="45">    <span class="k">def</span><span class="w"> </span><span class="nf">emit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 </span><span data-line="46"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Emit an event to all attached listeners.</span>
@@ -576,14 +576,14 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="57">
 </span><span data-line="58">
 <div class="viewcode-block" id="SimpleEventEmitter">
-<a class="viewcode-back" href="../../../reference/events.html#litestar.config.app.SimpleEventEmitter">[docs]</a>
+<a class="viewcode-back" href="../../../reference/events.html#litestar.events.SimpleEventEmitter">[docs]</a>
 </span><span data-line="59"><span class="k">class</span><span class="w"> </span><span class="nc">SimpleEventEmitter</span><span class="p">(</span><span class="n">BaseEventEmitterBackend</span><span class="p">):</span>
 </span><span data-line="60"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Event emitter the works only in the current process&quot;&quot;&quot;</span>
 </span><span data-line="61">
 </span><span data-line="62">    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;_exit_stack&quot;</span><span class="p">,</span> <span class="s2">&quot;_queue&quot;</span><span class="p">,</span> <span class="s2">&quot;_receive_stream&quot;</span><span class="p">,</span> <span class="s2">&quot;_send_stream&quot;</span><span class="p">)</span>
 </span><span data-line="63">
 <div class="viewcode-block" id="SimpleEventEmitter.__init__">
-<a class="viewcode-back" href="../../../reference/events.html#litestar.config.app.SimpleEventEmitter.__init__">[docs]</a>
+<a class="viewcode-back" href="../../../reference/events.html#litestar.events.SimpleEventEmitter.__init__">[docs]</a>
 </span><span data-line="64">    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">listeners</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">EventListener</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 </span><span data-line="65"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Create an event emitter instance.</span>
 </span><span data-line="66">
@@ -634,7 +634,7 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="110">        <span class="bp">self</span><span class="o">.</span><span class="n">_send_stream</span> <span class="o">=</span> <span class="kc">None</span>
 </span><span data-line="111">
 <div class="viewcode-block" id="SimpleEventEmitter.emit">
-<a class="viewcode-back" href="../../../reference/events.html#litestar.config.app.SimpleEventEmitter.emit">[docs]</a>
+<a class="viewcode-back" href="../../../reference/events.html#litestar.events.SimpleEventEmitter.emit">[docs]</a>
 </span><span data-line="112">    <span class="k">def</span><span class="w"> </span><span class="nf">emit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 </span><span data-line="113"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Emit an event to all attached listeners.</span>
 </span><span data-line="114">

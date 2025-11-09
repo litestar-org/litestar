@@ -677,7 +677,7 @@ list of domains to <a class="reference internal" href="../../reference/app.html#
 <p>You can use wildcard prefixes (<code class="docutils literal notranslate"><span class="pre">*.</span></code>) in the beginning of a domain to match any combination of subdomains. Thus,
 <code class="docutils literal notranslate"><span class="pre">*.example.com</span></code> will match <code class="docutils literal notranslate"><span class="pre">www.example.com</span></code> but also <code class="docutils literal notranslate"><span class="pre">x.y.z.example.com</span></code> etc. You can also simply put <code class="docutils literal notranslate"><span class="pre">*</span></code>
 in trusted hosts, which means allow all. This is akin to turning the middleware off, so in this case it may be
-better to not enable it in the first place. You should note that a wildcard can only be used only in the prefix of a
+better to not enable it in the first place. You should note that a wildcard can only be used in the prefix of a
 domain name, not in the middle or end. Doing so will result in a validation exception being raised.</p>
 </div>
 </section>
