@@ -31,10 +31,10 @@ You can also convert any exception that is not a ``HTTPException`` into a proble
 by providing a mapping of the exception type to a callable that converts the exception into a
 ``ProblemDetailsException.``
 
-.. tip:: This can used to override how the ``HTTPException`` is converted into a problem details response as well.
+.. tip:: This can be used to override how the ``HTTPException`` is converted into a problem details response as well.
 
 .. literalinclude:: /examples/plugins/problem_details/convert_exceptions.py
     :language: python
     :caption: Converting custom exceptions into problem details response.
 
-.. warning:: If the ``extra`` field is a ``Mapping``, then it's merged into the problem details response, otherwise it's included in the response with the key ``extra.``
+.. warning:: If the ``extra`` field is a ``Mapping``, then it's merged into the problem details response, otherwise it's included in the response with the key ``extra``.

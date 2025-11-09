@@ -158,7 +158,7 @@ list of domains to :class:`~litestar.app.Litestar`:
     You can use wildcard prefixes (``*.``) in the beginning of a domain to match any combination of subdomains. Thus,
     ``*.example.com`` will match ``www.example.com`` but also ``x.y.z.example.com`` etc. You can also simply put ``*``
     in trusted hosts, which means allow all. This is akin to turning the middleware off, so in this case it may be
-    better to not enable it in the first place. You should note that a wildcard can only be used only in the prefix of a
+    better to not enable it in the first place. You should note that a wildcard can only be used in the prefix of a
     domain name, not in the middle or end. Doing so will result in a validation exception being raised.
 
 
