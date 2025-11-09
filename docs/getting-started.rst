@@ -193,7 +193,7 @@ You can also use dataclasses (standard library and Pydantic),
 
         @patch(path="/{user_id:uuid}", dto=PartialUserDTO)
         async def partial_update_user(
-            self, user_id: UUID4, data: DTOData[User]
+            self, user_id: UUID4, data: DTOData[PartialUserDTO]
         ) -> User: ...
 
         @put(path="/{user_id:uuid}")
