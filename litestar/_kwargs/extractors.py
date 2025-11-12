@@ -85,7 +85,7 @@ def create_connection_value_extractor_mv_safe(
     kwargs_model: KwargsModel,
     connection_key: str,
     expected_params: set[ParameterDefinition],
-    parser: Callable[[ASGIConnection, KwargsModel], dict[str, list[str]]],
+    parser: Callable[[ASGIConnection, KwargsModel], dict[str, list[str]]] | None = None,
 ) -> Extractor:
     """Create a kwargs extractor function which requires values to be a list, but is safe to use with aliases and sequences
 
@@ -185,7 +185,7 @@ def create_query_default_dict(
     output: defaultdict[str, list[str]] = defaultdict(list)
 
     for k, v in parsed_query:
-        output[k].append(v)  # type: ignore[union-attr]
+        output[k].append(v)
 
     return output
 
