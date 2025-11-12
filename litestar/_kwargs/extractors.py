@@ -81,6 +81,54 @@ def _create_param_mappings(expected_params: set[ParameterDefinition]) -> ParamMa
     )
 
 
+def create_connection_value_extractor_mv_safe(
+    kwargs_model: KwargsModel,
+    connection_key: str,
+    expected_params: set[ParameterDefinition],
+    parser: Callable[[ASGIConnection, KwargsModel], dict[str, list[str]]],
+) -> Extractor:
+    """Create a kwargs extractor function which requires values to be a list, but is safe to use with aliases and sequences
+
+    Args:
+        kwargs_model: The KwargsModel instance.
+        connection_key: The attribute key to use.
+        expected_params: The set of expected params.
+        parser: An optional parser function.
+
+    Returns:
+        An extractor function.
+    """
+
+    alias_and_key_tuples, alias_defaults, alias_to_params = _create_param_mappings(expected_params)
+
+    key_is_sequence = {p.field_name: p.is_sequence for p in expected_params}
+
+    async def extractor(values: dict[str, Any], connection: ASGIConnection) -> None:
+        data: dict[str, Any] = parser(connection, kwargs_model) if parser else getattr(connection, connection_key, {})
+
+        try:
+            connection_mapping = {}
+
+            for alias, key in alias_and_key_tuples:
+                try:
+                    connection_mapping[key] = data[alias] if key_is_sequence[key] else data[alias][-1]
+                except (KeyError, IndexError):
+                    connection_mapping[key] = alias_defaults[alias]
+            values.update(connection_mapping)
+
+        except KeyError as e:
+            param = alias_to_params[e.args[0]]
+            path = URL.from_components(
+                path=connection.url.path,
+                query=connection.url.query,
+            )
+            raise ValidationException(
+                f"Missing required {param.param_type.value} parameter {param.field_alias!r} for path {path}"
+            ) from e
+
+    return extractor
+
+
 def create_connection_value_extractor(
     kwargs_model: KwargsModel,
     connection_key: str,
@@ -124,30 +172,28 @@ def create_connection_value_extractor(
 
 @lru_cache(1024)
 def create_query_default_dict(
-    parsed_query: tuple[tuple[str, str], ...], sequence_query_parameter_names: tuple[str, ...]
-) -> defaultdict[str, list[str] | str]:
-    """Transform a list of tuples into a default dict. Ensures non-list values are not wrapped in a list.
+    parsed_query: tuple[tuple[str, str], ...],
+) -> defaultdict[str, list[str]]:
+    """Transform a list of tuples into a default dict.
 
     Args:
         parsed_query: The parsed query list of tuples.
-        sequence_query_parameter_names: A set of query parameters that should be wrapped in list.
 
     Returns:
         A default dict
     """
-    output: defaultdict[str, list[str] | str] = defaultdict(list)
+    output: defaultdict[str, list[str]] = defaultdict(list)
 
     for k, v in parsed_query:
-        if k in sequence_query_parameter_names:
-            output[k].append(v)  # type: ignore[union-attr]
-        else:
-            output[k] = v
+        output[k].append(v)  # type: ignore[union-attr]
 
     return output
 
 
-def parse_connection_query_params(connection: ASGIConnection, kwargs_model: KwargsModel) -> dict[str, Any]:
-    """Parse query params and cache the result in scope.
+def parse_connection_query_params(connection: ASGIConnection, kwargs_model: KwargsModel) -> dict[str, list[str]]:
+    """Parse query params from the raw request and cache the result in scope.
+    Values are (now) always wrapped in a list - responsibility for type coercion does not lie here, and that includes listification/delistification
+
 
     Args:
         connection: The ASGI connection instance.
@@ -162,9 +208,11 @@ def parse_connection_query_params(connection: ASGIConnection, kwargs_model: Kwar
         else parse_query_string(connection.scope.get("query_string", b""))
     )
     ScopeState.from_scope(connection.scope).parsed_query = parsed_query
-    return create_query_default_dict(
-        parsed_query=parsed_query,
-        sequence_query_parameter_names=kwargs_model.sequence_query_parameter_names,
+
+    return dict(
+        create_query_default_dict(
+            parsed_query=parsed_query,
+        )
     )
 
 
