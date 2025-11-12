@@ -14,6 +14,7 @@ from litestar._kwargs.extractors import (
     body_extractor,
     cookies_extractor,
     create_connection_value_extractor,
+    create_connection_value_extractor_mv_safe,
     create_data_extractor,
     headers_extractor,
     parse_connection_headers,
@@ -175,7 +176,7 @@ class KwargsModel:
 
         if self.expected_query_params:
             extractors.append(
-                create_connection_value_extractor(
+                create_connection_value_extractor_mv_safe(
                     connection_key="query_params",
                     expected_params=self.expected_query_params,
                     kwargs_model=self,
