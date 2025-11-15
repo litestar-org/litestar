@@ -89,7 +89,7 @@ Using the CLI
 
         {
             "name": "Python: Litestar app",
-            "type": "python",
+            "type": "debugpy",
             "request": "launch",
             "module": "litestar",
             "justMyCode": true,
