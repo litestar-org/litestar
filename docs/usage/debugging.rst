@@ -116,7 +116,7 @@ Using uvicorn
 
         {
             "name": "Python: Litestar app",
-            "type": "python",
+            "type": "debugpy",
             "request": "launch",
             "module": "uvicorn",
             "justMyCode": true,
