@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from time import time
-from typing import TYPE_CHECKING, Any, Callable, Literal, cast
+from typing import TYPE_CHECKING, Any, Callable, Literal, cast, Union
 
 from litestar.datastructures import MutableScopeHeaders
 from litestar.enums import ScopeType
@@ -216,8 +216,8 @@ class RateLimitMiddleware(AbstractMiddleware):
 class RateLimitConfig:
     """Configuration for ``RateLimitMiddleware``"""
 
-    rate_limit: tuple[DurationUnit, int]
-    """A tuple containing a time unit (second, minute, hour, day) and quantity, e.g. ("day", 1) or ("minute", 5)."""
+    rate_limit: Union[tuple[DurationUnit, int], list]
+    """A tuple or list containing a time unit (second, minute, hour, day) and quantity, e.g. ("day", 1) or ["minute", 5]."""
     exclude: str | list[str] | None = field(default=None)
     """A pattern or list of patterns to skip in the rate limiting middleware."""
     exclude_opt_key: str | None = field(default=None)
@@ -256,6 +256,13 @@ class RateLimitConfig:
     def __post_init__(self) -> None:
         if self.check_throttle_handler:
             self.check_throttle_handler = ensure_async_callable(self.check_throttle_handler)  # type: ignore[arg-type]
+        if isinstance(self.rate_limit, list):
+            if len(self.rate_limit) != 2 or self.rate_limit[0] not in DurationUnit or not isinstance(self.rate_limit[1], int):
+                raise TypeError(
+                    f"""If rate limit is a list, element 0 must be one of {", ".join(DurationUnit)} 
+                    and element 1 must be an integer."""
+                )
+            self.rate_limit: tuple[DurationUnit, int] = (self.rate_limit[0], self.rate_limit[1])
 
     @property
     def middleware(self) -> DefineMiddleware:
