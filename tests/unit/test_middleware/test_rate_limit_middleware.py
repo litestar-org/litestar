@@ -307,8 +307,8 @@ def test_custom_identity_function() -> None:
 
 @pytest.mark.parametrize("unit", ["minute", "second", "hour", "day"])
 async def test_bad_rate_limit_input(unit: DurationUnit) -> None:
-    with pytest.raises(TypeError) as exc:
-        config = RateLimitConfig(rate_limit=[2, unit])
+    with pytest.raises(TypeError):
+        RateLimitConfig(rate_limit=[2, unit])
 
 @travel(datetime.now(UTC), tick=False)
 def test_check_throttle_handler_with_list() -> None:

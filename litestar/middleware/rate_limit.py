@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from time import time
-from typing import TYPE_CHECKING, Any, Callable, Literal, cast, Union, get_args
+from typing import TYPE_CHECKING, Any, Callable, Literal, cast, get_args
 
 from litestar.datastructures import MutableScopeHeaders
 from litestar.enums import ScopeType
@@ -216,7 +216,7 @@ class RateLimitMiddleware(AbstractMiddleware):
 class RateLimitConfig:
     """Configuration for ``RateLimitMiddleware``"""
 
-    rate_limit: Union[tuple[DurationUnit, int], list]
+    rate_limit: tuple[DurationUnit, int] | list
     """A tuple or list containing a time unit (second, minute, hour, day) and quantity, e.g. ("day", 1) or ["minute", 5]."""
     exclude: str | list[str] | None = field(default=None)
     """A pattern or list of patterns to skip in the rate limiting middleware."""
