@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from time import time
-from typing import TYPE_CHECKING, Any, Callable, Literal, cast, Union
+from typing import TYPE_CHECKING, Any, Callable, Literal, cast, Union, get_args
 
 from litestar.datastructures import MutableScopeHeaders
 from litestar.enums import ScopeType
@@ -257,9 +257,10 @@ class RateLimitConfig:
         if self.check_throttle_handler:
             self.check_throttle_handler = ensure_async_callable(self.check_throttle_handler)  # type: ignore[arg-type]
         if isinstance(self.rate_limit, list):
-            if len(self.rate_limit) != 2 or self.rate_limit[0] not in DurationUnit or not isinstance(self.rate_limit[1], int):
+            units = list(get_args(DurationUnit))
+            if len(self.rate_limit) != 2 or self.rate_limit[0] not in units or not isinstance(self.rate_limit[1], int):
                 raise TypeError(
-                    f"""If rate limit is a list, element 0 must be one of {", ".join(DurationUnit)} 
+                    f"""If rate limit is a list, element 0 must be one of {", ".join(units)} 
                     and element 1 must be an integer."""
                 )
             self.rate_limit: tuple[DurationUnit, int] = (self.rate_limit[0], self.rate_limit[1])
