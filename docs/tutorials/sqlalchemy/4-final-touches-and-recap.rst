@@ -63,4 +63,4 @@ engine and session lifecycle, and register our ``transaction`` dependency.
 
 .. seealso::
 
-    * `Advanced Alchemy Documentation <https://docs.advanced-alchemy.litestar.dev/>`_
+    * `Advanced Alchemy Documentation <https://advanced-alchemy.dev/latest/>`_
