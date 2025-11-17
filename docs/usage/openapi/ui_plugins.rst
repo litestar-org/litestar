@@ -119,6 +119,12 @@ Here's some example plugin configurations:
         .. literalinclude:: /examples/openapi/plugins/redoc_config.py
             :language: python
 
+        .. tip::
+
+           ``js_url`` 引数を指定すると、ReDoc のバンドル取得先を任意の CDN や社内ホストへ切り替えられます。
+           例えば ``redoc_config.py`` では ``https://cdn.company.internal/redoc/custom-redoc.js`` を指すように
+           上書きしており、``version`` の値よりも ``js_url`` が優先されます。
+
     .. tab-item:: stoplight
         :sync: stoplight
 
