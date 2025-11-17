@@ -283,7 +283,7 @@ class RedocRenderPlugin(OpenAPIRenderPlugin):
     def __init__(
         self,
         *,
-        version: str = "next",
+        version: str = "latest",
         js_url: str | None = None,
         google_fonts: bool = True,
         path: str | Sequence[str] = "/redoc",
