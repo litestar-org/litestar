@@ -3,12 +3,12 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Any, Callable
 
+from litestar.exceptions import MissingDependencyException
+from litestar.middleware.base import DefineMiddleware
 from litestar.plugins.opentelemetry._utils import get_route_details_from_scope
 from litestar.plugins.opentelemetry.middleware import (
     OpenTelemetryInstrumentationMiddleware,
 )
-from litestar.exceptions import MissingDependencyException
-from litestar.middleware.base import DefineMiddleware
 
 __all__ = ("OpenTelemetryConfig",)
 
