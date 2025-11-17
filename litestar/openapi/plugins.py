@@ -298,7 +298,7 @@ class RedocRenderPlugin(OpenAPIRenderPlugin):
             path: Path to serve the OpenAPI UI at.
             **kwargs: Additional arguments to pass to the base class.
         """
-        self.js_url = js_url or f"https://cdn.jsdelivr.net/npm/redoc@{version}/bundles/redoc.standalone.js"
+        self.js_url = js_url or f"https://cdn.redoc.ly/redoc/{version}/bundles/redoc.standalone.js"
         self.google_fonts = google_fonts
         super().__init__(path=path, **kwargs)
 
