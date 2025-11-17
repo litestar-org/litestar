@@ -89,10 +89,9 @@ Redoc CDN Default Updated
 -------------------------
 
 The :class:`~litestar.openapi.plugins.RedocRenderPlugin` now defaults to the ReDocly CDN
-(``https://cdn.redoc.ly/redoc/latest/bundles/redoc.standalone.js``) instead of jsDelivr. この変更により
-``version="latest"`` を指定した場合でも安定したバンドルを取得できます。自前 CDN や社内ホストを利用する
-必要がある場合は、``js_url`` 引数を設定すると従来どおり手動で URL を上書きできます。詳細なサンプルは
-``usage/openapi/ui_plugins`` に追記されています。
+(``https://cdn.redoc.ly/redoc/latest/bundles/redoc.standalone.js``) instead of jsDelivr. This change ensures that
+``version="latest"`` consistently resolves to a working bundle. If you rely on a private CDN or internal host,
+set the ``js_url`` argument to override the URL as before. See ``usage/openapi/ui_plugins`` for an updated example.
 
 Changes to Endpoint Configuration
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

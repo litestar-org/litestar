@@ -121,9 +121,9 @@ Here's some example plugin configurations:
 
         .. tip::
 
-           ``js_url`` 引数を指定すると、ReDoc のバンドル取得先を任意の CDN や社内ホストへ切り替えられます。
-           例えば ``redoc_config.py`` では ``https://cdn.company.internal/redoc/custom-redoc.js`` を指すように
-           上書きしており、``version`` の値よりも ``js_url`` が優先されます。
+           Setting ``js_url`` lets you point the ReDoc bundle to any CDN or internal host. In ``redoc_config.py``
+           we override it to ``https://cdn.company.internal/redoc/custom-redoc.js``. When provided, ``js_url`` takes
+           precedence over ``version``.
 
     .. tab-item:: stoplight
         :sync: stoplight
