@@ -13,17 +13,16 @@ from litestar.plugins.opentelemetry.middleware import (
 __all__ = ("OpenTelemetryConfig",)
 
 
-try:
+try:  # pragma: no cover - dependency is optional at runtime
     import opentelemetry  # noqa: F401
-except ImportError as e:
+    from opentelemetry.trace import Span, TracerProvider  # pyright: ignore
+except ImportError as e:  # pragma: no cover
     raise MissingDependencyException("opentelemetry") from e
-
-
-from opentelemetry.trace import Span, TracerProvider  # pyright: ignore
 
 if TYPE_CHECKING:
     from opentelemetry.metrics import Meter, MeterProvider
 
+    from litestar.plugins.opentelemetry.plugin import OpenTelemetryPlugin
     from litestar.types import Scope, Scopes
 
 OpenTelemetryHookHandler = Callable[[Span, dict], None]
@@ -87,6 +86,18 @@ class OpenTelemetryConfig:
     Should be a subclass of OpenTelemetry
     InstrumentationMiddleware][litestar.plugins.opentelemetry.OpenTelemetryInstrumentationMiddleware].
     """
+    instrument_guards: bool = field(default=True)
+    """Whether to automatically instrument Litestar route guards."""
+    instrument_events: bool = field(default=True)
+    """Whether to instrument event listeners and emitters."""
+    instrument_lifecycle: bool = field(default=True)
+    """Whether to instrument application lifecycle hooks (startup/shutdown)."""
+    instrument_middleware: bool = field(default=False)
+    """Reserved for future middleware-level instrumentation. Currently unused and left for forward compatibility."""
+    instrument_cli: bool = field(default=True)
+    """Whether to instrument Litestar CLI commands (click entrypoints)."""
+
+    _plugin: OpenTelemetryPlugin | None = field(default=None, init=False, repr=False)
 
     @property
     def middleware(self) -> DefineMiddleware:
@@ -100,3 +111,17 @@ class OpenTelemetryConfig:
             An instance of ``DefineMiddleware``.
         """
         return DefineMiddleware(self.middleware_class, config=self)
+
+    @property
+    def plugin(self) -> OpenTelemetryPlugin:
+        """Convenience accessor to build an :class:`OpenTelemetryPlugin` from this config.
+
+        Returns:
+            A plugin instance wired with this configuration.
+        """
+
+        if self._plugin is None:
+            from litestar.plugins.opentelemetry.plugin import OpenTelemetryPlugin
+
+            self._plugin = OpenTelemetryPlugin(self)
+        return self._plugin
