@@ -85,7 +85,7 @@ class OpenTelemetryConfig:
     """The middleware class to use.
 
     Should be a subclass of OpenTelemetry
-    InstrumentationMiddleware][litestar.contrib.opentelemetry.OpenTelemetryInstrumentationMiddleware].
+    InstrumentationMiddleware][litestar.plugins.opentelemetry.OpenTelemetryInstrumentationMiddleware].
     """
 
     @property
@@ -93,7 +93,7 @@ class OpenTelemetryConfig:
         """Create an instance of :class:`DefineMiddleware <litestar.middleware.base.DefineMiddleware>` that wraps with.
 
         [OpenTelemetry
-        InstrumentationMiddleware][litestar.contrib.opentelemetry.OpenTelemetryInstrumentationMiddleware] or a subclass
+        InstrumentationMiddleware][litestar.plugins.opentelemetry.OpenTelemetryInstrumentationMiddleware] or a subclass
         of this middleware.
 
         Returns:

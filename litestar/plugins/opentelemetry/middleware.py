@@ -29,7 +29,7 @@ class OpenTelemetryInstrumentationMiddleware(AbstractMiddleware):
 
         Args:
             app: The ``next`` ASGI app to call.
-            config: An instance of :class:`OpenTelemetryConfig <.contrib.opentelemetry.OpenTelemetryConfig>`
+            config: An instance of :class:`OpenTelemetryConfig <.plugins.opentelemetry.OpenTelemetryConfig>`
         """
         super().__init__(app=app, scopes=config.scopes, exclude=config.exclude, exclude_opt_key=config.exclude_opt_key)
         self.open_telemetry_middleware = OpenTelemetryMiddleware(
