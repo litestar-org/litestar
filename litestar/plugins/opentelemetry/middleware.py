@@ -15,12 +15,12 @@ try:
 except ImportError as e:
     raise MissingDependencyException("opentelemetry") from e
 
+from opentelemetry import trace
 from opentelemetry.instrumentation.asgi import OpenTelemetryMiddleware
+from opentelemetry.trace import Status, StatusCode
 from opentelemetry.util.http import get_excluded_urls
 
 if TYPE_CHECKING:
-    from opentelemetry.trace import Status  # noqa: F401
-
     from litestar.plugins.opentelemetry import OpenTelemetryConfig
     from litestar.types import ASGIApp, Receive, Scope, Send
 
@@ -33,7 +33,6 @@ class OpenTelemetryInstrumentationMiddleware(AbstractMiddleware):
     - Enhanced error status tracking on spans
     """
 
-    __slots__ = ("config", "open_telemetry_middleware")
     __singleton_middleware__: ClassVar[OpenTelemetryMiddleware | None] = None
 
     def __init__(self, app: ASGIApp, config: OpenTelemetryConfig) -> None:
@@ -69,8 +68,6 @@ class OpenTelemetryInstrumentationMiddleware(AbstractMiddleware):
 
     async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
         # Import here to avoid circular dependency and ensure OTEL is optional
-        from opentelemetry import trace
-        from opentelemetry.trace import Status, StatusCode
 
         try:
             await self.open_telemetry_middleware(scope, receive, send)  # type: ignore[arg-type] # pyright: ignore[reportGeneralTypeIssues]
