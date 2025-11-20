@@ -133,7 +133,6 @@ async def parse_multipart_form(  # noqa: C901
             await data.close()
         await _close_upload_files(fields)
 
-        # FIXED (3.0): This now should raise a '413 - Request Entity Too Large'
         raise HTTPException(
         status_code=HTTP_413_REQUEST_ENTITY_TOO_LARGE,
         detail="Multipart form size limit exceeded")

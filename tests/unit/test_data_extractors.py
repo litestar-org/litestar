@@ -7,11 +7,13 @@ from pytest_mock import MockFixture
 from litestar import Request
 from litestar.connection.base import empty_receive
 from litestar.data_extractors import ConnectionDataExtractor, ResponseDataExtractor
-from litestar.datastructures import Cookie
+from litestar.datastructures import Cookie, UploadFile
 from litestar.enums import RequestEncodingType
 from litestar.response.base import ASGIResponse
-from litestar.status_codes import HTTP_200_OK
-from litestar.testing import RequestFactory
+from litestar.status_codes import HTTP_200_OK, HTTP_413_REQUEST_ENTITY_TOO_LARGE
+from litestar.testing import RequestFactory, create_test_client
+from litestar import post
+from litestar.params import Body
 
 factory = RequestFactory()
 
@@ -125,3 +127,22 @@ async def test_skip_parse_malformed_body_false_raises(mocker: MockFixture) -> No
 
     with pytest.raises(ValueError):
         await extractor.extract(req, {"body"})
+
+async def test_multipart_exceeds_part_limit_returns_413() -> None:
+    @post("/upload")
+    async def upload_handler(
+        data: UploadFile = Body(media_type=RequestEncodingType.MULTI_PART)
+    ) -> dict:
+        return {"filename": data.filename}
+
+    with create_test_client(route_handlers=[upload_handler], multipart_form_part_limit=2) as client:
+        response = client.post(
+            "/upload",
+            files={
+                "file1": ("test1.txt", b"content1"),
+                "file2": ("test2.txt", b"content2"),
+                "data": ("test3.txt", b"content3"),
+            },
+        )
+
+    assert response.status_code == HTTP_413_REQUEST_ENTITY_TOO_LARGE
