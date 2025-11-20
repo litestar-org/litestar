@@ -12,7 +12,7 @@ from multipart import (  # type: ignore[import-untyped]
 )
 
 from litestar.datastructures.upload_file import UploadFile
-from litestar.exceptions import ClientException, HTTPException
+from litestar.exceptions import ClientException, HTTPException, RequestEntityTooLarge
 from starlette.status import HTTP_413_REQUEST_ENTITY_TOO_LARGE
 from litestar.utils.compat import async_next
 
