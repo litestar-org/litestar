@@ -16,6 +16,5 @@ async def test_oversized_file_returns_413():
     )
 
     async with create_test_client(app) as client:
-        response = await client.post("/upload", data={"file": "x" * 100})  # Example oversized 
-data
+        response = await client.post("/upload", data={"file": "x" * 100})  # Example oversized data
         assert response.status_code == HTTP_413_REQUEST_ENTITY_TOO_LARGE
