@@ -1,6 +1,6 @@
 import pytest
 from litestar import Litestar
-from litestar.exceptions import HTTPException
+from litestar.exceptions import HTTPException, RequestEntityTooLarge
 from starlette.status import HTTP_413_REQUEST_ENTITY_TOO_LARGE
 from litestar.testing import create_test_client
 
@@ -15,7 +15,7 @@ async def test_oversized_file_returns_413():
         multipart_form_part_limit=10,  # Small limit to trigger the error
     )
 
-    async def test_multipart_413(client):
-	response = await client.post("/upload", data=...)
-	assert response.status_code == HTTP_413_REQUEST_ENTITY_TOO_LARGE
-
+    async with create_test_client(app) as client:
+        response = await client.post("/upload", data={"file": "x" * 100})  # Example oversized 
+data
+        assert response.status_code == HTTP_413_REQUEST_ENTITY_TOO_LARGE
