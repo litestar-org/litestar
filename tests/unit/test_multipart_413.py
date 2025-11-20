@@ -1,6 +1,6 @@
 import pytest
 from litestar import Litestar
-from litestar.exceptions import HTTPException, RequestEntityTooLarge
+from litestar.exceptions import HTTPException
 from starlette.status import HTTP_413_REQUEST_ENTITY_TOO_LARGE
 from litestar.testing import create_test_client
 

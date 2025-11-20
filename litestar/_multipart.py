@@ -14,6 +14,7 @@ from multipart import (  # type: ignore[import-untyped]
 from litestar.datastructures.upload_file import UploadFile
 from litestar.exceptions import ClientException, HTTPException
 from starlette.status import HTTP_413_REQUEST_ENTITY_TOO_LARGE
+from litestar.utils.compat import async_next
 
 raise HTTPException(
     status_code=HTTP_413_REQUEST_ENTITY_TOO_LARGE,
@@ -21,8 +22,6 @@ raise HTTPException(
 )
 
 __all__ = ("parse_content_header", "parse_multipart_form")
-
-from litestar.utils.compat import async_next
 
 if TYPE_CHECKING:
     from collections.abc import AsyncGenerator
@@ -140,7 +139,7 @@ async def parse_multipart_form(  # noqa: C901
         await _close_upload_files(fields)
 
         # FIXED (3.0):Raises '413 - Request Entity Too Large' when upload exceeds the configured limit
-	# Previously returned 400 for backward compatibility; now correctly raises 413
+        # Note: Previously returned 400 for backward compatibility; now correctly raises 413
         raise RequestEntityTooLarge("Request Entity Too Large") from None
 
     return {k: v if len(v) > 1 else v[0] for k, v in fields.items()}
