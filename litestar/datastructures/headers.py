@@ -423,6 +423,7 @@ class MediaTypeHeader:
             else self.maintype == "*" or other.maintype == "*" or self.maintype == other.maintype,
         )
 
+
 _DefaultT = TypeVar("_DefaultT", bound=Optional[str])
 
 
