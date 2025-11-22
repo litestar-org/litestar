@@ -31,7 +31,7 @@ jobs:
         shell: bash
     steps:
       - name: Check out repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Set up python ${{ inputs.python-version }}
         uses: actions/setup-python@v6
