@@ -217,3 +217,69 @@ def test_unwrap_read_only() -> None:
             }
         }
     }
+
+
+def test_body_parameter_binary_request() -> None:
+    @post("/upload/")
+    async def handle_binary_upload(body: bytes) -> None:
+        return None
+
+    app = Litestar([handle_binary_upload])
+    schema = app.openapi_schema.to_schema()
+
+    assert "requestBody" in schema["paths"]["/upload"]["post"]
+    assert schema["paths"]["/upload"]["post"]["requestBody"] == {
+        "required": True,
+        "content": {"application/octet-stream": {"schema": {"type": "string"}}},
+    }
+
+
+def test_body_parameter_with_body_annotation() -> None:
+    @post("/upload/")
+    async def handle_binary_upload(
+        body: Annotated[bytes, Body(media_type="application/octet-stream", title="Binary Data")],
+    ) -> None:
+        return None
+
+    app = Litestar([handle_binary_upload])
+    schema = app.openapi_schema.to_schema()
+
+    assert "requestBody" in schema["paths"]["/upload"]["post"]
+    assert schema["paths"]["/upload"]["post"]["requestBody"] == {
+        "required": True,
+        "content": {"application/octet-stream": {"schema": {"type": "string", "title": "Binary Data"}}},
+    }
+
+
+def test_body_parameter_with_default_value() -> None:
+    @post("/upload/")
+    async def handle_binary_upload(
+        body: bytes = Body(media_type="application/octet-stream", title="Binary Data"),
+    ) -> None:
+        return None
+
+    app = Litestar([handle_binary_upload])
+    schema = app.openapi_schema.to_schema()
+
+    assert "requestBody" in schema["paths"]["/upload"]["post"]
+    assert schema["paths"]["/upload"]["post"]["requestBody"] == {
+        "required": True,
+        "content": {"application/octet-stream": {"schema": {"type": "string", "title": "Binary Data"}}},
+    }
+
+
+def test_body_parameter_with_custom_media_type() -> None:
+    @post("/upload/")
+    async def handle_binary_upload(
+        body: Annotated[bytes, Body(media_type="application/x-custom-binary")],
+    ) -> None:
+        return None
+
+    app = Litestar([handle_binary_upload])
+    schema = app.openapi_schema.to_schema()
+
+    assert "requestBody" in schema["paths"]["/upload"]["post"]
+    assert schema["paths"]["/upload"]["post"]["requestBody"] == {
+        "required": True,
+        "content": {"application/x-custom-binary": {"schema": {"type": "string"}}},
+    }
