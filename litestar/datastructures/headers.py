@@ -10,8 +10,10 @@ from typing import (
     Any,
     ClassVar,
     Optional,
+    TypeVar,
     Union,
     cast,
+    overload,
 )
 
 import msgspec
@@ -421,6 +423,8 @@ class MediaTypeHeader:
             else self.maintype == "*" or other.maintype == "*" or self.maintype == other.maintype,
         )
 
+_DefaultT = TypeVar("_DefaultT")
+
 
 class Accept:
     """An ``Accept`` header."""
@@ -440,7 +444,13 @@ class Accept:
     def __iter__(self) -> Iterator[str]:
         return map(str, self._accepted_types)
 
-    def best_match(self, provided_types: list[str], default: Optional[str] = None) -> Optional[str]:
+    @overload
+    def best_match(self, provided_types: list[str], default: None = None) -> Optional[str]: ...
+
+    @overload
+    def best_match(self, provided_types: list[str], default: _DefaultT) -> Union[str, _DefaultT]: ...
+
+    def best_match(self, provided_types: list[str], default: Optional[_DefaultT] = None) -> Union[str, _DefaultT]:
         """Find the best matching media type for the request.
 
         Args:
