@@ -10,7 +10,6 @@ from typing import (
     Any,
     ClassVar,
     Optional,
-    TypeVar,
     Union,
     cast,
     overload,
@@ -424,9 +423,6 @@ class MediaTypeHeader:
         )
 
 
-_DefaultT = TypeVar("_DefaultT", bound=Optional[str])
-
-
 class Accept:
     """An ``Accept`` header."""
 
@@ -449,9 +445,9 @@ class Accept:
     def best_match(self, provided_types: list[str], default: None = None) -> Optional[str]: ...
 
     @overload
-    def best_match(self, provided_types: list[str], default: _DefaultT) -> Union[str, _DefaultT]: ...
+    def best_match(self, provided_types: list[str], default: str) -> str: ...
 
-    def best_match(self, provided_types: list[str], default: Optional[_DefaultT] = None) -> Union[str, _DefaultT]:
+    def best_match(self, provided_types: list[str], default: Optional[str] = None) -> Optional[str]:
         """Find the best matching media type for the request.
 
         Args:
