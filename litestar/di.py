@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from inspect import isasyncgenfunction, isclass, isgeneratorfunction
+from inspect import isasyncgenfunction, isclass, isfunction, isgeneratorfunction
 from typing import TYPE_CHECKING, Any
 
 from litestar._signature import SignatureModel
@@ -58,12 +58,15 @@ class Provide:
             raise ImproperlyConfiguredException("Provider dependency must be a callable value")
 
         is_class_dependency = isclass(dependency)
-        self.has_sync_generator_dependency = isgeneratorfunction(
-            dependency if not is_class_dependency else dependency.__call__  # type: ignore[operator]
-        )
-        self.has_async_generator_dependency = isasyncgenfunction(
-            dependency if not is_class_dependency else dependency.__call__  # type: ignore[operator]
-        )
+        is_function = isfunction(dependency)
+        is_callable_instance = not is_class_dependency and not is_function
+        if is_class_dependency or is_callable_instance:
+            check_target = dependency.__call__  # type: ignore[operator]
+        else:
+            check_target = dependency
+        self.has_sync_generator_dependency = isgeneratorfunction(check_target)
+        self.has_async_generator_dependency = isasyncgenfunction(check_target)
+
         has_generator_dependency = self.has_sync_generator_dependency or self.has_async_generator_dependency
 
         if has_generator_dependency and use_cache:
