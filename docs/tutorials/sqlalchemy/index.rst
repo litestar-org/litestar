@@ -17,7 +17,7 @@ To follow this tutorial, you will need Advanced Alchemy installed. You can insta
 Litestar install it for you by installing the ``sqlalchemy`` extra (e.g., ``pip install 'litestar[standard,sqlalchemy]' aiosqlite``).
 
 .. note::
-    SQLAlchemy support in Litestar is now provided by `Advanced Alchemy <https://docs.advanced-alchemy.litestar.dev/>`_,
+    SQLAlchemy support in Litestar is now provided by `Advanced Alchemy <https://advanced-alchemy.dev/latest/>`_,
     a first-party library. All imports should use ``advanced_alchemy.extensions.litestar`` instead of the deprecated
     ``litestar.contrib.sqlalchemy`` or ``litestar.plugins.sqlalchemy`` modules.
 
