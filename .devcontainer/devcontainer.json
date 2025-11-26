@@ -13,7 +13,7 @@
       "upgradePackages": "true"
     },
     "ghcr.io/devcontainers/features/github-cli:1": {},
-    "ghcr.io/devcontainers-contrib/features/pre-commit:2": {},
+    "ghcr.io/devcontainers/features/rust:1": "latest",
     "ghcr.io/devcontainers/features/python:1": "none",
     "ghcr.io/devcontainers/features/git:1": {
       "version": "latest",
@@ -58,9 +58,6 @@
     }
   },
   "forwardPorts": [8000],
-  "postCreateCommand": [
-    "uv",
-    "sync"
-  ],
+  "postCreateCommand": "uv sync && cargo install prek",
   "remoteUser": "vscode"
 }
