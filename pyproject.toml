@@ -203,7 +203,6 @@ docs = [
 linting = [
   "ruff>=0.11.5",
   "mypy",
-  "pre-commit",
   "slotscheck",
   "codecov-cli",
   "pyright>=1.1.403",
