@@ -20,8 +20,12 @@ upgrade:       										## Upgrade all dependencies to the latest stable versio
 	@echo "=> Updating all dependencies"
 	@uv lock --upgrade
 	@echo "=> Dependencies Updated"
-	@uv run pre-commit autoupdate
-	@echo "=> Updated Pre-commit"
+	@if command -v prek >/dev/null 2>&1; then \
+		prek autoupdate; \
+	else \
+		uvx pre-commit autoupdate; \
+	fi
+	@echo "=> Updated pre-commit hooks"
 
 # =============================================================================
 # Developer Utils
