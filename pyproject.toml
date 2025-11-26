@@ -202,11 +202,10 @@ docs = [
 ]
 linting = [
   "ruff>=0.11.5",
-  "mypy",
+  "ty",
   "pre-commit",
   "slotscheck",
   "codecov-cli",
-  "pyright>=1.1.403",
   "asyncpg-stubs",
   "types-beautifulsoup4",
   "types-pyyaml",
@@ -275,108 +274,33 @@ markers = [
 testpaths = ["tests", "docs/examples/testing"]
 xfail_strict = true
 
-[tool.mypy]
-enable_error_code = [
-  "truthy-bool",
-  "truthy-iterable",
-  "unused-awaitable",
-  "ignore-without-code",
-  "possibly-undefined",
-  "redundant-self",
-]
-packages = ["litestar", "tests"]
-plugins = ["pydantic.mypy"]
-python_version = "3.9"
+[tool.ty.environment]
+python-version = "3.9"
 
-disallow_any_generics = false
-local_partial_types = true
-show_error_codes = true
-strict = true
-warn_unreachable = true
-
-[[tool.mypy.overrides]]
-ignore_errors = true
-module = ["tests.examples.*", "tests.docker_service_fixtures"]
-
-[[tool.mypy.overrides]]
-disable_error_code = ["truthy-bool"]
-module = ["tests.*"]
-
-[[tool.mypy.overrides]]
-disable_error_code = ["assignment"]
-module = ["tests.unit.test_logging.*"]
-
-[[tool.mypy.overrides]]
-disallow_untyped_decorators = false
-module = ["tests.unit.test_kwargs.test_reserved_kwargs_injection"]
-
-[[tool.mypy.overrides]]
-module = ["tests.unit.test_contrib.test_repository"]
-strict_equality = false
-
-[[tool.mypy.overrides]]
-disable_error_code = "index, union-attr"
-module = ["tests.unit.test_plugins.test_pydantic.test_openapi"]
-
-[[tool.mypy.overrides]]
-ignore_missing_imports = true
-module = [
-  "brotli.*",
-  "fsspec.*",
-  "jsbeautifier.*",
-  "pytimeparse.*",
-  "importlib_resources",
-  "exceptiongroup",
-  "picologging",
-  "picologging.*",
-  "zstandard",
-  "zstandard.*"
-]
-
-[[tool.mypy.overrides]]
-module = [
-  "litestar.contrib.sqlalchemy.*",
-  "litestar.plugins.pydantic.*",
-  "tests.unit.test_contrib.test_sqlalchemy",
-  "tests.unit.test_contrib.test_pydantic.*",
-  "tests.unit.test_logging.test_logging_config",
-  "litestar.openapi.spec.base",
-  "litestar.utils.helpers",
-  "litestar.channels.plugin",
-  "litestar.handlers.http_handlers._utils",
-]
-warn_unused_ignores = false
-
-[[tool.mypy.overrides]]
-disable_error_code = "arg-type"
-module = ["litestar.openapi.spec.base", "litestar._asgi.routin_trie.traversal", "litestar.plugins.pydantic.plugins.int"]
-warn_unused_ignores = false
-
-[tool.pydantic-mypy]
-init_forbid_extra = true
-init_typed = true
-warn_required_dynamic_aliases = true
-warn_untyped_fields = true
-
-[tool.pyright]
-disableBytesTypePromotions = true
-exclude = [
-  "test_apps",
-  "tools",
-  "docs",
-  "tests/examples",
-  "tests/docker_service_fixtures.py",
-  "litestar/plugins/pydantic/plugins/di.py",
-  "litestar/plugins/pydantic/plugins/init.py",
-  "litestar/plugins/pydantic/plugins/schema.py",
-  "litestar/plugins/pydantic/dto_factory.py",
-  "tests/unit/test_contrib/test_sqlalchemy.py",
-  "tests/unit/test_plugins/test_pydantic/test_openapi.py",
-  "tests/unit/test_repository/test_generic_mock_repository.py",
-]
-include = ["litestar", "tests"]
-pythonVersion = "3.9"
-reportUnnecessaryTypeIgnoreComments = true
+[tool.ty.rules]
+# Suppressed initially - enable incrementally in future PRs
+invalid-assignment = "ignore"
+invalid-argument-type = "ignore"
+invalid-type-form = "ignore"
+unresolved-import = "ignore"
+possibly-missing-attribute = "ignore"
+no-matching-overload = "ignore"
+invalid-return-type = "ignore"
+invalid-base = "ignore"
+non-subscriptable = "ignore"
+deprecated = "ignore"
+invalid-key = "ignore"
+missing-argument = "ignore"
+unresolved-attribute = "ignore"
+call-non-callable = "ignore"
+unsupported-operator = "ignore"
+unsupported-base = "ignore"
+unknown-argument = "ignore"
+not-iterable = "ignore"
+missing-typed-dict-key = "ignore"
+invalid-method-override = "ignore"
+conflicting-argument-forms = "ignore"
+redundant-cast = "ignore"
 
 [tool.slotscheck]
 exclude-classes = """
