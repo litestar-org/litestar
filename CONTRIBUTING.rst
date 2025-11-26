@@ -69,10 +69,25 @@ Workflow
 #. Clone your fork locally with git
 #. `Set up the environment <#setting-up-the-environment>`_
 #. Make your changes
-#. (Optional) Run ``pre-commit run --all-files`` to run linters and formatters. This step is optional and will be executed
-   automatically by git before you make a commit, but you may want to run it manually in order to apply fixes
+#. (Optional) Run linters and formatters manually. This step is optional and will be executed
+   automatically by git before you make a commit, but you may want to run it manually in order to apply fixes:
+
+   .. code-block:: shell
+        :caption: Running linters with prek (recommended)
+
+        # Install prek: brew install prek (or cargo install prek)
+        prek run --all-files
+
+   .. code-block:: shell
+        :caption: Running linters with pre-commit (alternative)
+
+        pre-commit run --all-files
+
+   We recommend `prek <https://prek.j178.dev/>`_ as a faster, Rust-based alternative to pre-commit.
+   Both tools use the same configuration file (``.pre-commit-config.yaml``).
+
 #. Commit your changes to git. We follow `conventional commits <https://www.conventionalcommits.org/>`_
-   which are enforced using a ``pre-commit`` hook.
+   which are enforced using a pre-commit hook.
 #. Push the changes to your fork
 #. Open a `pull request <https://docs.github.com/en/pull-requests>`_. Give the pull request a descriptive title
    indicating what it changes. The style of the PR title should also follow
@@ -137,7 +152,7 @@ enforce type safety. You can run them with:
 - ``make mypy``
 - ``make pyright``
 - ``make type-check`` to run both
-- ``make lint`` to run pre-commit hooks and type checkers.
+- ``make lint`` to run linting hooks (via prek/pre-commit) and type checkers.
 
 Our type checkers are run on Python 3.9 in CI, so you should make sure to run them on the same version locally as well.
 
