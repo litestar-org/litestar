@@ -11,7 +11,18 @@
   <body>
     <h4>{error}</h4>
     <h3><span>{error_description}</span></h3>
-    {exception_data}
+    <div class="traceback-controls">
+      <button id="toggleView" onclick="toggleTracebackView()">
+        Switch to copy-and-paste view
+      </button>
+      <button id="copyBtn" onclick="copyTraceback()" style="display: none">
+        Copy to clipboard
+      </button>
+    </div>
+    <div id="browserTraceback">{exception_data}</div>
+    <div id="pastebinTraceback" style="display: none">
+      <textarea id="traceback_area" readonly rows="30">{plain_text_traceback}</textarea>
+    </div>
     <script type="text/javascript">
       // prettier-ignore
       {scripts} // NOSONAR
