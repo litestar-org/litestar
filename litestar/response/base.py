@@ -5,6 +5,8 @@ import re
 from collections.abc import Iterable, Mapping
 from typing import TYPE_CHECKING, Any, ClassVar, Generic, Literal, TypeVar, overload
 
+import msgspec
+
 from litestar.datastructures.cookie import Cookie
 from litestar.datastructures.headers import ETag, MutableScopeHeaders
 from litestar.enums import MediaType, OpenAPIMediaType
@@ -365,15 +367,15 @@ class Response(Generic[T]):
         if isinstance(content, bytes):
             return content
 
+        if isinstance(content, msgspec.Raw):
+            return bytes(content)
+
         if content is Empty:
             raise RuntimeError("The `Empty` sentinel cannot be used as response content")
 
         try:
             if media_type.startswith("text/") and not content:
                 return b""
-
-            if isinstance(content, str):
-                return content.encode(self.encoding)
 
             if media_type == MediaType.MESSAGEPACK:
                 return encode_msgpack(content, enc_hook)
@@ -382,6 +384,9 @@ class Response(Generic[T]):
                 media_type,
             ):
                 return encode_json(content, enc_hook)
+
+            if isinstance(content, str):
+                return content.encode(self.encoding)
 
             raise ImproperlyConfiguredException(f"unsupported media_type {media_type} for content {content!r}")
         except (AttributeError, ValueError, TypeError) as e:
