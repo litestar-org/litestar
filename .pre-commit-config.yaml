@@ -1,11 +1,3 @@
-# Litestar pre-commit configuration
-#
-# This config is compatible with both pre-commit and prek.
-# We recommend using prek (https://prek.j178.dev) for faster execution.
-#
-# Install: brew install prek  (or cargo install prek)
-# Run: prek run --all-files
-#
 default_language_version:
   python: "3.12"
 repos:
@@ -14,7 +6,6 @@ repos:
     hooks:
       - id: conventional-pre-commit
         stages: [commit-msg]
-  # Use prek's builtin hooks for better performance (auto-detected by prek)
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v5.0.0
     hooks:

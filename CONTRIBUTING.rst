@@ -75,13 +75,12 @@ Workflow
    .. code-block:: shell
         :caption: Running linters with prek (recommended)
 
-        # Install prek: brew install prek (or cargo install prek)
-        prek run --all-files
+        uvx prek run --all-files
 
    .. code-block:: shell
         :caption: Running linters with pre-commit (alternative)
 
-        pre-commit run --all-files
+        uvx pre-commit run --all-files
 
    We recommend `prek <https://prek.j178.dev/>`_ as a faster, Rust-based alternative to pre-commit.
    Both tools use the same configuration file (``.pre-commit-config.yaml``).

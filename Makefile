@@ -20,11 +20,7 @@ upgrade:       										## Upgrade all dependencies to the latest stable versio
 	@echo "=> Updating all dependencies"
 	@uv lock --upgrade
 	@echo "=> Dependencies Updated"
-	@if command -v prek >/dev/null 2>&1; then \
-		prek autoupdate; \
-	else \
-		uvx pre-commit autoupdate; \
-	fi
+	@uvx prek autoupdate
 	@echo "=> Updated pre-commit hooks"
 
 # =============================================================================
@@ -85,11 +81,7 @@ type-check: mypy pyright                            ## Run all type checking
 .PHONY: pre-commit
 pre-commit: 										## Runs pre-commit hooks; includes ruff formatting and linting, codespell
 	@echo "=> Running pre-commit hooks"
-	@if command -v prek >/dev/null 2>&1; then \
-		prek run --all-files; \
-	else \
-		uv run pre-commit run --all-files; \
-	fi
+	@uvx prek run --all-files
 	@echo "=> Pre-commit complete"
 
 .PHONY: slots-check
