@@ -89,11 +89,13 @@ def test_response_validation_of_unknown_media_types(
         rendered = response.render(content, media_type=media_type)
         assert rendered == (content if isinstance(content, bytes) else content.encode("utf-8"))
 
+
 def test_string_serialization_with_json_media_type() -> None:
     content = "foo"
     encoded = Response(None).render(content, media_type=MediaType.JSON)
     assert encoded == b'"foo"'
     assert msgspec.json.decode(encoded) == "foo"
+
 
 def test_string_serialization_with_msgpack_media_type() -> None:
     content = "foo"
