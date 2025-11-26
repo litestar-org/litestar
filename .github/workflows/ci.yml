@@ -43,7 +43,7 @@ jobs:
           python-version: "3.9"
 
       - name: Run ty
-        uses: JacobCoffee/ty-action@v1
+        uses: JacobCoffee/ty-action@v0.0.1
         with:
           args: "check --output-format github"
 
