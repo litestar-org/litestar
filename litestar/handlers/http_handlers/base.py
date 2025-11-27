@@ -584,9 +584,7 @@ class HTTPRouteHandler(BaseRouteHandler):
             # Check for str/bytes types, including Literal[str] types
             if return_type.is_subclass_of((str, bytes)) or return_type.annotation is AnyStr:
                 self.media_type = MediaType.TEXT
-            elif return_type.is_literal and all(
-                isinstance(arg, (str, bytes)) for arg in return_type.args
-            ):
+            elif return_type.is_literal and all(isinstance(arg, (str, bytes)) for arg in return_type.args):
                 # Handle Literal types like Literal["enabled", "disabled"]
                 self.media_type = MediaType.TEXT
             elif not return_type.is_subclass_of(Response):
