@@ -274,15 +274,15 @@ def test_debug_html_response_contains_copy_traceback_elements() -> None:
         response = client.get("/", headers={"Accept": MediaType.HTML})
         html = response.text
 
+        # Verify copy button exists (always visible)
+        assert 'id="copyBtn"' in html
+        assert "copyTraceback()" in html
+        assert "Copy traceback to clipboard" in html
+
         # Verify toggle button exists
         assert 'id="toggleView"' in html
         assert "toggleTracebackView()" in html
-        assert "Switch to copy-and-paste view" in html
-
-        # Verify copy button exists
-        assert 'id="copyBtn"' in html
-        assert "copyTraceback()" in html
-        assert "Copy to clipboard" in html
+        assert "Plaintext view" in html
 
         # Verify traceback views exist
         assert 'id="browserTraceback"' in html

@@ -30,18 +30,15 @@ function toggleTracebackView() {
   const browser = document.getElementById("browserTraceback");
   const pastebin = document.getElementById("pastebinTraceback");
   const toggleBtn = document.getElementById("toggleView");
-  const copyBtn = document.getElementById("copyBtn");
 
   if (pastebin.style.display === "none") {
     browser.style.display = "none";
     pastebin.style.display = "block";
-    copyBtn.style.display = "inline-block";
-    toggleBtn.textContent = "Switch back to interactive view";
+    toggleBtn.textContent = "Interactive view";
   } else {
     browser.style.display = "block";
     pastebin.style.display = "none";
-    copyBtn.style.display = "none";
-    toggleBtn.textContent = "Switch to copy-and-paste view";
+    toggleBtn.textContent = "Plaintext view";
   }
 }
 
