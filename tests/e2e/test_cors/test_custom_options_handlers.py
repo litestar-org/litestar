@@ -35,4 +35,4 @@ def test_custom_options_handler_non_cors_request() -> None:
         response = client.options("/custom-options")
         assert response.status_code == 200
         assert response.headers.get("Custom-Handler") == "Active"
-        assert response.text == "Handled by Custom Options"
+        assert response.text == '"Handled by Custom Options"'

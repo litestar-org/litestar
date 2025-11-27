@@ -580,12 +580,11 @@ class HTTPRouteHandler(BaseRouteHandler):
             )
 
         if not self.media_type:
-            # Infer media_type from return type annotation (issue #4473)
-            # Check for str/bytes types, including Literal[str] types
-            if return_type.is_subclass_of((str, bytes)) or return_type.annotation is AnyStr:
-                self.media_type = MediaType.TEXT
-            elif return_type.is_literal and all(isinstance(arg, (str, bytes)) for arg in return_type.args):
-                # Handle Literal types like Literal["enabled", "disabled"]
+            if (
+                return_type.is_subclass_of((str, bytes))
+                or return_type.annotation is AnyStr
+                or (return_type.is_literal and all(isinstance(arg, (str, bytes)) for arg in return_type.args))
+            ):
                 self.media_type = MediaType.TEXT
             elif not return_type.is_subclass_of(Response):
                 self.media_type = MediaType.JSON
