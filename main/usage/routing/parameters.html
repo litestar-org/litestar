@@ -1087,7 +1087,7 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 </span><span data-line="37"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
 </span><span data-line="38">    <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">router</span><span class="p">],</span>
 </span><span data-line="39">    <span class="n">parameters</span><span class="o">=</span><span class="p">{</span>
-</span><span data-line="40">        <span class="s2">&quot;app_param&quot;</span><span class="p">:</span> <span class="n">Parameter</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">cookie</span><span class="o">=</span><span class="s2">&quot;special-cookie&quot;</span><span class="p">),</span>
+</span><span data-line="40">        <span class="s2">&quot;app_param&quot;</span><span class="p">:</span> <span class="n">Parameter</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">cookie</span><span class="o">=</span><span class="s2">&quot;special-cookie&quot;</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
 </span><span data-line="41">    <span class="p">},</span>
 </span><span data-line="42"><span class="p">)</span>
 </span></pre></div>
@@ -1138,7 +1138,7 @@ Python 3.10+</label><div class="sd-tab-content docutils">
 </span><span data-line="37"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
 </span><span data-line="38">    <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">router</span><span class="p">],</span>
 </span><span data-line="39">    <span class="n">parameters</span><span class="o">=</span><span class="p">{</span>
-</span><span data-line="40">        <span class="s2">&quot;app_param&quot;</span><span class="p">:</span> <span class="n">Parameter</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">cookie</span><span class="o">=</span><span class="s2">&quot;special-cookie&quot;</span><span class="p">),</span>
+</span><span data-line="40">        <span class="s2">&quot;app_param&quot;</span><span class="p">:</span> <span class="n">Parameter</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">cookie</span><span class="o">=</span><span class="s2">&quot;special-cookie&quot;</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
 </span><span data-line="41">    <span class="p">},</span>
 </span><span data-line="42"><span class="p">)</span>
 </span></pre></div>
