@@ -582,134 +582,135 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="68">            <span class="n">pydantic_v2</span><span class="o">.</span><span class="n">IPvAnyAddress</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
 </span><span data-line="69">            <span class="n">pydantic_v2</span><span class="o">.</span><span class="n">IPvAnyInterface</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
 </span><span data-line="70">            <span class="n">pydantic_v2</span><span class="o">.</span><span class="n">IPvAnyNetwork</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-</span><span data-line="71">        <span class="p">}</span>
-</span><span data-line="72">    <span class="p">)</span>
-</span><span data-line="73">
+</span><span data-line="71">            <span class="n">pydantic_v2</span><span class="o">.</span><span class="n">AwareDatetime</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+</span><span data-line="72">        <span class="p">}</span>
+</span><span data-line="73">    <span class="p">)</span>
 </span><span data-line="74">
-</span><span data-line="75"><span class="k">def</span><span class="w"> </span><span class="nf">convert_validation_error</span><span class="p">(</span><span class="n">validation_error</span><span class="p">:</span> <span class="n">ValidationErrorV1</span> <span class="o">|</span> <span class="n">ValidationErrorV2</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>  <span class="c1"># pyright: ignore[reportInvalidTypeForm,reportGeneralTypeIssues]</span>
-</span><span data-line="76">    <span class="n">error_list</span> <span class="o">=</span> <span class="n">validation_error</span><span class="o">.</span><span class="n">errors</span><span class="p">()</span>
-</span><span data-line="77">    <span class="k">for</span> <span class="n">error</span> <span class="ow">in</span> <span class="n">error_list</span><span class="p">:</span>
-</span><span data-line="78">        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">exception</span> <span class="o">:=</span> <span class="n">error</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;ctx&quot;</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;error&quot;</span><span class="p">),</span> <span class="ne">Exception</span><span class="p">):</span>
-</span><span data-line="79">            <span class="n">error</span><span class="p">[</span><span class="s2">&quot;ctx&quot;</span><span class="p">][</span><span class="s2">&quot;error&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">exception</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span>  <span class="c1"># pyright: ignore[reportTypedDictNotRequiredAccess]</span>
-</span><span data-line="80">    <span class="k">return</span> <span class="n">error_list</span>  <span class="c1"># type: ignore[return-value]</span>
-</span><span data-line="81">
+</span><span data-line="75">
+</span><span data-line="76"><span class="k">def</span><span class="w"> </span><span class="nf">convert_validation_error</span><span class="p">(</span><span class="n">validation_error</span><span class="p">:</span> <span class="n">ValidationErrorV1</span> <span class="o">|</span> <span class="n">ValidationErrorV2</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>  <span class="c1"># pyright: ignore[reportInvalidTypeForm,reportGeneralTypeIssues]</span>
+</span><span data-line="77">    <span class="n">error_list</span> <span class="o">=</span> <span class="n">validation_error</span><span class="o">.</span><span class="n">errors</span><span class="p">()</span>
+</span><span data-line="78">    <span class="k">for</span> <span class="n">error</span> <span class="ow">in</span> <span class="n">error_list</span><span class="p">:</span>
+</span><span data-line="79">        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">exception</span> <span class="o">:=</span> <span class="n">error</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;ctx&quot;</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;error&quot;</span><span class="p">),</span> <span class="ne">Exception</span><span class="p">):</span>
+</span><span data-line="80">            <span class="n">error</span><span class="p">[</span><span class="s2">&quot;ctx&quot;</span><span class="p">][</span><span class="s2">&quot;error&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">exception</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span>  <span class="c1"># pyright: ignore[reportTypedDictNotRequiredAccess]</span>
+</span><span data-line="81">    <span class="k">return</span> <span class="n">error_list</span>  <span class="c1"># type: ignore[return-value]</span>
 </span><span data-line="82">
-</span><span data-line="83"><span class="k">def</span><span class="w"> </span><span class="nf">downtype_for_data_transfer</span><span class="p">(</span><span class="n">field_definition</span><span class="p">:</span> <span class="n">FieldDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FieldDefinition</span><span class="p">:</span>
-</span><span data-line="84">    <span class="k">if</span> <span class="n">sub</span> <span class="o">:=</span> <span class="n">_down_types</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">field_definition</span><span class="o">.</span><span class="n">annotation</span><span class="p">):</span>
-</span><span data-line="85">        <span class="k">return</span> <span class="n">FieldDefinition</span><span class="o">.</span><span class="n">from_kwarg</span><span class="p">(</span>
-</span><span data-line="86">            <span class="n">annotation</span><span class="o">=</span><span class="n">Annotated</span><span class="p">[</span><span class="n">sub</span><span class="p">,</span> <span class="n">field_definition</span><span class="o">.</span><span class="n">metadata</span><span class="p">],</span> <span class="n">name</span><span class="o">=</span><span class="n">field_definition</span><span class="o">.</span><span class="n">name</span>
-</span><span data-line="87">        <span class="p">)</span>
-</span><span data-line="88">    <span class="k">return</span> <span class="n">field_definition</span>
-</span><span data-line="89">
+</span><span data-line="83">
+</span><span data-line="84"><span class="k">def</span><span class="w"> </span><span class="nf">downtype_for_data_transfer</span><span class="p">(</span><span class="n">field_definition</span><span class="p">:</span> <span class="n">FieldDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FieldDefinition</span><span class="p">:</span>
+</span><span data-line="85">    <span class="k">if</span> <span class="n">sub</span> <span class="o">:=</span> <span class="n">_down_types</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">field_definition</span><span class="o">.</span><span class="n">annotation</span><span class="p">):</span>
+</span><span data-line="86">        <span class="k">return</span> <span class="n">FieldDefinition</span><span class="o">.</span><span class="n">from_kwarg</span><span class="p">(</span>
+</span><span data-line="87">            <span class="n">annotation</span><span class="o">=</span><span class="n">Annotated</span><span class="p">[</span><span class="n">sub</span><span class="p">,</span> <span class="n">field_definition</span><span class="o">.</span><span class="n">metadata</span><span class="p">],</span> <span class="n">name</span><span class="o">=</span><span class="n">field_definition</span><span class="o">.</span><span class="n">name</span>
+</span><span data-line="88">        <span class="p">)</span>
+</span><span data-line="89">    <span class="k">return</span> <span class="n">field_definition</span>
 </span><span data-line="90">
+</span><span data-line="91">
 <div class="viewcode-block" id="PydanticDTO">
 <a class="viewcode-back" href="../../../../reference/plugins/pydantic.html#litestar.plugins.pydantic.PydanticDTO">[docs]</a>
-</span><span data-line="91"><span class="k">class</span><span class="w"> </span><span class="nc">PydanticDTO</span><span class="p">(</span><span class="n">AbstractDTO</span><span class="p">[</span><span class="n">T</span><span class="p">],</span> <span class="n">Generic</span><span class="p">[</span><span class="n">T</span><span class="p">]):</span>
-</span><span data-line="92"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Support for domain modelling with Pydantic.&quot;&quot;&quot;</span>
-</span><span data-line="93">
+</span><span data-line="92"><span class="k">class</span><span class="w"> </span><span class="nc">PydanticDTO</span><span class="p">(</span><span class="n">AbstractDTO</span><span class="p">[</span><span class="n">T</span><span class="p">],</span> <span class="n">Generic</span><span class="p">[</span><span class="n">T</span><span class="p">]):</span>
+</span><span data-line="93"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Support for domain modelling with Pydantic.&quot;&quot;&quot;</span>
+</span><span data-line="94">
 <div class="viewcode-block" id="PydanticDTO.decode_builtins">
 <a class="viewcode-back" href="../../../../reference/plugins/pydantic.html#litestar.plugins.pydantic.PydanticDTO.decode_builtins">[docs]</a>
-</span><span data-line="94">    <span class="nd">@override</span>
-</span><span data-line="95">    <span class="k">def</span><span class="w"> </span><span class="nf">decode_builtins</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
-</span><span data-line="96">        <span class="k">try</span><span class="p">:</span>
-</span><span data-line="97">            <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">decode_builtins</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
-</span><span data-line="98">        <span class="k">except</span> <span class="p">(</span><span class="n">ValidationErrorV2</span><span class="p">,</span> <span class="n">ValidationErrorV1</span><span class="p">)</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
-</span><span data-line="99">            <span class="k">raise</span> <span class="n">ValidationException</span><span class="p">(</span><span class="n">extra</span><span class="o">=</span><span class="n">convert_validation_error</span><span class="p">(</span><span class="n">ex</span><span class="p">))</span> <span class="kn">from</span><span class="w"> </span><span class="nn">ex</span></div>
+</span><span data-line="95">    <span class="nd">@override</span>
+</span><span data-line="96">    <span class="k">def</span><span class="w"> </span><span class="nf">decode_builtins</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+</span><span data-line="97">        <span class="k">try</span><span class="p">:</span>
+</span><span data-line="98">            <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">decode_builtins</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+</span><span data-line="99">        <span class="k">except</span> <span class="p">(</span><span class="n">ValidationErrorV2</span><span class="p">,</span> <span class="n">ValidationErrorV1</span><span class="p">)</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+</span><span data-line="100">            <span class="k">raise</span> <span class="n">ValidationException</span><span class="p">(</span><span class="n">extra</span><span class="o">=</span><span class="n">convert_validation_error</span><span class="p">(</span><span class="n">ex</span><span class="p">))</span> <span class="kn">from</span><span class="w"> </span><span class="nn">ex</span></div>
 
-</span><span data-line="100">
+</span><span data-line="101">
 <div class="viewcode-block" id="PydanticDTO.decode_bytes">
 <a class="viewcode-back" href="../../../../reference/plugins/pydantic.html#litestar.plugins.pydantic.PydanticDTO.decode_bytes">[docs]</a>
-</span><span data-line="101">    <span class="nd">@override</span>
-</span><span data-line="102">    <span class="k">def</span><span class="w"> </span><span class="nf">decode_bytes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
-</span><span data-line="103">        <span class="k">try</span><span class="p">:</span>
-</span><span data-line="104">            <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">decode_bytes</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
-</span><span data-line="105">        <span class="k">except</span> <span class="p">(</span><span class="n">ValidationErrorV2</span><span class="p">,</span> <span class="n">ValidationErrorV1</span><span class="p">)</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
-</span><span data-line="106">            <span class="k">raise</span> <span class="n">ValidationException</span><span class="p">(</span><span class="n">extra</span><span class="o">=</span><span class="n">convert_validation_error</span><span class="p">(</span><span class="n">ex</span><span class="p">))</span> <span class="kn">from</span><span class="w"> </span><span class="nn">ex</span></div>
+</span><span data-line="102">    <span class="nd">@override</span>
+</span><span data-line="103">    <span class="k">def</span><span class="w"> </span><span class="nf">decode_bytes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+</span><span data-line="104">        <span class="k">try</span><span class="p">:</span>
+</span><span data-line="105">            <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">decode_bytes</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+</span><span data-line="106">        <span class="k">except</span> <span class="p">(</span><span class="n">ValidationErrorV2</span><span class="p">,</span> <span class="n">ValidationErrorV1</span><span class="p">)</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+</span><span data-line="107">            <span class="k">raise</span> <span class="n">ValidationException</span><span class="p">(</span><span class="n">extra</span><span class="o">=</span><span class="n">convert_validation_error</span><span class="p">(</span><span class="n">ex</span><span class="p">))</span> <span class="kn">from</span><span class="w"> </span><span class="nn">ex</span></div>
 
-</span><span data-line="107">
+</span><span data-line="108">
 <div class="viewcode-block" id="PydanticDTO.generate_field_definitions">
 <a class="viewcode-back" href="../../../../reference/plugins/pydantic.html#litestar.plugins.pydantic.PydanticDTO.generate_field_definitions">[docs]</a>
-</span><span data-line="108">    <span class="nd">@classmethod</span>
-</span><span data-line="109">    <span class="k">def</span><span class="w"> </span><span class="nf">generate_field_definitions</span><span class="p">(</span>
-</span><span data-line="110">        <span class="bp">cls</span><span class="p">,</span>
-</span><span data-line="111">        <span class="n">model_type</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">pydantic_v1</span><span class="o">.</span><span class="n">BaseModel</span> <span class="o">|</span> <span class="n">pydantic_v2</span><span class="o">.</span><span class="n">BaseModel</span><span class="p">],</span>  <span class="c1"># pyright: ignore[reportInvalidTypeForm,reportGeneralTypeIssues]</span>
-</span><span data-line="112">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="n">DTOFieldDefinition</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
-</span><span data-line="113">        <span class="n">model_info</span> <span class="o">=</span> <span class="n">get_model_info</span><span class="p">(</span><span class="n">model_type</span><span class="p">)</span>
-</span><span data-line="114">        <span class="n">model_fields</span> <span class="o">=</span> <span class="n">model_info</span><span class="o">.</span><span class="n">model_fields</span>
-</span><span data-line="115">        <span class="n">model_field_definitions</span> <span class="o">=</span> <span class="n">model_info</span><span class="o">.</span><span class="n">field_definitions</span>
-</span><span data-line="116">
-</span><span data-line="117">        <span class="k">for</span> <span class="n">field_name</span><span class="p">,</span> <span class="n">field_definition</span> <span class="ow">in</span> <span class="n">model_field_definitions</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-</span><span data-line="118">            <span class="n">field_definition</span> <span class="o">=</span> <span class="n">downtype_for_data_transfer</span><span class="p">(</span><span class="n">field_definition</span><span class="p">)</span>
-</span><span data-line="119">            <span class="n">dto_field</span> <span class="o">=</span> <span class="n">extract_dto_field</span><span class="p">(</span><span class="n">field_definition</span><span class="p">,</span> <span class="n">field_definition</span><span class="o">.</span><span class="n">extra</span><span class="p">)</span>
-</span><span data-line="120">
-</span><span data-line="121">            <span class="n">default</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="n">Empty</span>
-</span><span data-line="122">            <span class="n">default_factory</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span>
-</span><span data-line="123">            <span class="k">if</span> <span class="n">field_info</span> <span class="o">:=</span> <span class="n">model_fields</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">field_name</span><span class="p">):</span>
-</span><span data-line="124">                <span class="c1"># field_info might not exist, since FieldInfo isn&#39;t provided by pydantic</span>
-</span><span data-line="125">                <span class="c1"># for computed fields, but we still generate a FieldDefinition for them</span>
-</span><span data-line="126">                <span class="k">try</span><span class="p">:</span>
-</span><span data-line="127">                    <span class="n">extra</span> <span class="o">=</span> <span class="n">field_info</span><span class="o">.</span><span class="n">extra</span>  <span class="c1"># type: ignore[union-attr]</span>
-</span><span data-line="128">                <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
-</span><span data-line="129">                    <span class="n">extra</span> <span class="o">=</span> <span class="n">field_info</span><span class="o">.</span><span class="n">json_schema_extra</span>  <span class="c1"># type: ignore[union-attr]</span>
-</span><span data-line="130">
-</span><span data-line="131">                <span class="k">if</span> <span class="n">extra</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">extra</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">DTO_FIELD_META_KEY</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
-</span><span data-line="132">                    <span class="n">warn</span><span class="p">(</span>
-</span><span data-line="133">                        <span class="n">message</span><span class="o">=</span><span class="s2">&quot;Declaring &#39;DTOField&#39; via Pydantic&#39;s &#39;Field.extra&#39; is deprecated. &quot;</span>
-</span><span data-line="134">                        <span class="s2">&quot;Use &#39;Annotated&#39;, e.g., &#39;Annotated[str, DTOField(mark=&#39;read-only&#39;)]&#39; instead. &quot;</span>
-</span><span data-line="135">                        <span class="s2">&quot;Support for &#39;DTOField&#39; in &#39;Field.extra&#39; will be removed in v3.&quot;</span><span class="p">,</span>
-</span><span data-line="136">                        <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">,</span>
-</span><span data-line="137">                        <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
-</span><span data-line="138">                    <span class="p">)</span>
-</span><span data-line="139">
-</span><span data-line="140">                <span class="k">if</span> <span class="ow">not</span> <span class="n">is_pydantic_undefined</span><span class="p">(</span><span class="n">field_info</span><span class="o">.</span><span class="n">default</span><span class="p">):</span>
-</span><span data-line="141">                    <span class="n">default</span> <span class="o">=</span> <span class="n">field_info</span><span class="o">.</span><span class="n">default</span>
-</span><span data-line="142">                <span class="k">elif</span> <span class="n">field_definition</span><span class="o">.</span><span class="n">is_optional</span><span class="p">:</span>
-</span><span data-line="143">                    <span class="n">default</span> <span class="o">=</span> <span class="kc">None</span>
-</span><span data-line="144">                <span class="k">else</span><span class="p">:</span>
-</span><span data-line="145">                    <span class="n">default</span> <span class="o">=</span> <span class="n">Empty</span>
-</span><span data-line="146">
-</span><span data-line="147">                <span class="n">default_factory</span> <span class="o">=</span> <span class="p">(</span>
-</span><span data-line="148">                    <span class="n">field_info</span><span class="o">.</span><span class="n">default_factory</span>
-</span><span data-line="149">                    <span class="k">if</span> <span class="n">field_info</span><span class="o">.</span><span class="n">default_factory</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">is_pydantic_undefined</span><span class="p">(</span><span class="n">field_info</span><span class="o">.</span><span class="n">default_factory</span><span class="p">)</span>
-</span><span data-line="150">                    <span class="k">else</span> <span class="kc">None</span>
-</span><span data-line="151">                <span class="p">)</span>
-</span><span data-line="152">
-</span><span data-line="153">            <span class="k">yield</span> <span class="n">replace</span><span class="p">(</span>
-</span><span data-line="154">                <span class="n">DTOFieldDefinition</span><span class="o">.</span><span class="n">from_field_definition</span><span class="p">(</span>
-</span><span data-line="155">                    <span class="n">field_definition</span><span class="o">=</span><span class="n">field_definition</span><span class="p">,</span>
-</span><span data-line="156">                    <span class="n">dto_field</span><span class="o">=</span><span class="n">dto_field</span><span class="p">,</span>
-</span><span data-line="157">                    <span class="n">model_name</span><span class="o">=</span><span class="n">model_type</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span>
-</span><span data-line="158">                    <span class="n">default_factory</span><span class="o">=</span><span class="n">default_factory</span><span class="p">,</span>
-</span><span data-line="159">                    <span class="c1"># we don&#39;t want the constraints to be set on the DTO struct as</span>
-</span><span data-line="160">                    <span class="c1"># constraints, but as schema metadata only, so we can let pydantic</span>
-</span><span data-line="161">                    <span class="c1"># handle all the constraining</span>
-</span><span data-line="162">                    <span class="n">passthrough_constraints</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-</span><span data-line="163">                <span class="p">),</span>
-</span><span data-line="164">                <span class="n">default</span><span class="o">=</span><span class="n">default</span><span class="p">,</span>
-</span><span data-line="165">                <span class="n">name</span><span class="o">=</span><span class="n">field_name</span><span class="p">,</span>
-</span><span data-line="166">            <span class="p">)</span></div>
+</span><span data-line="109">    <span class="nd">@classmethod</span>
+</span><span data-line="110">    <span class="k">def</span><span class="w"> </span><span class="nf">generate_field_definitions</span><span class="p">(</span>
+</span><span data-line="111">        <span class="bp">cls</span><span class="p">,</span>
+</span><span data-line="112">        <span class="n">model_type</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">pydantic_v1</span><span class="o">.</span><span class="n">BaseModel</span> <span class="o">|</span> <span class="n">pydantic_v2</span><span class="o">.</span><span class="n">BaseModel</span><span class="p">],</span>  <span class="c1"># pyright: ignore[reportInvalidTypeForm,reportGeneralTypeIssues]</span>
+</span><span data-line="113">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="n">DTOFieldDefinition</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+</span><span data-line="114">        <span class="n">model_info</span> <span class="o">=</span> <span class="n">get_model_info</span><span class="p">(</span><span class="n">model_type</span><span class="p">)</span>
+</span><span data-line="115">        <span class="n">model_fields</span> <span class="o">=</span> <span class="n">model_info</span><span class="o">.</span><span class="n">model_fields</span>
+</span><span data-line="116">        <span class="n">model_field_definitions</span> <span class="o">=</span> <span class="n">model_info</span><span class="o">.</span><span class="n">field_definitions</span>
+</span><span data-line="117">
+</span><span data-line="118">        <span class="k">for</span> <span class="n">field_name</span><span class="p">,</span> <span class="n">field_definition</span> <span class="ow">in</span> <span class="n">model_field_definitions</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+</span><span data-line="119">            <span class="n">field_definition</span> <span class="o">=</span> <span class="n">downtype_for_data_transfer</span><span class="p">(</span><span class="n">field_definition</span><span class="p">)</span>
+</span><span data-line="120">            <span class="n">dto_field</span> <span class="o">=</span> <span class="n">extract_dto_field</span><span class="p">(</span><span class="n">field_definition</span><span class="p">,</span> <span class="n">field_definition</span><span class="o">.</span><span class="n">extra</span><span class="p">)</span>
+</span><span data-line="121">
+</span><span data-line="122">            <span class="n">default</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="n">Empty</span>
+</span><span data-line="123">            <span class="n">default_factory</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span>
+</span><span data-line="124">            <span class="k">if</span> <span class="n">field_info</span> <span class="o">:=</span> <span class="n">model_fields</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">field_name</span><span class="p">):</span>
+</span><span data-line="125">                <span class="c1"># field_info might not exist, since FieldInfo isn&#39;t provided by pydantic</span>
+</span><span data-line="126">                <span class="c1"># for computed fields, but we still generate a FieldDefinition for them</span>
+</span><span data-line="127">                <span class="k">try</span><span class="p">:</span>
+</span><span data-line="128">                    <span class="n">extra</span> <span class="o">=</span> <span class="n">field_info</span><span class="o">.</span><span class="n">extra</span>  <span class="c1"># type: ignore[union-attr]</span>
+</span><span data-line="129">                <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+</span><span data-line="130">                    <span class="n">extra</span> <span class="o">=</span> <span class="n">field_info</span><span class="o">.</span><span class="n">json_schema_extra</span>  <span class="c1"># type: ignore[union-attr]</span>
+</span><span data-line="131">
+</span><span data-line="132">                <span class="k">if</span> <span class="n">extra</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">extra</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">DTO_FIELD_META_KEY</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
+</span><span data-line="133">                    <span class="n">warn</span><span class="p">(</span>
+</span><span data-line="134">                        <span class="n">message</span><span class="o">=</span><span class="s2">&quot;Declaring &#39;DTOField&#39; via Pydantic&#39;s &#39;Field.extra&#39; is deprecated. &quot;</span>
+</span><span data-line="135">                        <span class="s2">&quot;Use &#39;Annotated&#39;, e.g., &#39;Annotated[str, DTOField(mark=&#39;read-only&#39;)]&#39; instead. &quot;</span>
+</span><span data-line="136">                        <span class="s2">&quot;Support for &#39;DTOField&#39; in &#39;Field.extra&#39; will be removed in v3.&quot;</span><span class="p">,</span>
+</span><span data-line="137">                        <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">,</span>
+</span><span data-line="138">                        <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+</span><span data-line="139">                    <span class="p">)</span>
+</span><span data-line="140">
+</span><span data-line="141">                <span class="k">if</span> <span class="ow">not</span> <span class="n">is_pydantic_undefined</span><span class="p">(</span><span class="n">field_info</span><span class="o">.</span><span class="n">default</span><span class="p">):</span>
+</span><span data-line="142">                    <span class="n">default</span> <span class="o">=</span> <span class="n">field_info</span><span class="o">.</span><span class="n">default</span>
+</span><span data-line="143">                <span class="k">elif</span> <span class="n">field_definition</span><span class="o">.</span><span class="n">is_optional</span><span class="p">:</span>
+</span><span data-line="144">                    <span class="n">default</span> <span class="o">=</span> <span class="kc">None</span>
+</span><span data-line="145">                <span class="k">else</span><span class="p">:</span>
+</span><span data-line="146">                    <span class="n">default</span> <span class="o">=</span> <span class="n">Empty</span>
+</span><span data-line="147">
+</span><span data-line="148">                <span class="n">default_factory</span> <span class="o">=</span> <span class="p">(</span>
+</span><span data-line="149">                    <span class="n">field_info</span><span class="o">.</span><span class="n">default_factory</span>
+</span><span data-line="150">                    <span class="k">if</span> <span class="n">field_info</span><span class="o">.</span><span class="n">default_factory</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">is_pydantic_undefined</span><span class="p">(</span><span class="n">field_info</span><span class="o">.</span><span class="n">default_factory</span><span class="p">)</span>
+</span><span data-line="151">                    <span class="k">else</span> <span class="kc">None</span>
+</span><span data-line="152">                <span class="p">)</span>
+</span><span data-line="153">
+</span><span data-line="154">            <span class="k">yield</span> <span class="n">replace</span><span class="p">(</span>
+</span><span data-line="155">                <span class="n">DTOFieldDefinition</span><span class="o">.</span><span class="n">from_field_definition</span><span class="p">(</span>
+</span><span data-line="156">                    <span class="n">field_definition</span><span class="o">=</span><span class="n">field_definition</span><span class="p">,</span>
+</span><span data-line="157">                    <span class="n">dto_field</span><span class="o">=</span><span class="n">dto_field</span><span class="p">,</span>
+</span><span data-line="158">                    <span class="n">model_name</span><span class="o">=</span><span class="n">model_type</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span>
+</span><span data-line="159">                    <span class="n">default_factory</span><span class="o">=</span><span class="n">default_factory</span><span class="p">,</span>
+</span><span data-line="160">                    <span class="c1"># we don&#39;t want the constraints to be set on the DTO struct as</span>
+</span><span data-line="161">                    <span class="c1"># constraints, but as schema metadata only, so we can let pydantic</span>
+</span><span data-line="162">                    <span class="c1"># handle all the constraining</span>
+</span><span data-line="163">                    <span class="n">passthrough_constraints</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+</span><span data-line="164">                <span class="p">),</span>
+</span><span data-line="165">                <span class="n">default</span><span class="o">=</span><span class="n">default</span><span class="p">,</span>
+</span><span data-line="166">                <span class="n">name</span><span class="o">=</span><span class="n">field_name</span><span class="p">,</span>
+</span><span data-line="167">            <span class="p">)</span></div>
 
-</span><span data-line="167">
+</span><span data-line="168">
 <div class="viewcode-block" id="PydanticDTO.detect_nested_field">
 <a class="viewcode-back" href="../../../../reference/plugins/pydantic.html#litestar.plugins.pydantic.PydanticDTO.detect_nested_field">[docs]</a>
-</span><span data-line="168">    <span class="nd">@classmethod</span>
-</span><span data-line="169">    <span class="k">def</span><span class="w"> </span><span class="nf">detect_nested_field</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">field_definition</span><span class="p">:</span> <span class="n">FieldDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-</span><span data-line="170">        <span class="k">if</span> <span class="n">pydantic_v2</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">Empty</span><span class="p">:</span>  <span class="c1"># type: ignore[comparison-overlap]</span>
-</span><span data-line="171">            <span class="k">return</span> <span class="n">field_definition</span><span class="o">.</span><span class="n">is_subclass_of</span><span class="p">((</span><span class="n">pydantic_v1</span><span class="o">.</span><span class="n">BaseModel</span><span class="p">,</span> <span class="n">pydantic_v2</span><span class="o">.</span><span class="n">BaseModel</span><span class="p">))</span>
-</span><span data-line="172">        <span class="k">return</span> <span class="n">field_definition</span><span class="o">.</span><span class="n">is_subclass_of</span><span class="p">(</span><span class="n">pydantic_v1</span><span class="o">.</span><span class="n">BaseModel</span><span class="p">)</span>  <span class="c1"># type: ignore[unreachable]</span></div>
+</span><span data-line="169">    <span class="nd">@classmethod</span>
+</span><span data-line="170">    <span class="k">def</span><span class="w"> </span><span class="nf">detect_nested_field</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">field_definition</span><span class="p">:</span> <span class="n">FieldDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+</span><span data-line="171">        <span class="k">if</span> <span class="n">pydantic_v2</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">Empty</span><span class="p">:</span>  <span class="c1"># type: ignore[comparison-overlap]</span>
+</span><span data-line="172">            <span class="k">return</span> <span class="n">field_definition</span><span class="o">.</span><span class="n">is_subclass_of</span><span class="p">((</span><span class="n">pydantic_v1</span><span class="o">.</span><span class="n">BaseModel</span><span class="p">,</span> <span class="n">pydantic_v2</span><span class="o">.</span><span class="n">BaseModel</span><span class="p">))</span>
+</span><span data-line="173">        <span class="k">return</span> <span class="n">field_definition</span><span class="o">.</span><span class="n">is_subclass_of</span><span class="p">(</span><span class="n">pydantic_v1</span><span class="o">.</span><span class="n">BaseModel</span><span class="p">)</span>  <span class="c1"># type: ignore[unreachable]</span></div>
 
-</span><span data-line="173">
+</span><span data-line="174">
 <div class="viewcode-block" id="PydanticDTO.get_config_for_model_type">
 <a class="viewcode-back" href="../../../../reference/plugins/pydantic.html#litestar.plugins.pydantic.PydanticDTO.get_config_for_model_type">[docs]</a>
-</span><span data-line="174">    <span class="nd">@classmethod</span>
-</span><span data-line="175">    <span class="k">def</span><span class="w"> </span><span class="nf">get_config_for_model_type</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">DTOConfig</span><span class="p">,</span> <span class="n">model_type</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">DTOConfig</span><span class="p">:</span>
-</span><span data-line="176">        <span class="k">if</span> <span class="n">is_pydantic_2_model</span><span class="p">(</span><span class="n">model_type</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">model_config</span> <span class="o">:=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">model_type</span><span class="p">,</span> <span class="s2">&quot;model_config&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)):</span>
-</span><span data-line="177">            <span class="k">if</span> <span class="n">model_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;extra&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;forbid&quot;</span><span class="p">:</span>
-</span><span data-line="178">                <span class="n">config</span> <span class="o">=</span> <span class="n">dataclasses</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">forbid_unknown_fields</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</span><span data-line="179">        <span class="k">elif</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">model_type</span><span class="p">,</span> <span class="n">pydantic_v1</span><span class="o">.</span><span class="n">BaseModel</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">model_config</span> <span class="o">:=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">model_type</span><span class="p">,</span> <span class="s2">&quot;Config&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)):</span>  <span class="c1"># noqa: SIM102</span>
-</span><span data-line="180">            <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">model_config</span><span class="p">,</span> <span class="s2">&quot;extra&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;forbid&quot;</span><span class="p">:</span>
-</span><span data-line="181">                <span class="n">config</span> <span class="o">=</span> <span class="n">dataclasses</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">forbid_unknown_fields</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</span><span data-line="182">        <span class="k">return</span> <span class="n">config</span></div>
+</span><span data-line="175">    <span class="nd">@classmethod</span>
+</span><span data-line="176">    <span class="k">def</span><span class="w"> </span><span class="nf">get_config_for_model_type</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">DTOConfig</span><span class="p">,</span> <span class="n">model_type</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">DTOConfig</span><span class="p">:</span>
+</span><span data-line="177">        <span class="k">if</span> <span class="n">is_pydantic_2_model</span><span class="p">(</span><span class="n">model_type</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">model_config</span> <span class="o">:=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">model_type</span><span class="p">,</span> <span class="s2">&quot;model_config&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)):</span>
+</span><span data-line="178">            <span class="k">if</span> <span class="n">model_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;extra&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;forbid&quot;</span><span class="p">:</span>
+</span><span data-line="179">                <span class="n">config</span> <span class="o">=</span> <span class="n">dataclasses</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">forbid_unknown_fields</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span data-line="180">        <span class="k">elif</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">model_type</span><span class="p">,</span> <span class="n">pydantic_v1</span><span class="o">.</span><span class="n">BaseModel</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">model_config</span> <span class="o">:=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">model_type</span><span class="p">,</span> <span class="s2">&quot;Config&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)):</span>  <span class="c1"># noqa: SIM102</span>
+</span><span data-line="181">            <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">model_config</span><span class="p">,</span> <span class="s2">&quot;extra&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;forbid&quot;</span><span class="p">:</span>
+</span><span data-line="182">                <span class="n">config</span> <span class="o">=</span> <span class="n">dataclasses</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">forbid_unknown_fields</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span data-line="183">        <span class="k">return</span> <span class="n">config</span></div>
 </div>
 
 </span></pre></div>
