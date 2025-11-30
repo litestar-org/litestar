@@ -437,10 +437,29 @@ containing the route handler instance and paths. It can also be used to build a 
 
     app = Litestar(route_handlers=[handler_one, handler_two, handler_three])
 
-:meth:`~.app.Litestar.route_reverse` will raise :exc:`~.exceptions.NoRouteMatchFoundException` if a route with given
-name was not found, or if any of the passed path :term:`parameters <parameter>` are missing or do not match the types in the respective route declaration. As an exception, :class:`str` is accepted in place of :class:`~datetime.datetime`, :class:`~datetime.date`,
-:class:`~datetime.time`, :class:`~datetime.timedelta`, :class:`float`, and :class:`~pathlib.Path`
-parameters, so you can apply custom formatting and pass the result to :meth:`~.app.Litestar.route_reverse`.
+As a convenience, you can also pass the route handler directly to :meth:`~.app.Litestar.route_reverse`:
+
+.. code-block:: python
+    :caption: Directly retrieving a route handler's path from a reference to that handler
+
+    from litestar import Litestar, get
+
+
+    @get("/abc", name="one")
+    def handler_one() -> None:
+        pass
+
+    app = Litestar(route_handlers=[handler])
+
+    app.route_reverse(handler_one)  # Returns "/abc"
+
+
+:meth:`~.app.Litestar.route_reverse` will raise :exc:`~.exceptions.NoRouteMatchFoundException` if a route with the
+given name was not found, or if any of the passed path :term:`parameters <parameter>` are missing or do not match the
+types in the respective route declaration. As an exception, :class:`str` is accepted in place of
+:class:`~datetime.datetime`, :class:`~datetime.date`, :class:`~datetime.time`, :class:`~datetime.timedelta`,
+:class:`float`, and :class:`~pathlib.Path` parameters, so you can apply custom formatting and pass the result to
+:meth:`~.app.Litestar.route_reverse`.
 
 If handler has multiple paths attached to it, :meth:`~.app.Litestar.route_reverse` will return the path that consumes
 the highest number of the :term:`keyword arguments <argument>` passed to the function.

@@ -40,7 +40,7 @@ def url_for(context: Mapping[str, Any], /, route_name: str | BaseRouteHandler, *
 
     Args:
         context: The template context.
-        route_name: The name of the route handler.
+        route_name: The ``name`` of the route handler, or the route handler itself.
         **path_parameters: Actual values for path parameters in the route.
 
     Raises:
