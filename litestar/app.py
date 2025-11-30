@@ -922,6 +922,9 @@ class Litestar(Router):
         Returns:
             A fully formatted url path.
         """
+        if isinstance(name, BaseRouteHandler):
+            name = str(name)
+
         handler_index = self.get_handler_index_by_name(name)
         if handler_index is None:
             raise NoRouteMatchFoundException(f"Route {name} can not be found")

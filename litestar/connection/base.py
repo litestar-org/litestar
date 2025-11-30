@@ -307,7 +307,7 @@ class ASGIConnection(Generic[HandlerT, UserT, AuthT, StateT]):
     def get_session_id(self) -> str | None:
         return value_or_default(value=self._connection_state.session_id, default=None)
 
-    def url_for(self, name: str, **path_parameters: Any) -> str:
+    def url_for(self, name: str | BaseRouteHandler, **path_parameters: Any) -> str:
         """Return the url for a given route handler name.
 
         Args:
