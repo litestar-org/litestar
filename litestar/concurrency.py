@@ -5,7 +5,10 @@ import contextvars
 from functools import partial
 from typing import TYPE_CHECKING, Callable, TypeVar
 
-import sniffio
+try:
+    import sniffio
+except ImportError:
+    from anyio._core._eventloop import sniffio  # type: ignore[attr-defined]
 from typing_extensions import ParamSpec
 
 if TYPE_CHECKING:
