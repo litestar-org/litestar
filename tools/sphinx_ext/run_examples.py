@@ -22,6 +22,7 @@ from docutils.parsers.rst import directives
 from sphinx.addnodes import highlightlang
 
 from litestar import Litestar
+from litestar.utils import envflag
 
 if TYPE_CHECKING:
     from collections.abc import Generator
@@ -34,7 +35,7 @@ RGX_RUN = re.compile(r"# +?run:(.*)")
 
 logger = logging.getLogger("sphinx")
 
-ignore_missing_output = os.getenv("LITESTAR_DOCS_IGNORE_MISSING_EXAMPLE_OUTPUT", "") == "1"
+ignore_missing_output = envflag("LITESTAR_DOCS_IGNORE_MISSING_EXAMPLE_OUTPUT")
 
 
 class StartupError(RuntimeError):
