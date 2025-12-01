@@ -119,3 +119,32 @@ tr.executed-line {
 .cause-wrapper {
   margin-top: 50px;
 }
+
+.traceback-controls {
+  margin: 20px 0;
+}
+
+.traceback-controls button {
+  padding: 8px 16px;
+  margin-right: 10px;
+  cursor: pointer;
+  border: 1px solid var(--code-color-light);
+  border-radius: 4px;
+  background: var(--code-background-color);
+  font-family: var(--text-font-family);
+  font-size: 0.7rem;
+}
+
+.traceback-controls button:hover {
+  background: var(--code-background-color-dark);
+}
+
+#traceback_area {
+  width: 100%;
+  font-family: var(--code-font-family);
+  font-size: 0.68rem;
+  background: var(--code-background-color);
+  border: 1px solid var(--code-color-light);
+  padding: 10px;
+  box-sizing: border-box;
+}
