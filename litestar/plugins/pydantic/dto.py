@@ -68,6 +68,7 @@ if pydantic_v2 is not Empty:  # type: ignore[comparison-overlap]  # pragma: no c
             pydantic_v2.IPvAnyAddress: str,
             pydantic_v2.IPvAnyInterface: str,
             pydantic_v2.IPvAnyNetwork: str,
+            pydantic_v2.AwareDatetime: str,
         }
     )
 

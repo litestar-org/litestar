@@ -37,6 +37,6 @@ router = Router(
 app = Litestar(
     route_handlers=[router],
     parameters={
-        "app_param": Parameter(str, cookie="special-cookie"),
+        "app_param": Parameter(str, cookie="special-cookie", required=False),
     },
 )
