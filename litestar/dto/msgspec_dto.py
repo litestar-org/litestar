@@ -2,10 +2,10 @@ from __future__ import annotations
 
 import dataclasses
 from dataclasses import replace
-from typing import TYPE_CHECKING, Generic, TypeVar
+from typing import TYPE_CHECKING, Generic, TypeVar, Optional, Callable, Any
 
 import msgspec.inspect
-from msgspec import NODEFAULT, Struct, structs
+from msgspec import NODEFAULT, Struct, structs, Meta
 
 from litestar.dto.base_dto import AbstractDTO
 from litestar.dto.data_structures import DTOFieldDefinition
@@ -15,22 +15,31 @@ from litestar.types.empty import Empty
 
 if TYPE_CHECKING:
     from collections.abc import Collection, Generator
-    from typing import Any
-
     from litestar.typing import FieldDefinition
-
 
 __all__ = ("MsgspecDTO",)
 
 T = TypeVar("T", bound="Struct | Collection[Struct]")
 
-
 def _default_or_empty(value: Any) -> Any:
     return Empty if value is NODEFAULT else value
 
-
 def _default_or_none(value: Any) -> Any:
     return None if value is NODEFAULT else value
+
+# --- Optional URL validator utility ---
+def optional_pattern(pattern: str) -> Callable[[str | None], str | None]:
+    import re
+    def validator(value: str | None) -> str | None:
+        if value is None:
+            return None
+        if not re.fullmatch(pattern, value):
+            raise ValueError(f"Invalid value: {value}")
+        return value
+    return validator
+
+# Example usage:
+# URL = Annotated[Optional[str], optional_pattern(r"regex_here")]
 
 
 class MsgspecDTO(AbstractDTO[T], Generic[T]):
