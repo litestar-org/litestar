@@ -85,14 +85,6 @@ Migration Steps:
 
 See the :doc:`/usage/openapi/ui_plugins` documentation for more information on how to configure OpenAPI plugins.
 
-Redoc CDN Default Updated
--------------------------
-
-The :class:`~litestar.openapi.plugins.RedocRenderPlugin` now defaults to the ReDocly CDN
-(``https://cdn.redoc.ly/redoc/latest/bundles/redoc.standalone.js``) instead of jsDelivr. This change ensures that
-``version="latest"`` consistently resolves to a working bundle. If you rely on a private CDN or internal host,
-set the ``js_url`` argument to override the URL as before. See ``usage/openapi/ui_plugins`` for an updated example.
-
 Changes to Endpoint Configuration
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

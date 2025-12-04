@@ -1,7 +1,7 @@
 Plugins
 -------
 
-The `Advanced-Alchemy <https://advanced-alchemy.dev/latest/>`_ library
+The `Advanced-Alchemy <https://docs.advanced-alchemy.litestar.dev/latest/>`_ library
 provides a range of plugins to add support for SQLAlchemy:
 
 - :class:`~advanced_alchemy.extensions.litestar.SQLAlchemyPlugin`: Full SQLAlchemy support

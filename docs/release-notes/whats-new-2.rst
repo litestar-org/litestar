@@ -295,8 +295,8 @@ SQLAlchemy 2 only.
 TODO: Migration instructions
 
 .. seealso::
-    SQLAlchemy usage documentation was available in v2, but SQLAlchemy support was moved into a more comprehensive standalone library for v3. See the
-    `advanced-alchemy documentation <https://advanced-alchemy.dev/latest/>`_ for API reference
+    SQLAlchemy usage documentation was available in v2, but SQLAlchemy support was moved into a move comprehensive standalone library for v3. See the
+    `advanced-alchemy documentation <https://docs.advanced-alchemy.litestar.dev/>`_ for API reference
 
 
 Removal of Pydantic models
