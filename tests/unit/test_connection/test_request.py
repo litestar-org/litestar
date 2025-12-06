@@ -102,6 +102,20 @@ def test_request_url_for() -> None:
         assert response.status_code == 500
 
 
+def test_request_url_for_by_name() -> None:
+    @get(path="/proxy")
+    def proxy() -> None:
+        pass
+
+    @get(path="/test", signature_namespace={"dict": dict})
+    def root(request: Request[Any, Any, State]) -> dict[str, str]:
+        return {"url": request.url_for(proxy)}
+
+    with create_test_client(route_handlers=[proxy, root]) as client:
+        response = client.get("/test")
+        assert response.json() == {"url": "http://testserver.local/proxy"}
+
+
 def test_route_handler_property() -> None:
     value: Any = {}
 
