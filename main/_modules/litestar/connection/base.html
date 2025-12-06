@@ -526,328 +526,330 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="16">    <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">NoReturn</span>
 </span><span data-line="17">
 </span><span data-line="18">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.app</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span>
-</span><span data-line="19">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataContainerType</span><span class="p">,</span> <span class="n">EmptyType</span>
-</span><span data-line="20">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.types.asgi_types</span><span class="w"> </span><span class="kn">import</span> <span class="n">Message</span><span class="p">,</span> <span class="n">Receive</span><span class="p">,</span> <span class="n">Scope</span><span class="p">,</span> <span class="n">Send</span>
-</span><span data-line="21">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.types.protocols</span><span class="w"> </span><span class="kn">import</span> <span class="n">Logger</span>
-</span><span data-line="22">
-</span><span data-line="23"><span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;ASGIConnection&quot;</span><span class="p">,</span> <span class="s2">&quot;empty_receive&quot;</span><span class="p">,</span> <span class="s2">&quot;empty_send&quot;</span><span class="p">)</span>
+</span><span data-line="19">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.handlers</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseRouteHandler</span>
+</span><span data-line="20">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataContainerType</span><span class="p">,</span> <span class="n">EmptyType</span>
+</span><span data-line="21">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.types.asgi_types</span><span class="w"> </span><span class="kn">import</span> <span class="n">Message</span><span class="p">,</span> <span class="n">Receive</span><span class="p">,</span> <span class="n">Scope</span><span class="p">,</span> <span class="n">Send</span>
+</span><span data-line="22">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.types.protocols</span><span class="w"> </span><span class="kn">import</span> <span class="n">Logger</span>
+</span><span data-line="23">
 </span><span data-line="24">
-</span><span data-line="25"><span class="n">UserT</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;UserT&quot;</span><span class="p">)</span>
-</span><span data-line="26"><span class="n">AuthT</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;AuthT&quot;</span><span class="p">)</span>
-</span><span data-line="27"><span class="n">HandlerT</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;HandlerT&quot;</span><span class="p">)</span>
-</span><span data-line="28"><span class="n">StateT</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;StateT&quot;</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="n">State</span><span class="p">)</span>
-</span><span data-line="29">
-</span><span data-line="30">
-</span><span data-line="31"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">empty_receive</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">NoReturn</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
-</span><span data-line="32"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Raise a ``RuntimeError``.</span>
-</span><span data-line="33">
-</span><span data-line="34"><span class="sd">    Serves as a placeholder ``send`` function.</span>
+</span><span data-line="25"><span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;ASGIConnection&quot;</span><span class="p">,</span> <span class="s2">&quot;empty_receive&quot;</span><span class="p">,</span> <span class="s2">&quot;empty_send&quot;</span><span class="p">)</span>
+</span><span data-line="26">
+</span><span data-line="27"><span class="n">UserT</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;UserT&quot;</span><span class="p">)</span>
+</span><span data-line="28"><span class="n">AuthT</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;AuthT&quot;</span><span class="p">)</span>
+</span><span data-line="29"><span class="n">HandlerT</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;HandlerT&quot;</span><span class="p">)</span>
+</span><span data-line="30"><span class="n">StateT</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;StateT&quot;</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="n">State</span><span class="p">)</span>
+</span><span data-line="31">
+</span><span data-line="32">
+</span><span data-line="33"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">empty_receive</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">NoReturn</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
+</span><span data-line="34"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Raise a ``RuntimeError``.</span>
 </span><span data-line="35">
-</span><span data-line="36"><span class="sd">    Raises:</span>
-</span><span data-line="37"><span class="sd">        RuntimeError</span>
-</span><span data-line="38"><span class="sd">    &quot;&quot;&quot;</span>
-</span><span data-line="39">    <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">()</span>
-</span><span data-line="40">
-</span><span data-line="41">
-</span><span data-line="42"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">empty_send</span><span class="p">(</span><span class="n">_</span><span class="p">:</span> <span class="n">Message</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NoReturn</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
-</span><span data-line="43"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Raise a ``RuntimeError``.</span>
-</span><span data-line="44">
-</span><span data-line="45"><span class="sd">    Serves as a placeholder ``send`` function.</span>
+</span><span data-line="36"><span class="sd">    Serves as a placeholder ``send`` function.</span>
+</span><span data-line="37">
+</span><span data-line="38"><span class="sd">    Raises:</span>
+</span><span data-line="39"><span class="sd">        RuntimeError</span>
+</span><span data-line="40"><span class="sd">    &quot;&quot;&quot;</span>
+</span><span data-line="41">    <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">()</span>
+</span><span data-line="42">
+</span><span data-line="43">
+</span><span data-line="44"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">empty_send</span><span class="p">(</span><span class="n">_</span><span class="p">:</span> <span class="n">Message</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NoReturn</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
+</span><span data-line="45"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Raise a ``RuntimeError``.</span>
 </span><span data-line="46">
-</span><span data-line="47"><span class="sd">    Args:</span>
-</span><span data-line="48"><span class="sd">        _: An ASGI message</span>
-</span><span data-line="49">
-</span><span data-line="50"><span class="sd">    Raises:</span>
-</span><span data-line="51"><span class="sd">        RuntimeError</span>
-</span><span data-line="52"><span class="sd">    &quot;&quot;&quot;</span>
-</span><span data-line="53">    <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">()</span>
-</span><span data-line="54">
-</span><span data-line="55">
+</span><span data-line="47"><span class="sd">    Serves as a placeholder ``send`` function.</span>
+</span><span data-line="48">
+</span><span data-line="49"><span class="sd">    Args:</span>
+</span><span data-line="50"><span class="sd">        _: An ASGI message</span>
+</span><span data-line="51">
+</span><span data-line="52"><span class="sd">    Raises:</span>
+</span><span data-line="53"><span class="sd">        RuntimeError</span>
+</span><span data-line="54"><span class="sd">    &quot;&quot;&quot;</span>
+</span><span data-line="55">    <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">()</span>
+</span><span data-line="56">
+</span><span data-line="57">
 <div class="viewcode-block" id="ASGIConnection">
 <a class="viewcode-back" href="../../../reference/connection.html#litestar.connection.ASGIConnection">[docs]</a>
-</span><span data-line="56"><span class="k">class</span><span class="w"> </span><span class="nc">ASGIConnection</span><span class="p">(</span><span class="n">Generic</span><span class="p">[</span><span class="n">HandlerT</span><span class="p">,</span> <span class="n">UserT</span><span class="p">,</span> <span class="n">AuthT</span><span class="p">,</span> <span class="n">StateT</span><span class="p">]):</span>
-</span><span data-line="57"><span class="w">    </span><span class="sd">&quot;&quot;&quot;The base ASGI connection container.&quot;&quot;&quot;</span>
-</span><span data-line="58">
-</span><span data-line="59">    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span>
-</span><span data-line="60">        <span class="s2">&quot;_base_url&quot;</span><span class="p">,</span>
-</span><span data-line="61">        <span class="s2">&quot;_connection_state&quot;</span><span class="p">,</span>
-</span><span data-line="62">        <span class="s2">&quot;_cookies&quot;</span><span class="p">,</span>
-</span><span data-line="63">        <span class="s2">&quot;_parsed_query&quot;</span><span class="p">,</span>
-</span><span data-line="64">        <span class="s2">&quot;_server_extensions&quot;</span><span class="p">,</span>
-</span><span data-line="65">        <span class="s2">&quot;_url&quot;</span><span class="p">,</span>
-</span><span data-line="66">        <span class="s2">&quot;receive&quot;</span><span class="p">,</span>
-</span><span data-line="67">        <span class="s2">&quot;scope&quot;</span><span class="p">,</span>
-</span><span data-line="68">        <span class="s2">&quot;send&quot;</span><span class="p">,</span>
-</span><span data-line="69">    <span class="p">)</span>
-</span><span data-line="70">
-</span><span data-line="71">    <span class="n">scope</span><span class="p">:</span> <span class="n">Scope</span>
-</span><span data-line="72"><span class="w">    </span><span class="sd">&quot;&quot;&quot;The ASGI scope attached to the connection.&quot;&quot;&quot;</span>
-</span><span data-line="73">    <span class="n">receive</span><span class="p">:</span> <span class="n">Receive</span>
-</span><span data-line="74"><span class="w">    </span><span class="sd">&quot;&quot;&quot;The ASGI receive function.&quot;&quot;&quot;</span>
-</span><span data-line="75">    <span class="n">send</span><span class="p">:</span> <span class="n">Send</span>
-</span><span data-line="76"><span class="w">    </span><span class="sd">&quot;&quot;&quot;The ASGI send function.&quot;&quot;&quot;</span>
-</span><span data-line="77">
+</span><span data-line="58"><span class="k">class</span><span class="w"> </span><span class="nc">ASGIConnection</span><span class="p">(</span><span class="n">Generic</span><span class="p">[</span><span class="n">HandlerT</span><span class="p">,</span> <span class="n">UserT</span><span class="p">,</span> <span class="n">AuthT</span><span class="p">,</span> <span class="n">StateT</span><span class="p">]):</span>
+</span><span data-line="59"><span class="w">    </span><span class="sd">&quot;&quot;&quot;The base ASGI connection container.&quot;&quot;&quot;</span>
+</span><span data-line="60">
+</span><span data-line="61">    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span>
+</span><span data-line="62">        <span class="s2">&quot;_base_url&quot;</span><span class="p">,</span>
+</span><span data-line="63">        <span class="s2">&quot;_connection_state&quot;</span><span class="p">,</span>
+</span><span data-line="64">        <span class="s2">&quot;_cookies&quot;</span><span class="p">,</span>
+</span><span data-line="65">        <span class="s2">&quot;_parsed_query&quot;</span><span class="p">,</span>
+</span><span data-line="66">        <span class="s2">&quot;_server_extensions&quot;</span><span class="p">,</span>
+</span><span data-line="67">        <span class="s2">&quot;_url&quot;</span><span class="p">,</span>
+</span><span data-line="68">        <span class="s2">&quot;receive&quot;</span><span class="p">,</span>
+</span><span data-line="69">        <span class="s2">&quot;scope&quot;</span><span class="p">,</span>
+</span><span data-line="70">        <span class="s2">&quot;send&quot;</span><span class="p">,</span>
+</span><span data-line="71">    <span class="p">)</span>
+</span><span data-line="72">
+</span><span data-line="73">    <span class="n">scope</span><span class="p">:</span> <span class="n">Scope</span>
+</span><span data-line="74"><span class="w">    </span><span class="sd">&quot;&quot;&quot;The ASGI scope attached to the connection.&quot;&quot;&quot;</span>
+</span><span data-line="75">    <span class="n">receive</span><span class="p">:</span> <span class="n">Receive</span>
+</span><span data-line="76"><span class="w">    </span><span class="sd">&quot;&quot;&quot;The ASGI receive function.&quot;&quot;&quot;</span>
+</span><span data-line="77">    <span class="n">send</span><span class="p">:</span> <span class="n">Send</span>
+</span><span data-line="78"><span class="w">    </span><span class="sd">&quot;&quot;&quot;The ASGI send function.&quot;&quot;&quot;</span>
+</span><span data-line="79">
 <div class="viewcode-block" id="ASGIConnection.__init__">
 <a class="viewcode-back" href="../../../reference/connection.html#litestar.connection.ASGIConnection.__init__">[docs]</a>
-</span><span data-line="78">    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scope</span><span class="p">:</span> <span class="n">Scope</span><span class="p">,</span> <span class="n">receive</span><span class="p">:</span> <span class="n">Receive</span> <span class="o">=</span> <span class="n">empty_receive</span><span class="p">,</span> <span class="n">send</span><span class="p">:</span> <span class="n">Send</span> <span class="o">=</span> <span class="n">empty_send</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="79"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize ``ASGIConnection``.</span>
-</span><span data-line="80">
-</span><span data-line="81"><span class="sd">        Args:</span>
-</span><span data-line="82"><span class="sd">            scope: The ASGI connection scope.</span>
-</span><span data-line="83"><span class="sd">            receive: The ASGI receive function.</span>
-</span><span data-line="84"><span class="sd">            send: The ASGI send function.</span>
-</span><span data-line="85"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="86">        <span class="bp">self</span><span class="o">.</span><span class="n">scope</span> <span class="o">=</span> <span class="n">scope</span>
-</span><span data-line="87">        <span class="bp">self</span><span class="o">.</span><span class="n">receive</span> <span class="o">=</span> <span class="n">receive</span>
-</span><span data-line="88">        <span class="bp">self</span><span class="o">.</span><span class="n">send</span> <span class="o">=</span> <span class="n">send</span>
-</span><span data-line="89">        <span class="bp">self</span><span class="o">.</span><span class="n">_connection_state</span> <span class="o">=</span> <span class="n">ScopeState</span><span class="o">.</span><span class="n">from_scope</span><span class="p">(</span><span class="n">scope</span><span class="p">)</span>
-</span><span data-line="90">        <span class="bp">self</span><span class="o">.</span><span class="n">_base_url</span><span class="p">:</span> <span class="n">URL</span> <span class="o">|</span> <span class="n">EmptyType</span> <span class="o">=</span> <span class="n">Empty</span>
-</span><span data-line="91">        <span class="bp">self</span><span class="o">.</span><span class="n">_url</span><span class="p">:</span> <span class="n">URL</span> <span class="o">|</span> <span class="n">EmptyType</span> <span class="o">=</span> <span class="n">Empty</span>
-</span><span data-line="92">        <span class="bp">self</span><span class="o">.</span><span class="n">_parsed_query</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="o">...</span><span class="p">]</span> <span class="o">|</span> <span class="n">EmptyType</span> <span class="o">=</span> <span class="n">Empty</span>
-</span><span data-line="93">        <span class="bp">self</span><span class="o">.</span><span class="n">_cookies</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="n">EmptyType</span> <span class="o">=</span> <span class="n">Empty</span>
-</span><span data-line="94">        <span class="bp">self</span><span class="o">.</span><span class="n">_server_extensions</span> <span class="o">=</span> <span class="n">scope</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;extensions&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="p">{}</span>  <span class="c1"># extensions may be None</span></div>
+</span><span data-line="80">    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scope</span><span class="p">:</span> <span class="n">Scope</span><span class="p">,</span> <span class="n">receive</span><span class="p">:</span> <span class="n">Receive</span> <span class="o">=</span> <span class="n">empty_receive</span><span class="p">,</span> <span class="n">send</span><span class="p">:</span> <span class="n">Send</span> <span class="o">=</span> <span class="n">empty_send</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="81"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize ``ASGIConnection``.</span>
+</span><span data-line="82">
+</span><span data-line="83"><span class="sd">        Args:</span>
+</span><span data-line="84"><span class="sd">            scope: The ASGI connection scope.</span>
+</span><span data-line="85"><span class="sd">            receive: The ASGI receive function.</span>
+</span><span data-line="86"><span class="sd">            send: The ASGI send function.</span>
+</span><span data-line="87"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="88">        <span class="bp">self</span><span class="o">.</span><span class="n">scope</span> <span class="o">=</span> <span class="n">scope</span>
+</span><span data-line="89">        <span class="bp">self</span><span class="o">.</span><span class="n">receive</span> <span class="o">=</span> <span class="n">receive</span>
+</span><span data-line="90">        <span class="bp">self</span><span class="o">.</span><span class="n">send</span> <span class="o">=</span> <span class="n">send</span>
+</span><span data-line="91">        <span class="bp">self</span><span class="o">.</span><span class="n">_connection_state</span> <span class="o">=</span> <span class="n">ScopeState</span><span class="o">.</span><span class="n">from_scope</span><span class="p">(</span><span class="n">scope</span><span class="p">)</span>
+</span><span data-line="92">        <span class="bp">self</span><span class="o">.</span><span class="n">_base_url</span><span class="p">:</span> <span class="n">URL</span> <span class="o">|</span> <span class="n">EmptyType</span> <span class="o">=</span> <span class="n">Empty</span>
+</span><span data-line="93">        <span class="bp">self</span><span class="o">.</span><span class="n">_url</span><span class="p">:</span> <span class="n">URL</span> <span class="o">|</span> <span class="n">EmptyType</span> <span class="o">=</span> <span class="n">Empty</span>
+</span><span data-line="94">        <span class="bp">self</span><span class="o">.</span><span class="n">_parsed_query</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="o">...</span><span class="p">]</span> <span class="o">|</span> <span class="n">EmptyType</span> <span class="o">=</span> <span class="n">Empty</span>
+</span><span data-line="95">        <span class="bp">self</span><span class="o">.</span><span class="n">_cookies</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="n">EmptyType</span> <span class="o">=</span> <span class="n">Empty</span>
+</span><span data-line="96">        <span class="bp">self</span><span class="o">.</span><span class="n">_server_extensions</span> <span class="o">=</span> <span class="n">scope</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;extensions&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="p">{}</span>  <span class="c1"># extensions may be None</span></div>
 
-</span><span data-line="95">
-</span><span data-line="96">    <span class="nd">@property</span>
-</span><span data-line="97">    <span class="k">def</span><span class="w"> </span><span class="nf">app</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Litestar</span><span class="p">:</span>
-</span><span data-line="98"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the ``app`` for this connection.</span>
-</span><span data-line="99">
-</span><span data-line="100"><span class="sd">        Returns:</span>
-</span><span data-line="101"><span class="sd">            The :class:`Litestar &lt;litestar.app.Litestar&gt;` application instance</span>
-</span><span data-line="102"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="103">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">scope</span><span class="p">[</span><span class="s2">&quot;litestar_app&quot;</span><span class="p">]</span>
-</span><span data-line="104">
-</span><span data-line="105">    <span class="nd">@property</span>
-</span><span data-line="106">    <span class="k">def</span><span class="w"> </span><span class="nf">route_handler</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">HandlerT</span><span class="p">:</span>
-</span><span data-line="107"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the ``route_handler`` for this connection.</span>
-</span><span data-line="108">
-</span><span data-line="109"><span class="sd">        Returns:</span>
-</span><span data-line="110"><span class="sd">            The target route handler instance.</span>
-</span><span data-line="111"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="112">        <span class="k">return</span> <span class="n">cast</span><span class="p">(</span><span class="s2">&quot;HandlerT&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">scope</span><span class="p">[</span><span class="s2">&quot;route_handler&quot;</span><span class="p">])</span>
-</span><span data-line="113">
-</span><span data-line="114">    <span class="nd">@property</span>
-</span><span data-line="115">    <span class="k">def</span><span class="w"> </span><span class="nf">state</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">StateT</span><span class="p">:</span>
-</span><span data-line="116"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the ``State`` of this connection.</span>
-</span><span data-line="117">
-</span><span data-line="118"><span class="sd">        Returns:</span>
-</span><span data-line="119"><span class="sd">            A State instance constructed from the scope[&quot;state&quot;] value.</span>
-</span><span data-line="120"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="121">        <span class="k">return</span> <span class="n">cast</span><span class="p">(</span><span class="s2">&quot;StateT&quot;</span><span class="p">,</span> <span class="n">State</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scope</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;state&quot;</span><span class="p">)))</span>
-</span><span data-line="122">
-</span><span data-line="123">    <span class="nd">@property</span>
-</span><span data-line="124">    <span class="k">def</span><span class="w"> </span><span class="nf">url</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">URL</span><span class="p">:</span>
-</span><span data-line="125"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the URL of this connection&#39;s ``Scope``.</span>
-</span><span data-line="126">
-</span><span data-line="127"><span class="sd">        Returns:</span>
-</span><span data-line="128"><span class="sd">            A URL instance constructed from the request&#39;s scope.</span>
-</span><span data-line="129"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="130">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_url</span> <span class="ow">is</span> <span class="n">Empty</span><span class="p">:</span>
-</span><span data-line="131">            <span class="k">if</span> <span class="p">(</span><span class="n">url</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connection_state</span><span class="o">.</span><span class="n">url</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">Empty</span><span class="p">:</span>
-</span><span data-line="132">                <span class="bp">self</span><span class="o">.</span><span class="n">_url</span> <span class="o">=</span> <span class="n">url</span>
-</span><span data-line="133">            <span class="k">else</span><span class="p">:</span>
-</span><span data-line="134">                <span class="bp">self</span><span class="o">.</span><span class="n">_connection_state</span><span class="o">.</span><span class="n">url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_url</span> <span class="o">=</span> <span class="n">URL</span><span class="o">.</span><span class="n">from_scope</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scope</span><span class="p">)</span>
-</span><span data-line="135">
-</span><span data-line="136">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_url</span>
+</span><span data-line="97">
+</span><span data-line="98">    <span class="nd">@property</span>
+</span><span data-line="99">    <span class="k">def</span><span class="w"> </span><span class="nf">app</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Litestar</span><span class="p">:</span>
+</span><span data-line="100"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the ``app`` for this connection.</span>
+</span><span data-line="101">
+</span><span data-line="102"><span class="sd">        Returns:</span>
+</span><span data-line="103"><span class="sd">            The :class:`Litestar &lt;litestar.app.Litestar&gt;` application instance</span>
+</span><span data-line="104"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="105">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">scope</span><span class="p">[</span><span class="s2">&quot;litestar_app&quot;</span><span class="p">]</span>
+</span><span data-line="106">
+</span><span data-line="107">    <span class="nd">@property</span>
+</span><span data-line="108">    <span class="k">def</span><span class="w"> </span><span class="nf">route_handler</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">HandlerT</span><span class="p">:</span>
+</span><span data-line="109"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the ``route_handler`` for this connection.</span>
+</span><span data-line="110">
+</span><span data-line="111"><span class="sd">        Returns:</span>
+</span><span data-line="112"><span class="sd">            The target route handler instance.</span>
+</span><span data-line="113"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="114">        <span class="k">return</span> <span class="n">cast</span><span class="p">(</span><span class="s2">&quot;HandlerT&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">scope</span><span class="p">[</span><span class="s2">&quot;route_handler&quot;</span><span class="p">])</span>
+</span><span data-line="115">
+</span><span data-line="116">    <span class="nd">@property</span>
+</span><span data-line="117">    <span class="k">def</span><span class="w"> </span><span class="nf">state</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">StateT</span><span class="p">:</span>
+</span><span data-line="118"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the ``State`` of this connection.</span>
+</span><span data-line="119">
+</span><span data-line="120"><span class="sd">        Returns:</span>
+</span><span data-line="121"><span class="sd">            A State instance constructed from the scope[&quot;state&quot;] value.</span>
+</span><span data-line="122"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="123">        <span class="k">return</span> <span class="n">cast</span><span class="p">(</span><span class="s2">&quot;StateT&quot;</span><span class="p">,</span> <span class="n">State</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scope</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;state&quot;</span><span class="p">)))</span>
+</span><span data-line="124">
+</span><span data-line="125">    <span class="nd">@property</span>
+</span><span data-line="126">    <span class="k">def</span><span class="w"> </span><span class="nf">url</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">URL</span><span class="p">:</span>
+</span><span data-line="127"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the URL of this connection&#39;s ``Scope``.</span>
+</span><span data-line="128">
+</span><span data-line="129"><span class="sd">        Returns:</span>
+</span><span data-line="130"><span class="sd">            A URL instance constructed from the request&#39;s scope.</span>
+</span><span data-line="131"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="132">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_url</span> <span class="ow">is</span> <span class="n">Empty</span><span class="p">:</span>
+</span><span data-line="133">            <span class="k">if</span> <span class="p">(</span><span class="n">url</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connection_state</span><span class="o">.</span><span class="n">url</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">Empty</span><span class="p">:</span>
+</span><span data-line="134">                <span class="bp">self</span><span class="o">.</span><span class="n">_url</span> <span class="o">=</span> <span class="n">url</span>
+</span><span data-line="135">            <span class="k">else</span><span class="p">:</span>
+</span><span data-line="136">                <span class="bp">self</span><span class="o">.</span><span class="n">_connection_state</span><span class="o">.</span><span class="n">url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_url</span> <span class="o">=</span> <span class="n">URL</span><span class="o">.</span><span class="n">from_scope</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scope</span><span class="p">)</span>
 </span><span data-line="137">
-</span><span data-line="138">    <span class="nd">@property</span>
-</span><span data-line="139">    <span class="k">def</span><span class="w"> </span><span class="nf">base_url</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">URL</span><span class="p">:</span>
-</span><span data-line="140"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the base URL of this connection&#39;s ``Scope``.</span>
-</span><span data-line="141">
-</span><span data-line="142"><span class="sd">        Returns:</span>
-</span><span data-line="143"><span class="sd">            A URL instance constructed from the request&#39;s scope, representing only the base part</span>
-</span><span data-line="144"><span class="sd">            (host + domain + prefix) of the request.</span>
-</span><span data-line="145"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="146">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_base_url</span> <span class="ow">is</span> <span class="n">Empty</span><span class="p">:</span>
-</span><span data-line="147">            <span class="k">if</span> <span class="p">(</span><span class="n">base_url</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connection_state</span><span class="o">.</span><span class="n">base_url</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">Empty</span><span class="p">:</span>
-</span><span data-line="148">                <span class="bp">self</span><span class="o">.</span><span class="n">_base_url</span> <span class="o">=</span> <span class="n">base_url</span>
-</span><span data-line="149">            <span class="k">else</span><span class="p">:</span>
-</span><span data-line="150">                <span class="n">scope</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span>
-</span><span data-line="151">                    <span class="s2">&quot;Scope&quot;</span><span class="p">,</span>
-</span><span data-line="152">                    <span class="p">{</span>
-</span><span data-line="153">                        <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">scope</span><span class="p">,</span>
-</span><span data-line="154">                        <span class="s2">&quot;path&quot;</span><span class="p">:</span> <span class="s2">&quot;/&quot;</span><span class="p">,</span>
-</span><span data-line="155">                        <span class="s2">&quot;query_string&quot;</span><span class="p">:</span> <span class="sa">b</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
-</span><span data-line="156">                        <span class="s2">&quot;root_path&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">scope</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;app_root_path&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">scope</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;root_path&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">),</span>
-</span><span data-line="157">                    <span class="p">},</span>
-</span><span data-line="158">                <span class="p">)</span>
-</span><span data-line="159">                <span class="bp">self</span><span class="o">.</span><span class="n">_connection_state</span><span class="o">.</span><span class="n">base_url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_base_url</span> <span class="o">=</span> <span class="n">URL</span><span class="o">.</span><span class="n">from_scope</span><span class="p">(</span><span class="n">scope</span><span class="p">)</span>
-</span><span data-line="160">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_base_url</span>
-</span><span data-line="161">
-</span><span data-line="162">    <span class="nd">@property</span>
-</span><span data-line="163">    <span class="k">def</span><span class="w"> </span><span class="nf">headers</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Headers</span><span class="p">:</span>
-</span><span data-line="164"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the headers of this connection&#39;s ``Scope``.</span>
-</span><span data-line="165">
-</span><span data-line="166"><span class="sd">        Returns:</span>
-</span><span data-line="167"><span class="sd">            A Headers instance with the request&#39;s scope[&quot;headers&quot;] value.</span>
-</span><span data-line="168"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="169">        <span class="k">return</span> <span class="n">Headers</span><span class="o">.</span><span class="n">from_scope</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scope</span><span class="p">)</span>
-</span><span data-line="170">
-</span><span data-line="171">    <span class="nd">@property</span>
-</span><span data-line="172">    <span class="k">def</span><span class="w"> </span><span class="nf">query_params</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MultiDict</span><span class="p">[</span><span class="n">Any</span><span class="p">]:</span>
-</span><span data-line="173"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the query parameters of this connection&#39;s ``Scope``.</span>
-</span><span data-line="174">
-</span><span data-line="175"><span class="sd">        Returns:</span>
-</span><span data-line="176"><span class="sd">            A normalized dict of query parameters. Multiple values for the same key are returned as a list.</span>
-</span><span data-line="177"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="178">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parsed_query</span> <span class="ow">is</span> <span class="n">Empty</span><span class="p">:</span>
-</span><span data-line="179">            <span class="k">if</span> <span class="p">(</span><span class="n">parsed_query</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connection_state</span><span class="o">.</span><span class="n">parsed_query</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">Empty</span><span class="p">:</span>
-</span><span data-line="180">                <span class="bp">self</span><span class="o">.</span><span class="n">_parsed_query</span> <span class="o">=</span> <span class="n">parsed_query</span>
-</span><span data-line="181">            <span class="k">else</span><span class="p">:</span>
-</span><span data-line="182">                <span class="bp">self</span><span class="o">.</span><span class="n">_connection_state</span><span class="o">.</span><span class="n">parsed_query</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parsed_query</span> <span class="o">=</span> <span class="n">parse_query_string</span><span class="p">(</span>
-</span><span data-line="183">                    <span class="bp">self</span><span class="o">.</span><span class="n">scope</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;query_string&quot;</span><span class="p">,</span> <span class="sa">b</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
-</span><span data-line="184">                <span class="p">)</span>
-</span><span data-line="185">        <span class="k">return</span> <span class="n">MultiDict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_parsed_query</span><span class="p">)</span>
-</span><span data-line="186">
-</span><span data-line="187">    <span class="nd">@property</span>
-</span><span data-line="188">    <span class="k">def</span><span class="w"> </span><span class="nf">path_params</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
-</span><span data-line="189"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the ``path_params`` of this connection&#39;s ``Scope``.</span>
-</span><span data-line="190">
-</span><span data-line="191"><span class="sd">        Returns:</span>
-</span><span data-line="192"><span class="sd">            A string keyed dictionary of path parameter values.</span>
-</span><span data-line="193"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="194">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">scope</span><span class="p">[</span><span class="s2">&quot;path_params&quot;</span><span class="p">]</span>
-</span><span data-line="195">
-</span><span data-line="196">    <span class="nd">@property</span>
-</span><span data-line="197">    <span class="k">def</span><span class="w"> </span><span class="nf">cookies</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
-</span><span data-line="198"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the ``cookies`` of this connection&#39;s ``Scope``.</span>
-</span><span data-line="199">
-</span><span data-line="200"><span class="sd">        Returns:</span>
-</span><span data-line="201"><span class="sd">            Returns any cookies stored in the header as a parsed dictionary.</span>
-</span><span data-line="202"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="203">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cookies</span> <span class="ow">is</span> <span class="n">Empty</span><span class="p">:</span>
-</span><span data-line="204">            <span class="k">if</span> <span class="p">(</span><span class="n">cookies</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connection_state</span><span class="o">.</span><span class="n">cookies</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">Empty</span><span class="p">:</span>
-</span><span data-line="205">                <span class="bp">self</span><span class="o">.</span><span class="n">_cookies</span> <span class="o">=</span> <span class="n">cookies</span>
-</span><span data-line="206">            <span class="k">else</span><span class="p">:</span>
-</span><span data-line="207">                <span class="bp">self</span><span class="o">.</span><span class="n">_connection_state</span><span class="o">.</span><span class="n">cookies</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cookies</span> <span class="o">=</span> <span class="p">(</span>
-</span><span data-line="208">                    <span class="n">parse_cookie_string</span><span class="p">(</span><span class="n">cookie_header</span><span class="p">)</span> <span class="k">if</span> <span class="p">(</span><span class="n">cookie_header</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;cookie&quot;</span><span class="p">))</span> <span class="k">else</span> <span class="p">{}</span>
-</span><span data-line="209">                <span class="p">)</span>
-</span><span data-line="210">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cookies</span>
-</span><span data-line="211">
-</span><span data-line="212">    <span class="nd">@property</span>
-</span><span data-line="213">    <span class="k">def</span><span class="w"> </span><span class="nf">client</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Address</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="214"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the ``client`` data of this connection&#39;s ``Scope``.</span>
-</span><span data-line="215">
-</span><span data-line="216"><span class="sd">        Returns:</span>
-</span><span data-line="217"><span class="sd">            A two tuple of the host name and port number.</span>
-</span><span data-line="218"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="219">        <span class="n">client</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">scope</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;client&quot;</span><span class="p">)</span>
-</span><span data-line="220">        <span class="k">return</span> <span class="n">Address</span><span class="p">(</span><span class="o">*</span><span class="n">client</span><span class="p">)</span> <span class="k">if</span> <span class="n">client</span> <span class="k">else</span> <span class="kc">None</span>
-</span><span data-line="221">
-</span><span data-line="222">    <span class="nd">@property</span>
-</span><span data-line="223">    <span class="k">def</span><span class="w"> </span><span class="nf">auth</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AuthT</span><span class="p">:</span>
-</span><span data-line="224"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the ``auth`` data of this connection&#39;s ``Scope``.</span>
-</span><span data-line="225">
-</span><span data-line="226"><span class="sd">        Raises:</span>
-</span><span data-line="227"><span class="sd">            ImproperlyConfiguredException: If ``auth`` is not set in scope via an ``AuthMiddleware``, raises an exception</span>
-</span><span data-line="228">
-</span><span data-line="229"><span class="sd">        Returns:</span>
-</span><span data-line="230"><span class="sd">            A type correlating to the generic variable Auth.</span>
-</span><span data-line="231"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="232">        <span class="k">if</span> <span class="s2">&quot;auth&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">scope</span><span class="p">:</span>
-</span><span data-line="233">            <span class="k">raise</span> <span class="n">ImproperlyConfiguredException</span><span class="p">(</span><span class="s2">&quot;&#39;auth&#39; is not defined in scope, install an AuthMiddleware to set it&quot;</span><span class="p">)</span>
-</span><span data-line="234">
-</span><span data-line="235">        <span class="k">return</span> <span class="n">cast</span><span class="p">(</span><span class="s2">&quot;AuthT&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">scope</span><span class="p">[</span><span class="s2">&quot;auth&quot;</span><span class="p">])</span>
+</span><span data-line="138">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_url</span>
+</span><span data-line="139">
+</span><span data-line="140">    <span class="nd">@property</span>
+</span><span data-line="141">    <span class="k">def</span><span class="w"> </span><span class="nf">base_url</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">URL</span><span class="p">:</span>
+</span><span data-line="142"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the base URL of this connection&#39;s ``Scope``.</span>
+</span><span data-line="143">
+</span><span data-line="144"><span class="sd">        Returns:</span>
+</span><span data-line="145"><span class="sd">            A URL instance constructed from the request&#39;s scope, representing only the base part</span>
+</span><span data-line="146"><span class="sd">            (host + domain + prefix) of the request.</span>
+</span><span data-line="147"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="148">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_base_url</span> <span class="ow">is</span> <span class="n">Empty</span><span class="p">:</span>
+</span><span data-line="149">            <span class="k">if</span> <span class="p">(</span><span class="n">base_url</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connection_state</span><span class="o">.</span><span class="n">base_url</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">Empty</span><span class="p">:</span>
+</span><span data-line="150">                <span class="bp">self</span><span class="o">.</span><span class="n">_base_url</span> <span class="o">=</span> <span class="n">base_url</span>
+</span><span data-line="151">            <span class="k">else</span><span class="p">:</span>
+</span><span data-line="152">                <span class="n">scope</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span>
+</span><span data-line="153">                    <span class="s2">&quot;Scope&quot;</span><span class="p">,</span>
+</span><span data-line="154">                    <span class="p">{</span>
+</span><span data-line="155">                        <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">scope</span><span class="p">,</span>
+</span><span data-line="156">                        <span class="s2">&quot;path&quot;</span><span class="p">:</span> <span class="s2">&quot;/&quot;</span><span class="p">,</span>
+</span><span data-line="157">                        <span class="s2">&quot;query_string&quot;</span><span class="p">:</span> <span class="sa">b</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+</span><span data-line="158">                        <span class="s2">&quot;root_path&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">scope</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;app_root_path&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">scope</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;root_path&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">),</span>
+</span><span data-line="159">                    <span class="p">},</span>
+</span><span data-line="160">                <span class="p">)</span>
+</span><span data-line="161">                <span class="bp">self</span><span class="o">.</span><span class="n">_connection_state</span><span class="o">.</span><span class="n">base_url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_base_url</span> <span class="o">=</span> <span class="n">URL</span><span class="o">.</span><span class="n">from_scope</span><span class="p">(</span><span class="n">scope</span><span class="p">)</span>
+</span><span data-line="162">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_base_url</span>
+</span><span data-line="163">
+</span><span data-line="164">    <span class="nd">@property</span>
+</span><span data-line="165">    <span class="k">def</span><span class="w"> </span><span class="nf">headers</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Headers</span><span class="p">:</span>
+</span><span data-line="166"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the headers of this connection&#39;s ``Scope``.</span>
+</span><span data-line="167">
+</span><span data-line="168"><span class="sd">        Returns:</span>
+</span><span data-line="169"><span class="sd">            A Headers instance with the request&#39;s scope[&quot;headers&quot;] value.</span>
+</span><span data-line="170"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="171">        <span class="k">return</span> <span class="n">Headers</span><span class="o">.</span><span class="n">from_scope</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scope</span><span class="p">)</span>
+</span><span data-line="172">
+</span><span data-line="173">    <span class="nd">@property</span>
+</span><span data-line="174">    <span class="k">def</span><span class="w"> </span><span class="nf">query_params</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MultiDict</span><span class="p">[</span><span class="n">Any</span><span class="p">]:</span>
+</span><span data-line="175"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the query parameters of this connection&#39;s ``Scope``.</span>
+</span><span data-line="176">
+</span><span data-line="177"><span class="sd">        Returns:</span>
+</span><span data-line="178"><span class="sd">            A normalized dict of query parameters. Multiple values for the same key are returned as a list.</span>
+</span><span data-line="179"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="180">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parsed_query</span> <span class="ow">is</span> <span class="n">Empty</span><span class="p">:</span>
+</span><span data-line="181">            <span class="k">if</span> <span class="p">(</span><span class="n">parsed_query</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connection_state</span><span class="o">.</span><span class="n">parsed_query</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">Empty</span><span class="p">:</span>
+</span><span data-line="182">                <span class="bp">self</span><span class="o">.</span><span class="n">_parsed_query</span> <span class="o">=</span> <span class="n">parsed_query</span>
+</span><span data-line="183">            <span class="k">else</span><span class="p">:</span>
+</span><span data-line="184">                <span class="bp">self</span><span class="o">.</span><span class="n">_connection_state</span><span class="o">.</span><span class="n">parsed_query</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parsed_query</span> <span class="o">=</span> <span class="n">parse_query_string</span><span class="p">(</span>
+</span><span data-line="185">                    <span class="bp">self</span><span class="o">.</span><span class="n">scope</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;query_string&quot;</span><span class="p">,</span> <span class="sa">b</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+</span><span data-line="186">                <span class="p">)</span>
+</span><span data-line="187">        <span class="k">return</span> <span class="n">MultiDict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_parsed_query</span><span class="p">)</span>
+</span><span data-line="188">
+</span><span data-line="189">    <span class="nd">@property</span>
+</span><span data-line="190">    <span class="k">def</span><span class="w"> </span><span class="nf">path_params</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+</span><span data-line="191"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the ``path_params`` of this connection&#39;s ``Scope``.</span>
+</span><span data-line="192">
+</span><span data-line="193"><span class="sd">        Returns:</span>
+</span><span data-line="194"><span class="sd">            A string keyed dictionary of path parameter values.</span>
+</span><span data-line="195"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="196">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">scope</span><span class="p">[</span><span class="s2">&quot;path_params&quot;</span><span class="p">]</span>
+</span><span data-line="197">
+</span><span data-line="198">    <span class="nd">@property</span>
+</span><span data-line="199">    <span class="k">def</span><span class="w"> </span><span class="nf">cookies</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+</span><span data-line="200"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the ``cookies`` of this connection&#39;s ``Scope``.</span>
+</span><span data-line="201">
+</span><span data-line="202"><span class="sd">        Returns:</span>
+</span><span data-line="203"><span class="sd">            Returns any cookies stored in the header as a parsed dictionary.</span>
+</span><span data-line="204"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="205">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cookies</span> <span class="ow">is</span> <span class="n">Empty</span><span class="p">:</span>
+</span><span data-line="206">            <span class="k">if</span> <span class="p">(</span><span class="n">cookies</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connection_state</span><span class="o">.</span><span class="n">cookies</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">Empty</span><span class="p">:</span>
+</span><span data-line="207">                <span class="bp">self</span><span class="o">.</span><span class="n">_cookies</span> <span class="o">=</span> <span class="n">cookies</span>
+</span><span data-line="208">            <span class="k">else</span><span class="p">:</span>
+</span><span data-line="209">                <span class="bp">self</span><span class="o">.</span><span class="n">_connection_state</span><span class="o">.</span><span class="n">cookies</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cookies</span> <span class="o">=</span> <span class="p">(</span>
+</span><span data-line="210">                    <span class="n">parse_cookie_string</span><span class="p">(</span><span class="n">cookie_header</span><span class="p">)</span> <span class="k">if</span> <span class="p">(</span><span class="n">cookie_header</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;cookie&quot;</span><span class="p">))</span> <span class="k">else</span> <span class="p">{}</span>
+</span><span data-line="211">                <span class="p">)</span>
+</span><span data-line="212">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cookies</span>
+</span><span data-line="213">
+</span><span data-line="214">    <span class="nd">@property</span>
+</span><span data-line="215">    <span class="k">def</span><span class="w"> </span><span class="nf">client</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Address</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="216"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the ``client`` data of this connection&#39;s ``Scope``.</span>
+</span><span data-line="217">
+</span><span data-line="218"><span class="sd">        Returns:</span>
+</span><span data-line="219"><span class="sd">            A two tuple of the host name and port number.</span>
+</span><span data-line="220"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="221">        <span class="n">client</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">scope</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;client&quot;</span><span class="p">)</span>
+</span><span data-line="222">        <span class="k">return</span> <span class="n">Address</span><span class="p">(</span><span class="o">*</span><span class="n">client</span><span class="p">)</span> <span class="k">if</span> <span class="n">client</span> <span class="k">else</span> <span class="kc">None</span>
+</span><span data-line="223">
+</span><span data-line="224">    <span class="nd">@property</span>
+</span><span data-line="225">    <span class="k">def</span><span class="w"> </span><span class="nf">auth</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AuthT</span><span class="p">:</span>
+</span><span data-line="226"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the ``auth`` data of this connection&#39;s ``Scope``.</span>
+</span><span data-line="227">
+</span><span data-line="228"><span class="sd">        Raises:</span>
+</span><span data-line="229"><span class="sd">            ImproperlyConfiguredException: If ``auth`` is not set in scope via an ``AuthMiddleware``, raises an exception</span>
+</span><span data-line="230">
+</span><span data-line="231"><span class="sd">        Returns:</span>
+</span><span data-line="232"><span class="sd">            A type correlating to the generic variable Auth.</span>
+</span><span data-line="233"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="234">        <span class="k">if</span> <span class="s2">&quot;auth&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">scope</span><span class="p">:</span>
+</span><span data-line="235">            <span class="k">raise</span> <span class="n">ImproperlyConfiguredException</span><span class="p">(</span><span class="s2">&quot;&#39;auth&#39; is not defined in scope, install an AuthMiddleware to set it&quot;</span><span class="p">)</span>
 </span><span data-line="236">
-</span><span data-line="237">    <span class="nd">@property</span>
-</span><span data-line="238">    <span class="k">def</span><span class="w"> </span><span class="nf">user</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">UserT</span><span class="p">:</span>
-</span><span data-line="239"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the ``user`` data of this connection&#39;s ``Scope``.</span>
-</span><span data-line="240">
-</span><span data-line="241"><span class="sd">        Raises:</span>
-</span><span data-line="242"><span class="sd">            ImproperlyConfiguredException: If ``user`` is not set in scope via an ``AuthMiddleware``, raises an exception</span>
-</span><span data-line="243">
-</span><span data-line="244"><span class="sd">        Returns:</span>
-</span><span data-line="245"><span class="sd">            A type correlating to the generic variable User.</span>
-</span><span data-line="246"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="247">        <span class="k">if</span> <span class="s2">&quot;user&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">scope</span><span class="p">:</span>
-</span><span data-line="248">            <span class="k">raise</span> <span class="n">ImproperlyConfiguredException</span><span class="p">(</span><span class="s2">&quot;&#39;user&#39; is not defined in scope, install an AuthMiddleware to set it&quot;</span><span class="p">)</span>
-</span><span data-line="249">
-</span><span data-line="250">        <span class="k">return</span> <span class="n">cast</span><span class="p">(</span><span class="s2">&quot;UserT&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">scope</span><span class="p">[</span><span class="s2">&quot;user&quot;</span><span class="p">])</span>
+</span><span data-line="237">        <span class="k">return</span> <span class="n">cast</span><span class="p">(</span><span class="s2">&quot;AuthT&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">scope</span><span class="p">[</span><span class="s2">&quot;auth&quot;</span><span class="p">])</span>
+</span><span data-line="238">
+</span><span data-line="239">    <span class="nd">@property</span>
+</span><span data-line="240">    <span class="k">def</span><span class="w"> </span><span class="nf">user</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">UserT</span><span class="p">:</span>
+</span><span data-line="241"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the ``user`` data of this connection&#39;s ``Scope``.</span>
+</span><span data-line="242">
+</span><span data-line="243"><span class="sd">        Raises:</span>
+</span><span data-line="244"><span class="sd">            ImproperlyConfiguredException: If ``user`` is not set in scope via an ``AuthMiddleware``, raises an exception</span>
+</span><span data-line="245">
+</span><span data-line="246"><span class="sd">        Returns:</span>
+</span><span data-line="247"><span class="sd">            A type correlating to the generic variable User.</span>
+</span><span data-line="248"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="249">        <span class="k">if</span> <span class="s2">&quot;user&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">scope</span><span class="p">:</span>
+</span><span data-line="250">            <span class="k">raise</span> <span class="n">ImproperlyConfiguredException</span><span class="p">(</span><span class="s2">&quot;&#39;user&#39; is not defined in scope, install an AuthMiddleware to set it&quot;</span><span class="p">)</span>
 </span><span data-line="251">
-</span><span data-line="252">    <span class="nd">@property</span>
-</span><span data-line="253">    <span class="k">def</span><span class="w"> </span><span class="nf">session</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
-</span><span data-line="254"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the session for this connection if a session was previously set in the ``Scope``</span>
-</span><span data-line="255">
-</span><span data-line="256"><span class="sd">        Returns:</span>
-</span><span data-line="257"><span class="sd">            A dictionary representing the session value - if existing.</span>
-</span><span data-line="258">
-</span><span data-line="259"><span class="sd">        Raises:</span>
-</span><span data-line="260"><span class="sd">            ImproperlyConfiguredException: if session is not set in scope.</span>
-</span><span data-line="261"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="262">        <span class="k">if</span> <span class="s2">&quot;session&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">scope</span><span class="p">:</span>
-</span><span data-line="263">            <span class="k">raise</span> <span class="n">ImproperlyConfiguredException</span><span class="p">(</span>
-</span><span data-line="264">                <span class="s2">&quot;&#39;session&#39; is not defined in scope, install a SessionMiddleware to set it&quot;</span>
-</span><span data-line="265">            <span class="p">)</span>
-</span><span data-line="266">
-</span><span data-line="267">        <span class="k">return</span> <span class="n">cast</span><span class="p">(</span><span class="s2">&quot;dict[str, Any]&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">scope</span><span class="p">[</span><span class="s2">&quot;session&quot;</span><span class="p">])</span>
+</span><span data-line="252">        <span class="k">return</span> <span class="n">cast</span><span class="p">(</span><span class="s2">&quot;UserT&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">scope</span><span class="p">[</span><span class="s2">&quot;user&quot;</span><span class="p">])</span>
+</span><span data-line="253">
+</span><span data-line="254">    <span class="nd">@property</span>
+</span><span data-line="255">    <span class="k">def</span><span class="w"> </span><span class="nf">session</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+</span><span data-line="256"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the session for this connection if a session was previously set in the ``Scope``</span>
+</span><span data-line="257">
+</span><span data-line="258"><span class="sd">        Returns:</span>
+</span><span data-line="259"><span class="sd">            A dictionary representing the session value - if existing.</span>
+</span><span data-line="260">
+</span><span data-line="261"><span class="sd">        Raises:</span>
+</span><span data-line="262"><span class="sd">            ImproperlyConfiguredException: if session is not set in scope.</span>
+</span><span data-line="263"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="264">        <span class="k">if</span> <span class="s2">&quot;session&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">scope</span><span class="p">:</span>
+</span><span data-line="265">            <span class="k">raise</span> <span class="n">ImproperlyConfiguredException</span><span class="p">(</span>
+</span><span data-line="266">                <span class="s2">&quot;&#39;session&#39; is not defined in scope, install a SessionMiddleware to set it&quot;</span>
+</span><span data-line="267">            <span class="p">)</span>
 </span><span data-line="268">
-</span><span data-line="269">    <span class="nd">@property</span>
-</span><span data-line="270">    <span class="k">def</span><span class="w"> </span><span class="nf">logger</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Logger</span><span class="p">:</span>
-</span><span data-line="271"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the ``Logger`` instance for this connection.</span>
-</span><span data-line="272">
-</span><span data-line="273"><span class="sd">        Returns:</span>
-</span><span data-line="274"><span class="sd">            A ``Logger`` instance.</span>
-</span><span data-line="275">
-</span><span data-line="276"><span class="sd">        Raises:</span>
-</span><span data-line="277"><span class="sd">            ImproperlyConfiguredException: if ``log_config`` has not been passed to the Litestar constructor.</span>
-</span><span data-line="278"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="279">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">get_logger</span><span class="p">()</span>
-</span><span data-line="280">
+</span><span data-line="269">        <span class="k">return</span> <span class="n">cast</span><span class="p">(</span><span class="s2">&quot;dict[str, Any]&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">scope</span><span class="p">[</span><span class="s2">&quot;session&quot;</span><span class="p">])</span>
+</span><span data-line="270">
+</span><span data-line="271">    <span class="nd">@property</span>
+</span><span data-line="272">    <span class="k">def</span><span class="w"> </span><span class="nf">logger</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Logger</span><span class="p">:</span>
+</span><span data-line="273"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the ``Logger`` instance for this connection.</span>
+</span><span data-line="274">
+</span><span data-line="275"><span class="sd">        Returns:</span>
+</span><span data-line="276"><span class="sd">            A ``Logger`` instance.</span>
+</span><span data-line="277">
+</span><span data-line="278"><span class="sd">        Raises:</span>
+</span><span data-line="279"><span class="sd">            ImproperlyConfiguredException: if ``log_config`` has not been passed to the Litestar constructor.</span>
+</span><span data-line="280"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="281">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">get_logger</span><span class="p">()</span>
+</span><span data-line="282">
 <div class="viewcode-block" id="ASGIConnection.set_session">
 <a class="viewcode-back" href="../../../reference/connection.html#litestar.connection.ASGIConnection.set_session">[docs]</a>
-</span><span data-line="281">    <span class="k">def</span><span class="w"> </span><span class="nf">set_session</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="n">DataContainerType</span> <span class="o">|</span> <span class="n">EmptyType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="282"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Set the session in the connection&#39;s ``Scope``.</span>
-</span><span data-line="283">
-</span><span data-line="284"><span class="sd">        If the :class:`SessionMiddleware &lt;.middleware.session.base.SessionMiddleware&gt;` is enabled, the session will be added</span>
-</span><span data-line="285"><span class="sd">        to the response as a cookie header.</span>
-</span><span data-line="286">
-</span><span data-line="287"><span class="sd">        Args:</span>
-</span><span data-line="288"><span class="sd">            value: Dictionary or pydantic model instance for the session data.</span>
-</span><span data-line="289">
-</span><span data-line="290"><span class="sd">        Returns:</span>
-</span><span data-line="291"><span class="sd">            None</span>
-</span><span data-line="292"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="293">        <span class="bp">self</span><span class="o">.</span><span class="n">scope</span><span class="p">[</span><span class="s2">&quot;session&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span></div>
+</span><span data-line="283">    <span class="k">def</span><span class="w"> </span><span class="nf">set_session</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="n">DataContainerType</span> <span class="o">|</span> <span class="n">EmptyType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="284"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Set the session in the connection&#39;s ``Scope``.</span>
+</span><span data-line="285">
+</span><span data-line="286"><span class="sd">        If the :class:`SessionMiddleware &lt;.middleware.session.base.SessionMiddleware&gt;` is enabled, the session will be added</span>
+</span><span data-line="287"><span class="sd">        to the response as a cookie header.</span>
+</span><span data-line="288">
+</span><span data-line="289"><span class="sd">        Args:</span>
+</span><span data-line="290"><span class="sd">            value: Dictionary or pydantic model instance for the session data.</span>
+</span><span data-line="291">
+</span><span data-line="292"><span class="sd">        Returns:</span>
+</span><span data-line="293"><span class="sd">            None</span>
+</span><span data-line="294"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="295">        <span class="bp">self</span><span class="o">.</span><span class="n">scope</span><span class="p">[</span><span class="s2">&quot;session&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span></div>
 
-</span><span data-line="294">
+</span><span data-line="296">
 <div class="viewcode-block" id="ASGIConnection.clear_session">
 <a class="viewcode-back" href="../../../reference/connection.html#litestar.connection.ASGIConnection.clear_session">[docs]</a>
-</span><span data-line="295">    <span class="k">def</span><span class="w"> </span><span class="nf">clear_session</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="296"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Remove the session from the connection&#39;s ``Scope``.</span>
-</span><span data-line="297">
-</span><span data-line="298"><span class="sd">        If the :class:`Litestar SessionMiddleware &lt;.middleware.session.base.SessionMiddleware&gt;` is enabled, this will cause</span>
-</span><span data-line="299"><span class="sd">        the session data to be cleared.</span>
-</span><span data-line="300">
-</span><span data-line="301"><span class="sd">        Returns:</span>
-</span><span data-line="302"><span class="sd">            None.</span>
-</span><span data-line="303"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="304">        <span class="bp">self</span><span class="o">.</span><span class="n">scope</span><span class="p">[</span><span class="s2">&quot;session&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Empty</span>
-</span><span data-line="305">        <span class="bp">self</span><span class="o">.</span><span class="n">_connection_state</span><span class="o">.</span><span class="n">session_id</span> <span class="o">=</span> <span class="n">Empty</span></div>
+</span><span data-line="297">    <span class="k">def</span><span class="w"> </span><span class="nf">clear_session</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="298"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Remove the session from the connection&#39;s ``Scope``.</span>
+</span><span data-line="299">
+</span><span data-line="300"><span class="sd">        If the :class:`Litestar SessionMiddleware &lt;.middleware.session.base.SessionMiddleware&gt;` is enabled, this will cause</span>
+</span><span data-line="301"><span class="sd">        the session data to be cleared.</span>
+</span><span data-line="302">
+</span><span data-line="303"><span class="sd">        Returns:</span>
+</span><span data-line="304"><span class="sd">            None.</span>
+</span><span data-line="305"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="306">        <span class="bp">self</span><span class="o">.</span><span class="n">scope</span><span class="p">[</span><span class="s2">&quot;session&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Empty</span>
+</span><span data-line="307">        <span class="bp">self</span><span class="o">.</span><span class="n">_connection_state</span><span class="o">.</span><span class="n">session_id</span> <span class="o">=</span> <span class="n">Empty</span></div>
 
-</span><span data-line="306">
-</span><span data-line="307">    <span class="k">def</span><span class="w"> </span><span class="nf">get_session_id</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="308">        <span class="k">return</span> <span class="n">value_or_default</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_connection_state</span><span class="o">.</span><span class="n">session_id</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
-</span><span data-line="309">
+</span><span data-line="308">
+</span><span data-line="309">    <span class="k">def</span><span class="w"> </span><span class="nf">get_session_id</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="310">        <span class="k">return</span> <span class="n">value_or_default</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_connection_state</span><span class="o">.</span><span class="n">session_id</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+</span><span data-line="311">
 <div class="viewcode-block" id="ASGIConnection.url_for">
 <a class="viewcode-back" href="../../../reference/connection.html#litestar.connection.ASGIConnection.url_for">[docs]</a>
-</span><span data-line="310">    <span class="k">def</span><span class="w"> </span><span class="nf">url_for</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">path_parameters</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-</span><span data-line="311"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the url for a given route handler name.</span>
-</span><span data-line="312">
-</span><span data-line="313"><span class="sd">        Args:</span>
-</span><span data-line="314"><span class="sd">            name: The ``name`` of the request route handler.</span>
-</span><span data-line="315"><span class="sd">            **path_parameters: Values for path parameters in the route</span>
-</span><span data-line="316">
-</span><span data-line="317"><span class="sd">        Raises:</span>
-</span><span data-line="318"><span class="sd">            NoRouteMatchFoundException: If route with ``name`` does not exist, path parameters are missing or have a</span>
-</span><span data-line="319"><span class="sd">                wrong type.</span>
-</span><span data-line="320">
-</span><span data-line="321"><span class="sd">        Returns:</span>
-</span><span data-line="322"><span class="sd">            A string representing the absolute url of the route handler.</span>
-</span><span data-line="323"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="324">        <span class="n">litestar_instance</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">scope</span><span class="p">[</span><span class="s2">&quot;litestar_app&quot;</span><span class="p">]</span>
-</span><span data-line="325">        <span class="n">url_path</span> <span class="o">=</span> <span class="n">litestar_instance</span><span class="o">.</span><span class="n">route_reverse</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="o">**</span><span class="n">path_parameters</span><span class="p">)</span>
-</span><span data-line="326">
-</span><span data-line="327">        <span class="k">return</span> <span class="n">make_absolute_url</span><span class="p">(</span><span class="n">url_path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">base_url</span><span class="p">)</span></div>
+</span><span data-line="312">    <span class="k">def</span><span class="w"> </span><span class="nf">url_for</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">BaseRouteHandler</span><span class="p">,</span> <span class="o">**</span><span class="n">path_parameters</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span data-line="313"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the url for a given route handler / handler name.</span>
+</span><span data-line="314">
+</span><span data-line="315"><span class="sd">        Args:</span>
+</span><span data-line="316"><span class="sd">            name: The ``name`` of the route handler, or the route handler itself.</span>
+</span><span data-line="317"><span class="sd">            **path_parameters: Values for path parameters in the route</span>
+</span><span data-line="318">
+</span><span data-line="319"><span class="sd">        Raises:</span>
+</span><span data-line="320"><span class="sd">            NoRouteMatchFoundException: If route with ``name`` does not exist, path parameters are missing or have a</span>
+</span><span data-line="321"><span class="sd">                wrong type.</span>
+</span><span data-line="322">
+</span><span data-line="323"><span class="sd">        Returns:</span>
+</span><span data-line="324"><span class="sd">            A string representing the absolute url of the route handler.</span>
+</span><span data-line="325"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="326">        <span class="n">litestar_instance</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">scope</span><span class="p">[</span><span class="s2">&quot;litestar_app&quot;</span><span class="p">]</span>
+</span><span data-line="327">        <span class="n">url_path</span> <span class="o">=</span> <span class="n">litestar_instance</span><span class="o">.</span><span class="n">route_reverse</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="o">**</span><span class="n">path_parameters</span><span class="p">)</span>
+</span><span data-line="328">
+</span><span data-line="329">        <span class="k">return</span> <span class="n">make_absolute_url</span><span class="p">(</span><span class="n">url_path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">base_url</span><span class="p">)</span></div>
 </div>
 
 </span></pre></div>

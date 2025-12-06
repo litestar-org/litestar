@@ -467,7 +467,6 @@ data-aria-dark="Switch to auto color mode">
 <li><a class="reference internal" href="#post-json">Post json</a></li>
 <li><a class="reference internal" href="#default-status-codes">Default status codes</a></li>
 <li><a class="reference internal" href="#templates">Templates</a></li>
-<li><a class="reference internal" href="#default-handler-names">Default handler names</a></li>
 <li><a class="reference internal" href="#uploads">Uploads</a></li>
 <li><a class="reference internal" href="#exceptions-signature">Exceptions signature</a></li>
 <li><a class="reference internal" href="#authentication">Authentication</a></li>
@@ -844,43 +843,13 @@ Litestar</label><div class="sd-tab-content docutils">
 </div>
 </div>
 </section>
-<section id="default-handler-names">
-<h2>Default handler names<a class="headerlink" href="#default-handler-names" title="Link to this heading">¶</a></h2>
-<p>In FastAPI, the handler name defaults to the local name of the function. In Litestar, you need to explicitly declare the <cite>name</cite> parameter in the route decorator. This is important when using e.g. <cite>url_for</cite>.</p>
-<div class="sd-tab-set docutils">
-<input checked="checked" id="sd-tab-item-15" name="sd-tab-set-7" type="radio">
-<label class="sd-tab-label" data-sync-group="tab" data-sync-id="fastapi" for="sd-tab-item-15">
-FastAPI</label><div class="sd-tab-content docutils">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/blabla&quot;</span><span class="p">)</span>
-</span><span data-line="2"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">blabla</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-</span><span data-line="3">    <span class="k">return</span> <span class="s2">&quot;Blabla&quot;</span>
-</span></pre></div>
-</div>
-<div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="p">&lt;</span><span class="nt">a</span> <span class="na">href</span><span class="o">=</span><span class="s">&quot;{{ url_for(&#39;blabla&#39;) }}&quot;</span><span class="p">&gt;</span>Blabla<span class="p">&lt;/</span><span class="nt">a</span><span class="p">&gt;</span>
-</span></pre></div>
-</div>
-</div>
-<input id="sd-tab-item-16" name="sd-tab-set-7" type="radio">
-<label class="sd-tab-label" data-sync-group="tab" data-sync-id="litestar" for="sd-tab-item-16">
-Litestar</label><div class="sd-tab-content docutils">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/blabla&quot;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;blabla&quot;</span><span class="p">)</span>
-</span><span data-line="2"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">blabla</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-</span><span data-line="3">    <span class="k">return</span> <span class="s2">&quot;Blabla&quot;</span>
-</span></pre></div>
-</div>
-<div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="p">&lt;</span><span class="nt">a</span> <span class="na">href</span><span class="o">=</span><span class="s">&quot;{{ url_for(&#39;blabla&#39;) }}&quot;</span><span class="p">&gt;</span>Blabla<span class="p">&lt;/</span><span class="nt">a</span><span class="p">&gt;</span>
-</span></pre></div>
-</div>
-</div>
-</div>
-</section>
 <section id="uploads">
 <h2>Uploads<a class="headerlink" href="#uploads" title="Link to this heading">¶</a></h2>
 <p>In FastAPI, you use the <cite>File</cite> class to handle file uploads. In Litestar, you use the <cite>data</cite> keyword argument with <cite>Body</cite> and specify the <cite>media_type</cite> as <cite>RequestEncodingType.MULTI_PART</cite>.
 While this is more verbose, it’s also more explicit and communicates the intent more clearly.</p>
 <div class="sd-tab-set docutils">
-<input checked="checked" id="sd-tab-item-17" name="sd-tab-set-8" type="radio">
-<label class="sd-tab-label" data-sync-group="tab" data-sync-id="fastapi" for="sd-tab-item-17">
+<input checked="checked" id="sd-tab-item-15" name="sd-tab-set-7" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="fastapi" for="sd-tab-item-15">
 FastAPI</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="nd">@app</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">&quot;/upload/&quot;</span><span class="p">)</span>
 </span><span data-line="2"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">upload_file</span><span class="p">(</span><span class="n">files</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">UploadFile</span><span class="p">]</span> <span class="o">=</span> <span class="n">File</span><span class="p">(</span><span class="o">...</span><span class="p">))</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
@@ -888,8 +857,8 @@ FastAPI</label><div class="sd-tab-content docutils">
 </span></pre></div>
 </div>
 </div>
-<input id="sd-tab-item-18" name="sd-tab-set-8" type="radio">
-<label class="sd-tab-label" data-sync-group="tab" data-sync-id="litestar" for="sd-tab-item-18">
+<input id="sd-tab-item-16" name="sd-tab-set-7" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="litestar" for="sd-tab-item-16">
 Litestar</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/upload/&quot;</span><span class="p">)</span>
 </span><span data-line="2"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">upload_file</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">UploadFile</span><span class="p">],</span> <span class="n">Body</span><span class="p">(</span><span class="n">media_type</span><span class="o">=</span><span class="n">RequestEncodingType</span><span class="o">.</span><span class="n">MULTI_PART</span><span class="p">)])</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
@@ -906,8 +875,8 @@ Litestar</label><div class="sd-tab-content docutils">
 <p>In FastAPI, status code and exception details can be passed to <cite>HTTPException</cite> as positional arguments, while in Litestar they are set with keywords arguments, e.g. <cite>status_code</cite>. Positional arguments to <cite>HTTPException</cite> in Litestar will be added to the exception detail.
 If migrating you just change your HTTPException import this will break.</p>
 <div class="sd-tab-set docutils">
-<input checked="checked" id="sd-tab-item-19" name="sd-tab-set-9" type="radio">
-<label class="sd-tab-label" data-sync-group="tab" data-sync-id="fastapi" for="sd-tab-item-19">
+<input checked="checked" id="sd-tab-item-17" name="sd-tab-set-8" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="fastapi" for="sd-tab-item-17">
 FastAPI</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">fastapi</span><span class="w"> </span><span class="kn">import</span> <span class="n">FastAPI</span><span class="p">,</span> <span class="n">HTTPException</span>
 </span><span data-line="2">
@@ -922,8 +891,8 @@ FastAPI</label><div class="sd-tab-content docutils">
 </span></pre></div>
 </div>
 </div>
-<input id="sd-tab-item-20" name="sd-tab-set-9" type="radio">
-<label class="sd-tab-label" data-sync-group="tab" data-sync-id="litestar" for="sd-tab-item-20">
+<input id="sd-tab-item-18" name="sd-tab-set-8" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="litestar" for="sd-tab-item-18">
 Litestar</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
 </span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">HTTPException</span>
@@ -946,8 +915,8 @@ Litestar</label><div class="sd-tab-content docutils">
 <p>FastAPI promotes a pattern of using dependency injection for authentication. You can do the same in Litestar, but the
 preferred way of handling this is extending <a class="reference internal" href="../usage/security/abstract-authentication-middleware.html"><span class="doc">Implementing Custom Authentication</span></a>.</p>
 <div class="sd-tab-set docutils">
-<input checked="checked" id="sd-tab-item-21" name="sd-tab-set-10" type="radio">
-<label class="sd-tab-label" data-sync-group="tab" data-sync-id="fastapi" for="sd-tab-item-21">
+<input checked="checked" id="sd-tab-item-19" name="sd-tab-set-9" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="fastapi" for="sd-tab-item-19">
 FastAPI</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">fastapi</span><span class="w"> </span><span class="kn">import</span> <span class="n">FastAPI</span><span class="p">,</span> <span class="n">Depends</span><span class="p">,</span> <span class="n">Request</span>
 </span><span data-line="2">
@@ -963,8 +932,8 @@ FastAPI</label><div class="sd-tab-content docutils">
 </span></pre></div>
 </div>
 </div>
-<input id="sd-tab-item-22" name="sd-tab-set-10" type="radio">
-<label class="sd-tab-label" data-sync-group="tab" data-sync-id="litestar" for="sd-tab-item-22">
+<input id="sd-tab-item-20" name="sd-tab-set-9" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="litestar" for="sd-tab-item-20">
 Litestar</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">get</span><span class="p">,</span> <span class="n">ASGIConnection</span><span class="p">,</span> <span class="n">BaseRouteHandler</span>
 </span><span data-line="2">

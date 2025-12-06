@@ -522,160 +522,161 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="12">    <span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
 </span><span data-line="13">
 </span><span data-line="14">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.connection</span><span class="w"> </span><span class="kn">import</span> <span class="n">Request</span>
-</span><span data-line="15">
-</span><span data-line="16"><span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span>
-</span><span data-line="17">    <span class="s2">&quot;TemplateCallableType&quot;</span><span class="p">,</span>
-</span><span data-line="18">    <span class="s2">&quot;TemplateEngineProtocol&quot;</span><span class="p">,</span>
-</span><span data-line="19">    <span class="s2">&quot;TemplateProtocol&quot;</span><span class="p">,</span>
-</span><span data-line="20">    <span class="s2">&quot;csrf_token&quot;</span><span class="p">,</span>
-</span><span data-line="21">    <span class="s2">&quot;url_for&quot;</span><span class="p">,</span>
-</span><span data-line="22"><span class="p">)</span>
-</span><span data-line="23">
+</span><span data-line="15">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.handlers</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseRouteHandler</span>
+</span><span data-line="16">
+</span><span data-line="17"><span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span>
+</span><span data-line="18">    <span class="s2">&quot;TemplateCallableType&quot;</span><span class="p">,</span>
+</span><span data-line="19">    <span class="s2">&quot;TemplateEngineProtocol&quot;</span><span class="p">,</span>
+</span><span data-line="20">    <span class="s2">&quot;TemplateProtocol&quot;</span><span class="p">,</span>
+</span><span data-line="21">    <span class="s2">&quot;csrf_token&quot;</span><span class="p">,</span>
+</span><span data-line="22">    <span class="s2">&quot;url_for&quot;</span><span class="p">,</span>
+</span><span data-line="23"><span class="p">)</span>
 </span><span data-line="24">
-</span><span data-line="25"><span class="k">def</span><span class="w"> </span><span class="nf">_get_request_from_context</span><span class="p">(</span><span class="n">context</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Request</span><span class="p">:</span>
-</span><span data-line="26"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Get the request from the template context.</span>
-</span><span data-line="27">
-</span><span data-line="28"><span class="sd">    Args:</span>
-</span><span data-line="29"><span class="sd">        context: The template context.</span>
-</span><span data-line="30">
-</span><span data-line="31"><span class="sd">    Returns:</span>
-</span><span data-line="32"><span class="sd">        The request object.</span>
-</span><span data-line="33"><span class="sd">    &quot;&quot;&quot;</span>
-</span><span data-line="34">    <span class="k">return</span> <span class="n">cast</span><span class="p">(</span><span class="s2">&quot;Request&quot;</span><span class="p">,</span> <span class="n">context</span><span class="p">[</span><span class="s2">&quot;request&quot;</span><span class="p">])</span>
-</span><span data-line="35">
+</span><span data-line="25">
+</span><span data-line="26"><span class="k">def</span><span class="w"> </span><span class="nf">_get_request_from_context</span><span class="p">(</span><span class="n">context</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Request</span><span class="p">:</span>
+</span><span data-line="27"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Get the request from the template context.</span>
+</span><span data-line="28">
+</span><span data-line="29"><span class="sd">    Args:</span>
+</span><span data-line="30"><span class="sd">        context: The template context.</span>
+</span><span data-line="31">
+</span><span data-line="32"><span class="sd">    Returns:</span>
+</span><span data-line="33"><span class="sd">        The request object.</span>
+</span><span data-line="34"><span class="sd">    &quot;&quot;&quot;</span>
+</span><span data-line="35">    <span class="k">return</span> <span class="n">cast</span><span class="p">(</span><span class="s2">&quot;Request&quot;</span><span class="p">,</span> <span class="n">context</span><span class="p">[</span><span class="s2">&quot;request&quot;</span><span class="p">])</span>
 </span><span data-line="36">
-</span><span data-line="37"><span class="k">def</span><span class="w"> </span><span class="nf">url_for</span><span class="p">(</span><span class="n">context</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="o">/</span><span class="p">,</span> <span class="n">route_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">path_parameters</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-</span><span data-line="38"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Wrap :func:`route_reverse &lt;litestar.app.route_reverse&gt;` to be used in templates.</span>
-</span><span data-line="39">
-</span><span data-line="40"><span class="sd">    Args:</span>
-</span><span data-line="41"><span class="sd">        context: The template context.</span>
-</span><span data-line="42"><span class="sd">        route_name: The name of the route handler.</span>
-</span><span data-line="43"><span class="sd">        **path_parameters: Actual values for path parameters in the route.</span>
-</span><span data-line="44">
-</span><span data-line="45"><span class="sd">    Raises:</span>
-</span><span data-line="46"><span class="sd">        NoRouteMatchFoundException: If ``route_name`` does not exist, path parameters are missing in **path_parameters</span>
-</span><span data-line="47"><span class="sd">        or have wrong type.</span>
-</span><span data-line="48">
-</span><span data-line="49"><span class="sd">    Returns:</span>
-</span><span data-line="50"><span class="sd">        A fully formatted url path.</span>
-</span><span data-line="51"><span class="sd">    &quot;&quot;&quot;</span>
-</span><span data-line="52">    <span class="k">return</span> <span class="n">_get_request_from_context</span><span class="p">(</span><span class="n">context</span><span class="p">)</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">route_reverse</span><span class="p">(</span><span class="n">route_name</span><span class="p">,</span> <span class="o">**</span><span class="n">path_parameters</span><span class="p">)</span>
-</span><span data-line="53">
+</span><span data-line="37">
+</span><span data-line="38"><span class="k">def</span><span class="w"> </span><span class="nf">url_for</span><span class="p">(</span><span class="n">context</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="o">/</span><span class="p">,</span> <span class="n">route_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">BaseRouteHandler</span><span class="p">,</span> <span class="o">**</span><span class="n">path_parameters</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span data-line="39"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Wrap :func:`route_reverse &lt;litestar.app.route_reverse&gt;` to be used in templates.</span>
+</span><span data-line="40">
+</span><span data-line="41"><span class="sd">    Args:</span>
+</span><span data-line="42"><span class="sd">        context: The template context.</span>
+</span><span data-line="43"><span class="sd">        route_name: The ``name`` of the route handler, or the route handler itself.</span>
+</span><span data-line="44"><span class="sd">        **path_parameters: Actual values for path parameters in the route.</span>
+</span><span data-line="45">
+</span><span data-line="46"><span class="sd">    Raises:</span>
+</span><span data-line="47"><span class="sd">        NoRouteMatchFoundException: If ``route_name`` does not exist, path parameters are missing in **path_parameters</span>
+</span><span data-line="48"><span class="sd">        or have wrong type.</span>
+</span><span data-line="49">
+</span><span data-line="50"><span class="sd">    Returns:</span>
+</span><span data-line="51"><span class="sd">        A fully formatted url path.</span>
+</span><span data-line="52"><span class="sd">    &quot;&quot;&quot;</span>
+</span><span data-line="53">    <span class="k">return</span> <span class="n">_get_request_from_context</span><span class="p">(</span><span class="n">context</span><span class="p">)</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">route_reverse</span><span class="p">(</span><span class="n">route_name</span><span class="p">,</span> <span class="o">**</span><span class="n">path_parameters</span><span class="p">)</span>
 </span><span data-line="54">
-</span><span data-line="55"><span class="k">def</span><span class="w"> </span><span class="nf">csrf_token</span><span class="p">(</span><span class="n">context</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-</span><span data-line="56"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Set a CSRF token on the template.</span>
-</span><span data-line="57">
-</span><span data-line="58"><span class="sd">    Notes:</span>
-</span><span data-line="59"><span class="sd">        - to use this function make sure to pass an instance of :ref:`CSRFConfig &lt;litestar.config.csrf_config.CSRFConfig&gt;` to</span>
-</span><span data-line="60"><span class="sd">        the :class:`Litestar &lt;litestar.app.Litestar&gt;` constructor.</span>
-</span><span data-line="61">
-</span><span data-line="62"><span class="sd">    Args:</span>
-</span><span data-line="63"><span class="sd">        context: The template context.</span>
-</span><span data-line="64">
-</span><span data-line="65"><span class="sd">    Returns:</span>
-</span><span data-line="66"><span class="sd">        A CSRF token if the app level ``csrf_config`` is set, otherwise an empty string.</span>
-</span><span data-line="67"><span class="sd">    &quot;&quot;&quot;</span>
-</span><span data-line="68">    <span class="n">scope</span> <span class="o">=</span> <span class="n">_get_request_from_context</span><span class="p">(</span><span class="n">context</span><span class="p">)</span><span class="o">.</span><span class="n">scope</span>
-</span><span data-line="69">    <span class="k">return</span> <span class="n">value_or_default</span><span class="p">(</span><span class="n">ScopeState</span><span class="o">.</span><span class="n">from_scope</span><span class="p">(</span><span class="n">scope</span><span class="p">)</span><span class="o">.</span><span class="n">csrf_token</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
-</span><span data-line="70">
+</span><span data-line="55">
+</span><span data-line="56"><span class="k">def</span><span class="w"> </span><span class="nf">csrf_token</span><span class="p">(</span><span class="n">context</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span data-line="57"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Set a CSRF token on the template.</span>
+</span><span data-line="58">
+</span><span data-line="59"><span class="sd">    Notes:</span>
+</span><span data-line="60"><span class="sd">        - to use this function make sure to pass an instance of :ref:`CSRFConfig &lt;litestar.config.csrf_config.CSRFConfig&gt;` to</span>
+</span><span data-line="61"><span class="sd">        the :class:`Litestar &lt;litestar.app.Litestar&gt;` constructor.</span>
+</span><span data-line="62">
+</span><span data-line="63"><span class="sd">    Args:</span>
+</span><span data-line="64"><span class="sd">        context: The template context.</span>
+</span><span data-line="65">
+</span><span data-line="66"><span class="sd">    Returns:</span>
+</span><span data-line="67"><span class="sd">        A CSRF token if the app level ``csrf_config`` is set, otherwise an empty string.</span>
+</span><span data-line="68"><span class="sd">    &quot;&quot;&quot;</span>
+</span><span data-line="69">    <span class="n">scope</span> <span class="o">=</span> <span class="n">_get_request_from_context</span><span class="p">(</span><span class="n">context</span><span class="p">)</span><span class="o">.</span><span class="n">scope</span>
+</span><span data-line="70">    <span class="k">return</span> <span class="n">value_or_default</span><span class="p">(</span><span class="n">ScopeState</span><span class="o">.</span><span class="n">from_scope</span><span class="p">(</span><span class="n">scope</span><span class="p">)</span><span class="o">.</span><span class="n">csrf_token</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
 </span><span data-line="71">
+</span><span data-line="72">
 <div class="viewcode-block" id="TemplateProtocol">
 <a class="viewcode-back" href="../../../reference/template.html#litestar.template.TemplateProtocol">[docs]</a>
-</span><span data-line="72"><span class="k">class</span><span class="w"> </span><span class="nc">TemplateProtocol</span><span class="p">(</span><span class="n">Protocol</span><span class="p">):</span>
-</span><span data-line="73"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Protocol Defining a ``Template``.</span>
-</span><span data-line="74">
-</span><span data-line="75"><span class="sd">    Template is a class that has a render method which renders the template into a string.</span>
-</span><span data-line="76"><span class="sd">    &quot;&quot;&quot;</span>
-</span><span data-line="77">
+</span><span data-line="73"><span class="k">class</span><span class="w"> </span><span class="nc">TemplateProtocol</span><span class="p">(</span><span class="n">Protocol</span><span class="p">):</span>
+</span><span data-line="74"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Protocol Defining a ``Template``.</span>
+</span><span data-line="75">
+</span><span data-line="76"><span class="sd">    Template is a class that has a render method which renders the template into a string.</span>
+</span><span data-line="77"><span class="sd">    &quot;&quot;&quot;</span>
+</span><span data-line="78">
 <div class="viewcode-block" id="TemplateProtocol.render">
 <a class="viewcode-back" href="../../../reference/template.html#litestar.template.TemplateProtocol.render">[docs]</a>
-</span><span data-line="78">    <span class="k">def</span><span class="w"> </span><span class="nf">render</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-</span><span data-line="79"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the rendered template as a string.</span>
-</span><span data-line="80">
-</span><span data-line="81"><span class="sd">        Args:</span>
-</span><span data-line="82"><span class="sd">            *args: Positional arguments passed to the TemplateEngine</span>
-</span><span data-line="83"><span class="sd">            **kwargs: A string keyed mapping of values passed to the TemplateEngine</span>
-</span><span data-line="84">
-</span><span data-line="85"><span class="sd">        Returns:</span>
-</span><span data-line="86"><span class="sd">            The rendered template string</span>
-</span><span data-line="87"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="88">        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+</span><span data-line="79">    <span class="k">def</span><span class="w"> </span><span class="nf">render</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span data-line="80"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the rendered template as a string.</span>
+</span><span data-line="81">
+</span><span data-line="82"><span class="sd">        Args:</span>
+</span><span data-line="83"><span class="sd">            *args: Positional arguments passed to the TemplateEngine</span>
+</span><span data-line="84"><span class="sd">            **kwargs: A string keyed mapping of values passed to the TemplateEngine</span>
+</span><span data-line="85">
+</span><span data-line="86"><span class="sd">        Returns:</span>
+</span><span data-line="87"><span class="sd">            The rendered template string</span>
+</span><span data-line="88"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="89">        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 </div>
 
-</span><span data-line="89">
 </span><span data-line="90">
-</span><span data-line="91"><span class="n">P</span> <span class="o">=</span> <span class="n">ParamSpec</span><span class="p">(</span><span class="s2">&quot;P&quot;</span><span class="p">)</span>
-</span><span data-line="92"><span class="n">R</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;R&quot;</span><span class="p">)</span>
-</span><span data-line="93"><span class="n">ContextType</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;ContextType&quot;</span><span class="p">)</span>
-</span><span data-line="94"><span class="n">ContextType_co</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;ContextType_co&quot;</span><span class="p">,</span> <span class="n">covariant</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</span><span data-line="95"><span class="n">TemplateType_co</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;TemplateType_co&quot;</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="n">TemplateProtocol</span><span class="p">,</span> <span class="n">covariant</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</span><span data-line="96"><span class="n">TemplateCallableType</span><span class="p">:</span> <span class="n">TypeAlias</span> <span class="o">=</span> <span class="n">Callable</span><span class="p">[</span><span class="n">Concatenate</span><span class="p">[</span><span class="n">ContextType</span><span class="p">,</span> <span class="n">P</span><span class="p">],</span> <span class="n">R</span><span class="p">]</span>
-</span><span data-line="97">
+</span><span data-line="91">
+</span><span data-line="92"><span class="n">P</span> <span class="o">=</span> <span class="n">ParamSpec</span><span class="p">(</span><span class="s2">&quot;P&quot;</span><span class="p">)</span>
+</span><span data-line="93"><span class="n">R</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;R&quot;</span><span class="p">)</span>
+</span><span data-line="94"><span class="n">ContextType</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;ContextType&quot;</span><span class="p">)</span>
+</span><span data-line="95"><span class="n">ContextType_co</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;ContextType_co&quot;</span><span class="p">,</span> <span class="n">covariant</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span data-line="96"><span class="n">TemplateType_co</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;TemplateType_co&quot;</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="n">TemplateProtocol</span><span class="p">,</span> <span class="n">covariant</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span data-line="97"><span class="n">TemplateCallableType</span><span class="p">:</span> <span class="n">TypeAlias</span> <span class="o">=</span> <span class="n">Callable</span><span class="p">[</span><span class="n">Concatenate</span><span class="p">[</span><span class="n">ContextType</span><span class="p">,</span> <span class="n">P</span><span class="p">],</span> <span class="n">R</span><span class="p">]</span>
 </span><span data-line="98">
+</span><span data-line="99">
 <div class="viewcode-block" id="TemplateEngineProtocol">
 <a class="viewcode-back" href="../../../reference/template.html#litestar.template.TemplateEngineProtocol">[docs]</a>
-</span><span data-line="99"><span class="nd">@runtime_checkable</span>
-</span><span data-line="100"><span class="k">class</span><span class="w"> </span><span class="nc">TemplateEngineProtocol</span><span class="p">(</span><span class="n">Protocol</span><span class="p">[</span><span class="n">TemplateType_co</span><span class="p">,</span> <span class="n">ContextType_co</span><span class="p">]):</span>
-</span><span data-line="101"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Protocol for template engines.&quot;&quot;&quot;</span>
-</span><span data-line="102">
+</span><span data-line="100"><span class="nd">@runtime_checkable</span>
+</span><span data-line="101"><span class="k">class</span><span class="w"> </span><span class="nc">TemplateEngineProtocol</span><span class="p">(</span><span class="n">Protocol</span><span class="p">[</span><span class="n">TemplateType_co</span><span class="p">,</span> <span class="n">ContextType_co</span><span class="p">]):</span>
+</span><span data-line="102"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Protocol for template engines.&quot;&quot;&quot;</span>
+</span><span data-line="103">
 <div class="viewcode-block" id="TemplateEngineProtocol.__init__">
 <a class="viewcode-back" href="../../../reference/template.html#litestar.template.TemplateEngineProtocol.__init__">[docs]</a>
-</span><span data-line="103">    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">directory</span><span class="p">:</span> <span class="n">Path</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="n">Path</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="n">engine_instance</span><span class="p">:</span> <span class="n">Any</span> <span class="o">|</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="104"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize the template engine with a directory.</span>
-</span><span data-line="105">
-</span><span data-line="106"><span class="sd">        Args:</span>
-</span><span data-line="107"><span class="sd">            directory: Direct path or list of directory paths from which to serve templates, if provided the</span>
-</span><span data-line="108"><span class="sd">                implementation has to create the engine instance.</span>
-</span><span data-line="109"><span class="sd">            engine_instance: A template engine object, if provided the implementation has to use it.</span>
-</span><span data-line="110"><span class="sd">        &quot;&quot;&quot;</span></div>
+</span><span data-line="104">    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">directory</span><span class="p">:</span> <span class="n">Path</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="n">Path</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="n">engine_instance</span><span class="p">:</span> <span class="n">Any</span> <span class="o">|</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="105"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize the template engine with a directory.</span>
+</span><span data-line="106">
+</span><span data-line="107"><span class="sd">        Args:</span>
+</span><span data-line="108"><span class="sd">            directory: Direct path or list of directory paths from which to serve templates, if provided the</span>
+</span><span data-line="109"><span class="sd">                implementation has to create the engine instance.</span>
+</span><span data-line="110"><span class="sd">            engine_instance: A template engine object, if provided the implementation has to use it.</span>
+</span><span data-line="111"><span class="sd">        &quot;&quot;&quot;</span></div>
 
-</span><span data-line="111">
+</span><span data-line="112">
 <div class="viewcode-block" id="TemplateEngineProtocol.get_template">
 <a class="viewcode-back" href="../../../reference/template.html#litestar.template.TemplateEngineProtocol.get_template">[docs]</a>
-</span><span data-line="112">    <span class="k">def</span><span class="w"> </span><span class="nf">get_template</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">template_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TemplateType_co</span><span class="p">:</span>
-</span><span data-line="113"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Retrieve a template by matching its name (dotted path) with files in the directory or directories provided.</span>
-</span><span data-line="114">
-</span><span data-line="115"><span class="sd">        Args:</span>
-</span><span data-line="116"><span class="sd">            template_name: A dotted path</span>
-</span><span data-line="117">
-</span><span data-line="118"><span class="sd">        Returns:</span>
-</span><span data-line="119"><span class="sd">            Template instance</span>
-</span><span data-line="120">
-</span><span data-line="121"><span class="sd">        Raises:</span>
-</span><span data-line="122"><span class="sd">            TemplateNotFoundException: if no template is found.</span>
-</span><span data-line="123"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="124">        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+</span><span data-line="113">    <span class="k">def</span><span class="w"> </span><span class="nf">get_template</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">template_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TemplateType_co</span><span class="p">:</span>
+</span><span data-line="114"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Retrieve a template by matching its name (dotted path) with files in the directory or directories provided.</span>
+</span><span data-line="115">
+</span><span data-line="116"><span class="sd">        Args:</span>
+</span><span data-line="117"><span class="sd">            template_name: A dotted path</span>
+</span><span data-line="118">
+</span><span data-line="119"><span class="sd">        Returns:</span>
+</span><span data-line="120"><span class="sd">            Template instance</span>
+</span><span data-line="121">
+</span><span data-line="122"><span class="sd">        Raises:</span>
+</span><span data-line="123"><span class="sd">            TemplateNotFoundException: if no template is found.</span>
+</span><span data-line="124"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="125">        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-</span><span data-line="125">
+</span><span data-line="126">
 <div class="viewcode-block" id="TemplateEngineProtocol.render_string">
 <a class="viewcode-back" href="../../../reference/template.html#litestar.template.TemplateEngineProtocol.render_string">[docs]</a>
-</span><span data-line="126">    <span class="k">def</span><span class="w"> </span><span class="nf">render_string</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">template_string</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">context</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-</span><span data-line="127"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Render a template from a string with the given context.</span>
-</span><span data-line="128">
-</span><span data-line="129"><span class="sd">        Args:</span>
-</span><span data-line="130"><span class="sd">            template_string: The template string to render.</span>
-</span><span data-line="131"><span class="sd">            context: A dictionary of variables to pass to the template.</span>
-</span><span data-line="132">
-</span><span data-line="133"><span class="sd">        Returns:</span>
-</span><span data-line="134"><span class="sd">            The rendered template as a string.</span>
-</span><span data-line="135"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="136">        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+</span><span data-line="127">    <span class="k">def</span><span class="w"> </span><span class="nf">render_string</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">template_string</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">context</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span data-line="128"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Render a template from a string with the given context.</span>
+</span><span data-line="129">
+</span><span data-line="130"><span class="sd">        Args:</span>
+</span><span data-line="131"><span class="sd">            template_string: The template string to render.</span>
+</span><span data-line="132"><span class="sd">            context: A dictionary of variables to pass to the template.</span>
+</span><span data-line="133">
+</span><span data-line="134"><span class="sd">        Returns:</span>
+</span><span data-line="135"><span class="sd">            The rendered template as a string.</span>
+</span><span data-line="136"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="137">        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-</span><span data-line="137">
+</span><span data-line="138">
 <div class="viewcode-block" id="TemplateEngineProtocol.register_template_callable">
 <a class="viewcode-back" href="../../../reference/template.html#litestar.template.TemplateEngineProtocol.register_template_callable">[docs]</a>
-</span><span data-line="138">    <span class="k">def</span><span class="w"> </span><span class="nf">register_template_callable</span><span class="p">(</span>
-</span><span data-line="139">        <span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">template_callable</span><span class="p">:</span> <span class="n">TemplateCallableType</span><span class="p">[</span><span class="n">ContextType_co</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">R</span><span class="p">]</span>
-</span><span data-line="140">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="141"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Register a callable on the template engine.</span>
-</span><span data-line="142">
-</span><span data-line="143"><span class="sd">        Args:</span>
-</span><span data-line="144"><span class="sd">            key: The callable key, i.e. the value to use inside the template to call the callable.</span>
-</span><span data-line="145"><span class="sd">            template_callable: A callable to register.</span>
-</span><span data-line="146">
-</span><span data-line="147"><span class="sd">        Returns:</span>
-</span><span data-line="148"><span class="sd">            None</span>
-</span><span data-line="149"><span class="sd">        &quot;&quot;&quot;</span></div>
+</span><span data-line="139">    <span class="k">def</span><span class="w"> </span><span class="nf">register_template_callable</span><span class="p">(</span>
+</span><span data-line="140">        <span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">template_callable</span><span class="p">:</span> <span class="n">TemplateCallableType</span><span class="p">[</span><span class="n">ContextType_co</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">R</span><span class="p">]</span>
+</span><span data-line="141">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="142"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Register a callable on the template engine.</span>
+</span><span data-line="143">
+</span><span data-line="144"><span class="sd">        Args:</span>
+</span><span data-line="145"><span class="sd">            key: The callable key, i.e. the value to use inside the template to call the callable.</span>
+</span><span data-line="146"><span class="sd">            template_callable: A callable to register.</span>
+</span><span data-line="147">
+</span><span data-line="148"><span class="sd">        Returns:</span>
+</span><span data-line="149"><span class="sd">            None</span>
+</span><span data-line="150"><span class="sd">        &quot;&quot;&quot;</span></div>
 </div>
 
 </span></pre></div>

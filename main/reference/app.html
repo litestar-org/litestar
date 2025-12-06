@@ -789,39 +789,50 @@ list of paths sorted lexically.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="litestar.app.Litestar.route_reverse">
-<span class="sig-name descname"><span class="pre">route_reverse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">path_parameters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></span><a class="reference internal" href="../_modules/litestar/app.html#Litestar.route_reverse"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#litestar.app.Litestar.route_reverse" title="Link to this definition">¶</a></dt>
-<dd><p>Receives a route handler name, path parameter values and returns url path to the handler with filled path
-parameters.</p>
+<span class="sig-name descname"><span class="pre">route_reverse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="handlers.html#litestar.handlers.BaseRouteHandler" title="litestar.handlers.base.BaseRouteHandler"><span class="pre">BaseRouteHandler</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">path_parameters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></span><a class="reference internal" href="../_modules/litestar/app.html#Litestar.route_reverse"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#litestar.app.Litestar.route_reverse" title="Link to this definition">¶</a></dt>
+<dd><p>Receives a route handler name and path parameter values and returns the url path to the handler with filled
+path parameters.</p>
 <div class="admonition-examples admonition">
 <p class="admonition-title">Examples</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
 </span><span data-line="2">
 </span><span data-line="3">
-</span><span data-line="4"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/group/{group_id:int}/user/{user_id:int}&quot;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;get_membership_details&quot;</span><span class="p">)</span>
-</span><span data-line="5"><span class="k">def</span><span class="w"> </span><span class="nf">get_membership_details</span><span class="p">(</span><span class="n">group_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">user_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="4"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/group/{group_id:int}&quot;</span><span class="p">)</span>
+</span><span data-line="5"><span class="k">def</span><span class="w"> </span><span class="nf">get_group_members</span><span class="p">(</span><span class="n">group_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 </span><span data-line="6">    <span class="k">pass</span>
 </span><span data-line="7">
 </span><span data-line="8">
-</span><span data-line="9"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">get_membership_details</span><span class="p">])</span>
-</span><span data-line="10">
-</span><span data-line="11"><span class="n">path</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">route_reverse</span><span class="p">(</span><span class="s2">&quot;get_membership_details&quot;</span><span class="p">,</span> <span class="n">user_id</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">group_id</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+</span><span data-line="9"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/group/{group_id:int}/user/{user_id:int}&quot;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;get_membership_details&quot;</span><span class="p">)</span>
+</span><span data-line="10"><span class="k">def</span><span class="w"> </span><span class="nf">get_membership_details</span><span class="p">(</span><span class="n">group_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">user_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="11">    <span class="k">pass</span>
 </span><span data-line="12">
-</span><span data-line="13"><span class="c1"># /group/10/user/100</span>
+</span><span data-line="13">
+</span><span data-line="14"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">get_group_members</span><span class="p">,</span> <span class="n">get_membership_details</span><span class="p">])</span>
+</span><span data-line="15">
+</span><span data-line="16"><span class="n">group_members_path</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">route_reverse</span><span class="p">(</span><span class="n">get_group_members</span><span class="p">,</span> <span class="n">group_id</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+</span><span data-line="17">
+</span><span data-line="18"><span class="c1"># /group/10</span>
+</span><span data-line="19">
+</span><span data-line="20"><span class="n">membership_details_path</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">route_reverse</span><span class="p">(</span>
+</span><span data-line="21">    <span class="s2">&quot;get_membership_details&quot;</span><span class="p">,</span> <span class="n">user_id</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">group_id</span><span class="o">=</span><span class="mi">10</span>
+</span><span data-line="22"><span class="p">)</span>
+</span><span data-line="23">
+</span><span data-line="24"><span class="c1"># /group/10/user/100</span>
 </span></pre></div>
 </div>
 </div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><span class="target" id="litestar.app.Litestar.route_reverse.params.name"></span><strong>name</strong><a class="paramlink headerlink reference internal" href="#litestar.app.Litestar.route_reverse.params.name">¶</a> – A route handler unique name.</p></li>
+<li><p><span class="target" id="litestar.app.Litestar.route_reverse.params.name"></span><strong>name</strong><a class="paramlink headerlink reference internal" href="#litestar.app.Litestar.route_reverse.params.name">¶</a> – The <code class="docutils literal notranslate"><span class="pre">name</span></code> of the route handler, or the route handler itself.</p></li>
 <li><p><span class="target" id="litestar.app.Litestar.route_reverse.params.**path_parameters"></span><strong>**path_parameters</strong><a class="paramlink headerlink reference internal" href="#litestar.app.Litestar.route_reverse.params.**path_parameters">¶</a> – Actual values for path parameters in the route. Parameters of type
-<cite>datetime</cite>, <cite>date</cite>, <cite>time</cite>, <cite>timedelta</cite>, <cite>float</cite>, <cite>Path</cite>, <cite>UUID</cite>
+<cite>datetime</cite>, <cite>date</cite>, <cite>time</cite>, <cite>timedelta</cite>, <cite>float</cite>, <cite>Path</cite>, and <cite>UUID</cite>
 may be passed in their string representations.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference internal" href="exceptions.html#litestar.exceptions.NoRouteMatchFoundException" title="litestar.exceptions.NoRouteMatchFoundException"><strong>NoRouteMatchFoundException</strong></a> – If route with ‘name’ does not exist, path parameters are missing in
-    <code class="docutils literal notranslate"><span class="pre">**path_parameters</span> <span class="pre">or</span> <span class="pre">have</span> <span class="pre">wrong</span> <span class="pre">type</span></code>.</p>
+<dd class="field-even"><p><a class="reference internal" href="exceptions.html#litestar.exceptions.NoRouteMatchFoundException" title="litestar.exceptions.NoRouteMatchFoundException"><strong>NoRouteMatchFoundException</strong></a> – If a route with ‘name’ does not exist, or any of the path parameters in
+    <code class="docutils literal notranslate"><span class="pre">**path_parameters</span></code> are missing or are of the wrong type.</p>
 </dd>
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>A fully formatted url path.</p>

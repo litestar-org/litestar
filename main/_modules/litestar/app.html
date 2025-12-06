@@ -1426,9 +1426,9 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="890">
 <div class="viewcode-block" id="Litestar.route_reverse">
 <a class="viewcode-back" href="../../reference/app.html#litestar.app.Litestar.route_reverse">[docs]</a>
-</span><span data-line="891">    <span class="k">def</span><span class="w"> </span><span class="nf">route_reverse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">path_parameters</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-</span><span data-line="892"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Receives a route handler name, path parameter values and returns url path to the handler with filled path</span>
-</span><span data-line="893"><span class="sd">        parameters.</span>
+</span><span data-line="891">    <span class="k">def</span><span class="w"> </span><span class="nf">route_reverse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">BaseRouteHandler</span><span class="p">,</span> <span class="o">**</span><span class="n">path_parameters</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span data-line="892"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Receives a route handler name and path parameter values and returns the url path to the handler with filled</span>
+</span><span data-line="893"><span class="sd">        path parameters.</span>
 </span><span data-line="894">
 </span><span data-line="895"><span class="sd">        Examples:</span>
 </span><span data-line="896"><span class="sd">            .. code-block:: python</span>
@@ -1436,139 +1436,153 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="898"><span class="sd">                from litestar import Litestar, get</span>
 </span><span data-line="899">
 </span><span data-line="900">
-</span><span data-line="901"><span class="sd">                @get(&quot;/group/{group_id:int}/user/{user_id:int}&quot;, name=&quot;get_membership_details&quot;)</span>
-</span><span data-line="902"><span class="sd">                def get_membership_details(group_id: int, user_id: int) -&gt; None:</span>
+</span><span data-line="901"><span class="sd">                @get(&quot;/group/{group_id:int}&quot;)</span>
+</span><span data-line="902"><span class="sd">                def get_group_members(group_id: int) -&gt; None:</span>
 </span><span data-line="903"><span class="sd">                    pass</span>
 </span><span data-line="904">
 </span><span data-line="905">
-</span><span data-line="906"><span class="sd">                app = Litestar(route_handlers=[get_membership_details])</span>
-</span><span data-line="907">
-</span><span data-line="908"><span class="sd">                path = app.route_reverse(&quot;get_membership_details&quot;, user_id=100, group_id=10)</span>
+</span><span data-line="906"><span class="sd">                @get(&quot;/group/{group_id:int}/user/{user_id:int}&quot;, name=&quot;get_membership_details&quot;)</span>
+</span><span data-line="907"><span class="sd">                def get_membership_details(group_id: int, user_id: int) -&gt; None:</span>
+</span><span data-line="908"><span class="sd">                    pass</span>
 </span><span data-line="909">
-</span><span data-line="910"><span class="sd">                # /group/10/user/100</span>
-</span><span data-line="911">
-</span><span data-line="912"><span class="sd">        Args:</span>
-</span><span data-line="913"><span class="sd">            name: A route handler unique name.</span>
-</span><span data-line="914"><span class="sd">            **path_parameters: Actual values for path parameters in the route. Parameters of type</span>
-</span><span data-line="915"><span class="sd">                `datetime`, `date`, `time`, `timedelta`, `float`, `Path`, `UUID`</span>
-</span><span data-line="916"><span class="sd">                may be passed in their string representations.</span>
-</span><span data-line="917">
-</span><span data-line="918"><span class="sd">        Raises:</span>
-</span><span data-line="919"><span class="sd">            NoRouteMatchFoundException: If route with &#39;name&#39; does not exist, path parameters are missing in</span>
-</span><span data-line="920"><span class="sd">                ``**path_parameters or have wrong type``.</span>
-</span><span data-line="921">
-</span><span data-line="922"><span class="sd">        Returns:</span>
-</span><span data-line="923"><span class="sd">            A fully formatted url path.</span>
-</span><span data-line="924"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="925">        <span class="n">handler_index</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_handler_index_by_name</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
-</span><span data-line="926">        <span class="k">if</span> <span class="n">handler_index</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="927">            <span class="k">raise</span> <span class="n">NoRouteMatchFoundException</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Route </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> can not be found&quot;</span><span class="p">)</span>
+</span><span data-line="910">
+</span><span data-line="911"><span class="sd">                app = Litestar(route_handlers=[get_group_members, get_membership_details])</span>
+</span><span data-line="912">
+</span><span data-line="913"><span class="sd">                group_members_path = app.route_reverse(get_group_members, group_id=10)</span>
+</span><span data-line="914">
+</span><span data-line="915"><span class="sd">                # /group/10</span>
+</span><span data-line="916">
+</span><span data-line="917"><span class="sd">                membership_details_path = app.route_reverse(</span>
+</span><span data-line="918"><span class="sd">                    &quot;get_membership_details&quot;, user_id=100, group_id=10</span>
+</span><span data-line="919"><span class="sd">                )</span>
+</span><span data-line="920">
+</span><span data-line="921"><span class="sd">                # /group/10/user/100</span>
+</span><span data-line="922">
+</span><span data-line="923"><span class="sd">        Args:</span>
+</span><span data-line="924"><span class="sd">            name: The ``name`` of the route handler, or the route handler itself.</span>
+</span><span data-line="925"><span class="sd">            **path_parameters: Actual values for path parameters in the route. Parameters of type</span>
+</span><span data-line="926"><span class="sd">                `datetime`, `date`, `time`, `timedelta`, `float`, `Path`, and `UUID`</span>
+</span><span data-line="927"><span class="sd">                may be passed in their string representations.</span>
 </span><span data-line="928">
-</span><span data-line="929">        <span class="n">allow_str_instead</span> <span class="o">=</span> <span class="p">{</span><span class="n">datetime</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span> <span class="n">timedelta</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="n">Path</span><span class="p">,</span> <span class="n">UUID</span><span class="p">}</span>
-</span><span data-line="930">        <span class="n">routes</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span>
-</span><span data-line="931">            <span class="bp">self</span><span class="o">.</span><span class="n">asgi_router</span><span class="o">.</span><span class="n">route_mapping</span><span class="p">[</span><span class="n">handler_index</span><span class="p">[</span><span class="s2">&quot;identifier&quot;</span><span class="p">]],</span>
-</span><span data-line="932">            <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">r</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">path_parameters</span><span class="p">),</span>
-</span><span data-line="933">            <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-</span><span data-line="934">        <span class="p">)</span>
-</span><span data-line="935">        <span class="n">passed_parameters</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">path_parameters</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
-</span><span data-line="936">
-</span><span data-line="937">        <span class="n">selected_route</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span>
-</span><span data-line="938">            <span class="p">(</span><span class="n">route</span> <span class="k">for</span> <span class="n">route</span> <span class="ow">in</span> <span class="n">routes</span> <span class="k">if</span> <span class="n">passed_parameters</span><span class="o">.</span><span class="n">issuperset</span><span class="p">(</span><span class="n">route</span><span class="o">.</span><span class="n">path_parameters</span><span class="p">)),</span>
-</span><span data-line="939">            <span class="n">routes</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span>
-</span><span data-line="940">        <span class="p">)</span>
-</span><span data-line="941">        <span class="n">output</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
-</span><span data-line="942">        <span class="k">for</span> <span class="n">component</span> <span class="ow">in</span> <span class="n">selected_route</span><span class="o">.</span><span class="n">path_components</span><span class="p">:</span>
-</span><span data-line="943">            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">component</span><span class="p">,</span> <span class="n">PathParameterDefinition</span><span class="p">):</span>
-</span><span data-line="944">                <span class="n">val</span> <span class="o">=</span> <span class="n">path_parameters</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">component</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
-</span><span data-line="945">                <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">component</span><span class="o">.</span><span class="n">type</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span>
-</span><span data-line="946">                    <span class="n">component</span><span class="o">.</span><span class="n">type</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">allow_str_instead</span> <span class="ow">or</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
-</span><span data-line="947">                <span class="p">):</span>
-</span><span data-line="948">                    <span class="k">raise</span> <span class="n">NoRouteMatchFoundException</span><span class="p">(</span>
-</span><span data-line="949">                        <span class="sa">f</span><span class="s2">&quot;Received type for path parameter </span><span class="si">{</span><span class="n">component</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> doesn&#39;t match declared type </span><span class="si">{</span><span class="n">component</span><span class="o">.</span><span class="n">type</span><span class="si">}</span><span class="s2">&quot;</span>
-</span><span data-line="950">                    <span class="p">)</span>
-</span><span data-line="951">                <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">val</span><span class="p">))</span>
-</span><span data-line="952">            <span class="k">else</span><span class="p">:</span>
-</span><span data-line="953">                <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">component</span><span class="p">)</span>
-</span><span data-line="954">
-</span><span data-line="955">        <span class="k">return</span> <span class="n">join_paths</span><span class="p">(</span><span class="n">output</span><span class="p">)</span></div>
+</span><span data-line="929"><span class="sd">        Raises:</span>
+</span><span data-line="930"><span class="sd">            NoRouteMatchFoundException: If a route with &#39;name&#39; does not exist, or any of the path parameters in</span>
+</span><span data-line="931"><span class="sd">                ``**path_parameters`` are missing or are of the wrong type.</span>
+</span><span data-line="932">
+</span><span data-line="933"><span class="sd">        Returns:</span>
+</span><span data-line="934"><span class="sd">            A fully formatted url path.</span>
+</span><span data-line="935"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="936">        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">BaseRouteHandler</span><span class="p">):</span>
+</span><span data-line="937">            <span class="n">name</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+</span><span data-line="938">
+</span><span data-line="939">        <span class="n">handler_index</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_handler_index_by_name</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+</span><span data-line="940">        <span class="k">if</span> <span class="n">handler_index</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="941">            <span class="k">raise</span> <span class="n">NoRouteMatchFoundException</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Route </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> can not be found&quot;</span><span class="p">)</span>
+</span><span data-line="942">
+</span><span data-line="943">        <span class="n">allow_str_instead</span> <span class="o">=</span> <span class="p">{</span><span class="n">datetime</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span> <span class="n">timedelta</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="n">Path</span><span class="p">,</span> <span class="n">UUID</span><span class="p">}</span>
+</span><span data-line="944">        <span class="n">routes</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span>
+</span><span data-line="945">            <span class="bp">self</span><span class="o">.</span><span class="n">asgi_router</span><span class="o">.</span><span class="n">route_mapping</span><span class="p">[</span><span class="n">handler_index</span><span class="p">[</span><span class="s2">&quot;identifier&quot;</span><span class="p">]],</span>
+</span><span data-line="946">            <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">r</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">path_parameters</span><span class="p">),</span>
+</span><span data-line="947">            <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+</span><span data-line="948">        <span class="p">)</span>
+</span><span data-line="949">        <span class="n">passed_parameters</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">path_parameters</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+</span><span data-line="950">
+</span><span data-line="951">        <span class="n">selected_route</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span>
+</span><span data-line="952">            <span class="p">(</span><span class="n">route</span> <span class="k">for</span> <span class="n">route</span> <span class="ow">in</span> <span class="n">routes</span> <span class="k">if</span> <span class="n">passed_parameters</span><span class="o">.</span><span class="n">issuperset</span><span class="p">(</span><span class="n">route</span><span class="o">.</span><span class="n">path_parameters</span><span class="p">)),</span>
+</span><span data-line="953">            <span class="n">routes</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span>
+</span><span data-line="954">        <span class="p">)</span>
+</span><span data-line="955">        <span class="n">output</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+</span><span data-line="956">        <span class="k">for</span> <span class="n">component</span> <span class="ow">in</span> <span class="n">selected_route</span><span class="o">.</span><span class="n">path_components</span><span class="p">:</span>
+</span><span data-line="957">            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">component</span><span class="p">,</span> <span class="n">PathParameterDefinition</span><span class="p">):</span>
+</span><span data-line="958">                <span class="n">val</span> <span class="o">=</span> <span class="n">path_parameters</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">component</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+</span><span data-line="959">                <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">component</span><span class="o">.</span><span class="n">type</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span>
+</span><span data-line="960">                    <span class="n">component</span><span class="o">.</span><span class="n">type</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">allow_str_instead</span> <span class="ow">or</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
+</span><span data-line="961">                <span class="p">):</span>
+</span><span data-line="962">                    <span class="k">raise</span> <span class="n">NoRouteMatchFoundException</span><span class="p">(</span>
+</span><span data-line="963">                        <span class="sa">f</span><span class="s2">&quot;Received type for path parameter </span><span class="si">{</span><span class="n">component</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> doesn&#39;t match declared type </span><span class="si">{</span><span class="n">component</span><span class="o">.</span><span class="n">type</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span data-line="964">                    <span class="p">)</span>
+</span><span data-line="965">                <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">val</span><span class="p">))</span>
+</span><span data-line="966">            <span class="k">else</span><span class="p">:</span>
+</span><span data-line="967">                <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">component</span><span class="p">)</span>
+</span><span data-line="968">
+</span><span data-line="969">        <span class="k">return</span> <span class="n">join_paths</span><span class="p">(</span><span class="n">output</span><span class="p">)</span></div>
 
-</span><span data-line="956">
-</span><span data-line="957">    <span class="k">def</span><span class="w"> </span><span class="nf">_create_asgi_handler</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ASGIApp</span><span class="p">:</span>
-</span><span data-line="958"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Create an ASGIApp that wraps the ASGI router inside an exception handler.</span>
-</span><span data-line="959">
-</span><span data-line="960"><span class="sd">        If CORS or TrustedHost configs are provided to the constructor, they will wrap the router as well.</span>
-</span><span data-line="961"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="962">        <span class="n">asgi_handler</span> <span class="o">=</span> <span class="n">wrap_in_exception_handler</span><span class="p">(</span><span class="n">app</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">asgi_router</span><span class="p">)</span>
-</span><span data-line="963">
-</span><span data-line="964">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cors_config</span><span class="p">:</span>
-</span><span data-line="965">            <span class="n">asgi_handler</span> <span class="o">=</span> <span class="n">CORSMiddleware</span><span class="p">(</span><span class="n">app</span><span class="o">=</span><span class="n">asgi_handler</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cors_config</span><span class="p">)</span>
-</span><span data-line="966">
-</span><span data-line="967">        <span class="k">try</span><span class="p">:</span>
-</span><span data-line="968">            <span class="n">otel_plugin</span><span class="p">:</span> <span class="n">OpenTelemetryPlugin</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">plugins</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;OpenTelemetryPlugin&quot;</span><span class="p">)</span>
-</span><span data-line="969">            <span class="n">asgi_handler</span> <span class="o">=</span> <span class="n">otel_plugin</span><span class="o">.</span><span class="n">middleware</span><span class="p">(</span><span class="n">app</span><span class="o">=</span><span class="n">asgi_handler</span><span class="p">)</span>
-</span><span data-line="970">        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
-</span><span data-line="971">            <span class="k">pass</span>
-</span><span data-line="972">
-</span><span data-line="973">        <span class="k">return</span> <span class="n">asgi_handler</span>
-</span><span data-line="974">
-</span><span data-line="975">    <span class="k">def</span><span class="w"> </span><span class="nf">_wrap_send</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">send</span><span class="p">:</span> <span class="n">Send</span><span class="p">,</span> <span class="n">scope</span><span class="p">:</span> <span class="n">Scope</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Send</span><span class="p">:</span>
-</span><span data-line="976"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Wrap the ASGI send and handles any &#39;before send&#39; hooks.</span>
+</span><span data-line="970">
+</span><span data-line="971">    <span class="k">def</span><span class="w"> </span><span class="nf">_create_asgi_handler</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ASGIApp</span><span class="p">:</span>
+</span><span data-line="972"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Create an ASGIApp that wraps the ASGI router inside an exception handler.</span>
+</span><span data-line="973">
+</span><span data-line="974"><span class="sd">        If CORS or TrustedHost configs are provided to the constructor, they will wrap the router as well.</span>
+</span><span data-line="975"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="976">        <span class="n">asgi_handler</span> <span class="o">=</span> <span class="n">wrap_in_exception_handler</span><span class="p">(</span><span class="n">app</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">asgi_router</span><span class="p">)</span>
 </span><span data-line="977">
-</span><span data-line="978"><span class="sd">        Args:</span>
-</span><span data-line="979"><span class="sd">            send: The ASGI send function.</span>
-</span><span data-line="980"><span class="sd">            scope: The ASGI scope.</span>
-</span><span data-line="981">
-</span><span data-line="982"><span class="sd">        Returns:</span>
-</span><span data-line="983"><span class="sd">            An ASGI send function.</span>
-</span><span data-line="984"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="985">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">before_send</span><span class="p">:</span>
+</span><span data-line="978">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cors_config</span><span class="p">:</span>
+</span><span data-line="979">            <span class="n">asgi_handler</span> <span class="o">=</span> <span class="n">CORSMiddleware</span><span class="p">(</span><span class="n">app</span><span class="o">=</span><span class="n">asgi_handler</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cors_config</span><span class="p">)</span>
+</span><span data-line="980">
+</span><span data-line="981">        <span class="k">try</span><span class="p">:</span>
+</span><span data-line="982">            <span class="n">otel_plugin</span><span class="p">:</span> <span class="n">OpenTelemetryPlugin</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">plugins</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;OpenTelemetryPlugin&quot;</span><span class="p">)</span>
+</span><span data-line="983">            <span class="n">asgi_handler</span> <span class="o">=</span> <span class="n">otel_plugin</span><span class="o">.</span><span class="n">middleware</span><span class="p">(</span><span class="n">app</span><span class="o">=</span><span class="n">asgi_handler</span><span class="p">)</span>
+</span><span data-line="984">        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+</span><span data-line="985">            <span class="k">pass</span>
 </span><span data-line="986">
-</span><span data-line="987">            <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">wrapped_send</span><span class="p">(</span><span class="n">message</span><span class="p">:</span> <span class="n">Message</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="988">                <span class="k">for</span> <span class="n">hook</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">before_send</span><span class="p">:</span>
-</span><span data-line="989">                    <span class="k">await</span> <span class="n">hook</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="n">scope</span><span class="p">)</span>
-</span><span data-line="990">                <span class="k">await</span> <span class="n">send</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+</span><span data-line="987">        <span class="k">return</span> <span class="n">asgi_handler</span>
+</span><span data-line="988">
+</span><span data-line="989">    <span class="k">def</span><span class="w"> </span><span class="nf">_wrap_send</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">send</span><span class="p">:</span> <span class="n">Send</span><span class="p">,</span> <span class="n">scope</span><span class="p">:</span> <span class="n">Scope</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Send</span><span class="p">:</span>
+</span><span data-line="990"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Wrap the ASGI send and handles any &#39;before send&#39; hooks.</span>
 </span><span data-line="991">
-</span><span data-line="992">            <span class="k">return</span> <span class="n">wrapped_send</span>
-</span><span data-line="993">        <span class="k">return</span> <span class="n">send</span>
-</span><span data-line="994">
+</span><span data-line="992"><span class="sd">        Args:</span>
+</span><span data-line="993"><span class="sd">            send: The ASGI send function.</span>
+</span><span data-line="994"><span class="sd">            scope: The ASGI scope.</span>
+</span><span data-line="995">
+</span><span data-line="996"><span class="sd">        Returns:</span>
+</span><span data-line="997"><span class="sd">            An ASGI send function.</span>
+</span><span data-line="998"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="999">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">before_send</span><span class="p">:</span>
+</span><span data-line="1000">
+</span><span data-line="1001">            <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">wrapped_send</span><span class="p">(</span><span class="n">message</span><span class="p">:</span> <span class="n">Message</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="1002">                <span class="k">for</span> <span class="n">hook</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">before_send</span><span class="p">:</span>
+</span><span data-line="1003">                    <span class="k">await</span> <span class="n">hook</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="n">scope</span><span class="p">)</span>
+</span><span data-line="1004">                <span class="k">await</span> <span class="n">send</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+</span><span data-line="1005">
+</span><span data-line="1006">            <span class="k">return</span> <span class="n">wrapped_send</span>
+</span><span data-line="1007">        <span class="k">return</span> <span class="n">send</span>
+</span><span data-line="1008">
 <div class="viewcode-block" id="Litestar.update_openapi_schema">
 <a class="viewcode-back" href="../../reference/app.html#litestar.app.Litestar.update_openapi_schema">[docs]</a>
-</span><span data-line="995">    <span class="k">def</span><span class="w"> </span><span class="nf">update_openapi_schema</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="996"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Update the OpenAPI schema to reflect the route handlers registered on the app.</span>
-</span><span data-line="997">
-</span><span data-line="998"><span class="sd">        Returns:</span>
-</span><span data-line="999"><span class="sd">            None</span>
-</span><span data-line="1000"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="1001">        <span class="bp">self</span><span class="o">.</span><span class="n">plugins</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">OpenAPIPlugin</span><span class="p">)</span><span class="o">.</span><span class="n">_build_openapi</span><span class="p">()</span></div>
+</span><span data-line="1009">    <span class="k">def</span><span class="w"> </span><span class="nf">update_openapi_schema</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="1010"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Update the OpenAPI schema to reflect the route handlers registered on the app.</span>
+</span><span data-line="1011">
+</span><span data-line="1012"><span class="sd">        Returns:</span>
+</span><span data-line="1013"><span class="sd">            None</span>
+</span><span data-line="1014"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="1015">        <span class="bp">self</span><span class="o">.</span><span class="n">plugins</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">OpenAPIPlugin</span><span class="p">)</span><span class="o">.</span><span class="n">_build_openapi</span><span class="p">()</span></div>
 
-</span><span data-line="1002">
+</span><span data-line="1016">
 <div class="viewcode-block" id="Litestar.emit">
 <a class="viewcode-back" href="../../reference/app.html#litestar.app.Litestar.emit">[docs]</a>
-</span><span data-line="1003">    <span class="k">def</span><span class="w"> </span><span class="nf">emit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="1004"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Emit an event to all attached listeners.</span>
-</span><span data-line="1005">
-</span><span data-line="1006"><span class="sd">        Args:</span>
-</span><span data-line="1007"><span class="sd">            event_id: The ID of the event to emit, e.g ``my_event``.</span>
-</span><span data-line="1008"><span class="sd">            args: args to pass to the listener(s).</span>
-</span><span data-line="1009"><span class="sd">            kwargs: kwargs to pass to the listener(s)</span>
-</span><span data-line="1010">
-</span><span data-line="1011"><span class="sd">        Returns:</span>
-</span><span data-line="1012"><span class="sd">            None</span>
-</span><span data-line="1013"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="1014">        <span class="bp">self</span><span class="o">.</span><span class="n">event_emitter</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="n">event_id</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+</span><span data-line="1017">    <span class="k">def</span><span class="w"> </span><span class="nf">emit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="1018"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Emit an event to all attached listeners.</span>
+</span><span data-line="1019">
+</span><span data-line="1020"><span class="sd">        Args:</span>
+</span><span data-line="1021"><span class="sd">            event_id: The ID of the event to emit, e.g ``my_event``.</span>
+</span><span data-line="1022"><span class="sd">            args: args to pass to the listener(s).</span>
+</span><span data-line="1023"><span class="sd">            kwargs: kwargs to pass to the listener(s)</span>
+</span><span data-line="1024">
+</span><span data-line="1025"><span class="sd">        Returns:</span>
+</span><span data-line="1026"><span class="sd">            None</span>
+</span><span data-line="1027"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="1028">        <span class="bp">self</span><span class="o">.</span><span class="n">event_emitter</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="n">event_id</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 </div>
 
-</span><span data-line="1015">
-</span><span data-line="1016">
-</span><span data-line="1017"><span class="k">def</span><span class="w"> </span><span class="nf">_maybe_add_options_handler</span><span class="p">(</span>
-</span><span data-line="1018">    <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">http_handlers</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">HTTPRouteHandler</span><span class="p">],</span> <span class="n">root</span><span class="p">:</span> <span class="n">Router</span>
-</span><span data-line="1019"><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">HTTPRouteHandler</span><span class="p">]:</span>
-</span><span data-line="1020">    <span class="n">handler_methods</span> <span class="o">=</span> <span class="p">{</span><span class="n">method</span> <span class="k">for</span> <span class="n">handler</span> <span class="ow">in</span> <span class="n">http_handlers</span> <span class="k">for</span> <span class="n">method</span> <span class="ow">in</span> <span class="n">handler</span><span class="o">.</span><span class="n">http_methods</span><span class="p">}</span>
-</span><span data-line="1021">    <span class="k">if</span> <span class="s2">&quot;OPTIONS&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">handler_methods</span><span class="p">:</span>
-</span><span data-line="1022">        <span class="n">options_handler</span> <span class="o">=</span> <span class="n">create_options_handler</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="n">path</span><span class="p">,</span> <span class="n">allow_methods</span><span class="o">=</span><span class="p">{</span><span class="o">*</span><span class="n">handler_methods</span><span class="p">,</span> <span class="s2">&quot;OPTIONS&quot;</span><span class="p">})</span>  <span class="c1"># pyright: ignore</span>
-</span><span data-line="1023">        <span class="n">options_handler</span> <span class="o">=</span> <span class="n">options_handler</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">root</span><span class="p">)</span>
-</span><span data-line="1024">        <span class="k">return</span> <span class="p">[</span><span class="o">*</span><span class="n">http_handlers</span><span class="p">,</span> <span class="n">options_handler</span><span class="p">]</span>
-</span><span data-line="1025">    <span class="k">return</span> <span class="n">http_handlers</span>
+</span><span data-line="1029">
+</span><span data-line="1030">
+</span><span data-line="1031"><span class="k">def</span><span class="w"> </span><span class="nf">_maybe_add_options_handler</span><span class="p">(</span>
+</span><span data-line="1032">    <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">http_handlers</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">HTTPRouteHandler</span><span class="p">],</span> <span class="n">root</span><span class="p">:</span> <span class="n">Router</span>
+</span><span data-line="1033"><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">HTTPRouteHandler</span><span class="p">]:</span>
+</span><span data-line="1034">    <span class="n">handler_methods</span> <span class="o">=</span> <span class="p">{</span><span class="n">method</span> <span class="k">for</span> <span class="n">handler</span> <span class="ow">in</span> <span class="n">http_handlers</span> <span class="k">for</span> <span class="n">method</span> <span class="ow">in</span> <span class="n">handler</span><span class="o">.</span><span class="n">http_methods</span><span class="p">}</span>
+</span><span data-line="1035">    <span class="k">if</span> <span class="s2">&quot;OPTIONS&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">handler_methods</span><span class="p">:</span>
+</span><span data-line="1036">        <span class="n">options_handler</span> <span class="o">=</span> <span class="n">create_options_handler</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="n">path</span><span class="p">,</span> <span class="n">allow_methods</span><span class="o">=</span><span class="p">{</span><span class="o">*</span><span class="n">handler_methods</span><span class="p">,</span> <span class="s2">&quot;OPTIONS&quot;</span><span class="p">})</span>  <span class="c1"># pyright: ignore</span>
+</span><span data-line="1037">        <span class="n">options_handler</span> <span class="o">=</span> <span class="n">options_handler</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">root</span><span class="p">)</span>
+</span><span data-line="1038">        <span class="k">return</span> <span class="p">[</span><span class="o">*</span><span class="n">http_handlers</span><span class="p">,</span> <span class="n">options_handler</span><span class="p">]</span>
+</span><span data-line="1039">    <span class="k">return</span> <span class="n">http_handlers</span>
 </span></pre></div>
         </article><button class="back-to-top" type="button">
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
