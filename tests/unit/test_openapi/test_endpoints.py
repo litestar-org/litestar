@@ -35,8 +35,8 @@ def config_factory() -> ConfigFactoryType:
 def test_default_redoc_cdn_urls(
     person_controller: type[Controller], pet_controller: type[Controller], config_factory: ConfigFactoryType
 ) -> None:
-    default_redoc_version = "next"
-    default_redoc_js_bundle = f"https://cdn.jsdelivr.net/npm/redoc@{default_redoc_version}/bundles/redoc.standalone.js"
+    default_redoc_version = "latest"
+    default_redoc_js_bundle = f"https://cdn.redoc.ly/redoc/{default_redoc_version}/bundles/redoc.standalone.js"
     with create_test_client(
         [person_controller, pet_controller], openapi_config=config_factory((RedocRenderPlugin(),))
     ) as client:
