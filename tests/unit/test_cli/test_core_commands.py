@@ -706,7 +706,7 @@ def test_routes_command_text_output(runner: CliRunner, create_app_file: CreateAp
 
 @pytest.mark.usefixtures("unset_env")
 def test_routes_command_unsupported_format(runner: CliRunner, create_app_file: CreateAppFileFixture) -> None:
-    """Test that unsupported formats are handled gracefully."""
+    """Test that unsupported formats are handled gracefully"""
     create_app_file("app.py", content=APP_FILE_CONTENT_ROUTES_EXAMPLE)
 
     result = runner.invoke(cli_command, ["routes", "--format=yaml"])
