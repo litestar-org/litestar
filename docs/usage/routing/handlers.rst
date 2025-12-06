@@ -386,11 +386,11 @@ You can provide a :paramref:`~.handlers.base.BaseRouteHandler.name` :term:`kwarg
 :term:`decorators <decorator>`. The value for this :term:`kwarg <argument>` **must be unique**, otherwise
 :exc:`~.exceptions.ImproperlyConfiguredException` exception will be raised.
 
-The default value for :paramref:`~.handlers.base.BaseRouteHandler.name` is value returned by the handler's
-:meth:`~object.__str__` method which should be the full dotted path to the handler
-(e.g., ``app.controllers.projects.list`` for ``list`` function residing in ``app/controllers/projects.py`` file).
+The default value for :paramref:`~.handlers.base.BaseRouteHandler.name` is the value returned by the handler's
+:meth:`~object.__str__` method, which should be the full dotted path to the handler
+(e.g., ``app.controllers.projects.list`` for the ``list`` function residing in the ``app/controllers/projects.py`` file).
 :paramref:`~.handlers.base.BaseRouteHandler.name` can be used to dynamically retrieve (i.e. during runtime) a mapping
-containing the route handler instance and paths, also it can be used to build a URL path for that handler:
+containing the route handler instance and paths. It can also be used to build a URL path for that handler:
 
 .. code-block:: python
     :caption: Using the :paramref:`~.handlers.base.BaseRouteHandler.name` :term:`kwarg <argument>` to retrieve a route
@@ -437,16 +437,32 @@ containing the route handler instance and paths, also it can be used to build a 
 
     app = Litestar(route_handlers=[handler_one, handler_two, handler_three])
 
-:meth:`~.app.Litestar.route_reverse` will raise :exc:`~.exceptions.NoRouteMatchFoundException` if route with given
-name was not found or if any of path :term:`parameters <parameter>` is missing or if any of passed path
-:term:`parameters <parameter>` types do not match types in the respective route declaration.
+As a convenience, you can also pass the route handler directly to :meth:`~.app.Litestar.route_reverse`:
 
-However, :class:`str` is accepted in place of :class:`~datetime.datetime`, :class:`~datetime.date`,
-:class:`~datetime.time`, :class:`~datetime.timedelta`, :class:`float`, and :class:`~pathlib.Path`
-parameters, so you can apply custom formatting and pass the result to :meth:`~.app.Litestar.route_reverse`.
+.. code-block:: python
+    :caption: Directly retrieving a route handler's path from a reference to that handler
 
-If handler has multiple paths attached to it :meth:`~.app.Litestar.route_reverse` will return the path that consumes
-the most number of :term:`keyword arguments <argument>` passed to the function.
+    from litestar import Litestar, get
+
+
+    @get("/abc", name="one")
+    def handler_one() -> None:
+        pass
+
+    app = Litestar(route_handlers=[handler])
+
+    app.route_reverse(handler_one)  # Returns "/abc"
+
+
+:meth:`~.app.Litestar.route_reverse` will raise :exc:`~.exceptions.NoRouteMatchFoundException` if a route with the
+given name was not found, or if any of the passed path :term:`parameters <parameter>` are missing or do not match the
+types in the respective route declaration. As an exception, :class:`str` is accepted in place of
+:class:`~datetime.datetime`, :class:`~datetime.date`, :class:`~datetime.time`, :class:`~datetime.timedelta`,
+:class:`float`, and :class:`~pathlib.Path` parameters, so you can apply custom formatting and pass the result to
+:meth:`~.app.Litestar.route_reverse`.
+
+If handler has multiple paths attached to it, :meth:`~.app.Litestar.route_reverse` will return the path that consumes
+the highest number of the :term:`keyword arguments <argument>` passed to the function.
 
 .. code-block:: python
     :caption: Using the :meth:`~.app.Litestar.route_reverse` method to build a URL path for a route handler
@@ -479,8 +495,8 @@ When a handler is associated with multiple routes having identical path :term:`p
 unpredictable. This :term:`callable` will return a formatted path; however, its selection may appear arbitrary.
 Therefore, reversing URLs under these conditions is **strongly** advised against.
 
-If you have access to :class:`~.connection.Request` instance you can make reverse lookups using
-:meth:`~.connection.ASGIConnection.url_for` method which is similar to :meth:`~.app.Litestar.route_reverse` but
+If you have access to a :class:`~.connection.Request` instance, you can perform reverse lookups using the
+:meth:`~.connection.ASGIConnection.url_for` method, which is similar to :meth:`~.app.Litestar.route_reverse`, but
 returns an absolute URL.
 
 .. _handler_opts:
