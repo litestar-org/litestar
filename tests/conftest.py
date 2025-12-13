@@ -17,7 +17,7 @@ import pytest
 from pytest_lazy_fixtures import lf
 from redis.asyncio import Redis as AsyncRedis
 from redis.client import Redis
-from time_machine import Traveller, travel
+from time_machine import Coordinates, travel
 from valkey.asyncio import Valkey as AsyncValkey
 from valkey.client import Valkey
 
@@ -39,7 +39,7 @@ if TYPE_CHECKING:
     from types import ModuleType
 
     from pytest import FixtureRequest, MonkeyPatch
-    from time_machine import Traveller
+    from time_machine import Coordinates
 
     from litestar import Litestar
     from litestar.types import (
@@ -275,7 +275,7 @@ def create_module(tmp_path: Path, monkeypatch: MonkeyPatch) -> Callable[[str], M
 
 
 @pytest.fixture()
-def frozen_datetime() -> Generator[Traveller, None, None]:
+def frozen_datetime() -> Generator[Coordinates, None, None]:
     with travel(datetime.utcnow, tick=False) as frozen:
         yield frozen
 

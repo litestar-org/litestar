@@ -11,7 +11,7 @@ from litestar.stores.memory import MemoryStore
 from litestar.testing import TestClient
 
 if TYPE_CHECKING:
-    from time_machine import Traveller
+    from time_machine import Coordinates
 
     from litestar.middleware.session.server_side import ServerSideSessionBackend
 
@@ -70,7 +70,7 @@ async def test_get_renew_on_access(
     server_side_session_backend: "ServerSideSessionBackend",
     session_data: bytes,
     memory_store: MemoryStore,
-    frozen_datetime: "Traveller",
+    frozen_datetime: "Coordinates",
 ) -> None:
     server_side_session_backend.config.max_age = 1
     server_side_session_backend.config.renew_on_access = True
@@ -121,7 +121,7 @@ async def test_max_age_expires(
     server_side_session_backend: "ServerSideSessionBackend",
     session_data: bytes,
     memory_store: MemoryStore,
-    frozen_datetime: "Traveller",
+    frozen_datetime: "Coordinates",
 ) -> None:
     server_side_session_backend.config.max_age = 1
     await server_side_session_backend.set("foo", session_data, memory_store)

@@ -21,7 +21,7 @@ from litestar.testing import TestClient, create_test_client
 from litestar.types import HTTPScope
 
 if TYPE_CHECKING:
-    from time_machine import Traveller
+    from time_machine import Coordinates
 
 T = TypeVar("T")
 
@@ -60,7 +60,7 @@ def test_default_cache_response(sync_to_thread: bool, mock: MagicMock) -> None:
         assert mock.call_count == 1
 
 
-def test_handler_expiration(mock: MagicMock, frozen_datetime: "Traveller") -> None:
+def test_handler_expiration(mock: MagicMock, frozen_datetime: "Coordinates") -> None:
     @get("/cached-local", cache=10)
     async def handler() -> str:
         return mock()  # type: ignore[no-any-return]
@@ -78,7 +78,7 @@ def test_handler_expiration(mock: MagicMock, frozen_datetime: "Traveller") -> No
         assert mock.call_count == 2
 
 
-def test_default_expiration(mock: MagicMock, frozen_datetime: "Traveller") -> None:
+def test_default_expiration(mock: MagicMock, frozen_datetime: "Coordinates") -> None:
     @get("/cached-default", cache=True)
     async def handler() -> str:
         return mock()  # type: ignore[no-any-return]

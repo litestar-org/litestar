@@ -184,7 +184,7 @@ test = [
   "pytest-rerunfailures",
   "pytest-timeout",
   "pytest-xdist",
-  "time-machine",
+  "time-machine<3",
 ]
 
 [build-system]
