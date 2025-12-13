@@ -166,6 +166,7 @@ linting = [
   "pre-commit",
   "slotscheck",
   "codecov-cli",
+  "codecov-cli>=11.2.6; python_version >= \"3.14\"",
   "pyright==1.1.344",
   "asyncpg-stubs",
   "types-beautifulsoup4",
