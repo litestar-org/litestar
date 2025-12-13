@@ -479,7 +479,7 @@ def test_customizing_handler(
         assert type(root_logger_handler) is expected_root_logger_handler_class
 
         if type(root_logger_handler) is QueueHandler:
-            formatter = root_logger_handler.listener.handlers[0].formatter  # type: ignore[attr-defined]
+            formatter = root_logger_handler.listener.handlers[0].formatter  # type: ignore[attr-defined, union-attr]
         else:
             formatter = root_logger_handler.formatter
         if formatter is not None:

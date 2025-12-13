@@ -17,7 +17,7 @@ __all__ = (
 NoneType: type[None] = type(None)
 
 try:
-    from types import UnionType  # type: ignore[attr-defined]
+    from types import UnionType
 except ImportError:
     UnionType: TypeAlias = Union  # type: ignore[no-redef]
 
