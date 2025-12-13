@@ -29,8 +29,8 @@ def config(openapi_controller: Optional[Type[OpenAPIController]]) -> OpenAPIConf
 def test_default_redoc_cdn_urls(
     person_controller: Type[Controller], pet_controller: Type[Controller], config: OpenAPIConfig
 ) -> None:
-    default_redoc_version = "next"
-    default_redoc_js_bundle = f"https://cdn.jsdelivr.net/npm/redoc@{default_redoc_version}/bundles/redoc.standalone.js"
+    default_redoc_version = "latest"
+    default_redoc_js_bundle = f"https://cdn.redoc.ly/redoc/{default_redoc_version}/bundles/redoc.standalone.js"
     with create_test_client([person_controller, pet_controller], openapi_config=config) as client:
         response = client.get("/schema/redoc")
         assert default_redoc_js_bundle in response.text
