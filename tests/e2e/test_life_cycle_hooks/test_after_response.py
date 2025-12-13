@@ -24,7 +24,7 @@ def test_after_response_resolution(layer: str, sync: bool) -> None:
 
     class MyController(Controller):
         path = "/controller"
-        after_response = handler if layer == "controller" else None
+        after_response = handler if layer == "controller" else None  # type: ignore[assignment]
 
         @get("/", after_response=handler if layer == "handler" else None)
         def my_handler(self) -> None:

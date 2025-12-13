@@ -156,7 +156,7 @@ class LitestarGroup(Group):  # pyright: ignore
     ) -> None:
         """Init ``LitestarGroup``"""
         self.group_class = LitestarGroup
-        super().__init__(name=name, commands=commands, **attrs)
+        super().__init__(name=name, commands=commands, **attrs)  # type: ignore[arg-type]
 
     def add_command(self, cmd: Command, name: str | None = None) -> None:  # type: ignore[override]
         """Add command.
@@ -223,7 +223,7 @@ class LitestarExtensionGroup(LitestarGroup):
 
         self._prepare_done = True
 
-    def make_context(  # type: ignore[override]
+    def make_context(
         self,
         info_name: str | None,
         args: list[str],

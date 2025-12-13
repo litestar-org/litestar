@@ -366,7 +366,7 @@ def test_custom_attribute_accessor(backend_cls: type[DTOBackend]) -> None:
         return getattr(obj, attr)
 
     class MyDataclassDTO(DataclassDTO):
-        attribute_accessor = my_getattr
+        attribute_accessor = my_getattr  # type: ignore[assignment]
 
     class Factory(MyDataclassDTO):
         config = DTOConfig(include={"id"})

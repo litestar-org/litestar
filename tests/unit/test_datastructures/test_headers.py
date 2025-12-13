@@ -36,7 +36,7 @@ def test_header_container_requires_header_key_being_defined() -> None:
         def _get_header_value(self) -> str:
             return ""
 
-        def from_header(self, header_value: str) -> "Header":  # type: ignore[explicit-override, override]
+        def from_header(self, header_value: str) -> "Header":  # type: ignore[override]
             return self
 
     with pytest.raises(ImproperlyConfiguredException):

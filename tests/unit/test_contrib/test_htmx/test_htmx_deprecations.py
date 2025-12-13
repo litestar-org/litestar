@@ -12,7 +12,7 @@ def purge_module(module_names: List[str], path: Union[str, Path]) -> None:
     for name in module_names:
         if name in sys.modules:
             del sys.modules[name]
-    Path(importlib.util.cache_from_source(path)).unlink(missing_ok=True)  # type: ignore[arg-type]
+    Path(importlib.util.cache_from_source(path)).unlink(missing_ok=True)
 
 
 def test_deprecated_htmx_request() -> None:

@@ -190,7 +190,7 @@ def test_load_session_cookies_and_expire_previous(
         middleware=[cookie_session_middleware.backend.config.middleware],
     ) as client:
         # Set cookies on the client to avoid warnings about per-request cookies.
-        client.cookies = {  # type: ignore[assignment]
+        client.cookies = {
             f"{cookie_session_middleware.backend.config.key}-{i}": text.decode("utf-8")
             for i, text in enumerate(ciphertext)
         }
