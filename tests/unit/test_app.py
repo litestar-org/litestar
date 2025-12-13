@@ -243,7 +243,7 @@ def test_before_send() -> None:
     async def before_send_hook_handler(message: Message, scope: Scope) -> None:
         if message["type"] == "http.response.start":
             headers = MutableScopeHeaders(message)
-            headers.add("My Header", Litestar.from_scope(scope).state.message)
+            headers.add("My-Header", Litestar.from_scope(scope).state.message)
 
     def on_startup(app: Litestar) -> None:
         app.state.message = "value injected during send"
@@ -251,7 +251,7 @@ def test_before_send() -> None:
     with create_test_client(handler, on_startup=[on_startup], before_send=[before_send_hook_handler]) as client:
         response = client.get("/test")
         assert response.status_code == HTTP_200_OK
-        assert response.headers.get("My Header") == "value injected during send"
+        assert response.headers.get("My-Header") == "value injected during send"
 
 
 def test_using_custom_http_exception_handler() -> None:
