@@ -1,10 +1,9 @@
 from __future__ import annotations
 
 import re
-from collections.abc import Callable
 from dataclasses import dataclass
 from io import StringIO
-from typing import AsyncGenerator, AsyncIterable, AsyncIterator, Iterable, Iterator, TYPE_CHECKING
+from typing import TYPE_CHECKING, AsyncGenerator, AsyncIterable, AsyncIterator, Iterable, Iterator
 
 from litestar.concurrency import sync_to_thread
 from litestar.exceptions import ImproperlyConfiguredException
@@ -12,6 +11,8 @@ from litestar.response.streaming import Stream
 from litestar.utils import AsyncIteratorWrapper
 
 if TYPE_CHECKING:
+    from collections.abc import Callable
+
     from litestar.background_tasks import BackgroundTask, BackgroundTasks
     from litestar.types import ResponseCookies, ResponseHeaders, SSEData, StreamType
 

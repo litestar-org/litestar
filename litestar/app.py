@@ -33,6 +33,7 @@ from litestar.exceptions import (
     MissingDependencyException,
     NoRouteMatchFoundException,
 )
+from litestar.handlers.base import BaseRouteHandler
 from litestar.logging.config import LoggingConfig, get_logger_placeholder
 from litestar.middleware._internal.cors import CORSMiddleware
 from litestar.openapi.config import OpenAPIConfig
@@ -76,7 +77,6 @@ if TYPE_CHECKING:
         AfterExceptionHookHandler,
         AfterRequestHookHandler,
         AfterResponseHookHandler,
-        AnyCallable,
         ASGIApp,
         BeforeMessageSendHookHandler,
         BeforeRequestHookHandler,
@@ -103,8 +103,7 @@ if TYPE_CHECKING:
         Send,
         TypeEncodersMap,
     )
-    from litestar.types.callable_types import LifespanHook
-
+    from litestar.types.callable_types import AnyCallable, LifespanHook
 
 __all__ = ("DEFAULT_OPENAPI_CONFIG", "HandlerIndex", "Litestar")
 

@@ -2,8 +2,7 @@ from __future__ import annotations
 
 import asyncio
 import dataclasses
-from typing import AsyncGenerator, Dict, Generator
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, AsyncGenerator, Dict, Generator
 from unittest.mock import MagicMock
 
 import pytest
