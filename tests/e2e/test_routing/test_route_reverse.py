@@ -7,7 +7,7 @@ import pytest
 
 from litestar import Litestar, Router, delete, get, patch, post, put
 from litestar.exceptions import NoRouteMatchFoundException
-from litestar.handlers.http_handlers import HTTPRouteHandler
+from litestar.handlers import HTTPRouteHandler
 
 
 @pytest.mark.parametrize("decorator", [get, post, patch, put, delete])
@@ -16,7 +16,7 @@ def test_route_reverse(decorator: Type[HTTPRouteHandler]) -> None:
     def handler() -> None:
         return None
 
-    @decorator("/path-nameless")
+    @decorator("/path-nameless")  # type: ignore[call-arg]
     def handler_nameless() -> None:
         return None
 

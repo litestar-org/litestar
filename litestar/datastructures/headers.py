@@ -69,7 +69,7 @@ class Headers(CIMultiDictProxy[str], MultiMixin[str]):
 
             super().__init__(CIMultiDict(headers_))
         else:
-            super().__init__(headers)
+            super().__init__(headers)  # type: ignore[arg-type]
         self._header_list: Optional[RawHeadersList] = None
 
     @classmethod
@@ -448,10 +448,10 @@ class Accept:
         return map(str, self._accepted_types)
 
     @overload
-    def best_match(self, provided_types: list[str], default: None = None) -> Optional[str]: ...
+    def best_match(self, provided_types: List[str], default: None = None) -> Optional[str]: ...
 
     @overload
-    def best_match(self, provided_types: list[str], default: str) -> str: ...
+    def best_match(self, provided_types: List[str], default: str) -> str: ...
 
     def best_match(self, provided_types: List[str], default: Optional[str] = None) -> Optional[str]:
         """Find the best matching media type for the request.

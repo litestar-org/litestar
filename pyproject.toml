@@ -59,7 +59,6 @@ maintainers = [
   { name = "Cody Fincher", email = "cody@litestar.dev" },
   { name = "Jacob Coffee", email = "jacob@litestar.dev" },
   { name = "Janek Nouvertné", email = "janek@litestar.dev" },
-  { name = "Visakh Unnikrishnan", email = "guacs@litestar.dev" },
   { name = "Julien Courtes", email = "julien@litestar.dev" },
 ]
 name = "litestar"
