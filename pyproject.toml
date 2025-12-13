@@ -226,6 +226,7 @@ filterwarnings = [
   "ignore: Python Debugger on exception enabled:litestar.exceptions.LitestarWarning:",
   "ignore: datetime.datetime.utcnow:DeprecationWarning:time_machine",
   "ignore:Use of deprecated default '__check_model__':DeprecationWarning:polyfactory:",
+  "ignore:Core Pydantic V1:UserWarning:"
 ]
 markers = [
   "sqlalchemy_integration: SQLAlchemy integration tests",
@@ -245,7 +246,7 @@ enable_error_code = [
 ]
 packages = ["litestar", "tests"]
 plugins = ["pydantic.mypy"]
-python_version = "3.8"
+python_version = "3.12"
 
 disallow_any_generics = false
 local_partial_types = true

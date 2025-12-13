@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import sys
 from typing import Callable
 
 import pydantic
@@ -15,7 +16,9 @@ def int_factory() -> Callable[[], int]:
     return lambda: 2
 
 
-@pytest.fixture(params=["v1", "v2"])
+@pytest.fixture(
+    params=[pytest.param("v1", marks=[pytest.mark.skipif(sys.version_info >= (3, 14), reason="not supported")]), "v2"]
+)
 def pydantic_version(request: FixtureRequest) -> PydanticVersion:
     return request.param  # type: ignore[no-any-return]
 

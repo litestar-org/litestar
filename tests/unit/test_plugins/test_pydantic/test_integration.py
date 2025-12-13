@@ -1,3 +1,4 @@
+import sys
 from typing import Any, Dict, List
 from unittest.mock import ANY
 
@@ -12,12 +13,13 @@ from litestar.params import Body, Parameter
 from litestar.plugins.pydantic import PydanticDTO, PydanticInitPlugin, PydanticPlugin
 from litestar.status_codes import HTTP_400_BAD_REQUEST
 from litestar.testing import create_test_client
-from tests.unit.test_plugins.test_pydantic.models import PydanticPerson, PydanticV1Person
+from tests.unit.test_plugins.test_pydantic.models_v2 import PydanticPerson
 
 from . import BaseModelType, PydanticVersion
 
 
 @pytest.mark.parametrize(("meta",), [(None,), (Body(media_type=RequestEncodingType.URL_ENCODED),)])
+@pytest.mark.skipif(sys.version_info >= (3, 14), reason="not supported")
 def test_pydantic_v1_validation_error_raises_400(meta: Any) -> None:
     class Model(pydantic_v1.BaseModel):
         foo: str = pydantic_v1.Field(max_length=2)
@@ -101,7 +103,10 @@ def test_default_error_handling() -> None:
         assert len(extra) == 5
 
 
+@pytest.mark.skipif(sys.version_info >= (3, 14), reason="not supported")
 def test_default_error_handling_v1() -> None:
+    from tests.unit.test_plugins.test_pydantic.models_v1 import PydanticV1Person
+
     @post("/{param:int}")
     def my_route_handler(param: int, data: PydanticV1Person) -> None: ...
 
@@ -234,7 +239,11 @@ def test_private_fields(model_type: BaseModelType) -> None:
     [
         pytest.param(pydantic_v2.BaseModel, pydantic_v2.JsonValue, {"foo": "bar"}, id="pydantic_v2.JsonValue"),
         pytest.param(
-            pydantic_v1.BaseModel, pydantic_v1.IPvAnyAddress, "127.0.0.1", id="pydantic_v1.IPvAnyAddress (v4)"
+            pydantic_v1.BaseModel,
+            pydantic_v1.IPvAnyAddress,
+            "127.0.0.1",
+            id="pydantic_v1.IPvAnyAddress (v4)",
+            marks=[pytest.mark.skipif(sys.version_info >= (3, 14), reason="not supported")],
         ),
         pytest.param(
             pydantic_v2.BaseModel, pydantic_v2.IPvAnyAddress, "127.0.0.1", id="pydantic_v2.IPvAnyAddress (v4)"
@@ -244,6 +253,7 @@ def test_private_fields(model_type: BaseModelType) -> None:
             pydantic_v1.IPvAnyAddress,
             "2001:db8::ff00:42:8329",
             id="pydantic_v1.IPvAnyAddress (v6)",
+            marks=[pytest.mark.skipif(sys.version_info >= (3, 14), reason="not supported")],
         ),
         pytest.param(
             pydantic_v2.BaseModel,
@@ -252,7 +262,11 @@ def test_private_fields(model_type: BaseModelType) -> None:
             id="pydantic_v2.IPvAnyAddress (v6)",
         ),
         pytest.param(
-            pydantic_v1.BaseModel, pydantic_v1.IPvAnyInterface, "127.0.0.1/24", id="pydantic_v1.IPvAnyInterface (v4)"
+            pydantic_v1.BaseModel,
+            pydantic_v1.IPvAnyInterface,
+            "127.0.0.1/24",
+            id="pydantic_v1.IPvAnyInterface (v4)",
+            marks=[pytest.mark.skipif(sys.version_info >= (3, 14), reason="not supported")],
         ),
         pytest.param(
             pydantic_v2.BaseModel, pydantic_v2.IPvAnyInterface, "127.0.0.1/24", id="pydantic_v2.IPvAnyInterface (v4)"
@@ -262,6 +276,7 @@ def test_private_fields(model_type: BaseModelType) -> None:
             pydantic_v1.IPvAnyInterface,
             "2001:db8::ff00:42:8329/128",
             id="pydantic_v1.IPvAnyInterface (v6)",
+            marks=[pytest.mark.skipif(sys.version_info >= (3, 14), reason="not supported")],
         ),
         pytest.param(
             pydantic_v2.BaseModel,
@@ -270,7 +285,11 @@ def test_private_fields(model_type: BaseModelType) -> None:
             id="pydantic_v2.IPvAnyInterface (v6)",
         ),
         pytest.param(
-            pydantic_v1.BaseModel, pydantic_v1.IPvAnyNetwork, "127.0.0.1/32", id="pydantic_v1.IPvAnyNetwork (v4)"
+            pydantic_v1.BaseModel,
+            pydantic_v1.IPvAnyNetwork,
+            "127.0.0.1/32",
+            id="pydantic_v1.IPvAnyNetwork (v4)",
+            marks=[pytest.mark.skipif(sys.version_info >= (3, 14), reason="not supported")],
         ),
         pytest.param(
             pydantic_v2.BaseModel, pydantic_v2.IPvAnyNetwork, "127.0.0.1/32", id="pydantic_v2.IPvAnyNetwork (v4)"
@@ -280,6 +299,7 @@ def test_private_fields(model_type: BaseModelType) -> None:
             pydantic_v1.IPvAnyNetwork,
             "2001:db8::ff00:42:8329/128",
             id="pydantic_v1.IPvAnyNetwork (v6)",
+            marks=[pytest.mark.skipif(sys.version_info >= (3, 14), reason="not supported")],
         ),
         pytest.param(
             pydantic_v2.BaseModel,
@@ -287,7 +307,13 @@ def test_private_fields(model_type: BaseModelType) -> None:
             "2001:db8::ff00:42:8329/128",
             id="pydantic_v2.IPvAnyNetwork (v6)",
         ),
-        pytest.param(pydantic_v1.BaseModel, pydantic_v1.EmailStr, "test@example.com", id="pydantic_v1.EmailStr"),
+        pytest.param(
+            pydantic_v1.BaseModel,
+            pydantic_v1.EmailStr,
+            "test@example.com",
+            id="pydantic_v1.EmailStr",
+            marks=[pytest.mark.skipif(sys.version_info >= (3, 14), reason="not supported")],
+        ),
         pytest.param(pydantic_v2.BaseModel, pydantic_v2.EmailStr, "test@example.com", id="pydantic_v2.EmailStr"),
     ],
 )
@@ -330,6 +356,7 @@ def test_dto_with_non_instantiable_types(base_model: BaseModelType, type_: Any, 
         "Use alias in response",
     ),
 )
+@pytest.mark.skipif(sys.version_info >= (3, 14), reason="not supported")
 def test_params_with_v1_and_v2_models(plugin_params: dict, response: dict) -> None:
     class ModelV1(pydantic_v1.BaseModel):  # pyright: ignore
         alias: str = pydantic_v1.fields.Field(alias="prefer_alias")  # pyright: ignore

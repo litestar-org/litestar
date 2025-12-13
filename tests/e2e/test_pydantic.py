@@ -1,10 +1,14 @@
+import sys
+
 import pydantic
+import pytest
 from pydantic import v1 as pydantic_v1
 
 from litestar import get, post
 from litestar.testing import create_test_client
 
 
+@pytest.mark.skipif(sys.version_info >= (3, 14), reason="not supported")
 def test_app_with_v1_and_v2_models() -> None:
     class ModelV1(pydantic.v1.BaseModel):  # pyright: ignore
         foo: str
@@ -25,6 +29,7 @@ def test_app_with_v1_and_v2_models() -> None:
         assert client.get("/v2").json() == {"foo": "bar"}
 
 
+@pytest.mark.skipif(sys.version_info >= (3, 14), reason="not supported")
 def test_pydantic_v1_model_with_field_default() -> None:
     # https://github.com/litestar-org/litestar/issues/3471
 
