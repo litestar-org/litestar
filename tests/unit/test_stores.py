@@ -12,7 +12,7 @@ from unittest.mock import MagicMock, Mock, patch
 import pytest
 from _pytest.fixtures import FixtureRequest
 from pytest_mock import MockerFixture
-from time_machine import Coordinates
+from time_machine import Traveller
 
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.stores.file import FileStore
@@ -69,7 +69,7 @@ async def test_set_special_chars_key(store: Store, key: str) -> None:
     assert await store.get(key) == value
 
 
-async def test_expires(store: Store, frozen_datetime: Coordinates) -> None:
+async def test_expires(store: Store, frozen_datetime: Traveller) -> None:
     await store.set("foo", b"bar", expires_in=1)
 
     frozen_datetime.shift(2)
@@ -87,7 +87,7 @@ async def test_expires(store: Store, frozen_datetime: Coordinates) -> None:
 
 @pytest.mark.flaky(reruns=5)
 @pytest.mark.parametrize("renew_for", [10, timedelta(seconds=10)])
-async def test_get_and_renew(store: Store, renew_for: int | timedelta, frozen_datetime: Coordinates) -> None:
+async def test_get_and_renew(store: Store, renew_for: int | timedelta, frozen_datetime: Traveller) -> None:
     if isinstance(store, (RedisStore, ValkeyStore)):
         pytest.skip()
 
@@ -176,7 +176,7 @@ async def test_delete_all(store: Store) -> None:
         assert await store.get(key) is None
 
 
-async def test_expires_in(store: Store, frozen_datetime: Coordinates) -> None:
+async def test_expires_in(store: Store, frozen_datetime: Traveller) -> None:
     if not isinstance(store, (RedisStore, ValkeyStore)):
         pytest.xfail("bug in FileStore and MemoryStore")
 
@@ -426,7 +426,7 @@ async def test_namespaced_store_delete_all_propagates_down(namespaced_store: Nam
 
 
 @pytest.mark.parametrize("store_fixture", ["memory_store", "file_store"])
-async def test_memory_delete_expired(store_fixture: str, request: FixtureRequest, frozen_datetime: Coordinates) -> None:
+async def test_memory_delete_expired(store_fixture: str, request: FixtureRequest, frozen_datetime: Traveller) -> None:
     store = request.getfixturevalue(store_fixture)
 
     expect_expired: list[str] = []
