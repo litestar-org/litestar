@@ -836,7 +836,7 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="283">    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
 </span><span data-line="284">        <span class="bp">self</span><span class="p">,</span>
 </span><span data-line="285">        <span class="o">*</span><span class="p">,</span>
-</span><span data-line="286">        <span class="n">version</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;next&quot;</span><span class="p">,</span>
+</span><span data-line="286">        <span class="n">version</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;latest&quot;</span><span class="p">,</span>
 </span><span data-line="287">        <span class="n">js_url</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 </span><span data-line="288">        <span class="n">google_fonts</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
 </span><span data-line="289">        <span class="n">path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;/redoc&quot;</span><span class="p">,</span>
@@ -851,7 +851,7 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="298"><span class="sd">            path: Path to serve the OpenAPI UI at.</span>
 </span><span data-line="299"><span class="sd">            **kwargs: Additional arguments to pass to the base class.</span>
 </span><span data-line="300"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="301">        <span class="bp">self</span><span class="o">.</span><span class="n">js_url</span> <span class="o">=</span> <span class="n">js_url</span> <span class="ow">or</span> <span class="sa">f</span><span class="s2">&quot;https://cdn.jsdelivr.net/npm/redoc@</span><span class="si">{</span><span class="n">version</span><span class="si">}</span><span class="s2">/bundles/redoc.standalone.js&quot;</span>
+</span><span data-line="301">        <span class="bp">self</span><span class="o">.</span><span class="n">js_url</span> <span class="o">=</span> <span class="n">js_url</span> <span class="ow">or</span> <span class="sa">f</span><span class="s2">&quot;https://cdn.redoc.ly/redoc/</span><span class="si">{</span><span class="n">version</span><span class="si">}</span><span class="s2">/bundles/redoc.standalone.js&quot;</span>
 </span><span data-line="302">        <span class="bp">self</span><span class="o">.</span><span class="n">google_fonts</span> <span class="o">=</span> <span class="n">google_fonts</span>
 </span><span data-line="303">        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="n">path</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 

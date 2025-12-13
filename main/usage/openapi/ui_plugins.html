@@ -784,8 +784,19 @@ rapidoc</label><div class="sd-tab-content docutils">
 redoc</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.openapi.plugins</span><span class="w"> </span><span class="kn">import</span> <span class="n">RedocRenderPlugin</span>
 </span><span data-line="2">
-</span><span data-line="3"><span class="n">redoc_plugin</span> <span class="o">=</span> <span class="n">RedocRenderPlugin</span><span class="p">(</span><span class="n">version</span><span class="o">=</span><span class="s2">&quot;next&quot;</span><span class="p">,</span> <span class="n">google_fonts</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="s2">&quot;/redoc&quot;</span><span class="p">)</span>
+</span><span data-line="3"><span class="n">redoc_plugin</span> <span class="o">=</span> <span class="n">RedocRenderPlugin</span><span class="p">(</span>
+</span><span data-line="4">    <span class="n">version</span><span class="o">=</span><span class="s2">&quot;latest&quot;</span><span class="p">,</span>
+</span><span data-line="5">    <span class="n">google_fonts</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+</span><span data-line="6">    <span class="n">path</span><span class="o">=</span><span class="s2">&quot;/redoc&quot;</span><span class="p">,</span>
+</span><span data-line="7">    <span class="n">js_url</span><span class="o">=</span><span class="s2">&quot;https://cdn.company.internal/redoc/custom-redoc.js&quot;</span><span class="p">,</span>
+</span><span data-line="8"><span class="p">)</span>
 </span></pre></div>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>Setting <code class="docutils literal notranslate"><span class="pre">js_url</span></code> lets you point the ReDoc bundle to any CDN or internal host. In <code class="docutils literal notranslate"><span class="pre">redoc_config.py</span></code>
+we override it to <code class="docutils literal notranslate"><span class="pre">https://cdn.company.internal/redoc/custom-redoc.js</span></code>. When provided, <code class="docutils literal notranslate"><span class="pre">js_url</span></code> takes
+precedence over <code class="docutils literal notranslate"><span class="pre">version</span></code>.</p>
 </div>
 </div>
 <input id="sd-tab-item-10" name="sd-tab-set-1" type="radio">
