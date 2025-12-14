@@ -69,7 +69,7 @@ class Headers(CIMultiDictProxy[str], MultiMixin[str]):
 
             super().__init__(CIMultiDict(headers_))
         else:
-            super().__init__(headers)  # type: ignore[arg-type]
+            super().__init__(headers)
         self._header_list: Optional[RawHeadersList] = None
 
     @classmethod
