@@ -24,7 +24,7 @@ def _get_typed_dict_info(tp: Any) -> _TypedDictInfo:
     if sys.version_info < (3, 9):
         return _make_typed_dict_info(tp)
 
-    return _TypedDictInfo(  # type: ignore[unreachable]
+    return _TypedDictInfo(
         required_keys=tp.__required_keys__,
         optional_keys=tp.__optional_keys__,
         readonly_keys=getattr(tp, "__readonly_keys__", frozenset()),
