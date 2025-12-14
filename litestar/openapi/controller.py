@@ -34,7 +34,7 @@ class OpenAPIController(Controller):
     """Base path for the OpenAPI documentation endpoints."""
     style: str = "body { margin: 0; padding: 0 }"
     """Base styling of the html body."""
-    redoc_version: str = "next"
+    redoc_version: str = "latest"
     """Redoc version to download from the CDN."""
     swagger_ui_version: str = "5.18.2"
     """SwaggerUI version to download from the CDN."""
@@ -49,7 +49,7 @@ class OpenAPIController(Controller):
 
     Should be set to ``False`` when not using a CDN.
     """
-    redoc_js_url: str = f"https://cdn.jsdelivr.net/npm/redoc@{redoc_version}/bundles/redoc.standalone.js"
+    redoc_js_url: str = f"https://cdn.redoc.ly/redoc/{redoc_version}/bundles/redoc.standalone.js"
     """Download url for the Redoc JS bundle."""
     swagger_css_url: str = f"https://cdn.jsdelivr.net/npm/swagger-ui-dist@{swagger_ui_version}/swagger-ui.css"
     """Download url for the Swagger UI CSS bundle."""
