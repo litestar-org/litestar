@@ -38,9 +38,9 @@ the the synchronous and asynchronous repositories.
     +---------------------+----------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
     | ``upsert_many``     | Updating Data  | Updates or inserts multiple records based whether or not the primary key value on the model object is populated.                                                                                                                            |
     +---------------------+----------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-    | ``remove``          | Removing Data  | Remove a single record from the database.                                                                                                                                                                                                   |
+    | ``delete``          | Removing Data  | Remove a single record from the database.                                                                                                                                                                                                   |
     +---------------------+----------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-    | ``remove_many``     | Removing Data  | Remove one or more records from the database.                                                                                                                                                                                               |
+    | ``delete_many``     | Removing Data  | Remove one or more records from the database.                                                                                                                                                                                               |
     +---------------------+----------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
 
 .. note::
@@ -115,7 +115,7 @@ Updating Data: The ``update`` method will ensure any updates made to the model o
         :lines: 64-68
         :linenos:
 
-Removing Data: The ``remove`` method accepts the primary key of the row you want to delete:
+Removing Data: The ``delete`` method accepts the primary key of the row you want to delete:
 
     .. literalinclude:: /examples/sqla/sqlalchemy_repository_crud.py
         :language: python

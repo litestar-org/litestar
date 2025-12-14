@@ -15,6 +15,10 @@ def test_route_reverse(decorator: HTTPHandlerDecorator) -> None:
     def handler() -> None:
         return None
 
+    @decorator("/path-nameless")
+    def handler_nameless() -> None:
+        return None
+
     @decorator("/path-two", name="handler-no-params")
     def handler_no_params() -> None:
         return None
@@ -34,12 +38,15 @@ def test_route_reverse(decorator: HTTPHandlerDecorator) -> None:
     def handler4(int_param: int = 1, str_param: str = "str") -> None:
         return None
 
-    router = Router("router-path/", route_handlers=[handler, handler_no_params, handler3, handler4])
+    router = Router("router-path/", route_handlers=[handler, handler_nameless, handler_no_params, handler3, handler4])
     router_with_param = Router("router-with-param/{router_param:str}", route_handlers=[handler2])
     app = Litestar(route_handlers=[router, router_with_param])
 
     reversed_url_path = app.route_reverse("handler-name", param="param-value")
     assert reversed_url_path == "/router-path/path-one/param-value"
+
+    reversed_url_path = app.route_reverse(handler_nameless)
+    assert reversed_url_path == "/router-path/path-nameless"
 
     reversed_url_path = app.route_reverse("handler-no-params")
     assert reversed_url_path == "/router-path/path-two"
