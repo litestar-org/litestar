@@ -115,7 +115,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        typing-extensions: ["4.13.0", "4.14.0", "4.15.0", "latest"]
+        typing-extensions: ["4.14.0", "4.15.0", "latest"]
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
