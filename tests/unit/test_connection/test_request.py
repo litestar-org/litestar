@@ -130,7 +130,7 @@ def test_request_url_for_by_name() -> None:
         pass
 
     @get(path="/test", signature_namespace={"dict": dict})
-    def root(request: Request[Any, Any, State]) -> dict[str, str]:
+    def root(request: Request[Any, Any, State]) -> Dict[str, str]:  # noqa: UP006
         return {"url": request.url_for(proxy)}
 
     with create_test_client(route_handlers=[proxy, root]) as client:

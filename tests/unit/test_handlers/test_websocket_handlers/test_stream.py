@@ -164,7 +164,7 @@ def test_websocket_stream_applies_guards() -> None:
         guard_called = True
 
     @websocket_stream("/", guards=[custom_guard])
-    async def handler() -> AsyncGenerator[dict[str, str], None]:
+    async def handler() -> AsyncGenerator[Dict[str, str], None]:  # noqa: UP006
         yield {"Urfaust": "Gespinnst"}
         yield {"Des": "Verderbens"}
 

@@ -463,7 +463,7 @@ def test_additional_responses_with_custom_examples(create_factory: CreateFactory
 
     factory = create_factory(handler)
     responses = factory.create_additional_responses()
-    status_code, response = next(responses)
+    _status_code, response = next(responses)
     assert response.content
     assert response.content["application/json"].examples == {
         "dataclassperson-example-1": Example(
@@ -498,7 +498,7 @@ def test_additional_responses_with_custom_example_ids(create_factory: CreateFact
 
     factory = create_factory(handler)
     responses = factory.create_additional_responses()
-    status_code, response = next(responses)
+    _status_code, response = next(responses)
     assert response.content
     assert isinstance(response.content["application/json"], OpenAPIMediaType)
     assert response.content["application/json"].examples is not None

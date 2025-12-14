@@ -215,7 +215,7 @@ def test_get_logger_without_logging_config() -> None:
     with create_test_client(logging_config=None) as client:
         with pytest.raises(
             ImproperlyConfiguredException,
-            match="cannot call '.get_logger' without passing 'logging_config' to the Litestar constructor first",
+            match=r"cannot call '.get_logger' without passing 'logging_config' to the Litestar constructor first",
         ):
             client.app.get_logger()
 
