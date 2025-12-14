@@ -14,7 +14,7 @@ T = TypeVar("T")
 D = TypeVar("D")
 
 try:
-    async_next = anext
+    async_next = anext  # pyright: ignore
 except NameError:
 
     async def async_next(gen: AsyncGenerator[T, Any], default: D | EmptyType = Empty) -> T | D:  # type: ignore[misc]

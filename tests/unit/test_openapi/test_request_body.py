@@ -185,7 +185,7 @@ def test_request_body_generation_with_dto(create_request: RequestBodyFactory) ->
 
 def test_unwrap_read_only() -> None:
     class SchemaDict(TypedDict):
-        id: ReadOnly[int]
+        id: ReadOnly[int]  # pyright: ignore
         email: str
 
     @post("/")
