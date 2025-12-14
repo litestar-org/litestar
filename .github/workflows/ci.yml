@@ -5,8 +5,7 @@ on:
   merge_group:
   push:
     branches:
-      - main
-      - v1.51
+      - v2
 
 env:
   UV_LOCKED: 1
@@ -47,7 +46,6 @@ jobs:
       - name: Install uv
         uses: astral-sh/setup-uv@v6
         with:
-          version: "0.5.4"
           enable-cache: true
 
       - name: Run mypy
@@ -66,7 +64,6 @@ jobs:
       - name: Install uv
         uses: astral-sh/setup-uv@v6
         with:
-          version: "0.5.4"
           enable-cache: true
 
       - name: Run pyright
@@ -85,7 +82,6 @@ jobs:
       - name: Install uv
         uses: astral-sh/setup-uv@v6
         with:
-          version: "0.5.4"
           enable-cache: true
 
       - name: Run slotscheck
@@ -96,10 +92,10 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12", "3.13"]
+        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12", "3.13", "3.14"]
     uses: ./.github/workflows/test.yml
     with:
-      coverage: ${{ (matrix.python-version == '3.12' || matrix.python-version == '3.8') }}
+      coverage: ${{ (matrix.python-version == '3.14' || matrix.python-version == '3.8') }}
       python-version: ${{ matrix.python-version }}
 
   # add an aggregate step here to check if any of the steps of the matrix 'test' job
@@ -119,7 +115,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        typing-extensions: ["4.12.1", "4.13.1", "latest"]
+        typing-extensions: ["4.14.0", "4.15.0", "latest"]
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -168,7 +164,6 @@ jobs:
       - name: Install uv
         uses: astral-sh/setup-uv@v6
         with:
-          version: "0.5.4"
           enable-cache: true
 
       - name: Install Build Dependencies
@@ -278,7 +273,6 @@ jobs:
       - name: Install uv
         uses: astral-sh/setup-uv@v6
         with:
-          version: "0.5.4"
           enable-cache: true
 
       - name: Set pythonpath

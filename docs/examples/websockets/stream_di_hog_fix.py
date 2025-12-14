@@ -2,6 +2,7 @@ import asyncio
 from typing import AsyncGenerator
 
 from app.lib import ping_external_resource
+
 from litestar import Litestar, websocket_stream
 
 RESOURCE_LOCK = asyncio.Lock()

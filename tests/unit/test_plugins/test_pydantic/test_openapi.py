@@ -1,4 +1,5 @@
 # pyright: reportOptionalSubscript=false, reportGeneralTypeIssues=false
+import sys
 from datetime import date, timedelta
 from decimal import Decimal
 from types import ModuleType
@@ -20,11 +21,9 @@ from litestar.testing import TestClient, create_test_client
 from litestar.typing import FieldDefinition
 from litestar.utils import is_class_and_subclass
 from tests.helpers import get_schema_for_field_definition
-from tests.unit.test_plugins.test_pydantic.models import (
+from tests.unit.test_plugins.test_pydantic.models_v2 import (
     PydanticDataclassPerson,
     PydanticPerson,
-    PydanticV1DataclassPerson,
-    PydanticV1Person,
 )
 
 from . import PydanticVersion
@@ -133,6 +132,7 @@ def plugin() -> PydanticSchemaPlugin:
 
 
 @pytest.mark.parametrize("annotation", constrained_collection_v1)
+@pytest.mark.skipif(sys.version_info >= (3, 14), reason="not supported")
 def test_create_collection_constrained_field_schema_pydantic_v1(
     annotation: Any,
     schema_creator: SchemaCreator,
@@ -231,6 +231,7 @@ def test_create_collection_constrained_field_schema_sub_fields(
 
 
 @pytest.mark.parametrize("annotation", constrained_string_v1)
+@pytest.mark.skipif(sys.version_info >= (3, 14), reason="not supported")
 def test_create_string_constrained_field_schema_pydantic_v1(
     annotation: Any,
     schema_creator: SchemaCreator,
@@ -295,6 +296,7 @@ def test_create_byte_constrained_field_schema_pydantic_v2(
 
 
 @pytest.mark.parametrize("annotation", constrained_numbers_v1)
+@pytest.mark.skipif(sys.version_info >= (3, 14), reason="not supported")
 def test_create_numerical_constrained_field_schema_pydantic_v1(
     annotation: Any,
     schema_creator: SchemaCreator,
@@ -343,7 +345,7 @@ def test_create_numerical_constrained_field_schema_pydantic_v2(
 ) -> None:
     annotation = make_constraint(**constraint_kwargs)
 
-    class Model(pydantic_v1.BaseModel):
+    class Model(pydantic_v2.BaseModel):
         field: annotation  # type: ignore[valid-type]
 
     schema = schema_creator.for_plugin(FieldDefinition.from_annotation(Model), plugin).properties["field"]  # pyright: ignore[reportAttributeAccessIssue]
@@ -357,6 +359,7 @@ def test_create_numerical_constrained_field_schema_pydantic_v2(
 
 
 @pytest.mark.parametrize("annotation", constrained_dates_v1)
+@pytest.mark.skipif(sys.version_info >= (3, 14), reason="not supported")
 def test_create_date_constrained_field_schema_pydantic_v1(
     annotation: Any,
     schema_creator: SchemaCreator,
@@ -419,6 +422,7 @@ def test_create_date_constrained_field_schema_pydantic_v2(
         *constrained_dates_v1,
     ],
 )
+@pytest.mark.skipif(sys.version_info >= (3, 14), reason="not supported")
 def test_create_constrained_field_schema_v1(
     annotation: Any,
     schema_creator: SchemaCreator,
@@ -450,8 +454,47 @@ def test_create_constrained_field_schema_v2(
     assert schema_creator.for_plugin(FieldDefinition.from_annotation(Model), plugin).properties["field"]  # type: ignore[index, union-attr]
 
 
-@pytest.mark.parametrize("cls", (PydanticPerson, PydanticDataclassPerson, PydanticV1Person, PydanticV1DataclassPerson))
-def test_spec_generation(cls: Any) -> None:
+@pytest.fixture()
+def pydantic_v1_person(request: pytest.FixtureRequest) -> Any:
+    from tests.unit.test_plugins.test_pydantic.models_v1 import PydanticV1Person
+
+    return PydanticV1Person
+
+
+@pytest.fixture()
+def pydantic_v1_dataclass_person(request: pytest.FixtureRequest) -> Any:
+    from tests.unit.test_plugins.test_pydantic.models_v1 import PydanticV1DataclassPerson
+
+    return PydanticV1DataclassPerson
+
+
+@pytest.fixture()
+def pydantic_v2_person(request: pytest.FixtureRequest) -> Any:
+    return PydanticPerson
+
+
+@pytest.fixture()
+def pydantic_v2_dataclass_person(request: pytest.FixtureRequest) -> Any:
+    return PydanticDataclassPerson
+
+
+@pytest.mark.parametrize(
+    "fixture_name",
+    [
+        pytest.param(
+            "pydantic_v1_person", marks=[pytest.mark.skipif(sys.version_info >= (3, 14), reason="not supported")]
+        ),
+        pytest.param(
+            "pydantic_v1_dataclass_person",
+            marks=[pytest.mark.skipif(sys.version_info >= (3, 14), reason="not supported")],
+        ),
+        "pydantic_v2_person",
+        "pydantic_v2_dataclass_person",
+    ],
+)
+def test_spec_generation(fixture_name: str, request: pytest.FixtureRequest) -> None:
+    cls: Any = request.getfixturevalue(fixture_name)
+
     @post("/")
     def handler(data: cls) -> cls:
         return data
@@ -490,6 +533,7 @@ def test_spec_generation(cls: Any) -> None:
         }
 
 
+@pytest.mark.skipif(sys.version_info >= (3, 14), reason="not supported")
 def test_schema_generation_v1() -> None:
     class Lookup(pydantic_v1.BaseModel):
         id: Annotated[
@@ -674,6 +718,7 @@ def test_schema_by_alias_plugin_override(base_model: AnyBaseModelType, pydantic_
         assert response.json() == {response_key: "foo"}
 
 
+@pytest.mark.skipif(sys.version_info >= (3, 14), reason="not supported")
 def test_create_schema_for_field_v1() -> None:
     class Model(pydantic_v1.BaseModel):
         value: str = pydantic_v1.Field(
@@ -752,6 +797,9 @@ class Foo(BaseModel):
     foo: Annotated[int, "Foo description"]
 """
     )
+    if pydantic_version == "v1" and sys.version_info >= (3, 14):
+        pytest.skip()
+
     creator = SchemaCreator(plugins=[PydanticSchemaPlugin()])
     creator.for_field_definition(FieldDefinition.from_annotation(module.Foo))
     schemas = creator.schema_registry.generate_components_schemas()

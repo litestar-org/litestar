@@ -40,12 +40,12 @@ def test_re_exports() -> None:
 
     # deprecated, to be removed later
     with pytest.warns(DeprecationWarning):
-        assert sqlalchemy.AuditColumns is sa_base.AuditColumns  # type: ignore[attr-defined]
+        assert sqlalchemy.AuditColumns is sa_base.AuditColumns
         assert sqlalchemy.BigIntAuditBase is sa_base.BigIntAuditBase
         assert sqlalchemy.BigIntBase is sa_base.BigIntBase
-        assert sqlalchemy.BigIntPrimaryKey is sa_base.BigIntPrimaryKey  # type: ignore[attr-defined]
+        assert sqlalchemy.BigIntPrimaryKey is sa_base.BigIntPrimaryKey
         assert sqlalchemy.CommonTableAttributes is sa_base.CommonTableAttributes
         assert sqlalchemy.UUIDAuditBase is sa_base.UUIDAuditBase
         assert sqlalchemy.UUIDBase is sa_base.UUIDBase
-        assert sqlalchemy.UUIDPrimaryKey is sa_base.UUIDPrimaryKey  # type: ignore[attr-defined]
+        assert sqlalchemy.UUIDPrimaryKey is sa_base.UUIDPrimaryKey
         assert sqlalchemy.orm_registry is sa_base.orm_registry

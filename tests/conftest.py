@@ -17,7 +17,7 @@ import pytest
 from pytest_lazy_fixtures import lf
 from redis.asyncio import Redis as AsyncRedis
 from redis.client import Redis
-from time_machine import travel
+from time_machine import Coordinates, travel
 from valkey.asyncio import Valkey as AsyncValkey
 from valkey.client import Valkey
 

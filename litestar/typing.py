@@ -32,7 +32,7 @@ from typing_extensions import (
 )
 
 try:
-    from typing import TypeAliasType  # type: ignore[attr-defined]
+    from typing import TypeAliasType  # pyright: ignore
 
     TypeAliasTypes = (TypeAliasType, TeTypeAliasType)
 except ImportError:

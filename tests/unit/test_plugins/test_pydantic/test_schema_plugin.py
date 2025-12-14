@@ -1,4 +1,5 @@
 import datetime
+import sys
 from decimal import Decimal
 from typing import Any, Generic, Optional, Type, TypeVar, Union
 
@@ -32,7 +33,15 @@ class PydanticV2Generic(pydantic_v2.BaseModel, Generic[T]):
     annotated_foo: Annotated[T, object()]
 
 
-@pytest.mark.parametrize("model", [PydanticV1Generic, PydanticV2Generic])
+@pytest.mark.parametrize(
+    "model",
+    [
+        pytest.param(
+            PydanticV1Generic, marks=[pytest.mark.skipif(sys.version_info >= (3, 14), reason="not supported")]
+        ),
+        PydanticV2Generic,
+    ],
+)
 def test_schema_generation_with_generic_classes(model: Type[Union[PydanticV1Generic, PydanticV2Generic]]) -> None:
     cls = model[int]  # type: ignore[index]
     field_definition = FieldDefinition.from_kwarg(name=get_name(cls), annotation=cls)
@@ -130,6 +139,7 @@ def test_exclude_private_fields(model_class: Type[Union[pydantic_v1.BaseModel, p
     assert not schema.properties
 
 
+@pytest.mark.skipif(sys.version_info >= (3, 14), reason="not supported")
 def test_v1_constrained_str_with_default_factory_does_not_generate_title() -> None:
     # https://github.com/litestar-org/litestar/issues/3710
     class Model(pydantic_v1.BaseModel):

@@ -45,7 +45,7 @@ except ImportError:
     from pydantic import ValidationError as ValidationErrorV1  # type: ignore[assignment]
 
     ValidationErrorV2 = ValidationErrorV1  # type: ignore[assignment, misc]
-    ModelType = "pydantic_v1.BaseModel"  # type: ignore[misc]
+    ModelType = "pydantic_v1.BaseModel"  # type: ignore[misc, assignment]
 
 
 T = TypeVar("T", bound="ModelType | Collection[ModelType]")

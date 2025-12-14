@@ -18,9 +18,9 @@ from typing_extensions import (
 )
 
 try:
-    from typing import TypeAliasType  # type: ignore[attr-defined]
+    from typing import TypeAliasType  # pyright: ignore
 except ImportError:
-    TypeAliasType = TeTypeAliasType
+    TypeAliasType = TeTypeAliasType  # type: ignore[misc]
 
 from litestar import get
 from litestar.exceptions import LitestarWarning
@@ -266,7 +266,7 @@ def test_field_definition_is_typeddict_predicate() -> None:
 
         assert FieldDefinition.from_annotation(GenericTypedDictClass).is_typeddict_type is True
         assert FieldDefinition.from_annotation(GenericTypedDictClass[int]).is_typeddict_type is True
-        assert FieldDefinition.from_annotation(GenericTypedDictClass[T]).is_typeddict_type is True
+        assert FieldDefinition.from_annotation(GenericTypedDictClass[T]).is_typeddict_type is True  # type: ignore[valid-type]
 
 
 def test_field_definition_is_subclass_of() -> None:

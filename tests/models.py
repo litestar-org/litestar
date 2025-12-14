@@ -35,7 +35,7 @@ class DataclassPerson:
 class TypedDictPerson(TypedDict):
     first_name: Required[str]
     last_name: Required[str]
-    id: Required[ReadOnly[str]]
+    id: Required[ReadOnly[str]]  # pyright: ignore
     optional: NotRequired[Optional[str]]
     complex: Required[Dict[str, List[Dict[str, str]]]]
     pets: NotRequired[Optional[List[DataclassPet]]]
