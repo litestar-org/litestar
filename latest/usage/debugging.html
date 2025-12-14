@@ -1425,7 +1425,6 @@ document.write(`
 <li class="toctree-l1 has-children"><a class="reference internal" href="../topics/index.html">Topics</a><input class="toctree-checkbox" id="toctree-checkbox-28" name="toctree-checkbox-28" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-28"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../topics/sync-vs-async.html">Sync vs. Async</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../topics/deployment/index.html">Deployment</a><input class="toctree-checkbox" id="toctree-checkbox-29" name="toctree-checkbox-29" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-29"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../topics/deployment/nginx-unit.html">NGINX Unit</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../topics/deployment/manually-with-asgi-server.html">Manually with ASGI server</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../topics/deployment/docker.html">Docker</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../topics/deployment/supervisor.html">Supervisor (Linux)</a></li>
@@ -1545,7 +1544,7 @@ document.write(`
 <h1>Debugging<a class="headerlink" href="#debugging" title="Link to this heading">#</a></h1>
 <section id="using-the-python-debugger">
 <h2>Using the Python debugger<a class="headerlink" href="#using-the-python-debugger" title="Link to this heading">#</a></h2>
-<p>You can configure Litestar to drop into the <a class="reference external" href="https://docs.python.org/3/library/pdb.html" title="(in Python v3.13)"><span class="xref std std-doc">Python Debugger</span></a>
+<p>You can configure Litestar to drop into the <a class="reference external" href="https://docs.python.org/3/library/pdb.html" title="(in Python v3.14)"><span class="xref std std-doc">Python Debugger</span></a>
 when an exception occurs. This can be configured in different ways:</p>
 <dl>
 <dt>Configuring <code class="docutils literal notranslate"><span class="pre">Litestar</span></code> with the <code class="docutils literal notranslate"><span class="pre">pdb_on_exception</span></code> option</dt><dd><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">pdb_on_exception</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -1624,7 +1623,7 @@ running uvicorn process via <code class="docutils literal notranslate"><span cla
 <li><dl>
 <dt>In the opened JSON file, alter the configuration as follows:</dt><dd><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
 <span class="w">    </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Python: Litestar app&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;python&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;debugpy&quot;</span><span class="p">,</span>
 <span class="w">    </span><span class="nt">&quot;request&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;launch&quot;</span><span class="p">,</span>
 <span class="w">    </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;litestar&quot;</span><span class="p">,</span>
 <span class="w">    </span><span class="nt">&quot;justMyCode&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
@@ -1663,7 +1662,7 @@ running uvicorn process via <code class="docutils literal notranslate"><span cla
 <li><dl>
 <dt>In the opened JSON file, alter the configuration as follows:</dt><dd><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
 <span class="w">    </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Python: Litestar app&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;python&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;debugpy&quot;</span><span class="p">,</span>
 <span class="w">    </span><span class="nt">&quot;request&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;launch&quot;</span><span class="p">,</span>
 <span class="w">    </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;uvicorn&quot;</span><span class="p">,</span>
 <span class="w">    </span><span class="nt">&quot;justMyCode&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>

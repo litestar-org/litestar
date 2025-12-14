@@ -3,6 +3,71 @@
 Litestar 2 Changelog
 ====================
 
+.. changelog:: 2.19.0
+    :date: 2025-12-14
+
+    .. change:: Add sniffio as dependency
+      :type: bugfix
+      :pr: 4522
+
+      Backport fix for the sniffio dependency.
+
+    .. change:: PydanticDTO - Support for ``AwareDatetime`` serialization
+      :type: bugfix
+      :pr: 4503
+      :issue: 4502
+
+      Fix an issue where ``pydantic.AwareDatetime`` was not correctly mapped in
+      ``PydanticDTO``. The type is now explicitly mapped to ``str`` to ensure correct
+      serialization.
+
+    .. change:: Improve ``Accept.best_match`` typing
+      :type: bugfix
+      :pr: 4487
+
+      Fix a typing issue where ``best_match`` returned ``Optional[str]`` even when a
+      non-optional default value was provided.
+
+    .. change:: Do not swallow ``KeyError`` in ``default_serializer``
+      :type: bugfix
+      :pr: 4420
+
+      Prevent :exc:`KeyError` exceptions raised by encoders from being silently
+      swallowed.
+
+    .. change:: Use ``inspect.iscoroutinefunction`` for Python 3.14 compatibility
+      :type: bugfix
+      :pr: 4405
+
+      Address a deprecation warning introduced in Python 3.14.
+
+    .. change:: WebSocket listeners: Ensure ``guards`` are always passed to underlying handler
+      :type: bugfix
+      :pr: 4414
+
+      Fix an issue where ``guards`` were incorrectly passed to the underlying handler
+
+    .. change:: Support ``typing.ReadOnly`` for ``TypedDict`` schemas
+      :type: feature
+      :pr: 4424
+      :issue: 4423
+
+      Added support for ``typing.ReadOnly`` in ``TypedDict`` schema generation.
+
+    .. change:: Allow passing handlers to ``route_reverse``
+      :type: feature
+      :pr: 4506
+      :issue: 4498
+
+      Allow passing route handlers directly to :meth:`~Litestar.route_reverse`.
+
+    .. change:: Support Python 3.14
+      :type: feature
+      :pr: 4524
+
+      Add tests and apply necessary package updates to support Python 3.14.
+
+
 .. changelog:: 2.18.0
     :date: 2025-10-05
 

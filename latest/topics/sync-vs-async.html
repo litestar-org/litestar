@@ -1425,7 +1425,6 @@ document.write(`
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">Topics</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-28" name="toctree-checkbox-28" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-28"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">Sync vs. Async</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="deployment/index.html">Deployment</a><input class="toctree-checkbox" id="toctree-checkbox-29" name="toctree-checkbox-29" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-29"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="deployment/nginx-unit.html">NGINX Unit</a></li>
 <li class="toctree-l3"><a class="reference internal" href="deployment/manually-with-asgi-server.html">Manually with ASGI server</a></li>
 <li class="toctree-l3"><a class="reference internal" href="deployment/docker.html">Docker</a></li>
 <li class="toctree-l3"><a class="reference internal" href="deployment/supervisor.html">Supervisor (Linux)</a></li>
@@ -1603,7 +1602,7 @@ don’t spend a significant amount of time waiting.</p>
 <h3>Asynchronous CPU-bound tasks<a class="headerlink" href="#asynchronous-cpu-bound-tasks" title="Link to this heading">#</a></h3>
 <p>In some cases, CPU bound tasks can be made asynchronous, by introducing points for the
 event loop to switch to other tasks. An example of this would be an inner loop which
-awaits <a class="reference external" href="https://docs.python.org/3/library/asyncio-task.html#asyncio.sleep" title="(in Python v3.13)"><code class="xref py py-func docutils literal notranslate"><span class="pre">asyncio.sleep(0)</span></code></a> at the beginning of each iteration.</p>
+awaits <a class="reference external" href="https://docs.python.org/3/library/asyncio-task.html#asyncio.sleep" title="(in Python v3.14)"><code class="xref py py-func docutils literal notranslate"><span class="pre">asyncio.sleep(0)</span></code></a> at the beginning of each iteration.</p>
 <p>This technique is mostly useful for long-running tasks, where each individual step does
 not block for an extended period of time.</p>
 </section>
@@ -1643,7 +1642,7 @@ necessary.</p>
 non-blocking way, it does not speed up its execution. Computationally intensive tasks
 that are performed regularly should be offloaded into a different process, to make use
 of multiple CPU cores.</p>
-<p>This can for example be achieve by using <a class="reference external" href="https://anyio.readthedocs.io/en/stable/api.html#anyio.to_process.run_sync" title="(in AnyIO v4.11.0)"><code class="xref py py-func docutils literal notranslate"><span class="pre">anyio.to_process.run_sync()</span></code></a>.</p>
+<p>This can for example be achieve by using <a class="reference external" href="https://anyio.readthedocs.io/en/stable/api.html#anyio.to_process.run_sync" title="(in AnyIO v4.12.0)"><code class="xref py py-func docutils literal notranslate"><span class="pre">anyio.to_process.run_sync()</span></code></a>.</p>
 </section>
 </section>
 <section id="warnings-about-the-mode-of-execution">

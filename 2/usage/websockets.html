@@ -1425,7 +1425,6 @@ document.write(`
 <li class="toctree-l1 has-children"><a class="reference internal" href="../topics/index.html">Topics</a><input class="toctree-checkbox" id="toctree-checkbox-28" name="toctree-checkbox-28" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-28"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../topics/sync-vs-async.html">Sync vs. Async</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../topics/deployment/index.html">Deployment</a><input class="toctree-checkbox" id="toctree-checkbox-29" name="toctree-checkbox-29" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-29"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../topics/deployment/nginx-unit.html">NGINX Unit</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../topics/deployment/manually-with-asgi-server.html">Manually with ASGI server</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../topics/deployment/docker.html">Docker</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../topics/deployment/supervisor.html">Supervisor (Linux)</a></li>
@@ -1591,7 +1590,7 @@ asynchronous.</p>
 <h3>Receiving data<a class="headerlink" href="#receiving-data" title="Link to this heading">#</a></h3>
 <p>Data can be received in the listener via the <code class="docutils literal notranslate"><span class="pre">data</span></code> parameter. The data passed to this
 will be converted / parsed according to the given type annotation and supports
-<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code></a>, or arbitrary <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a> / or <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a> in the
+<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code></a>, or arbitrary <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a> / or <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a> in the
 form of JSON.
 .. important:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>The listeners will default to JSON unless `data` is annotated with `str` or `bytes`
@@ -1677,11 +1676,11 @@ is a limitation of the current implementation and will change in future versions
 <h3>Sending data<a class="headerlink" href="#sending-data" title="Link to this heading">#</a></h3>
 <p>Sending data is done by simply returning the value to be sent from the handler function.
 Similar to receiving data, type annotations configure how the data is being handled.
-Values that are not <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a> or <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code></a> are assumed to be JSON encodable and
+Values that are not <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a> or <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code></a> are assumed to be JSON encodable and
 will be serialized accordingly before being sent. This serialization is available for
 all data types currently supported by Litestar (
-<a class="reference external" href="https://docs.python.org/3/library/dataclasses.html" title="(in Python v3.13)"><span class="xref std std-doc">dataclasses</span></a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.TypedDict" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypedDict</span></code></a>,
-<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.NamedTuple" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">NamedTuple</span></code></a>,  <a class="reference external" href="https://jcristharif.com/msgspec/api.html#msgspec.Struct" title="(in msgspec)"><code class="xref py py-class docutils literal notranslate"><span class="pre">msgspec.Struct</span></code></a>, etc.), including
+<a class="reference external" href="https://docs.python.org/3/library/dataclasses.html" title="(in Python v3.14)"><span class="xref std std-doc">dataclasses</span></a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.TypedDict" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypedDict</span></code></a>,
+<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.NamedTuple" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">NamedTuple</span></code></a>,  <a class="reference external" href="https://jcristharif.com/msgspec/api.html#msgspec.Struct" title="(in msgspec)"><code class="xref py py-class docutils literal notranslate"><span class="pre">msgspec.Struct</span></code></a>, etc.), including
 DTOs.</p>
 <div class="sd-tab-set docutils">
 <input checked="checked" id="sd-tab-item-5" name="sd-tab-set-2" type="radio">
@@ -2123,10 +2122,10 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <section id="serialization">
 <h3>Serialization<a class="headerlink" href="#serialization" title="Link to this heading">#</a></h3>
 <p>Just like with route handlers, type annotations configure how the data is being handled.
-<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a> or <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code></a> will be sent as-is, while everything else will be encoded
+<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a> or <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code></a> will be sent as-is, while everything else will be encoded
 as JSON before being sent. This serialization is available for all data types currently
-supported by Litestar (<a class="reference external" href="https://docs.python.org/3/library/dataclasses.html" title="(in Python v3.13)"><span class="xref std std-doc">dataclasses</span></a>,
-<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.TypedDict" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypedDict</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.NamedTuple" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">NamedTuple</span></code></a>,
+supported by Litestar (<a class="reference external" href="https://docs.python.org/3/library/dataclasses.html" title="(in Python v3.14)"><span class="xref std std-doc">dataclasses</span></a>,
+<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.TypedDict" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypedDict</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.NamedTuple" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">NamedTuple</span></code></a>,
 <a class="reference external" href="https://jcristharif.com/msgspec/api.html#msgspec.Struct" title="(in msgspec)"><code class="xref py py-class docutils literal notranslate"><span class="pre">msgspec.Struct</span></code></a>, etc.), including DTOs.</p>
 </section>
 <section id="id1">
@@ -2149,6 +2148,7 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">AsyncGenerator</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">app.lib</span><span class="w"> </span><span class="kn">import</span> <span class="n">ping_external_resource</span>
+
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">websocket_stream</span>
 
 <span class="n">RESOURCE_LOCK</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Lock</span><span class="p">()</span>
@@ -2181,6 +2181,7 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">AsyncGenerator</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">app.lib</span><span class="w"> </span><span class="kn">import</span> <span class="n">ping_external_resource</span>
+
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">websocket_stream</span>
 
 <span class="n">RESOURCE_LOCK</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Lock</span><span class="p">()</span>
@@ -2215,6 +2216,7 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">AsyncGenerator</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">app.lib</span><span class="w"> </span><span class="kn">import</span> <span class="n">ping_external_resource</span>
+
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">websocket_stream</span>
 
 <span class="n">RESOURCE_LOCK</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Lock</span><span class="p">()</span>
@@ -2243,6 +2245,7 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">AsyncGenerator</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">app.lib</span><span class="w"> </span><span class="kn">import</span> <span class="n">ping_external_resource</span>
+
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">websocket_stream</span>
 
 <span class="n">RESOURCE_LOCK</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Lock</span><span class="p">()</span>
@@ -2567,8 +2570,8 @@ how to test</label><div class="sd-tab-content docutils">
 <p>WebSockets have two transport modes: <code class="docutils literal notranslate"><span class="pre">text</span></code> and <code class="docutils literal notranslate"><span class="pre">binary</span></code>. They dictate how bytes are
 transferred over the wire and can be set independently from another, i.e. a socket can
 send <code class="docutils literal notranslate"><span class="pre">binary</span></code> and receive <code class="docutils literal notranslate"><span class="pre">text</span></code></p>
-<p>It may seem intuitive that <code class="docutils literal notranslate"><span class="pre">text</span></code> and <code class="docutils literal notranslate"><span class="pre">binary</span></code> should map to <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a> and
-<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code></a> respectively, but this is not the case. WebSockets can receive and
+<p>It may seem intuitive that <code class="docutils literal notranslate"><span class="pre">text</span></code> and <code class="docutils literal notranslate"><span class="pre">binary</span></code> should map to <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a> and
+<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code></a> respectively, but this is not the case. WebSockets can receive and
 send data in any format, independently of the mode. The mode only affects how the
 bytes are handled during transport (i.e. on the protocol level). In most cases the
 default mode - <code class="docutils literal notranslate"><span class="pre">text</span></code> - is all that’s needed. Binary transport is usually employed

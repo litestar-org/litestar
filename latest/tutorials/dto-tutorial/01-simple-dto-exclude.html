@@ -1421,7 +1421,6 @@ document.write(`
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../topics/index.html">Topics</a><input class="toctree-checkbox" id="toctree-checkbox-28" name="toctree-checkbox-28" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-28"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../topics/sync-vs-async.html">Sync vs. Async</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../topics/deployment/index.html">Deployment</a><input class="toctree-checkbox" id="toctree-checkbox-29" name="toctree-checkbox-29" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-29"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../topics/deployment/nginx-unit.html">NGINX Unit</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../topics/deployment/manually-with-asgi-server.html">Manually with ASGI server</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../topics/deployment/docker.html">Docker</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../topics/deployment/supervisor.html">Supervisor (Linux)</a></li>
@@ -1583,7 +1582,7 @@ handler is also instructed to use the DTO to handle the response.</p>
 exclude the <code class="docutils literal notranslate"><span class="pre">email</span></code> field from the DTO, but there are many other configuration options available and we’ll cover most
 of them in this tutorial.</p>
 <p>The <a class="reference internal" href="../../reference/dto/dataclass_dto.html#litestar.dto.dataclass_dto.DataclassDTO" title="litestar.dto.dataclass_dto.DataclassDTO"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataclassDTO</span></code></a> class is a factory class that specializes
-in creating DTOs from dataclasses. It is also a <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Generic" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Generic</span></code></a> class, which means that it accepts
+in creating DTOs from dataclasses. It is also a <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Generic" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Generic</span></code></a> class, which means that it accepts
 a type parameter. When we provide a type parameter to a generic class it makes that class a specialized version of the
 generic class. In this case, we create a DTO type that specializes in transferring data to and from instances of the
 <code class="docutils literal notranslate"><span class="pre">Person</span></code> class (<code class="docutils literal notranslate"><span class="pre">DataclassDTO[Person]</span></code>).</p>

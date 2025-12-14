@@ -1425,7 +1425,6 @@ document.write(`
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../topics/index.html">Topics</a><input class="toctree-checkbox" id="toctree-checkbox-28" name="toctree-checkbox-28" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-28"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../topics/sync-vs-async.html">Sync vs. Async</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../topics/deployment/index.html">Deployment</a><input class="toctree-checkbox" id="toctree-checkbox-29" name="toctree-checkbox-29" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-29"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../topics/deployment/nginx-unit.html">NGINX Unit</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../topics/deployment/manually-with-asgi-server.html">Manually with ASGI server</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../topics/deployment/docker.html">Docker</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../topics/deployment/supervisor.html">Supervisor (Linux)</a></li>
@@ -2027,8 +2026,19 @@ rapidoc</label><div class="sd-tab-content docutils">
 redoc</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.openapi.plugins</span><span class="w"> </span><span class="kn">import</span> <span class="n">RedocRenderPlugin</span>
 
-<span class="n">redoc_plugin</span> <span class="o">=</span> <span class="n">RedocRenderPlugin</span><span class="p">(</span><span class="n">version</span><span class="o">=</span><span class="s2">&quot;next&quot;</span><span class="p">,</span> <span class="n">google_fonts</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="s2">&quot;/redoc&quot;</span><span class="p">)</span>
+<span class="n">redoc_plugin</span> <span class="o">=</span> <span class="n">RedocRenderPlugin</span><span class="p">(</span>
+    <span class="n">version</span><span class="o">=</span><span class="s2">&quot;latest&quot;</span><span class="p">,</span>
+    <span class="n">google_fonts</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">path</span><span class="o">=</span><span class="s2">&quot;/redoc&quot;</span><span class="p">,</span>
+    <span class="n">js_url</span><span class="o">=</span><span class="s2">&quot;https://cdn.company.internal/redoc/custom-redoc.js&quot;</span><span class="p">,</span>
+<span class="p">)</span>
 </pre></div>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>Setting <code class="docutils literal notranslate"><span class="pre">js_url</span></code> lets you point the ReDoc bundle to any CDN or internal host. In <code class="docutils literal notranslate"><span class="pre">redoc_config.py</span></code>
+we override it to <code class="docutils literal notranslate"><span class="pre">https://cdn.company.internal/redoc/custom-redoc.js</span></code>. When provided, <code class="docutils literal notranslate"><span class="pre">js_url</span></code> takes
+precedence over <code class="docutils literal notranslate"><span class="pre">version</span></code>.</p>
 </div>
 </div>
 <input id="sd-tab-item-24" name="sd-tab-set-8" type="radio">

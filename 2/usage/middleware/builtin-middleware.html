@@ -1425,7 +1425,6 @@ document.write(`
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../topics/index.html">Topics</a><input class="toctree-checkbox" id="toctree-checkbox-28" name="toctree-checkbox-28" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-28"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../topics/sync-vs-async.html">Sync vs. Async</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../topics/deployment/index.html">Deployment</a><input class="toctree-checkbox" id="toctree-checkbox-29" name="toctree-checkbox-29" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-29"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../topics/deployment/nginx-unit.html">NGINX Unit</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../topics/deployment/manually-with-asgi-server.html">Manually with ASGI server</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../topics/deployment/docker.html">Docker</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../topics/deployment/supervisor.html">Supervisor (Linux)</a></li>
@@ -1682,7 +1681,7 @@ list of domains to <a class="reference internal" href="../../reference/app.html#
 <p>You can use wildcard prefixes (<code class="docutils literal notranslate"><span class="pre">*.</span></code>) in the beginning of a domain to match any combination of subdomains. Thus,
 <code class="docutils literal notranslate"><span class="pre">*.example.com</span></code> will match <code class="docutils literal notranslate"><span class="pre">www.example.com</span></code> but also <code class="docutils literal notranslate"><span class="pre">x.y.z.example.com</span></code> etc. You can also simply put <code class="docutils literal notranslate"><span class="pre">*</span></code>
 in trusted hosts, which means allow all. This is akin to turning the middleware off, so in this case it may be
-better to not enable it in the first place. You should note that a wildcard can only be used only in the prefix of a
+better to not enable it in the first place. You should note that a wildcard can only be used in the prefix of a
 domain name, not in the middle or end. Doing so will result in a validation exception being raised.</p>
 </div>
 </section>

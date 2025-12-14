@@ -1421,7 +1421,6 @@ document.write(`
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../topics/index.html">Topics</a><input class="toctree-checkbox" id="toctree-checkbox-28" name="toctree-checkbox-28" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-28"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../topics/sync-vs-async.html">Sync vs. Async</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../topics/deployment/index.html">Deployment</a><input class="toctree-checkbox" id="toctree-checkbox-29" name="toctree-checkbox-29" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-29"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../topics/deployment/nginx-unit.html">NGINX Unit</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../topics/deployment/manually-with-asgi-server.html">Manually with ASGI server</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../topics/deployment/docker.html">Docker</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../topics/deployment/supervisor.html">Supervisor (Linux)</a></li>
@@ -1578,7 +1577,7 @@ control the data that we receive from the client.</p>
 <p>As before, <code class="docutils literal notranslate"><span class="pre">ReadDTO</span></code> is configured for the handler, and excludes the <code class="docutils literal notranslate"><span class="pre">email</span></code> attribute from return payloads.</p>
 <p>Our handler is now a <a class="reference internal" href="../../reference/handlers.html#litestar.handlers.post" title="litestar.handlers.post"><code class="xref py py-class docutils literal notranslate"><span class="pre">&#64;post()</span></code></a> handler, that is annotated to both accept and return an
 instance of <code class="docutils literal notranslate"><span class="pre">Person</span></code>.</p>
-<p>Litestar can natively decode request payloads into Python <a class="reference external" href="https://docs.python.org/3/library/dataclasses.html#dataclasses.dataclass" title="(in Python v3.13)"><code class="xref py py-func docutils literal notranslate"><span class="pre">dataclasses</span></code></a>, so we don’t
+<p>Litestar can natively decode request payloads into Python <a class="reference external" href="https://docs.python.org/3/library/dataclasses.html#dataclasses.dataclass" title="(in Python v3.14)"><code class="xref py py-func docutils literal notranslate"><span class="pre">dataclasses</span></code></a>, so we don’t
 <em>need</em> a DTO defined for the inbound data for this script to work.</p>
 <p>Now that we need to send data to the server to test our program, you can use a tool like
 <a class="reference external" href="https://www.postman.com/">Postman</a> or <a class="reference external" href="https://github.com/darrenburns/posting?tab=readme-ov-file#posting">Posting</a>. Here’s an example of a request/response payload:</p>

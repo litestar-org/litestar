@@ -1425,7 +1425,6 @@ document.write(`
 <li class="toctree-l1 has-children"><a class="reference internal" href="../topics/index.html">Topics</a><input class="toctree-checkbox" id="toctree-checkbox-28" name="toctree-checkbox-28" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-28"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../topics/sync-vs-async.html">Sync vs. Async</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../topics/deployment/index.html">Deployment</a><input class="toctree-checkbox" id="toctree-checkbox-29" name="toctree-checkbox-29" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-29"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../topics/deployment/nginx-unit.html">NGINX Unit</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../topics/deployment/manually-with-asgi-server.html">Manually with ASGI server</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../topics/deployment/docker.html">Docker</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../topics/deployment/supervisor.html">Supervisor (Linux)</a></li>
@@ -1583,8 +1582,8 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <p>The type of <code class="docutils literal notranslate"><span class="pre">data</span></code> can be any supported type, including</p>
 <ul class="simple">
 <li><p>Arbitrary stdlib types</p></li>
-<li><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.TypedDict" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypedDicts</span></code></a></p></li>
-<li><p><a class="reference external" href="https://docs.python.org/3/library/dataclasses.html#dataclasses.dataclass" title="(in Python v3.13)"><code class="xref py py-func docutils literal notranslate"><span class="pre">dataclasses</span></code></a></p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.TypedDict" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypedDicts</span></code></a></p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/library/dataclasses.html#dataclasses.dataclass" title="(in Python v3.14)"><code class="xref py py-func docutils literal notranslate"><span class="pre">dataclasses</span></code></a></p></li>
 <li><dl class="simple">
 <dt>Types supported via <a class="reference internal" href="plugins/index.html"><span class="doc">plugins</span></a> ie.</dt><dd><ul>
 <li><p><a class="reference external" href="https://jcristharif.com/msgspec/structs.html">Msgspec Struct</a></p></li>
@@ -2046,8 +2045,8 @@ how to test</label><div class="sd-tab-content docutils">
 <div class="info admonition">
 <p class="admonition-title">Technical details</p>
 <p><a class="reference internal" href="../reference/datastructures/index.html#litestar.datastructures.UploadFile" title="litestar.datastructures.UploadFile"><code class="xref py py-class docutils literal notranslate"><span class="pre">UploadFile</span></code></a> wraps
-<a class="reference external" href="https://docs.python.org/3/library/tempfile.html#tempfile.SpooledTemporaryFile" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">SpooledTemporaryFile</span></code></a> so it can be used asynchronously. Inside a synchronous
-function we don’t need this wrapper, so we can use its <a class="reference external" href="https://docs.python.org/3/library/io.html#io.TextIOBase.read" title="(in Python v3.13)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">read</span></code></a> method directly.</p>
+<a class="reference external" href="https://docs.python.org/3/library/tempfile.html#tempfile.SpooledTemporaryFile" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">SpooledTemporaryFile</span></code></a> so it can be used asynchronously. Inside a synchronous
+function we don’t need this wrapper, so we can use its <a class="reference external" href="https://docs.python.org/3/library/io.html#io.TextIOBase.read" title="(in Python v3.14)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">read</span></code></a> method directly.</p>
 </div>
 <section id="multiple-files">
 <h3>Multiple files<a class="headerlink" href="#multiple-files" title="Link to this heading">#</a></h3>
@@ -2489,7 +2488,7 @@ body, including requesting it via the <code class="docutils literal notranslate"
 consuming it through a manually constructed <a class="reference internal" href="../reference/connection.html#litestar.connection.Request" title="litestar.connection.Request"><code class="xref py py-class docutils literal notranslate"><span class="pre">Request</span></code></a>
 instance, e.g. in a middleware.</p>
 <p>To disable this limit for a specific handler / router / controller, it can be set to
-<a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a>.</p>
+<a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a>.</p>
 <div class="admonition danger">
 <p class="admonition-title">Danger</p>
 <p>Setting <code class="docutils literal notranslate"><span class="pre">request_max_body_size=None</span></code> is strongly discouraged as it exposes the
