@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import asyncio
+import sys
 import time
 from secrets import token_hex
 from typing import cast
@@ -13,6 +14,7 @@ from pytest_mock import MockerFixture
 from litestar import Litestar, get
 from litestar.channels import ChannelsBackend, ChannelsPlugin
 from litestar.channels.backends.memory import MemoryChannelsBackend
+from litestar.channels.backends.psycopg import PsycoPgChannelsBackend
 from litestar.channels.subscriber import BacklogStrategy
 from litestar.exceptions import ImproperlyConfiguredException, LitestarException
 from litestar.testing import TestClient, create_test_client
@@ -79,6 +81,9 @@ def test_plugin_dependency_signature_namespace(memory_backend: MemoryChannelsBac
 
 @pytest.mark.flaky(reruns=5)
 async def test_pub_sub_wait_published(channels_backend: ChannelsBackend) -> None:
+    if sys.version_info >= (3, 14) and isinstance(channels_backend, PsycoPgChannelsBackend):
+        pytest.skip()  # the max supported psycopg version is buggy on 3.14
+
     async with ChannelsPlugin(backend=channels_backend, channels=["something"]) as plugin:
         subscriber = await plugin.subscribe("something")
         await plugin.wait_published(b"foo", "something")
@@ -91,6 +96,8 @@ async def test_pub_sub_wait_published(channels_backend: ChannelsBackend) -> None
 @pytest.mark.flaky(reruns=10)
 @pytest.mark.parametrize("channel", ["something", ["something"]])
 async def test_pub_sub_non_blocking(channels_backend: ChannelsBackend, channel: str | list[str]) -> None:
+    if sys.version_info >= (3, 14) and isinstance(channels_backend, PsycoPgChannelsBackend):
+        pytest.skip()  # the max supported psycopg version is buggy on 3.14
     async with ChannelsPlugin(backend=channels_backend, channels=["something"]) as plugin:
         subscriber = await plugin.subscribe(channel)
         plugin.publish(b"foo", channel)
@@ -104,6 +111,8 @@ async def test_pub_sub_non_blocking(channels_backend: ChannelsBackend, channel: 
 
 @pytest.mark.flaky(reruns=10)
 async def test_pub_sub_run_in_background(channels_backend: ChannelsBackend, async_mock: AsyncMock) -> None:
+    if sys.version_info >= (3, 14) and isinstance(channels_backend, PsycoPgChannelsBackend):
+        pytest.skip()  # the max supported psycopg version is buggy on 3.14
     async with ChannelsPlugin(backend=channels_backend, channels=["something"]) as plugin:
         subscriber = await plugin.subscribe("something")
         async with subscriber.run_in_background(async_mock):
@@ -119,6 +128,8 @@ async def test_pub_sub_run_in_background(channels_backend: ChannelsBackend, asyn
 def test_create_ws_route_handlers(
     channels_backend: ChannelsBackend, handler_base_path: str | None, socket_send_mode: WebSocketMode
 ) -> None:
+    if sys.version_info >= (3, 14) and isinstance(channels_backend, PsycoPgChannelsBackend):
+        pytest.skip()  # the max supported psycopg version is buggy on 3.14
     channels_plugin = ChannelsPlugin(
         backend=channels_backend,
         create_ws_route_handlers=True,
@@ -139,6 +150,8 @@ async def test_ws_route_handlers_receive_arbitrary_message(channels_backend: Cha
 
     This test ensures that the subscription is only stopped in the case of receiving a `websocket.disconnect` message.
     """
+    if sys.version_info >= (3, 14) and isinstance(channels_backend, PsycoPgChannelsBackend):
+        pytest.skip()  # the max supported psycopg version is buggy on 3.14
     channels_plugin = ChannelsPlugin(
         backend=channels_backend,
         create_ws_route_handlers=True,
@@ -156,6 +169,8 @@ async def test_ws_route_handlers_receive_arbitrary_message(channels_backend: Cha
 
 @pytest.mark.flaky(reruns=15)
 def test_create_ws_route_handlers_arbitrary_channels_allowed(channels_backend: ChannelsBackend) -> None:
+    if sys.version_info >= (3, 14) and isinstance(channels_backend, PsycoPgChannelsBackend):
+        pytest.skip()  # the max supported psycopg version is buggy on 3.14
     channels_plugin = ChannelsPlugin(
         backend=channels_backend,
         arbitrary_channels_allowed=True,
