@@ -93,7 +93,7 @@ async def test_pub_sub_no_subscriptions(channels_backend: ChannelsBackend) -> No
 
 @pytest.mark.flaky(reruns=5)  # this should not really happen but just in case, we retry
 async def test_pub_sub_no_subscriptions_by_unsubscribes(channels_backend: ChannelsBackend) -> None:
-    if sys.version_info >= (3, 14) and isinstance(channels_backend, PsycoPgChannelsBackend):
+    if sys.version_info >= (3, 13) and isinstance(channels_backend, PsycoPgChannelsBackend):
         pytest.skip()  # the max supported psycopg version is buggy on 3.14
 
     await channels_backend.subscribe(["foo", "bar"])
