@@ -1,7 +1,7 @@
+const urlRoot = DOCUMENTATION_OPTIONS.URL_ROOT ?? "";
+
 const loadVersions = async () => {
-  const res = await fetch(
-    DOCUMENTATION_OPTIONS.URL_ROOT + "_static/versions.json",
-  );
+  const res = await fetch(urlRoot + "_static/versions.json");
   if (res.status !== 200) {
     return null;
   }
@@ -32,7 +32,7 @@ const addVersionWarning = (currentVersion, latestVersion) => {
 
   const latestLink = document.createElement("a");
   latestLink.textContent = "Click here to go to the latest version";
-  latestLink.href = DOCUMENTATION_OPTIONS.URL_ROOT + "../latest";
+  latestLink.href = urlRoot + "../latest";
   container.appendChild(latestLink);
 
   header.before(container);
@@ -75,7 +75,7 @@ const addVersionSelect = (currentVersion, versionSpec) => {
 
     const navLink = document.createElement("a");
     navLink.classList.add("nav-link", "nav-internal");
-    navLink.href = DOCUMENTATION_OPTIONS.URL_ROOT + `../${version}`;
+    navLink.href = urlRoot + `../${version}`;
     navLink.textContent = formatVersionName(
       version,
       version === versionSpec.latest,
