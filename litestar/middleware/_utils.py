@@ -44,6 +44,15 @@ def build_exclude_path_pattern(
         ) from e
 
 
+def should_bypass_for_path_pattern(scope: Scope, pattern: Pattern | None = None) -> bool:
+    return bool(
+        pattern
+        and pattern.findall(
+            scope["raw_path"].decode() if getattr(scope.get("route_handler", {}), "is_mount", False) else scope["path"]
+        )
+    )
+
+
 def should_bypass_middleware(
     *,
     exclude_http_methods: Sequence[Method] | None = None,
@@ -73,9 +82,4 @@ def should_bypass_middleware(
     if exclude_http_methods and scope.get("method") in exclude_http_methods:
         return True
 
-    return bool(
-        exclude_path_pattern
-        and exclude_path_pattern.findall(
-            scope["raw_path"].decode() if getattr(scope.get("route_handler", {}), "is_mount", False) else scope["path"]
-        )
-    )
+    return should_bypass_for_path_pattern(scope, exclude_path_pattern)
