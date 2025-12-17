@@ -209,7 +209,10 @@ class KwargsModel:
             for key in dependencies
             if key in field_definitions
         }
-        ignored_keys = {*RESERVED_KWARGS, *(dependency.key for dependency in expected_dependencies)}
+        ignored_keys = {
+            *RESERVED_KWARGS,
+            *(dependency.key for dependency in expected_dependencies),
+        }
 
         param_definitions = {
             *(
@@ -312,8 +315,14 @@ class KwargsModel:
             if isinstance(data_field_definition.kwarg_definition, BodyKwarg):
                 media_type = data_field_definition.kwarg_definition.media_type
 
-            if media_type in (RequestEncodingType.MULTI_PART, RequestEncodingType.URL_ENCODED):
-                expected_form_data = (media_type, data_field_definition)  # pyright: ignore
+            if media_type in (
+                RequestEncodingType.MULTI_PART,
+                RequestEncodingType.URL_ENCODED,
+            ):
+                expected_form_data = (
+                    media_type,
+                    data_field_definition,
+                )  # pyright: ignore
                 expected_data_dto = signature_model._data_dto
             elif signature_model._data_dto:
                 expected_data_dto = signature_model._data_dto
@@ -335,10 +344,12 @@ class KwargsModel:
                 expected_query_parameters, dependency_kwargs_model.expected_query_params
             )
             expected_cookie_parameters = merge_parameter_sets(
-                expected_cookie_parameters, dependency_kwargs_model.expected_cookie_params
+                expected_cookie_parameters,
+                dependency_kwargs_model.expected_cookie_params,
             )
             expected_header_parameters = merge_parameter_sets(
-                expected_header_parameters, dependency_kwargs_model.expected_header_params
+                expected_header_parameters,
+                dependency_kwargs_model.expected_header_params,
             )
 
             if "data" in expected_reserved_kwargs and "data" in dependency_kwargs_model.expected_reserved_kwargs:
@@ -404,7 +415,13 @@ class KwargsModel:
                 try:
                     async with create_task_group() as task_group:
                         for dependency in batch:
-                            task_group.start_soon(resolve_dependency, dependency, connection, kwargs, cleanup_group)
+                            task_group.start_soon(
+                                resolve_dependency,
+                                dependency,
+                                connection,
+                                kwargs,
+                                cleanup_group,
+                            )
                 except _ExceptionGroup as excgroup:
                     raise excgroup.exceptions[0] from excgroup  # type: ignore[attr-defined]
 
