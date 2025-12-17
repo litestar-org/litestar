@@ -1,7 +1,6 @@
 from __future__ import annotations
 
-from collections import defaultdict
-from functools import lru_cache, partial
+from functools import partial
 from typing import TYPE_CHECKING, Any, Callable, NamedTuple, cast
 
 from multidict import MultiDict, MultiDictProxy
@@ -39,7 +38,6 @@ __all__ = (
     "create_connection_value_extractor",
     "create_data_extractor",
     "create_multipart_extractor",
-    "create_query_default_dict",
     "create_url_encoded_data_extractor",
     "headers_extractor",
     "json_extractor",
@@ -172,26 +170,6 @@ def create_connection_value_extractor(
             ) from e
 
     return extractor
-
-
-@lru_cache(1024)
-def create_query_default_dict(
-    parsed_query: tuple[tuple[str, str], ...],
-) -> defaultdict[str, list[str]]:
-    """Transform a list of tuples into a default dict.
-
-    Args:
-        parsed_query: The parsed query list of tuples.
-
-    Returns:
-        A default dict
-    """
-    output: defaultdict[str, list[str]] = defaultdict(list)
-
-    for k, v in parsed_query:
-        output[k].append(v)
-
-    return output
 
 
 def parse_connection_query_params(connection: ASGIConnection, kwargs_model: KwargsModel) -> MultiDict[str]:
