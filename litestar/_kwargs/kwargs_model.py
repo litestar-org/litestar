@@ -148,7 +148,7 @@ class KwargsModel:
 
         if self.expected_header_params:
             extractors.append(
-                create_connection_value_extractor(
+                create_connection_value_extractor_mv_safe(
                     connection_key="headers",
                     expected_params=self.expected_header_params,
                     kwargs_model=self,

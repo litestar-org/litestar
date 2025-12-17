@@ -4,7 +4,7 @@ from collections import defaultdict
 from functools import lru_cache, partial
 from typing import TYPE_CHECKING, Any, Callable, NamedTuple, cast
 
-from multidict import MultiDict
+from multidict import MultiDict, MultiDictProxy
 
 from litestar._multipart import parse_multipart_form
 from litestar._parsers import (
@@ -87,9 +87,9 @@ def create_connection_value_extractor_mv_safe(
     kwargs_model: KwargsModel,
     connection_key: str,
     expected_params: set[ParameterDefinition],
-    parser: Callable[[ASGIConnection, KwargsModel], MultiDict[str]] | None = None,
+    parser: (Callable[[ASGIConnection, KwargsModel], MultiDict[str] | MultiDictProxy[str]] | None) = None,
 ) -> Extractor:
-    """Create a kwargs extractor function which requires values to be a list, but is safe to use with aliases and sequences
+    """Create a kwargs extractor function which requires values to be a MultiDict, but is safe to use with aliases and sequences
 
     Args:
         kwargs_model: The KwargsModel instance.
@@ -106,7 +106,7 @@ def create_connection_value_extractor_mv_safe(
     key_is_sequence = {p.field_name: p.is_sequence for p in expected_params}
 
     async def extractor(values: dict[str, Any], connection: ASGIConnection) -> None:
-        data: MultiDict[str] = (
+        data: MultiDict[str] | MultiDictProxy[str] = (
             parser(connection, kwargs_model) if parser else MultiDict(getattr(connection, connection_key, {}))
         )
 
