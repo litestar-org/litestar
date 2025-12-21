@@ -182,7 +182,7 @@ You can configure the following additional gzip-specific values:
 
 
 * ``minimum_size``: the minimum threshold for response size to enable compression. Smaller responses will not be
-    compressed. Defaults is ``500``, i.e. half a kilobyte.
+    compressed. Default is ``500``, i.e. half a kilobyte.
 * ``gzip_compress_level``: a range between 0-9, see the `official python docs <https://docs.python.org/3/library/gzip.html>`_.
     Defaults to ``9`` , which is the maximum value.
 
@@ -232,16 +232,15 @@ You can configure the following additional brotli-specific values:
 Zstd
 ^^^^^^
 
-The `Zstd <https://pypi.org/project/zstd>`_ package is required to run this middleware. It is available as an extra for Litestar via the ``zstd`` extra: (``pip install 'litestar[zstd]'``).
+The `zstandard <https://pypi.org/pypi/zstandard>`_ package is required to run this middleware. It is available as an extra for Litestar via the ``zstd`` extra: (``pip install 'litestar[zstd]'``).
 
 You can enable zstd compression of responses by passing an instance of
 :class:`~litestar.config.compression.CompressionConfig` with the ``backend`` parameter set to ``"zstd"``.
 
 You can configure the following additional zstd-specific values:
 
-* ``minimum_size``: the minimum threshold for response size to enable compression. Smaller responses will not be
-    compressed. Default is 500, i.e. half a kilobyte.
-* ``zstd_level``: Range [0-22], Controls the compression level. Higher values increase compression ratio but are slower. Default is 3.
+* ``minimum_size``: the minimum threshold for response size to enable compression. Smaller responses will not be compressed. Default is 500, i.e. half a kilobyte.
+* ``zstd_compress_level``: Range [0-22], Controls the compression level. Higher values increase compression ratio but are slower. Default is 3.
 * ``zstd_gzip_fallback``: Boolean indicating whether to fall back to gzip if Zstd is not supported. Default is True.
 
 .. code-block:: python
