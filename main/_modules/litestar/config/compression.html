@@ -536,7 +536,7 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="24">    <span class="n">backend</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;gzip&quot;</span><span class="p">,</span> <span class="s2">&quot;brotli&quot;</span><span class="p">,</span> <span class="s2">&quot;zstd&quot;</span><span class="p">]</span> <span class="o">|</span> <span class="nb">str</span>
 </span><span data-line="25"><span class="w">    </span><span class="sd">&quot;&quot;&quot;The backend to use.</span>
 </span><span data-line="26">
-</span><span data-line="27"><span class="sd">    If the value given is `gzip` or `brotli`, then the builtin gzip and brotli compression is used.</span>
+</span><span data-line="27"><span class="sd">    If the value given is `gzip`, `brotli` or `zstd`, then the corresponding compression algorithm will be used.</span>
 </span><span data-line="28"><span class="sd">    &quot;&quot;&quot;</span>
 </span><span data-line="29">    <span class="n">minimum_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">500</span><span class="p">)</span>
 </span><span data-line="30"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Minimum response size (bytes) to enable compression, affects all backends.&quot;&quot;&quot;</span>

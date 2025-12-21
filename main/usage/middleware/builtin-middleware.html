@@ -683,9 +683,9 @@ domain name, not in the middle or end. Doing so will result in a validation exce
 </section>
 <section id="compression">
 <h2>Compression<a class="headerlink" href="#compression" title="Link to this heading">¶</a></h2>
-<p>HTML responses can optionally be compressed. Litestar has built in support for gzip, brotli, and zstd. Gzip support is provided
-through the built-in Starlette classes. Brotli support can be added by installing the <code class="docutils literal notranslate"><span class="pre">brotli</span></code> extra, and Zstd support by installing the <code class="docutils literal notranslate"><span class="pre">zstd</span></code> extra.</p>
-<p>You can enable either backend by passing an instance of
+<p>HTTP responses can optionally be compressed. Litestar has support for gzip, brotli, and zstd.
+Gzip is supported by Litestar out of the box, while Brotli support can be added by installing the <code class="docutils literal notranslate"><span class="pre">brotli</span></code> extra, and Zstd support can be added by installing the <code class="docutils literal notranslate"><span class="pre">zstd</span></code> extra.</p>
+<p>You can enable any one of these backends by passing an instance of
 <a class="reference internal" href="../../reference/config.html#litestar.config.compression.CompressionConfig" title="litestar.config.compression.CompressionConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">CompressionConfig</span></code></a> to <code class="docutils literal notranslate"><span class="pre">compression_config</span></code> of
 <a class="reference internal" href="../../reference/app.html#litestar.app.Litestar" title="litestar.app.Litestar"><code class="xref py py-class docutils literal notranslate"><span class="pre">Litestar</span></code></a>.</p>
 <section id="gzip">
@@ -695,12 +695,12 @@ the <code class="docutils literal notranslate"><span class="pre">backend</span><
 <p>You can configure the following additional gzip-specific values:</p>
 <ul class="simple">
 <li><dl class="simple">
-<dt><code class="docutils literal notranslate"><span class="pre">minimum_size</span></code>: the minimum threshold for response size to enable compression. Smaller responses will not be</dt><dd><p>compressed. Defaults is <code class="docutils literal notranslate"><span class="pre">500</span></code>, i.e. half a kilobyte.</p>
+<dt><code class="docutils literal notranslate"><span class="pre">minimum_size</span></code>: the minimum threshold for response size to enable compression. Smaller responses will not be</dt><dd><p>compressed. Default is <code class="docutils literal notranslate"><span class="pre">500</span></code>, i.e. half a kilobyte.</p>
 </dd>
 </dl>
 </li>
 <li><dl class="simple">
-<dt><code class="docutils literal notranslate"><span class="pre">gzip_compress_level</span></code>: a range between 0-9, see the <a class="reference external" href="https://docs.python.org/3/library/gzip.html">official python docs</a>.</dt><dd><p>Defaults to <code class="docutils literal notranslate"><span class="pre">9</span></code> , which is the maximum value.</p>
+<dt><code class="docutils literal notranslate"><span class="pre">gzip_compress_level</span></code>: a range between 0-9, see the <a class="reference external" href="https://docs.python.org/3/library/gzip.html">official python docs</a>.</dt><dd><p>Defaults to <code class="docutils literal notranslate"><span class="pre">9</span></code>, which is the maximum value.</p>
 </dd>
 </dl>
 </li>
@@ -758,17 +758,13 @@ extra (<code class="docutils literal notranslate"><span class="pre">pip</span> <
 </section>
 <section id="zstd">
 <h3>Zstd<a class="headerlink" href="#zstd" title="Link to this heading">¶</a></h3>
-<p>The <a class="reference external" href="https://pypi.org/project/zstd">Zstd</a> package is required to run this middleware. It is available as an extra for Litestar via the <code class="docutils literal notranslate"><span class="pre">zstd</span></code> extra: (<code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">'litestar[zstd]'</span></code>).</p>
+<p>The <a class="reference external" href="https://pypi.org/project/zstandard">zstandard</a> package is required to run this middleware. It is available as an extra for Litestar via the <code class="docutils literal notranslate"><span class="pre">zstd</span></code> extra: (<code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">'litestar[zstd]'</span></code>).</p>
 <p>You can enable zstd compression of responses by passing an instance of
 <a class="reference internal" href="../../reference/config.html#litestar.config.compression.CompressionConfig" title="litestar.config.compression.CompressionConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">CompressionConfig</span></code></a> with the <code class="docutils literal notranslate"><span class="pre">backend</span></code> parameter set to <code class="docutils literal notranslate"><span class="pre">&quot;zstd&quot;</span></code>.</p>
 <p>You can configure the following additional zstd-specific values:</p>
 <ul class="simple">
-<li><dl class="simple">
-<dt><code class="docutils literal notranslate"><span class="pre">minimum_size</span></code>: the minimum threshold for response size to enable compression. Smaller responses will not be</dt><dd><p>compressed. Default is 500, i.e. half a kilobyte.</p>
-</dd>
-</dl>
-</li>
-<li><p><code class="docutils literal notranslate"><span class="pre">zstd_level</span></code>: Range [0-22], Controls the compression level. Higher values increase compression ratio but are slower. Default is 3.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">minimum_size</span></code>: the minimum threshold for response size to enable compression. Smaller responses will not be compressed. Default is 500, i.e. half a kilobyte.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">zstd_compress_level</span></code>: Range [0-22], Controls the compression level. Higher values increase compression ratio but are slower. Default is 3.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">zstd_gzip_fallback</span></code>: Boolean indicating whether to fall back to gzip if Zstd is not supported. Default is True.</p></li>
 </ul>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span>
@@ -889,8 +885,8 @@ offering client- and server-side sessions. Server-side sessions are backed by Li
 <p>To start using sessions in your application all you have to do is create an instance
 of a <a class="reference internal" href="../../reference/middleware/session/base.html#litestar.middleware.session.base.BaseBackendConfig" title="litestar.middleware.session.base.BaseBackendConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">configuration</span></code></a> object and
 add its middleware to your application’s middleware stack:</p>
-<div class="literal-block-wrapper docutils container" id="id3">
-<div class="code-block-caption"><span class="caption-text">Hello World</span><a class="headerlink" href="#id3" title="Link to this code">¶</a></div>
+<div class="literal-block-wrapper docutils container" id="id2">
+<div class="code-block-caption"><span class="caption-text">Hello World</span><a class="headerlink" href="#id2" title="Link to this code">¶</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">os</span><span class="w"> </span><span class="kn">import</span> <span class="n">urandom</span>
 </span><span data-line="2">
 </span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">Request</span><span class="p">,</span> <span class="n">delete</span><span class="p">,</span> <span class="n">get</span><span class="p">,</span> <span class="n">post</span>
@@ -945,8 +941,8 @@ which offers strong AES-CGM encryption security best practices while support coo
 <p><code class="docutils literal notranslate"><span class="pre">ClientSideSessionBackend</span></code> requires the <a class="reference external" href="https://cryptography.io/en/latest/">cryptography</a> library,
 which can be installed together with litestar as an extra using <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">'litestar[cryptography]'</span></code></p>
 </div>
-<div class="literal-block-wrapper docutils container" id="id4">
-<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">cookie_backend.py</span></code></span><a class="headerlink" href="#id4" title="Link to this code">¶</a></div>
+<div class="literal-block-wrapper docutils container" id="id3">
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">cookie_backend.py</span></code></span><a class="headerlink" href="#id3" title="Link to this code">¶</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">os</span><span class="w"> </span><span class="kn">import</span> <span class="n">urandom</span>
 </span><span data-line="2">
 </span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span>
