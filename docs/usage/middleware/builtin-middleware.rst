@@ -165,10 +165,10 @@ list of domains to :class:`~litestar.app.Litestar`:
 Compression
 -----------
 
-HTML responses can optionally be compressed. Litestar has built in support for gzip, brotli, and zstd. Gzip support is provided
-through the built-in Starlette classes. Brotli support can be added by installing the ``brotli`` extra, and Zstd support by installing the ``zstd`` extra.
+HTTP responses can optionally be compressed. Litestar has support for gzip, brotli, and zstd.
+Gzip is supported by Litestar out of the box, while Brotli support can be added by installing the ``brotli`` extra, and Zstd support can be added by installing the ``zstd`` extra.
 
-You can enable either backend by passing an instance of
+You can enable any one of these backends by passing an instance of
 :class:`~litestar.config.compression.CompressionConfig` to ``compression_config`` of
 :class:`~litestar.app.Litestar`.
 
@@ -184,7 +184,7 @@ You can configure the following additional gzip-specific values:
 * ``minimum_size``: the minimum threshold for response size to enable compression. Smaller responses will not be
     compressed. Default is ``500``, i.e. half a kilobyte.
 * ``gzip_compress_level``: a range between 0-9, see the `official python docs <https://docs.python.org/3/library/gzip.html>`_.
-    Defaults to ``9`` , which is the maximum value.
+    Defaults to ``9``, which is the maximum value.
 
 .. code-block:: python
 
