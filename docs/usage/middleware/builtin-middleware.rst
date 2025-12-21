@@ -232,7 +232,7 @@ You can configure the following additional brotli-specific values:
 Zstd
 ^^^^^^
 
-The `zstandard <https://pypi.org/pypi/zstandard>`_ package is required to run this middleware. It is available as an extra for Litestar via the ``zstd`` extra: (``pip install 'litestar[zstd]'``).
+The `zstandard <https://pypi.org/project/zstandard>`_ package is required to run this middleware. It is available as an extra for Litestar via the ``zstd`` extra: (``pip install 'litestar[zstd]'``).
 
 You can enable zstd compression of responses by passing an instance of
 :class:`~litestar.config.compression.CompressionConfig` with the ``backend`` parameter set to ``"zstd"``.
