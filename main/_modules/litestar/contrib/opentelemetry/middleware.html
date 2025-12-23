@@ -552,25 +552,26 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="38">            <span class="n">client_response_hook</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">client_response_hook_handler</span><span class="p">,</span>  <span class="c1"># type: ignore[arg-type]</span>
 </span><span data-line="39">            <span class="n">default_span_details</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">scope_span_details_extractor</span><span class="p">,</span>
 </span><span data-line="40">            <span class="n">excluded_urls</span><span class="o">=</span><span class="n">get_excluded_urls</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">exclude_urls_env_key</span><span class="p">),</span>
-</span><span data-line="41">            <span class="n">meter</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">meter</span><span class="p">,</span>
-</span><span data-line="42">            <span class="n">meter_provider</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">meter_provider</span><span class="p">,</span>
-</span><span data-line="43">            <span class="n">server_request_hook</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">server_request_hook_handler</span><span class="p">,</span>
-</span><span data-line="44">            <span class="n">tracer_provider</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">tracer_provider</span><span class="p">,</span>
-</span><span data-line="45">        <span class="p">)</span></div>
+</span><span data-line="41">            <span class="n">exclude_spans</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">exclude_spans</span><span class="p">,</span>
+</span><span data-line="42">            <span class="n">meter</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">meter</span><span class="p">,</span>
+</span><span data-line="43">            <span class="n">meter_provider</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">meter_provider</span><span class="p">,</span>
+</span><span data-line="44">            <span class="n">server_request_hook</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">server_request_hook_handler</span><span class="p">,</span>
+</span><span data-line="45">            <span class="n">tracer_provider</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">tracer_provider</span><span class="p">,</span>
+</span><span data-line="46">        <span class="p">)</span></div>
 
-</span><span data-line="46">
-</span><span data-line="47">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scope</span><span class="p">:</span> <span class="n">Scope</span><span class="p">,</span> <span class="n">receive</span><span class="p">:</span> <span class="n">Receive</span><span class="p">,</span> <span class="n">send</span><span class="p">:</span> <span class="n">Send</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="48"><span class="w">        </span><span class="sd">&quot;&quot;&quot;ASGI callable.</span>
-</span><span data-line="49">
-</span><span data-line="50"><span class="sd">        Args:</span>
-</span><span data-line="51"><span class="sd">            scope: The ASGI connection scope.</span>
-</span><span data-line="52"><span class="sd">            receive: The ASGI receive function.</span>
-</span><span data-line="53"><span class="sd">            send: The ASGI send function.</span>
-</span><span data-line="54">
-</span><span data-line="55"><span class="sd">        Returns:</span>
-</span><span data-line="56"><span class="sd">            None</span>
-</span><span data-line="57"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="58">        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">open_telemetry_middleware</span><span class="p">(</span><span class="n">scope</span><span class="p">,</span> <span class="n">receive</span><span class="p">,</span> <span class="n">send</span><span class="p">)</span>  <span class="c1"># type: ignore[arg-type] # pyright: ignore[reportGeneralTypeIssues]</span></div>
+</span><span data-line="47">
+</span><span data-line="48">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scope</span><span class="p">:</span> <span class="n">Scope</span><span class="p">,</span> <span class="n">receive</span><span class="p">:</span> <span class="n">Receive</span><span class="p">,</span> <span class="n">send</span><span class="p">:</span> <span class="n">Send</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="49"><span class="w">        </span><span class="sd">&quot;&quot;&quot;ASGI callable.</span>
+</span><span data-line="50">
+</span><span data-line="51"><span class="sd">        Args:</span>
+</span><span data-line="52"><span class="sd">            scope: The ASGI connection scope.</span>
+</span><span data-line="53"><span class="sd">            receive: The ASGI receive function.</span>
+</span><span data-line="54"><span class="sd">            send: The ASGI send function.</span>
+</span><span data-line="55">
+</span><span data-line="56"><span class="sd">        Returns:</span>
+</span><span data-line="57"><span class="sd">            None</span>
+</span><span data-line="58"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="59">        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">open_telemetry_middleware</span><span class="p">(</span><span class="n">scope</span><span class="p">,</span> <span class="n">receive</span><span class="p">,</span> <span class="n">send</span><span class="p">)</span>  <span class="c1"># type: ignore[arg-type] # pyright: ignore[reportGeneralTypeIssues]</span></div>
 
 </span></pre></div>
         </article><button class="back-to-top" type="button">

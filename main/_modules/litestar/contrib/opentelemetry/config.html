@@ -511,7 +511,7 @@ data-aria-dark="Switch to auto color mode">
 <span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 </span><span data-line="2">
 </span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
-</span><span data-line="4"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Callable</span>
+</span><span data-line="4"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Literal</span>
 </span><span data-line="5">
 </span><span data-line="6"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.contrib.opentelemetry._utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_route_details_from_scope</span>
 </span><span data-line="7"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.contrib.opentelemetry.middleware</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
@@ -589,29 +589,31 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="77"><span class="sd">    OpenTelemetry supports excluding urls by passing an env in the format &#39;{exclude_urls_env_key}_EXCLUDED_URLS&#39;. With</span>
 </span><span data-line="78"><span class="sd">    the default being ``LITESTAR_EXCLUDED_URLS``.</span>
 </span><span data-line="79"><span class="sd">    &quot;&quot;&quot;</span>
-</span><span data-line="80">    <span class="n">scopes</span><span class="p">:</span> <span class="n">Scopes</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
-</span><span data-line="81"><span class="w">    </span><span class="sd">&quot;&quot;&quot;ASGI scopes processed by the middleware, if None both ``http`` and ``websocket`` will be processed.&quot;&quot;&quot;</span>
-</span><span data-line="82">    <span class="n">middleware_class</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">OpenTelemetryInstrumentationMiddleware</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
-</span><span data-line="83">        <span class="n">default</span><span class="o">=</span><span class="n">OpenTelemetryInstrumentationMiddleware</span>
-</span><span data-line="84">    <span class="p">)</span>
-</span><span data-line="85"><span class="w">    </span><span class="sd">&quot;&quot;&quot;The middleware class to use.</span>
-</span><span data-line="86">
-</span><span data-line="87"><span class="sd">    Should be a subclass of OpenTelemetry</span>
-</span><span data-line="88"><span class="sd">    InstrumentationMiddleware][litestar.contrib.opentelemetry.OpenTelemetryInstrumentationMiddleware].</span>
-</span><span data-line="89"><span class="sd">    &quot;&quot;&quot;</span>
-</span><span data-line="90">
-</span><span data-line="91">    <span class="nd">@property</span>
-</span><span data-line="92">    <span class="k">def</span><span class="w"> </span><span class="nf">middleware</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DefineMiddleware</span><span class="p">:</span>
-</span><span data-line="93"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Create an instance of :class:`DefineMiddleware &lt;litestar.middleware.base.DefineMiddleware&gt;` that wraps with.</span>
-</span><span data-line="94">
-</span><span data-line="95"><span class="sd">        [OpenTelemetry</span>
-</span><span data-line="96"><span class="sd">        InstrumentationMiddleware][litestar.contrib.opentelemetry.OpenTelemetryInstrumentationMiddleware] or a subclass</span>
-</span><span data-line="97"><span class="sd">        of this middleware.</span>
-</span><span data-line="98">
-</span><span data-line="99"><span class="sd">        Returns:</span>
-</span><span data-line="100"><span class="sd">            An instance of ``DefineMiddleware``.</span>
-</span><span data-line="101"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="102">        <span class="k">return</span> <span class="n">DefineMiddleware</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">middleware_class</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span></div>
+</span><span data-line="80">    <span class="n">exclude_spans</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;receive&quot;</span><span class="p">,</span> <span class="s2">&quot;send&quot;</span><span class="p">]]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+</span><span data-line="81"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Optionally exclude HTTP send and/or receive spans from the trace.&quot;&quot;&quot;</span>
+</span><span data-line="82">    <span class="n">scopes</span><span class="p">:</span> <span class="n">Scopes</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+</span><span data-line="83"><span class="w">    </span><span class="sd">&quot;&quot;&quot;ASGI scopes processed by the middleware, if None both ``http`` and ``websocket`` will be processed.&quot;&quot;&quot;</span>
+</span><span data-line="84">    <span class="n">middleware_class</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">OpenTelemetryInstrumentationMiddleware</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+</span><span data-line="85">        <span class="n">default</span><span class="o">=</span><span class="n">OpenTelemetryInstrumentationMiddleware</span>
+</span><span data-line="86">    <span class="p">)</span>
+</span><span data-line="87"><span class="w">    </span><span class="sd">&quot;&quot;&quot;The middleware class to use.</span>
+</span><span data-line="88">
+</span><span data-line="89"><span class="sd">    Should be a subclass of OpenTelemetry</span>
+</span><span data-line="90"><span class="sd">    InstrumentationMiddleware][litestar.contrib.opentelemetry.OpenTelemetryInstrumentationMiddleware].</span>
+</span><span data-line="91"><span class="sd">    &quot;&quot;&quot;</span>
+</span><span data-line="92">
+</span><span data-line="93">    <span class="nd">@property</span>
+</span><span data-line="94">    <span class="k">def</span><span class="w"> </span><span class="nf">middleware</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DefineMiddleware</span><span class="p">:</span>
+</span><span data-line="95"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Create an instance of :class:`DefineMiddleware &lt;litestar.middleware.base.DefineMiddleware&gt;` that wraps with.</span>
+</span><span data-line="96">
+</span><span data-line="97"><span class="sd">        [OpenTelemetry</span>
+</span><span data-line="98"><span class="sd">        InstrumentationMiddleware][litestar.contrib.opentelemetry.OpenTelemetryInstrumentationMiddleware] or a subclass</span>
+</span><span data-line="99"><span class="sd">        of this middleware.</span>
+</span><span data-line="100">
+</span><span data-line="101"><span class="sd">        Returns:</span>
+</span><span data-line="102"><span class="sd">            An instance of ``DefineMiddleware``.</span>
+</span><span data-line="103"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="104">        <span class="k">return</span> <span class="n">DefineMiddleware</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">middleware_class</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span></div>
 
 </span></pre></div>
         </article><button class="back-to-top" type="button">
