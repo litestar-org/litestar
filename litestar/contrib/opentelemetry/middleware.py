@@ -38,6 +38,7 @@ class OpenTelemetryInstrumentationMiddleware(AbstractMiddleware):
             client_response_hook=config.client_response_hook_handler,  # type: ignore[arg-type]
             default_span_details=config.scope_span_details_extractor,
             excluded_urls=get_excluded_urls(config.exclude_urls_env_key),
+            exclude_spans=config.exclude_spans,
             meter=config.meter,
             meter_provider=config.meter_provider,
             server_request_hook=config.server_request_hook_handler,
