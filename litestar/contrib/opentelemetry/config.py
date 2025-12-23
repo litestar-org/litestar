@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, Any, Callable
+from typing import TYPE_CHECKING, Any, Callable, Literal
 
 from litestar.contrib.opentelemetry._utils import get_route_details_from_scope
 from litestar.contrib.opentelemetry.middleware import (
@@ -77,6 +77,8 @@ class OpenTelemetryConfig:
     OpenTelemetry supports excluding urls by passing an env in the format '{exclude_urls_env_key}_EXCLUDED_URLS'. With
     the default being ``LITESTAR_EXCLUDED_URLS``.
     """
+    exclude_spans: list[Literal["receive", "send"]] | None = None
+    """Optionally exclude HTTP send and/or receive spans from the trace."""
     scopes: Scopes | None = field(default=None)
     """ASGI scopes processed by the middleware, if None both ``http`` and ``websocket`` will be processed."""
     middleware_class: type[OpenTelemetryInstrumentationMiddleware] = field(
