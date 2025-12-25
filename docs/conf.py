@@ -10,6 +10,7 @@ from typing import Any
 
 from sphinx.addnodes import document
 from sphinx.application import Sphinx
+from sphinx.locale import _
 from sqlalchemy.exc import SAWarning
 
 warnings.filterwarnings("ignore", category=SAWarning)
@@ -314,91 +315,91 @@ html_theme_options = {
     "github_repo_name": "litestar",
     "navigation_with_keys": True,
     "nav_links": [  # TODO(provinzkraut): I need a guide on extra_navbar_items and its magic :P
-        {"title": "Home", "url": "index"},
+        {"title": _("Home"), "url": "index"},
         {
-            "title": "Community",
+            "title": _("Community"),
             "children": [
                 {
-                    "title": "Contributing",
-                    "summary": "Learn how to contribute to the Litestar project",
+                    "title": _("Contributing"),
+                    "summary": _("Learn how to contribute to the Litestar project"),
                     "url": "contribution-guide",
                     "icon": "contributing",
                 },
                 {
-                    "title": "Code of Conduct",
-                    "summary": "Review the etiquette for interacting with the Litestar community",
+                    "title": _("Code of Conduct"),
+                    "summary": _("Review the etiquette for interacting with the Litestar community"),
                     "url": "https://github.com/litestar-org/.github?tab=coc-ov-file",
                     "icon": "coc",
                 },
                 {
-                    "title": "Security",
-                    "summary": "Overview of Litestar's security protocols",
+                    "title": _("Security"),
+                    "summary": _("Overview of Litestar's security protocols"),
                     "url": "https://github.com/litestar-org/.github?tab=coc-ov-file#security-ov-file",
                     "icon": "coc",
                 },
             ],
         },
         {
-            "title": "About",
+            "title": _("About"),
             "children": [
                 {
-                    "title": "Litestar Organization",
-                    "summary": "Details about the Litestar organization",
+                    "title": _("Litestar Organization"),
+                    "summary": _("Details about the Litestar organization"),
                     "url": "https://litestar.dev/about/organization",
                     "icon": "org",
                 },
                 {
-                    "title": "Releases",
-                    "summary": "Explore the release process, versioning, and deprecation policy for Litestar",
+                    "title": _("Releases"),
+                    "summary": _("Explore the release process, versioning, and deprecation policy for Litestar"),
                     "url": "https://litestar.dev/about/litestar-releases",
                     "icon": "releases",
                 },
             ],
         },
         {
-            "title": "Release notes",
+            "title": _("Release notes"),
             "children": [
                 {
-                    "title": "What's new in 3.0",
+                    "title": _("What's new in 3.0"),
+                    "summary": _("Explore the new features in Litestar 3.0"),
                     "url": "release-notes/whats-new-3",
-                    "summary": "Explore the new features in Litestar 3.0",
                 },
                 {
-                    "title": "3.x Changelog",
+                    "title": _("3.x Changelog"),
+                    "summary": _("All changes in the 3.x series"),
                     "url": "release-notes/changelog",
-                    "summary": "All changes in the 3.x series",
                 },
                 {
-                    "title": "2.x Changelog",
+                    "title": _("2.x Changelog"),
+                    "summary": _("All changes in the 2.x series"),
                     "url": "https://docs.litestar.dev/2/release-notes/changelog.html",
-                    "summary": "All changes in the 2.x series",
                 },
             ],
         },
         {
-            "title": "Help",
+            "title": _("Help"),
             "children": [
                 {
-                    "title": "Discord Help Forum",
-                    "summary": "Dedicated Discord help forum",
+                    "title": _("Discord Help Forum"),
+                    "summary": _("Dedicated Discord help forum"),
                     "url": "https://discord.gg/litestar",
                     "icon": "coc",
                 },
                 {
-                    "title": "GitHub Discussions",
-                    "summary": "GitHub Discussions",
+                    "title": _("GitHub Discussions"),
+                    "summary": _("GitHub Discussions"),
                     "url": "https://github.com/orgs/litestar-org/discussions",
                     "icon": "coc",
                 },
                 {
-                    "title": "Stack Overflow",
-                    "summary": "We monitor the <code><b>litestar</b></code> tag on Stack Overflow",
+                    "title": _("Stack Overflow"),
+                    "summary": _("We monitor the <code><b>litestar</b></code> tag on Stack Overflow"),
                     "url": "https://stackoverflow.com/questions/tagged/litestar",
                     "icon": "coc",
                 },
             ],
         },
-        {"title": "Sponsor", "url": "https://github.com/sponsors/Litestar-Org", "icon": "heart"},
+        {"title": _("Sponsor"), "url": "https://github.com/sponsors/Litestar-Org", "icon": "heart"},
     ],
 }
 
