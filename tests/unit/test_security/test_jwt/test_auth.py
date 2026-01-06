@@ -366,6 +366,54 @@ async def test_jwt_cookie_auth(
             assert response.json()["message"] == f"can't logout, jti is {decoded_token.jti}"
 
 
+async def test_jwt_cookie_auth_without_bearer_prefix() -> None:
+    """Test that JWTCookieAuth correctly handles raw JWT tokens in cookies without 'Bearer ' prefix.
+
+    This is a regression test for a bug where cookie tokens were incorrectly parsed.
+    The original code used `partition(" ")[-1]` on all tokens, which works for header
+    tokens with "Bearer " prefix but returns an empty string for raw cookie tokens
+    (since str.partition(" ") on a string without spaces returns (original, "", "")).
+    """
+    user = UserFactory.build()
+    token_secret = secrets.token_hex()
+
+    async def retrieve_user_handler(token: Token, _: "ASGIConnection") -> Any:
+        if token.sub == str(user.id):
+            return user
+        return None
+
+    jwt_auth = JWTCookieAuth(
+        key="token",
+        token_secret=token_secret,
+        retrieve_user_handler=retrieve_user_handler,
+    )
+
+    @get("/protected", middleware=[jwt_auth.middleware])
+    def protected_handler(request: Request["User", Token, Any]) -> dict[str, str]:
+        return {"user_id": str(request.user.id)}
+
+    # Create a raw token without "Bearer " prefix (as cookies typically store them)
+    raw_token = jwt_auth.create_token(identifier=str(user.id))
+
+    with create_test_client(route_handlers=[protected_handler]) as client:
+        # Test 1: Raw token in cookie should work
+        client.cookies = {"token": raw_token}
+        response = client.get("/protected")
+        assert response.status_code == HTTP_200_OK
+        assert response.json()["user_id"] == str(user.id)
+
+        # Test 2: Token with "Bearer " prefix in header should still work
+        client.cookies.clear()
+        response = client.get("/protected", headers={"Authorization": f"Bearer {raw_token}"})
+        assert response.status_code == HTTP_200_OK
+        assert response.json()["user_id"] == str(user.id)
+
+        # Test 3: No token should return 401
+        client.cookies.clear()
+        response = client.get("/protected")
+        assert response.status_code == HTTP_401_UNAUTHORIZED
+
+
 async def test_path_exclusion() -> None:
     async def retrieve_user_handler(_: Token, __: "ASGIConnection") -> None:
         return None
