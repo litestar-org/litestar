@@ -250,20 +250,27 @@ class JWTCookieAuthenticationMiddleware(JWTAuthenticationMiddleware):
         self.auth_cookie_key = auth_cookie_key
 
     async def authenticate_request(self, connection: ASGIConnection[Any, Any, Any, Any]) -> AuthenticationResult:
-        """Given an HTTP Connection, parse the JWT api key stored in the header and retrieve the user correlating to the
-        token from the DB.
+        """Given an HTTP Connection, parse the JWT api key stored in the header or cookie
+        and retrieve the user correlating to the token from the DB.
 
         Args:
             connection: An Litestar HTTPConnection instance.
 
-        Raises:
-            NotAuthorizedException: If token is invalid or user is not found.
-
         Returns:
             AuthenticationResult
+
+        Raises:
+            NotAuthorizedException: If token is invalid or user is not found.
         """
-        auth_header = connection.headers.get(self.auth_header) or connection.cookies.get(self.auth_cookie_key)
-        if not auth_header:
-            raise NotAuthorizedException("No JWT token found in request header or cookies")
-        encoded_token = auth_header.partition(" ")[-1]
-        return await self.authenticate_token(encoded_token=encoded_token, connection=connection)
+        # Try Authorization header first (has "Bearer " prefix)
+        auth_header = connection.headers.get(self.auth_header)
+        if auth_header:
+            encoded_token = auth_header.partition(" ")[-1]
+            return await self.authenticate_token(encoded_token=encoded_token, connection=connection)
+
+        # Fallback to cookie (no "Bearer " prefix, raw JWT)
+        cookie_token = connection.cookies.get(self.auth_cookie_key)
+        if cookie_token:
+            return await self.authenticate_token(encoded_token=cookie_token, connection=connection)
+
+        raise NotAuthorizedException("No JWT token found in request header or cookies")
