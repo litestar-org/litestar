@@ -14,6 +14,21 @@ def test_scalar_simple() -> None:
         assert "Litestar Example" in resp.text
 
 
+def test_scalar_render_options() -> None:
+    from docs.examples.openapi.plugins.scalar_config import scalar_plugin_with_options
+
+    openapi_config = OpenAPIConfig(
+        title="My API",
+        description="This is the description of my API",
+        version="0.1.0",
+        render_plugins=[scalar_plugin_with_options],
+    )
+
+    with create_test_client(route_handlers=[], openapi_config=openapi_config) as client:
+        resp = client.get("/schema/scalar")
+        assert '"showSidebar":false' in resp.text
+
+
 def test_rapidoc_simple() -> None:
     from docs.examples.openapi.plugins.rapidoc_simple import app
 

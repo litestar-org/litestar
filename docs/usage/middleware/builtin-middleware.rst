@@ -158,17 +158,17 @@ list of domains to :class:`~litestar.app.Litestar`:
     You can use wildcard prefixes (``*.``) in the beginning of a domain to match any combination of subdomains. Thus,
     ``*.example.com`` will match ``www.example.com`` but also ``x.y.z.example.com`` etc. You can also simply put ``*``
     in trusted hosts, which means allow all. This is akin to turning the middleware off, so in this case it may be
-    better to not enable it in the first place. You should note that a wildcard can only be used only in the prefix of a
+    better to not enable it in the first place. You should note that a wildcard can only be used in the prefix of a
     domain name, not in the middle or end. Doing so will result in a validation exception being raised.
 
 
 Compression
 -----------
 
-HTML responses can optionally be compressed. Litestar has built in support for gzip, brotli, and zstd. Gzip support is provided
-through the built-in Starlette classes. Brotli support can be added by installing the ``brotli`` extra, and Zstd support by installing the ``zstd`` extra.
+HTTP responses can optionally be compressed. Litestar has support for gzip, brotli, and zstd.
+Gzip is supported by Litestar out of the box, while Brotli support can be added by installing the ``brotli`` extra, and Zstd support can be added by installing the ``zstd`` extra.
 
-You can enable either backend by passing an instance of
+You can enable any one of these backends by passing an instance of
 :class:`~litestar.config.compression.CompressionConfig` to ``compression_config`` of
 :class:`~litestar.app.Litestar`.
 
@@ -182,9 +182,9 @@ You can configure the following additional gzip-specific values:
 
 
 * ``minimum_size``: the minimum threshold for response size to enable compression. Smaller responses will not be
-    compressed. Defaults is ``500``, i.e. half a kilobyte.
+    compressed. Default is ``500``, i.e. half a kilobyte.
 * ``gzip_compress_level``: a range between 0-9, see the `official python docs <https://docs.python.org/3/library/gzip.html>`_.
-    Defaults to ``9`` , which is the maximum value.
+    Defaults to ``9``, which is the maximum value.
 
 .. code-block:: python
 
@@ -232,16 +232,15 @@ You can configure the following additional brotli-specific values:
 Zstd
 ^^^^^^
 
-The `Zstd <https://pypi.org/project/zstd>`_ package is required to run this middleware. It is available as an extra for Litestar via the ``zstd`` extra: (``pip install 'litestar[zstd]'``).
+The `zstandard <https://pypi.org/project/zstandard>`_ package is required to run this middleware. It is available as an extra for Litestar via the ``zstd`` extra: (``pip install 'litestar[zstd]'``).
 
 You can enable zstd compression of responses by passing an instance of
 :class:`~litestar.config.compression.CompressionConfig` with the ``backend`` parameter set to ``"zstd"``.
 
 You can configure the following additional zstd-specific values:
 
-* ``minimum_size``: the minimum threshold for response size to enable compression. Smaller responses will not be
-    compressed. Default is 500, i.e. half a kilobyte.
-* ``zstd_level``: Range [0-22], Controls the compression level. Higher values increase compression ratio but are slower. Default is 3.
+* ``minimum_size``: the minimum threshold for response size to enable compression. Smaller responses will not be compressed. Default is 500, i.e. half a kilobyte.
+* ``zstd_compress_level``: Range [0-22], Controls the compression level. Higher values increase compression ratio but are slower. Default is 3.
 * ``zstd_gzip_fallback``: Boolean indicating whether to fall back to gzip if Zstd is not supported. Default is True.
 
 .. code-block:: python
@@ -267,6 +266,25 @@ To use the rate limit middleware, use the :class:`~litestar.middleware.rate_limi
 
 The only required configuration kwarg is ``rate_limit``, which expects a tuple containing a time-unit (``"second"``,
 ``"minute"``, ``"hour"``, ``"day"``\ ) and a value for the request quota (integer).
+
+
+Using behind a proxy
+^^^^^^^^^^^^^^^^^^^^
+
+The default mode for uniquely identifiying client uses the client's address. When an
+application is running behind a proxy, that address will be the proxy's, not the "real"
+address of the end-user.
+
+While there are special headers set by proxies to retrieve the remote client's actual
+address (``X-FORWARDED-FOR``), their values should not implicitly be trusted, as any
+client is free to set them to whatever value they want. A rate-limit could easily be
+circumvented by spoofing these, and simply attaching a new, random address to each
+request.
+
+The best way to handle applications running behind a proxy is to use a middleware that
+updates the client's address in a secure way, such as uvicorn's
+`ProxyHeaderMiddleware <https://github.com/encode/uvicorn/blob/master/uvicorn/middleware/proxy_headers.py>`_
+or hypercon's `ProxyFixMiddleware <https://hypercorn.readthedocs.io/en/latest/how_to_guides/proxy_fix.html>`_ .
 
 
 Logging Middleware

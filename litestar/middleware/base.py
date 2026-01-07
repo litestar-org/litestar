@@ -20,7 +20,7 @@ __all__ = (
 
 if TYPE_CHECKING:
     from litestar.middleware.constraints import MiddlewareConstraints
-    from litestar.types import Scopes
+    from litestar.types import RouteHandlerType, Scopes
     from litestar.types.asgi_types import ASGIApp, Receive, Scope, Send
 
 
@@ -215,27 +215,118 @@ class ASGIMiddleware(abc.ABC):
         ScopeType.WEBSOCKET,
         ScopeType.ASGI,
     )
+    """Scope types this middleware should be applied to"""
     exclude_path_pattern: str | tuple[str, ...] | None = None
+    r"""
+    A regex pattern (or tuple of patterns) to exclude this middleware from route
+    handlers whose path matches any of the provided patterns.
+
+    .. important::
+        Pattern matching is performed against the **handler's path** (e.g.,
+        ``/user/{user_id:int}/``), NOT against the actual **request path** (e.g.,
+        ``/user/1234/``). This is a critical distinction for dynamic routes.
+
+        If you need to exclude based on paths dynamically, use
+        :attr:`~litestar.middleware.ASGIMiddleware.should_bypass_for_scope`
+        instead, matching on ``scope["path"]``.
+
+    **Example 1: Static path**
+
+    Handler path::
+
+        /api/health
+
+    To exclude this handler, use a pattern like::
+
+        exclude_path_pattern = r"^/api/health$"
+
+    **Example 2: Dynamic path (path parameters)**
+
+    Handler path::
+
+        /user/{user_id:int}/profile
+             └─────┬──────┘
+                   └─ This is what the pattern matches against
+
+    Actual request paths that match this handler::
+
+        /user/1234/profile
+        /user/5678/profile
+        /user/9999/profile
+
+    To exclude this handler, the pattern must match the **handler**, not the actual request path::
+
+        exclude_path_pattern = "/user/{user_id:int}/profile"
+        exclude_path_pattern = "/user/\{.+?\}/"
+    """
     exclude_opt_key: str | None = None
+    """
+    Exclude this middleware for handlers with an opt-key of this name that is truthy
+    """
+    should_bypass_for_scope: Callable[[Scope], bool] | None = None
+    r"""
+    A callable that takes in the :class:`~litestar.types.Scope` of the current
+    connection and returns a boolean, indicating if the middleware should be skipped for
+    the current request.
+
+    This can for example be used to exclude a middleware based on a dynamic path::
+
+        should_bypass_for_scope = lambda scope: scope["path"].endswith(".jpg")
+
+    Applied to a route with a dynamic path like ``/static/{file_name:str}``, it would
+    be skipped *only* if ``file_name`` has a ``.jpg`` extension.
+
+    .. note::
+
+        If it is not required to dynamically match the path of a request,
+        :attr:`~litestar.middleware.ASGIMiddleware.exclude_path_pattern` should be
+        used instead. Since its exclusion is done statically at startup time, it has no
+        performance cost at runtime.
+
+    .. versionadded:: 3.0
+    """
     constraints: MiddlewareConstraints | None = None
+
+    def should_bypass_for_handler(self, handler: RouteHandlerType) -> bool:
+        """Return ``True`` if this middleware should be bypassed for ``handler``, according
+        to :attr:`~litestar.middleware.ASGIMiddleware.scopes`,
+        :attr:`~litestar.middleware.ASGIMiddleware.exclude_path_pattern` or
+        :attr:`~litestar.middleware.ASGIMiddleware.exclude_opt_key`, otherwise ``False``.
+        """
+        from litestar.handlers import ASGIRouteHandler, HTTPRouteHandler, WebsocketRouteHandler
+
+        if isinstance(handler, HTTPRouteHandler) and ScopeType.HTTP not in self.scopes:
+            return True
+        if isinstance(handler, WebsocketRouteHandler) and ScopeType.WEBSOCKET not in self.scopes:
+            return True
+        if isinstance(handler, ASGIRouteHandler) and ScopeType.ASGI not in self.scopes:
+            return True
+
+        if self.exclude_opt_key and handler.opt.get(self.exclude_opt_key):
+            return True
+
+        pattern = build_exclude_path_pattern(exclude=self.exclude_path_pattern, middleware_cls=type(self))
+        if pattern and any(pattern.search(path) for path in handler.paths):
+            return True
+
+        return False
 
     def __call__(self, app: ASGIApp) -> ASGIApp:
         """Create the actual middleware callable"""
         handle = self.handle
-        exclude_pattern = build_exclude_path_pattern(exclude=self.exclude_path_pattern, middleware_cls=type(self))
-        scopes = set(self.scopes)
-        exclude_opt_key = self.exclude_opt_key
 
-        async def middleware(scope: Scope, receive: Receive, send: Send) -> None:
-            if should_bypass_middleware(
-                scope=scope,
-                scopes=scopes,  # type: ignore[arg-type]
-                exclude_opt_key=exclude_opt_key,
-                exclude_path_pattern=exclude_pattern,
-            ):
-                await app(scope, receive, send)
-            else:
+        should_bypass_for_scope = self.should_bypass_for_scope
+        if should_bypass_for_scope is None:
+
+            async def middleware(scope: Scope, receive: Receive, send: Send) -> None:
                 await handle(scope=scope, receive=receive, send=send, next_app=app)
+        else:
+
+            async def middleware(scope: Scope, receive: Receive, send: Send) -> None:
+                if should_bypass_for_scope(scope):
+                    await app(scope, receive, send)
+                else:
+                    await handle(scope=scope, receive=receive, send=send, next_app=app)
 
         return middleware
 

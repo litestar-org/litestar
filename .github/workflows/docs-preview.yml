@@ -14,10 +14,10 @@ jobs:
 
     steps:
       - name: Check out repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Download artifact
-        uses: dawidd6/action-download-artifact@v11
+        uses: dawidd6/action-download-artifact@v12
         with:
           workflow_conclusion: success
           run_id: ${{ github.event.workflow_run.id }}

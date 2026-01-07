@@ -10,5 +10,5 @@ splitted = 'splitted'
 extend-exclude = [
     "docs/changelog.rst",
     "docs/release-notes/changelog.rst",
-    "/docs/examples/contrib/sqlalchemy/us_state_lookup.json",
+    "/docs/examples/sqla/us_state_lookup.json",
 ]

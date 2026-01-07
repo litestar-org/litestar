@@ -1,15 +1,18 @@
 from __future__ import annotations
 
+from datetime import datetime, timezone
 from typing import TYPE_CHECKING, Annotated, Optional, cast
 
 import pydantic as pydantic_v2
 import pytest
+from pydantic import AwareDatetime
 from pydantic import v1 as pydantic_v1
 from typing_extensions import Literal
 
 from litestar import Request, post
 from litestar.dto import DTOConfig
-from litestar.plugins.pydantic import PydanticDTO, _model_dump_json
+from litestar.plugins.pydantic import PydanticDTO, _model_dump, _model_dump_json
+from litestar.status_codes import HTTP_201_CREATED
 from litestar.testing import create_test_client
 from litestar.types import Empty
 from litestar.typing import FieldDefinition
@@ -21,6 +24,32 @@ if TYPE_CHECKING:
     from pydantic import BaseModel
 
     from litestar import Litestar
+
+
+def test_aware_datetime_serialization_v2(use_experimental_dto_backend: bool) -> None:
+    class PydanticAwareDatetimeModel(pydantic_v2.BaseModel):
+        tz_aware_datetime: AwareDatetime
+
+    class AwareDatetimeDTO(PydanticDTO[PydanticAwareDatetimeModel]):
+        config = DTOConfig(experimental_codegen_backend=use_experimental_dto_backend)
+
+    @post(dto=AwareDatetimeDTO, signature_types=[PydanticAwareDatetimeModel])
+    def handler(data: PydanticAwareDatetimeModel) -> PydanticAwareDatetimeModel:
+        return data
+
+    with create_test_client(handler) as client:
+        data = PydanticAwareDatetimeModel(tz_aware_datetime=datetime.now(tz=timezone.utc))
+        dict_payload = _model_dump(data)
+        json_payload = _model_dump_json(data)
+
+        headers = {"Content-Type": "application/json; charset=utf-8"}
+        response = client.post(
+            "/",
+            content=json_payload,
+            headers=headers,
+        )
+        assert response.status_code == HTTP_201_CREATED
+        assert response.json() == dict_payload
 
 
 def test_schema_required_fields_with_pydantic_dto(

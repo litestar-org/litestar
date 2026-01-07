@@ -1948,7 +1948,7 @@
         :pr: 2145
 
         Add missing default values for the ``receive`` and ``send`` parameters of
-        :class:`~litestar.contrib.htmx.request.HTMXRequest`.
+        ``litestar.contrib.htmx.request.HTMXRequest``.
 
     .. change:: DTO: Excluded attributes accessed during transfer
         :type: bugfix
@@ -3329,8 +3329,8 @@
         :type: feature
         :pr: 1488
 
-        Pass the template context to the :class:`Template <litestar.response_containers.Template>` returned by
-        :class:`htmx.Response <litestar.contrib.htmx.response>`.
+        Pass the template context to the ``Template`` returned by
+        ``htmx.Response``.
 
 
     .. change:: OpenAPI support for attrs and msgspec classes
@@ -3613,8 +3613,8 @@
         A :class:`SQLAlchemyInitPlugin <litestar.contrib.sqlalchemy.plugins.SQLAlchemyInitPlugin>` was added,
         providing support for managed synchronous and asynchronous sessions.
 
-        .. seealso::
-            :doc:`/usage/databases/sqlalchemy/index`
+        .. note::
+            SQLAlchemy documentation was available in v2 but SQLAlchemy support was moved into a standalone library in v3.
 
     .. change:: Attrs signature modelling
         :type: feature

@@ -119,6 +119,12 @@ Here's some example plugin configurations:
         .. literalinclude:: /examples/openapi/plugins/redoc_config.py
             :language: python
 
+        .. tip::
+
+           Setting ``js_url`` lets you point the ReDoc bundle to any CDN or internal host. In ``redoc_config.py``
+           we override it to ``https://cdn.company.internal/redoc/custom-redoc.js``. When provided, ``js_url`` takes
+           precedence over ``version``.
+
     .. tab-item:: stoplight
         :sync: stoplight
 
@@ -241,17 +247,6 @@ With that, you can preset your clientId or enable PKCE support.
 
 .. literalinclude:: /examples/openapi/plugins/swagger_ui_oauth.py
     :language: python
-
-Customizing the OpenAPI UI
---------------------------
-
-Style and behavior of the OpenAPI UI can be customized by overriding the default ``css_url`` and ``js_url`` attributes
-on the render plugin class, for example:
-
-.. literalinclude:: /examples/openapi/plugins/scalar_customized.py
-    :language: python
-
-To learn more about customizing the ``Scalar`` UI, see the `Scalar documentation <https://docs.scalar.com/>`_.
 
 CDN and offline file support
 ----------------------------

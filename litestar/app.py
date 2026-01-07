@@ -888,9 +888,9 @@ class Litestar(Router):
 
         return HandlerIndex(handler=handler, paths=paths, identifier=identifier)
 
-    def route_reverse(self, name: str, **path_parameters: Any) -> str:
-        """Receives a route handler name, path parameter values and returns url path to the handler with filled path
-        parameters.
+    def route_reverse(self, name: str | BaseRouteHandler, **path_parameters: Any) -> str:
+        """Receives a route handler name and path parameter values and returns the url path to the handler with filled
+        path parameters.
 
         Examples:
             .. code-block:: python
@@ -898,30 +898,44 @@ class Litestar(Router):
                 from litestar import Litestar, get
 
 
+                @get("/group/{group_id:int}")
+                def get_group_members(group_id: int) -> None:
+                    pass
+
+
                 @get("/group/{group_id:int}/user/{user_id:int}", name="get_membership_details")
                 def get_membership_details(group_id: int, user_id: int) -> None:
                     pass
 
 
-                app = Litestar(route_handlers=[get_membership_details])
+                app = Litestar(route_handlers=[get_group_members, get_membership_details])
 
-                path = app.route_reverse("get_membership_details", user_id=100, group_id=10)
+                group_members_path = app.route_reverse(get_group_members, group_id=10)
+
+                # /group/10
+
+                membership_details_path = app.route_reverse(
+                    "get_membership_details", user_id=100, group_id=10
+                )
 
                 # /group/10/user/100
 
         Args:
-            name: A route handler unique name.
+            name: The ``name`` of the route handler, or the route handler itself.
             **path_parameters: Actual values for path parameters in the route. Parameters of type
-                `datetime`, `date`, `time`, `timedelta`, `float`, `Path`, `UUID`
+                `datetime`, `date`, `time`, `timedelta`, `float`, `Path`, and `UUID`
                 may be passed in their string representations.
 
         Raises:
-            NoRouteMatchFoundException: If route with 'name' does not exist, path parameters are missing in
-                ``**path_parameters or have wrong type``.
+            NoRouteMatchFoundException: If a route with 'name' does not exist, or any of the path parameters in
+                ``**path_parameters`` are missing or are of the wrong type.
 
         Returns:
             A fully formatted url path.
         """
+        if isinstance(name, BaseRouteHandler):
+            name = str(name)
+
         handler_index = self.get_handler_index_by_name(name)
         if handler_index is None:
             raise NoRouteMatchFoundException(f"Route {name} can not be found")

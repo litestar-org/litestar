@@ -2,12 +2,12 @@ from datetime import datetime
 from typing import Annotated
 from uuid import UUID
 
+from advanced_alchemy.extensions.litestar import SQLAlchemyDTO
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from litestar import Litestar, post
 from litestar.dto import DTOConfig, dto_field
-from litestar.plugins.sqlalchemy import SQLAlchemyDTO
 
 from .my_lib import Base
 

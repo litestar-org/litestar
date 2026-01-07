@@ -89,7 +89,7 @@ Using the CLI
 
         {
             "name": "Python: Litestar app",
-            "type": "python",
+            "type": "debugpy",
             "request": "launch",
             "module": "litestar",
             "justMyCode": true,
@@ -116,7 +116,7 @@ Using uvicorn
 
         {
             "name": "Python: Litestar app",
-            "type": "python",
+            "type": "debugpy",
             "request": "launch",
             "module": "uvicorn",
             "justMyCode": true,
