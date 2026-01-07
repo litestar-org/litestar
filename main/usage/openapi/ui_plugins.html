@@ -218,7 +218,6 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l3"><a class="reference internal" href="#building-your-own-openapi-ui-plugin">Building your own OpenAPI UI Plugin</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#interacting-with-the-router">Interacting with the <code class="docutils literal notranslate"><span class="pre">Router</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#oauth2-in-swagger-ui">OAuth2 in Swagger UI</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#customizing-the-openapi-ui">Customizing the OpenAPI UI</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#cdn-and-offline-file-support">CDN and offline file support</a></li>
 </ul>
 </li>
@@ -469,7 +468,6 @@ data-aria-dark="Switch to auto color mode">
 </li>
 <li><a class="reference internal" href="#interacting-with-the-router">Interacting with the <code class="docutils literal notranslate"><span class="pre">Router</span></code></a></li>
 <li><a class="reference internal" href="#oauth2-in-swagger-ui">OAuth2 in Swagger UI</a></li>
-<li><a class="reference internal" href="#customizing-the-openapi-ui">Customizing the OpenAPI UI</a></li>
 <li><a class="reference internal" href="#cdn-and-offline-file-support">CDN and offline file support</a></li>
 </ul>
 </div><a class="js-repo-stats repo-stats flex items-center" href="https://github.com/litestar-org/litestar"
@@ -767,6 +765,15 @@ scalar</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.openapi.plugins</span><span class="w"> </span><span class="kn">import</span> <span class="n">ScalarRenderPlugin</span>
 </span><span data-line="2">
 </span><span data-line="3"><span class="n">scalar_plugin</span> <span class="o">=</span> <span class="n">ScalarRenderPlugin</span><span class="p">(</span><span class="n">version</span><span class="o">=</span><span class="s2">&quot;1.19.5&quot;</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="s2">&quot;/scalar&quot;</span><span class="p">)</span>
+</span><span data-line="4">
+</span><span data-line="5"><span class="c1"># Example demonstrating custom Scalar render options</span>
+</span><span data-line="6"><span class="c1"># For more configuration options, see: https://guides.scalar.com/scalar/scalar-api-references/configuration</span>
+</span><span data-line="7"><span class="n">scalar_plugin_with_options</span> <span class="o">=</span> <span class="n">ScalarRenderPlugin</span><span class="p">(</span>
+</span><span data-line="8">    <span class="n">options</span><span class="o">=</span><span class="p">{</span>
+</span><span data-line="9">        <span class="c1"># Hide the sidebar to give more space to the main content</span>
+</span><span data-line="10">        <span class="s2">&quot;showSidebar&quot;</span><span class="p">:</span> <span class="kc">False</span>
+</span><span data-line="11">    <span class="p">}</span>
+</span><span data-line="12"><span class="p">)</span>
 </span></pre></div>
 </div>
 </div>
@@ -1062,21 +1069,6 @@ containing the parameters described in the Swagger UI documentation for OAuth2
 </span><span data-line="30"><span class="p">)</span>
 </span></pre></div>
 </div>
-</section>
-<section id="customizing-the-openapi-ui">
-<h1>Customizing the OpenAPI UI<a class="headerlink" href="#customizing-the-openapi-ui" title="Link to this heading">¶</a></h1>
-<p>Style and behavior of the OpenAPI UI can be customized by overriding the default <code class="docutils literal notranslate"><span class="pre">css_url</span></code> and <code class="docutils literal notranslate"><span class="pre">js_url</span></code> attributes
-on the render plugin class, for example:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.openapi.plugins</span><span class="w"> </span><span class="kn">import</span> <span class="n">ScalarRenderPlugin</span>
-</span><span data-line="2">
-</span><span data-line="3"><span class="n">scalar_plugin</span> <span class="o">=</span> <span class="n">ScalarRenderPlugin</span><span class="p">(</span>
-</span><span data-line="4">    <span class="n">js_url</span><span class="o">=</span><span class="s2">&quot;https://example.com/my-custom-scalar.js&quot;</span><span class="p">,</span>
-</span><span data-line="5">    <span class="n">css_url</span><span class="o">=</span><span class="s2">&quot;https://example.com/my-custom-scalar.css&quot;</span><span class="p">,</span>
-</span><span data-line="6">    <span class="n">path</span><span class="o">=</span><span class="s2">&quot;/scalar&quot;</span><span class="p">,</span>
-</span><span data-line="7"><span class="p">)</span>
-</span></pre></div>
-</div>
-<p>To learn more about customizing the <code class="docutils literal notranslate"><span class="pre">Scalar</span></code> UI, see the <a class="reference external" href="https://docs.scalar.com/">Scalar documentation</a>.</p>
 </section>
 <section id="cdn-and-offline-file-support">
 <h1>CDN and offline file support<a class="headerlink" href="#cdn-and-offline-file-support" title="Link to this heading">¶</a></h1>
