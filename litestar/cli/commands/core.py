@@ -277,7 +277,7 @@ def run_command(
     if pdb:
         os.environ["LITESTAR_PDB"] = "1"
 
-    quiet_console = bool(envflag("LITESTAR_QUIET_CONSOLE"))
+    quiet_console = envflag("LITESTAR_QUIET_CONSOLE")
 
     if not UVICORN_INSTALLED:
         console.print(

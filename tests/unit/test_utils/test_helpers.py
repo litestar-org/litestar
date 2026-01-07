@@ -71,6 +71,7 @@ def test_envflag_invalid_value(monkeypatch: pytest.MonkeyPatch) -> None:
 
 def test_envflag_missing() -> None:
     assert envflag("NONEXISTENT_VAR") is False
+    assert envflag("NONEXISTENT_VAR", default=True) is True
 
 
 def test_envflag_overrides(monkeypatch: pytest.MonkeyPatch) -> None:
