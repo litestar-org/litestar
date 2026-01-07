@@ -1,12 +1,14 @@
 from __future__ import annotations
 
 import abc
+import warnings
 from abc import abstractmethod
 from typing import TYPE_CHECKING, Any, Callable, Protocol, runtime_checkable
 
 from litestar.enums import ScopeType
 from litestar.middleware._utils import (
     build_exclude_path_pattern,
+    should_bypass_for_path_pattern,
     should_bypass_middleware,
 )
 from litestar.utils.deprecation import warn_deprecation
@@ -217,22 +219,70 @@ class ASGIMiddleware(abc.ABC):
     exclude_path_pattern: str | tuple[str, ...] | None = None
     exclude_opt_key: str | None = None
 
+    should_bypass_for_scope: Callable[[Scope], bool] | None = None
+    r"""
+    A callable that takes in the :class:`~litestar.types.Scope` of the current
+    connection and returns a boolean, indicating if the middleware should be skipped for
+    the current request.
+
+    This can for example be used to exclude a middleware based on a dynamic path::
+
+        should_bypass_for_scope = lambda scope: scope["path"].endswith(".jpg")
+
+    Applied to a route with a dynamic path like ``/static/{file_name:str}``, it would
+    be skipped *only* if ``file_name`` has a ``.jpg`` extension.
+
+    .. versionadded:: 2.19
+    """
+
     def __call__(self, app: ASGIApp) -> ASGIApp:
         """Create the actual middleware callable"""
         handle = self.handle
         exclude_pattern = build_exclude_path_pattern(exclude=self.exclude_path_pattern, middleware_cls=type(self))
         scopes = set(self.scopes)
         exclude_opt_key = self.exclude_opt_key
+        should_bypass_for_scope = self.should_bypass_for_scope
+
+        def exclude_pattern_matches_handler_path(scope: Scope) -> bool:
+            if exclude_pattern is None:
+                return False
+            handler = scope["route_handler"]
+            return any(exclude_pattern.search(path) for path in handler.paths)
 
         async def middleware(scope: Scope, receive: Receive, send: Send) -> None:
-            if should_bypass_middleware(
-                scope=scope,
-                scopes=scopes,  # type: ignore[arg-type]
-                exclude_opt_key=exclude_opt_key,
-                exclude_path_pattern=exclude_pattern,
+            path_excluded = False
+            if (
+                should_bypass_middleware(
+                    scope=scope,
+                    scopes=scopes,  # type: ignore[arg-type]
+                    exclude_opt_key=exclude_opt_key,
+                )
+                or (path_excluded := should_bypass_for_path_pattern(scope, exclude_pattern))
+                or (should_bypass_for_scope and should_bypass_for_scope(scope))
             ):
+                if path_excluded and exclude_pattern is not None and not exclude_pattern_matches_handler_path(scope):
+                    warnings.warn(
+                        f"{type(self).__name__}.exclude_path_pattern={exclude_pattern.pattern!r} "
+                        "did match the request path but did not match the route "
+                        "handler's path. When upgrading to Litestar 3, this middleware "
+                        "would NOT be excluded. To keep the current behaviour, use "
+                        "'should_bypass_for_scope' instead.",
+                        category=DeprecationWarning,
+                        stacklevel=2,
+                    )
+
                 await app(scope, receive, send)
             else:
+                if exclude_pattern is not None and exclude_pattern_matches_handler_path(scope):
+                    warnings.warn(
+                        f"{type(self).__name__}.exclude_path_pattern={exclude_pattern.pattern!r} "
+                        "did not match the request path but did match the route "
+                        "handler's path. When upgrading to Litestar 3, this middleware "
+                        "would be excluded. To keep the current behaviour, use "
+                        "'should_bypass_for_scope' instead.",
+                        category=DeprecationWarning,
+                        stacklevel=2,
+                    )
                 await handle(scope=scope, receive=receive, send=send, next_app=app)
 
         return middleware
