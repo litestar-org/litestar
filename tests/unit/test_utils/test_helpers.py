@@ -63,14 +63,14 @@ def test_envflag_falsy_values(monkeypatch: pytest.MonkeyPatch) -> None:
 
 
 def test_envflag_invalid_value(monkeypatch: pytest.MonkeyPatch) -> None:
-    for value in ("2", "Tru", "Fals", "maybe", "invalid", "O"):
+    for value in ("2", "Tru", "Falsy", "maybe", "invalid", "O"):
         monkeypatch.setenv("TEST_FLAG", value)
         with pytest.raises(LitestarException):
             envflag("TEST_FLAG")
 
 
 def test_envflag_missing() -> None:
-    assert envflag("NONEXISTENT_VAR") is None
+    assert envflag("NONEXISTENT_VAR") is False
 
 
 def test_envflag_overrides(monkeypatch: pytest.MonkeyPatch) -> None:

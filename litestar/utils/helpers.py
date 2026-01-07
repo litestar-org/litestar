@@ -106,22 +106,23 @@ def get_exception_group() -> type[BaseException]:
         return cast("type[BaseException]", _ExceptionGroup)
 
 
-def envflag(varname: str) -> bool | None:
+def envflag(varname: str, default: bool = False) -> bool:
     """Parse an environment variable as a boolean flag.
 
     Args:
         varname: The name of the environment variable to check.
+        default: Value to return if the environment variable is not set.
 
     Returns:
         True for truthy values (1, true, t, yes, y, on),
         False for falsy values (0, false, f, no, n, off),
-        or empty string, None if not set.
+        otherwise the provided default if the variable is not set.
 
     Raises:
         LitestarException: If the value is not a recognized boolean.
     """
     if varname not in os.environ:
-        return None
+        return default
 
     envvar = os.environ.get(varname)
     if not envvar:
