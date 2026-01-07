@@ -634,7 +634,7 @@ pdm</label><div class="sd-tab-content docutils">
 poetry</label><div class="sd-tab-content docutils">
 <div class="literal-block-wrapper docutils container" id="id7">
 <div class="code-block-caption"><span class="caption-text">Using <a class="reference external" href="https://python-poetry.org/">poetry</a></span><a class="headerlink" href="#id7" title="Link to this code">¶</a></div>
-<div class="highlight-toml notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">[tool.poetry.plugins.</span><span class="s2">&quot;litestar.commands&quot;</span><span class="k">]</span>
+<div class="highlight-toml notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">[project.entry-points.</span><span class="s2">&quot;litestar.commands&quot;</span><span class="k">]</span>
 </span><span data-line="2"><span class="n">my_command</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;my_litestar_plugin.cli:main&quot;</span>
 </span></pre></div>
 </div>
@@ -645,7 +645,7 @@ poetry</label><div class="sd-tab-content docutils">
 uv</label><div class="sd-tab-content docutils">
 <div class="literal-block-wrapper docutils container" id="id8">
 <div class="code-block-caption"><span class="caption-text">Using <a class="reference external" href="https://docs.astral.sh/uv/">uv</a></span><a class="headerlink" href="#id8" title="Link to this code">¶</a></div>
-<div class="highlight-toml notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">[project.scripts]</span>
+<div class="highlight-toml notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">[project.entry-points.</span><span class="s2">&quot;litestar.commands&quot;</span><span class="k">]</span>
 </span><span data-line="2"><span class="n">my_command</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;my_litestar_plugin.cli:main&quot;</span>
 </span></pre></div>
 </div>
