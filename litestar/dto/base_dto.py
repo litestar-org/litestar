@@ -57,6 +57,7 @@ class AbstractDTO(Generic[T]):
     """:func:`getattr` like callable to access attributes on the data source"""
 
     _dto_backends: ClassVar[dict[str, _BackendDict]] = {}
+    __schema_name__: ClassVar[None | str] = None
 
     def __init__(self, asgi_connection: ASGIConnection) -> None:
         """Create an AbstractDTOFactory type.
