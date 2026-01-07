@@ -15,11 +15,14 @@ from os import getenv
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Callable, Generator, Iterable, Sequence, TypeVar, cast
 
+from litestar.cli._suggestions import suggest_option
+
 try:
+    from rich_click import NoSuchOption
     from rich_click import RichCommand as Command
     from rich_click import RichGroup as Group
 except ImportError:
-    from click import Command, Group  # type: ignore[assignment]
+    from click import Command, Group, NoSuchOption  # type: ignore[assignment]
 
 from click import ClickException, Context, pass_context
 from rich import get_console
@@ -179,6 +182,12 @@ class LitestarGroup(Group):  # pyright: ignore
             return cast("Command", Group.command(self, *args, **kwargs)(f))
 
         return decorator
+
+    def parse_args(self, *args: Any, **kwargs: Any) -> list[str]:
+        try:
+            return super().parse_args(*args, **kwargs)
+        except NoSuchOption as e:
+            suggest_option(e)
 
 
 class LitestarExtensionGroup(LitestarGroup):
