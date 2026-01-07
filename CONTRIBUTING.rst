@@ -1,13 +1,6 @@
 Contribution Guide
 ==================
 
-.. _pipx: https://pypa.github.io/pipx/
-.. |pipx| replace:: `pipx <https://pypa.github.io/pipx/>`__
-
-.. _homebrew: https://brew.sh/
-.. |homebrew| replace:: `Homebrew <https://brew.sh/>`__
-
-
 Getting Started
 ---------------
 
@@ -19,6 +12,7 @@ At a minimum you will need Python 3.8 for code changes and 3.12 if you plan on d
 
 You can use various tools to manage multiple Python versions on your system including:
 
+* Using `uv built-in <https://docs.astral.sh/uv/guides/install-python/>`_ Python version management.
 * `pyenv <https://github.com/pyenv/pyenv>`_ and `pyenv-win for Windows <https://github.com/pyenv-win/pyenv-win>`_
 * `rtx / mise <https://mise.jdx.dev/>`_
 * `asdf <https://asdf-vm.com/>`_
@@ -61,6 +55,14 @@ the environment will bootstrap itself automatically. The steps below are for loc
 
 Code contributions
 ------------------
+
+.. important::
+    * Documentation PRs are always welcome; it's often a very good entry point to get familiar with the project.
+    * Bug fixes and small improvements are also a good way to get started. There is no shortage of small things that can be improved.
+    * We're all humans (hopefully) and may forget about your particular PR. If you feel your PR has stalled, feel free to gently nudge us.
+    * Large features or refactors may take time. Please be patient; we're all volunteers and want to ensure the best possible outcome.
+    * Use LLMs intelligently. Most PRs automatically generated are not usable, and incur a higher than normal cost from reviewers and maintainers, as they still need to be thoroughly evaluated, even if they are ultimately not acceptable.
+
 
 Workflow
 ++++++++
@@ -107,6 +109,7 @@ Guidelines for writing code
 - When adding a new public interface, it has to be  included in the reference documentation located in
   ``docs/reference``. If applicable, add or modify examples in the docs related to the new functionality implemented,
   following the guidelines established in `Adding examples`_.
+
 
 Writing and running tests
 +++++++++++++++++++++++++
