@@ -12,6 +12,7 @@ if TYPE_CHECKING:
     from pathlib import Path
 
     from litestar.connection import Request
+    from litestar.handlers import BaseRouteHandler
 
 __all__ = (
     "TemplateCallableType",
@@ -34,12 +35,12 @@ def _get_request_from_context(context: Mapping[str, Any]) -> Request:
     return cast("Request", context["request"])
 
 
-def url_for(context: Mapping[str, Any], /, route_name: str, **path_parameters: Any) -> str:
+def url_for(context: Mapping[str, Any], /, route_name: str | BaseRouteHandler, **path_parameters: Any) -> str:
     """Wrap :func:`route_reverse <litestar.app.route_reverse>` to be used in templates.
 
     Args:
         context: The template context.
-        route_name: The name of the route handler.
+        route_name: The ``name`` of the route handler, or the route handler itself.
         **path_parameters: Actual values for path parameters in the route.
 
     Raises:

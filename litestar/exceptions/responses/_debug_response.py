@@ -151,12 +151,16 @@ def create_html_response_content(exc: Exception, request: Request, line_limit: i
     scripts = (tpl_dir / "scripts.js").read_text()
     styles = (tpl_dir / "styles.css").read_text()
     body_tpl = (tpl_dir / "body.html").read_text()
+
+    plain_text_traceback = create_plain_text_response_content(exc)
+
     return body_tpl.format(
         scripts=scripts,
         styles=styles,
         error=f"<span>{escape(exc.__class__.__name__)}</span> on {request.method} {escape(request.url.path)}",
         error_description=escape(str(exc)),
         exception_data="".join(exception_data),
+        plain_text_traceback=escape(plain_text_traceback),
     )
 
 

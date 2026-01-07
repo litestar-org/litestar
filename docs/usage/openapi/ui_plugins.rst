@@ -119,6 +119,12 @@ Here's some example plugin configurations:
         .. literalinclude:: /examples/openapi/plugins/redoc_config.py
             :language: python
 
+        .. tip::
+
+           Setting ``js_url`` lets you point the ReDoc bundle to any CDN or internal host. In ``redoc_config.py``
+           we override it to ``https://cdn.company.internal/redoc/custom-redoc.js``. When provided, ``js_url`` takes
+           precedence over ``version``.
+
     .. tab-item:: stoplight
         :sync: stoplight
 

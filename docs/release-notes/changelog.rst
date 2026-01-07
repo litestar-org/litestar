@@ -261,3 +261,28 @@
             difference is expected. Some test cases may break though if they relied on
             the fact that the middleware wrapper created by ``ASGIMiddleware`` was
             always being called
+
+    .. change:: Support for ``typing.ReadOnly`` in typed dict schemas
+        :type: feature
+        :issue: 4423
+        :pr: 4424
+
+        Support unwrapping ``ReadOnly`` type in schemas like:
+
+        .. code:: python
+
+          from typing import ReadOnly, TypedDict
+
+          class User(TypedDict):
+              id: ReadOnly[int]
+
+        ``typing_extensions.ReadOnly`` should be used for python versions <3.13.
+
+
+    .. change:: Add ``should_bypass_for_scope`` to ``ASGIMiddleware`` to allow excluding middlewares dynamically
+        :type: feature
+        :pr: 4441
+
+        Add a new attribute :attr:`~litestar.middleware.ASGIMiddleware.should_bypass_for_scope`;
+        A callable which takes in a :class:`~litestar.types.Scope` and returns a boolean
+        to indicate whether to bypass the middleware for the current request.

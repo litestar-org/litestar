@@ -18,7 +18,7 @@ simple, our first model will encompass only three fields: ``id``, ``name``, and 
 .. literalinclude:: /examples/sqla/sqlalchemy_declarative_models.py
     :language: python
     :caption: ``app.py``
-    :lines: 9, 11, 18-20
+    :lines: 9, 11, 17-20
     :linenos:
 
 The book entity is not considered a "strong" entity and therefore always requires an
@@ -31,7 +31,7 @@ key constraints when using the ``author_id`` field in each ``Book`` record.
 .. literalinclude:: /examples/sqla/sqlalchemy_declarative_models.py
     :language: python
     :caption: ``app.py``
-    :lines: 9, 11, 18-22, 27-30
+    :lines: 9, 11, 17-22, 27-30
     :linenos:
 
 By using the audit model, we can automatically record the time a record was created and
