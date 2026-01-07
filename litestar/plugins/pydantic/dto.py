@@ -68,6 +68,7 @@ if pydantic_v2 is not Empty:  # type: ignore[comparison-overlap]  # pragma: no c
             pydantic_v2.IPvAnyAddress: str,
             pydantic_v2.IPvAnyInterface: str,
             pydantic_v2.IPvAnyNetwork: str,
+            pydantic_v2.AwareDatetime: str,
         }
     )
 
@@ -149,6 +150,13 @@ class PydanticDTO(AbstractDTO[T], Generic[T]):
                     if field_info.default_factory and not is_pydantic_undefined(field_info.default_factory)
                     else None
                 )
+            else:
+                # Computed fields don't expose FieldInfo; mark Optional[...] as default=None so
+                # the transfer struct treats them as optional when the computed value is None.
+                if field_definition.is_optional:
+                    default = None
+                else:
+                    default = Empty
 
             yield replace(
                 DTOFieldDefinition.from_field_definition(

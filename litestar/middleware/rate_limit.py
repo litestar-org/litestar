@@ -11,7 +11,12 @@ from litestar.middleware.base import AbstractMiddleware, DefineMiddleware
 from litestar.serialization import decode_json, encode_json
 from litestar.utils import ensure_async_callable
 
-__all__ = ("CacheObject", "RateLimitConfig", "RateLimitMiddleware")
+__all__ = (
+    "CacheObject",
+    "RateLimitConfig",
+    "RateLimitMiddleware",
+    "get_remote_address",
+)
 
 
 if TYPE_CHECKING:
@@ -38,6 +43,18 @@ class CacheObject:
     reset: int
 
 
+def get_remote_address(request: Request[Any, Any, Any]) -> str:
+    """Get a client's remote address from a ``Request``
+
+    Args:
+        request: A :class:`Request <.connection.Request>` instance.
+
+    Returns:
+        An address, uniquely identifying this client
+    """
+    return request.client.host if request.client else "127.0.0.1"
+
+
 class RateLimitMiddleware(AbstractMiddleware):
     """Rate-limiting middleware."""
 
@@ -55,6 +72,7 @@ class RateLimitMiddleware(AbstractMiddleware):
         self.config = config
         self.max_requests: int = config.rate_limit[1]
         self.unit: DurationUnit = config.rate_limit[0]
+        self.get_identifier_for_request = config.identifier_for_request
 
     async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
         """ASGI callable.
@@ -71,7 +89,12 @@ class RateLimitMiddleware(AbstractMiddleware):
         request: Request[Any, Any, Any] = app.request_class(scope)
         store = self.config.get_store_from_app(app)
         if await self.should_check_request(request=request):
-            key = self.cache_key_from_request(request=request)
+            identifier = self.get_identifier_for_request(request)
+            key = f"{type(self).__name__}::{identifier}"
+            route_handler = request.scope["route_handler"]
+            if getattr(route_handler, "is_mount", False):
+                key += "::mount"
+
             cache_object = await self.retrieve_cached_history(key, store)
             if len(cache_object.history) >= self.max_requests:
                 raise TooManyRequestsException(
@@ -113,23 +136,6 @@ class RateLimitMiddleware(AbstractMiddleware):
             await send(message)
 
         return send_wrapper
-
-    def cache_key_from_request(self, request: Request[Any, Any, Any]) -> str:
-        """Get a cache-key from a ``Request``
-
-        Args:
-            request: A :class:`Request <.connection.Request>` instance.
-
-        Returns:
-            A cache key.
-        """
-        host = request.client.host if request.client else "anonymous"
-        identifier = request.headers.get("X-Forwarded-For") or request.headers.get("X-Real-IP") or host
-        route_handler = request.scope["route_handler"]
-        if getattr(route_handler, "is_mount", False):
-            identifier += "::mount"
-
-        return f"{type(self).__name__}::{identifier}"
 
     async def retrieve_cached_history(self, key: str, store: Store) -> CacheObject:
         """Retrieve a list of time stamps for the given duration unit.
@@ -216,6 +222,18 @@ class RateLimitConfig:
     """A pattern or list of patterns to skip in the rate limiting middleware."""
     exclude_opt_key: str | None = field(default=None)
     """An identifier to use on routes to disable rate limiting for a particular route."""
+    identifier_for_request: Callable[[Request], str] = get_remote_address
+    """
+    A callable that receives the request and returns an identifier for which the limit
+    should be applied. Defaults to :func:`~litestar.middleware.rate_limit.get_remote_address`, which returns the client's
+    address.
+
+    Note that :func:`~litestar.middleware.rate_limit.get_remote_address` does *NOT* honour ``X-FORWARDED-FOR`` headers, as these cannot be
+    trusted implicitly. If running behind a proxy, a secure way of updating the client's
+    address should be implemented, such as uvicorn's
+    `ProxyHeaderMiddleware <https://github.com/encode/uvicorn/blob/master/uvicorn/middleware/proxy_headers.py>`_
+    or hypercon's `ProxyFixMiddleware <https://hypercorn.readthedocs.io/en/latest/how_to_guides/proxy_fix.html>`_ .
+    """
     check_throttle_handler: Callable[[Request[Any, Any, Any]], SyncOrAsyncUnion[bool]] | None = field(default=None)
     """Handler callable that receives the request instance, returning a boolean dictating whether or not the request
     should be checked for rate limiting.

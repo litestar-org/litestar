@@ -373,7 +373,7 @@ def _write_changelog_entry(changelog_entry: str) -> None:
         (i for i, line in enumerate(changelog_lines) if line.startswith(".. changelog::")),
         None,
     )
-    if not line_no:
+    if line_no is None:
         raise ValueError("Changelog start not found")
 
     changelog_lines[line_no:line_no] = changelog_entry.splitlines()

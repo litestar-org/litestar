@@ -7,6 +7,22 @@
     :date: 2024-08-30
 
 
+    .. change:: Remove all SQLAlchemy modules in favor of direct advanced-alchemy imports
+        :type: feature
+        :breaking:
+        :pr: TBD
+
+        Remove all SQLAlchemy functionality from Litestar. Both ``litestar.contrib.sqlalchemy``
+        and ``litestar.plugins.sqlalchemy`` modules have been completely removed. Users must now
+        import directly from ``advanced_alchemy.extensions.litestar``.
+
+        Migration:
+        - ``from litestar.contrib.sqlalchemy import X`` → ``from advanced_alchemy.extensions.litestar import X``
+        - ``from litestar.plugins.sqlalchemy import Y`` → ``from advanced_alchemy.extensions.litestar import Y``
+
+        This completes the separation of concerns, with advanced-alchemy being the sole provider
+        of SQLAlchemy integration for Litestar.
+
     .. change:: Remove deprecated ``litestar.contrib.prometheus`` module
         :type: feature
         :breaking:
@@ -94,6 +110,17 @@
         - :meth:`~litestar.response.Template.to_asgi_response`
 
         Existing code still using ``encoded_headers`` should be migrated to using the ``headers`` parameter instead.
+
+    .. change:: Remove deprecated ``litestar.contrib.htmx`` module
+        :type: feature
+        :breaking:
+        :pr: 4316
+        :issue: 4303
+
+        Remove the deprecated ``litestar.contrib.htmx`` module. Code still using imports
+        from this module should switch to using ``litestar_htmx``.
+
+        Install it via ``litestar[htmx]`` extra.
 
     .. change:: Remove deprecated ``LitestarType``
         :type: feature
@@ -234,3 +261,28 @@
             difference is expected. Some test cases may break though if they relied on
             the fact that the middleware wrapper created by ``ASGIMiddleware`` was
             always being called
+
+    .. change:: Support for ``typing.ReadOnly`` in typed dict schemas
+        :type: feature
+        :issue: 4423
+        :pr: 4424
+
+        Support unwrapping ``ReadOnly`` type in schemas like:
+
+        .. code:: python
+
+          from typing import ReadOnly, TypedDict
+
+          class User(TypedDict):
+              id: ReadOnly[int]
+
+        ``typing_extensions.ReadOnly`` should be used for python versions <3.13.
+
+
+    .. change:: Add ``should_bypass_for_scope`` to ``ASGIMiddleware`` to allow excluding middlewares dynamically
+        :type: feature
+        :pr: 4441
+
+        Add a new attribute :attr:`~litestar.middleware.ASGIMiddleware.should_bypass_for_scope`;
+        A callable which takes in a :class:`~litestar.types.Scope` and returns a boolean
+        to indicate whether to bypass the middleware for the current request.

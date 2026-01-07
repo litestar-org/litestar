@@ -9,67 +9,67 @@ Installation
 
    pip install litestar
 
-.. tip:: ``litestar[standard]`` includes commonly used extras like ``uvicorn`` and ``jinja2`` (for templating).
+.. tip:: ``litestar[standard]`` includes commonly used extras like CLI, ``uvicorn`` and ``jinja2`` (for templating).
 
 .. dropdown:: Extras
     :icon: star
 
     `Pydantic <https://docs.pydantic.dev/latest/>`_
-        :code:`pip install litestar[pydantic]`
+        :code:`pip install 'litestar[pydantic]'`
 
     `Attrs <https://www.attrs.org>`_
-        :code:`pip install litestar[attrs]`
+        :code:`pip install 'litestar[attrs]'`
 
-    :ref:`Brotli Compression Middleware <usage/middleware/builtin-middleware:brotli>`:
-        :code:`pip install litestar[brotli]`
+    :ref:`Brotli Compression Middleware <usage/middleware/builtin-middleware:brotli>`
+        :code:`pip install 'litestar[brotli]'`
 
-   :ref:`Zstd Compression Middleware <usage/middleware/builtin-middleware:zstd>`:
-        :code:`pip install litestar[zstd]`
+   :ref:`Zstd Compression Middleware <usage/middleware/builtin-middleware:zstd>`
+        :code:`pip install 'litestar[zstd]'`
 
     :ref:`Cookie Based Sessions <usage/middleware/builtin-middleware:client-side sessions>`
-        :code:`pip install litestar[cryptography]`
+        :code:`pip install 'litestar[cryptography]'`
 
     :doc:`JWT </usage/security/jwt>`
-        :code:`pip install litestar[jwt]`
+        :code:`pip install 'litestar[jwt]'`
 
     :doc:`RedisStore </usage/stores>`
-        :code:`pip install litestar[redis]`
+        :code:`pip install 'litestar[redis]'`
 
     :ref:`Picologging <usage/logging:using picologging>`
-        :code:`pip install litestar[picologging]`
+        :code:`pip install 'litestar[picologging]'`
 
     :ref:`StructLog <usage/logging:using structlog>`
-        :code:`pip install litestar[structlog]`
+        :code:`pip install 'litestar[structlog]'`
 
     :doc:`Prometheus Instrumentation </usage/metrics/prometheus>`
-        :code:`pip install litestar[prometheus]`
+        :code:`pip install 'litestar[prometheus]'`
 
     :doc:`Open Telemetry Instrumentation </usage/metrics/open-telemetry>`
-        :code:`pip install litestar[opentelemetry]`
+        :code:`pip install 'litestar[opentelemetry]'`
 
-    :doc:`SQLAlchemy </usage/databases/sqlalchemy/index>`
-        :code:`pip install litestar[sqlalchemy]`
+    :doc:`SQLAlchemy </usage/databases/sqlalchemy/index>` (via `Advanced-Alchemy <https://docs.advanced-alchemy.litestar.dev/latest/>`_)
+        :code:`pip install 'litestar[sqlalchemy]'`
 
     :doc:`Jinja Templating </usage/templating>`
-        :code:`pip install litestar[jinja]`
+        :code:`pip install 'litestar[jinja]'`
 
     :doc:`Mako Templating </usage/templating>`
-        :code:`pip install litestar[mako]`
+        :code:`pip install 'litestar[mako]'`
 
-    :ref:`Polyfactory to generate OpenAPI examples <usage/openapi/schema_generation:Generating examples>`
-        :code:`pip install litestar[polyfactory]`
+    :ref:`Better OpenAPI examples generation <usage/openapi/schema_generation:Generating examples>` with `Polyfactory <https://github.com/litestar-org/polyfactory>`_
+        :code:`pip install 'litestar[polyfactory]'`
 
     :doc:`HTMX plugin </usage/htmx>`
-        :code:`pip install litestar[htmx]`
+        :code:`pip install 'litestar[htmx]'`
 
     :ref:`OpenAPI YAML rendering <usage/openapi/ui_plugins:Using OpenAPI UI Plugins>`
-      :code:`pip install litestar[yaml]`
+        :code:`pip install 'litestar[yaml]'`
 
-    Standard Installation (includes Uvicorn and Jinja2 templating):
-        :code:`pip install litestar[standard]`
+    Standard Installation (includes CLI, Uvicorn, and Jinja2 templating):
+        :code:`pip install 'litestar[standard]'`
 
     All Extras:
-        :code:`pip install litestar[full]`
+        :code:`pip install 'litestar[full]'`
 
     .. note:: The full extras is not recommended because it will add a lot of unnecessary extras.
 

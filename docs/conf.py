@@ -47,6 +47,7 @@ extensions = [
     "sphinx_click",
     "sphinx_paramlinks",
     "sphinx_togglebutton",
+    "sphinx.ext.viewcode",
 ]
 
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
@@ -147,13 +148,14 @@ nitpick_ignore = [
     (PY_CLASS, "NoneType"),
     (PY_CLASS, "litestar._openapi.schema_generation.schema.SchemaCreator"),
     (PY_CLASS, "litestar._signature.model.SignatureModel"),
-    (PY_CLASS, "litestar.contrib.sqlalchemy.plugins.init.config.compat._CreateEngineMixin"),
     (PY_CLASS, "litestar.utils.signature.ParsedSignature"),
     (PY_CLASS, "litestar.utils.sync.AsyncCallable"),
     # types in changelog that no longer exist
     (PY_ATTR, "litestar.dto.factory.DTOConfig.underscore_fields_private"),
     (PY_CLASS, "anyio.abc.BlockingPortal"),
     (PY_CLASS, "litestar.contrib.msgspec.MsgspecDTO"),
+    (PY_CLASS, "litestar.contrib.sqlalchemy.types.JsonB"),
+    (PY_CLASS, "litestar.contrib.sqlalchemy.plugins.SQLAlchemyInitPlugin"),
     (PY_CLASS, "litestar.contrib.repository.filters.NotInCollectionFilter"),
     (PY_CLASS, "litestar.contrib.repository.filters.NotInSearchFilter"),
     (PY_CLASS, "litestar.contrib.repository.filters.OnBeforeAfter"),
@@ -167,12 +169,6 @@ nitpick_ignore = [
     (PY_CLASS, "litestar.response.RedirectResponse"),
     (PY_CLASS, "litestar.response_containers.Redirect"),
     (PY_CLASS, "litestar.response_containers.Template"),
-    (PY_CLASS, "litestar.contrib.sqlalchemy.plugins.SQLAlchemyPlugin"),
-    (PY_CLASS, "litestar.contrib.sqlalchemy.plugins.SQLAlchemySerializationPlugin"),
-    (PY_CLASS, "litestar.contrib.sqlalchemy.plugins.SQLAlchemyInitPlugin"),
-    (PY_CLASS, "litestar.contrib.sqlalchemy.dto.SQLAlchemyDTO"),
-    (PY_CLASS, "litestar.contrib.sqlalchemy.types.BigIntIdentity"),
-    (PY_CLASS, "litestar.contrib.sqlalchemy.types.JsonB"),
     (PY_CLASS, "litestar.contrib.htmx.request.HTMXRequest"),
     (PY_CLASS, "litestar.typing.ParsedType"),
     (PY_METH, "litestar.dto.factory.DTOData.create_instance"),
@@ -208,6 +204,8 @@ nitpick_ignore = [
     (PY_CLASS, "advanced_alchemy.base.UUIDAuditBase"),
     (PY_CLASS, "advanced_alchemy.base.BigIntBase"),
     (PY_CLASS, "advanced_alchemy.base.BigIntAuditBase"),
+    (PY_CLASS, "advanced_alchemy.extensions.litestar.plugins.SQLAlchemySerializationPlugin"),
+    (PY_CLASS, "advanced_alchemy.extensions.litestar.plugins.SQLAlchemyInitPlugin"),
 ]
 
 nitpick_ignore_regex = [
@@ -220,7 +218,6 @@ nitpick_ignore_regex = [
     (PY_RE, r".*UserType"),
     (PY_RE, r"ModelT"),
     (PY_RE, r"litestar.*\.T"),
-    (PY_RE, r"litestar.contrib.sqlalchemy.repository.ModelT"),
     (PY_RE, r"litestar\.middleware\.session\.base\.BaseSessionBackendT"),
     (PY_RE, r"litestar\.types.*"),
     (PY_RE, r"httpx.*"),

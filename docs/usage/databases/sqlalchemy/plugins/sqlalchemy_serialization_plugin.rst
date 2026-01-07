@@ -11,14 +11,14 @@ Example
 
    .. tab-item:: Async
 
-        .. literalinclude:: /examples/contrib/sqlalchemy/plugins/sqlalchemy_async_serialization_plugin.py
+        .. literalinclude:: /examples/sqla/plugins/sqlalchemy_async_serialization_plugin.py
             :caption: SQLAlchemy Async Serialization Plugin
             :language: python
             :linenos:
 
    .. tab-item:: Sync
 
-        .. literalinclude:: /examples/contrib/sqlalchemy/plugins/sqlalchemy_sync_serialization_plugin.py
+        .. literalinclude:: /examples/sqla/plugins/sqlalchemy_sync_serialization_plugin.py
             :caption: SQLAlchemy Sync Serialization Plugin
             :language: python
             :linenos:
@@ -36,13 +36,13 @@ The following two examples are functionally equivalent:
 
    .. tab-item:: Serialization Plugin
 
-        .. literalinclude:: /examples/contrib/sqlalchemy/plugins/sqlalchemy_async_serialization_plugin.py
+        .. literalinclude:: /examples/sqla/plugins/sqlalchemy_async_serialization_plugin.py
             :language: python
             :linenos:
 
    .. tab-item:: Data Transfer Object
 
-        .. literalinclude:: /examples/contrib/sqlalchemy/plugins/sqlalchemy_async_serialization_dto.py
+        .. literalinclude:: /examples/sqla/plugins/sqlalchemy_async_serialization_dto.py
             :language: python
             :linenos:
 
@@ -61,7 +61,7 @@ our application.
 
    .. tab-item:: Async
 
-        .. literalinclude:: /examples/contrib/sqlalchemy/plugins/sqlalchemy_async_serialization_plugin_marking_fields.py
+        .. literalinclude:: /examples/sqla/plugins/sqlalchemy_async_serialization_plugin_marking_fields.py
             :caption: SQLAlchemy Async Marking Fields
             :language: python
             :linenos:
@@ -69,7 +69,7 @@ our application.
 
    .. tab-item:: Sync
 
-        .. literalinclude:: /examples/contrib/sqlalchemy/plugins/sqlalchemy_sync_serialization_plugin_marking_fields.py
+        .. literalinclude:: /examples/sqla/plugins/sqlalchemy_sync_serialization_plugin_marking_fields.py
             :caption: SQLAlchemy Sync Marking Fields
             :language: python
             :linenos:
