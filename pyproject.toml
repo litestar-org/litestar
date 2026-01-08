@@ -109,7 +109,6 @@ standard = [
   "jinja2",
   "jsbeautifier",
   "uvicorn[standard]",
-  "fast-query-parsers>=1.0.2",
 ]
 structlog = ["structlog"]
 valkey = ["valkey[libvalkey]>=6.0.2"]
