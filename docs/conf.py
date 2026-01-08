@@ -357,8 +357,12 @@ def delayed_setup(app: Sphinx) -> None:
     When running linkcheck pydata_sphinx_theme causes a build failure, and checking
     the builder in the initial `setup` function call is not possible, so the check
     and extension setup has to be delayed until the builder is initialized.
+
+    When running gettext pydata_sphinx_theme causes a build failure by attempting to
+    write to the _static directory, resulting in a FileNotFoundError for missing files
+    like pygments.css. See: https://github.com/pydata/pydata-sphinx-theme/issues/1840
     """
-    if app.builder.name == "linkcheck":
+    if app.builder.name == "linkcheck" or app.builder.name == "gettext":
         return
 
     app.setup_extension("pydata_sphinx_theme")
