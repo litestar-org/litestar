@@ -8,6 +8,8 @@ import sys
 from contextlib import AbstractContextManager, ExitStack, contextmanager
 from typing import TYPE_CHECKING, Any
 
+from litestar.utils.helpers import envflag
+
 try:
     import rich_click as click
 except ImportError:
@@ -119,7 +121,14 @@ class CommaSplittedPath(click.Path):
 
 
 @click.command(name="version")
-@click.option("-s", "--short", help="Exclude release level and serial information", is_flag=True, default=False)
+@click.option(
+    "-s",
+    "--short",
+    help="Exclude release level and serial information",
+    type=click.BOOL,
+    default=False,
+    is_flag=True,
+)
 def version_command(short: bool) -> None:
     """Show the currently installed Litestar version."""
     from litestar import __version__
@@ -135,7 +144,15 @@ def info_command(app: Litestar) -> None:
 
 
 @click.command(name="run")
-@click.option("-r", "--reload", help="Reload server on changes", default=False, is_flag=True, envvar="LITESTAR_RELOAD")
+@click.option(
+    "-r",
+    "--reload",
+    help="Reload server on changes",
+    envvar="LITESTAR_RELOAD",
+    type=click.BOOL,
+    default=False,
+    is_flag=True,
+)
 @click.option(
     "-R",
     "--reload-dir",
@@ -195,15 +212,39 @@ def info_command(app: Litestar) -> None:
     show_default=True,
     envvar="LITESTAR_UNIX_DOMAIN_SOCKET",
 )
-@click.option("-d", "--debug", help="Run app in debug mode", is_flag=True, envvar="LITESTAR_DEBUG")
-@click.option("-P", "--pdb", "--use-pdb", help="Drop into PDB on an exception", is_flag=True, envvar="LITESTAR_PDB")
+@click.option(
+    "-d",
+    "--debug",
+    help="Run app in debug mode",
+    envvar="LITESTAR_DEBUG",
+    type=click.BOOL,
+    is_flag=True,
+)
+@click.option(
+    "-P",
+    "--pdb",
+    "--use-pdb",
+    help="Drop into PDB on an exception",
+    envvar="LITESTAR_PDB",
+    type=click.BOOL,
+    is_flag=True,
+)
 @click.option("--ssl-certfile", help="Location of the SSL cert file", default=None, envvar="LITESTAR_SSL_CERT_PATH")
 @click.option("--ssl-keyfile", help="Location of the SSL key file", default=None, envvar="LITESTAR_SSL_KEY_PATH")
 @click.option(
     "--create-self-signed-cert",
     help="If certificate and key are not found at specified locations, create a self-signed certificate and a key",
-    is_flag=True,
     envvar="LITESTAR_CREATE_SELF_SIGNED_CERT",
+    type=click.BOOL,
+    is_flag=True,
+)
+@click.option(
+    "-q",
+    "--quiet-console",
+    envvar="LITESTAR_QUIET_CONSOLE",
+    help="Suppress formatted console output (useful for non-TTY environments, logs, and CI/CD",
+    type=click.BOOL,
+    is_flag=True,
 )
 def run_command(
     reload: bool,
@@ -220,6 +261,7 @@ def run_command(
     ssl_certfile: str | None,
     ssl_keyfile: str | None,
     create_self_signed_cert: bool,
+    quiet_console: bool,
     ctx: click.Context,
 ) -> None:
     """Run a Litestar app. (requires 'uvicorn' to be installed).
@@ -234,7 +276,9 @@ def run_command(
 
     if pdb:
         os.environ["LITESTAR_PDB"] = "1"
-    quiet_console = os.getenv("LITESTAR_QUIET_CONSOLE") or False
+
+    quiet_console = envflag("LITESTAR_QUIET_CONSOLE")
+
     if not UVICORN_INSTALLED:
         console.print(
             r"uvicorn is not installed. Please install the standard group, litestar\[standard], to use this command."
@@ -307,7 +351,7 @@ def run_command(
 
 
 @click.command(name="routes")
-@click.option("--schema", help="Include schema routes", is_flag=True, default=False)
+@click.option("--schema", help="Include schema routes", is_flag=True, default=False, type=click.BOOL)
 @click.option("--exclude", help="routes to exclude via regex", type=str, is_flag=False, multiple=True)
 def routes_command(app: Litestar, exclude: tuple[str, ...], schema: bool) -> None:  # pragma: no cover
     """Display information about the application's routes."""

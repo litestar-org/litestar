@@ -1,10 +1,12 @@
 from __future__ import annotations
 
+import os
 from enum import Enum
 from functools import partial
 from typing import TYPE_CHECKING, TypeVar, cast
 from urllib.parse import quote
 
+from litestar.exceptions import LitestarException
 from litestar.utils.typing import get_origin_or_inner_type
 
 if TYPE_CHECKING:
@@ -102,3 +104,34 @@ def get_exception_group() -> type[BaseException]:
         from exceptiongroup import ExceptionGroup as _ExceptionGroup  # pyright: ignore
 
         return cast("type[BaseException]", _ExceptionGroup)
+
+
+def envflag(varname: str, default: bool = False) -> bool:
+    """Parse an environment variable as a boolean flag.
+
+    Args:
+        varname: The name of the environment variable to check.
+        default: Value to return if the environment variable is not set.
+
+    Returns:
+        True for truthy values (1, true, t, yes, y, on),
+        False for falsy values (0, false, f, no, n, off),
+        otherwise the provided default if the variable is not set.
+
+    Raises:
+        LitestarException: If the value is not a recognized boolean.
+    """
+    if varname not in os.environ:
+        return default
+
+    envvar = os.environ.get(varname)
+    if not envvar:
+        return False
+
+    norm = envvar.strip().lower()
+    if norm in {"1", "true", "t", "yes", "y", "on"}:
+        return True
+    if norm in {"0", "false", "f", "no", "n", "off"}:
+        return False
+
+    raise LitestarException(f"Invalid value for {varname}: '{norm}' is not a valid boolean.")

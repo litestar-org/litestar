@@ -33,7 +33,7 @@ from typing_extensions import ParamSpec
 
 from litestar import Litestar, __version__
 from litestar.middleware import DefineMiddleware
-from litestar.utils import get_name
+from litestar.utils import envflag, get_name
 
 if sys.version_info >= (3, 10):
     from importlib.metadata import entry_points
@@ -116,7 +116,7 @@ class LitestarEnv:
             dotenv.load_dotenv()
         app_path = app_path or getenv("LITESTAR_APP")
         app_name = getenv("LITESTAR_APP_NAME") or "Litestar"
-        quiet_console = getenv("LITESTAR_QUIET_CONSOLE") or False
+        quiet_console = envflag("LITESTAR_QUIET_CONSOLE")
         if app_path and getenv("LITESTAR_APP") is None:
             os.environ["LITESTAR_APP"] = app_path
         if app_path:
@@ -354,7 +354,7 @@ def _autodiscovery_paths(base_dir: Path, arbitrary: bool = True) -> Generator[Pa
 
 def _autodiscover_app(cwd: Path) -> LoadedApp:
     app_name = getenv("LITESTAR_APP_NAME") or "Litestar"
-    quiet_console = getenv("LITESTAR_QUIET_CONSOLE") or False
+    quiet_console = envflag("LITESTAR_QUIET_CONSOLE")
     for file_path in _autodiscovery_paths(cwd):
         import_path = _path_to_dotted_path(file_path.relative_to(cwd))
         module = importlib.import_module(import_path)
