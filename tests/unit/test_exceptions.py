@@ -13,6 +13,10 @@ from litestar.exceptions import (
     ValidationException,
 )
 from litestar.exceptions.responses import create_exception_response
+from litestar.exceptions.responses._debug_response import (
+    create_html_response_content,
+    create_plain_text_response_content,
+)
 from litestar.status_codes import HTTP_400_BAD_REQUEST, HTTP_500_INTERNAL_SERVER_ERROR
 from litestar.testing import RequestFactory, create_test_client
 
@@ -257,3 +261,93 @@ def test_http_exception_with_class_var_headers_explicit_none() -> None:
             "status_code": 400,
             "detail": "hello",
         }
+
+
+def test_debug_html_response_contains_copy_traceback_elements() -> None:
+    """Test that debug HTML response includes copy-and-paste traceback UI elements."""
+
+    @get("/")
+    def handler() -> None:
+        raise ValueError("test error")
+
+    with create_test_client([handler], debug=True) as client:
+        response = client.get("/", headers={"Accept": MediaType.HTML})
+        html = response.text
+
+        # Verify copy button exists (always visible)
+        assert 'id="copyBtn"' in html
+        assert "copyTraceback()" in html
+        assert "Copy traceback to clipboard" in html
+
+        # Verify toggle button exists
+        assert 'id="toggleView"' in html
+        assert "toggleTracebackView()" in html
+        assert "Plaintext view" in html
+
+        # Verify traceback views exist
+        assert 'id="browserTraceback"' in html
+        assert 'id="pastebinTraceback"' in html
+        assert 'id="traceback_area"' in html
+
+        # Verify plain text traceback is included (escaped)
+        assert "Traceback (most recent call last)" in html
+        assert "ValueError" in html
+
+
+def test_debug_html_response_contains_javascript_functions() -> None:
+    """Test that debug HTML response includes the toggle and copy JavaScript functions."""
+
+    @get("/")
+    def handler() -> None:
+        raise ValueError("test error")
+
+    with create_test_client([handler], debug=True) as client:
+        response = client.get("/", headers={"Accept": MediaType.HTML})
+        html = response.text
+
+        # Verify JavaScript functions are included
+        assert "function toggleTracebackView()" in html
+        assert "function copyTraceback()" in html
+        assert "navigator.clipboard.writeText" in html
+
+
+def test_debug_html_response_contains_css_styles() -> None:
+    """Test that debug HTML response includes the CSS styles for traceback controls."""
+
+    @get("/")
+    def handler() -> None:
+        raise ValueError("test error")
+
+    with create_test_client([handler], debug=True) as client:
+        response = client.get("/", headers={"Accept": MediaType.HTML})
+        html = response.text
+
+        # Verify CSS styles are included
+        assert ".traceback-controls" in html
+        assert "#traceback_area" in html
+
+
+def test_create_html_response_content_includes_plain_text_traceback() -> None:
+    """Test that create_html_response_content includes escaped plain text traceback."""
+    request = RequestFactory().get()
+
+    try:
+        raise ValueError("test exception message")
+    except ValueError as exc:
+        html = create_html_response_content(exc, request)
+
+        # Verify plain text traceback content is present and escaped
+        assert "Traceback (most recent call last)" in html
+        assert "ValueError: test exception message" in html
+        assert 'id="traceback_area"' in html
+
+
+def test_create_plain_text_response_content_format() -> None:
+    """Test that create_plain_text_response_content produces proper traceback format."""
+    try:
+        raise ValueError("test exception")
+    except ValueError as exc:
+        text = create_plain_text_response_content(exc)
+
+        assert text.startswith("Traceback (most recent call last)")
+        assert "ValueError: test exception" in text

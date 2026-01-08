@@ -16,9 +16,11 @@ if TYPE_CHECKING:
     from typing import NoReturn
 
     from litestar.app import Litestar
+    from litestar.handlers import BaseRouteHandler
     from litestar.types import DataContainerType, EmptyType
     from litestar.types.asgi_types import Message, Receive, Scope, Send
     from litestar.types.protocols import Logger
+
 
 __all__ = ("ASGIConnection", "empty_receive", "empty_send")
 
@@ -307,11 +309,11 @@ class ASGIConnection(Generic[HandlerT, UserT, AuthT, StateT]):
     def get_session_id(self) -> str | None:
         return value_or_default(value=self._connection_state.session_id, default=None)
 
-    def url_for(self, name: str, **path_parameters: Any) -> str:
-        """Return the url for a given route handler name.
+    def url_for(self, name: str | BaseRouteHandler, **path_parameters: Any) -> str:
+        """Return the url for a given route handler / handler name.
 
         Args:
-            name: The ``name`` of the request route handler.
+            name: The ``name`` of the route handler, or the route handler itself.
             **path_parameters: Values for path parameters in the route
 
         Raises:

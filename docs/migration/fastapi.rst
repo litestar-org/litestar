@@ -334,38 +334,6 @@ Also FastAPI let you pass a dictionary while in Litestar you need to explicitly 
                     name="uploads.html", context={"debug": app_settings.debug}
                 )
 
-Default handler names
-~~~~~~~~~~~~~~~~~~~~~~~
-
-In FastAPI, the handler name defaults to the local name of the function. In Litestar, you need to explicitly declare the `name` parameter in the route decorator. This is important when using e.g. `url_for`.
-
-.. tab-set::
-
-    .. tab-item:: FastAPI
-        :sync: fastapi
-
-        .. code-block:: python
-
-            @app.get("/blabla")
-            async def blabla() -> str:
-                return "Blabla"
-        .. code-block:: html
-
-            <a href="{{ url_for('blabla') }}">Blabla</a>
-
-    .. tab-item:: Litestar
-        :sync: litestar
-
-        .. code-block:: python
-
-            @get(path="/blabla", name="blabla")
-            async def blabla() -> str:
-                return "Blabla"
-
-        .. code-block:: html
-
-            <a href="{{ url_for('blabla') }}">Blabla</a>
-
 Uploads
 ~~~~~~~
 

@@ -12,6 +12,7 @@ from typing import (
     Optional,
     Union,
     cast,
+    overload,
 )
 
 import msgspec
@@ -439,6 +440,12 @@ class Accept:
 
     def __iter__(self) -> Iterator[str]:
         return map(str, self._accepted_types)
+
+    @overload
+    def best_match(self, provided_types: list[str], default: None = None) -> Optional[str]: ...
+
+    @overload
+    def best_match(self, provided_types: list[str], default: str) -> str: ...
 
     def best_match(self, provided_types: list[str], default: Optional[str] = None) -> Optional[str]:
         """Find the best matching media type for the request.

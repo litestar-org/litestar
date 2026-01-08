@@ -9,7 +9,7 @@ from litestar.middleware.compression.facade import CompressionFacade
 try:
     import zstandard as zstd
 except ImportError as e:
-    raise MissingDependencyException("zstandard") from e
+    raise MissingDependencyException("zstandard", extra="zstd") from e
 
 if TYPE_CHECKING:
     from io import BytesIO
