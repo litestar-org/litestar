@@ -3,15 +3,12 @@ from __future__ import annotations
 from collections import defaultdict
 from functools import lru_cache
 from http.cookies import _unquote as unquote_cookie
+from urllib.parse import parse_qsl as _parse_qsl
 from urllib.parse import unquote
 
-try:
-    from fast_query_parsers import parse_query_string as parse_qsl
-except ImportError:
-    from urllib.parse import parse_qsl as _parse_qsl
 
-    def parse_qsl(qs: bytes, separator: str) -> list[tuple[str, str]]:
-        return _parse_qsl(qs.decode("latin-1"), keep_blank_values=True, separator=separator)
+def parse_qsl(qs: bytes, separator: str) -> list[tuple[str, str]]:
+    return _parse_qsl(qs.decode("latin-1"), keep_blank_values=True, separator=separator)
 
 
 __all__ = ("parse_cookie_string", "parse_query_string", "parse_url_encoded_form_data")
