@@ -1,4 +1,4 @@
-name: Deploy documentation preview updated
+name: Deploy documentation preview
 on:
   workflow_run:
     workflows: [Tests And Linting]
