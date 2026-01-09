@@ -12,7 +12,6 @@ jobs:
       issues: write
       pull-requests: write
       contents: write
-      pages: write
 
     steps:
       - name: Check out repository
