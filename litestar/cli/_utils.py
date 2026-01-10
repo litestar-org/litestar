@@ -590,3 +590,16 @@ def isatty() -> bool:
     This is a convenience wrapper around the built in system methods.  This allows for easier testing of TTY/non-TTY modes.
     """
     return sys.stdout.isatty()
+
+
+def populate_repl_globals(app: Litestar) -> tuple[dict[str, Any], str]:
+    repl_locals = {"app": Litestar}
+    banner = "app = Litestar(...)\n\n"
+    for plugin in app.plugins.cli:
+        plugin_provided = plugin.populate_repl_namespace(app=app)
+        if plugin_provided:
+            banner += f"Plugin {type(plugin).__name__!r} provided:\n"
+            for name, value in plugin_provided.items():
+                repl_locals[name] = value
+                banner += f"name = {value!r}\n"
+    return repl_locals, banner
