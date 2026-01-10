@@ -546,7 +546,7 @@ class JWTCookieAuth(Generic[UserType, TokenT], BaseJWTAuth[UserType, TokenT]):
             key=self.key,
             path=self.path,
             httponly=True,
-            value=self.format_auth_header(encoded_token),
+            value=encoded_token,
             max_age=int((token_expiration or self.default_token_expiration).total_seconds()),
             secure=self.secure,
             samesite=self.samesite,
