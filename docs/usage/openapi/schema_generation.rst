@@ -186,6 +186,53 @@ access the request instance:
        return schema.to_schema()
 
 
+Accessing the OpenAPI schema via HTTP
+-------------------------------------
+
+Litestar automatically exposes the OpenAPI schema via HTTP endpoints under the configured OpenAPI path (``/schema`` by
+default). The following endpoint is always available:
+
+- ``/schema/openapi.json`` - The OpenAPI schema in JSON format
+
+This endpoint is automatically registered by Litestar via the :class:`JsonRenderPlugin <litestar.openapi.plugins.JsonRenderPlugin>`.
+The JSON endpoint is useful for integrating with tools that consume OpenAPI specifications, such as API clients or
+code generators.
+
+To also serve the schema in YAML format, add the :class:`YamlRenderPlugin <litestar.openapi.plugins.YamlRenderPlugin>`
+to your OpenAPI configuration:
+
+.. code-block:: python
+
+   from litestar import Litestar
+   from litestar.openapi import OpenAPIConfig
+   from litestar.openapi.plugins import ScalarRenderPlugin, YamlRenderPlugin
+
+   app = Litestar(
+       route_handlers=[...],
+       openapi_config=OpenAPIConfig(
+           title="My API",
+           version="1.0.0",
+           render_plugins=[ScalarRenderPlugin(), YamlRenderPlugin()],
+       ),
+   )
+
+With the ``YamlRenderPlugin`` added, the following additional endpoints become available:
+
+- ``/schema/openapi.yaml`` - The OpenAPI schema in YAML format
+- ``/schema/openapi.yml`` - The OpenAPI schema in YAML format (alternative extension)
+
+.. tip::
+
+   Rendering YAML requires the `PyYAML <https://pyyaml.org/wiki/PyYAMLDocumentation>`_ library, which can
+   be installed via the ``litestar[yaml]`` package extra.
+
+.. note::
+
+   The base path for these endpoints (``/schema``) can be customized via the :attr:`OpenAPIConfig.path` attribute.
+   See :ref:`Configuring the OpenAPI Root Path <usage/openapi/ui_plugins:Configuring the OpenAPI Root Path>` for more
+   information.
+
+
 Customizing Pydantic model schemas
 ----------------------------------
 
