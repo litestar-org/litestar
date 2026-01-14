@@ -71,28 +71,28 @@ that annotation.
 Example
 +++++++
 
-The following example shows the implementation pattern of a ``SerializationPlugin`` for
-`SQLAlchemy <https://www.sqlalchemy.org/>`_ models. For the actual implementation, see the
-``advanced_alchemy`` library documentation.
+The following example shows a complete implementation of a ``SerializationPlugin`` that automatically
+creates DTOs for a custom model hierarchy.
 
-:meth:`supports_type(self, field_definition: FieldDefinition) -> bool: <advanced_alchemy.extensions.litestar.SQLAlchemySerializationPlugin.supports_type>`
-returns a :class:`bool` indicating whether the plugin supports serialization for the given type. Specifically, we return
-``True`` if the parsed type is either a collection of SQLAlchemy models or a single SQLAlchemy model.
+.. literalinclude:: /examples/plugins/serialization_plugin.py
+   :language: python
+   :caption: ``SerializationPlugin`` implementation example
 
-:meth:`create_dto_for_type(self, field_definition: FieldDefinition) -> type[AbstractDTO]: <advanced_alchemy.extensions.litestar.SQLAlchemySerializationPlugin.create_dto_for_type>`
-takes a :class:`FieldDefinition <litestar.typing.FieldDefinition>` instance as an argument and returns a
-:class:`SQLAlchemyDTO <advanced_alchemy.extensions.litestar.dto.SQLAlchemyDTO>` subclass and includes some logic that may be
-interesting to potential serialization plugin authors.
+The ``CustomSerializationPlugin`` class implements :class:`~litestar.plugins.SerializationPlugin` and
+provides automatic DTO creation for any class that inherits from ``CustomModel``.
 
-The first thing the method does is check if the parsed type is a collection of SQLAlchemy models or a single SQLAlchemy
-model, retrieves the model type in either case and assigns it to the ``annotation`` variable.
+The :meth:`supports_type` method checks whether the parsed type is either:
 
-The method then checks if ``annotation`` is already in the ``_type_dto_map`` dictionary. If it is, it returns the
-corresponding DTO type. This is done to ensure that multiple :class:`SQLAlchemyDTO <advanced_alchemy.extensions.litestar.dto.SQLAlchemyDTO>`
-subtypes are not created for the same model.
+- A single instance of a ``CustomModel`` subclass, or
+- A collection containing ``CustomModel`` subclasses
 
-If the annotation is not in the ``_type_dto_map`` dictionary, the method creates a new DTO type for the annotation,
-adds it to the ``_type_dto_map`` dictionary, and returns it.
+The :meth:`create_dto_for_type` method handles both single models and collections by extracting the
+actual model type from the field definition. It uses a cache (``_type_dto_map``) to ensure that the
+same DTO type is reused when the same model class is encountered multiple times.
+
+For a production example using SQLAlchemy models, see the
+:class:`SQLAlchemySerializationPlugin <advanced_alchemy.extensions.litestar.SQLAlchemySerializationPlugin>`
+in the ``advanced_alchemy`` library.
 
 
 DIPlugin
