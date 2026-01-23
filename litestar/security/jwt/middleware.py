@@ -250,8 +250,8 @@ class JWTCookieAuthenticationMiddleware(JWTAuthenticationMiddleware):
         self.auth_cookie_key = auth_cookie_key
 
     async def authenticate_request(self, connection: ASGIConnection[Any, Any, Any, Any]) -> AuthenticationResult:
-        """Given an HTTP Connection, parse the JWT api key stored in the header or cookie and retrieve the user correlating
-        to the token from the DB.
+        """Given an HTTP Connection, parse the JWT api key stored in the header and retrieve the user correlating to the
+        token from the DB.
 
         Args:
             connection: An Litestar HTTPConnection instance.
