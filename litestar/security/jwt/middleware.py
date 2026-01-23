@@ -250,8 +250,8 @@ class JWTCookieAuthenticationMiddleware(JWTAuthenticationMiddleware):
         self.auth_cookie_key = auth_cookie_key
 
     async def authenticate_request(self, connection: ASGIConnection[Any, Any, Any, Any]) -> AuthenticationResult:
-        """Given an HTTP Connection, parse the JWT api key stored in the cookie and retrieve the user correlating to the
-        token from the DB.
+        """Given an HTTP Connection, parse the JWT api key stored in the header or cookie and retrieve the user correlating
+        to the token from the DB.
 
         Args:
             connection: An Litestar HTTPConnection instance.
@@ -262,7 +262,8 @@ class JWTCookieAuthenticationMiddleware(JWTAuthenticationMiddleware):
         Returns:
             AuthenticationResult
         """
-        auth_cookie = connection.cookies.get(self.auth_cookie_key)
-        if not auth_cookie:
-            raise NotAuthorizedException("No JWT token found in request cookies")
-        return await self.authenticate_token(encoded_token=auth_cookie, connection=connection)
+        auth_header = connection.headers.get(self.auth_header) or connection.cookies.get(self.auth_cookie_key)
+        if not auth_header:
+            raise NotAuthorizedException("No JWT token found in request header or cookies")
+        encoded_token = auth_header.split(maxsplit=1)[-1]
+        return await self.authenticate_token(encoded_token=encoded_token, connection=connection)
