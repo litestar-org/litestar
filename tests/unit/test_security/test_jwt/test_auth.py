@@ -357,6 +357,12 @@ async def test_jwt_cookie_auth(
         client.cookies = {auth_cookie: jwt_auth.format_auth_header(encoded_token)}  # type: ignore[assignment]
         response = client.get("/my-endpoint")
         assert response.status_code == HTTP_200_OK
+
+        client.cookies.clear()
+        client.cookies = {auth_cookie: encoded_token}
+        response = client.get("/my-endpoint")
+        assert response.status_code == HTTP_200_OK
+
         response = client.get("/logout")
         if decoded_token.jti:
             assert response.json()["message"] == "logged out successfully"
