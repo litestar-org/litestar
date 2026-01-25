@@ -428,10 +428,11 @@ async def test_exception_handler_middleware_response_already_started(scope: HTTP
 
 async def test_async_exception_handler_can_await_request_body() -> None:
     """Test that async exception handlers can await request.body()."""
+    import json
 
     async def async_handler(request: Request, exc: Exception) -> Response:
         body = await request.body()
-        return Response(content={"body": body.decode()}, status_code=500)
+        return Response(content={"body": json.loads(body)}, status_code=500)
 
     @post("/")
     async def handler(data: dict) -> None:
@@ -440,7 +441,7 @@ async def test_async_exception_handler_can_await_request_body() -> None:
     with create_test_client([handler], exception_handlers={ValueError: async_handler}) as client:
         response = client.post("/", json={"key": "value"})
         assert response.status_code == 500
-        assert response.json()["body"] == '{"key": "value"}'
+        assert response.json()["body"] == {"key": "value"}
 
 
 async def test_async_exception_handler_without_await() -> None:
