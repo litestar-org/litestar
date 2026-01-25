@@ -165,6 +165,7 @@ class ExceptionHandlerMiddleware:
         exception_handlers = value_or_raise(ScopeState.from_scope(scope).exception_handlers)
         exception_handler = get_exception_handler(exception_handlers, exc) or self.default_http_exception_handler
         request: Request[Any, Any, Any] = litestar_app.request_class(scope=scope, receive=receive, send=send)
+        response: Response[Any]
         if is_async_callable(exception_handler):
             response = await exception_handler(request, exc)
         else:

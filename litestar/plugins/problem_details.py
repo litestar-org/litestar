@@ -15,7 +15,7 @@ from litestar.response.base import Response
 if TYPE_CHECKING:
     from litestar.config.app import AppConfig
     from litestar.connection.request import Request
-    from litestar.types.callable_types import ExceptionHandler, ExceptionT
+    from litestar.types.callable_types import ExceptionT, SyncExceptionHandler
 
 ProblemDetailsExceptionT = TypeVar("ProblemDetailsExceptionT", bound="ProblemDetailsException")
 ProblemDetailsExceptionHandlerType: TypeAlias = "Callable[[Request, ProblemDetailsExceptionT], Response]"
@@ -30,7 +30,7 @@ def _problem_details_exception_handler(request: Request[Any, Any, Any], exc: Pro
 
 def _create_exception_handler(
     exc_to_problem_details_exc_fn: Callable[[ExceptionT], ProblemDetailsException], exc_type: type[ExceptionT]
-) -> ExceptionHandler[ExceptionT]:
+) -> SyncExceptionHandler[ExceptionT]:
     def _exception_handler(req: Request, exc: exc_type) -> Response:  # type: ignore[valid-type]
         problem_details_exc = exc_to_problem_details_exc_fn(exc)
 
