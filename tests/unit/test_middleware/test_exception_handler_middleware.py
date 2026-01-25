@@ -1,3 +1,4 @@
+import json
 from collections.abc import Generator
 from inspect import getinnerframes
 from typing import TYPE_CHECKING, Any, Callable, Optional
@@ -428,7 +429,6 @@ async def test_exception_handler_middleware_response_already_started(scope: HTTP
 
 async def test_async_exception_handler_can_await_request_body() -> None:
     """Test that async exception handlers can await request.body()."""
-    import json
 
     async def async_handler(request: Request, exc: Exception) -> Response:
         body = await request.body()
