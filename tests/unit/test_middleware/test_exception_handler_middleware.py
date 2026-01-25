@@ -9,7 +9,7 @@ from pytest_mock import MockerFixture
 from starlette.exceptions import HTTPException as StarletteHTTPException
 from structlog.testing import capture_logs
 
-from litestar import Litestar, MediaType, Request, Response, get
+from litestar import Litestar, MediaType, Request, Response, get, post
 from litestar.exceptions import HTTPException, InternalServerException, LitestarException, ValidationException
 from litestar.exceptions.responses._debug_response import get_symbol_name
 from litestar.logging.config import LoggingConfig, StructLoggingConfig
@@ -424,3 +424,36 @@ async def test_exception_handler_middleware_response_already_started(scope: HTTP
 
     mock.assert_called_once_with(start_message)
     assert ScopeState.from_scope(scope).response_started
+
+
+async def test_async_exception_handler() -> None:
+    """Test that async exception handlers can read request body."""
+
+    async def async_handler(request: Request, exc: Exception) -> Response:
+        body = await request.body()
+        return Response(content={"body_length": len(body)}, status_code=500)
+
+    @post("/")
+    async def handler(data: dict) -> None:
+        raise ValueError("test")
+
+    with create_test_client([handler], exception_handlers={ValueError: async_handler}) as client:
+        response = client.post("/", json={"key": "value"})
+        assert response.status_code == 500
+        assert response.json()["body_length"] > 0
+
+
+def test_sync_exception_handler_backward_compatible() -> None:
+    """Test that sync exception handlers still work."""
+
+    def sync_handler(request: Request, exc: Exception) -> Response:
+        return Response(content={"error": str(exc)}, status_code=500)
+
+    @get("/")
+    async def handler() -> None:
+        raise ValueError("test error")
+
+    with create_test_client([handler], exception_handlers={ValueError: sync_handler}) as client:
+        response = client.get("/")
+        assert response.status_code == 500
+        assert response.json()["error"] == "test error"

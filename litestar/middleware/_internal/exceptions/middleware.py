@@ -13,6 +13,7 @@ from litestar.exceptions.responses._debug_response import (
 )
 from litestar.status_codes import HTTP_500_INTERNAL_SERVER_ERROR
 from litestar.utils.empty import value_or_raise
+from litestar.utils.predicates import is_async_callable
 from litestar.utils.scope.state import ScopeState
 
 if TYPE_CHECKING:
@@ -164,7 +165,10 @@ class ExceptionHandlerMiddleware:
         exception_handlers = value_or_raise(ScopeState.from_scope(scope).exception_handlers)
         exception_handler = get_exception_handler(exception_handlers, exc) or self.default_http_exception_handler
         request: Request[Any, Any, Any] = litestar_app.request_class(scope=scope, receive=receive, send=send)
-        response = exception_handler(request, exc)
+        if is_async_callable(exception_handler):
+            response = await exception_handler(request, exc)
+        else:
+            response = exception_handler(request, exc)
         route_handler: BaseRouteHandler | None = scope.get("route_handler")
         type_encoders = route_handler.type_encoders if route_handler else litestar_app.type_encoders
         await response.to_asgi_response(request=request, type_encoders=type_encoders)(
