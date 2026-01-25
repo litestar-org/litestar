@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import dataclasses
-from collections.abc import Sequence  # noqa: TC003
 from dataclasses import asdict, dataclass, field
 from datetime import datetime, timezone
 from typing import TYPE_CHECKING, Any, Dict, Optional, Sequence, TypedDict
