@@ -2,8 +2,12 @@ import dataclasses
 from typing import TYPE_CHECKING, Annotated, Any, Optional, cast
 from uuid import UUID
 
+import attrs
+import msgspec
+import pydantic
 import pytest
-from typing_extensions import NewType
+from pydantic import BaseModel
+from typing_extensions import NewType, NotRequired, TypedDict
 
 from litestar import Controller, Litestar, Router, get
 from litestar._openapi.datastructures import OpenAPIContext
@@ -516,3 +520,233 @@ def test_two_parameters_but_one_not_included_in_schema() -> None:
         parameter_names = {param["name"] for param in handler_schema["parameters"]}
         assert "param1" in parameter_names
         assert "param2" not in parameter_names
+
+
+@dataclasses.dataclass
+class DataclassQuery:
+    name: str
+    age: int
+    nickname: Optional[str] = None
+    page: int = 1
+
+
+class PydanticQuery(BaseModel):
+    name: str
+    age: int
+    nickname: Optional[str] = None
+    page: int = 1
+
+
+class MsgspecQuery(msgspec.Struct):
+    name: str
+    age: int
+    nickname: Optional[str] = None
+    page: int = 1
+
+
+class TypedDictQuery(TypedDict):
+    name: str
+    age: int
+    nickname: NotRequired[Optional[str]]
+    page: NotRequired[int]
+
+
+@attrs.define
+class AttrsQuery:
+    name: str
+    age: int
+    nickname: Optional[str] = None
+    page: int = 1
+
+
+@pytest.mark.parametrize(
+    "query_model",
+    [DataclassQuery, PydanticQuery, MsgspecQuery, TypedDictQuery, AttrsQuery],
+    ids=["dataclass", "pydantic", "msgspec", "typeddict", "attrs"],
+)
+def test_query_model_generates_parameters(query_model: type) -> None:
+    @get("/")
+    async def handler(query: query_model) -> None:  # type: ignore[valid-type]
+        pass
+
+    app = Litestar([handler])
+    params = app.openapi_schema.paths["/"].get.parameters  # type: ignore[index, union-attr]
+    assert params is not None
+
+    param_map = {p.name: p for p in params}
+    assert "name" in param_map
+    assert "age" in param_map
+    assert "nickname" in param_map
+    assert "page" in param_map
+
+    assert param_map["name"].param_in == ParamType.QUERY
+    assert param_map["name"].required is True
+    assert param_map["age"].required is True
+    assert param_map["nickname"].required is False
+    assert param_map["page"].required is False
+
+
+def test_query_dict_does_not_generate_parameters() -> None:
+    @get("/")
+    async def handler(query: dict) -> None:  # type: ignore[type-arg]
+        pass
+
+    app = Litestar([handler])
+    params = app.openapi_schema.paths["/"].get.parameters  # type: ignore[index, union-attr]
+    assert params is None or len(params) == 0
+
+
+def test_query_model_with_all_optional_fields() -> None:
+    @dataclasses.dataclass
+    class AllOptionalQuery:
+        name: Optional[str] = None
+        page: int = 1
+
+    @get("/")
+    async def handler(query: AllOptionalQuery) -> None:
+        pass
+
+    app = Litestar([handler])
+    params = app.openapi_schema.paths["/"].get.parameters  # type: ignore[index, union-attr]
+    assert params is not None
+
+    param_map = {p.name: p for p in params}
+    assert param_map["name"].required is False
+    assert param_map["page"].required is False
+
+
+def test_query_model_with_all_required_fields() -> None:
+    @dataclasses.dataclass
+    class AllRequiredQuery:
+        name: str
+        age: int
+
+    @get("/")
+    async def handler(query: AllRequiredQuery) -> None:
+        pass
+
+    app = Litestar([handler])
+    params = app.openapi_schema.paths["/"].get.parameters  # type: ignore[index, union-attr]
+    assert params is not None
+
+    param_map = {p.name: p for p in params}
+    assert param_map["name"].required is True
+    assert param_map["age"].required is True
+
+
+def test_query_model_alongside_regular_params() -> None:
+    @dataclasses.dataclass
+    class QueryFilter:
+        name: str
+
+    @get("/")
+    async def handler(query: QueryFilter, extra_param: int) -> None:
+        pass
+
+    app = Litestar([handler])
+    params = app.openapi_schema.paths["/"].get.parameters  # type: ignore[index, union-attr]
+    assert params is not None
+
+    param_map = {p.name: p for p in params}
+    assert "name" in param_map
+    assert param_map["name"].param_in == ParamType.QUERY
+    assert "extra_param" in param_map
+    assert param_map["extra_param"].param_in == ParamType.QUERY
+
+
+def test_headers_model_generates_header_parameters() -> None:
+    @dataclasses.dataclass
+    class CustomHeaders:
+        x_custom: str
+        x_optional: Optional[str] = None
+
+    @get("/")
+    async def handler(headers: CustomHeaders) -> None:
+        pass
+
+    app = Litestar([handler])
+    params = app.openapi_schema.paths["/"].get.parameters  # type: ignore[index, union-attr]
+    assert params is not None
+
+    param_map = {p.name: p for p in params}
+    assert "x_custom" in param_map
+    assert param_map["x_custom"].param_in == ParamType.HEADER
+    assert param_map["x_custom"].required is True
+    assert "x_optional" in param_map
+    assert param_map["x_optional"].param_in == ParamType.HEADER
+    assert param_map["x_optional"].required is False
+
+
+def test_cookies_model_generates_cookie_parameters() -> None:
+    @dataclasses.dataclass
+    class CustomCookies:
+        session_id: str
+        theme: Optional[str] = None
+
+    @get("/")
+    async def handler(cookies: CustomCookies) -> None:
+        pass
+
+    app = Litestar([handler])
+    params = app.openapi_schema.paths["/"].get.parameters  # type: ignore[index, union-attr]
+    assert params is not None
+
+    param_map = {p.name: p for p in params}
+    assert "session_id" in param_map
+    assert param_map["session_id"].param_in == ParamType.COOKIE
+    assert param_map["session_id"].required is True
+    assert "theme" in param_map
+    assert param_map["theme"].param_in == ParamType.COOKIE
+    assert param_map["theme"].required is False
+
+
+def test_query_model_e2e_openapi_json() -> None:
+    @dataclasses.dataclass
+    class SearchQuery:
+        q: str
+        limit: int = 10
+
+    @get("/search")
+    async def handler(query: SearchQuery) -> list[str]:
+        return []
+
+    with create_test_client(handler) as client:
+        response = client.get("/schema/openapi.json")
+        assert response.status_code == 200
+        schema = response.json()
+
+        params = schema["paths"]["/search"]["get"]["parameters"]
+        param_map = {p["name"]: p for p in params}
+
+        assert "q" in param_map
+        assert param_map["q"]["in"] == "query"
+        assert param_map["q"]["required"] is True
+
+        assert "limit" in param_map
+        assert param_map["limit"]["in"] == "query"
+        assert param_map["limit"]["required"] is False
+
+
+def test_issue_2015_pydantic_model_query_openapi() -> None:
+    # https://github.com/litestar-org/litestar/issues/2015
+    class EvenOdd(BaseModel):
+        even: Annotated[str, pydantic.Field(pattern=r"^\d*[02468]$")]
+        odd: Annotated[str, pydantic.Field(pattern=r"^\d*[13579]$")]
+
+    @get("/")
+    async def foo(query: EvenOdd) -> EvenOdd:
+        return query
+
+    app = Litestar([foo])
+    schema = app.openapi_schema
+
+    params = schema.paths["/"].get.parameters  # type: ignore[index, union-attr]
+    assert params is not None, "Expected query parameters in OpenAPI schema, got None"
+    param_map = {p.name: p for p in params}
+
+    assert "even" in param_map
+    assert "odd" in param_map
+    assert param_map["even"].param_in == ParamType.QUERY
+    assert param_map["odd"].param_in == ParamType.QUERY
+    assert param_map["even"].required is True
+    assert param_map["odd"].required is True

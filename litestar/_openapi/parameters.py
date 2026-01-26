@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+import dataclasses
+from typing import TYPE_CHECKING, Any
 
 from litestar._openapi.schema_generation import SchemaCreator
 from litestar._openapi.schema_generation.utils import get_formatted_examples
@@ -12,6 +13,7 @@ from litestar.openapi.spec.schema import Schema
 from litestar.params import DependencyKwarg, ParameterKwarg
 from litestar.types import Empty
 from litestar.typing import FieldDefinition
+from litestar.utils.predicates import is_optional_union
 
 if TYPE_CHECKING:
     from litestar._openapi.datastructures import OpenAPIContext
@@ -20,6 +22,32 @@ if TYPE_CHECKING:
     from litestar.types.internal_types import PathParameterDefinition
 
 __all__ = ("create_parameters_for_handler",)
+
+_DOCUMENTABLE_RESERVED_KWARGS: dict[str, ParamType] = {
+    "query": ParamType.QUERY,
+    "headers": ParamType.HEADER,
+    "cookies": ParamType.COOKIE,
+}
+
+
+def _is_struct_type(annotation: Any) -> bool:
+    """Check if the annotation is a msgspec Struct type."""
+    try:
+        from msgspec import Struct
+
+        return isinstance(annotation, type) and issubclass(annotation, Struct)
+    except ImportError:
+        return False
+
+
+def _is_attrs_type(annotation: Any) -> bool:
+    """Check if the annotation is an attrs class."""
+    try:
+        import attrs
+
+        return isinstance(annotation, type) and attrs.has(annotation)
+    except (ImportError, TypeError):
+        return False
 
 
 class ParameterCollection:
@@ -177,6 +205,94 @@ class ParameterFactory:
         )
         return self.create_parameter(field_definition=field_definition, parameter_name=parameter_name)
 
+    def _is_model_field_definition(self, field_definition: FieldDefinition) -> bool:
+        """Check if a FieldDefinition represents a decomposable model type.
+
+        Args:
+            field_definition: The field definition to inspect.
+        """
+        if field_definition.is_dataclass_type or field_definition.is_typeddict_type:
+            return True
+        return self.schema_creator.get_plugin_for(field_definition) is not None
+
+    @staticmethod
+    def _get_model_required_fields(field_definition: FieldDefinition, type_hints: dict[str, Any]) -> set[str]:
+        """Determine which fields in a model type are required.
+
+        Args:
+            field_definition: The model's field definition.
+            type_hints: Resolved type hints mapping field names to their annotations.
+        """
+        model_type = field_definition.type_
+
+        if field_definition.is_dataclass_type:
+            required: set[str] = set()
+            for dc_field in dataclasses.fields(model_type):
+                if (
+                    dc_field.default is dataclasses.MISSING
+                    and dc_field.default_factory is dataclasses.MISSING
+                    and not is_optional_union(type_hints[dc_field.name])
+                ):
+                    required.add(dc_field.name)
+            return required
+
+        if field_definition.is_typeddict_type:
+            required_keys: set[str] = getattr(model_type, "__required_keys__", set())
+            return {k for k in required_keys if not is_optional_union(type_hints[k])}
+
+        # Generic approach for plugin-supported types (Pydantic, msgspec, attrs, etc.)
+        required = {name for name, hint in type_hints.items() if not is_optional_union(hint)}
+
+        # Refine using model-specific default detection
+        if hasattr(model_type, "model_fields"):
+            # Pydantic v2
+            for name, field_info in model_type.model_fields.items():
+                if not field_info.is_required():
+                    required.discard(name)
+        elif _is_struct_type(model_type):
+            import msgspec.inspect
+
+            for f in msgspec.inspect.type_info(model_type).fields:
+                if not f.required:
+                    required.discard(f.name)
+        elif _is_attrs_type(model_type):
+            import attrs
+
+            for f in attrs.fields(model_type):
+                if f.default is not attrs.NOTHING:
+                    required.discard(f.name)
+
+        return required
+
+    def _create_parameters_from_model(self, field_definition: FieldDefinition, param_type: ParamType) -> None:
+        """Decompose a model-typed reserved kwarg into individual OpenAPI parameters.
+
+        Args:
+            field_definition: The model's field definition.
+            param_type: The OpenAPI parameter location (query, header, or cookie).
+        """
+        type_hints = field_definition.get_type_hints(include_extras=True, resolve_generics=True)
+        required_fields = self._get_model_required_fields(field_definition, type_hints)
+
+        for field_name, field_type in type_hints.items():
+            fd = FieldDefinition.from_kwarg(
+                annotation=field_type,
+                name=field_name,
+            )
+
+            result = self.schema_creator.for_field_definition(fd)
+            schema = result if isinstance(result, Schema) else self.context.schema_registry.from_reference(result).schema
+
+            self.parameters.add(
+                Parameter(
+                    name=field_name,
+                    param_in=param_type,
+                    required=field_name in required_fields,
+                    schema=result,
+                    description=schema.description,
+                )
+            )
+
     def create_parameters_for_field_definitions(self, fields: dict[str, FieldDefinition]) -> None:
         """Add Parameter models to the handler's collection for the given field definitions.
 
@@ -213,6 +329,14 @@ class ParameterFactory:
 
         for field_name, field_definition in intersection_fields:
             self.parameters.add(self.get_layered_parameter(field_name=field_name, field_definition=field_definition))
+
+        # Handle model-typed reserved kwargs (e.g., query: SomeModel, headers: SomeModel)
+        # by decomposing the model's fields into individual OpenAPI parameters.
+        for kwarg_name, param_type in _DOCUMENTABLE_RESERVED_KWARGS.items():
+            if kwarg_name in fields:
+                field_def = fields[kwarg_name]
+                if self._is_model_field_definition(field_def):
+                    self._create_parameters_from_model(field_def, param_type)
 
     def create_parameters_for_handler(self) -> list[Parameter]:
         """Create a list of path/query/header Parameter models for the given PathHandler."""
