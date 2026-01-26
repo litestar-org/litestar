@@ -573,7 +573,7 @@ def test_query_model_generates_parameters(query_model: type) -> None:
     params = app.openapi_schema.paths["/"].get.parameters  # type: ignore[index, union-attr]
     assert params is not None
 
-    param_map = {p.name: p for p in params}
+    param_map: dict[str, OpenAPIParameter] = {p.name: p for p in params}  # type: ignore[misc, union-attr]
     assert "name" in param_map
     assert "age" in param_map
     assert "nickname" in param_map
@@ -588,7 +588,7 @@ def test_query_model_generates_parameters(query_model: type) -> None:
 
 def test_query_dict_does_not_generate_parameters() -> None:
     @get("/")
-    async def handler(query: dict) -> None:  # type: ignore[type-arg]
+    async def handler(query: dict) -> None:
         pass
 
     app = Litestar([handler])
@@ -610,7 +610,7 @@ def test_query_model_with_all_optional_fields() -> None:
     params = app.openapi_schema.paths["/"].get.parameters  # type: ignore[index, union-attr]
     assert params is not None
 
-    param_map = {p.name: p for p in params}
+    param_map: dict[str, OpenAPIParameter] = {p.name: p for p in params}  # type: ignore[misc, union-attr]
     assert param_map["name"].required is False
     assert param_map["page"].required is False
 
@@ -629,7 +629,7 @@ def test_query_model_with_all_required_fields() -> None:
     params = app.openapi_schema.paths["/"].get.parameters  # type: ignore[index, union-attr]
     assert params is not None
 
-    param_map = {p.name: p for p in params}
+    param_map: dict[str, OpenAPIParameter] = {p.name: p for p in params}  # type: ignore[misc, union-attr]
     assert param_map["name"].required is True
     assert param_map["age"].required is True
 
@@ -647,7 +647,7 @@ def test_query_model_alongside_regular_params() -> None:
     params = app.openapi_schema.paths["/"].get.parameters  # type: ignore[index, union-attr]
     assert params is not None
 
-    param_map = {p.name: p for p in params}
+    param_map: dict[str, OpenAPIParameter] = {p.name: p for p in params}  # type: ignore[misc, union-attr]
     assert "name" in param_map
     assert param_map["name"].param_in == ParamType.QUERY
     assert "extra_param" in param_map
@@ -668,7 +668,7 @@ def test_headers_model_generates_header_parameters() -> None:
     params = app.openapi_schema.paths["/"].get.parameters  # type: ignore[index, union-attr]
     assert params is not None
 
-    param_map = {p.name: p for p in params}
+    param_map: dict[str, OpenAPIParameter] = {p.name: p for p in params}  # type: ignore[misc, union-attr]
     assert "x_custom" in param_map
     assert param_map["x_custom"].param_in == ParamType.HEADER
     assert param_map["x_custom"].required is True
@@ -691,7 +691,7 @@ def test_cookies_model_generates_cookie_parameters() -> None:
     params = app.openapi_schema.paths["/"].get.parameters  # type: ignore[index, union-attr]
     assert params is not None
 
-    param_map = {p.name: p for p in params}
+    param_map: dict[str, OpenAPIParameter] = {p.name: p for p in params}  # type: ignore[misc, union-attr]
     assert "session_id" in param_map
     assert param_map["session_id"].param_in == ParamType.COOKIE
     assert param_map["session_id"].required is True
@@ -742,7 +742,7 @@ def test_issue_2015_pydantic_model_query_openapi() -> None:
 
     params = schema.paths["/"].get.parameters  # type: ignore[index, union-attr]
     assert params is not None, "Expected query parameters in OpenAPI schema, got None"
-    param_map = {p.name: p for p in params}
+    param_map: dict[str, OpenAPIParameter] = {p.name: p for p in params}  # type: ignore[misc, union-attr]
 
     assert "even" in param_map
     assert "odd" in param_map

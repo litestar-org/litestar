@@ -36,7 +36,7 @@ def _is_struct_type(annotation: Any) -> bool:
         from msgspec import Struct
 
         return isinstance(annotation, type) and issubclass(annotation, Struct)
-    except ImportError:
+    except ImportError:  # pragma: no cover
         return False
 
 
@@ -46,8 +46,29 @@ def _is_attrs_type(annotation: Any) -> bool:
         import attrs
 
         return isinstance(annotation, type) and attrs.has(annotation)
-    except (ImportError, TypeError):
+    except (ImportError, TypeError):  # pragma: no cover
         return False
+
+
+def _refine_required_fields_from_defaults(model_type: Any, required: set[str]) -> None:
+    """Remove fields with defaults from the required set using model-specific detection."""
+    if hasattr(model_type, "model_fields"):
+        # Pydantic v2
+        for name, field_info in model_type.model_fields.items():
+            if not field_info.is_required():
+                required.discard(name)
+    elif _is_struct_type(model_type):
+        import msgspec.inspect
+
+        for f in msgspec.inspect.type_info(model_type).fields:  # type: ignore[attr-defined]
+            if not f.required:
+                required.discard(f.name)
+    elif _is_attrs_type(model_type):
+        import attrs
+
+        for f in attrs.fields(model_type):
+            if f.default is not attrs.NOTHING:
+                required.discard(f.name)
 
 
 class ParameterCollection:
@@ -242,26 +263,7 @@ class ParameterFactory:
 
         # Generic approach for plugin-supported types (Pydantic, msgspec, attrs, etc.)
         required = {name for name, hint in type_hints.items() if not is_optional_union(hint)}
-
-        # Refine using model-specific default detection
-        if hasattr(model_type, "model_fields"):
-            # Pydantic v2
-            for name, field_info in model_type.model_fields.items():
-                if not field_info.is_required():
-                    required.discard(name)
-        elif _is_struct_type(model_type):
-            import msgspec.inspect
-
-            for f in msgspec.inspect.type_info(model_type).fields:
-                if not f.required:
-                    required.discard(f.name)
-        elif _is_attrs_type(model_type):
-            import attrs
-
-            for f in attrs.fields(model_type):
-                if f.default is not attrs.NOTHING:
-                    required.discard(f.name)
-
+        _refine_required_fields_from_defaults(model_type, required)
         return required
 
     def _create_parameters_from_model(self, field_definition: FieldDefinition, param_type: ParamType) -> None:
@@ -281,7 +283,9 @@ class ParameterFactory:
             )
 
             result = self.schema_creator.for_field_definition(fd)
-            schema = result if isinstance(result, Schema) else self.context.schema_registry.from_reference(result).schema
+            schema = (
+                result if isinstance(result, Schema) else self.context.schema_registry.from_reference(result).schema
+            )
 
             self.parameters.add(
                 Parameter(
