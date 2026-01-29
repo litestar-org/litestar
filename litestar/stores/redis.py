@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from datetime import timedelta
-from typing import TYPE_CHECKING, cast
+from typing import TYPE_CHECKING, Literal, cast, overload
 
 from redis.asyncio import Redis
 from redis.asyncio.connection import ConnectionPool
@@ -140,20 +140,51 @@ class RedisStore(NamespacedStore):
         prefix = f"{self.namespace}:" if self.namespace else ""
         return prefix + key
 
-    async def set(self, key: str, value: str | bytes, expires_in: int | timedelta | None = None) -> None:
+    @overload
+    async def set(
+        self,
+        key: str,
+        value: str | bytes,
+        expires_in: int | timedelta | None = ...,
+        keep_ttl: Literal[False] = ...,
+    ) -> None: ...
+
+    @overload
+    async def set(
+        self,
+        key: str,
+        value: str | bytes,
+        expires_in: None = ...,
+        *,
+        keep_ttl: Literal[True],
+    ) -> None: ...
+
+    async def set(
+        self,
+        key: str,
+        value: str | bytes,
+        expires_in: int | timedelta | None = None,
+        keep_ttl: bool = False,
+    ) -> None:
         """Set a value.
 
         Args:
             key: Key to associate the value with
             value: Value to store
             expires_in: Time in seconds before the key is considered expired
+            keep_ttl: If ``True``, the TTL of the key will not be changed. If ``False``, the TTL of the key will be set to the value of ``expires_in``
+
+        Raises:
+            ValueError: If both ``expires_in`` and ``keep_ttl`` are set, as these options are mutually exclusive
 
         Returns:
             ``None``
         """
+        if expires_in is not None and keep_ttl:
+            raise ValueError("Cannot set both 'expires_in' and 'keep_ttl': these options are mutually exclusive")
         if isinstance(value, str):
             value = value.encode("utf-8")
-        await self._redis.set(self._make_key(key), value, ex=expires_in)
+        await self._redis.set(self._make_key(key), value, ex=expires_in, keepttl=keep_ttl)
 
     async def get(self, key: str, renew_for: int | timedelta | None = None) -> bytes | None:
         """Get a value.
