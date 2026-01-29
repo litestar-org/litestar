@@ -236,6 +236,34 @@ def test_redis_with_non_default(connection_pool_from_url_mock: Mock, mock_redis:
     assert backend._redis is mock_redis.return_value
 
 
+@patch("litestar.stores.redis.Redis")
+@patch("litestar.stores.redis.ConnectionPool.from_url")
+async def test_redis_set_with_expires_in_and_keep_ttl_raises(
+    connection_pool_from_url_mock: Mock, mock_redis: Mock
+) -> None:
+    """Test that setting both expires_in and keep_ttl raises ValueError."""
+    store = RedisStore.with_client()
+
+    with pytest.raises(ValueError, match="Cannot set both 'expires_in' and 'keep_ttl'"):
+        await store.set("key", b"value", expires_in=60, keep_ttl=True)  # type: ignore[call-overload]
+
+
+@pytest.mark.xdist_group("redis")
+async def test_redis_set_with_keep_ttl(redis_store: RedisStore) -> None:
+    """Test that keep_ttl=True preserves the existing TTL."""
+    # Set key with initial TTL
+    await redis_store.set("foo", b"bar", expires_in=100)
+    initial_ttl = await redis_store.expires_in("foo")
+    assert initial_ttl is not None and initial_ttl > 0
+
+    # Update value with keep_ttl=True - TTL should be preserved
+    await redis_store.set("foo", b"updated", keep_ttl=True)
+    new_ttl = await redis_store.expires_in("foo")
+
+    assert new_ttl is not None and new_ttl > 0
+    assert await redis_store.get("foo") == b"updated"
+
+
 @patch("litestar.stores.valkey.Valkey")
 @patch("litestar.stores.valkey.ConnectionPool.from_url")
 def test_valkey_with_non_default(connection_pool_from_url_mock: Mock, mock_valkey: Mock) -> None:
