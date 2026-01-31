@@ -9,6 +9,7 @@ from litestar.events import SimpleEventEmitter
 from litestar.testing.client import AsyncTestClient, TestClient
 from litestar.types import Empty
 from litestar.utils.predicates import is_class_and_subclass
+from litestar.logging import LoggingConfig
 
 if TYPE_CHECKING:
     from contextlib import AbstractAsyncContextManager
@@ -23,7 +24,6 @@ if TYPE_CHECKING:
     from litestar.datastructures import CacheControlHeader, ETag, State
     from litestar.dto import AbstractDTO
     from litestar.events import BaseEventEmitterBackend, EventListener
-    from litestar.logging.config import BaseLoggingConfig
     from litestar.middleware.session.base import BaseBackendConfig
     from litestar.openapi.config import OpenAPIConfig
     from litestar.openapi.spec import SecurityRequirement
@@ -77,7 +77,7 @@ def create_test_client(
     guards: Sequence[Guard] | None = None,
     include_in_schema: bool | EmptyType = Empty,
     listeners: Sequence[EventListener] | None = None,
-    logging_config: BaseLoggingConfig | EmptyType | None = Empty,
+    logging_config: LoggingConfig | None = None,
     middleware: Sequence[Middleware] | None = None,
     multipart_form_part_limit: int = 1000,
     on_app_init: Sequence[OnAppInitHandler] | None = None,
@@ -334,7 +334,7 @@ def create_async_test_client(
     include_in_schema: bool | EmptyType = Empty,
     lifespan: list[Callable[[Litestar], AbstractAsyncContextManager] | AbstractAsyncContextManager] | None = None,
     listeners: Sequence[EventListener] | None = None,
-    logging_config: BaseLoggingConfig | EmptyType | None = Empty,
+    logging_config: LoggingConfig | None = None,
     middleware: Sequence[Middleware] | None = None,
     multipart_form_part_limit: int = 1000,
     on_app_init: Sequence[OnAppInitHandler] | None = None,
