@@ -9,8 +9,7 @@ import pytest
 import structlog
 
 from litestar import Litestar, get
-from litestar.logging.structlog import StructLoggingConfig
-from litestar.plugins.structlog import StructlogConfig, StructlogPlugin
+from litestar.logging.structlog import StructLoggingConfig, StructLoggingMiddleware
 from litestar.testing import TestClient
 
 if TYPE_CHECKING:
@@ -29,12 +28,6 @@ def test_structlog_to_file(tmp_path: Path) -> None:
     log_file = tmp_path / "log.log"
 
     with log_file.open("wt") as file_handle:
-        logging_config = StructlogConfig(
-            structlog_logging_config=StructLoggingConfig(
-                logger_factory=lambda: structlog.WriteLoggerFactory(file=file_handle),
-            ),
-        )
-
         logger = structlog.get_logger()
 
         @get("/")
@@ -42,7 +35,14 @@ def test_structlog_to_file(tmp_path: Path) -> None:
             logger.info("handled", hello="world")
             return "hello"
 
-        app = Litestar(route_handlers=[handler], plugins=[StructlogPlugin(config=logging_config)], debug=True)
+        app = Litestar(
+            route_handlers=[handler],
+            middleware=[StructLoggingMiddleware()],
+            logging_config=StructLoggingConfig(
+                logger_factory=lambda: structlog.WriteLoggerFactory(file=file_handle),
+            ),
+            debug=True,
+        )
 
         with TestClient(app) as client:
             resp = client.get("/")
