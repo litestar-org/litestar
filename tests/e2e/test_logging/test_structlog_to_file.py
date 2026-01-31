@@ -9,8 +9,7 @@ import pytest
 import structlog
 
 from litestar import Litestar, get
-from litestar.logging import StructLoggingConfig
-from litestar.logging.config import default_json_serializer, default_structlog_processors
+from litestar.logging.structlog import StructLoggingConfig
 from litestar.plugins.structlog import StructlogConfig, StructlogPlugin
 from litestar.testing import TestClient
 
@@ -32,10 +31,7 @@ def test_structlog_to_file(tmp_path: Path) -> None:
     with log_file.open("wt") as file_handle:
         logging_config = StructlogConfig(
             structlog_logging_config=StructLoggingConfig(
-                logger_factory=structlog.WriteLoggerFactory(file=file_handle),
-                processors=default_structlog_processors(
-                    json_serializer=lambda v, **_: str(default_json_serializer(v), "utf-8")
-                ),
+                logger_factory=lambda: structlog.WriteLoggerFactory(file=file_handle),
             ),
         )
 

@@ -1,151 +1,100 @@
 # pyright: reportAttributeAccessIssue=false, reportOptionalMemberAccess=false
 
 import datetime
-import sys
-from typing import Callable, Union
-from unittest.mock import MagicMock, patch
+from typing import Union
+from unittest.mock import MagicMock, patch, ANY
 
 import pytest
 import structlog
-from pytest import CaptureFixture
-from structlog import BytesLoggerFactory, get_logger
 from structlog.processors import JSONRenderer
-from structlog.types import BindableLogger, WrappedLogger
+from structlog.types import BindableLogger
 
 from litestar import get
 from litestar.exceptions import HTTPException, NotFoundException
-from litestar.logging.config import LoggingConfig, StructlogEventFilter, StructLoggingConfig, default_json_serializer
+from litestar.logging.structlog import StructLoggingConfig
 from litestar.plugins.structlog import StructlogConfig, StructlogPlugin
 from litestar.serialization import decode_json
 from litestar.testing import create_test_client
 
-# structlog.testing.capture_logs changes the processors
-# Because we want to test processors, use capsys instead
+
+@pytest.fixture(autouse=True)
+def reset_structlog() -> None:
+    structlog.reset_defaults()
 
 
-def test_event_filter() -> None:
-    """Functionality test for the event filter processor."""
-    event_filter = StructlogEventFilter(["a_key"])
-    log_event = {"a_key": "a_val", "b_key": "b_val"}
-    log_event = event_filter(..., "", log_event)
-    assert log_event == {"b_key": "b_val"}
-
-
-def test_set_level_custom_logger_factory() -> None:
-    """Functionality test for the event filter processor."""
-
-    def custom_logger_factory() -> Callable[..., WrappedLogger]:
-        """Set the default logger factory for structlog.
-
-        Returns:
-            An optional logger factory.
-        """
-        return BytesLoggerFactory()
-
-    log_config = StructLoggingConfig(logger_factory=custom_logger_factory, wrapper_class=structlog.stdlib.BoundLogger)
-    logger = get_logger()
-    assert logger.bind().__class__.__name__ != "BoundLoggerFilteringAtDebug"
-    log_config.set_level(logger, 10)
-    logger.info("a message")
-    assert logger.bind().__class__.__name__ == "BoundLoggerFilteringAtDebug"
-
-
-def test_structlog_plugin(capsys: CaptureFixture) -> None:
+def test_structlog_plugin(caplog: pytest.LogCaptureFixture) -> None:
     with create_test_client([], plugins=[StructlogPlugin()]) as client:
         assert isinstance(client.app.logger, structlog._config.BoundLoggerLazyProxy)
         assert isinstance(client.app.logger.bind(), BindableLogger)
 
         client.app.logger.info("message", key="value")
 
-        log_messages = [decode_json(value=x) for x in capsys.readouterr().out.splitlines()]
-        assert len(log_messages) == 1
+    log_messages = [decode_json(value=x) for x in caplog.messages]
+    assert len(log_messages) == 1
 
-        # Format should be: {event: message, key: value, level: info, timestamp: isoformat}
-        log_messages[0].pop("timestamp")  # Assume structlog formats timestamp correctly
-        assert log_messages[0] == {"event": "message", "key": "value", "level": "info"}
+    # Format should be: {event: message, key: value, level: info, timestamp: isoformat}
+    log_messages[0].pop("timestamp")  # Assume structlog formats timestamp correctly
+    assert log_messages[0] == {"event": "message", "key": "value", "level": "info"}
 
 
-def test_structlog_plugin_config(capsys: CaptureFixture) -> None:
+def test_structlog_plugin_config(caplog: pytest.LogCaptureFixture) -> None:
     config = StructlogConfig()
     with create_test_client([], plugins=[StructlogPlugin(config=config)]) as client:
         assert isinstance(client.app.logger, structlog._config.BoundLoggerLazyProxy)
         assert isinstance(client.app.logger.bind(), BindableLogger)
         client.app.logger.info("message", key="value")
 
-        log_messages = [decode_json(value=x) for x in capsys.readouterr().out.splitlines()]
-        assert len(log_messages) == 1
-        assert client.app.plugins.get(StructlogPlugin)._config == config
+    log_messages = [decode_json(value=x) for x in caplog.messages]
+    assert len(log_messages) == 1
+    assert client.app.plugins.get(StructlogPlugin)._config == config
 
 
-def test_structlog_plugin_config_custom_standard_logger() -> None:
-    standard_logging_config = LoggingConfig()
-    structlog_logging_config = StructLoggingConfig(standard_lib_logging_config=standard_logging_config)
-    config = StructlogConfig(structlog_logging_config=structlog_logging_config)
-    with create_test_client([], plugins=[StructlogPlugin(config=config)]) as client:
-        assert client.app.plugins.get(StructlogPlugin)._config == config
-        assert (
-            client.app.plugins.get(StructlogPlugin)._config.structlog_logging_config.standard_lib_logging_config
-            == standard_logging_config
-        )
-
-
-def test_structlog_plugin_config_custom() -> None:
-    structlog_logging_config = StructLoggingConfig(standard_lib_logging_config=None)
-    config = StructlogConfig(structlog_logging_config=structlog_logging_config)
-    with create_test_client([], plugins=[StructlogPlugin(config=config)]) as client:
-        assert client.app.plugins.get(StructlogPlugin)._config == config
-        assert client.app.plugins.get(StructlogPlugin)._config.structlog_logging_config == structlog_logging_config
-        assert (
-            client.app.plugins.get(StructlogPlugin)._config.structlog_logging_config.standard_lib_logging_config
-            is not None
-        )
-
-
-def test_structlog_plugin_config_with_existing_logging_config(capsys: CaptureFixture) -> None:
+def test_structlog_plugin_config_with_existing_logging_config(caplog: pytest.LogCaptureFixture) -> None:
     existing_log_config = StructLoggingConfig()
-    standard_logging_config = LoggingConfig()
-    structlog_logging_config = StructLoggingConfig(standard_lib_logging_config=standard_logging_config)
+    structlog_logging_config = StructLoggingConfig()
     config = StructlogConfig(structlog_logging_config=structlog_logging_config)
     with create_test_client([], logging_config=existing_log_config, plugins=[StructlogPlugin(config=config)]) as client:
         assert client.app.plugins.get(StructlogPlugin)._config == config
-        assert "Found pre-configured" in capsys.readouterr().out
+        client.app.logger.info("message", key="value")
+
+    assert decode_json(caplog.messages[0]) == {"event": "message", "key": "value", "level": "info", "timestamp": ANY}
 
 
-def test_structlog_config_no_tty_default(capsys: CaptureFixture) -> None:
+def test_structlog_config_no_tty_default(caplog: pytest.LogCaptureFixture) -> None:
     with create_test_client([], logging_config=StructLoggingConfig()) as client:
         assert isinstance(client.app.logger, structlog._config.BoundLoggerLazyProxy)
         assert isinstance(client.app.logger.bind(), BindableLogger)
         client.app.logger.info("message", key="value")
 
-        log_messages = [decode_json(value=x) for x in capsys.readouterr().out.splitlines()]
-        assert len(log_messages) == 1
+    log_messages = [decode_json(value=x) for x in caplog.messages]
+    assert len(log_messages) == 1
 
-        # Format should be: {event: message, key: value, level: info, timestamp: isoformat}
-        log_messages[0].pop("timestamp")  # Assume structlog formats timestamp correctly
-        assert log_messages[0] == {"event": "message", "key": "value", "level": "info"}
+    # Format should be: {event: message, key: value, level: info, timestamp: isoformat}
+    log_messages[0].pop("timestamp")  # Assume structlog formats timestamp correctly
+    assert log_messages[0] == {"event": "message", "key": "value", "level": "info"}
 
 
-def test_structlog_config_tty_default(capsys: CaptureFixture, monkeypatch: pytest.MonkeyPatch) -> None:
-    from sys import stderr
+def test_structlog_config_tty_default(
+    caplog: pytest.LogCaptureFixture, monkeypatch: pytest.MonkeyPatch, mocker
+) -> None:
+    # from sys import stderr
 
-    monkeypatch.setattr(stderr, "isatty", lambda: True)
+    # monkeypatch.setattr(stderr, "isatty", lambda: True)
+    mocker.patch("litestar.logging.structlog.sys.stderr.isatty", return_value=True)
 
     with create_test_client([], logging_config=StructLoggingConfig()) as client:
         assert isinstance(client.app.logger, structlog._config.BoundLoggerLazyProxy)
         assert isinstance(client.app.logger.bind(), BindableLogger)
         client.app.logger.info("message", key="value")
 
-        log_messages = capsys.readouterr().out.splitlines()
-        assert len(log_messages) == 1
+    log_messages = caplog.messages
+    assert len(log_messages) == 1
 
-        if sys.platform.startswith("win"):
-            assert log_messages[0].startswith(str(datetime.datetime.now().year))
-        else:
-            assert log_messages[0].startswith("\x1b[")
+    assert log_messages[0].startswith(str(datetime.datetime.now().year))
 
 
-def test_structlog_config_specify_processors(capsys: CaptureFixture) -> None:
-    logging_config = StructLoggingConfig(processors=[JSONRenderer(serializer=default_json_serializer)])
+def test_structlog_config_specify_processors(caplog: pytest.LogCaptureFixture) -> None:
+    logging_config = StructLoggingConfig(processors=[JSONRenderer()])
 
     with create_test_client([], logging_config=logging_config) as client:
         assert isinstance(client.app.logger, structlog._config.BoundLoggerLazyProxy)
@@ -155,12 +104,12 @@ def test_structlog_config_specify_processors(capsys: CaptureFixture) -> None:
         # Log twice to make sure issue #882 doesn't appear again
         client.app.logger.info("message2", key="value2")
 
-        log_messages = [decode_json(value=x) for x in capsys.readouterr().out.splitlines()]
+    log_messages = [decode_json(value=x) for x in caplog.messages]
 
-        assert log_messages == [
-            {"key": "value1", "event": "message1"},
-            {"key": "value2", "event": "message2"},
-        ]
+    assert log_messages == [
+        {"key": "value1", "event": "message1"},
+        {"key": "value2", "event": "message2"},
+    ]
 
 
 @pytest.mark.parametrize(
@@ -173,10 +122,10 @@ def test_structlog_config_specify_processors(capsys: CaptureFixture) -> None:
     ],
 )
 def test_structlog_config_as_json(isatty: bool, pretty_print_tty: bool, expected_as_json: bool) -> None:
-    with patch("litestar.logging.config.sys.stderr.isatty") as isatty_mock:
+    with patch("litestar.logging.structlog.sys.stderr.isatty") as isatty_mock:
         isatty_mock.return_value = isatty
         logging_config = StructLoggingConfig(pretty_print_tty=pretty_print_tty)
-        assert logging_config.as_json() is expected_as_json
+        assert logging_config.should_log_as_json is expected_as_json
 
 
 @pytest.mark.parametrize(
