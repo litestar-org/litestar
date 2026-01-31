@@ -164,7 +164,7 @@ def test_app_debug_level_sets_logging_config_level() -> None:
     app = Litestar([], debug=True)
 
     assert app.logging_config.level == logging.DEBUG
-    assert app.logger.level == logging.DEBUG
+    assert app.logger.level == logging.DEBUG  # type: ignore[attr-defined]
 
 
 def test_set_state() -> None:
