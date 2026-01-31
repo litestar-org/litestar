@@ -4,6 +4,7 @@ from logging import INFO
 from typing import TYPE_CHECKING, Annotated, Any
 
 import pytest
+import structlog
 from structlog.testing import capture_logs
 
 from litestar import Response, get, post
@@ -13,9 +14,10 @@ from litestar.datastructures import Cookie, UploadFile
 from litestar.enums import RequestEncodingType
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.handlers import HTTPRouteHandler
-from litestar.logging.config import LoggingConfig, StructLoggingConfig
+from litestar.logging.config import LoggingConfig
+from litestar.logging.structlog import StructLoggingConfig
 from litestar.middleware import logging as middleware_logging
-from litestar.middleware.logging import LoggingMiddlewareConfig
+from litestar.middleware.logging import LoggingMiddlewareConfig, StructLoggingMiddleware
 from litestar.params import Body
 from litestar.status_codes import HTTP_200_OK, HTTP_201_CREATED
 from litestar.testing import create_test_client
@@ -87,7 +89,7 @@ def test_logging_middleware_struct_logger(handler: HTTPRouteHandler) -> None:
     with (
         create_test_client(
             route_handlers=[handler],
-            middleware=[LoggingMiddlewareConfig().middleware],
+            middleware=[LoggingMiddlewareConfig(middleware_class=StructLoggingMiddleware).middleware],
             logging_config=StructLoggingConfig(),
         ) as client,
         capture_logs() as cap_logs,
@@ -224,9 +226,6 @@ async def test_logging_middleware_post_binary_file_without_structlog(monkeypatch
     async def post_handler(data: Annotated[UploadFile, Body(media_type=RequestEncodingType.MULTI_PART)]) -> str:
         content = await data.read()
         return f"{len(content)} bytes"
-
-    # force LoggingConfig to not parse body data
-    monkeypatch.setattr(middleware_logging, "structlog_installed", False)
 
     with create_test_client(
         route_handlers=[post_handler], middleware=[LoggingMiddlewareConfig().middleware], logging_config=LoggingConfig()

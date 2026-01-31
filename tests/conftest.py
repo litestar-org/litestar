@@ -320,12 +320,8 @@ def enable_warn_implicit_sync_to_thread(monkeypatch: MonkeyPatch) -> None:
 def get_logger() -> GetLogger:
     # due to the limitations of caplog we have to place this call here.
     # we also have to allow propagation.
-    return LoggingConfig(
-        logging_module="logging",
-        loggers={
-            "litestar": {"level": "INFO", "handlers": ["queue_listener"], "propagate": True},
-        },
-    ).configure()
+    config = LoggingConfig()
+    return config.get_logger
 
 
 @pytest.fixture()

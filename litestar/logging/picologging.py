@@ -1,39 +1,34 @@
 from __future__ import annotations
 
-import atexit
-from queue import Queue
-from typing import Any
+import dataclasses
+import queue
+from typing import TYPE_CHECKING, Any
 
-from litestar.exceptions import MissingDependencyException
-from litestar.logging._utils import resolve_handlers
+import picologging
+from picologging.handlers import QueueHandler, QueueListener
 
-__all__ = ("QueueListenerHandler",)
+from litestar.logging.config import LoggingConfig
 
-
-try:
-    import picologging  # noqa: F401 # pyright: ignore[reportMissingImports]
-except ImportError as e:
-    raise MissingDependencyException("picologging") from e
-
-from picologging import StreamHandler  # pyright: ignore[reportMissingImports]
-from picologging.handlers import QueueHandler, QueueListener  # pyright: ignore[reportMissingImports]
+if TYPE_CHECKING:
+    from litestar import Litestar
+    from litestar.types import LifespanHook, Logger
 
 
-class QueueListenerHandler(QueueHandler):  # type: ignore[misc,unused-ignore]
-    """Configure queue listener and handler to support non-blocking logging configuration."""
+@dataclasses.dataclass(frozen=True)
+class PicoLoggingConfig(LoggingConfig):
+    def configure_handlers(self, app: Litestar, logger: Logger) -> LifespanHook:
+        if not isinstance(logger, picologging.Logger):
+            raise ValueError(f"Cannot configure logger of type {type(logger)!r}")
 
-    def __init__(self, handlers: list[Any] | None = None) -> None:
-        """Initialize ``QueueListenerHandler``.
+        handler_queue: queue.Queue[Any] = queue.Queue(-1)
+        queue_handler = QueueHandler(handler_queue)
+        for handler in logger.handlers:
+            logger.removeHandler(handler)
+        logger.addHandler(queue_handler)
+        listener = QueueListener(handler_queue, queue_handler, respect_handler_level=True)
+        listener.start()
 
-        Args:
-            handlers: Optional 'ConvertingList'
+        def shutdown(app: Litestar) -> None:
+            listener.stop()
 
-        Notes:
-            - Requires ``picologging`` to be installed.
-        """
-        super().__init__(Queue(-1))
-        handlers = resolve_handlers(handlers) if handlers else [StreamHandler()]  # pyright: ignore[reportGeneralTypeIssues]
-        self.listener = QueueListener(self.queue, *handlers)  # pyright: ignore[reportGeneralTypeIssues]
-        self.listener.start()
-
-        atexit.register(self.listener.stop)
+        return shutdown

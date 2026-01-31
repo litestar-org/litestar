@@ -22,7 +22,11 @@ from litestar.utils.empty import value_or_default
 from litestar.utils.scope import get_serializer_from_scope
 from litestar.utils.scope.state import ScopeState
 
-__all__ = ("LoggingMiddleware", "LoggingMiddlewareConfig")
+__all__ = (
+    "LoggingMiddleware",
+    "LoggingMiddlewareConfig",
+    "StructLoggingMiddleware",
+)
 
 
 if TYPE_CHECKING:
@@ -37,21 +41,19 @@ if TYPE_CHECKING:
         Serializer,
     )
 
-try:
-    from structlog.types import BindableLogger
-
-    structlog_installed = True
-except ImportError:
-    BindableLogger = object  # type: ignore[assignment, misc]
-    structlog_installed = False
-
 
 class LoggingMiddleware(AbstractMiddleware):
     """Logging middleware."""
 
     logger: Logger
 
-    def __init__(self, app: ASGIApp, config: LoggingMiddlewareConfig) -> None:
+    def __init__(
+        self,
+        app: ASGIApp,
+        config: LoggingMiddlewareConfig,
+        parse_body: bool = False,
+        parse_query: bool = True,
+    ) -> None:
         """Initialize ``LoggingMiddleware``.
 
         Args:
@@ -61,7 +63,6 @@ class LoggingMiddleware(AbstractMiddleware):
         super().__init__(
             app=app, scopes={ScopeType.HTTP}, exclude=config.exclude, exclude_opt_key=config.exclude_opt_key
         )
-        self.is_struct_logger = structlog_installed
         self.config = config
 
         self.request_extractor = ConnectionDataExtractor(
@@ -77,8 +78,8 @@ class LoggingMiddleware(AbstractMiddleware):
             extract_scheme="scheme" in self.config.request_log_fields,
             obfuscate_cookies=self.config.request_cookies_to_obfuscate,
             obfuscate_headers=self.config.request_headers_to_obfuscate,
-            parse_body=self.is_struct_logger,
-            parse_query=self.is_struct_logger,
+            parse_body=parse_body,
+            parse_query=parse_query,
             skip_parse_malformed_body=True,
         )
         self.response_extractor = ResponseDataExtractor(
@@ -102,7 +103,6 @@ class LoggingMiddleware(AbstractMiddleware):
         """
         if not hasattr(self, "logger"):
             self.logger = scope["litestar_app"].get_logger(self.config.logger_name)
-            self.is_struct_logger = structlog_installed and repr(self.logger).startswith("<BoundLoggerLazyProxy")
 
         if self.config.response_log_fields:
             send = self.create_send_wrapper(scope=scope, send=send)
@@ -147,15 +147,12 @@ class LoggingMiddleware(AbstractMiddleware):
             None
         """
         message = values.pop("message")
-        if self.is_struct_logger:
-            self.logger.info(message, **values)
-        else:
-            value_strings = [f"{key}={value}" for key, value in values.items()]
-            log_message = f"{message}: {', '.join(value_strings)}"
-            self.logger.info(log_message)
+        value_strings = [f"{key}={value}" for key, value in values.items()]
+        log_message = f"{message}: {', '.join(value_strings)}"
+        self.logger.info(log_message)
 
     def _serialize_value(self, serializer: Serializer | None, value: Any) -> Any:
-        if not self.is_struct_logger and isinstance(value, (dict, list, tuple, set)):
+        if isinstance(value, (dict, list, tuple, set)):
             value = encode_json(value, serializer)
         return value.decode("utf-8", errors="backslashreplace") if isinstance(value, bytes) else value
 
@@ -363,3 +360,19 @@ class LoggingMiddlewareConfig:
             An instance of DefineMiddleware including ``self`` as the config kwarg value.
         """
         return DefineMiddleware(self.middleware_class, config=self)
+
+
+class StructLoggingMiddleware(LoggingMiddleware):
+    def __init__(
+        self,
+        app: ASGIApp,
+        config: LoggingMiddlewareConfig,
+    ) -> None:
+        super().__init__(app=app, config=config, parse_body=True, parse_query=True)
+
+    def log_message(self, values: dict[str, Any]) -> None:
+        message = values.pop("message")
+        self.logger.info(message, **values)
+
+    def _serialize_value(self, serializer: Serializer | None, value: Any) -> Any:
+        return value.decode("utf-8", errors="backslashreplace") if isinstance(value, bytes) else value
