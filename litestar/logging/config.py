@@ -6,8 +6,9 @@ import logging
 import logging.config
 import os
 import queue
+import sys
 from logging.handlers import QueueListener
-from typing import TYPE_CHECKING, Literal, ClassVar
+from typing import TYPE_CHECKING, Literal, ClassVar, cast
 
 __all__ = ("LoggingConfig",)
 
@@ -18,6 +19,13 @@ if TYPE_CHECKING:
     from litestar import Litestar
     from litestar.types import GetLogger, LifespanHook, Logger, Scope
     from litestar.types.callable_types import ExceptionLoggingHandler
+
+
+if sys.version_info >= (3, 12):
+    from logging import getHandlerByName
+else:
+    def getHandlerByName(name: str) -> logging.Handler:
+        return cast(logging.Handler, logging._handlers.get(name)) # type: ignore[attr-defined]
 
 
 def _default_exception_logging_handler(logger: Logger, scope: Scope, tb: list[str]) -> None:
@@ -119,7 +127,8 @@ class LoggingConfig:
         if self.configure_queue_handler:
             if LoggingConfig._queue_listener is None:
                 LoggingConfig._queue_listener = QueueListener(
-                    LoggingConfig._handler_queue, logging.getHandlerByName("litestar_stream_handler")
+                    LoggingConfig._handler_queue, # type: ignore[arg-type]
+                    getHandlerByName("litestar_stream_handler"),
                 )
                 atexit.register(LoggingConfig._queue_listener.stop)
             if LoggingConfig._queue_listener._thread is None:

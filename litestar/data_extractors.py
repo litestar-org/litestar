@@ -19,7 +19,7 @@ __all__ = (
 
 
 if TYPE_CHECKING:
-    from collections.abc import Coroutine, Iterable
+    from collections.abc import Coroutine, Iterable, Set
 
     from litestar.connection import ASGIConnection
     from litestar.types import Method
@@ -88,8 +88,8 @@ class ConnectionDataExtractor:
         extract_path_params: bool = True,
         extract_query: bool = True,
         extract_scheme: bool = True,
-        obfuscate_cookies: set[str] | None = None,
-        obfuscate_headers: set[str] | None = None,
+        obfuscate_cookies: Set[str] | None = None,
+        obfuscate_headers: Set[str] | None = None,
         parse_body: bool = False,
         parse_query: bool = False,
         skip_parse_malformed_body: bool = False,
@@ -334,8 +334,8 @@ class ResponseDataExtractor:
         extract_cookies: bool = True,
         extract_headers: bool = True,
         extract_status_code: bool = True,
-        obfuscate_cookies: set[str] | None = None,
-        obfuscate_headers: set[str] | None = None,
+        obfuscate_cookies: Set[str] | None = None,
+        obfuscate_headers: Set[str] | None = None,
     ) -> None:
         """Initialize ``ResponseDataExtractor`` with options.
 
