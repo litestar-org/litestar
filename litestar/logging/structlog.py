@@ -6,9 +6,8 @@ from typing import TYPE_CHECKING, Any, Callable
 
 import structlog
 
-from litestar.exceptions import ImproperlyConfiguredException
 from litestar.logging.config import LoggingConfig
-from litestar.middleware.logging import LoggingMiddlewareConfig, StructLoggingMiddleware, LoggingMiddleware
+from litestar.middleware.logging import StructLoggingMiddleware, LoggingMiddleware
 from litestar.serialization.msgspec_hooks import _msgspec_json_encoder
 from litestar.types.callable_types import ExceptionLoggingHandler
 
@@ -16,7 +15,7 @@ if TYPE_CHECKING:
     from collections.abc import Iterable
 
     from litestar import Litestar
-    from litestar.types import LifespanHook, Scope, GetLogger, Logger
+    from litestar.types import LifespanHook, Scope, GetLogger
 
 
 def structlog_exception_logging_handler(logger: structlog.BoundLogger, scope: Scope, tb: list[str]) -> None:
@@ -44,7 +43,7 @@ def json_processors() -> list[structlog.typing.Processor]:
 @dataclasses.dataclass(frozen=True)
 class StructLoggingConfig(LoggingConfig):
     get_logger: GetLogger = structlog.get_logger
-    exception_logging_handler: ExceptionLoggingHandler = dataclasses.field(default=structlog_exception_logging_handler)
+    exception_logging_handler: ExceptionLoggingHandler = dataclasses.field(default=structlog_exception_logging_handler)  # type: ignore[assignment]
 
     configure_structlog: bool = True
     """
@@ -104,8 +103,3 @@ class StructLoggingConfig(LoggingConfig):
             )
 
         return super().configure_logger(app=app)
-
-
-@dataclasses.dataclass()
-class StructLogLoggingMiddlewareConfig(LoggingMiddlewareConfig):
-    middleware_class: type[LoggingMiddleware] = dataclasses.field(default=StructLoggingMiddleware)

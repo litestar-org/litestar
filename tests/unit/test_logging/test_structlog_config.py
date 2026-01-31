@@ -6,13 +6,13 @@ from unittest.mock import MagicMock, patch, ANY
 
 import pytest
 import structlog
+from pytest_mock import MockerFixture
 from structlog.processors import JSONRenderer
 from structlog.types import BindableLogger
 
 from litestar import get
 from litestar.exceptions import HTTPException, NotFoundException
-from litestar.logging.structlog import StructLoggingConfig
-from litestar.plugins.structlog import StructlogConfig, StructlogPlugin
+from litestar.logging.structlog import StructLoggingConfig, StructLoggingMiddleware
 from litestar.serialization import decode_json
 from litestar.testing import create_test_client
 
@@ -23,7 +23,11 @@ def reset_structlog() -> None:
 
 
 def test_structlog_plugin(caplog: pytest.LogCaptureFixture) -> None:
-    with create_test_client([], plugins=[StructlogPlugin()]) as client:
+    with create_test_client(
+        [],
+        logging_config=StructLoggingConfig(),
+        middleware=[StructLoggingMiddleware()],
+    ) as client:
         assert isinstance(client.app.logger, structlog._config.BoundLoggerLazyProxy)
         assert isinstance(client.app.logger.bind(), BindableLogger)
 
@@ -38,26 +42,18 @@ def test_structlog_plugin(caplog: pytest.LogCaptureFixture) -> None:
 
 
 def test_structlog_plugin_config(caplog: pytest.LogCaptureFixture) -> None:
-    config = StructlogConfig()
-    with create_test_client([], plugins=[StructlogPlugin(config=config)]) as client:
+    with create_test_client(
+        [],
+        logging_config=StructLoggingConfig(),
+        middleware=[StructLoggingMiddleware()],
+    ) as client:
         assert isinstance(client.app.logger, structlog._config.BoundLoggerLazyProxy)
         assert isinstance(client.app.logger.bind(), BindableLogger)
         client.app.logger.info("message", key="value")
 
     log_messages = [decode_json(value=x) for x in caplog.messages]
     assert len(log_messages) == 1
-    assert client.app.plugins.get(StructlogPlugin)._config == config
 
-
-def test_structlog_plugin_config_with_existing_logging_config(caplog: pytest.LogCaptureFixture) -> None:
-    existing_log_config = StructLoggingConfig()
-    structlog_logging_config = StructLoggingConfig()
-    config = StructlogConfig(structlog_logging_config=structlog_logging_config)
-    with create_test_client([], logging_config=existing_log_config, plugins=[StructlogPlugin(config=config)]) as client:
-        assert client.app.plugins.get(StructlogPlugin)._config == config
-        client.app.logger.info("message", key="value")
-
-    assert decode_json(caplog.messages[0]) == {"event": "message", "key": "value", "level": "info", "timestamp": ANY}
 
 
 def test_structlog_config_no_tty_default(caplog: pytest.LogCaptureFixture) -> None:
@@ -75,7 +71,9 @@ def test_structlog_config_no_tty_default(caplog: pytest.LogCaptureFixture) -> No
 
 
 def test_structlog_config_tty_default(
-    caplog: pytest.LogCaptureFixture, monkeypatch: pytest.MonkeyPatch, mocker
+    caplog: pytest.LogCaptureFixture,
+    monkeypatch: pytest.MonkeyPatch,
+    mocker: MockerFixture,
 ) -> None:
     # from sys import stderr
 
