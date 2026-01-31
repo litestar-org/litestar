@@ -9,6 +9,7 @@ from litestar.config.allowed_hosts import AllowedHostsConfig
 from litestar.config.response_cache import ResponseCacheConfig
 from litestar.datastructures import State
 from litestar.events.emitter import SimpleEventEmitter
+from litestar.logging import LoggingConfig
 from litestar.types.empty import Empty
 
 if TYPE_CHECKING:
@@ -24,7 +25,6 @@ if TYPE_CHECKING:
     from litestar.dto import AbstractDTO
     from litestar.events.emitter import BaseEventEmitterBackend
     from litestar.events.listener import EventListener
-    from litestar.logging.config import BaseLoggingConfig
     from litestar.openapi.config import OpenAPIConfig
     from litestar.openapi.spec import SecurityRequirement
     from litestar.plugins import PluginProtocol
@@ -134,7 +134,7 @@ class AppConfig:
     """A list of callables returning async context managers, wrapping the lifespan of the ASGI application"""
     listeners: list[EventListener] = field(default_factory=list)
     """A list of :class:`EventListener <.events.listener.EventListener>`."""
-    logging_config: BaseLoggingConfig | None = field(default=None)
+    logging_config: LoggingConfig = field(default_factory=LoggingConfig)
     """An instance of :class:`BaseLoggingConfig <.logging.config.BaseLoggingConfig>` subclass."""
     middleware: list[Middleware] = field(default_factory=list)
     """A list of :class:`Middleware <.types.Middleware>`."""
