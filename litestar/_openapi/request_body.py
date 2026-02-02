@@ -54,6 +54,6 @@ def create_request_body(
 
     examples: Mapping[str, Example] | None = None
     if isinstance(data_field.kwarg_definition, BodyKwarg) and data_field.kwarg_definition.examples:
-        examples = get_formatted_examples(data_field, data_field.kwarg_definition.examples) or None
+        examples = dict(get_formatted_examples(data_field, data_field.kwarg_definition.examples)) or None
 
     return RequestBody(required=True, content={media_type: OpenAPIMediaType(schema=schema, examples=examples)})
