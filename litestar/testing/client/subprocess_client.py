@@ -25,12 +25,15 @@ def _get_available_port() -> int:
 
 
 @contextmanager
-def run_app(workdir: pathlib.Path, app: str, retry_count: int = 100, retry_timeout: int = 1) -> Iterator[str]:
+def run_app(
+    workdir: pathlib.Path, app: str, capture_output: bool, retry_count: int = 100, retry_timeout: int = 1
+) -> Iterator[str]:
     """Launch a litestar application in a subprocess with a random available port.
 
     Args:
         workdir: Path to working directory where run command will be executed
         app: Path to Litestar application, e.g.: "my_app:application"
+        capture_output: Whether to capture output from the subprocess in the main process stdout/stderr
         retry_count: Number of retries to wait for the application to start
         retry_timeout: Timeout in seconds to wait between retries
 
@@ -38,10 +41,11 @@ def run_app(workdir: pathlib.Path, app: str, retry_count: int = 100, retry_timeo
         StartupError: If the application fails to start with given retry count and timeout
     """
     port = _get_available_port()
+    output = None if capture_output else subprocess.DEVNULL
     with subprocess.Popen(
         args=["litestar", "--app", app, "run", "--port", str(port)],
-        stderr=subprocess.PIPE,
-        stdout=subprocess.PIPE,
+        stderr=output,
+        stdout=output,
         cwd=workdir,
     ) as proc:
         url = f"http://127.0.0.1:{port}"
@@ -64,25 +68,29 @@ def run_app(workdir: pathlib.Path, app: str, retry_count: int = 100, retry_timeo
 
 
 @asynccontextmanager
-async def subprocess_async_client(workdir: pathlib.Path, app: str) -> AsyncIterator[httpx.AsyncClient]:
+async def subprocess_async_client(
+    workdir: pathlib.Path, app: str, capture_output: bool = True
+) -> AsyncIterator[httpx.AsyncClient]:
     """Provides an async httpx client for a litestar app launched in a subprocess.
 
     Args:
         workdir: Path to the directory in which the app module resides.
         app: Uvicorn app string that can be resolved in the provided working directory, e.g.: "app:app"
+        capture_output: Whether to capture output from the subprocess in the main process stdout/stderr
     """
-    with run_app(workdir=workdir, app=app) as url:
+    with run_app(workdir=workdir, app=app, capture_output=capture_output) as url:
         async with httpx.AsyncClient(base_url=url) as client:
             yield client
 
 
 @contextmanager
-def subprocess_sync_client(workdir: pathlib.Path, app: str) -> Iterator[httpx.Client]:
+def subprocess_sync_client(workdir: pathlib.Path, app: str, capture_output: bool = True) -> Iterator[httpx.Client]:
     """Provides a sync httpx client for a litestar app launched in a subprocess.
 
     Args:
         workdir: Path to the directory in which the app module resides.
         app: Uvicorn app string that can be resolved in the provided working directory, e.g.: "app:app"
+        capture_output: Whether to capture output from the subprocess in the main process stdout/stderr
     """
-    with run_app(workdir=workdir, app=app) as url, httpx.Client(base_url=url) as client:
+    with run_app(workdir=workdir, app=app, capture_output=capture_output) as url, httpx.Client(base_url=url) as client:
         yield client
