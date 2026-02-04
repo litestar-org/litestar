@@ -5,8 +5,14 @@ Assemble components into an app that shall be tested
 import asyncio
 from typing import AsyncIterator
 
-from litestar import Litestar, get
+from litestar import Litestar, get, post
 from litestar.response import ServerSentEvent
+
+
+@post("/log")
+async def create_log_entry(message: str) -> None:
+    # A print statement explicitly goes to buffer, logging may not
+    print(f"Received log entry: {message}", flush=True)  # noqa: T201
 
 
 @get("/notify/{topic:str}")
@@ -21,7 +27,7 @@ async def get_notified(topic: str) -> ServerSentEvent:
 
 def create_test_app() -> Litestar:
     return Litestar(
-        route_handlers=[get_notified],
+        route_handlers=[create_log_entry, get_notified],
     )
 
 
