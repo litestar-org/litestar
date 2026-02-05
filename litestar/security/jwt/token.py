@@ -30,7 +30,7 @@ def _normalize_datetime(value: datetime) -> datetime:
         A datetime instance
     """
     if value.tzinfo is not None:
-        value.astimezone(timezone.utc)
+        value = value.astimezone(timezone.utc)
 
     return value.replace(microsecond=0)
 
