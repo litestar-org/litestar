@@ -1788,12 +1788,12 @@
         Converts the repository to use :func:`lambda_stmt <sqlalchemy.sql.expression.lambda_stmt>`
         instead of the normal ``select``
 
-    .. change:: SQLAlchemy: Swap to the `advanced_alchemy <https://advanced-alchemy.jolt.rs>`_ implementations
+    .. change:: SQLAlchemy: Swap to the `advanced_alchemy <https://advanced-alchemy.litestar.dev>`_ implementations
         :type: feature
         :pr: 2312
 
         Swaps the internal SQLAlchemy repository to use the external
-        `advanced_alchemy <https://advanced-alchemy.jolt.rs>`_ library implementations
+        `advanced_alchemy <https://advanced-alchemy.litestar.dev>`_ library implementations
 
     .. change:: Remove usages of deprecated ``ExceptionHandlerMiddleware`` ``debug`` parameter
         :type: bugfix
