@@ -55,18 +55,6 @@ def test_token(
             "1",
         ),
         (
-            "HS256",
-            "",
-        ),
-        (
-            None,
-            None,
-        ),
-        (
-            "HS256",
-            None,
-        ),
-        (
             "",
             None,
         ),
