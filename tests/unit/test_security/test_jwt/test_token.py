@@ -264,7 +264,7 @@ def test_token_encode_includes_custom_headers() -> None:
     assert header["kid"] == custom_headers["kid"]
 
 
-@pytest.mark.parametrize('issuer', [None, 'text', ['list', 'of', 'values']])
+@pytest.mark.parametrize("issuer", [None, "text", ["list", "of", "values"]])
 def test_token_issuer(issuer: str | list[str] | None) -> None:
     iss = issuer[0] if isinstance(issuer, list) else issuer
     secret = secrets.token_hex()
