@@ -91,7 +91,7 @@ class Token:
         encoded_token: str,
         secret: str | bytes,
         algorithms: list[str],
-        issuer: list[str] | None = None,
+        issuer: str | Sequence[str] | None = None,
         audience: str | Sequence[str] | None = None,
         options: JWTDecodeOptions | None = None,
     ) -> Any:
@@ -172,7 +172,7 @@ class Token:
                 secret=secret,
                 algorithms=[algorithm],
                 audience=audience,
-                issuer=list(issuer) if issuer else None,
+                issuer=issuer,
                 options=options,
             )
             # msgspec can do these conversions as well, but to keep backwards
