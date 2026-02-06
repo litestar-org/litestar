@@ -85,7 +85,7 @@ def test_encode_validation(algorithm: str, secret: str) -> None:
         Token(
             sub="123",
             exp=(datetime.now(timezone.utc) + timedelta(seconds=30)),
-        ).encode(algorithm="nope", secret=secret)
+        ).encode(algorithm=algorithm, secret=secret)
 
 
 def test_decode_validation() -> None:
