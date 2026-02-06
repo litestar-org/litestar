@@ -236,7 +236,7 @@ def test_custom_decode_payload() -> None:
             encoded_token: str,
             secret: str | bytes,
             algorithms: list[str],
-            issuer: list[str] | None = None,
+            issuer: str | Sequence[str] | None = None,
             audience: str | Sequence[str] | None = None,
             options: JWTDecodeOptions | None = None,
         ) -> Any:
