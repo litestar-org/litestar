@@ -182,7 +182,7 @@ def test_strict_aud_with_multiple_audiences_raises(audience: str | list[str]) ->
         )
 
 
-@pytest.mark.parametrize("audience", ["foo", ["foo", "bar"]])
+@pytest.mark.parametrize("audience", ["foo", ["foo"]])
 def test_strict_aud_with_one_element_sequence(audience: str | list[str]) -> None:
     # when validating with strict audience, PyJWT requires that the 'audience' parameter
     # is passed as a string - one element lists are not allowed. Since we allow these
@@ -193,7 +193,7 @@ def test_strict_aud_with_one_element_sequence(audience: str | list[str]) -> None
         encoded,
         secret=secret,
         algorithm="HS256",
-        audience=["foo"],
+        audience=audience,
         strict_audience=True,
     )
 
