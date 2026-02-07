@@ -235,7 +235,7 @@ def test_custom_decode_payload() -> None:
             encoded_token: str,
             secret: str,
             algorithms: list[str],
-            issuer: list[str] | None = None,
+            issuer: str | Sequence[str] | None = None,
             audience: str | Sequence[str] | None = None,
             options: JWTDecodeOptions | None = None,
         ) -> Any:
@@ -250,3 +250,23 @@ def test_custom_decode_payload() -> None:
     _secret = secrets.token_hex()
     encoded = CustomToken(exp=datetime.now() + timedelta(days=1), sub="foo").encode(_secret, "HS256")
     assert CustomToken.decode(encoded, secret=_secret, algorithm="HS256").sub == "some-random-value"
+
+
+@pytest.mark.parametrize("issuer", [None, "text", ["list", "of", "values"]])
+def test_token_issuer(issuer: str | list[str] | None) -> None:
+    iss = issuer[0] if isinstance(issuer, list) else issuer
+    secret = secrets.token_hex()
+    encoded = Token(
+        exp=datetime.now() + timedelta(days=1),
+        sub="foo",
+        iss=iss,
+    ).encode(secret, "HS256")
+
+    token = Token.decode(
+        encoded,
+        secret=secret,
+        algorithm="HS256",
+        issuer=issuer,
+    )
+
+    assert token.iss == iss
