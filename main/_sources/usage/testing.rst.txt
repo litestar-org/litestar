@@ -330,6 +330,16 @@ with the regular test client setup:
 .. literalinclude:: /examples/testing/test_subprocess_sse.py
     :language: python
 
+By default, the subprocess client will capture all output from the litestar instance. To discard output in the main (testing) process, set the ``capture_output`` argument to ``False`` when creating the client:
+
+.. code-block:: python
+
+    @pytest.fixture(name="async_client")
+    async def fx_async_client() -> AsyncIterator[httpx.AsyncClient]:
+        async with subprocess_async_client(workdir=ROOT, app="subprocess_sse_app:app", capture_output=False) as client:
+            yield client
+
+
 RequestFactory
 --------------
 

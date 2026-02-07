@@ -510,7 +510,7 @@ data-aria-dark="Switch to auto color mode">
 <span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 </span><span data-line="2">
 </span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">timedelta</span>
-</span><span data-line="4"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">cast</span>
+</span><span data-line="4"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">cast</span><span class="p">,</span> <span class="n">overload</span>
 </span><span data-line="5">
 </span><span data-line="6"><span class="kn">from</span><span class="w"> </span><span class="nn">redis.asyncio</span><span class="w"> </span><span class="kn">import</span> <span class="n">Redis</span>
 </span><span data-line="7"><span class="kn">from</span><span class="w"> </span><span class="nn">redis.asyncio.connection</span><span class="w"> </span><span class="kn">import</span> <span class="n">ConnectionPool</span>
@@ -660,92 +660,123 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="140">        <span class="n">prefix</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">namespace</span><span class="si">}</span><span class="s2">:&quot;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">namespace</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
 </span><span data-line="141">        <span class="k">return</span> <span class="n">prefix</span> <span class="o">+</span> <span class="n">key</span>
 </span><span data-line="142">
+</span><span data-line="143">    <span class="nd">@overload</span>
+</span><span data-line="144">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">set</span><span class="p">(</span>
+</span><span data-line="145">        <span class="bp">self</span><span class="p">,</span>
+</span><span data-line="146">        <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+</span><span data-line="147">        <span class="n">value</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">bytes</span><span class="p">,</span>
+</span><span data-line="148">        <span class="n">expires_in</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="n">timedelta</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="o">...</span><span class="p">,</span>
+</span><span data-line="149">        <span class="n">keep_ttl</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="kc">False</span><span class="p">]</span> <span class="o">=</span> <span class="o">...</span><span class="p">,</span>
+</span><span data-line="150">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
+</span><span data-line="151">
+</span><span data-line="152">    <span class="nd">@overload</span>
+</span><span data-line="153">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">set</span><span class="p">(</span>
+</span><span data-line="154">        <span class="bp">self</span><span class="p">,</span>
+</span><span data-line="155">        <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+</span><span data-line="156">        <span class="n">value</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">bytes</span><span class="p">,</span>
+</span><span data-line="157">        <span class="n">expires_in</span><span class="p">:</span> <span class="kc">None</span> <span class="o">=</span> <span class="o">...</span><span class="p">,</span>
+</span><span data-line="158">        <span class="o">*</span><span class="p">,</span>
+</span><span data-line="159">        <span class="n">keep_ttl</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="kc">True</span><span class="p">],</span>
+</span><span data-line="160">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
+</span><span data-line="161">
 <div class="viewcode-block" id="RedisStore.set">
 <a class="viewcode-back" href="../../../reference/stores/redis.html#litestar.stores.redis.RedisStore.set">[docs]</a>
-</span><span data-line="143">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">set</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">expires_in</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="n">timedelta</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="144"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Set a value.</span>
-</span><span data-line="145">
-</span><span data-line="146"><span class="sd">        Args:</span>
-</span><span data-line="147"><span class="sd">            key: Key to associate the value with</span>
-</span><span data-line="148"><span class="sd">            value: Value to store</span>
-</span><span data-line="149"><span class="sd">            expires_in: Time in seconds before the key is considered expired</span>
-</span><span data-line="150">
-</span><span data-line="151"><span class="sd">        Returns:</span>
-</span><span data-line="152"><span class="sd">            ``None``</span>
-</span><span data-line="153"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="154">        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-</span><span data-line="155">            <span class="n">value</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
-</span><span data-line="156">        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_redis</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_make_key</span><span class="p">(</span><span class="n">key</span><span class="p">),</span> <span class="n">value</span><span class="p">,</span> <span class="n">ex</span><span class="o">=</span><span class="n">expires_in</span><span class="p">)</span></div>
+</span><span data-line="162">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">set</span><span class="p">(</span>
+</span><span data-line="163">        <span class="bp">self</span><span class="p">,</span>
+</span><span data-line="164">        <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+</span><span data-line="165">        <span class="n">value</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">bytes</span><span class="p">,</span>
+</span><span data-line="166">        <span class="n">expires_in</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="n">timedelta</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="167">        <span class="n">keep_ttl</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+</span><span data-line="168">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="169"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Set a value.</span>
+</span><span data-line="170">
+</span><span data-line="171"><span class="sd">        Args:</span>
+</span><span data-line="172"><span class="sd">            key: Key to associate the value with</span>
+</span><span data-line="173"><span class="sd">            value: Value to store</span>
+</span><span data-line="174"><span class="sd">            expires_in: Time in seconds before the key is considered expired</span>
+</span><span data-line="175"><span class="sd">            keep_ttl: If ``True``, the TTL of the key will not be changed. If ``False``, the TTL of the key will be set to the value of ``expires_in``</span>
+</span><span data-line="176">
+</span><span data-line="177"><span class="sd">        Raises:</span>
+</span><span data-line="178"><span class="sd">            ValueError: If both ``expires_in`` and ``keep_ttl`` are set, as these options are mutually exclusive</span>
+</span><span data-line="179">
+</span><span data-line="180"><span class="sd">        Returns:</span>
+</span><span data-line="181"><span class="sd">            ``None``</span>
+</span><span data-line="182"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="183">        <span class="k">if</span> <span class="n">expires_in</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">keep_ttl</span><span class="p">:</span>
+</span><span data-line="184">            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Cannot set both &#39;expires_in&#39; and &#39;keep_ttl&#39;: these options are mutually exclusive&quot;</span><span class="p">)</span>
+</span><span data-line="185">        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+</span><span data-line="186">            <span class="n">value</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
+</span><span data-line="187">        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_redis</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_make_key</span><span class="p">(</span><span class="n">key</span><span class="p">),</span> <span class="n">value</span><span class="p">,</span> <span class="n">ex</span><span class="o">=</span><span class="n">expires_in</span><span class="p">,</span> <span class="n">keepttl</span><span class="o">=</span><span class="n">keep_ttl</span><span class="p">)</span></div>
 
-</span><span data-line="157">
+</span><span data-line="188">
 <div class="viewcode-block" id="RedisStore.get">
 <a class="viewcode-back" href="../../../reference/stores/redis.html#litestar.stores.redis.RedisStore.get">[docs]</a>
-</span><span data-line="158">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">renew_for</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="n">timedelta</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bytes</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="159"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Get a value.</span>
-</span><span data-line="160">
-</span><span data-line="161"><span class="sd">        Args:</span>
-</span><span data-line="162"><span class="sd">            key: Key associated with the value</span>
-</span><span data-line="163"><span class="sd">            renew_for: If given and the value had an initial expiry time set, renew the</span>
-</span><span data-line="164"><span class="sd">                expiry time for ``renew_for`` seconds. If the value has not been set</span>
-</span><span data-line="165"><span class="sd">                with an expiry time this is a no-op. Atomicity of this step is guaranteed</span>
-</span><span data-line="166"><span class="sd">                by using a lua script to execute fetch and renewal. If ``renew_for`` is</span>
-</span><span data-line="167"><span class="sd">                not given, the script will be bypassed so no overhead will occur</span>
-</span><span data-line="168">
-</span><span data-line="169"><span class="sd">        Returns:</span>
-</span><span data-line="170"><span class="sd">            The value associated with ``key`` if it exists and is not expired, else</span>
-</span><span data-line="171"><span class="sd">            ``None``</span>
-</span><span data-line="172"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="173">        <span class="n">key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_make_key</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
-</span><span data-line="174">        <span class="k">if</span> <span class="n">renew_for</span><span class="p">:</span>
-</span><span data-line="175">            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">renew_for</span><span class="p">,</span> <span class="n">timedelta</span><span class="p">):</span>
-</span><span data-line="176">                <span class="n">renew_for</span> <span class="o">=</span> <span class="n">renew_for</span><span class="o">.</span><span class="n">seconds</span>
-</span><span data-line="177">            <span class="n">data</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_and_renew_script</span><span class="p">(</span><span class="n">keys</span><span class="o">=</span><span class="p">[</span><span class="n">key</span><span class="p">],</span> <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="n">renew_for</span><span class="p">])</span>
-</span><span data-line="178">            <span class="k">return</span> <span class="n">cast</span><span class="p">(</span><span class="s2">&quot;bytes | None&quot;</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
-</span><span data-line="179">        <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_redis</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">)</span></div>
+</span><span data-line="189">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">renew_for</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="n">timedelta</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bytes</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="190"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Get a value.</span>
+</span><span data-line="191">
+</span><span data-line="192"><span class="sd">        Args:</span>
+</span><span data-line="193"><span class="sd">            key: Key associated with the value</span>
+</span><span data-line="194"><span class="sd">            renew_for: If given and the value had an initial expiry time set, renew the</span>
+</span><span data-line="195"><span class="sd">                expiry time for ``renew_for`` seconds. If the value has not been set</span>
+</span><span data-line="196"><span class="sd">                with an expiry time this is a no-op. Atomicity of this step is guaranteed</span>
+</span><span data-line="197"><span class="sd">                by using a lua script to execute fetch and renewal. If ``renew_for`` is</span>
+</span><span data-line="198"><span class="sd">                not given, the script will be bypassed so no overhead will occur</span>
+</span><span data-line="199">
+</span><span data-line="200"><span class="sd">        Returns:</span>
+</span><span data-line="201"><span class="sd">            The value associated with ``key`` if it exists and is not expired, else</span>
+</span><span data-line="202"><span class="sd">            ``None``</span>
+</span><span data-line="203"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="204">        <span class="n">key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_make_key</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+</span><span data-line="205">        <span class="k">if</span> <span class="n">renew_for</span><span class="p">:</span>
+</span><span data-line="206">            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">renew_for</span><span class="p">,</span> <span class="n">timedelta</span><span class="p">):</span>
+</span><span data-line="207">                <span class="n">renew_for</span> <span class="o">=</span> <span class="n">renew_for</span><span class="o">.</span><span class="n">seconds</span>
+</span><span data-line="208">            <span class="n">data</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_and_renew_script</span><span class="p">(</span><span class="n">keys</span><span class="o">=</span><span class="p">[</span><span class="n">key</span><span class="p">],</span> <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="n">renew_for</span><span class="p">])</span>
+</span><span data-line="209">            <span class="k">return</span> <span class="n">cast</span><span class="p">(</span><span class="s2">&quot;bytes | None&quot;</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+</span><span data-line="210">        <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_redis</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">)</span></div>
 
-</span><span data-line="180">
+</span><span data-line="211">
 <div class="viewcode-block" id="RedisStore.delete">
 <a class="viewcode-back" href="../../../reference/stores/redis.html#litestar.stores.redis.RedisStore.delete">[docs]</a>
-</span><span data-line="181">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="182"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Delete a value.</span>
-</span><span data-line="183">
-</span><span data-line="184"><span class="sd">        If no such key exists, this is a no-op.</span>
-</span><span data-line="185">
-</span><span data-line="186"><span class="sd">        Args:</span>
-</span><span data-line="187"><span class="sd">            key: Key of the value to delete</span>
-</span><span data-line="188"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="189">        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_redis</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_make_key</span><span class="p">(</span><span class="n">key</span><span class="p">))</span></div>
+</span><span data-line="212">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="213"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Delete a value.</span>
+</span><span data-line="214">
+</span><span data-line="215"><span class="sd">        If no such key exists, this is a no-op.</span>
+</span><span data-line="216">
+</span><span data-line="217"><span class="sd">        Args:</span>
+</span><span data-line="218"><span class="sd">            key: Key of the value to delete</span>
+</span><span data-line="219"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="220">        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_redis</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_make_key</span><span class="p">(</span><span class="n">key</span><span class="p">))</span></div>
 
-</span><span data-line="190">
+</span><span data-line="221">
 <div class="viewcode-block" id="RedisStore.delete_all">
 <a class="viewcode-back" href="../../../reference/stores/redis.html#litestar.stores.redis.RedisStore.delete_all">[docs]</a>
-</span><span data-line="191">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">delete_all</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="192"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Delete all stored values in the virtual key namespace.</span>
-</span><span data-line="193">
-</span><span data-line="194"><span class="sd">        Raises:</span>
-</span><span data-line="195"><span class="sd">            ImproperlyConfiguredException: If no namespace was configured</span>
-</span><span data-line="196"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="197">        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">namespace</span><span class="p">:</span>
-</span><span data-line="198">            <span class="k">raise</span> <span class="n">ImproperlyConfiguredException</span><span class="p">(</span><span class="s2">&quot;Cannot perform delete operation: No namespace configured&quot;</span><span class="p">)</span>
-</span><span data-line="199">
-</span><span data-line="200">        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_delete_all_script</span><span class="p">(</span><span class="n">keys</span><span class="o">=</span><span class="p">[],</span> <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">namespace</span><span class="si">}</span><span class="s2">*:*&quot;</span><span class="p">])</span></div>
+</span><span data-line="222">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">delete_all</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="223"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Delete all stored values in the virtual key namespace.</span>
+</span><span data-line="224">
+</span><span data-line="225"><span class="sd">        Raises:</span>
+</span><span data-line="226"><span class="sd">            ImproperlyConfiguredException: If no namespace was configured</span>
+</span><span data-line="227"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="228">        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">namespace</span><span class="p">:</span>
+</span><span data-line="229">            <span class="k">raise</span> <span class="n">ImproperlyConfiguredException</span><span class="p">(</span><span class="s2">&quot;Cannot perform delete operation: No namespace configured&quot;</span><span class="p">)</span>
+</span><span data-line="230">
+</span><span data-line="231">        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_delete_all_script</span><span class="p">(</span><span class="n">keys</span><span class="o">=</span><span class="p">[],</span> <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">namespace</span><span class="si">}</span><span class="s2">*:*&quot;</span><span class="p">])</span></div>
 
-</span><span data-line="201">
+</span><span data-line="232">
 <div class="viewcode-block" id="RedisStore.exists">
 <a class="viewcode-back" href="../../../reference/stores/redis.html#litestar.stores.redis.RedisStore.exists">[docs]</a>
-</span><span data-line="202">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">exists</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-</span><span data-line="203"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Check if a given ``key`` exists.&quot;&quot;&quot;</span>
-</span><span data-line="204">        <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_redis</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_make_key</span><span class="p">(</span><span class="n">key</span><span class="p">))</span> <span class="o">==</span> <span class="mi">1</span></div>
+</span><span data-line="233">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">exists</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+</span><span data-line="234"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Check if a given ``key`` exists.&quot;&quot;&quot;</span>
+</span><span data-line="235">        <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_redis</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_make_key</span><span class="p">(</span><span class="n">key</span><span class="p">))</span> <span class="o">==</span> <span class="mi">1</span></div>
 
-</span><span data-line="205">
+</span><span data-line="236">
 <div class="viewcode-block" id="RedisStore.expires_in">
 <a class="viewcode-back" href="../../../reference/stores/redis.html#litestar.stores.redis.RedisStore.expires_in">[docs]</a>
-</span><span data-line="206">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">expires_in</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="207"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the time in seconds ``key`` expires in. If no such ``key`` exists or no</span>
-</span><span data-line="208"><span class="sd">        expiry time was set, return ``None``.</span>
-</span><span data-line="209"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="210">        <span class="n">ttl</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_redis</span><span class="o">.</span><span class="n">ttl</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_make_key</span><span class="p">(</span><span class="n">key</span><span class="p">))</span>
-</span><span data-line="211">        <span class="k">return</span> <span class="kc">None</span> <span class="k">if</span> <span class="n">ttl</span> <span class="o">==</span> <span class="o">-</span><span class="mi">2</span> <span class="k">else</span> <span class="n">ttl</span></div>
+</span><span data-line="237">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">expires_in</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="238"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the time in seconds ``key`` expires in. If no such ``key`` exists or no</span>
+</span><span data-line="239"><span class="sd">        expiry time was set, return ``None``.</span>
+</span><span data-line="240"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="241">        <span class="n">ttl</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_redis</span><span class="o">.</span><span class="n">ttl</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_make_key</span><span class="p">(</span><span class="n">key</span><span class="p">))</span>
+</span><span data-line="242">        <span class="k">return</span> <span class="kc">None</span> <span class="k">if</span> <span class="n">ttl</span> <span class="o">==</span> <span class="o">-</span><span class="mi">2</span> <span class="k">else</span> <span class="n">ttl</span></div>
 </div>
 
 </span></pre></div>

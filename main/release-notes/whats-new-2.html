@@ -892,7 +892,7 @@ SQLAlchemy 2 only.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <p>SQLAlchemy usage documentation was available in v2, but SQLAlchemy support was moved into a move comprehensive standalone library for v3. See the
-<a class="reference external" href="https://docs.advanced-alchemy.litestar.dev/">advanced-alchemy documentation</a> for API reference</p>
+<a class="reference external" href="https://advanced-alchemy.litestar.dev/">advanced-alchemy documentation</a> for API reference</p>
 </div>
 </section>
 <section id="removal-of-pydantic-models">
@@ -1055,7 +1055,7 @@ and can be used to define DTOs:</p>
 <ul class="simple">
 <li><p><a class="reference internal" href="../reference/dto/dataclass_dto.html#litestar.dto.dataclass_dto.DataclassDTO" title="litestar.dto.dataclass_dto.DataclassDTO"><code class="xref py py-class docutils literal notranslate"><span class="pre">litestar.dto.dataclass_dto.DataclassDTO</span></code></a></p></li>
 <li><p><a class="reference internal" href="../reference/dto/msgspec_dto.html#litestar.dto.msgspec_dto.MsgspecDTO" title="litestar.dto.msgspec_dto.MsgspecDTO"><code class="xref py py-class docutils literal notranslate"><span class="pre">litestar.dto.msgspec_dto.MsgspecDTO</span></code></a></p></li>
-<li><p><a class="reference external" href="https://docs.advanced-alchemy.litestar.dev/latest/reference/extensions/litestar/dto.html#advanced_alchemy.extensions.litestar.dto.SQLAlchemyDTO" title="(in advanced_alchemy)"><code class="xref py py-class docutils literal notranslate"><span class="pre">advanced_alchemy.extensions.litestar.dto.SQLAlchemyDTO</span></code></a></p></li>
+<li><p><a class="reference external" href="https://advanced-alchemy.litestar.dev/latest/reference/extensions/litestar/index.html#advanced_alchemy.extensions.litestar.SQLAlchemyDTO" title="(in advanced_alchemy)"><code class="xref py py-class docutils literal notranslate"><span class="pre">advanced_alchemy.extensions.litestar.dto.SQLAlchemyDTO</span></code></a></p></li>
 <li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">litestar.contrib.pydantic.PydanticDTO</span></code></p></li>
 <li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">litestar.contrib.piccolo.PiccoloDTO</span></code></p></li>
 </ul>
@@ -1129,7 +1129,7 @@ and can be used to define DTOs:</p>
 <div class="admonition">
 <p class="admonition-title">Run it</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span data-line="1">&gt;<span class="w"> </span>curl<span class="w"> </span>http://127.0.0.1:8000/users<span class="w"> </span>-H<span class="w"> </span>Content-Type:<span class="w"> </span>application/json<span class="w"> </span>-d<span class="w"> </span><span class="o">{</span><span class="s2">&quot;userName&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span>,<span class="s2">&quot;password&quot;</span>:<span class="s2">&quot;xyz&quot;</span>,<span class="s2">&quot;created_at&quot;</span>:<span class="s2">&quot;2023-04-24T00:00:00Z&quot;</span><span class="o">}</span>
-</span><span data-line="2"><span class="o">{</span><span class="s2">&quot;created_at&quot;</span>:<span class="s2">&quot;0001-01-01T00:00:00&quot;</span>,<span class="s2">&quot;id&quot;</span>:<span class="s2">&quot;05ef066c-8894-429f-8088-43f865e7278c&quot;</span>,<span class="s2">&quot;userName&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span><span class="o">}</span>
+</span><span data-line="2"><span class="o">{</span><span class="s2">&quot;created_at&quot;</span>:<span class="s2">&quot;0001-01-01T00:00:00&quot;</span>,<span class="s2">&quot;id&quot;</span>:<span class="s2">&quot;f63dabe7-30d8-41cd-a72a-e42b5003ef43&quot;</span>,<span class="s2">&quot;userName&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span><span class="o">}</span>
 </span></pre></div>
 </div>
 </div>
@@ -1246,7 +1246,7 @@ and can be used to define DTOs:</p>
 <div class="admonition">
 <p class="admonition-title">Run it</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span data-line="1">&gt;<span class="w"> </span>curl<span class="w"> </span>http://127.0.0.1:8000/users<span class="w"> </span>-H<span class="w"> </span>Content-Type:<span class="w"> </span>application/json<span class="w"> </span>-d<span class="w"> </span><span class="o">{</span><span class="s2">&quot;name&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span>,<span class="s2">&quot;password&quot;</span>:<span class="s2">&quot;xyz&quot;</span>,<span class="s2">&quot;created_at&quot;</span>:<span class="s2">&quot;2023-04-24T00:00:00Z&quot;</span><span class="o">}</span>
-</span><span data-line="2"><span class="o">{</span><span class="s2">&quot;created_at&quot;</span>:<span class="s2">&quot;0001-01-01T00:00:00&quot;</span>,<span class="s2">&quot;id&quot;</span>:<span class="s2">&quot;18ec50f5-2abd-4b33-93d9-903f2ce0f625&quot;</span>,<span class="s2">&quot;name&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span><span class="o">}</span>
+</span><span data-line="2"><span class="o">{</span><span class="s2">&quot;created_at&quot;</span>:<span class="s2">&quot;0001-01-01T00:00:00&quot;</span>,<span class="s2">&quot;id&quot;</span>:<span class="s2">&quot;628c60ee-aed8-478c-9d61-f22a8f0a6e9d&quot;</span>,<span class="s2">&quot;name&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span><span class="o">}</span>
 </span></pre></div>
 </div>
 </div>

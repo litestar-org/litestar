@@ -1270,6 +1270,13 @@ with the regular test client setup:</p>
 </span><span data-line="38">            <span class="k">break</span>
 </span></pre></div>
 </div>
+<p>By default, the subprocess client will capture all output from the litestar instance. To discard output in the main (testing) process, set the <code class="docutils literal notranslate"><span class="pre">capture_output</span></code> argument to <code class="docutils literal notranslate"><span class="pre">False</span></code> when creating the client:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;async_client&quot;</span><span class="p">)</span>
+</span><span data-line="2"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">fx_async_client</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">AsyncIterator</span><span class="p">[</span><span class="n">httpx</span><span class="o">.</span><span class="n">AsyncClient</span><span class="p">]:</span>
+</span><span data-line="3">    <span class="k">async</span> <span class="k">with</span> <span class="n">subprocess_async_client</span><span class="p">(</span><span class="n">workdir</span><span class="o">=</span><span class="n">ROOT</span><span class="p">,</span> <span class="n">app</span><span class="o">=</span><span class="s2">&quot;subprocess_sse_app:app&quot;</span><span class="p">,</span> <span class="n">capture_output</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
+</span><span data-line="4">        <span class="k">yield</span> <span class="n">client</span>
+</span></pre></div>
+</div>
 </section>
 <section id="requestfactory">
 <h2>RequestFactory<a class="headerlink" href="#requestfactory" title="Link to this heading">¶</a></h2>

@@ -1074,7 +1074,7 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="546">            <span class="n">key</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">,</span>
 </span><span data-line="547">            <span class="n">path</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span>
 </span><span data-line="548">            <span class="n">httponly</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-</span><span data-line="549">            <span class="n">value</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">format_auth_header</span><span class="p">(</span><span class="n">encoded_token</span><span class="p">),</span>
+</span><span data-line="549">            <span class="n">value</span><span class="o">=</span><span class="n">encoded_token</span><span class="p">,</span>
 </span><span data-line="550">            <span class="n">max_age</span><span class="o">=</span><span class="nb">int</span><span class="p">((</span><span class="n">token_expiration</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_token_expiration</span><span class="p">)</span><span class="o">.</span><span class="n">total_seconds</span><span class="p">()),</span>
 </span><span data-line="551">            <span class="n">secure</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">secure</span><span class="p">,</span>
 </span><span data-line="552">            <span class="n">samesite</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">samesite</span><span class="p">,</span>
@@ -1336,7 +1336,7 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="799">            <span class="n">key</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">,</span>
 </span><span data-line="800">            <span class="n">path</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span>
 </span><span data-line="801">            <span class="n">httponly</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-</span><span data-line="802">            <span class="n">value</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">format_auth_header</span><span class="p">(</span><span class="n">encoded_token</span><span class="p">),</span>
+</span><span data-line="802">            <span class="n">value</span><span class="o">=</span><span class="n">encoded_token</span><span class="p">,</span>
 </span><span data-line="803">            <span class="n">max_age</span><span class="o">=</span><span class="n">expires_in</span><span class="p">,</span>
 </span><span data-line="804">            <span class="n">secure</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">secure</span><span class="p">,</span>
 </span><span data-line="805">            <span class="n">samesite</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">samesite</span><span class="p">,</span>
