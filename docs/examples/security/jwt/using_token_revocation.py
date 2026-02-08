@@ -1,6 +1,6 @@
 from os import environ
 from typing import Any, Dict, Optional
-from uuid import UUID
+from uuid import UUID, uuid4
 
 from pydantic import BaseModel, EmailStr
 
@@ -62,7 +62,12 @@ async def login_handler(data: User) -> Response[User]:
     MOCK_DB[str(data.id)] = data
     # you can do whatever you want to update the response instance here
     # e.g. response.set_cookie(...)
-    return jwt_auth.login(identifier=str(data.id), token_extras={"email": data.email}, response_body=data)
+    return jwt_auth.login(
+        identifier=str(data.id),
+        token_unique_jwt_id=uuid4().hex,
+        token_extras={"email": data.email},
+        response_body=data,
+    )
 
 
 # Also we can create a logout
