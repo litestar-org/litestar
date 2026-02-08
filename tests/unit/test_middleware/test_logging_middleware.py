@@ -15,7 +15,7 @@ from litestar.exceptions import ImproperlyConfiguredException
 from litestar.handlers import HTTPRouteHandler
 from litestar.logging.config import LoggingConfig
 from litestar.logging.structlog import StructLoggingConfig
-from litestar.middleware.logging import LoggingMiddleware, StructLoggingMiddleware
+from litestar.middleware.logging import LoggingMiddleware
 from litestar.params import Body
 from litestar.status_codes import HTTP_200_OK, HTTP_201_CREATED
 from litestar.testing import create_test_client
@@ -78,7 +78,7 @@ def test_logging_middleware_struct_logger(handler: HTTPRouteHandler) -> None:
     with (
         create_test_client(
             route_handlers=[handler],
-            middleware=[StructLoggingMiddleware()],
+            middleware=[LoggingMiddleware()],
             logging_config=StructLoggingConfig(),
         ) as client,
         capture_logs() as cap_logs,
@@ -127,7 +127,8 @@ def test_logging_middleware_exclude_pattern(
 
     with (
         create_test_client(
-            route_handlers=[handler, handler2], middleware=[LoggingMiddleware(exclude=["^/exclude"])]
+            route_handlers=[handler, handler2],
+            middleware=[LoggingMiddleware(exclude=["^/exclude"])],
         ) as client,
         caplog.at_level(INFO),
     ):
@@ -186,12 +187,12 @@ def test_logging_middleware_compressed_response_body(
         client.cookies = {"request-cookie": "abc"}
         client.app.get_logger = get_logger
         response = client.get("/", headers={"request-header": "1"})
-        assert response.status_code == HTTP_200_OK
-        assert len(caplog.messages) == 2
-        if include:
-            assert "body=" in caplog.messages[1]
-        else:
-            assert "body=" not in caplog.messages[1]
+    assert response.status_code == HTTP_200_OK
+    assert len(caplog.messages) == 2
+    if include:
+        assert "body=" in caplog.messages[1]
+    else:
+        assert "body=" not in caplog.messages[1]
 
 
 def test_logging_middleware_post_body() -> None:
