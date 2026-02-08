@@ -12,7 +12,8 @@ from structlog.types import BindableLogger
 
 from litestar import get
 from litestar.exceptions import HTTPException, NotFoundException
-from litestar.logging.structlog import StructLoggingConfig, StructLoggingMiddleware
+from litestar.logging.structlog import StructLoggingConfig
+from litestar.middleware.logging import LoggingMiddleware
 from litestar.serialization import decode_json
 from litestar.testing import create_test_client
 
@@ -26,7 +27,7 @@ def test_structlog_plugin(caplog: pytest.LogCaptureFixture) -> None:
     with create_test_client(
         [],
         logging_config=StructLoggingConfig(),
-        middleware=[StructLoggingMiddleware()],
+        middleware=[LoggingMiddleware()],
     ) as client:
         assert isinstance(client.app.logger, structlog._config.BoundLoggerLazyProxy)
         assert isinstance(client.app.logger.bind(), BindableLogger)
@@ -45,7 +46,7 @@ def test_structlog_plugin_config(caplog: pytest.LogCaptureFixture) -> None:
     with create_test_client(
         [],
         logging_config=StructLoggingConfig(),
-        middleware=[StructLoggingMiddleware()],
+        middleware=[LoggingMiddleware()],
     ) as client:
         assert isinstance(client.app.logger, structlog._config.BoundLoggerLazyProxy)
         assert isinstance(client.app.logger.bind(), BindableLogger)

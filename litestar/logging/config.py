@@ -8,7 +8,7 @@ import os
 import queue
 import sys
 from logging.handlers import QueueListener
-from typing import TYPE_CHECKING, Literal, ClassVar, cast
+from typing import TYPE_CHECKING, Literal, ClassVar, cast, Any
 
 __all__ = ("LoggingConfig",)
 
@@ -24,8 +24,9 @@ if TYPE_CHECKING:
 if sys.version_info >= (3, 12):
     from logging import getHandlerByName
 else:
+
     def getHandlerByName(name: str) -> logging.Handler:
-        return cast(logging.Handler, logging._handlers.get(name)) # type: ignore[attr-defined]
+        return cast(logging.Handler, logging._handlers.get(name))  # type: ignore[attr-defined]
 
 
 def _default_exception_logging_handler(logger: Logger, scope: Scope, tb: list[str]) -> None:
@@ -34,6 +35,23 @@ def _default_exception_logging_handler(logger: Logger, scope: Scope, tb: list[st
         scope["type"],
         scope["path"],
     )
+
+
+class ExtraKeyValueFormatter(logging.Formatter):
+    def format(self, record: logging.LogRecord) -> str:
+        message = super().format(record)
+
+        extras = {
+            key.removeprefix("litestar_"): value
+            for key, value in record.__dict__.items()
+            if key.startswith("litestar_")
+        }
+
+        if extras:
+            extra_str = " ".join(f"{k}={v}" for k, v in extras.items())
+            message = f"{message}: {extra_str}"
+
+        return message
 
 
 @dataclasses.dataclass(frozen=True)
@@ -78,6 +96,10 @@ class LoggingConfig:
     set 'propagate=True' when running under pytest. Useful when working with pytest's 
     'caplog' fixture, as it may not work correctly otherwise
     """
+
+    formatter: type[logging.Formatter] | None = dataclasses.field(default=ExtraKeyValueFormatter)
+
+    supports_json_like_data: bool = False
 
     @property
     def should_propagate(self) -> bool:
@@ -124,10 +146,14 @@ class LoggingConfig:
             }
         )
 
+        if self.formatter is not None:
+            handler = getHandlerByName("litestar_stream_handler")
+            handler.setFormatter(self.formatter(handler.formatter._fmt))
+
         if self.configure_queue_handler:
             if LoggingConfig._queue_listener is None:
                 LoggingConfig._queue_listener = QueueListener(
-                    LoggingConfig._handler_queue, # type: ignore[arg-type]
+                    LoggingConfig._handler_queue,  # type: ignore[arg-type]
                     getHandlerByName("litestar_stream_handler"),
                 )
                 atexit.register(LoggingConfig._queue_listener.stop)

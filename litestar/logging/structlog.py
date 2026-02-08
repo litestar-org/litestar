@@ -1,13 +1,13 @@
 from __future__ import annotations
 
 import dataclasses
+import logging
 import sys
 from typing import TYPE_CHECKING, Any, Callable
 
 import structlog
 
 from litestar.logging.config import LoggingConfig
-from litestar.middleware.logging import StructLoggingMiddleware, LoggingMiddleware
 from litestar.serialization.msgspec_hooks import _msgspec_json_encoder
 from litestar.types.callable_types import ExceptionLoggingHandler
 
@@ -40,10 +40,32 @@ def json_processors() -> list[structlog.typing.Processor]:
     ]
 
 
+def stdlib_extra_processor(
+    logger: logging.Logger,
+    method_name: str,
+    event_dict: structlog.typing.EventDict,
+):
+    if "extra" in event_dict:
+        extras = {
+            key.removeprefix("litestar_"): value
+            for key, value in event_dict.pop("extra").items()
+            if key.startswith("litestar_")
+        }
+        event_dict.update(extras)
+
+    return event_dict
+
+
+LITESTAR_PROCESSORS = (stdlib_extra_processor,)
+
+
 @dataclasses.dataclass(frozen=True)
 class StructLoggingConfig(LoggingConfig):
-    get_logger: GetLogger = structlog.get_logger
+    get_logger: GetLogger = dataclasses.field(default=structlog.get_logger)
     exception_logging_handler: ExceptionLoggingHandler = dataclasses.field(default=structlog_exception_logging_handler)  # type: ignore[assignment]
+    enabled_structured_logging: bool = dataclasses.field(default=True)
+    formatter: logging.Formatter = dataclasses.field(default=None)
+    supports_json_like_data: bool = dataclasses.field(default=True)
 
     configure_structlog: bool = True
     """
@@ -85,8 +107,11 @@ class StructLoggingConfig(LoggingConfig):
     def configure_logger(self, app: Litestar) -> LifespanHook | None:
         if self.configure_structlog:
             processors = self.processors
-            if processors is None and self.should_log_as_json:
-                processors = json_processors()
+            if processors is None:
+                if self.should_log_as_json:
+                    processors = json_processors()
+                else:
+                    processors = structlog.get_config()["processors"]
 
             wrapper_class = structlog.make_filtering_bound_logger(self.level)
             if self.wrapper_class is not None:
@@ -95,7 +120,7 @@ class StructLoggingConfig(LoggingConfig):
                 )
 
             structlog.configure(
-                processors=processors,
+                processors=[*LITESTAR_PROCESSORS, *processors],
                 wrapper_class=wrapper_class,
                 context_class=self.context_class,
                 logger_factory=self.logger_factory() if self.logger_factory else None,

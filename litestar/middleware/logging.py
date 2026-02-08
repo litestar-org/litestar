@@ -14,16 +14,14 @@ from litestar.data_extractors import (
     ResponseExtractorField,
 )
 from litestar.enums import ScopeType
+from litestar.logging import LoggingConfig
 from litestar.middleware.base import ASGIMiddleware
 from litestar.serialization import encode_json
 from litestar.utils.empty import value_or_default
 from litestar.utils.scope import get_serializer_from_scope
 from litestar.utils.scope.state import ScopeState
 
-__all__ = (
-    "LoggingMiddleware",
-    "StructLoggingMiddleware",
-)
+__all__ = ("LoggingMiddleware",)
 
 
 if TYPE_CHECKING:
@@ -34,20 +32,23 @@ if TYPE_CHECKING:
         Receive,
         Scope,
         Send,
-        Serializer, Logger,
-)
+        Serializer,
+        Logger,
+    )
 
 
 class LoggingMiddleware(ASGIMiddleware):
     """Logging middleware."""
+
     logger: Logger
+    logging_config: LoggingConfig
 
     scopes = (ScopeType.HTTP,)
 
     def __init__(
         self,
         *,
-        exclude: str | list[str] | None= None,
+        exclude: str | list[str] | None = None,
         exclude_opt_key: str | None = None,
         include_compressed_body: bool = False,
         logger_name: str = "litestar",
@@ -67,7 +68,7 @@ class LoggingMiddleware(ASGIMiddleware):
             "path_params",
             "body",
         ),
-        response_log_fields: Collection[ResponseExtractorField]  = (
+        response_log_fields: Collection[ResponseExtractorField] = (
             "status_code",
             "cookies",
             "headers",
@@ -117,6 +118,7 @@ class LoggingMiddleware(ASGIMiddleware):
     async def handle(self, scope: Scope, receive: Receive, send: Send, next_app: ASGIApp) -> None:
         if not hasattr(self, "logger"):
             self.logger = scope["litestar_app"].get_logger(self.logger_name)
+            self.logging_config = scope["litestar_app"].logging_config
 
         if self.response_log_fields:
             send = self.create_send_wrapper(scope=scope, send=send)
@@ -161,12 +163,10 @@ class LoggingMiddleware(ASGIMiddleware):
             None
         """
         message = values.pop("message")
-        value_strings = [f"{key}={value}" for key, value in values.items()]
-        log_message = f"{message}: {', '.join(value_strings)}"
-        self.logger.info(log_message)
+        self.logger.info(message, extra={f"litestar_{k}": v for k, v in values.items()})
 
     def _serialize_value(self, serializer: Serializer | None, value: Any) -> Any:
-        if isinstance(value, (dict, list, tuple, set)):
+        if not self.logging_config.supports_json_like_data and isinstance(value, (dict, list, tuple, set)):
             value = encode_json(value, serializer)
         return value.decode("utf-8", errors="backslashreplace") if isinstance(value, bytes) else value
 
@@ -245,12 +245,3 @@ class LoggingMiddleware(ASGIMiddleware):
             await send(message)
 
         return send_wrapper
-
-
-class StructLoggingMiddleware(LoggingMiddleware):
-    def log_message(self, values: dict[str, Any]) -> None:
-        message = values.pop("message")
-        self.logger.info(message, **values)
-
-    def _serialize_value(self, serializer: Serializer | None, value: Any) -> Any:
-        return value.decode("utf-8", errors="backslashreplace") if isinstance(value, bytes) else value
