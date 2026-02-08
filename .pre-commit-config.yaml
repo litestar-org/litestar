@@ -22,9 +22,9 @@ repos:
     rev: "v0.8.1"
     hooks:
       - id: unasyncd
-        additional_dependencies: ["ruff==0.14.9"]
+        additional_dependencies: ["ruff==0.15.0"]
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: "v0.14.9"
+    rev: "v0.15.0"
     hooks:
       - id: ruff
         args: ["--fix"]

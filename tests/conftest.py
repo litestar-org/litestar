@@ -10,7 +10,7 @@ import sys
 from datetime import datetime
 from os import urandom
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, AsyncGenerator, Callable, Generator, Union, cast
+from typing import TYPE_CHECKING, Any, AsyncGenerator, Callable, Generator, cast
 from unittest.mock import AsyncMock, MagicMock
 
 import pytest
@@ -141,7 +141,7 @@ def cookie_session_backend(cookie_session_backend_config: CookieBackendConfig) -
     ]
 )
 def session_backend_config(request: pytest.FixtureRequest) -> ServerSideSessionConfig | CookieBackendConfig:
-    return cast("Union[ServerSideSessionConfig, CookieBackendConfig]", request.param)  # noqa: UP007
+    return cast("ServerSideSessionConfig | CookieBackendConfig", request.param)
 
 
 @pytest.fixture()

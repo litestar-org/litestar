@@ -84,7 +84,7 @@ def test_middleware_allowed_hosts(base_url: str, expected_status_code: int) -> N
     config = AllowedHostsConfig(allowed_hosts=["*.example.com", "moishe.zuchmir.com"])
 
     with create_test_client(handler, allowed_hosts=config) as client:
-        client.base_url = base_url
+        client.base_url = base_url  # type: ignore[assignment]
         response = client.get("/")
         assert response.status_code == expected_status_code
 

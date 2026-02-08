@@ -3,7 +3,7 @@ from __future__ import annotations
 import dataclasses
 from dataclasses import asdict, dataclass, field
 from datetime import datetime, timezone
-from typing import TYPE_CHECKING, Any, Dict, Optional, Sequence, TypedDict
+from typing import TYPE_CHECKING, Any, Dict, Optional, Sequence, TypedDict, Union
 
 import jwt
 import msgspec
@@ -57,9 +57,9 @@ class Token:
     """Issued at - should always be current now."""
     iss: Optional[str] = field(default=None)  # noqa: UP045
     """Issuer - optional unique identifier for the issuer."""
-    aud: Optional[str | Sequence[str]] = field(default=None)  # noqa: UP045
+    aud: Optional[Union[str, Sequence[str]]] = field(default=None)  # noqa: UP045, UP007
     """Audience - intended audience."""
-    jti: Optional[str | Sequence[str]] = field(default=None)  # noqa: UP045
+    jti: Optional[Union[str, Sequence[str]]] = field(default=None)  # noqa: UP045, UP007
     """JWT ID - a unique identifier of the JWT between different issuers."""
     extras: Dict[str, Any] = field(default_factory=dict)  # noqa: UP006
     """Extra fields that were found on the JWT token."""
@@ -99,7 +99,7 @@ class Token:
             jwt=encoded_token,
             key=secret,
             algorithms=algorithms,
-            issuer=issuer,
+            issuer=issuer,  # type: ignore[arg-type]
             audience=audience,
             options=options,  # type: ignore[arg-type]
         )
