@@ -48,7 +48,7 @@
     <script src="../_static/litestar-theme.js?v=ab2dcc9e"></script>
     <script src="../_static/design-tabs.js?v=f930bc37"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'usage/custom-types';</script>
-    <script src="../_static/versioning.js?v=68b42869"></script>
+    <script src="../_static/versioning.js?v=770a9916"></script>
     <link rel="icon" href="../_static/favicon.png"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -1245,7 +1245,6 @@ document.write(`
 
 
 
-
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="plugins/index.html">Plugins</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-9"><i class="fa-solid fa-chevron-down"></i></label><ul>
@@ -1782,7 +1781,7 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 
 <span class="n">PydAnnotatedTenantUser</span> <span class="o">=</span> <span class="n">Annotated</span><span class="p">[</span>
     <span class="n">TenantUser</span><span class="p">,</span>
-    <span class="n">BeforeValidator</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">TenantUser</span><span class="o">.</span><span class="n">from_string</span><span class="p">(</span><span class="n">x</span><span class="p">)),</span>
+    <span class="n">BeforeValidator</span><span class="p">(</span><span class="n">TenantUser</span><span class="o">.</span><span class="n">from_string</span><span class="p">),</span>
     <span class="n">PlainSerializer</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">to_combined_str</span><span class="p">(),</span> <span class="n">return_type</span><span class="o">=</span><span class="nb">str</span><span class="p">),</span>
     <span class="n">WithJsonSchema</span><span class="p">({</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">},</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;serialization&quot;</span><span class="p">),</span>
 <span class="p">]</span>
@@ -1854,7 +1853,7 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 
 <span class="n">PydAnnotatedTenantUser</span> <span class="o">=</span> <span class="n">Annotated</span><span class="p">[</span>
     <span class="n">TenantUser</span><span class="p">,</span>
-    <span class="n">BeforeValidator</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">TenantUser</span><span class="o">.</span><span class="n">from_string</span><span class="p">(</span><span class="n">x</span><span class="p">)),</span>
+    <span class="n">BeforeValidator</span><span class="p">(</span><span class="n">TenantUser</span><span class="o">.</span><span class="n">from_string</span><span class="p">),</span>
     <span class="n">PlainSerializer</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">to_combined_str</span><span class="p">(),</span> <span class="n">return_type</span><span class="o">=</span><span class="nb">str</span><span class="p">),</span>
     <span class="n">WithJsonSchema</span><span class="p">({</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">},</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;serialization&quot;</span><span class="p">),</span>
 <span class="p">]</span>
@@ -1976,7 +1975,7 @@ Python 3.9+</label><div class="sd-tab-content docutils">
         <div class="footer-item">
 
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
     <br/>
   </p>
 </div>

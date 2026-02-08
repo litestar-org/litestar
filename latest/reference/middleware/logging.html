@@ -48,7 +48,7 @@
     <script src="../../_static/litestar-theme.js?v=ab2dcc9e"></script>
     <script src="../../_static/design-tabs.js?v=f930bc37"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'reference/middleware/logging';</script>
-    <script src="../../_static/versioning.js?v=68b42869"></script>
+    <script src="../../_static/versioning.js?v=770a9916"></script>
     <link rel="icon" href="../../_static/favicon.png"/>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
@@ -1245,7 +1245,6 @@ document.write(`
 
 
 
-
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../usage/plugins/index.html">Plugins</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-9"><i class="fa-solid fa-chevron-down"></i></label><ul>
@@ -1547,7 +1546,7 @@ document.write(`
 <span id="logging"></span><h1>logging<a class="headerlink" href="#module-litestar.middleware.logging" title="Link to this heading">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="litestar.middleware.logging.LoggingMiddleware">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.middleware.logging.</span></span><span class="sig-name descname"><span class="pre">LoggingMiddleware</span></span><a class="headerlink" href="#litestar.middleware.logging.LoggingMiddleware" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.middleware.logging.</span></span><span class="sig-name descname"><span class="pre">LoggingMiddleware</span></span><a class="headerlink" href="#litestar.middleware.logging.LoggingMiddleware" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="index.html#litestar.middleware.AbstractMiddleware" title="litestar.middleware.base.AbstractMiddleware"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractMiddleware</span></code></a></p>
 <p>Logging middleware.</p>
 <dl class="py method">
@@ -1566,7 +1565,7 @@ document.write(`
 
 <dl class="py method">
 <dt class="sig sig-object py" id="litestar.middleware.logging.LoggingMiddleware.log_request">
-<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">log_request</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scope</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../types.html#litestar.types.Scope" title="litestar.types.Scope"><span class="pre">Scope</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">receive</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../types.html#litestar.types.Receive" title="litestar.types.Receive"><span class="pre">Receive</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#litestar.middleware.logging.LoggingMiddleware.log_request" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">log_request</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scope</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../types.html#litestar.types.Scope" title="litestar.types.Scope"><span class="pre">Scope</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">receive</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../types.html#litestar.types.Receive" title="litestar.types.Receive"><span class="pre">Receive</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#litestar.middleware.logging.LoggingMiddleware.log_request" title="Link to this definition">#</a></dt>
 <dd><p>Extract request data and log the message.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1611,7 +1610,7 @@ document.write(`
 
 <dl class="py method">
 <dt class="sig sig-object py" id="litestar.middleware.logging.LoggingMiddleware.extract_request_data">
-<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">extract_request_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../connection.html#litestar.connection.Request" title="litestar.connection.Request"><span class="pre">Request</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#litestar.middleware.logging.LoggingMiddleware.extract_request_data" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">extract_request_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../connection.html#litestar.connection.Request" title="litestar.connection.Request"><span class="pre">Request</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#litestar.middleware.logging.LoggingMiddleware.extract_request_data" title="Link to this definition">#</a></dt>
 <dd><p>Create a dictionary of values for the message.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1658,7 +1657,7 @@ document.write(`
 
 <dl class="py class">
 <dt class="sig sig-object py" id="litestar.middleware.logging.LoggingMiddlewareConfig">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.middleware.logging.</span></span><span class="sig-name descname"><span class="pre">LoggingMiddlewareConfig</span></span><a class="headerlink" href="#litestar.middleware.logging.LoggingMiddlewareConfig" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.middleware.logging.</span></span><span class="sig-name descname"><span class="pre">LoggingMiddlewareConfig</span></span><a class="headerlink" href="#litestar.middleware.logging.LoggingMiddlewareConfig" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>Configuration for <code class="docutils literal notranslate"><span class="pre">LoggingMiddleware</span></code></p>
 <dl class="py attribute">
@@ -1790,7 +1789,7 @@ message logged out.</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="litestar.middleware.logging.LoggingMiddlewareConfig.middleware">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">middleware</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="index.html#litestar.middleware.DefineMiddleware" title="litestar.middleware.base.DefineMiddleware"><span class="pre">DefineMiddleware</span></a></em><a class="headerlink" href="#litestar.middleware.logging.LoggingMiddlewareConfig.middleware" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">middleware</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="index.html#litestar.middleware.DefineMiddleware" title="litestar.middleware.base.DefineMiddleware"><span class="pre">DefineMiddleware</span></a></em><a class="headerlink" href="#litestar.middleware.logging.LoggingMiddlewareConfig.middleware" title="Link to this definition">#</a></dt>
 <dd><p>Use this property to insert the config into a middleware list on one of the application layers.</p>
 <div class="admonition-examples admonition">
 <p class="admonition-title">Examples</p>
@@ -1936,7 +1935,7 @@ message logged out.</p>
         <div class="footer-item">
 
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
     <br/>
   </p>
 </div>

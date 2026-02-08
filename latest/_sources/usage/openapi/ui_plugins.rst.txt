@@ -293,17 +293,6 @@ With that, you can preset your clientId or enable PKCE support.
 .. literalinclude:: /examples/openapi/plugins/swagger_ui_oauth.py
     :language: python
 
-Customizing the OpenAPI UI
---------------------------
-
-Style and behavior of the OpenAPI UI can be customized by overriding the default ``css_url`` and ``js_url`` attributes
-on the render plugin class, for example:
-
-.. literalinclude:: /examples/openapi/plugins/scalar_customized.py
-    :language: python
-
-To learn more about customizing the ``Scalar`` UI, see the `Scalar documentation <https://docs.scalar.com/>`_.
-
 CDN and offline file support
 ----------------------------
 

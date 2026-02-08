@@ -48,7 +48,7 @@
     <script src="../../_static/litestar-theme.js?v=ab2dcc9e"></script>
     <script src="../../_static/design-tabs.js?v=f930bc37"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'reference/contrib/mako';</script>
-    <script src="../../_static/versioning.js?v=68b42869"></script>
+    <script src="../../_static/versioning.js?v=770a9916"></script>
     <link rel="icon" href="../../_static/favicon.png"/>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
@@ -1245,7 +1245,6 @@ document.write(`
 
 
 
-
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../usage/plugins/index.html">Plugins</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-9"><i class="fa-solid fa-chevron-down"></i></label><ul>
@@ -1547,7 +1546,7 @@ document.write(`
 <span id="mako"></span><h1>mako<a class="headerlink" href="#module-litestar.contrib.mako" title="Link to this heading">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="litestar.contrib.mako.MakoTemplate">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.contrib.mako.</span></span><span class="sig-name descname"><span class="pre">MakoTemplate</span></span><a class="headerlink" href="#litestar.contrib.mako.MakoTemplate" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.contrib.mako.</span></span><span class="sig-name descname"><span class="pre">MakoTemplate</span></span><a class="headerlink" href="#litestar.contrib.mako.MakoTemplate" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="../template.html#litestar.template.TemplateProtocol" title="litestar.template.base.TemplateProtocol"><code class="xref py py-class docutils literal notranslate"><span class="pre">TemplateProtocol</span></code></a></p>
 <p>Mako template, implementing <code class="docutils literal notranslate"><span class="pre">TemplateProtocol</span></code></p>
 <dl class="py method">
@@ -1585,7 +1584,7 @@ document.write(`
 
 <dl class="py class">
 <dt class="sig sig-object py" id="litestar.contrib.mako.MakoTemplateEngine">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.contrib.mako.</span></span><span class="sig-name descname"><span class="pre">MakoTemplateEngine</span></span><a class="headerlink" href="#litestar.contrib.mako.MakoTemplateEngine" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.contrib.mako.</span></span><span class="sig-name descname"><span class="pre">MakoTemplateEngine</span></span><a class="headerlink" href="#litestar.contrib.mako.MakoTemplateEngine" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="../template.html#litestar.template.TemplateEngineProtocol" title="litestar.template.base.TemplateEngineProtocol"><code class="xref py py-class docutils literal notranslate"><span class="pre">TemplateEngineProtocol</span></code></a>[<a class="reference internal" href="#litestar.contrib.mako.MakoTemplate" title="litestar.contrib.mako.MakoTemplate"><code class="xref py py-class docutils literal notranslate"><span class="pre">MakoTemplate</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Mapping" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Mapping</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Any</span></code></a>]]</p>
 <p>Mako-based TemplateEngine.</p>
 <dl class="py method">
@@ -1655,7 +1654,7 @@ document.write(`
 
 <dl class="py method">
 <dt class="sig sig-object py" id="litestar.contrib.mako.MakoTemplateEngine.from_template_lookup">
-<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_template_lookup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">template_lookup</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">TemplateLookup</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#litestar.contrib.mako.MakoTemplateEngine" title="litestar.contrib.mako.MakoTemplateEngine"><span class="pre">MakoTemplateEngine</span></a></span></span><a class="headerlink" href="#litestar.contrib.mako.MakoTemplateEngine.from_template_lookup" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_template_lookup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">template_lookup</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">TemplateLookup</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#litestar.contrib.mako.MakoTemplateEngine" title="litestar.contrib.mako.MakoTemplateEngine"><span class="pre">MakoTemplateEngine</span></a></span></span><a class="headerlink" href="#litestar.contrib.mako.MakoTemplateEngine.from_template_lookup" title="Link to this definition">#</a></dt>
 <dd><p>Create a template engine from an existing mako TemplateLookup instance.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1765,7 +1764,7 @@ document.write(`
         <div class="footer-item">
 
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
     <br/>
   </p>
 </div>

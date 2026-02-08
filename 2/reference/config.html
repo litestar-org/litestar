@@ -48,7 +48,7 @@
     <script src="../_static/litestar-theme.js?v=ab2dcc9e"></script>
     <script src="../_static/design-tabs.js?v=f930bc37"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'reference/config';</script>
-    <script src="../_static/versioning.js?v=68b42869"></script>
+    <script src="../_static/versioning.js?v=770a9916"></script>
     <link rel="icon" href="../_static/favicon.png"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -1245,7 +1245,6 @@ document.write(`
 
 
 
-
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../usage/plugins/index.html">Plugins</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-9"><i class="fa-solid fa-chevron-down"></i></label><ul>
@@ -1544,7 +1543,7 @@ document.write(`
 <span id="config"></span><h1>config<a class="headerlink" href="#module-litestar.config.allowed_hosts" title="Link to this heading">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="litestar.config.allowed_hosts.AllowedHostsConfig">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.config.allowed_hosts.</span></span><span class="sig-name descname"><span class="pre">AllowedHostsConfig</span></span><a class="headerlink" href="#litestar.config.allowed_hosts.AllowedHostsConfig" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.config.allowed_hosts.</span></span><span class="sig-name descname"><span class="pre">AllowedHostsConfig</span></span><a class="headerlink" href="#litestar.config.allowed_hosts.AllowedHostsConfig" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>Configuration for allowed hosts protection.</p>
 <p>To enable allowed hosts protection, pass an instance of this class to the <a class="reference internal" href="app.html#litestar.app.Litestar" title="litestar.app.Litestar"><code class="xref py py-class docutils literal notranslate"><span class="pre">Litestar</span></code></a>
@@ -1595,7 +1594,7 @@ constructor using the <code class="docutils literal notranslate"><span class="pr
 
 <dl class="py class" id="module-litestar.config.app">
 <dt class="sig sig-object py" id="litestar.config.app.AppConfig">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.config.app.</span></span><span class="sig-name descname"><span class="pre">AppConfig</span></span><a class="headerlink" href="#litestar.config.app.AppConfig" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.config.app.</span></span><span class="sig-name descname"><span class="pre">AppConfig</span></span><a class="headerlink" href="#litestar.config.app.AppConfig" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>The parameters provided to the <code class="docutils literal notranslate"><span class="pre">Litestar</span></code> app are used to instantiate an instance, and then the instance is
 passed to any callbacks registered to <code class="docutils literal notranslate"><span class="pre">on_app_init</span></code> in the order they are provided.</p>
@@ -1955,7 +1954,7 @@ DoS attacks.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="litestar.config.app.ExperimentalFeatures">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.config.app.</span></span><span class="sig-name descname"><span class="pre">ExperimentalFeatures</span></span><a class="headerlink" href="#litestar.config.app.ExperimentalFeatures" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.config.app.</span></span><span class="sig-name descname"><span class="pre">ExperimentalFeatures</span></span><a class="headerlink" href="#litestar.config.app.ExperimentalFeatures" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/enum.html#enum.Enum" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></a></p>
 <dl class="py method">
 <dt class="sig sig-object py" id="litestar.config.app.ExperimentalFeatures.__new__">
@@ -1978,7 +1977,7 @@ DoS attacks.</p>
 
 <dl class="py class" id="module-litestar.config.compression">
 <dt class="sig sig-object py" id="litestar.config.compression.CompressionConfig">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.config.compression.</span></span><span class="sig-name descname"><span class="pre">CompressionConfig</span></span><a class="headerlink" href="#litestar.config.compression.CompressionConfig" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.config.compression.</span></span><span class="sig-name descname"><span class="pre">CompressionConfig</span></span><a class="headerlink" href="#litestar.config.compression.CompressionConfig" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>Configuration for response compression.</p>
 <p>To enable response compression, pass an instance of this class to the <a class="reference internal" href="app.html#litestar.app.Litestar" title="litestar.app.Litestar"><code class="xref py py-class docutils literal notranslate"><span class="pre">Litestar</span></code></a> constructor
@@ -2082,7 +2081,7 @@ using the <code class="docutils literal notranslate"><span class="pre">compressi
 
 <dl class="py class" id="module-litestar.config.cors">
 <dt class="sig sig-object py" id="litestar.config.cors.CORSConfig">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.config.cors.</span></span><span class="sig-name descname"><span class="pre">CORSConfig</span></span><a class="headerlink" href="#litestar.config.cors.CORSConfig" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.config.cors.</span></span><span class="sig-name descname"><span class="pre">CORSConfig</span></span><a class="headerlink" href="#litestar.config.cors.CORSConfig" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>Configuration for CORS (Cross-Origin Resource Sharing).</p>
 <p>To enable CORS, pass an instance of this class to the <a class="reference internal" href="app.html#litestar.app.Litestar" title="litestar.app.Litestar"><code class="xref py py-class docutils literal notranslate"><span class="pre">Litestar</span></code></a> constructor using the
@@ -2140,7 +2139,7 @@ using the <code class="docutils literal notranslate"><span class="pre">compressi
 
 <dl class="py property">
 <dt class="sig sig-object py" id="litestar.config.cors.CORSConfig.allowed_origins_regex">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">allowed_origins_regex</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Pattern" title="(in Python v3.14)"><span class="pre">Pattern</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#litestar.config.cors.CORSConfig.allowed_origins_regex" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">allowed_origins_regex</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Pattern" title="(in Python v3.14)"><span class="pre">Pattern</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#litestar.config.cors.CORSConfig.allowed_origins_regex" title="Link to this definition">#</a></dt>
 <dd><p>Get or create a compiled regex for allowed origins.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -2151,7 +2150,7 @@ using the <code class="docutils literal notranslate"><span class="pre">compressi
 
 <dl class="py property">
 <dt class="sig sig-object py" id="litestar.config.cors.CORSConfig.is_allow_all_origins">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_allow_all_origins</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></em><a class="headerlink" href="#litestar.config.cors.CORSConfig.is_allow_all_origins" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_allow_all_origins</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></em><a class="headerlink" href="#litestar.config.cors.CORSConfig.is_allow_all_origins" title="Link to this definition">#</a></dt>
 <dd><p>Get a cached boolean flag dictating whether all origins are allowed.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -2162,7 +2161,7 @@ using the <code class="docutils literal notranslate"><span class="pre">compressi
 
 <dl class="py property">
 <dt class="sig sig-object py" id="litestar.config.cors.CORSConfig.is_allow_all_methods">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_allow_all_methods</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></em><a class="headerlink" href="#litestar.config.cors.CORSConfig.is_allow_all_methods" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_allow_all_methods</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></em><a class="headerlink" href="#litestar.config.cors.CORSConfig.is_allow_all_methods" title="Link to this definition">#</a></dt>
 <dd><p>Get a cached boolean flag dictating whether all methods are allowed.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -2173,7 +2172,7 @@ using the <code class="docutils literal notranslate"><span class="pre">compressi
 
 <dl class="py property">
 <dt class="sig sig-object py" id="litestar.config.cors.CORSConfig.is_allow_all_headers">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_allow_all_headers</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></em><a class="headerlink" href="#litestar.config.cors.CORSConfig.is_allow_all_headers" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_allow_all_headers</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></em><a class="headerlink" href="#litestar.config.cors.CORSConfig.is_allow_all_headers" title="Link to this definition">#</a></dt>
 <dd><p>Get a cached boolean flag dictating whether all headers are allowed.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -2184,7 +2183,7 @@ using the <code class="docutils literal notranslate"><span class="pre">compressi
 
 <dl class="py property">
 <dt class="sig sig-object py" id="litestar.config.cors.CORSConfig.preflight_headers">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">preflight_headers</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#litestar.config.cors.CORSConfig.preflight_headers" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">preflight_headers</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#litestar.config.cors.CORSConfig.preflight_headers" title="Link to this definition">#</a></dt>
 <dd><p>Get cached pre-flight headers.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -2195,7 +2194,7 @@ using the <code class="docutils literal notranslate"><span class="pre">compressi
 
 <dl class="py property">
 <dt class="sig sig-object py" id="litestar.config.cors.CORSConfig.simple_headers">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">simple_headers</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#litestar.config.cors.CORSConfig.simple_headers" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">simple_headers</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#litestar.config.cors.CORSConfig.simple_headers" title="Link to this definition">#</a></dt>
 <dd><p>Get cached simple headers.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -2222,7 +2221,7 @@ using the <code class="docutils literal notranslate"><span class="pre">compressi
 
 <dl class="py class" id="module-litestar.config.csrf">
 <dt class="sig sig-object py" id="litestar.config.csrf.CSRFConfig">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.config.csrf.</span></span><span class="sig-name descname"><span class="pre">CSRFConfig</span></span><a class="headerlink" href="#litestar.config.csrf.CSRFConfig" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.config.csrf.</span></span><span class="sig-name descname"><span class="pre">CSRFConfig</span></span><a class="headerlink" href="#litestar.config.csrf.CSRFConfig" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>Configuration for CSRF (Cross Site Request Forgery) protection.</p>
 <p>To enable CSRF protection, pass an instance of this class to the <a class="reference internal" href="app.html#litestar.app.Litestar" title="litestar.app.Litestar"><code class="xref py py-class docutils literal notranslate"><span class="pre">Litestar</span></code></a> constructor using
@@ -2302,7 +2301,7 @@ the ‘csrf_config’ key.</p>
 
 <dl class="py class" id="module-litestar.config.response_cache">
 <dt class="sig sig-object py" id="litestar.config.response_cache.CACHE_FOREVER">
-<em class="property"><span class="k"><span class="pre">final</span></span><span class="w"> </span><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.config.response_cache.</span></span><span class="sig-name descname"><span class="pre">CACHE_FOREVER</span></span><a class="headerlink" href="#litestar.config.response_cache.CACHE_FOREVER" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">final</span><span class="w"> </span><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.config.response_cache.</span></span><span class="sig-name descname"><span class="pre">CACHE_FOREVER</span></span><a class="headerlink" href="#litestar.config.response_cache.CACHE_FOREVER" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>Sentinel value indicating that a cached response should be stored without an expiration, explicitly skipping the
 default expiration</p>
@@ -2310,7 +2309,7 @@ default expiration</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="litestar.config.response_cache.ResponseCacheConfig">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.config.response_cache.</span></span><span class="sig-name descname"><span class="pre">ResponseCacheConfig</span></span><a class="headerlink" href="#litestar.config.response_cache.ResponseCacheConfig" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.config.response_cache.</span></span><span class="sig-name descname"><span class="pre">ResponseCacheConfig</span></span><a class="headerlink" href="#litestar.config.response_cache.ResponseCacheConfig" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>Configuration for response caching.</p>
 <p>To enable response caching, pass an instance of this class to <a class="reference internal" href="app.html#litestar.app.Litestar" title="litestar.app.Litestar"><code class="xref py py-class docutils literal notranslate"><span class="pre">Litestar</span></code></a> using the
@@ -2585,7 +2584,7 @@ the request method and path with the sorted query params.</p>
         <div class="footer-item">
 
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
     <br/>
   </p>
 </div>

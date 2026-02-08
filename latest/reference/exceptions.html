@@ -48,7 +48,7 @@
     <script src="../_static/litestar-theme.js?v=ab2dcc9e"></script>
     <script src="../_static/design-tabs.js?v=f930bc37"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'reference/exceptions';</script>
-    <script src="../_static/versioning.js?v=68b42869"></script>
+    <script src="../_static/versioning.js?v=770a9916"></script>
     <link rel="icon" href="../_static/favicon.png"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -1245,7 +1245,6 @@ document.write(`
 
 
 
-
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../usage/plugins/index.html">Plugins</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-9"><i class="fa-solid fa-chevron-down"></i></label><ul>
@@ -1544,7 +1543,7 @@ document.write(`
 <span id="exceptions"></span><h1>exceptions<a class="headerlink" href="#module-litestar.exceptions" title="Link to this heading">#</a></h1>
 <dl class="py exception">
 <dt class="sig sig-object py" id="litestar.exceptions.ClientException">
-<em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.exceptions.</span></span><span class="sig-name descname"><span class="pre">ClientException</span></span><a class="headerlink" href="#litestar.exceptions.ClientException" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.exceptions.</span></span><span class="sig-name descname"><span class="pre">ClientException</span></span><a class="headerlink" href="#litestar.exceptions.ClientException" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#litestar.exceptions.HTTPException" title="litestar.exceptions.http_exceptions.HTTPException"><code class="xref py py-class docutils literal notranslate"><span class="pre">HTTPException</span></code></a></p>
 <p>Client error.</p>
 <dl class="py attribute">
@@ -1557,14 +1556,14 @@ document.write(`
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="litestar.exceptions.DTOFactoryException">
-<em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.exceptions.</span></span><span class="sig-name descname"><span class="pre">DTOFactoryException</span></span><a class="headerlink" href="#litestar.exceptions.DTOFactoryException" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.exceptions.</span></span><span class="sig-name descname"><span class="pre">DTOFactoryException</span></span><a class="headerlink" href="#litestar.exceptions.DTOFactoryException" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#litestar.exceptions.LitestarException" title="litestar.exceptions.base_exceptions.LitestarException"><code class="xref py py-class docutils literal notranslate"><span class="pre">LitestarException</span></code></a></p>
 <p>Base DTO exception type.</p>
 </dd></dl>
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="litestar.exceptions.HTTPException">
-<em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.exceptions.</span></span><span class="sig-name descname"><span class="pre">HTTPException</span></span><a class="headerlink" href="#litestar.exceptions.HTTPException" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.exceptions.</span></span><span class="sig-name descname"><span class="pre">HTTPException</span></span><a class="headerlink" href="#litestar.exceptions.HTTPException" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#litestar.exceptions.LitestarException" title="litestar.exceptions.base_exceptions.LitestarException"><code class="xref py py-class docutils literal notranslate"><span class="pre">LitestarException</span></code></a></p>
 <p>Base exception for HTTP error responses.</p>
 <p>These exceptions carry information to construct an HTTP response.</p>
@@ -1593,9 +1592,9 @@ document.write(`
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="litestar.exceptions.HTTPException.detail">
-<span class="sig-name descname"><span class="pre">detail</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></em><a class="headerlink" href="#litestar.exceptions.HTTPException.detail" title="Link to this definition">#</a></dt>
-<dd><p>Exception details or message.</p>
+<dt class="sig sig-object py" id="litestar.exceptions.HTTPException.extra">
+<span class="sig-name descname"><span class="pre">extra</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></em><a class="headerlink" href="#litestar.exceptions.HTTPException.extra" title="Link to this definition">#</a></dt>
+<dd><p>An extra mapping to attach to the exception.</p>
 </dd></dl>
 
 <dl class="py attribute">
@@ -1605,23 +1604,23 @@ document.write(`
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="litestar.exceptions.HTTPException.extra">
-<span class="sig-name descname"><span class="pre">extra</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></em><a class="headerlink" href="#litestar.exceptions.HTTPException.extra" title="Link to this definition">#</a></dt>
-<dd><p>An extra mapping to attach to the exception.</p>
+<dt class="sig sig-object py" id="litestar.exceptions.HTTPException.detail">
+<span class="sig-name descname"><span class="pre">detail</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></em><a class="headerlink" href="#litestar.exceptions.HTTPException.detail" title="Link to this definition">#</a></dt>
+<dd><p>Exception details or message.</p>
 </dd></dl>
 
 </dd></dl>
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="litestar.exceptions.ImproperlyConfiguredException">
-<em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.exceptions.</span></span><span class="sig-name descname"><span class="pre">ImproperlyConfiguredException</span></span><a class="headerlink" href="#litestar.exceptions.ImproperlyConfiguredException" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.exceptions.</span></span><span class="sig-name descname"><span class="pre">ImproperlyConfiguredException</span></span><a class="headerlink" href="#litestar.exceptions.ImproperlyConfiguredException" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#litestar.exceptions.HTTPException" title="litestar.exceptions.http_exceptions.HTTPException"><code class="xref py py-class docutils literal notranslate"><span class="pre">HTTPException</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ValueError</span></code></a></p>
 <p>Application has improper configuration.</p>
 </dd></dl>
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="litestar.exceptions.InternalServerException">
-<em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.exceptions.</span></span><span class="sig-name descname"><span class="pre">InternalServerException</span></span><a class="headerlink" href="#litestar.exceptions.InternalServerException" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.exceptions.</span></span><span class="sig-name descname"><span class="pre">InternalServerException</span></span><a class="headerlink" href="#litestar.exceptions.InternalServerException" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#litestar.exceptions.HTTPException" title="litestar.exceptions.http_exceptions.HTTPException"><code class="xref py py-class docutils literal notranslate"><span class="pre">HTTPException</span></code></a></p>
 <p>Server encountered an unexpected condition that prevented it from fulfilling the request.</p>
 <dl class="py attribute">
@@ -1634,14 +1633,14 @@ document.write(`
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="litestar.exceptions.InvalidAnnotationException">
-<em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.exceptions.</span></span><span class="sig-name descname"><span class="pre">InvalidAnnotationException</span></span><a class="headerlink" href="#litestar.exceptions.InvalidAnnotationException" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.exceptions.</span></span><span class="sig-name descname"><span class="pre">InvalidAnnotationException</span></span><a class="headerlink" href="#litestar.exceptions.InvalidAnnotationException" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#litestar.exceptions.DTOFactoryException" title="litestar.exceptions.dto_exceptions.DTOFactoryException"><code class="xref py py-class docutils literal notranslate"><span class="pre">DTOFactoryException</span></code></a></p>
 <p>Unexpected DTO type argument.</p>
 </dd></dl>
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="litestar.exceptions.LitestarException">
-<em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.exceptions.</span></span><span class="sig-name descname"><span class="pre">LitestarException</span></span><a class="headerlink" href="#litestar.exceptions.LitestarException" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.exceptions.</span></span><span class="sig-name descname"><span class="pre">LitestarException</span></span><a class="headerlink" href="#litestar.exceptions.LitestarException" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#Exception" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></a></p>
 <p>Base exception class from which all Litestar exceptions inherit.</p>
 <dl class="py method">
@@ -1662,14 +1661,14 @@ document.write(`
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="litestar.exceptions.LitestarWarning">
-<em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.exceptions.</span></span><span class="sig-name descname"><span class="pre">LitestarWarning</span></span><a class="headerlink" href="#litestar.exceptions.LitestarWarning" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.exceptions.</span></span><span class="sig-name descname"><span class="pre">LitestarWarning</span></span><a class="headerlink" href="#litestar.exceptions.LitestarWarning" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#UserWarning" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">UserWarning</span></code></a></p>
 <p>Base class for Litestar warnings</p>
 </dd></dl>
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="litestar.exceptions.MethodNotAllowedException">
-<em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.exceptions.</span></span><span class="sig-name descname"><span class="pre">MethodNotAllowedException</span></span><a class="headerlink" href="#litestar.exceptions.MethodNotAllowedException" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.exceptions.</span></span><span class="sig-name descname"><span class="pre">MethodNotAllowedException</span></span><a class="headerlink" href="#litestar.exceptions.MethodNotAllowedException" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#litestar.exceptions.ClientException" title="litestar.exceptions.http_exceptions.ClientException"><code class="xref py py-class docutils literal notranslate"><span class="pre">ClientException</span></code></a></p>
 <p>Server knows the request method, but the target resource doesn’t support this method.</p>
 <dl class="py attribute">
@@ -1682,7 +1681,7 @@ document.write(`
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="litestar.exceptions.MissingDependencyException">
-<em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.exceptions.</span></span><span class="sig-name descname"><span class="pre">MissingDependencyException</span></span><a class="headerlink" href="#litestar.exceptions.MissingDependencyException" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.exceptions.</span></span><span class="sig-name descname"><span class="pre">MissingDependencyException</span></span><a class="headerlink" href="#litestar.exceptions.MissingDependencyException" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#litestar.exceptions.LitestarException" title="litestar.exceptions.base_exceptions.LitestarException"><code class="xref py py-class docutils literal notranslate"><span class="pre">LitestarException</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ImportError" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ImportError</span></code></a></p>
 <p>Missing optional dependency.</p>
 <p>This exception is raised only when a module depends on a dependency that has not been installed.</p>
@@ -1704,14 +1703,14 @@ document.write(`
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="litestar.exceptions.NoRouteMatchFoundException">
-<em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.exceptions.</span></span><span class="sig-name descname"><span class="pre">NoRouteMatchFoundException</span></span><a class="headerlink" href="#litestar.exceptions.NoRouteMatchFoundException" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.exceptions.</span></span><span class="sig-name descname"><span class="pre">NoRouteMatchFoundException</span></span><a class="headerlink" href="#litestar.exceptions.NoRouteMatchFoundException" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#litestar.exceptions.InternalServerException" title="litestar.exceptions.http_exceptions.InternalServerException"><code class="xref py py-class docutils literal notranslate"><span class="pre">InternalServerException</span></code></a></p>
 <p>A route with the given name could not be found.</p>
 </dd></dl>
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="litestar.exceptions.NotAuthorizedException">
-<em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.exceptions.</span></span><span class="sig-name descname"><span class="pre">NotAuthorizedException</span></span><a class="headerlink" href="#litestar.exceptions.NotAuthorizedException" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.exceptions.</span></span><span class="sig-name descname"><span class="pre">NotAuthorizedException</span></span><a class="headerlink" href="#litestar.exceptions.NotAuthorizedException" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#litestar.exceptions.ClientException" title="litestar.exceptions.http_exceptions.ClientException"><code class="xref py py-class docutils literal notranslate"><span class="pre">ClientException</span></code></a></p>
 <p>Request lacks valid authentication credentials for the requested resource.</p>
 <dl class="py attribute">
@@ -1724,7 +1723,7 @@ document.write(`
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="litestar.exceptions.NotFoundException">
-<em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.exceptions.</span></span><span class="sig-name descname"><span class="pre">NotFoundException</span></span><a class="headerlink" href="#litestar.exceptions.NotFoundException" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.exceptions.</span></span><span class="sig-name descname"><span class="pre">NotFoundException</span></span><a class="headerlink" href="#litestar.exceptions.NotFoundException" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#litestar.exceptions.ClientException" title="litestar.exceptions.http_exceptions.ClientException"><code class="xref py py-class docutils literal notranslate"><span class="pre">ClientException</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ValueError</span></code></a></p>
 <p>Cannot find the requested resource.</p>
 <dl class="py attribute">
@@ -1737,7 +1736,7 @@ document.write(`
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="litestar.exceptions.PermissionDeniedException">
-<em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.exceptions.</span></span><span class="sig-name descname"><span class="pre">PermissionDeniedException</span></span><a class="headerlink" href="#litestar.exceptions.PermissionDeniedException" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.exceptions.</span></span><span class="sig-name descname"><span class="pre">PermissionDeniedException</span></span><a class="headerlink" href="#litestar.exceptions.PermissionDeniedException" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#litestar.exceptions.ClientException" title="litestar.exceptions.http_exceptions.ClientException"><code class="xref py py-class docutils literal notranslate"><span class="pre">ClientException</span></code></a></p>
 <p>Request understood, but not authorized.</p>
 <dl class="py attribute">
@@ -1750,14 +1749,14 @@ document.write(`
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="litestar.exceptions.SerializationException">
-<em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.exceptions.</span></span><span class="sig-name descname"><span class="pre">SerializationException</span></span><a class="headerlink" href="#litestar.exceptions.SerializationException" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.exceptions.</span></span><span class="sig-name descname"><span class="pre">SerializationException</span></span><a class="headerlink" href="#litestar.exceptions.SerializationException" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#litestar.exceptions.LitestarException" title="litestar.exceptions.base_exceptions.LitestarException"><code class="xref py py-class docutils literal notranslate"><span class="pre">LitestarException</span></code></a></p>
 <p>Encoding or decoding of an object failed.</p>
 </dd></dl>
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="litestar.exceptions.ServiceUnavailableException">
-<em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.exceptions.</span></span><span class="sig-name descname"><span class="pre">ServiceUnavailableException</span></span><a class="headerlink" href="#litestar.exceptions.ServiceUnavailableException" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.exceptions.</span></span><span class="sig-name descname"><span class="pre">ServiceUnavailableException</span></span><a class="headerlink" href="#litestar.exceptions.ServiceUnavailableException" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#litestar.exceptions.InternalServerException" title="litestar.exceptions.http_exceptions.InternalServerException"><code class="xref py py-class docutils literal notranslate"><span class="pre">InternalServerException</span></code></a></p>
 <p>Server is not ready to handle the request.</p>
 <dl class="py attribute">
@@ -1770,7 +1769,7 @@ document.write(`
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="litestar.exceptions.TemplateNotFoundException">
-<em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.exceptions.</span></span><span class="sig-name descname"><span class="pre">TemplateNotFoundException</span></span><a class="headerlink" href="#litestar.exceptions.TemplateNotFoundException" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.exceptions.</span></span><span class="sig-name descname"><span class="pre">TemplateNotFoundException</span></span><a class="headerlink" href="#litestar.exceptions.TemplateNotFoundException" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#litestar.exceptions.InternalServerException" title="litestar.exceptions.http_exceptions.InternalServerException"><code class="xref py py-class docutils literal notranslate"><span class="pre">InternalServerException</span></code></a></p>
 <p>Referenced template could not be found.</p>
 <dl class="py method">
@@ -1791,7 +1790,7 @@ document.write(`
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="litestar.exceptions.TooManyRequestsException">
-<em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.exceptions.</span></span><span class="sig-name descname"><span class="pre">TooManyRequestsException</span></span><a class="headerlink" href="#litestar.exceptions.TooManyRequestsException" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.exceptions.</span></span><span class="sig-name descname"><span class="pre">TooManyRequestsException</span></span><a class="headerlink" href="#litestar.exceptions.TooManyRequestsException" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#litestar.exceptions.ClientException" title="litestar.exceptions.http_exceptions.ClientException"><code class="xref py py-class docutils literal notranslate"><span class="pre">ClientException</span></code></a></p>
 <p>Request limits have been exceeded.</p>
 <dl class="py attribute">
@@ -1804,14 +1803,14 @@ document.write(`
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="litestar.exceptions.ValidationException">
-<em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.exceptions.</span></span><span class="sig-name descname"><span class="pre">ValidationException</span></span><a class="headerlink" href="#litestar.exceptions.ValidationException" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.exceptions.</span></span><span class="sig-name descname"><span class="pre">ValidationException</span></span><a class="headerlink" href="#litestar.exceptions.ValidationException" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#litestar.exceptions.ClientException" title="litestar.exceptions.http_exceptions.ClientException"><code class="xref py py-class docutils literal notranslate"><span class="pre">ClientException</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ValueError</span></code></a></p>
 <p>Client data validation error.</p>
 </dd></dl>
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="litestar.exceptions.WebSocketDisconnect">
-<em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.exceptions.</span></span><span class="sig-name descname"><span class="pre">WebSocketDisconnect</span></span><a class="headerlink" href="#litestar.exceptions.WebSocketDisconnect" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.exceptions.</span></span><span class="sig-name descname"><span class="pre">WebSocketDisconnect</span></span><a class="headerlink" href="#litestar.exceptions.WebSocketDisconnect" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#litestar.exceptions.WebSocketException" title="litestar.exceptions.websocket_exceptions.WebSocketException"><code class="xref py py-class docutils literal notranslate"><span class="pre">WebSocketException</span></code></a></p>
 <p>Exception class for websocket disconnect events.</p>
 <dl class="py method">
@@ -1833,7 +1832,7 @@ document.write(`
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="litestar.exceptions.WebSocketException">
-<em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.exceptions.</span></span><span class="sig-name descname"><span class="pre">WebSocketException</span></span><a class="headerlink" href="#litestar.exceptions.WebSocketException" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.exceptions.</span></span><span class="sig-name descname"><span class="pre">WebSocketException</span></span><a class="headerlink" href="#litestar.exceptions.WebSocketException" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#litestar.exceptions.LitestarException" title="litestar.exceptions.base_exceptions.LitestarException"><code class="xref py py-class docutils literal notranslate"><span class="pre">LitestarException</span></code></a></p>
 <p>Exception class for websocket related events.</p>
 <dl class="py method">
@@ -1862,7 +1861,7 @@ document.write(`
 
 <dl class="py class" id="module-litestar.exceptions.responses">
 <dt class="sig sig-object py" id="litestar.exceptions.responses.ExceptionResponseContent">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.exceptions.responses.</span></span><span class="sig-name descname"><span class="pre">ExceptionResponseContent</span></span><a class="headerlink" href="#litestar.exceptions.responses.ExceptionResponseContent" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.exceptions.responses.</span></span><span class="sig-name descname"><span class="pre">ExceptionResponseContent</span></span><a class="headerlink" href="#litestar.exceptions.responses.ExceptionResponseContent" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>Represent the contents of an exception-response.</p>
 <dl class="py attribute">
@@ -2015,9 +2014,9 @@ response status is <code class="docutils literal notranslate"><span class="pre">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.exceptions.HTTPException"><code class="docutils literal notranslate"><span class="pre">HTTPException</span></code></a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.exceptions.HTTPException.__init__"><code class="docutils literal notranslate"><span class="pre">HTTPException.__init__()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.exceptions.HTTPException.status_code"><code class="docutils literal notranslate"><span class="pre">HTTPException.status_code</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.exceptions.HTTPException.detail"><code class="docutils literal notranslate"><span class="pre">HTTPException.detail</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.exceptions.HTTPException.headers"><code class="docutils literal notranslate"><span class="pre">HTTPException.headers</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.exceptions.HTTPException.extra"><code class="docutils literal notranslate"><span class="pre">HTTPException.extra</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.exceptions.HTTPException.headers"><code class="docutils literal notranslate"><span class="pre">HTTPException.headers</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.exceptions.HTTPException.detail"><code class="docutils literal notranslate"><span class="pre">HTTPException.detail</span></code></a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.exceptions.ImproperlyConfiguredException"><code class="docutils literal notranslate"><span class="pre">ImproperlyConfiguredException</span></code></a></li>
@@ -2124,7 +2123,7 @@ response status is <code class="docutils literal notranslate"><span class="pre">
         <div class="footer-item">
 
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
     <br/>
   </p>
 </div>

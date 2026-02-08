@@ -121,7 +121,7 @@ entries should point to a :class:`click.Command` or :class:`click.Group`:
         .. code-block:: toml
             :caption: Using `poetry <https://python-poetry.org/>`_
 
-            [tool.poetry.plugins."litestar.commands"]
+            [project.entry-points."litestar.commands"]
             my_command = "my_litestar_plugin.cli:main"
 
     .. tab-item:: uv
@@ -129,7 +129,7 @@ entries should point to a :class:`click.Command` or :class:`click.Group`:
         .. code-block:: toml
             :caption: Using `uv <https://docs.astral.sh/uv/>`_
 
-            [project.scripts]
+            [project.entry-points."litestar.commands"]
             my_command = "my_litestar_plugin.cli:main"
 
 Using a plugin
