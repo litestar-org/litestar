@@ -1,3 +1,4 @@
+import secrets
 from os import environ
 from typing import Any, Dict, Optional
 from uuid import UUID
@@ -35,7 +36,7 @@ async def retrieve_user_handler(token: Token, connection: "ASGIConnection[Any, A
 
 jwt_auth = JWTAuth[User](
     retrieve_user_handler=retrieve_user_handler,
-    token_secret=environ.get("JWT_SECRET", "abcd123"),
+    token_secret=environ.get("JWT_SECRET", secrets.token_hex()),
     # we are specifying which endpoints should be excluded from authentication. In this case the login endpoint
     # and our openAPI docs.
     exclude=["/login", "/schema"],
