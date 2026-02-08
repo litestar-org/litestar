@@ -6,7 +6,7 @@ from inspect import isasyncgen
 from typing import TYPE_CHECKING, Any, AsyncGenerator, Awaitable, Callable, Generator
 
 if sys.version_info < (3, 11):
-    from exceptiongroup import ExceptionGroup
+    from exceptiongroup import ExceptionGroup  # pyright: ignore
 
 from anyio import create_task_group
 

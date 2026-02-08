@@ -427,7 +427,7 @@ class HTTPRouteHandler(BaseRouteHandler):
             ]
             self._resolved_after_response = after_response_handlers[-1] if after_response_handlers else None
 
-        return cast("AsyncAnyCallable | None", self._resolved_after_response)
+        return self._resolved_after_response
 
     def resolve_include_in_schema(self) -> bool:
         """Resolve the 'include_in_schema' property by starting from the route handler and moving up.

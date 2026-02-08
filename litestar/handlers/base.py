@@ -292,7 +292,7 @@ class BaseRouteHandler:
             for layer in self.ownership_layers:
                 if type_encoders := getattr(layer, "type_encoders", None):
                     self._resolved_type_encoders.update(type_encoders)
-        return cast("TypeEncodersMap", self._resolved_type_encoders)
+        return self._resolved_type_encoders
 
     def resolve_type_decoders(self) -> TypeDecodersSequence:
         """Return a merged type_encoders mapping.
@@ -308,7 +308,7 @@ class BaseRouteHandler:
             for layer in self.ownership_layers:
                 if type_decoders := getattr(layer, "type_decoders", None):
                     self._resolved_type_decoders.extend(list(type_decoders))
-        return cast("TypeDecodersSequence", self._resolved_type_decoders)
+        return self._resolved_type_decoders
 
     def resolve_layered_parameters(self) -> dict[str, FieldDefinition]:
         """Return all parameters declared above the handler."""

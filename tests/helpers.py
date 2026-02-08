@@ -119,4 +119,4 @@ def purge_module(module_names: list[str], path: str | Path) -> None:
     for name in module_names:
         if name in sys.modules:
             del sys.modules[name]
-    Path(importlib.util.cache_from_source(path)).unlink(missing_ok=True)  # type: ignore[arg-type]
+    Path(importlib.util.cache_from_source(path)).unlink(missing_ok=True)  # pyright: ignore

@@ -491,7 +491,7 @@ def get_model_info(
     }
 
     computed_field_definitions = create_field_definitions_for_computed_fields(
-        model,
+        model,  # type: ignore[arg-type]
         prefer_alias=prefer_alias,
     )
     property_fields.update(computed_field_definitions)

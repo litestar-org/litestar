@@ -40,7 +40,7 @@ class MultiMixin(Generic[T], MultiMapping[T], ABC):
                 yield key, value
 
 
-class MultiDict(BaseMultiDict[T], MultiMixin[T], Generic[T]):
+class MultiDict(BaseMultiDict[T], MultiMixin[T], Generic[T]):  # pyright: ignore
     """MultiDict, using :class:`MultiDict <multidict.MultiDictProxy>`."""
 
     def __init__(self, args: MultiMapping | Mapping[str, T] | Iterable[tuple[str, T]] | None = None) -> None:
@@ -67,7 +67,7 @@ class MultiDict(BaseMultiDict[T], MultiMixin[T], Generic[T]):
         return type(self)(list(self.multi_items()))
 
 
-class ImmutableMultiDict(MultiDictProxy[T], MultiMixin[T], Generic[T]):
+class ImmutableMultiDict(MultiDictProxy[T], MultiMixin[T], Generic[T]):  # pyright: ignore
     """Immutable MultiDict, using class:`MultiDictProxy <multidict.MultiDictProxy>`."""
 
     def __init__(self, args: MultiMapping | Mapping[str, Any] | Iterable[tuple[str, Any]] | None = None) -> None:

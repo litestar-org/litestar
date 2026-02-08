@@ -512,7 +512,7 @@ async def test_valkey_store_with_client_shutdown(valkey_service: None) -> None:
     # the check on connection is a mimic of https://github.com/redis/redis-py/blob/d529c2ad8d2cf4dcfb41bfd93ea68cfefd81aa66/tests/test_asyncio/test_connection_pool.py#L35-L39
     await valkey_store._shutdown()
     assert not any(
-        x.is_connected
+        x.is_connected  # pyright: ignore
         for x in valkey_store._valkey.connection_pool._available_connections
         + list(valkey_store._valkey.connection_pool._in_use_connections)
     )

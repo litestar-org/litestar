@@ -5,7 +5,7 @@ from typing import AsyncGenerator, Generator
 from unittest.mock import MagicMock
 
 if sys.version_info < (3, 11):
-    from exceptiongroup import ExceptionGroup
+    from exceptiongroup import ExceptionGroup  # pyright: ignore
 
 import pytest
 
