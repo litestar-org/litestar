@@ -73,15 +73,15 @@ def __getattr__(attr_name: str) -> object:
     }
 
     if attr_name in _deprecated_attrs:
-        from advanced_alchemy.base import (  # type: ignore[attr-defined]
-            AuditColumns,  # pyright: ignore
+        from advanced_alchemy.base import (
+            AuditColumns,
             BigIntAuditBase,
             BigIntBase,
-            BigIntPrimaryKey,  # pyright: ignore
+            BigIntPrimaryKey,
             CommonTableAttributes,
             UUIDAuditBase,
             UUIDBase,
-            UUIDPrimaryKey,  # pyright: ignore
+            UUIDPrimaryKey,
             orm_registry,
         )
 
@@ -148,15 +148,15 @@ if TYPE_CHECKING:
         types,
         utils,
     )
-    from advanced_alchemy.base import (  # type: ignore[attr-defined]
-        AuditColumns,  # pyright: ignore
+    from advanced_alchemy.base import (
+        AuditColumns,
         BigIntAuditBase,
         BigIntBase,
-        BigIntPrimaryKey,  # pyright: ignore
+        BigIntPrimaryKey,
         CommonTableAttributes,
         UUIDAuditBase,
         UUIDBase,
-        UUIDPrimaryKey,  # pyright: ignore
+        UUIDPrimaryKey,
         orm_registry,
     )
     from advanced_alchemy.extensions.litestar import (

@@ -144,7 +144,7 @@ def test_create_collection_constrained_field_schema_pydantic_v1(
     schema = schema_creator.for_plugin(FieldDefinition.from_annotation(Model), plugin).properties["field"]  # pyright: ignore[reportAttributeAccessIssue]
 
     assert schema.type == OpenAPIType.ARRAY  # pyright: ignore[reportAttributeAccessIssue]
-    assert schema.items.type == OpenAPIType.INTEGER  # pyright: ignore
+    assert schema.items.type == OpenAPIType.INTEGER  # type: ignore[union-attr] # pyright: ignore[reportAttributeAccessIssue]
     assert schema.min_items == annotation.min_items  # pyright: ignore[reportAttributeAccessIssue]
     assert schema.max_items == annotation.max_items  # pyright: ignore[reportAttributeAccessIssue]
 
@@ -172,7 +172,7 @@ def test_create_collection_constrained_field_schema_pydantic_v2(
     schema = schema_creator.for_plugin(FieldDefinition.from_annotation(Model), plugin).properties["field"]  # pyright: ignore[reportAttributeAccessIssue]
 
     assert schema.type == OpenAPIType.ARRAY  # pyright: ignore[reportAttributeAccessIssue]
-    assert schema.items.type == OpenAPIType.INTEGER  # pyright: ignore
+    assert schema.items.type == OpenAPIType.INTEGER  # type: ignore[union-attr]
     assert schema.min_items == min_length  # pyright: ignore[reportAttributeAccessIssue]
     assert schema.max_items == max_length  # pyright: ignore[reportAttributeAccessIssue]
 
@@ -451,7 +451,7 @@ def test_create_constrained_field_schema_v2(
     class Model(pydantic_v2.BaseModel):
         field: annotation
 
-    assert schema_creator.for_plugin(FieldDefinition.from_annotation(Model), plugin).properties["field"]
+    assert schema_creator.for_plugin(FieldDefinition.from_annotation(Model), plugin).properties["field"]  # type: ignore[index, union-attr]
 
 
 @pytest.fixture()
@@ -842,8 +842,8 @@ class Model(BaseModel):
 def test_create_for_url_v2(field_type: Any) -> None:
     field_definition = FieldDefinition.from_annotation(field_type)
     schema = SchemaCreator(plugins=[PydanticSchemaPlugin()]).for_field_definition(field_definition)
-    assert schema.type == OpenAPIType.STRING
-    assert schema.format == OpenAPIFormat.URL
+    assert schema.type == OpenAPIType.STRING  # type: ignore[union-attr]
+    assert schema.format == OpenAPIFormat.URL  # type: ignore[union-attr]
 
 
 @pytest.mark.parametrize("prefer_alias", [True, False])

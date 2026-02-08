@@ -32,7 +32,7 @@ def ensure_async_callable(fn: Callable[P, T]) -> Callable[P, Awaitable[T]]:
     return AsyncCallable(fn)  # pyright: ignore
 
 
-class AsyncCallable(Generic[P, T]):
+class AsyncCallable:
     """Wrap a given callable to be called in a thread pool using
     ``anyio.to_thread.run_sync``, keeping a reference to the original callable as
     :attr:`func`
@@ -42,7 +42,7 @@ class AsyncCallable(Generic[P, T]):
         self.func = fn
 
     def __call__(self, *args: P.args, **kwargs: P.kwargs) -> Awaitable[T]:  # pyright: ignore
-        return sync_to_thread(self.func, *args, **kwargs)
+        return sync_to_thread(self.func, *args, **kwargs)  # type: ignore[arg-type]
 
 
 class AsyncIteratorWrapper(Generic[T]):

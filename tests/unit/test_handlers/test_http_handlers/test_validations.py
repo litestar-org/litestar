@@ -22,7 +22,7 @@ from tests.models import DataclassPerson
 def test_route_handler_validation_http_method() -> None:
     # doesn't raise for http methods
     for value in (*list(HttpMethod), *[x.upper() for x in list(HttpMethod)]):
-        assert route(http_method=value)  # type: ignore[arg-type]
+        assert route(http_method=value)  # type: ignore[arg-type, truthy-bool]
 
     # raises for invalid values
     with pytest.raises(ValidationException):

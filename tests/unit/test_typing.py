@@ -20,7 +20,7 @@ from typing_extensions import (
 try:
     from typing import TypeAliasType  # pyright: ignore
 except ImportError:
-    TypeAliasType = TeTypeAliasType  # type: ignore[misc, assignment]
+    TypeAliasType = TeTypeAliasType  # type: ignore[misc]
 
 from litestar import get
 from litestar.exceptions import LitestarWarning
