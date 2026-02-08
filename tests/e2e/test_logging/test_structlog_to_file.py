@@ -9,7 +9,8 @@ import pytest
 import structlog
 
 from litestar import Litestar, get
-from litestar.logging.structlog import StructLoggingConfig, StructLoggingMiddleware
+from litestar.logging.structlog import StructLoggingConfig
+from litestar.middleware.logging import LoggingMiddleware
 from litestar.testing import TestClient
 
 if TYPE_CHECKING:
@@ -37,7 +38,7 @@ def test_structlog_to_file(tmp_path: Path) -> None:
 
         app = Litestar(
             route_handlers=[handler],
-            middleware=[StructLoggingMiddleware()],
+            middleware=[LoggingMiddleware()],
             logging_config=StructLoggingConfig(
                 logger_factory=lambda: structlog.WriteLoggerFactory(file=file_handle),
             ),
