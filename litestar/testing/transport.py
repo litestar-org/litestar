@@ -63,7 +63,7 @@ class TestClientTransport(Generic[T]):
                 disconnect_event: HTTPDisconnectEvent = {"type": "http.disconnect"}
                 return disconnect_event
 
-            body = cast("Union[bytes, str, GeneratorType]", (request.read() or b""))
+            body = cast("bytes | str | GeneratorType", (request.read() or b""))
             request_event: HTTPRequestEvent = {"type": "http.request", "body": b"", "more_body": False}
             if isinstance(body, GeneratorType):  # pragma: no cover
                 try:

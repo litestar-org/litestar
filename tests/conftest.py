@@ -141,7 +141,7 @@ def cookie_session_backend(cookie_session_backend_config: CookieBackendConfig) -
     ]
 )
 def session_backend_config(request: pytest.FixtureRequest) -> ServerSideSessionConfig | CookieBackendConfig:
-    return cast("Union[ServerSideSessionConfig, CookieBackendConfig]", request.param)
+    return cast("Union[ServerSideSessionConfig, CookieBackendConfig]", request.param)  # noqa: UP007
 
 
 @pytest.fixture()

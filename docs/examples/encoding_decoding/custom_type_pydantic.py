@@ -37,7 +37,7 @@ class TenantUser:
 
 PydAnnotatedTenantUser = Annotated[
     TenantUser,
-    BeforeValidator(lambda x: TenantUser.from_string(x)),
+    BeforeValidator(TenantUser.from_string),
     PlainSerializer(lambda x: x.to_combined_str(), return_type=str),
     WithJsonSchema({"type": "string"}, mode="serialization"),
 ]

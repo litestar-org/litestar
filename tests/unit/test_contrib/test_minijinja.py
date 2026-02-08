@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 import pytest
-from minijinja import Environment  # type: ignore[import-untyped]
+from minijinja import Environment
 
 from litestar.contrib.minijinja import MiniJinjaTemplateEngine
 from litestar.exceptions import ImproperlyConfiguredException, TemplateNotFoundException

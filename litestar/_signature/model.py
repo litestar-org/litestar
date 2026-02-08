@@ -147,7 +147,7 @@ class SignatureModel(Struct):
             An ErrorMessage
         """
 
-        message: ErrorMessage = {"message": exc_msg.split(" - ")[0]}
+        message: ErrorMessage = {"message": exc_msg.split(" - ", maxsplit=1)[0]}
 
         if keys:
             message["key"] = key = ".".join(keys)
