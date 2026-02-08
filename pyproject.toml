@@ -64,7 +64,7 @@ maintainers = [
 name = "litestar"
 readme = "docs/PYPI_README.md"
 requires-python = ">=3.8,<4.0"
-version = "2.19.0"
+version = "2.20.0"
 
 [project.urls]
 Blog = "https://blog.litestar.dev"
@@ -148,7 +148,7 @@ dev = [
 ]
 
 docs = [
-  "sphinx>=7.1.2",
+  "sphinx>=7.1.2,<9",
   "sphinx-autobuild>=2021.3.14",
   "sphinx-copybutton>=0.5.2",
   "sphinx-toolbox>=3.5.0",

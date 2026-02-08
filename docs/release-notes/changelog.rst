@@ -3,6 +3,102 @@
 Litestar 2 Changelog
 ====================
 
+.. changelog:: 2.20.0
+    :date: 2026-02-08
+
+    .. change:: Fix ``AllowedHosts`` validation bypass via improperly escaped host names in ``AllowedHostsConfig``
+        :type: bugfix
+
+        Fix a bug in :class:`~litestar.config.allowed_hosts.AllowedHostsConfig`, that
+        could allow to bypass the allowed hosts validation, caused by an improperly
+        escaped regex value in the ``allowed_hosts`` property.
+
+        ``allowed_hosts=["*.example.com"]`` would not only allow ``foo.example.com``,
+        but also ``example.x.com``.
+
+    .. change:: Fix CORS vulnerability in ``CORSConfig`` via improperly escaped ``allow_origins``
+        :type: bugfix
+
+        Fix a bug in :class:`~litestar.config.cors.CORSConfig`, that could allow to
+        bypass CORS validation, caused by an improperly escaped regex value in the
+        ``allow_origins`` property; A value like ``example.com`` would not only allow
+        the host ``example.com``, but also ``exampleXcom``.
+
+    .. change:: Fix key collision due to improper key normalization in ``FileStore``
+        :type: bugfix
+
+        Fix a bug in :class:`~litestar.stores.file.FileStore`, that could lead to a key
+        collision due to improper normalization.
+
+        ``FileStore`` use a key normalization method to ensure every key passed was able
+        to be used as a valid file name on any platform. However, due to the nature of
+        unicode normalization, the approach taken resulted in the possibility of
+        uninentional key collisions, e.g. ``K`` (The Kelvin sign) would normalize to a
+        regular ASCII ``K``, so a key like ``K1234`` (with the Kelvin sign) and
+        ``K1234`` (with a regular ``K``) would result in the same key.
+
+        This has been fixed by performing normalization on the keys via a hashing
+        function.
+
+    .. change:: Added ``exclude_spans`` option for ``OpenTelemetryMiddleware``
+        :type: feature
+        :pr: 4534
+        :issue: 4533
+
+        Add a config option to ``exclude_spans`` for ``OpenTelemetryMiddleware``
+
+    .. change:: DTO: add ``__schema_name__`` to dto base
+        :type: feature
+        :pr: 4131
+        :issue: 3427
+
+        Add a new ``__schema_name__`` attribute to the DTO base, to allow to customising
+        the name the DTO model will be given in the OpenAPI schema
+
+    .. change:: Fix header name when raising ``MethodNotAllowedException``
+        :type: bugfix
+        :pr: 4539
+        :issue: 4277
+
+        Fix a typo that snuck in when fixing https://github.com/litestar-org/litestar/issues/4277,
+        where instead of an ``Allow`` header, an ``Allowed`` header would be sent
+
+    .. change:: JWT: Store raw token in cookies without ``Bearer`` prefix
+        :type: bugfix
+        :pr: 4552
+
+        Fix a bug wherer the JWT Cookie backend would store the token with a ``Bearer``
+        prefix in the cookie, because it was using the same functions to generate the
+        payload as the header-based JWT backend
+
+    .. change:: JWT: Relax typing to allow ``Sequence`` for ``Token.aud``
+        :type: bugfix
+        :pr: 4241
+
+        Fix typing to allow :class:`typing.Sequence` in
+        :attr:`~litestar.security.jwt.Token.aud`.
+
+
+    .. change:: DI: Properly handle (async) generators returned by ``__call__``
+        :type: bugfix
+        :pr: 4459
+        :issue: 4457
+
+        Fix a bug that would treat a generator returned from a provider by invoking its
+        ``__call__`` method, as a regular return value, and would ignore the cleanup
+        step.
+
+    .. change:: Testing: Improve stdout handling of subprocess test client
+        :type: bugfix
+        :pr: 4574
+
+        Adds handling to the subprocess (sync and async) test clients to:
+
+        - Discard output to :obj:`subprocess.DEVNULL` by default, rather than to an
+          unconsumed :obj:`subprocess.PIPE` (which could result in an overflow)
+        - Enable subprocess output capture in the main stdout/stderr via the
+          ``capture_output`` flag (defaults to ``True`` to keep existing behaviour)
+
 .. changelog:: 2.19.0
     :date: 2025-12-14
 
