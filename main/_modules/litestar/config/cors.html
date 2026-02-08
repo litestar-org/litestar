@@ -510,155 +510,165 @@ data-aria-dark="Switch to auto color mode">
 <span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 </span><span data-line="2">
 </span><span data-line="3"><span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
-</span><span data-line="4"><span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
-</span><span data-line="5"><span class="kn">from</span><span class="w"> </span><span class="nn">functools</span><span class="w"> </span><span class="kn">import</span> <span class="n">cached_property</span>
-</span><span data-line="6"><span class="kn">from</span><span class="w"> </span><span class="nn">re</span><span class="w"> </span><span class="kn">import</span> <span class="n">Pattern</span>
-</span><span data-line="7"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Literal</span>
-</span><span data-line="8">
-</span><span data-line="9"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">DEFAULT_ALLOWED_CORS_HEADERS</span>
-</span><span data-line="10">
-</span><span data-line="11"><span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;CORSConfig&quot;</span><span class="p">,)</span>
-</span><span data-line="12">
+</span><span data-line="4"><span class="kn">import</span><span class="w"> </span><span class="nn">uuid</span>
+</span><span data-line="5"><span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
+</span><span data-line="6"><span class="kn">from</span><span class="w"> </span><span class="nn">functools</span><span class="w"> </span><span class="kn">import</span> <span class="n">cached_property</span>
+</span><span data-line="7"><span class="kn">from</span><span class="w"> </span><span class="nn">re</span><span class="w"> </span><span class="kn">import</span> <span class="n">Pattern</span>
+</span><span data-line="8"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Final</span><span class="p">,</span> <span class="n">Literal</span>
+</span><span data-line="9">
+</span><span data-line="10"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">DEFAULT_ALLOWED_CORS_HEADERS</span>
+</span><span data-line="11">
+</span><span data-line="12"><span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;CORSConfig&quot;</span><span class="p">,)</span>
 </span><span data-line="13">
-</span><span data-line="14"><span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
-</span><span data-line="15">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">Method</span>
-</span><span data-line="16">
+</span><span data-line="14">
+</span><span data-line="15"><span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+</span><span data-line="16">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">Method</span>
 </span><span data-line="17">
+</span><span data-line="18">
+</span><span data-line="19"><span class="c1"># this is just a UUID, so we can be sure it&#39;s not contained within the string we&#39;re</span>
+</span><span data-line="20"><span class="c1"># calling &#39;.replace&#39; on</span>
+</span><span data-line="21"><span class="n">_RE_ESCAPE_PLACEHOLDER</span><span class="p">:</span> <span class="n">Final</span> <span class="o">=</span> <span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">()</span><span class="o">.</span><span class="n">hex</span>
+</span><span data-line="22">
+</span><span data-line="23">
 <div class="viewcode-block" id="CORSConfig">
 <a class="viewcode-back" href="../../../reference/config.html#litestar.config.cors.CORSConfig">[docs]</a>
-</span><span data-line="18"><span class="nd">@dataclass</span>
-</span><span data-line="19"><span class="k">class</span><span class="w"> </span><span class="nc">CORSConfig</span><span class="p">:</span>
-</span><span data-line="20"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Configuration for CORS (Cross-Origin Resource Sharing).</span>
-</span><span data-line="21">
-</span><span data-line="22"><span class="sd">    To enable CORS, pass an instance of this class to the :class:`Litestar &lt;litestar.app.Litestar&gt;` constructor using the</span>
-</span><span data-line="23"><span class="sd">    &#39;cors_config&#39; key.</span>
-</span><span data-line="24"><span class="sd">    &quot;&quot;&quot;</span>
-</span><span data-line="25">
-</span><span data-line="26">    <span class="n">allow_origins</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;*&quot;</span><span class="p">])</span>
-</span><span data-line="27"><span class="w">    </span><span class="sd">&quot;&quot;&quot;List of origins that are allowed.</span>
-</span><span data-line="28">
-</span><span data-line="29"><span class="sd">    Can use &#39;*&#39; in any component of the path, e.g. &#39;domain.*&#39;. Sets the &#39;Access-Control-Allow-Origin&#39; header.</span>
+</span><span data-line="24"><span class="nd">@dataclass</span>
+</span><span data-line="25"><span class="k">class</span><span class="w"> </span><span class="nc">CORSConfig</span><span class="p">:</span>
+</span><span data-line="26"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Configuration for CORS (Cross-Origin Resource Sharing).</span>
+</span><span data-line="27">
+</span><span data-line="28"><span class="sd">    To enable CORS, pass an instance of this class to the :class:`Litestar &lt;litestar.app.Litestar&gt;` constructor using the</span>
+</span><span data-line="29"><span class="sd">    &#39;cors_config&#39; key.</span>
 </span><span data-line="30"><span class="sd">    &quot;&quot;&quot;</span>
-</span><span data-line="31">    <span class="n">allow_methods</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;*&quot;</span><span class="p">]</span> <span class="o">|</span> <span class="n">Method</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;*&quot;</span><span class="p">])</span>
-</span><span data-line="32"><span class="w">    </span><span class="sd">&quot;&quot;&quot;List of allowed HTTP methods.</span>
-</span><span data-line="33">
-</span><span data-line="34"><span class="sd">    Sets the &#39;Access-Control-Allow-Methods&#39; header.</span>
-</span><span data-line="35"><span class="sd">    &quot;&quot;&quot;</span>
-</span><span data-line="36">    <span class="n">allow_headers</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;*&quot;</span><span class="p">])</span>
-</span><span data-line="37"><span class="w">    </span><span class="sd">&quot;&quot;&quot;List of allowed headers.</span>
-</span><span data-line="38">
-</span><span data-line="39"><span class="sd">    Sets the &#39;Access-Control-Allow-Headers&#39; header.</span>
-</span><span data-line="40"><span class="sd">    &quot;&quot;&quot;</span>
-</span><span data-line="41">    <span class="n">allow_credentials</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-</span><span data-line="42"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Boolean dictating whether or not to set the &#39;Access-Control-Allow-Credentials&#39; header.&quot;&quot;&quot;</span>
-</span><span data-line="43">    <span class="n">allow_origin_regex</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
-</span><span data-line="44"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Regex to match origins against.&quot;&quot;&quot;</span>
-</span><span data-line="45">    <span class="n">expose_headers</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
-</span><span data-line="46"><span class="w">    </span><span class="sd">&quot;&quot;&quot;List of headers that are exposed via the &#39;Access-Control-Expose-Headers&#39; header.&quot;&quot;&quot;</span>
-</span><span data-line="47">    <span class="n">max_age</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">600</span><span class="p">)</span>
-</span><span data-line="48"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Response caching TTL in seconds, defaults to 600.</span>
-</span><span data-line="49">
-</span><span data-line="50"><span class="sd">    Sets the &#39;Access-Control-Max-Age&#39; header.</span>
-</span><span data-line="51"><span class="sd">    &quot;&quot;&quot;</span>
-</span><span data-line="52">
-</span><span data-line="53">    <span class="k">def</span><span class="w"> </span><span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="54">        <span class="bp">self</span><span class="o">.</span><span class="n">allow_headers</span> <span class="o">=</span> <span class="p">[</span><span class="n">v</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">allow_headers</span><span class="p">]</span>
+</span><span data-line="31">
+</span><span data-line="32">    <span class="n">allow_origins</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;*&quot;</span><span class="p">])</span>
+</span><span data-line="33"><span class="w">    </span><span class="sd">&quot;&quot;&quot;List of origins that are allowed.</span>
+</span><span data-line="34">
+</span><span data-line="35"><span class="sd">    Can use &#39;*&#39; in any component of the path, e.g. &#39;domain.*&#39;. Sets the &#39;Access-Control-Allow-Origin&#39; header.</span>
+</span><span data-line="36"><span class="sd">    &quot;&quot;&quot;</span>
+</span><span data-line="37">    <span class="n">allow_methods</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;*&quot;</span><span class="p">]</span> <span class="o">|</span> <span class="n">Method</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;*&quot;</span><span class="p">])</span>
+</span><span data-line="38"><span class="w">    </span><span class="sd">&quot;&quot;&quot;List of allowed HTTP methods.</span>
+</span><span data-line="39">
+</span><span data-line="40"><span class="sd">    Sets the &#39;Access-Control-Allow-Methods&#39; header.</span>
+</span><span data-line="41"><span class="sd">    &quot;&quot;&quot;</span>
+</span><span data-line="42">    <span class="n">allow_headers</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;*&quot;</span><span class="p">])</span>
+</span><span data-line="43"><span class="w">    </span><span class="sd">&quot;&quot;&quot;List of allowed headers.</span>
+</span><span data-line="44">
+</span><span data-line="45"><span class="sd">    Sets the &#39;Access-Control-Allow-Headers&#39; header.</span>
+</span><span data-line="46"><span class="sd">    &quot;&quot;&quot;</span>
+</span><span data-line="47">    <span class="n">allow_credentials</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</span><span data-line="48"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Boolean dictating whether or not to set the &#39;Access-Control-Allow-Credentials&#39; header.&quot;&quot;&quot;</span>
+</span><span data-line="49">    <span class="n">allow_origin_regex</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+</span><span data-line="50"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Regex to match origins against.&quot;&quot;&quot;</span>
+</span><span data-line="51">    <span class="n">expose_headers</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
+</span><span data-line="52"><span class="w">    </span><span class="sd">&quot;&quot;&quot;List of headers that are exposed via the &#39;Access-Control-Expose-Headers&#39; header.&quot;&quot;&quot;</span>
+</span><span data-line="53">    <span class="n">max_age</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">600</span><span class="p">)</span>
+</span><span data-line="54"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Response caching TTL in seconds, defaults to 600.</span>
 </span><span data-line="55">
-</span><span data-line="56">    <span class="nd">@cached_property</span>
-</span><span data-line="57">    <span class="k">def</span><span class="w"> </span><span class="nf">allowed_origins_regex</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Pattern</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-</span><span data-line="58"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Get or create a compiled regex for allowed origins.</span>
-</span><span data-line="59">
-</span><span data-line="60"><span class="sd">        Returns:</span>
-</span><span data-line="61"><span class="sd">            A compiled regex of the allowed path.</span>
-</span><span data-line="62"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="63">        <span class="n">origins</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">allow_origins</span>
-</span><span data-line="64">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">allow_origin_regex</span><span class="p">:</span>
-</span><span data-line="65">            <span class="n">origins</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">allow_origin_regex</span><span class="p">)</span>
-</span><span data-line="66">        <span class="k">return</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s2">&quot;|&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">origin</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;*.&quot;</span><span class="p">,</span> <span class="sa">r</span><span class="s2">&quot;.*\.&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">origin</span> <span class="ow">in</span> <span class="n">origins</span><span class="p">]))</span>
-</span><span data-line="67">
-</span><span data-line="68">    <span class="nd">@cached_property</span>
-</span><span data-line="69">    <span class="k">def</span><span class="w"> </span><span class="nf">is_allow_all_origins</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-</span><span data-line="70"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Get a cached boolean flag dictating whether all origins are allowed.</span>
-</span><span data-line="71">
-</span><span data-line="72"><span class="sd">        Returns:</span>
-</span><span data-line="73"><span class="sd">            Boolean dictating whether all origins are allowed.</span>
-</span><span data-line="74"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="75">        <span class="k">return</span> <span class="s2">&quot;*&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">allow_origins</span>
-</span><span data-line="76">
-</span><span data-line="77">    <span class="nd">@cached_property</span>
-</span><span data-line="78">    <span class="k">def</span><span class="w"> </span><span class="nf">is_allow_all_methods</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-</span><span data-line="79"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Get a cached boolean flag dictating whether all methods are allowed.</span>
-</span><span data-line="80">
-</span><span data-line="81"><span class="sd">        Returns:</span>
-</span><span data-line="82"><span class="sd">            Boolean dictating whether all methods are allowed.</span>
-</span><span data-line="83"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="84">        <span class="k">return</span> <span class="s2">&quot;*&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">allow_methods</span>
-</span><span data-line="85">
-</span><span data-line="86">    <span class="nd">@cached_property</span>
-</span><span data-line="87">    <span class="k">def</span><span class="w"> </span><span class="nf">is_allow_all_headers</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-</span><span data-line="88"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Get a cached boolean flag dictating whether all headers are allowed.</span>
-</span><span data-line="89">
-</span><span data-line="90"><span class="sd">        Returns:</span>
-</span><span data-line="91"><span class="sd">            Boolean dictating whether all headers are allowed.</span>
-</span><span data-line="92"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="93">        <span class="k">return</span> <span class="s2">&quot;*&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">allow_headers</span>
-</span><span data-line="94">
-</span><span data-line="95">    <span class="nd">@cached_property</span>
-</span><span data-line="96">    <span class="k">def</span><span class="w"> </span><span class="nf">preflight_headers</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
-</span><span data-line="97"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Get cached pre-flight headers.</span>
-</span><span data-line="98">
-</span><span data-line="99"><span class="sd">        Returns:</span>
-</span><span data-line="100"><span class="sd">            A dictionary of headers to set on the response object.</span>
-</span><span data-line="101"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="102">        <span class="n">headers</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;Access-Control-Max-Age&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">max_age</span><span class="p">)}</span>
-</span><span data-line="103">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_allow_all_origins</span><span class="p">:</span>
-</span><span data-line="104">            <span class="n">headers</span><span class="p">[</span><span class="s2">&quot;Access-Control-Allow-Origin&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;*&quot;</span>
-</span><span data-line="105">        <span class="k">else</span><span class="p">:</span>
-</span><span data-line="106">            <span class="n">headers</span><span class="p">[</span><span class="s2">&quot;Vary&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Origin&quot;</span>
-</span><span data-line="107">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">allow_credentials</span><span class="p">:</span>
-</span><span data-line="108">            <span class="n">headers</span><span class="p">[</span><span class="s2">&quot;Access-Control-Allow-Credentials&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">allow_credentials</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
-</span><span data-line="109">        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_allow_all_headers</span><span class="p">:</span>
-</span><span data-line="110">            <span class="n">headers</span><span class="p">[</span><span class="s2">&quot;Access-Control-Allow-Headers&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
-</span><span data-line="111">                <span class="nb">sorted</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">allow_headers</span><span class="p">)</span> <span class="o">|</span> <span class="n">DEFAULT_ALLOWED_CORS_HEADERS</span><span class="p">)</span>  <span class="c1"># pyright: ignore</span>
-</span><span data-line="112">            <span class="p">)</span>
-</span><span data-line="113">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">allow_methods</span><span class="p">:</span>
-</span><span data-line="114">            <span class="n">headers</span><span class="p">[</span><span class="s2">&quot;Access-Control-Allow-Methods&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
-</span><span data-line="115">                <span class="nb">sorted</span><span class="p">(</span>
-</span><span data-line="116">                    <span class="p">{</span><span class="s2">&quot;DELETE&quot;</span><span class="p">,</span> <span class="s2">&quot;GET&quot;</span><span class="p">,</span> <span class="s2">&quot;HEAD&quot;</span><span class="p">,</span> <span class="s2">&quot;OPTIONS&quot;</span><span class="p">,</span> <span class="s2">&quot;PATCH&quot;</span><span class="p">,</span> <span class="s2">&quot;POST&quot;</span><span class="p">,</span> <span class="s2">&quot;PUT&quot;</span><span class="p">}</span>
-</span><span data-line="117">                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_allow_all_methods</span>
-</span><span data-line="118">                    <span class="k">else</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">allow_methods</span><span class="p">)</span>
-</span><span data-line="119">                <span class="p">)</span>
-</span><span data-line="120">            <span class="p">)</span>
-</span><span data-line="121">        <span class="k">return</span> <span class="n">headers</span>
-</span><span data-line="122">
-</span><span data-line="123">    <span class="nd">@cached_property</span>
-</span><span data-line="124">    <span class="k">def</span><span class="w"> </span><span class="nf">simple_headers</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
-</span><span data-line="125"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Get cached simple headers.</span>
-</span><span data-line="126">
-</span><span data-line="127"><span class="sd">        Returns:</span>
-</span><span data-line="128"><span class="sd">            A dictionary of headers to set on the response object.</span>
-</span><span data-line="129"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="130">        <span class="n">simple_headers</span> <span class="o">=</span> <span class="p">{}</span>
-</span><span data-line="131">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_allow_all_origins</span><span class="p">:</span>
-</span><span data-line="132">            <span class="n">simple_headers</span><span class="p">[</span><span class="s2">&quot;Access-Control-Allow-Origin&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;*&quot;</span>
-</span><span data-line="133">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">allow_credentials</span><span class="p">:</span>
-</span><span data-line="134">            <span class="n">simple_headers</span><span class="p">[</span><span class="s2">&quot;Access-Control-Allow-Credentials&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;true&quot;</span>
-</span><span data-line="135">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">expose_headers</span><span class="p">:</span>
-</span><span data-line="136">            <span class="n">simple_headers</span><span class="p">[</span><span class="s2">&quot;Access-Control-Expose-Headers&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">expose_headers</span><span class="p">)))</span>
-</span><span data-line="137">        <span class="k">return</span> <span class="n">simple_headers</span>
-</span><span data-line="138">
+</span><span data-line="56"><span class="sd">    Sets the &#39;Access-Control-Max-Age&#39; header.</span>
+</span><span data-line="57"><span class="sd">    &quot;&quot;&quot;</span>
+</span><span data-line="58">
+</span><span data-line="59">    <span class="k">def</span><span class="w"> </span><span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="60">        <span class="bp">self</span><span class="o">.</span><span class="n">allow_headers</span> <span class="o">=</span> <span class="p">[</span><span class="n">v</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">allow_headers</span><span class="p">]</span>
+</span><span data-line="61">
+</span><span data-line="62">    <span class="nd">@cached_property</span>
+</span><span data-line="63">    <span class="k">def</span><span class="w"> </span><span class="nf">allowed_origins_regex</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Pattern</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+</span><span data-line="64"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Get or create a compiled regex for allowed origins.</span>
+</span><span data-line="65">
+</span><span data-line="66"><span class="sd">        Returns:</span>
+</span><span data-line="67"><span class="sd">            A compiled regex of the allowed path.</span>
+</span><span data-line="68"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="69">        <span class="c1"># escape the allowed origins, while turning &#39;*&#39; into wildcard &#39;.*&#39; matches</span>
+</span><span data-line="70">        <span class="n">origins</span> <span class="o">=</span> <span class="p">[</span>
+</span><span data-line="71">            <span class="n">re</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="n">o</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;*&quot;</span><span class="p">,</span> <span class="n">_RE_ESCAPE_PLACEHOLDER</span><span class="p">))</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">_RE_ESCAPE_PLACEHOLDER</span><span class="p">,</span> <span class="s2">&quot;.*&quot;</span><span class="p">)</span>
+</span><span data-line="72">            <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">allow_origins</span>
+</span><span data-line="73">        <span class="p">]</span>
+</span><span data-line="74">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">allow_origin_regex</span><span class="p">:</span>
+</span><span data-line="75">            <span class="n">origins</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">allow_origin_regex</span><span class="p">)</span>
+</span><span data-line="76">        <span class="k">return</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s2">&quot;|&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">origins</span><span class="p">))</span>
+</span><span data-line="77">
+</span><span data-line="78">    <span class="nd">@cached_property</span>
+</span><span data-line="79">    <span class="k">def</span><span class="w"> </span><span class="nf">is_allow_all_origins</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+</span><span data-line="80"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Get a cached boolean flag dictating whether all origins are allowed.</span>
+</span><span data-line="81">
+</span><span data-line="82"><span class="sd">        Returns:</span>
+</span><span data-line="83"><span class="sd">            Boolean dictating whether all origins are allowed.</span>
+</span><span data-line="84"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="85">        <span class="k">return</span> <span class="s2">&quot;*&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">allow_origins</span>
+</span><span data-line="86">
+</span><span data-line="87">    <span class="nd">@cached_property</span>
+</span><span data-line="88">    <span class="k">def</span><span class="w"> </span><span class="nf">is_allow_all_methods</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+</span><span data-line="89"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Get a cached boolean flag dictating whether all methods are allowed.</span>
+</span><span data-line="90">
+</span><span data-line="91"><span class="sd">        Returns:</span>
+</span><span data-line="92"><span class="sd">            Boolean dictating whether all methods are allowed.</span>
+</span><span data-line="93"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="94">        <span class="k">return</span> <span class="s2">&quot;*&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">allow_methods</span>
+</span><span data-line="95">
+</span><span data-line="96">    <span class="nd">@cached_property</span>
+</span><span data-line="97">    <span class="k">def</span><span class="w"> </span><span class="nf">is_allow_all_headers</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+</span><span data-line="98"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Get a cached boolean flag dictating whether all headers are allowed.</span>
+</span><span data-line="99">
+</span><span data-line="100"><span class="sd">        Returns:</span>
+</span><span data-line="101"><span class="sd">            Boolean dictating whether all headers are allowed.</span>
+</span><span data-line="102"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="103">        <span class="k">return</span> <span class="s2">&quot;*&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">allow_headers</span>
+</span><span data-line="104">
+</span><span data-line="105">    <span class="nd">@cached_property</span>
+</span><span data-line="106">    <span class="k">def</span><span class="w"> </span><span class="nf">preflight_headers</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+</span><span data-line="107"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Get cached pre-flight headers.</span>
+</span><span data-line="108">
+</span><span data-line="109"><span class="sd">        Returns:</span>
+</span><span data-line="110"><span class="sd">            A dictionary of headers to set on the response object.</span>
+</span><span data-line="111"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="112">        <span class="n">headers</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;Access-Control-Max-Age&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">max_age</span><span class="p">)}</span>
+</span><span data-line="113">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_allow_all_origins</span><span class="p">:</span>
+</span><span data-line="114">            <span class="n">headers</span><span class="p">[</span><span class="s2">&quot;Access-Control-Allow-Origin&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;*&quot;</span>
+</span><span data-line="115">        <span class="k">else</span><span class="p">:</span>
+</span><span data-line="116">            <span class="n">headers</span><span class="p">[</span><span class="s2">&quot;Vary&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Origin&quot;</span>
+</span><span data-line="117">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">allow_credentials</span><span class="p">:</span>
+</span><span data-line="118">            <span class="n">headers</span><span class="p">[</span><span class="s2">&quot;Access-Control-Allow-Credentials&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">allow_credentials</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+</span><span data-line="119">        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_allow_all_headers</span><span class="p">:</span>
+</span><span data-line="120">            <span class="n">headers</span><span class="p">[</span><span class="s2">&quot;Access-Control-Allow-Headers&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+</span><span data-line="121">                <span class="nb">sorted</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">allow_headers</span><span class="p">)</span> <span class="o">|</span> <span class="n">DEFAULT_ALLOWED_CORS_HEADERS</span><span class="p">)</span>  <span class="c1"># pyright: ignore</span>
+</span><span data-line="122">            <span class="p">)</span>
+</span><span data-line="123">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">allow_methods</span><span class="p">:</span>
+</span><span data-line="124">            <span class="n">headers</span><span class="p">[</span><span class="s2">&quot;Access-Control-Allow-Methods&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+</span><span data-line="125">                <span class="nb">sorted</span><span class="p">(</span>
+</span><span data-line="126">                    <span class="p">{</span><span class="s2">&quot;DELETE&quot;</span><span class="p">,</span> <span class="s2">&quot;GET&quot;</span><span class="p">,</span> <span class="s2">&quot;HEAD&quot;</span><span class="p">,</span> <span class="s2">&quot;OPTIONS&quot;</span><span class="p">,</span> <span class="s2">&quot;PATCH&quot;</span><span class="p">,</span> <span class="s2">&quot;POST&quot;</span><span class="p">,</span> <span class="s2">&quot;PUT&quot;</span><span class="p">}</span>
+</span><span data-line="127">                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_allow_all_methods</span>
+</span><span data-line="128">                    <span class="k">else</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">allow_methods</span><span class="p">)</span>
+</span><span data-line="129">                <span class="p">)</span>
+</span><span data-line="130">            <span class="p">)</span>
+</span><span data-line="131">        <span class="k">return</span> <span class="n">headers</span>
+</span><span data-line="132">
+</span><span data-line="133">    <span class="nd">@cached_property</span>
+</span><span data-line="134">    <span class="k">def</span><span class="w"> </span><span class="nf">simple_headers</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+</span><span data-line="135"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Get cached simple headers.</span>
+</span><span data-line="136">
+</span><span data-line="137"><span class="sd">        Returns:</span>
+</span><span data-line="138"><span class="sd">            A dictionary of headers to set on the response object.</span>
+</span><span data-line="139"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="140">        <span class="n">simple_headers</span> <span class="o">=</span> <span class="p">{}</span>
+</span><span data-line="141">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_allow_all_origins</span><span class="p">:</span>
+</span><span data-line="142">            <span class="n">simple_headers</span><span class="p">[</span><span class="s2">&quot;Access-Control-Allow-Origin&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;*&quot;</span>
+</span><span data-line="143">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">allow_credentials</span><span class="p">:</span>
+</span><span data-line="144">            <span class="n">simple_headers</span><span class="p">[</span><span class="s2">&quot;Access-Control-Allow-Credentials&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;true&quot;</span>
+</span><span data-line="145">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">expose_headers</span><span class="p">:</span>
+</span><span data-line="146">            <span class="n">simple_headers</span><span class="p">[</span><span class="s2">&quot;Access-Control-Expose-Headers&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">expose_headers</span><span class="p">)))</span>
+</span><span data-line="147">        <span class="k">return</span> <span class="n">simple_headers</span>
+</span><span data-line="148">
 <div class="viewcode-block" id="CORSConfig.is_origin_allowed">
 <a class="viewcode-back" href="../../../reference/config.html#litestar.config.cors.CORSConfig.is_origin_allowed">[docs]</a>
-</span><span data-line="139">    <span class="k">def</span><span class="w"> </span><span class="nf">is_origin_allowed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">origin</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-</span><span data-line="140"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Check whether a given origin is allowed.</span>
-</span><span data-line="141">
-</span><span data-line="142"><span class="sd">        Args:</span>
-</span><span data-line="143"><span class="sd">            origin: An origin header value.</span>
-</span><span data-line="144">
-</span><span data-line="145"><span class="sd">        Returns:</span>
-</span><span data-line="146"><span class="sd">            Boolean determining whether an origin is allowed.</span>
-</span><span data-line="147"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="148">        <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">is_allow_all_origins</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">allowed_origins_regex</span><span class="o">.</span><span class="n">fullmatch</span><span class="p">(</span><span class="n">origin</span><span class="p">))</span></div>
+</span><span data-line="149">    <span class="k">def</span><span class="w"> </span><span class="nf">is_origin_allowed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">origin</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+</span><span data-line="150"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Check whether a given origin is allowed.</span>
+</span><span data-line="151">
+</span><span data-line="152"><span class="sd">        Args:</span>
+</span><span data-line="153"><span class="sd">            origin: An origin header value.</span>
+</span><span data-line="154">
+</span><span data-line="155"><span class="sd">        Returns:</span>
+</span><span data-line="156"><span class="sd">            Boolean determining whether an origin is allowed.</span>
+</span><span data-line="157"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="158">        <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">is_allow_all_origins</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">allowed_origins_regex</span><span class="o">.</span><span class="n">fullmatch</span><span class="p">(</span><span class="n">origin</span><span class="p">))</span></div>
 </div>
 
 </span></pre></div>
