@@ -33,14 +33,14 @@ def test_allowed_hosts_middleware() -> None:
 
     allowed_hosts_middleware, *_ = unpacked_middleware
     assert isinstance(allowed_hosts_middleware, AllowedHostsMiddleware)
-    assert allowed_hosts_middleware.allowed_hosts_regex.pattern == ".*\\.example.com$|moishe.zuchmir.com"  # type: ignore[union-attr]
+    assert allowed_hosts_middleware.allowed_hosts_regex.pattern == r".*\.example\.com$|moishe\.zuchmir\.com"  # type: ignore[union-attr]
 
 
 def test_allowed_hosts_middleware_hosts_regex() -> None:
     config = AllowedHostsConfig(allowed_hosts=["*.example.com", "moishe.zuchmir.com"])
     middleware = AllowedHostsMiddleware(app=DummyApp(), config=config)  # type: ignore[abstract]
     assert middleware.allowed_hosts_regex is not None
-    assert middleware.allowed_hosts_regex.pattern == ".*\\.example.com$|moishe.zuchmir.com"
+    assert middleware.allowed_hosts_regex.pattern == r".*\.example\.com$|moishe\.zuchmir\.com"
 
     assert middleware.allowed_hosts_regex.fullmatch("www.example.com")
     assert middleware.allowed_hosts_regex.fullmatch("other.example.com")
@@ -65,7 +65,18 @@ def test_allowed_hosts_middleware_redirect_regex() -> None:
     assert middleware.redirect_domains.fullmatch("yada.bada.bing.io")
 
 
-def test_middleware_allowed_hosts() -> None:
+@pytest.mark.parametrize(
+    "base_url,expected_status_code",
+    [
+        ("http://x.example.com", HTTP_200_OK),
+        ("http://x.y.example.com", HTTP_200_OK),
+        ("http://moishe.zuchmir.com", HTTP_200_OK),
+        ("http://moisheAzuchmir.com", HTTP_400_BAD_REQUEST),
+        ("http://x.moishe.zuchmir.com", HTTP_400_BAD_REQUEST),
+        ("http://x.example.x.com", HTTP_400_BAD_REQUEST),
+    ],
+)
+def test_middleware_allowed_hosts(base_url: str, expected_status_code: int) -> None:
     @get("/")
     def handler() -> dict:
         return {"hello": "world"}
@@ -73,25 +84,9 @@ def test_middleware_allowed_hosts() -> None:
     config = AllowedHostsConfig(allowed_hosts=["*.example.com", "moishe.zuchmir.com"])
 
     with create_test_client(handler, allowed_hosts=config) as client:
-        client.base_url = "http://x.example.com"
+        client.base_url = base_url
         response = client.get("/")
-        assert response.status_code == HTTP_200_OK
-
-        client.base_url = "http://x.y.example.com"
-        response = client.get("/")
-        assert response.status_code == HTTP_200_OK
-
-        client.base_url = "http://moishe.zuchmir.com"
-        response = client.get("/")
-        assert response.status_code == HTTP_200_OK
-
-        client.base_url = "http://x.moishe.zuchmir.com"
-        response = client.get("/")
-        assert response.status_code == HTTP_400_BAD_REQUEST
-
-        client.base_url = "http://x.example.x.com"
-        response = client.get("/")
-        assert response.status_code == HTTP_400_BAD_REQUEST
+        assert response.status_code == expected_status_code
 
 
 def test_middleware_allow_all() -> None:

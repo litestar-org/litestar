@@ -37,7 +37,8 @@ class AllowedHostsMiddleware(AbstractMiddleware):
             return
 
         allowed_hosts: set[str] = {
-            rf".*\.{host.replace('*.', '')}$" if host.startswith("*.") else host for host in config.allowed_hosts
+            rf".*\.{re.escape(host.replace('*.', ''))}$" if host.startswith("*.") else re.escape(host)
+            for host in config.allowed_hosts
         }
 
         self.allowed_hosts_regex = re.compile("|".join(sorted(allowed_hosts)))  # pyright: ignore
