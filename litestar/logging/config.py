@@ -8,7 +8,7 @@ import os
 import queue
 import sys
 from logging.handlers import QueueListener
-from typing import TYPE_CHECKING, Literal, ClassVar, cast, Any
+from typing import TYPE_CHECKING, Literal, ClassVar, cast
 
 __all__ = ("LoggingConfig",)
 
@@ -59,14 +59,31 @@ class LoggingConfig:
     _handler_queue: ClassVar[queue.Queue | None] = None
     _queue_listener: ClassVar[QueueListener | None] = None
 
+    root_logger_name: str = "litestar"
+    """Name of the litestar root logger"""
+
     level: Literal[0, 10, 20, 30, 40, 50] = logging.INFO
     """Log level"""
+
     log_exceptions: Literal["always", "debug", "never"] = "always"
     """When to log exceptions"""
+
+    log_requests: bool = False
+    """
+    Log details about requests.
+    
+    This is a convenience function and functionally equivalent to passing 
+    :class:`~litestar.middleware.logging.LoggingMiddleware` to the root Litestar app.
+    To configure request logging more precisely, set ``log_requests=False``, and pass 
+    the middleware manually.
+    """
+
     disable_stack_trace: set[int | type[Exception]] = dataclasses.field(default_factory=set)
     """Set of http status codes and exceptions to disable stack trace logging for."""
+
     exception_logging_handler: ExceptionLoggingHandler = _default_exception_logging_handler
     """Handler function for logging exceptions."""
+
     get_logger: GetLogger = logging.getLogger
     """
     :func:`logging.getLogger`-like function to retrieve a logger. Litestar will use this
@@ -93,19 +110,42 @@ class LoggingConfig:
 
     always_propagate_on_pytest: bool = True
     """
-    set 'propagate=True' when running under pytest. Useful when working with pytest's 
+    Set 'propagate=True' when running under pytest. Useful when working with pytest's 
     'caplog' fixture, as it may not work correctly otherwise
     """
 
     formatter: type[logging.Formatter] | None = dataclasses.field(default=ExtraKeyValueFormatter)
+    """
+    Logging formatter to use for the Litestar logger.
+    """
 
-    supports_json_like_data: bool = False
+    can_log_structured_data: bool = False
+    """
+    Whether the logger supports structured data, e.g. 'dict' or 'list'.
+    """
 
     @property
     def should_propagate(self) -> bool:
         return self.propagate or (self.always_propagate_on_pytest and "PYTEST_VERSION" in os.environ)
 
-    def configure_logger(self, app: Litestar) -> LifespanHook | None:
+    def get_litestar_logger(self, name: str | None = None):
+        """
+        Get a litestar logger. If 'name' is given and not the name of the root logger,
+        a child logger of the root logger will be returned, e.g. requesting 'stores'
+        will return a logger named 'litestar.stores'.
+        """
+        logger = self.get_logger(self.root_logger_name)
+        if name and name != self.root_logger_name:
+            logger = logger.getChild(name)
+        return logger
+
+    def _configure_logger(self) -> LifespanHook | None:
+        """
+        Configure the Litestar logger. Should only be called once per application.
+
+        Optionally returns a 'LifespanHook' that will be called on application
+        shutdown.
+        """
         queue_handler_config = {}
         if self.configure_queue_handler:
             if LoggingConfig._handler_queue is None:
@@ -135,7 +175,7 @@ class LoggingConfig:
                     **queue_handler_config,
                 },
                 "loggers": {
-                    "litestar": {
+                    self.root_logger_name: {
                         "handlers": [
                             "litestar_queue_handler" if self.configure_queue_handler else "litestar_stream_handler",
                         ],

@@ -117,7 +117,9 @@ class LoggingMiddleware(ASGIMiddleware):
 
     async def handle(self, scope: Scope, receive: Receive, send: Send, next_app: ASGIApp) -> None:
         if not hasattr(self, "logger"):
-            self.logger = scope["litestar_app"].get_logger(self.logger_name)
+            self.logger = scope["litestar_app"].get_litestar_logger(self.logger_name)
+
+        if not hasattr(self, "logging_config"):
             self.logging_config = scope["litestar_app"].logging_config
 
         if self.response_log_fields:
@@ -166,7 +168,7 @@ class LoggingMiddleware(ASGIMiddleware):
         self.logger.info(message, extra={f"litestar_{k}": v for k, v in values.items()})
 
     def _serialize_value(self, serializer: Serializer | None, value: Any) -> Any:
-        if not self.logging_config.supports_json_like_data and isinstance(value, (dict, list, tuple, set)):
+        if not self.logging_config.can_log_structured_data and isinstance(value, (dict, list, tuple, set)):
             value = encode_json(value, serializer)
         return value.decode("utf-8", errors="backslashreplace") if isinstance(value, bytes) else value
 
