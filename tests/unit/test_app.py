@@ -23,7 +23,6 @@ from litestar.exceptions import (
     LitestarWarning,
     NotFoundException,
 )
-from litestar.logging.config import LoggingConfig
 from litestar.plugins import CLIPlugin
 from litestar.status_codes import HTTP_200_OK, HTTP_400_BAD_REQUEST, HTTP_500_INTERNAL_SERVER_ERROR
 from litestar.testing import TestClient, create_test_client

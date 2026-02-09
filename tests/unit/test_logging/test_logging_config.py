@@ -4,7 +4,7 @@ from unittest.mock import MagicMock
 import pytest
 
 from litestar import get
-from litestar.exceptions import HTTPException, ImproperlyConfiguredException, NotFoundException
+from litestar.exceptions import HTTPException, NotFoundException
 from litestar.logging.config import LoggingConfig
 from litestar.testing import create_test_client
 

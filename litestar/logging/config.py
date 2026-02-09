@@ -8,7 +8,7 @@ import os
 import queue
 import sys
 from logging.handlers import QueueListener
-from typing import TYPE_CHECKING, Literal, ClassVar, cast
+from typing import TYPE_CHECKING, ClassVar, Literal, cast
 
 __all__ = ("LoggingConfig",)
 
@@ -16,7 +16,6 @@ __all__ = ("LoggingConfig",)
 if TYPE_CHECKING:
     # these imports are duplicated on purpose so sphinx autodoc can find and link them
 
-    from litestar import Litestar
     from litestar.types import GetLogger, LifespanHook, Logger, Scope
     from litestar.types.callable_types import ExceptionLoggingHandler
 
@@ -25,8 +24,8 @@ if sys.version_info >= (3, 12):
     from logging import getHandlerByName
 else:
 
-    def getHandlerByName(name: str) -> logging.Handler:
-        return cast(logging.Handler, logging._handlers.get(name))  # type: ignore[attr-defined]
+    def getHandlerByName(name: str) -> logging.Handler:  # noqa: N802
+        return cast("logging.Handler", logging._handlers.get(name))  # type: ignore[attr-defined]
 
 
 def _default_exception_logging_handler(logger: Logger, scope: Scope, tb: list[str]) -> None:
@@ -71,10 +70,10 @@ class LoggingConfig:
     log_requests: bool = False
     """
     Log details about requests.
-    
-    This is a convenience function and functionally equivalent to passing 
+
+    This is a convenience function and functionally equivalent to passing
     :class:`~litestar.middleware.logging.LoggingMiddleware` to the root Litestar app.
-    To configure request logging more precisely, set ``log_requests=False``, and pass 
+    To configure request logging more precisely, set ``log_requests=False``, and pass
     the middleware manually.
     """
 
@@ -93,13 +92,13 @@ class LoggingConfig:
     configure_queue_handler: bool = True
     """
     Set up a :class:`logging.handlers.QueueHandler`, to ensure logging does not block
-    async execution on the main thread. The handler will be registered as 
-    ``litestar_queue_handler``. This handler will be created *once*, globally, and shut 
+    async execution on the main thread. The handler will be registered as
+    ``litestar_queue_handler``. This handler will be created *once*, globally, and shut
     down at interpreter shutdown via an :func:`atexit.atexit` handler. At application
     shutdown, the handler queue will be :meth:`joined <queue.Queue.join>`, to ensure all
-    messages are processed properly. 
-    
-    This should be set to ``True`` unless a different method of asynchronous log 
+    messages are processed properly.
+
+    This should be set to ``True`` unless a different method of asynchronous log
     handling is provided for the litestar logger
     """
 
@@ -110,7 +109,7 @@ class LoggingConfig:
 
     always_propagate_on_pytest: bool = True
     """
-    Set 'propagate=True' when running under pytest. Useful when working with pytest's 
+    Set 'propagate=True' when running under pytest. Useful when working with pytest's
     'caplog' fixture, as it may not work correctly otherwise
     """
 
@@ -129,8 +128,7 @@ class LoggingConfig:
         return self.propagate or (self.always_propagate_on_pytest and "PYTEST_VERSION" in os.environ)
 
     def get_litestar_logger(self, name: str | None = None):
-        """
-        Get a litestar logger. If 'name' is given and not the name of the root logger,
+        """Get a litestar logger. If 'name' is given and not the name of the root logger,
         a child logger of the root logger will be returned, e.g. requesting 'stores'
         will return a logger named 'litestar.stores'.
         """
@@ -140,8 +138,7 @@ class LoggingConfig:
         return logger
 
     def _configure_logger(self) -> LifespanHook | None:
-        """
-        Configure the Litestar logger. Should only be called once per application.
+        """Configure the Litestar logger. Should only be called once per application.
 
         Optionally returns a 'LifespanHook' that will be called on application
         shutdown.
