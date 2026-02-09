@@ -120,20 +120,34 @@ def _default_exception_logging_handler_factory(is_struct_logger: bool) -> Except
     if is_struct_logger:
 
         def _default_exception_logging_handler(logger: Logger, scope: Scope, tb: list[str]) -> None:
-            logger.exception(
-                "Uncaught exception",
-                connection_type=scope["type"],
-                path=scope["path"],
-            )
+            if tb:
+                logger.exception(
+                    "Uncaught exception",
+                    connection_type=scope["type"],
+                    path=scope["path"],
+                )
+            else:
+                logger.error(
+                    "Uncaught exception",
+                    connection_type=scope["type"],
+                    path=scope["path"],
+                )
 
     else:
 
         def _default_exception_logging_handler(logger: Logger, scope: Scope, tb: list[str]) -> None:
-            logger.exception(
-                "Uncaught exception (connection_type=%s, path=%r):",
-                scope["type"],
-                scope["path"],
-            )
+            if tb:
+                logger.exception(
+                    "Uncaught exception (connection_type=%s, path=%r):",
+                    scope["type"],
+                    scope["path"],
+                )
+            else:
+                logger.error(
+                    "Uncaught exception (connection_type=%s, path=%r):",
+                    scope["type"],
+                    scope["path"],
+                )
 
     return _default_exception_logging_handler
 

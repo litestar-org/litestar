@@ -180,15 +180,15 @@ def test_structlog_config_as_json(isatty: bool, pretty_print_tty: bool, expected
 
 
 @pytest.mark.parametrize(
-    "disable_stack_trace, exception_to_raise, handler_called",
+    "disable_stack_trace, exception_to_raise, expect_tb",
     [
-        # will log the stack trace
+        # will log WITH the stack trace (tb is non-empty)
         [set(), HTTPException, True],
         [set(), ValueError, True],
         [{400}, HTTPException, True],
         [{NameError}, ValueError, True],
         [{400, NameError}, ValueError, True],
-        # will not log the stack trace
+        # will log WITHOUT the stack trace (tb is empty)
         [{NotFoundException}, HTTPException, False],
         [{404}, HTTPException, False],
         [{ValueError}, ValueError, False],
@@ -199,7 +199,7 @@ def test_structlog_config_as_json(isatty: bool, pretty_print_tty: bool, expected
 def test_structlog_disable_stack_trace(
     disable_stack_trace: set[Union[int, type[Exception]]],
     exception_to_raise: type[Exception],
-    handler_called: bool,
+    expect_tb: bool,
 ) -> None:
     mock_handler = MagicMock()
 
@@ -217,7 +217,9 @@ def test_structlog_disable_stack_trace(
         else:
             _ = client.get("/error")
 
-        if handler_called:
-            assert mock_handler.called, "Structlog exception handler should have been called"
+        assert mock_handler.called, "Structlog exception handler should always be called"
+        tb = mock_handler.call_args[0][2]
+        if expect_tb:
+            assert len(tb) > 0, "Stack trace should be present"
         else:
-            assert not mock_handler.called, "Structlog exception handler should not have been called"
+            assert tb == [], "Stack trace should be suppressed but handler should still be called"
