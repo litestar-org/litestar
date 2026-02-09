@@ -278,7 +278,7 @@ class ASGIConnection(Generic[HandlerT, UserT, AuthT, StateT]):
         Raises:
             ImproperlyConfiguredException: if ``log_config`` has not been passed to the Litestar constructor.
         """
-        return self.app.get_logger()
+        return self.app.logger
 
     def set_session(self, value: dict[str, Any] | DataContainerType | EmptyType) -> None:
         """Set the session in the connection's ``Scope``.

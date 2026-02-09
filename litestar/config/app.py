@@ -229,6 +229,11 @@ class AppConfig:
         if self.allowed_hosts and isinstance(self.allowed_hosts, list):
             self.allowed_hosts = AllowedHostsConfig(allowed_hosts=self.allowed_hosts)
 
+        if self.logging_config.log_requests:
+            from litestar.middleware.logging import LoggingMiddleware
+
+            self.middleware.append(LoggingMiddleware())
+
 
 class ExperimentalFeatures(str, enum.Enum):
     DTO_CODEGEN = "DTO_CODEGEN"
