@@ -223,3 +223,23 @@ def test_structlog_disable_stack_trace(
             assert len(tb) > 0, "Stack trace should be present"
         else:
             assert tb == [], "Stack trace should be suppressed but handler should still be called"
+
+
+def test_structlog_default_handler_uses_error_when_stack_trace_suppressed() -> None:
+    """The default structlog exception logging handler should call
+    ``logger.error`` (not ``logger.exception``) when the stack trace is
+    suppressed via ``disable_stack_trace``.  This exercises the ``else``
+    branch inside ``_default_exception_logging_handler_factory(is_struct_logger=True)``.
+    """
+    logging_config = StructLoggingConfig(disable_stack_trace={ValueError})
+
+    @get("/error")
+    async def error_route() -> None:
+        raise ValueError("boom")
+
+    with create_test_client([error_route], logging_config=logging_config, debug=True) as client:
+        logger = client.app.logger
+        with patch.object(logger, "error") as mock_error, patch.object(logger, "exception") as mock_exception:
+            _ = client.get("/error")
+            mock_error.assert_called_once()
+            mock_exception.assert_not_called()
