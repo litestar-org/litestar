@@ -9,7 +9,6 @@ from litestar.events import SimpleEventEmitter
 from litestar.testing.client import AsyncTestClient, TestClient
 from litestar.types import Empty
 from litestar.utils.predicates import is_class_and_subclass
-from litestar.logging import LoggingConfig
 
 if TYPE_CHECKING:
     from contextlib import AbstractAsyncContextManager
@@ -24,6 +23,7 @@ if TYPE_CHECKING:
     from litestar.datastructures import CacheControlHeader, ETag, State
     from litestar.dto import AbstractDTO
     from litestar.events import BaseEventEmitterBackend, EventListener
+    from litestar.logging import LoggingConfig
     from litestar.middleware.session.base import BaseBackendConfig
     from litestar.openapi.config import OpenAPIConfig
     from litestar.openapi.spec import SecurityRequirement

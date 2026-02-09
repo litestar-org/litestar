@@ -1,8 +1,6 @@
 from __future__ import annotations
 
 import dataclasses
-import functools
-import logging
 import sys
 from typing import TYPE_CHECKING, Any, Callable
 
@@ -10,13 +8,13 @@ import structlog
 
 from litestar.logging.config import LoggingConfig
 from litestar.serialization.msgspec_hooks import _msgspec_json_encoder
-from litestar.types.callable_types import ExceptionLoggingHandler
 
 if TYPE_CHECKING:
+    import logging
     from collections.abc import Iterable
 
-    from litestar import Litestar
-    from litestar.types import LifespanHook, Scope, GetLogger, Logger
+    from litestar.types import Logger, Scope
+    from litestar.types.callable_types import ExceptionLoggingHandler
 
 
 def structlog_exception_logging_handler(logger: structlog.BoundLogger, scope: Scope, tb: list[str]) -> None:
@@ -89,8 +87,8 @@ class StructLoggingConfig(LoggingConfig):
 
     logger_factory: Callable[..., structlog.typing.WrappedLogger] | None = None
     """
-    Passed to :func:`structlog.configure` It is highly recommended to use 
-    :class:`structlog.stdlib.LoggerFactory`, as it will use the 
+    Passed to :func:`structlog.configure` It is highly recommended to use
+    :class:`structlog.stdlib.LoggerFactory`, as it will use the
     ``litestar_queue_handler`` to ensure non-blocking logging
     """
 
