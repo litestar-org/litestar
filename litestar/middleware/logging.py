@@ -1,7 +1,6 @@
 from __future__ import annotations
 
-from collections.abc import Collection
-from typing import TYPE_CHECKING, Any, Iterable
+from typing import TYPE_CHECKING, Any
 
 from litestar.constants import (
     HTTP_RESPONSE_BODY,
@@ -14,7 +13,6 @@ from litestar.data_extractors import (
     ResponseExtractorField,
 )
 from litestar.enums import ScopeType
-from litestar.logging import LoggingConfig
 from litestar.middleware.base import ASGIMiddleware
 from litestar.serialization import encode_json
 from litestar.utils.empty import value_or_default
@@ -25,15 +23,18 @@ __all__ = ("LoggingMiddleware",)
 
 
 if TYPE_CHECKING:
+    from collections.abc import Collection, Iterable
+
     from litestar.connection import Request
+    from litestar.logging import LoggingConfig
     from litestar.types import (
         ASGIApp,
+        Logger,
         Message,
         Receive,
         Scope,
         Send,
         Serializer,
-        Logger,
     )
 
 

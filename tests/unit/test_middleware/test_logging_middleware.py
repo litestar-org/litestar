@@ -4,7 +4,6 @@ from logging import INFO
 from typing import TYPE_CHECKING, Annotated, Any
 
 import pytest
-import structlog
 from structlog.testing import capture_logs
 
 from litestar import Response, get, post
@@ -12,7 +11,6 @@ from litestar.config.compression import CompressionConfig
 from litestar.connection import Request
 from litestar.datastructures import Cookie, UploadFile
 from litestar.enums import RequestEncodingType
-from litestar.exceptions import ImproperlyConfiguredException
 from litestar.handlers import HTTPRouteHandler
 from litestar.logging.config import LoggingConfig
 from litestar.logging.structlog import StructLoggingConfig
@@ -27,7 +25,6 @@ if TYPE_CHECKING:
     from pytest import MonkeyPatch
 
     from litestar.middleware.session.server_side import ServerSideSessionConfig
-    from litestar.types.callable_types import GetLogger
 
 
 pytestmark = pytest.mark.usefixtures("reset_httpx_logging")
@@ -53,9 +50,7 @@ def handler() -> HTTPRouteHandler:
 
 
 @pytest.mark.skipif(sys.version_info >= (3, 13), reason="Broken. Skip because of pending removal in v3")
-def test_logging_middleware_regular_logger(
-    caplog: "LogCaptureFixture", handler: HTTPRouteHandler
-) -> None:
+def test_logging_middleware_regular_logger(caplog: "LogCaptureFixture", handler: HTTPRouteHandler) -> None:
     with (
         create_test_client(route_handlers=[handler], middleware=[LoggingMiddleware()]) as client,
         caplog.at_level(INFO),
@@ -120,9 +115,7 @@ def test_logging_middleware_struct_logger(handler: HTTPRouteHandler) -> None:
 
 
 @pytest.mark.skipif(sys.version_info >= (3, 13), reason="Broken. Skip because of pending removal in v3")
-def test_logging_middleware_exclude_pattern(
-    caplog: "LogCaptureFixture", handler: HTTPRouteHandler
-) -> None:
+def test_logging_middleware_exclude_pattern(caplog: "LogCaptureFixture", handler: HTTPRouteHandler) -> None:
     @get("/exclude")
     def handler2() -> None:
         return None
@@ -147,9 +140,7 @@ def test_logging_middleware_exclude_pattern(
 
 
 @pytest.mark.skipif(sys.version_info >= (3, 13), reason="Broken. Skip because of pending removal in v3")
-def test_logging_middleware_exclude_opt_key(
-    caplog: "LogCaptureFixture", handler: HTTPRouteHandler
-) -> None:
+def test_logging_middleware_exclude_opt_key(caplog: "LogCaptureFixture", handler: HTTPRouteHandler) -> None:
     @get("/exclude", skip_logging=True)
     def handler2() -> None:
         return None
@@ -227,9 +218,7 @@ async def test_logging_middleware_post_binary_file_without_structlog(monkeypatch
 
 @pytest.mark.parametrize("logger_name", ("litestar", "other"))
 @pytest.mark.skipif(sys.version_info >= (3, 13), reason="Broken. Skip because of pending removal in v3")
-def test_logging_messages_are_not_doubled(
-    logger_name: str, caplog: "LogCaptureFixture"
-) -> None:
+def test_logging_messages_are_not_doubled(logger_name: str, caplog: "LogCaptureFixture") -> None:
     # https://github.com/litestar-org/litestar/issues/896
 
     @get("/")
@@ -252,9 +241,7 @@ def test_logging_messages_are_not_doubled(
 
 
 @pytest.mark.skipif(sys.version_info >= (3, 13), reason="Broken. Skip because of pending removal in v3")
-def test_logging_middleware_log_fields(
-    caplog: "LogCaptureFixture", handler: HTTPRouteHandler
-) -> None:
+def test_logging_middleware_log_fields(caplog: "LogCaptureFixture", handler: HTTPRouteHandler) -> None:
     with (
         create_test_client(
             route_handlers=[handler],

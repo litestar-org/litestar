@@ -22,7 +22,6 @@ from time_machine import travel
 from valkey.asyncio import Valkey as AsyncValkey
 from valkey.client import Valkey
 
-from litestar.logging import LoggingConfig
 from litestar.middleware.session import SessionMiddleware
 from litestar.middleware.session.base import BaseSessionBackend
 from litestar.middleware.session.client_side import ClientSideSessionBackend, CookieBackendConfig
@@ -47,7 +46,6 @@ if TYPE_CHECKING:
         AnyIOBackend,
         ASGIApp,
         ASGIVersion,
-        GetLogger,
         Receive,
         RouteHandlerType,
         Scope,

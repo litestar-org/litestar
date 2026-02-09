@@ -8,7 +8,7 @@ from unittest.mock import ANY
 import pytest
 import structlog
 
-from litestar import Litestar, get, Request
+from litestar import Litestar, Request, get
 from litestar.logging.structlog import StructLoggingConfig
 from litestar.middleware.logging import LoggingMiddleware
 from litestar.testing import TestClient
@@ -29,6 +29,7 @@ def test_structlog_to_file(tmp_path: Path) -> None:
     log_file = tmp_path / "log.log"
 
     with log_file.open("wt") as file_handle:
+
         @get("/")
         def handler(request: Request) -> str:
             request.logger.info("handled", hello="world")

@@ -2,7 +2,7 @@
 
 import datetime
 from typing import Union
-from unittest.mock import MagicMock, patch, ANY
+from unittest.mock import MagicMock, patch
 
 import pytest
 import structlog
@@ -56,7 +56,6 @@ def test_structlog_plugin_config(caplog: pytest.LogCaptureFixture) -> None:
     assert len(log_messages) == 1
 
 
-
 def test_structlog_config_no_tty_default(caplog: pytest.LogCaptureFixture) -> None:
     with create_test_client([], logging_config=StructLoggingConfig()) as client:
         assert isinstance(client.app.logger, structlog._config.BoundLoggerLazyProxy)
@@ -76,9 +75,6 @@ def test_structlog_config_tty_default(
     monkeypatch: pytest.MonkeyPatch,
     mocker: MockerFixture,
 ) -> None:
-    # from sys import stderr
-
-    # monkeypatch.setattr(stderr, "isatty", lambda: True)
     mocker.patch("litestar.logging.structlog.sys.stderr.isatty", return_value=True)
 
     with create_test_client([], logging_config=StructLoggingConfig()) as client:
