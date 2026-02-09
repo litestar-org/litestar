@@ -587,7 +587,7 @@ def test_default_handler_uses_error_when_stack_trace_suppressed() -> None:
     """
     handler = _default_exception_logging_handler_factory(is_struct_logger=False)
     mock_logger = MagicMock()
-    scope: dict = {"type": "http", "path": "/error"}
+    scope: Any = {"type": "http", "path": "/error"}
 
     # With traceback present -> logger.exception
     handler(mock_logger, scope, ["Traceback ..."])
