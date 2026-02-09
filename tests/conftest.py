@@ -316,14 +316,6 @@ def enable_warn_implicit_sync_to_thread(monkeypatch: MonkeyPatch) -> None:
     monkeypatch.setenv("LITESTAR_WARN_IMPLICIT_SYNC_TO_THREAD", "1")
 
 
-@pytest.fixture
-def get_logger() -> GetLogger:
-    # due to the limitations of caplog we have to place this call here.
-    # we also have to allow propagation.
-    config = LoggingConfig()
-    return config.get_logger
-
-
 @pytest.fixture()
 async def redis_client(docker_ip: str, redis_service: None) -> AsyncGenerator[AsyncRedis, None]:
     # this is to get around some weirdness with pytest-asyncio and redis interaction
