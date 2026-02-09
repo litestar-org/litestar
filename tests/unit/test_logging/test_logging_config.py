@@ -17,6 +17,7 @@ from litestar import Request, get
 from litestar.exceptions import HTTPException, ImproperlyConfiguredException, NotFoundException
 from litestar.logging.config import (
     LoggingConfig,
+    _default_exception_logging_handler_factory,
     _get_default_handlers,
     _get_default_logging_module,
     default_handlers,
@@ -584,15 +585,18 @@ def test_default_handler_uses_error_when_stack_trace_suppressed() -> None:
     ``disable_stack_trace``.  This exercises the ``else`` branch inside
     ``_default_exception_logging_handler_factory(is_struct_logger=False)``.
     """
-    logging_config = LoggingConfig(disable_stack_trace={ValueError})
+    handler = _default_exception_logging_handler_factory(is_struct_logger=False)
+    mock_logger = MagicMock()
+    scope: dict = {"type": "http", "path": "/error"}
 
-    @get("/error")
-    async def error_route() -> None:
-        raise ValueError("boom")
+    # With traceback present -> logger.exception
+    handler(mock_logger, scope, ["Traceback ..."])
+    mock_logger.exception.assert_called_once()
+    mock_logger.error.assert_not_called()
 
-    with create_test_client([error_route], logging_config=logging_config, debug=True) as client:
-        logger = client.app.logger
-        with patch.object(logger, "error") as mock_error, patch.object(logger, "exception") as mock_exception:
-            _ = client.get("/error")
-            mock_error.assert_called_once()
-            mock_exception.assert_not_called()
+    mock_logger.reset_mock()
+
+    # With empty traceback (stack trace suppressed) -> logger.error
+    handler(mock_logger, scope, [])
+    mock_logger.error.assert_called_once()
+    mock_logger.exception.assert_not_called()

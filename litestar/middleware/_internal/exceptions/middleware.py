@@ -223,12 +223,11 @@ class ExceptionHandlerMiddleware:
         exc_detail: set[Union[Exception, int]] = {exc[0], getattr(exc[0], "status_code", None)}  # type: ignore[arg-type]  # noqa: UP007
 
         handler = logging_config.exception_logging_handler
-        should_log = (
-            logging_config.log_exceptions == "always"
-            or (logging_config.log_exceptions == "debug" and self._get_debug_scope(scope))
-        ) and handler is not None
+        should_log = logging_config.log_exceptions == "always" or (
+            logging_config.log_exceptions == "debug" and self._get_debug_scope(scope)
+        )
 
-        if should_log:
+        if should_log and handler is not None:
             include_stack_trace = exc_detail.isdisjoint(logging_config.disable_stack_trace)
             tb = format_exception(*exc) if include_stack_trace else []
             handler(logger, scope, tb)

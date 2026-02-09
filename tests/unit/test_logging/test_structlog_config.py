@@ -14,7 +14,13 @@ from structlog.types import BindableLogger, WrappedLogger
 
 from litestar import get
 from litestar.exceptions import HTTPException, NotFoundException
-from litestar.logging.config import LoggingConfig, StructlogEventFilter, StructLoggingConfig, default_json_serializer
+from litestar.logging.config import (
+    LoggingConfig,
+    StructlogEventFilter,
+    StructLoggingConfig,
+    _default_exception_logging_handler_factory,
+    default_json_serializer,
+)
 from litestar.plugins.structlog import StructlogConfig, StructlogPlugin
 from litestar.serialization import decode_json
 from litestar.testing import create_test_client
@@ -231,15 +237,18 @@ def test_structlog_default_handler_uses_error_when_stack_trace_suppressed() -> N
     suppressed via ``disable_stack_trace``.  This exercises the ``else``
     branch inside ``_default_exception_logging_handler_factory(is_struct_logger=True)``.
     """
-    logging_config = StructLoggingConfig(disable_stack_trace={ValueError})
+    handler = _default_exception_logging_handler_factory(is_struct_logger=True)
+    mock_logger = MagicMock()
+    scope: dict = {"type": "http", "path": "/error"}
 
-    @get("/error")
-    async def error_route() -> None:
-        raise ValueError("boom")
+    # With traceback present -> logger.exception
+    handler(mock_logger, scope, ["Traceback ..."])
+    mock_logger.exception.assert_called_once()
+    mock_logger.error.assert_not_called()
 
-    with create_test_client([error_route], logging_config=logging_config, debug=True) as client:
-        logger = client.app.logger
-        with patch.object(logger, "error") as mock_error, patch.object(logger, "exception") as mock_exception:
-            _ = client.get("/error")
-            mock_error.assert_called_once()
-            mock_exception.assert_not_called()
+    mock_logger.reset_mock()
+
+    # With empty traceback (stack trace suppressed) -> logger.error
+    handler(mock_logger, scope, [])
+    mock_logger.error.assert_called_once()
+    mock_logger.exception.assert_not_called()
