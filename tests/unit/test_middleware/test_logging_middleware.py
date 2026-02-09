@@ -54,14 +54,13 @@ def handler() -> HTTPRouteHandler:
 
 @pytest.mark.skipif(sys.version_info >= (3, 13), reason="Broken. Skip because of pending removal in v3")
 def test_logging_middleware_regular_logger(
-    get_logger: "GetLogger", caplog: "LogCaptureFixture", handler: HTTPRouteHandler
+    caplog: "LogCaptureFixture", handler: HTTPRouteHandler
 ) -> None:
     with (
         create_test_client(route_handlers=[handler], middleware=[LoggingMiddleware()]) as client,
         caplog.at_level(INFO),
     ):
         # Set cookies on the client to avoid warnings about per-request cookies.
-        client.app.get_logger = get_logger
         client.cookies = {"request-cookie": "abc"}
         response = client.get("/", headers={"request-header": "1"})
         assert response.status_code == HTTP_200_OK
@@ -122,7 +121,7 @@ def test_logging_middleware_struct_logger(handler: HTTPRouteHandler) -> None:
 
 @pytest.mark.skipif(sys.version_info >= (3, 13), reason="Broken. Skip because of pending removal in v3")
 def test_logging_middleware_exclude_pattern(
-    get_logger: "GetLogger", caplog: "LogCaptureFixture", handler: HTTPRouteHandler
+    caplog: "LogCaptureFixture", handler: HTTPRouteHandler
 ) -> None:
     @get("/exclude")
     def handler2() -> None:
@@ -137,7 +136,6 @@ def test_logging_middleware_exclude_pattern(
     ):
         # Set cookies on the client to avoid warnings about per-request cookies.
         client.cookies = {"request-cookie": "abc"}
-        client.app.get_logger = get_logger
 
         response = client.get("/exclude")
         assert response.status_code == HTTP_200_OK
@@ -150,7 +148,7 @@ def test_logging_middleware_exclude_pattern(
 
 @pytest.mark.skipif(sys.version_info >= (3, 13), reason="Broken. Skip because of pending removal in v3")
 def test_logging_middleware_exclude_opt_key(
-    get_logger: "GetLogger", caplog: "LogCaptureFixture", handler: HTTPRouteHandler
+    caplog: "LogCaptureFixture", handler: HTTPRouteHandler
 ) -> None:
     @get("/exclude", skip_logging=True)
     def handler2() -> None:
@@ -164,7 +162,6 @@ def test_logging_middleware_exclude_opt_key(
     ):
         # Set cookies on the client to avoid warnings about per-request cookies.
         client.cookies = {"request-cookie": "abc"}
-        client.app.get_logger = get_logger
 
         response = client.get("/exclude")
         assert response.status_code == HTTP_200_OK
@@ -178,7 +175,7 @@ def test_logging_middleware_exclude_opt_key(
 @pytest.mark.parametrize("include", [True, False])
 @pytest.mark.skipif(sys.version_info >= (3, 13), reason="Broken. Skip because of pending removal in v3")
 def test_logging_middleware_compressed_response_body(
-    get_logger: "GetLogger", include: bool, caplog: "LogCaptureFixture", handler: HTTPRouteHandler
+    include: bool, caplog: "LogCaptureFixture", handler: HTTPRouteHandler
 ) -> None:
     with (
         create_test_client(
@@ -190,7 +187,6 @@ def test_logging_middleware_compressed_response_body(
     ):
         # Set cookies on the client to avoid warnings about per-request cookies.
         client.cookies = {"request-cookie": "abc"}
-        client.app.get_logger = get_logger
         response = client.get("/", headers={"request-header": "1"})
     assert response.status_code == HTTP_200_OK
     assert len(caplog.messages) == 2
@@ -232,7 +228,7 @@ async def test_logging_middleware_post_binary_file_without_structlog(monkeypatch
 @pytest.mark.parametrize("logger_name", ("litestar", "other"))
 @pytest.mark.skipif(sys.version_info >= (3, 13), reason="Broken. Skip because of pending removal in v3")
 def test_logging_messages_are_not_doubled(
-    get_logger: "GetLogger", logger_name: str, caplog: "LogCaptureFixture"
+    logger_name: str, caplog: "LogCaptureFixture"
 ) -> None:
     # https://github.com/litestar-org/litestar/issues/896
 
@@ -250,7 +246,6 @@ def test_logging_messages_are_not_doubled(
         ) as client,
         caplog.at_level(INFO),
     ):
-        client.app.get_logger = get_logger
         response = client.get("/")
         assert response.status_code == HTTP_200_OK
         assert len(caplog.messages) == 2
@@ -258,7 +253,7 @@ def test_logging_messages_are_not_doubled(
 
 @pytest.mark.skipif(sys.version_info >= (3, 13), reason="Broken. Skip because of pending removal in v3")
 def test_logging_middleware_log_fields(
-    get_logger: "GetLogger", caplog: "LogCaptureFixture", handler: HTTPRouteHandler
+    caplog: "LogCaptureFixture", handler: HTTPRouteHandler
 ) -> None:
     with (
         create_test_client(
@@ -268,7 +263,6 @@ def test_logging_middleware_log_fields(
         caplog.at_level(INFO),
     ):
         # Set cookies on the client to avoid warnings about per-request cookies.
-        client.app.get_logger = get_logger
         client.cookies = {"request-cookie": "abc"}
         response = client.get("/", headers={"request-header": "1"})
         assert response.status_code == HTTP_200_OK

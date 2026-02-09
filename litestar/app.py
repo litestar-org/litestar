@@ -496,13 +496,15 @@ class Litestar(Router):
 
         self.asgi_router.construct_routing_trie()
 
-        logger_shutdown = self.logging_config.configure_logger(app=self)
-        self.get_logger = self.logging_config.get_logger
-        self.logger = self.get_logger("litestar")
+        logger_shutdown = self.logging_config._configure_logger()
         if logger_shutdown:
             self.on_shutdown.append(logger_shutdown)
+        self.logger = self.logging_config.get_litestar_logger()
 
         self.asgi_handler = self._create_asgi_handler()
+
+    def get_litestar_logger(self, name: str | None = None) -> logging.Logger:
+        return self.logging_config.get_litestar_logger(name)
 
     @staticmethod
     def _patch_opentelemetry_middleware(config: AppConfig) -> AppConfig:
