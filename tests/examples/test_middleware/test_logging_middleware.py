@@ -6,7 +6,6 @@ import pytest
 if TYPE_CHECKING:
     from pytest import LogCaptureFixture
 
-    from litestar.types.callable_types import GetLogger
 
 from docs.examples.middleware.logging_middleware import app
 

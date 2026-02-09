@@ -138,11 +138,11 @@ class Litestar(Router):
 
     __slots__ = (
         "_debug",
+        "_is_using_litestar_test_client",
         "_lifespan_managers",
         "_logger_shutdown",
         "_openapi_schema",
         "_server_lifespan_managers",
-        "_is_using_litestar_test_client",
         "after_exception",
         "allowed_hosts",
         "asgi_handler",

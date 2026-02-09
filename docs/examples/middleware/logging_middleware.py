@@ -3,7 +3,6 @@ from litestar.logging.config import LoggingConfig
 from litestar.middleware.logging import LoggingMiddleware
 
 
-
 @get("/", sync_to_thread=False)
 def my_handler() -> dict[str, str]:
     return {"hello": "world"}
