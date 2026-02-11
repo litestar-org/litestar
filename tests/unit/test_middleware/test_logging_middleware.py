@@ -62,7 +62,7 @@ def test_logging_middleware_regular_logger(caplog: "LogCaptureFixture", handler:
     assert len(caplog.messages) == 2
 
     assert caplog.messages[0] == "HTTP Request"
-    assert caplog.records[0].litestar == {
+    assert caplog.records[0].litestar == { # type: ignore[attr-defined]
         "path": "/",
         "method": "GET",
         "content_type": '["",{}]',
@@ -184,7 +184,7 @@ def test_logging_middleware_compressed_response_body(
         create_test_client(
             route_handlers=[handler],
             compression_config=CompressionConfig(backend="gzip", minimum_size=1),
-            middleware=[LoggingMiddleware(include_compressed_body=include, response_log_fields=("body",))],
+            middleware=[LoggingMiddleware(include_compressed_body=include, response_log_fields=["body",])],
         ) as client,
     ):
         # Set cookies on the client to avoid warnings about per-request cookies.
@@ -193,9 +193,9 @@ def test_logging_middleware_compressed_response_body(
     assert response.status_code == HTTP_200_OK
     assert len(caplog.messages) == 2
     if include:
-        assert "body" in caplog.records[1].litestar
+        assert "body" in caplog.records[1].litestar # type: ignore[attr-defined]
     else:
-        assert "body" not in caplog.records[1].litestar
+        assert "body" not in caplog.records[1].litestar # type: ignore[attr-defined]
 
 
 def test_logging_middleware_post_body() -> None:
@@ -267,9 +267,9 @@ def test_logging_middleware_log_fields(caplog: "LogCaptureFixture", handler: HTT
         assert len(caplog.messages) == 2
 
     assert caplog.messages[0] == "HTTP Request"
-    assert caplog.records[0].litestar == {"path": "/"}
+    assert caplog.records[0].litestar == {"path": "/"} # type: ignore[attr-defined]
     assert caplog.messages[1] == "HTTP Response"
-    assert caplog.records[1].litestar == {"status_code": 200}
+    assert caplog.records[1].litestar == {"status_code": 200} # type: ignore[attr-defined]
 
 
 def test_logging_middleware_with_session_middleware(session_backend_config_memory: "ServerSideSessionConfig") -> None:
