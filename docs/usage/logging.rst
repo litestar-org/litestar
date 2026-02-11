@@ -117,6 +117,18 @@ the wrapped logger:
     config = StructLoggingConfig(processors=[timestamper])
 
 
+Testing
++++++++
+
+You can use structlog's :func:`structlog.testing.capture_logs` function to capture logs.
+By default, Litestar will disable its own processors if it detects that
+``capture_logs`` is being used.
+
+.. note::
+
+    Be sure to enable ``capture_logs`` *before* you set up your application, otherwise
+    structlog will try to patch the configuration after Litestar has already set up its
+    loggers.
 
 
 Request logging
