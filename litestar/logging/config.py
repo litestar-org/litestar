@@ -48,7 +48,7 @@ class ExtraKeyValueFormatter(logging.Formatter):
         extras: dict[str, Any] | None = getattr(record, "litestar", None)
 
         if extras:
-            extra_str = " ".join(f"{k}={v}" for k, v in extras.items())
+            extra_str = ", ".join(f"{k}={v}" for k, v in extras.items())
             message = f"{message}: {extra_str}"
 
         return message
@@ -162,7 +162,7 @@ class LoggingConfig:
                 "disable_existing_loggers": False,
                 "formatters": {
                     "litestar_formatter": {
-                        "format": "%(levelname)s - %(asctime)s - %(name)s - %(module)s - %(message)s",
+                        "format": "%(levelname)s - %(asctime)s - %(name)s - %(message)s",
                     },
                 },
                 "handlers": {
