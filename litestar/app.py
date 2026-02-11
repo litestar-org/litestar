@@ -50,7 +50,7 @@ from litestar.plugins import (
 from litestar.router import Router
 from litestar.routes import ASGIRoute, HTTPRoute, WebSocketRoute
 from litestar.stores.registry import StoreRegistry
-from litestar.types import Empty, TypeDecodersSequence
+from litestar.types import Empty, Logger, TypeDecodersSequence
 from litestar.types.internal_types import PathParameterDefinition, RouteHandlerMapItem, TemplateConfigType
 from litestar.utils import ensure_async_callable, envflag, join_paths, unique
 from litestar.utils.dataclass import extract_dataclass_items
@@ -503,7 +503,7 @@ class Litestar(Router):
 
         self.asgi_handler = self._create_asgi_handler()
 
-    def get_litestar_logger(self, name: str | None = None) -> logging.Logger:
+    def get_litestar_logger(self, name: str | None = None) -> Logger:
         return self.logging_config.get_litestar_logger(name)
 
     @staticmethod
