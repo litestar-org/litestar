@@ -58,26 +58,40 @@ def test_logging_middleware_regular_logger(caplog: "LogCaptureFixture", handler:
         # Set cookies on the client to avoid warnings about per-request cookies.
         client.cookies = {"request-cookie": "abc"}
         response = client.get("/", headers={"request-header": "1"})
-        assert response.status_code == HTTP_200_OK
-        assert len(caplog.messages) == 2
+    assert response.status_code == HTTP_200_OK
+    assert len(caplog.messages) == 2
 
-        assert (
-            caplog.messages[0] == 'HTTP Request: path=/, method=GET, content_type=["",{}], '
-            'headers={"host":"testserver.local","accept":"*/*","accept-encoding":"gzip, '
-            'deflate, br, zstd","connection":"keep-alive","user-agent":"testclient",'
-            '"request-header":"1","cookie":"request-cookie=abc"}, '
-            'cookies={"request-cookie":"abc"}, query={}, path_params={}, body=None'
-        )
+    assert caplog.messages[0] == "HTTP Request"
+    assert caplog.records[0].litestar == {
+        "path": "/",
+        "method": "GET",
+        "content_type": '["",{}]',
+        "path_params": "{}",
+        "query": "{}",
+    }
 
 
 def test_logging_middleware_struct_logger(handler: HTTPRouteHandler) -> None:
     with (
+        capture_logs() as cap_logs,
         create_test_client(
             route_handlers=[handler],
-            middleware=[LoggingMiddleware()],
+            middleware=[
+                LoggingMiddleware(
+                    request_log_fields=(
+                        "path",
+                        "method",
+                        "content_type",
+                        "headers",
+                        "cookies",
+                        "query",
+                        "path_params",
+                    ),
+                    response_log_fields=("status_code", "cookies", "headers"),
+                )
+            ],
             logging_config=StructLoggingConfig(),
         ) as client,
-        capture_logs() as cap_logs,
     ):
         # Set cookies on the client to avoid warnings about per-request cookies.
         client.cookies = {"request-cookie": "abc"}
@@ -85,9 +99,9 @@ def test_logging_middleware_struct_logger(handler: HTTPRouteHandler) -> None:
         assert response.status_code == HTTP_200_OK
         assert len(cap_logs) == 2
         assert cap_logs[0] == {
+            "event": "HTTP Request",
             "path": "/",
             "method": "GET",
-            "body": None,
             "content_type": ("", {}),
             "headers": {
                 "host": "testserver.local",
@@ -101,15 +115,13 @@ def test_logging_middleware_struct_logger(handler: HTTPRouteHandler) -> None:
             "cookies": {"request-cookie": "abc"},
             "query": {},
             "path_params": {},
-            "event": "HTTP Request",
             "log_level": "info",
         }
         assert cap_logs[1] == {
+            "event": "HTTP Response",
             "status_code": 200,
             "cookies": {"first-cookie": "abc", "Path": "/", "SameSite": "lax", "second-cookie": "xxx"},
             "headers": {"token": "123", "regular": "abc", "content-length": "17", "content-type": "application/json"},
-            "body": '{"hello":"world"}',
-            "event": "HTTP Response",
             "log_level": "info",
         }
 
@@ -172,9 +184,8 @@ def test_logging_middleware_compressed_response_body(
         create_test_client(
             route_handlers=[handler],
             compression_config=CompressionConfig(backend="gzip", minimum_size=1),
-            middleware=[LoggingMiddleware(include_compressed_body=include)],
+            middleware=[LoggingMiddleware(include_compressed_body=include, response_log_fields=("body",))],
         ) as client,
-        caplog.at_level(INFO),
     ):
         # Set cookies on the client to avoid warnings about per-request cookies.
         client.cookies = {"request-cookie": "abc"}
@@ -182,9 +193,9 @@ def test_logging_middleware_compressed_response_body(
     assert response.status_code == HTTP_200_OK
     assert len(caplog.messages) == 2
     if include:
-        assert "body=" in caplog.messages[1]
+        assert "body" in caplog.records[1].litestar
     else:
-        assert "body=" not in caplog.messages[1]
+        assert "body" not in caplog.records[1].litestar
 
 
 def test_logging_middleware_post_body() -> None:
@@ -255,8 +266,10 @@ def test_logging_middleware_log_fields(caplog: "LogCaptureFixture", handler: HTT
         assert response.status_code == HTTP_200_OK
         assert len(caplog.messages) == 2
 
-        assert caplog.messages[0] == "HTTP Request: path=/"
-        assert caplog.messages[1] == "HTTP Response: status_code=200"
+    assert caplog.messages[0] == "HTTP Request"
+    assert caplog.records[0].litestar == {"path": "/"}
+    assert caplog.messages[1] == "HTTP Response"
+    assert caplog.records[1].litestar == {"status_code": 200}
 
 
 def test_logging_middleware_with_session_middleware(session_backend_config_memory: "ServerSideSessionConfig") -> None:
