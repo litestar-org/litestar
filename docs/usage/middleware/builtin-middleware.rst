@@ -286,50 +286,11 @@ updates the client's address in a secure way, such as uvicorn's
 `ProxyHeaderMiddleware <https://github.com/encode/uvicorn/blob/master/uvicorn/middleware/proxy_headers.py>`_
 or hypercon's `ProxyFixMiddleware <https://hypercorn.readthedocs.io/en/latest/how_to_guides/proxy_fix.html>`_ .
 
-
 Logging Middleware
 ------------------
 
-Litestar ships with a robust logging middleware that allows logging HTTP request and responses while building on
-the Litestar's :ref:`logging configuration <logging-usage>`:
+This content has moved to :ref:`usage/logging:Request logging`
 
-.. literalinclude:: /examples/middleware/logging_middleware.py
-    :language: python
-
-
-The logging middleware uses the logger configuration defined on the application level, which allows for using any supported logging tool, depending on the configuration used
-(see :ref:`logging configuration <logging-usage>` for more details).
-
-Obfuscating Logging Output
-^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-Sometimes certain data, e.g. request or response headers, needs to be obfuscated. This is supported by the middleware
-configuration:
-
-.. code-block:: python
-
-   from litestar.middleware.logging import LoggingMiddlewareConfig
-
-   logging_middleware_config = LoggingMiddlewareConfig(
-       request_cookies_to_obfuscate={"my-custom-session-key"},
-       response_cookies_to_obfuscate={"my-custom-session-key"},
-       request_headers_to_obfuscate={"my-custom-header"},
-       response_headers_to_obfuscate={"my-custom-header"},
-   )
-
-The middleware will obfuscate the headers ``Authorization`` and ``X-API-KEY`` , and the cookie ``session`` by default.
-
-
-Compression and Logging of Response Body
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-If both :class:`~litestar.config.compression.CompressionConfig` and
-:class:`~litestar.middleware.logging.LoggingMiddleware` have been defined for the application, the response
-body will be omitted from response logging if it has been compressed, even if ``"body"`` has been included in
-:class:`~litestar.middleware.logging.LoggingMiddlewareConfig.response_log_fields`. To force the body of
-compressed responses to be logged, set
-:attr:`~litestar.middleware.logging.LoggingMiddlewareConfig.include_compressed_body` to ``True`` , in
-addition to including ``"body"`` in ``response_log_fields``.
 
 Session Middleware
 ------------------

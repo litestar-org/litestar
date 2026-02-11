@@ -10,7 +10,10 @@ import sys
 from logging.handlers import QueueListener
 from typing import TYPE_CHECKING, ClassVar, Literal, cast
 
-__all__ = ("LoggingConfig",)
+__all__ = (
+    "LoggingConfig",
+    "ExtraKeyValueFormatter",
+)
 
 
 if TYPE_CHECKING:
@@ -37,6 +40,11 @@ def _default_exception_logging_handler(logger: Logger, scope: Scope, tb: list[st
 
 
 class ExtraKeyValueFormatter(logging.Formatter):
+    """
+    Formatter that extracts items from 'LogRecord.extra' if they start with a
+    ``litestar_`` prefix.
+    """
+
     def format(self, record: logging.LogRecord) -> str:
         message = super().format(record)
 
@@ -94,7 +102,7 @@ class LoggingConfig:
     Set up a :class:`logging.handlers.QueueHandler`, to ensure logging does not block
     async execution on the main thread. The handler will be registered as
     ``litestar_queue_handler``. This handler will be created *once*, globally, and shut
-    down at interpreter shutdown via an :func:`atexit.atexit` handler. At application
+    down at interpreter shutdown via an :func:`atexit.register` handler. At application
     shutdown, the handler queue will be :meth:`joined <queue.Queue.join>`, to ensure all
     messages are processed properly.
 
