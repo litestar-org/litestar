@@ -267,7 +267,7 @@ class Litestar(Router):
             include_in_schema: A boolean flag dictating whether  the route handler should be documented in the OpenAPI schema.
             lifespan: A list of callables returning async context managers, wrapping the lifespan of the ASGI application
             listeners: A sequence of :class:`EventListener <.events.listener.EventListener>`.
-            logging_config: A subclass of :class:`BaseLoggingConfig <.logging.config.BaseLoggingConfig>`.
+            logging_config: A :class:`~litestar.logging.config.LoggingConfig`.
             middleware: A sequence of :class:`Middleware <.types.Middleware>`.
             multipart_form_part_limit: The maximal number of allowed parts in a multipart/formdata request. This limit
                 is intended to protect from DoS attacks.

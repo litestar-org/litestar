@@ -409,7 +409,7 @@
         :type: feature
         :pr: 2969
 
-        The option :attr:`~litestar.logging.config.LoggingConfig.configure_root_logger` was
+        The option ``litestar.logging.config.LoggingConfig.configure_root_logger`` was
         added to :class:`~litestar.logging.config.LoggingConfig` attribute. It is enabled by
         default to not implement a breaking change.
 
