@@ -127,14 +127,14 @@ class LoggingConfig:
     def should_propagate(self) -> bool:
         return self.propagate or (self.always_propagate_on_pytest and "PYTEST_VERSION" in os.environ)
 
-    def get_litestar_logger(self, name: str | None = None):
+    def get_litestar_logger(self, name: str | None = None) -> Logger:
         """Get a litestar logger. If 'name' is given and not the name of the root logger,
         a child logger of the root logger will be returned, e.g. requesting 'stores'
         will return a logger named 'litestar.stores'.
         """
         logger = self.get_logger(self.root_logger_name)
         if name and name != self.root_logger_name:
-            logger = logger.getChild(name)
+            logger = logger.getChild(name)  # type: ignore[attr-defined]
         return logger
 
     def _configure_logger(self) -> LifespanHook | None:
@@ -185,7 +185,7 @@ class LoggingConfig:
 
         if self.formatter is not None:
             handler = getHandlerByName("litestar_stream_handler")
-            handler.setFormatter(self.formatter(handler.formatter._fmt))
+            handler.setFormatter(self.formatter(handler.formatter._fmt))  # type: ignore[union-attr]
 
         if self.configure_queue_handler:
             if LoggingConfig._queue_listener is None:

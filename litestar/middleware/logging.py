@@ -79,7 +79,7 @@ class LoggingMiddleware(ASGIMiddleware):
         parse_query: bool = True,
     ) -> None:
         self.exclude_opt_key = exclude_opt_key
-        self.exclude_path_pattern = exclude
+        self.exclude_path_pattern = tuple(exclude) if isinstance(exclude, list) else exclude
         self.include_compressed_body = include_compressed_body
         self.logger_name = logger_name
         self.request_cookies_to_obfuscate = frozenset(request_cookies_to_obfuscate)

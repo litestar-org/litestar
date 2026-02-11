@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import dataclasses
 import sys
-from typing import TYPE_CHECKING, Any, Callable
+from typing import TYPE_CHECKING, Any, Callable, cast
 
 import structlog
 
@@ -43,7 +43,7 @@ def stdlib_extra_processor(
     logger: logging.Logger,
     method_name: str,
     event_dict: structlog.typing.EventDict,
-):
+) -> structlog.typing.EventDict:
     if "extra" in event_dict:
         extras = {
             key.removeprefix("litestar_"): value
@@ -61,7 +61,7 @@ LITESTAR_PROCESSORS = (stdlib_extra_processor,)
 @dataclasses.dataclass(frozen=True)
 class StructLoggingConfig(LoggingConfig):
     exception_logging_handler: ExceptionLoggingHandler = dataclasses.field(default=structlog_exception_logging_handler)  # type: ignore[assignment]
-    formatter: logging.Formatter = dataclasses.field(default=None)
+    formatter: type[logging.Formatter] | None = dataclasses.field(default=None)
     """
     This should always be 'None' to disable the Litestar formatter for structlog
     """
@@ -129,7 +129,8 @@ class StructLoggingConfig(LoggingConfig):
         object.__setattr__(self, "_structlog_config", config)
 
     def get_litestar_logger(self, name: str | None = None) -> Logger:
-        return structlog.wrap_logger(
+        logger = structlog.wrap_logger(
             super().get_litestar_logger(name) if self.logger_factory is None else self.logger_factory(name),
-            **self._structlog_config,
+            **(self._structlog_config or {}),
         )
+        return cast("Logger", logger)
