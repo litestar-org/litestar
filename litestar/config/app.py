@@ -135,7 +135,7 @@ class AppConfig:
     listeners: list[EventListener] = field(default_factory=list)
     """A list of :class:`EventListener <.events.listener.EventListener>`."""
     logging_config: LoggingConfig = field(default_factory=LoggingConfig)
-    """An instance of :class:`BaseLoggingConfig <.logging.config.BaseLoggingConfig>` subclass."""
+    """A :class:`~litestar.logging.config.LoggingConfig`"""
     middleware: list[Middleware] = field(default_factory=list)
     """A list of :class:`Middleware <.types.Middleware>`."""
     on_shutdown: list[LifespanHook] = field(default_factory=list)

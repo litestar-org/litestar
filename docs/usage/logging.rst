@@ -3,45 +3,22 @@
 Logging
 =======
 
-Application and request level loggers can be configured using the :class:`~litestar.logging.config.LoggingConfig`:
+You can configure how and what Litestar logs via
+:class:`~litestar.logging.config.LoggingConfig`.
 
-.. code-block:: python
+.. note::
 
-   import logging
-
-   from litestar import Litestar, Request, get
-   from litestar.logging import LoggingConfig
-
-
-   @get("/")
-   def my_router_handler(request: Request) -> None:
-       request.logger.info("inside a request")
-       return None
-
-
-   logging_config = LoggingConfig(
-       root={"level": "INFO", "handlers": ["queue_listener"]},
-       formatters={
-           "standard": {"format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s"}
-       },
-       log_exceptions="always",
-   )
-
-   app = Litestar(route_handlers=[my_router_handler], logging_config=logging_config)
-
-.. attention::
-
-    Litestar configures a non-blocking ``QueueListenerHandler`` which
-    is keyed as ``queue_listener`` in the logging configuration. The above example is using this handler,
-    which is optimal for async applications. Make sure to use it in your own loggers as in the above example.
+    This is not a general way to configure logging. For that, refer to :mod:`logging`.
+    The logging configuration is specifically for how Litestar logs, and to integrate it
+    with an existing logging environment.
 
 .. attention::
 
     Exceptions won't be logged by default, except in debug mode. Make sure to use ``log_exceptions="always"`` as in the
     example above to log exceptions if you need it.
 
-Controlling Exception Logging
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Controlling exception logging
+-----------------------------
 
 While ``log_exceptions`` controls when exceptions are logged, sometimes you may want to suppress stack traces for specific
 exception types or HTTP status codes. The ``disable_stack_trace`` parameter allows you to specify a set of exception types
@@ -62,111 +39,144 @@ or status codes that should not generate stack traces in logs:
 
 This is particularly useful for common exceptions that you expect in normal operation and don't need detailed stack traces for.
 
-Using Python standard library
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Default handlers
+----------------
 
-`logging <https://docs.python.org/3/howto/logging.html>`_ is Python's builtin standard logging library and can be
-configured through ``LoggingConfig``.
+By default, Litestar registers two handlers:
 
-The ``LoggingConfig.configure()`` method returns a reference to ``logging.getLogger`` which can be used to access a
-logger instance. Thus, the root logger can retrieved with ``logging_config.configure()()`` as shown in the example
-below:
-
-.. code-block:: python
-
-    import logging
-
-    from litestar import Litestar, Request, get
-    from litestar.logging import LoggingConfig
-
-    logging_config = LoggingConfig(
-        root={"level": "INFO", "handlers": ["queue_listener"]},
-        formatters={
-            "standard": {"format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s"}
-        },
-        log_exceptions="always",
-    )
-
-    logger = logging_config.configure()()
+- ``litestar_stream_handler``: A :class:`logging.StreamHandler`
+- ``litestar_queue_handler``: A non-blocking :class:`logging.handlers.QueueHandler`,
+  outputting to ``litestar_stream_handler``.
 
 
-    @get("/")
-    def my_router_handler(request: Request) -> None:
-        request.logger.info("inside a request")
-        logger.info("here too")
+Non-blocking logging
+++++++++++++++++++++
+
+Since logging is a blocking operation by default, Litestar configures a non-blocking
+:class:`logging.handlers.QueueHandler` to use for its own loggers, registered under the
+key ``litestar_queue_handler``. It will start automatically with your application, and
+shut down at interpreter exit. On application exit, the queue is flushed to ensure all
+messages are processed properly. This behaviour can be disabled via the
+:attr:`~litestar.logging.config.LoggingConfig.configure_queue_handler` flag.
+
+.. important::
+
+    When setting ``configure_queue_handler=False``, be sure to provide a non-blocking
+    alternative handler under ``litestar_stream_handler``
 
 
-    app = Litestar(
-        route_handlers=[my_router_handler],
-        logging_config=logging_config,
-    )
+Structlog integration
+---------------------
 
-The above example is the same as using logging without the litestar ``LoggingConfig``.
-
-.. code-block:: python
-
-    import logging
-
-    from litestar import Litestar, Request, get
-    from litestar.logging.config import LoggingConfig
-
-
-    def get_logger(mod_name: str) -> logging.Logger:
-        """Return logger object."""
-        format = "%(asctime)s: %(name)s: %(levelname)s: %(message)s"
-        logger = logging.getLogger(mod_name)
-        # Writes to stdout
-        ch = logging.StreamHandler()
-        ch.setLevel(logging.INFO)
-        ch.setFormatter(logging.Formatter(format))
-        logger.addHandler(ch)
-        return logger
-
-
-    logger = get_logger(__name__)
-
-
-    @get("/")
-    def my_router_handler(request: Request) -> None:
-        logger.info("logger inside a request")
-
-
-    app = Litestar(
-        route_handlers=[my_router_handler],
-    )
-
-
-Using Picologging
-^^^^^^^^^^^^^^^^^
-
-`Picologging <https://github.com/microsoft/picologging>`_ is a high performance logging library that is developed by
-Microsoft. Litestar will default to using this library automatically if its installed - requiring zero configuration on
-the part of the user. That is, if ``picologging`` is present the previous example will work with it automatically.
-
-Using StructLog
-^^^^^^^^^^^^^^^
-
-`StructLog <https://www.structlog.org/en/stable/>`_ is a powerful structured-logging library. Litestar ships with a
-dedicated logging plugin and config for using it:
+Litestar offers a built-in `structLog <https://www.structlog.org/en/stable/>`
+integration, which enables Litestar to use structlog. To set it up, use
+:class:`~litestar.logging.structlog.StructLoggingConfig` instead of
+:class:`~litestar.logging.config.LoggingConfig`:
 
 .. code-block:: python
 
    from litestar import Litestar, Request, get
-   from litestar.plugins.structlog import StructlogPlugin
-
+   from litestar.plugins.structlog import StructLoggingConfig
 
    @get("/")
    def my_router_handler(request: Request) -> None:
        request.logger.info("inside a request")
        return None
 
+   app = Litestar(route_handlers=[my_router_handler], logging_config=StructLoggingConfig())
 
-   structlog_plugin = StructlogPlugin()
 
-   app = Litestar(route_handlers=[my_router_handler], plugins=[StructlogPlugin()])
+.. note::
 
-Subclass Logging Configs
-^^^^^^^^^^^^^^^^^^^^^^^^
+    Litestar uses structlog's stdlib logging integration to handle cofiguration and
+    ensure non-blocking logging.
 
-You can easily create you own ``LoggingConfig`` class by subclassing
-:class:`BaseLoggingConfig <.logging.config.BaseLoggingConfig>` and implementing the ``configure`` method.
+
+.. important::
+
+    Litestar does *not* configure structlog globally via :func:`structlog.configure`.
+    Instead, it creates its own logger(s) via :func:`structlog.wrap_logger`
+
+
+Configuring Litestar's structlogger
++++++++++++++++++++++++++++++++++++
+
+You can pass custom structlog configuration to
+:class:`~litestar.logging.structlog.StructLoggingConfig`, which will get passed on to
+the wrapped logger:
+
+.. code-block:: python
+
+    from litestar import Litestar, Request, get
+    from litestar.plugins.structlog import StructLoggingConfig
+
+    def timestamper(logger, log_method, event_dict):
+        event_dict["timestamp"] = calendar.timegm(time.gmtime())
+        return event_dict
+
+    config = StructLoggingConfig(processors=[timestamper])
+
+
+
+
+Request logging
+---------------
+
+You turn on request / response logging by setting
+:attr:`~litestar.logging.config.LoggingConfig.log_requests` to ``True``, which will
+inject a :class:`~litestar.middleware.logging.LoggingMiddleware`.
+
+Default request log properties
+++++++++++++++++++++++++++++++
+
+-  ``path``
+-  :attr:`~litestar.connection.Request.method`
+-  :attr:`~litestar.connection.Request.content_type`
+-  :attr:`~litestar.connection.ASGIConnection.query_params`
+-  :attr:`~litestar.connection.ASGIConnection.path_params`
+
+Default response log properties
++++++++++++++++++++++++++++++++
+
+- ``status_code``
+
+Configuration
++++++++++++++
+
+Other options can be configured by instantiating the middleware directly:
+
+.. literalinclude:: /examples/middleware/logging_middleware.py
+    :language: python
+
+
+Obfuscating Logging Output
++++++++++++++++++++++++++++
+
+Sometimes certain data, e.g. request or response headers, needs to be obfuscated:
+
+.. code-block:: python
+
+   from litestar.middleware.logging import LoggingMiddleware
+
+   logging_middleware_config = LoggingMiddleware(
+       request_cookies_to_obfuscate={"my-custom-session-key"},
+       response_cookies_to_obfuscate={"my-custom-session-key"},
+       request_headers_to_obfuscate={"my-custom-header"},
+       response_headers_to_obfuscate={"my-custom-header"},
+   )
+
+.. note::
+    The middleware will obfuscate the headers ``Authorization`` and ``X-API-KEY`` , and
+    the cookie ``session`` by default.
+
+
+Compression and Logging of Response Body
+++++++++++++++++++++++++++++++++++++++++
+
+If both :class:`~litestar.config.compression.CompressionConfig` and
+:class:`~litestar.middleware.logging.LoggingMiddleware` have been defined for the application, the response
+body will be omitted from response logging if it has been compressed, even if ``"body"`` has been included in
+:paramref:`~litestar.middleware.logging.LoggingMiddleware.response_log_fields`. To force the body of
+compressed responses to be logged, set
+:paramref:`~litestar.middleware.logging.LoggingMiddleware.include_compressed_body` to ``True`` , in
+addition to including ``"body"`` in ``response_log_fields``.
