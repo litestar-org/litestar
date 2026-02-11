@@ -66,7 +66,7 @@ class LoggingMiddleware(ASGIMiddleware):
             "query",
             "path_params",
         ),
-        response_log_fields: Collection[ResponseExtractorField] = ("status_code",),
+        response_log_fields: Collection[ResponseExtractorField] = ("status_code",),  # type: ignore[assignment] # Literal is not correctly infered here
         parse_body: bool = False,
         parse_query: bool = True,
     ) -> None:

@@ -8,11 +8,11 @@ import os
 import queue
 import sys
 from logging.handlers import QueueListener
-from typing import TYPE_CHECKING, ClassVar, Literal, cast, Any
+from typing import TYPE_CHECKING, Any, ClassVar, Literal, cast
 
 __all__ = (
-    "LoggingConfig",
     "ExtraKeyValueFormatter",
+    "LoggingConfig",
 )
 
 
@@ -40,9 +40,7 @@ def _default_exception_logging_handler(logger: Logger, scope: Scope, tb: list[st
 
 
 class ExtraKeyValueFormatter(logging.Formatter):
-    """
-    Formatter that extracts items from a 'LogRecord.extra' ``litestar`` key.
-    """
+    """Formatter that extracts items from a 'LogRecord.extra' ``litestar`` key"""
 
     def format(self, record: logging.LogRecord) -> str:
         message = super().format(record)
