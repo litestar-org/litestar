@@ -8,12 +8,12 @@ import structlog
 
 from litestar.logging.config import LoggingConfig
 from litestar.serialization.msgspec_hooks import _msgspec_json_encoder
+from litestar.types import Empty, EmptyType, Logger, Scope
 
 if TYPE_CHECKING:
     import logging
     from collections.abc import Iterable
 
-    from litestar.types import Logger, Scope
     from litestar.types.callable_types import ExceptionLoggingHandler
 
 
@@ -67,7 +67,7 @@ class StructLoggingConfig(LoggingConfig):
     pretty_print_tty: bool = True
     """Pretty print log output when run from an interactive terminal."""
 
-    processors: Iterable[structlog.typing.Processor] | None = None
+    processors: Iterable[structlog.typing.Processor] | None | EmptyType = Empty
     """
     Passed to :class:`structlog.typing.BindableLogger`
     """
@@ -94,6 +94,11 @@ class StructLoggingConfig(LoggingConfig):
     Passed to :class:`structlog.typing.BindableLogger`
     """
 
+    bypass_processors_under_capture_logs: bool = True
+    """
+    Disable all processors when running 'capture_logs()' is active
+    """
+
     _structlog_config: dict[str, Any] | None = None
 
     @property
@@ -102,32 +107,46 @@ class StructLoggingConfig(LoggingConfig):
             return not self.pretty_print_tty
         return True
 
-    def __post_init__(self) -> None:
-        processors = self.processors
-        if processors is None:
-            if self.should_log_as_json:
-                processors = json_processors()
+    def _get_structlog_config(self) -> dict[str, None]:
+        if self._structlog_config is None:
+            if (
+                self.bypass_processors_under_capture_logs
+                and (config_processors := structlog.get_config()["processors"])
+                and len(config_processors) == 1
+                and isinstance(config_processors[0], structlog.testing.LogCapture)
+            ):
+                config_processors.insert(0, stdlib_extra_processor)
+                processors = None
             else:
-                processors = structlog.get_config()["processors"]
+                processors = self.processors
+                if processors is Empty:
+                    if self.should_log_as_json:
+                        processors = json_processors()
+                    else:
+                        processors = structlog.get_config()["processors"]
+                if processors:
+                    processors = [*LITESTAR_PROCESSORS, *processors]
 
-        wrapper_class = structlog.make_filtering_bound_logger(self.level)
-        if self.wrapper_class is not None:
-            wrapper_class = type(
-                f"{wrapper_class.__name__}_{self.wrapper_class.__name__}", (wrapper_class, self.wrapper_class), {}
-            )
+            wrapper_class = structlog.make_filtering_bound_logger(self.level)
+            if self.wrapper_class is not None:
+                wrapper_class = type(
+                    f"{wrapper_class.__name__}_{self.wrapper_class.__name__}", (wrapper_class, self.wrapper_class), {}
+                )
 
-        config = {
-            "processors": [*LITESTAR_PROCESSORS, *processors],
-            "wrapper_class": wrapper_class,
-            "context_class": self.context_class,
-            "cache_logger_on_first_use": self.cache_logger_on_first_use,
-        }
-        # get around frozen dataclasses
-        object.__setattr__(self, "_structlog_config", config)
+            config = {
+                "processors": processors,
+                "wrapper_class": wrapper_class,
+                "context_class": self.context_class,
+                "cache_logger_on_first_use": self.cache_logger_on_first_use,
+            }
+            # get around frozen dataclasses
+            object.__setattr__(self, "_structlog_config", config)
+
+        return self._structlog_config
 
     def get_litestar_logger(self, name: str | None = None) -> Logger:
         logger = structlog.wrap_logger(
             super().get_litestar_logger(name) if self.logger_factory is None else self.logger_factory(name),
-            **(self._structlog_config or {}),
+            **(self._get_structlog_config() or {}),
         )
         return cast("Logger", logger)
