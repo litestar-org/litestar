@@ -45,12 +45,9 @@ def stdlib_extra_processor(
     event_dict: structlog.typing.EventDict,
 ) -> structlog.typing.EventDict:
     if "extra" in event_dict:
-        extras = {
-            key.removeprefix("litestar_"): value
-            for key, value in event_dict.pop("extra").items()
-            if key.startswith("litestar_")
-        }
-        event_dict.update(extras)
+        extra = event_dict.pop("extra")
+        if isinstance(extra, dict):
+            event_dict.update(extra.pop("litestar", {}))
 
     return event_dict
 

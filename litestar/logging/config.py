@@ -8,7 +8,7 @@ import os
 import queue
 import sys
 from logging.handlers import QueueListener
-from typing import TYPE_CHECKING, ClassVar, Literal, cast
+from typing import TYPE_CHECKING, ClassVar, Literal, cast, Any
 
 __all__ = (
     "LoggingConfig",
@@ -41,18 +41,13 @@ def _default_exception_logging_handler(logger: Logger, scope: Scope, tb: list[st
 
 class ExtraKeyValueFormatter(logging.Formatter):
     """
-    Formatter that extracts items from 'LogRecord.extra' if they start with a
-    ``litestar_`` prefix.
+    Formatter that extracts items from a 'LogRecord.extra' ``litestar`` key.
     """
 
     def format(self, record: logging.LogRecord) -> str:
         message = super().format(record)
 
-        extras = {
-            key.removeprefix("litestar_"): value
-            for key, value in record.__dict__.items()
-            if key.startswith("litestar_")
-        }
+        extras: dict[str, Any] | None = getattr(record, "litestar", None)
 
         if extras:
             extra_str = " ".join(f"{k}={v}" for k, v in extras.items())
