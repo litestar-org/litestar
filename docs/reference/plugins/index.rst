@@ -15,4 +15,3 @@ plugins
     problem_details
     prometheus
     pydantic
-    structlog

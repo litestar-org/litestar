@@ -74,7 +74,6 @@ full = [
     opentelemetry, \
     piccolo, \
     polyfactory, \
-    picologging, \
     prometheus, \
     pydantic, \
     redis, \
@@ -119,7 +118,6 @@ mako = ["mako>=1.2.4"]
 minijinja = ["minijinja>=1.0.0"]
 opentelemetry = ["opentelemetry-instrumentation-asgi"]
 piccolo = ["piccolo", "litestar-piccolo"]
-picologging = ["picologging; python_version < \"3.13\""]
 polyfactory = ["polyfactory>=2.6.3"]
 prometheus = ["prometheus-client"]
 pydantic = ["pydantic", "email-validator", "pydantic-extra-types"]
@@ -327,8 +325,6 @@ module = [
   "pytimeparse.*",
   "importlib_resources",
   "exceptiongroup",
-  "picologging",
-  "picologging.*",
   "zstandard",
   "zstandard.*"
 ]
