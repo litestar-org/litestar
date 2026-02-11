@@ -108,7 +108,8 @@ class StructLoggingConfig(LoggingConfig):
         return True
 
     def _get_structlog_config(self) -> dict[str, None]:
-        if self._structlog_config is None:
+        config = self._structlog_config
+        if config is None:
             if (
                 self.bypass_processors_under_capture_logs
                 and (config_processors := structlog.get_config()["processors"])
@@ -142,7 +143,7 @@ class StructLoggingConfig(LoggingConfig):
             # get around frozen dataclasses
             object.__setattr__(self, "_structlog_config", config)
 
-        return self._structlog_config
+        return config
 
     def get_litestar_logger(self, name: str | None = None) -> Logger:
         logger = structlog.wrap_logger(
