@@ -86,30 +86,6 @@ full = [
     zstd]; \
     python_version < \"3.13\"""",
 
-  # full extra without picologging
-  """litestar[annotated-types, \
-    attrs, \
-    brotli, \
-    cli, \
-    cryptography, \
-    jinja, \
-    jwt, \
-    mako, \
-    minijinja, \
-    opentelemetry, \
-    piccolo, \
-    polyfactory, \
-    prometheus, \
-    pydantic, \
-    redis, \
-    sqlalchemy, \
-    standard, \
-    structlog, \
-    valkey, \
-    htmx, \
-    yaml, \
-    zstd]; \
-    python_version >= \"3.13\"""",
 ]
 htmx = ["litestar-htmx>=0.4.0"]
 jinja = ["jinja2>=3.1.2"]
