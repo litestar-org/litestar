@@ -83,9 +83,7 @@ full = [
     valkey, \
     htmx, \
     yaml, \
-    zstd]; \
-    python_version < \"3.13\"""",
-
+    zstd]""",
 ]
 htmx = ["litestar-htmx>=0.4.0"]
 jinja = ["jinja2>=3.1.2"]
