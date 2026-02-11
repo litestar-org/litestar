@@ -23,7 +23,7 @@ __all__ = ("LoggingMiddleware",)
 
 
 if TYPE_CHECKING:
-    from collections.abc import Collection, Iterable
+    from collections.abc import Iterable, Sequence
 
     from litestar.connection import Request
     from litestar.logging import LoggingConfig
@@ -59,14 +59,14 @@ class LoggingMiddleware(ASGIMiddleware):
         response_headers_to_obfuscate: Iterable[str] = ("Authorization", "X-API-KEY"),
         request_log_message: str = "HTTP Request",
         response_log_message: str = "HTTP Response",
-        request_log_fields: Collection[RequestExtractorField] = (
+        request_log_fields: Sequence[RequestExtractorField] = (
             "path",
             "method",
             "content_type",
             "query",
             "path_params",
         ),
-        response_log_fields: Collection[ResponseExtractorField] = ("status_code",),  # type: ignore[assignment] # Literal is not correctly infered here
+        response_log_fields: Sequence[ResponseExtractorField] = ("status_code",),
         parse_body: bool = False,
         parse_query: bool = True,
     ) -> None:
