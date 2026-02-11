@@ -158,7 +158,7 @@ class LoggingMiddleware(ASGIMiddleware):
             None
         """
         message = values.pop("message")
-        self.logger.info(message, extra={f"litestar_{k}": v for k, v in values.items()})
+        self.logger.info(message, extra={"litestar": values})
 
     def _serialize_value(self, serializer: Serializer | None, value: Any) -> Any:
         if not self.logging_config.can_log_structured_data and isinstance(value, (dict, list, tuple, set)):
