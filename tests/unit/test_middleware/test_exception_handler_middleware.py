@@ -31,7 +31,6 @@ if TYPE_CHECKING:
     from _pytest.logging import LogCaptureFixture
 
     from litestar.types import Scope
-    from litestar.types.callable_types import GetLogger
 
 
 async def dummy_app(scope: Any, receive: Any, send: Any) -> None:
@@ -224,7 +223,6 @@ def test_exception_handler_middleware_calls_app_level_after_exception_hook() -> 
     ],
 )
 def test_exception_handler_default_logging(
-    get_logger: "GetLogger",
     caplog: "LogCaptureFixture",
     is_debug: bool,
     logging_config: Optional[LoggingConfig],
@@ -237,7 +235,6 @@ def test_exception_handler_default_logging(
     app = Litestar([handler], logging_config=logging_config, debug=is_debug)
 
     with caplog.at_level("ERROR", "litestar"), TestClient(app=app) as client:
-        client.app.logger = get_logger("litestar")
         response = client.get("/test")
         assert response.status_code == HTTP_500_INTERNAL_SERVER_ERROR
 
@@ -267,7 +264,6 @@ def test_exception_handler_default_logging(
     ],
 )
 def test_exception_handler_struct_logging(
-    get_logger: "GetLogger",
     is_debug: bool,
     logging_config: Optional[LoggingConfig],
     should_log: bool,
@@ -278,9 +274,10 @@ def test_exception_handler_struct_logging(
     def handler() -> None:
         raise ValueError("Test debug exception")
 
-    app = Litestar([handler], logging_config=logging_config, debug=is_debug)
-
-    with TestClient(app=app) as client, capture_logs() as cap_logs:
+    with (
+        capture_logs() as cap_logs,
+        TestClient(Litestar([handler], logging_config=logging_config, debug=is_debug)) as client,
+    ):
         response = client.get("/test")
         assert response.status_code == HTTP_500_INTERNAL_SERVER_ERROR
 
@@ -346,7 +343,7 @@ def test_pdb_on_exception(mocker: MockerFixture) -> None:
     mock_post_mortem.assert_called_once()
 
 
-def test_get_debug_from_scope(get_logger: "GetLogger", caplog: "LogCaptureFixture") -> None:
+def test_get_debug_from_scope(caplog: "LogCaptureFixture") -> None:
     @get("/test")
     def handler() -> None:
         raise ValueError("Test debug exception")
@@ -354,7 +351,6 @@ def test_get_debug_from_scope(get_logger: "GetLogger", caplog: "LogCaptureFixtur
     app = Litestar([handler], debug=True)
 
     with caplog.at_level("ERROR", "litestar"), TestClient(app=app) as client:
-        client.app.logger = get_logger("litestar")
         response = client.get("/test")
 
         assert response.status_code == HTTP_500_INTERNAL_SERVER_ERROR

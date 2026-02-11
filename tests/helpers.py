@@ -11,7 +11,6 @@ from contextlib import AbstractAsyncContextManager, AbstractContextManager, cont
 from pathlib import Path
 from typing import Any, TypeVar, cast, overload
 
-import pytest
 from _pytest.logging import LogCaptureHandler, _LiveLoggingNullHandler
 
 from litestar._openapi.schema_generation import SchemaCreator
