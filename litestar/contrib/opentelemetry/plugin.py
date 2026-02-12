@@ -30,6 +30,8 @@ class OpenTelemetryPlugin(InitPlugin):
 
     def on_app_init(self, app_config: AppConfig) -> AppConfig:
         app_config.middleware, _middleware = self._pop_otel_middleware(app_config.middleware)
+        if self.config.after_exception_hook_handler:
+            app_config.after_exception.append(self.config.after_exception_hook_handler)
         return app_config
 
     @staticmethod
