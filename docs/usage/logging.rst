@@ -76,7 +76,7 @@ integration, which enables Litestar to use structlog. To set it up, use
 .. code-block:: python
 
    from litestar import Litestar, Request, get
-   from litestar.plugins.structlog import StructLoggingConfig
+   from litestar.logging.structlog import StructLoggingConfig
 
    @get("/")
    def my_router_handler(request: Request) -> None:
@@ -108,7 +108,7 @@ the wrapped logger:
 .. code-block:: python
 
     from litestar import Litestar, Request, get
-    from litestar.plugins.structlog import StructLoggingConfig
+    from litestar.logging.structlog import StructLoggingConfig
 
     def timestamper(logger, log_method, event_dict):
         event_dict["timestamp"] = calendar.timegm(time.gmtime())
