@@ -546,26 +546,28 @@ data-aria-dark="Switch to auto color mode">
 <a class="viewcode-back" href="../../../../reference/contrib/opentelemetry.html#litestar.contrib.opentelemetry.OpenTelemetryPlugin.on_app_init">[docs]</a>
 </span><span data-line="31">    <span class="k">def</span><span class="w"> </span><span class="nf">on_app_init</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">app_config</span><span class="p">:</span> <span class="n">AppConfig</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AppConfig</span><span class="p">:</span>
 </span><span data-line="32">        <span class="n">app_config</span><span class="o">.</span><span class="n">middleware</span><span class="p">,</span> <span class="n">_middleware</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pop_otel_middleware</span><span class="p">(</span><span class="n">app_config</span><span class="o">.</span><span class="n">middleware</span><span class="p">)</span>
-</span><span data-line="33">        <span class="k">return</span> <span class="n">app_config</span></div>
+</span><span data-line="33">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">after_exception_hook_handler</span><span class="p">:</span>
+</span><span data-line="34">            <span class="n">app_config</span><span class="o">.</span><span class="n">after_exception</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">after_exception_hook_handler</span><span class="p">)</span>
+</span><span data-line="35">        <span class="k">return</span> <span class="n">app_config</span></div>
 
-</span><span data-line="34">
-</span><span data-line="35">    <span class="nd">@staticmethod</span>
-</span><span data-line="36">    <span class="k">def</span><span class="w"> </span><span class="nf">_pop_otel_middleware</span><span class="p">(</span><span class="n">middlewares</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Middleware</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">Middleware</span><span class="p">],</span> <span class="n">DefineMiddleware</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]:</span>
-</span><span data-line="37"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the OpenTelemetry middleware if it is enabled in the application.</span>
-</span><span data-line="38"><span class="sd">        Remove the middleware from the list of middlewares if it is found.</span>
-</span><span data-line="39"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="40">        <span class="n">otel_middleware</span><span class="p">:</span> <span class="n">DefineMiddleware</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
-</span><span data-line="41">        <span class="n">other_middlewares</span> <span class="o">=</span> <span class="p">[]</span>
-</span><span data-line="42">        <span class="k">for</span> <span class="n">middleware</span> <span class="ow">in</span> <span class="n">middlewares</span><span class="p">:</span>
-</span><span data-line="43">            <span class="k">if</span> <span class="p">(</span>
-</span><span data-line="44">                <span class="nb">isinstance</span><span class="p">(</span><span class="n">middleware</span><span class="p">,</span> <span class="n">DefineMiddleware</span><span class="p">)</span>
-</span><span data-line="45">                <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">middleware</span><span class="o">.</span><span class="n">middleware</span><span class="p">,</span> <span class="nb">type</span><span class="p">)</span>
-</span><span data-line="46">                <span class="ow">and</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">middleware</span><span class="o">.</span><span class="n">middleware</span><span class="p">,</span> <span class="n">OpenTelemetryInstrumentationMiddleware</span><span class="p">)</span>
-</span><span data-line="47">            <span class="p">):</span>
-</span><span data-line="48">                <span class="n">otel_middleware</span> <span class="o">=</span> <span class="n">middleware</span>
-</span><span data-line="49">            <span class="k">else</span><span class="p">:</span>
-</span><span data-line="50">                <span class="n">other_middlewares</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">middleware</span><span class="p">)</span>
-</span><span data-line="51">        <span class="k">return</span> <span class="n">other_middlewares</span><span class="p">,</span> <span class="n">otel_middleware</span></div>
+</span><span data-line="36">
+</span><span data-line="37">    <span class="nd">@staticmethod</span>
+</span><span data-line="38">    <span class="k">def</span><span class="w"> </span><span class="nf">_pop_otel_middleware</span><span class="p">(</span><span class="n">middlewares</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Middleware</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">Middleware</span><span class="p">],</span> <span class="n">DefineMiddleware</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]:</span>
+</span><span data-line="39"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the OpenTelemetry middleware if it is enabled in the application.</span>
+</span><span data-line="40"><span class="sd">        Remove the middleware from the list of middlewares if it is found.</span>
+</span><span data-line="41"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="42">        <span class="n">otel_middleware</span><span class="p">:</span> <span class="n">DefineMiddleware</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+</span><span data-line="43">        <span class="n">other_middlewares</span> <span class="o">=</span> <span class="p">[]</span>
+</span><span data-line="44">        <span class="k">for</span> <span class="n">middleware</span> <span class="ow">in</span> <span class="n">middlewares</span><span class="p">:</span>
+</span><span data-line="45">            <span class="k">if</span> <span class="p">(</span>
+</span><span data-line="46">                <span class="nb">isinstance</span><span class="p">(</span><span class="n">middleware</span><span class="p">,</span> <span class="n">DefineMiddleware</span><span class="p">)</span>
+</span><span data-line="47">                <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">middleware</span><span class="o">.</span><span class="n">middleware</span><span class="p">,</span> <span class="nb">type</span><span class="p">)</span>
+</span><span data-line="48">                <span class="ow">and</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">middleware</span><span class="o">.</span><span class="n">middleware</span><span class="p">,</span> <span class="n">OpenTelemetryInstrumentationMiddleware</span><span class="p">)</span>
+</span><span data-line="49">            <span class="p">):</span>
+</span><span data-line="50">                <span class="n">otel_middleware</span> <span class="o">=</span> <span class="n">middleware</span>
+</span><span data-line="51">            <span class="k">else</span><span class="p">:</span>
+</span><span data-line="52">                <span class="n">other_middlewares</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">middleware</span><span class="p">)</span>
+</span><span data-line="53">        <span class="k">return</span> <span class="n">other_middlewares</span><span class="p">,</span> <span class="n">otel_middleware</span></div>
 
 </span></pre></div>
         </article><button class="back-to-top" type="button">

@@ -533,7 +533,7 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="24"><span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
 </span><span data-line="25">    <span class="kn">from</span><span class="w"> </span><span class="nn">opentelemetry.metrics</span><span class="w"> </span><span class="kn">import</span> <span class="n">Meter</span><span class="p">,</span> <span class="n">MeterProvider</span>
 </span><span data-line="26">
-</span><span data-line="27">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">Scope</span><span class="p">,</span> <span class="n">Scopes</span>
+</span><span data-line="27">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">AfterExceptionHookHandler</span><span class="p">,</span> <span class="n">Scope</span><span class="p">,</span> <span class="n">Scopes</span>
 </span><span data-line="28">
 </span><span data-line="29"><span class="n">OpenTelemetryHookHandler</span> <span class="o">=</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Span</span><span class="p">,</span> <span class="nb">dict</span><span class="p">],</span> <span class="kc">None</span><span class="p">]</span>
 </span><span data-line="30">
@@ -547,72 +547,75 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="36"><span class="sd">    Consult the [OpenTelemetry ASGI documentation](https://opentelemetry-python-contrib.readthedocs.io/en/latest/instrumentation/asgi/asgi.html) for more info about the configuration options.</span>
 </span><span data-line="37"><span class="sd">    &quot;&quot;&quot;</span>
 </span><span data-line="38">
-</span><span data-line="39">    <span class="n">scope_span_details_extractor</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Scope</span><span class="p">],</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
-</span><span data-line="40">        <span class="n">default</span><span class="o">=</span><span class="n">get_route_details_from_scope</span>
-</span><span data-line="41">    <span class="p">)</span>
-</span><span data-line="42"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Callback which should return a string and a tuple, representing the desired default span name and a dictionary</span>
-</span><span data-line="43"><span class="sd">    with any additional span attributes to set.</span>
-</span><span data-line="44"><span class="sd">    &quot;&quot;&quot;</span>
-</span><span data-line="45">    <span class="n">server_request_hook_handler</span><span class="p">:</span> <span class="n">OpenTelemetryHookHandler</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
-</span><span data-line="46"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Optional callback which is called with the server span and ASGI scope object for every incoming request.&quot;&quot;&quot;</span>
-</span><span data-line="47">    <span class="n">client_request_hook_handler</span><span class="p">:</span> <span class="n">OpenTelemetryHookHandler</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
-</span><span data-line="48"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Optional callback which is called with the internal span and an ASGI scope which is sent as a dictionary for when</span>
-</span><span data-line="49"><span class="sd">    the method receive is called.</span>
-</span><span data-line="50"><span class="sd">    &quot;&quot;&quot;</span>
-</span><span data-line="51">    <span class="n">client_response_hook_handler</span><span class="p">:</span> <span class="n">OpenTelemetryHookHandler</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
-</span><span data-line="52"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Optional callback which is called with the internal span and an ASGI event which is sent as a dictionary for when</span>
-</span><span data-line="53"><span class="sd">    the method send is called.</span>
-</span><span data-line="54"><span class="sd">    &quot;&quot;&quot;</span>
-</span><span data-line="55">    <span class="n">meter_provider</span><span class="p">:</span> <span class="n">MeterProvider</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
-</span><span data-line="56"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Optional meter provider to use.</span>
-</span><span data-line="57">
-</span><span data-line="58"><span class="sd">    If omitted the current globally configured one is used.</span>
-</span><span data-line="59"><span class="sd">    &quot;&quot;&quot;</span>
-</span><span data-line="60">    <span class="n">tracer_provider</span><span class="p">:</span> <span class="n">TracerProvider</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
-</span><span data-line="61"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Optional tracer provider to use.</span>
-</span><span data-line="62">
-</span><span data-line="63"><span class="sd">    If omitted the current globally configured one is used.</span>
-</span><span data-line="64"><span class="sd">    &quot;&quot;&quot;</span>
-</span><span data-line="65">    <span class="n">meter</span><span class="p">:</span> <span class="n">Meter</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
-</span><span data-line="66"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Optional meter to use.</span>
-</span><span data-line="67">
-</span><span data-line="68"><span class="sd">    If omitted the provided meter provider or the global one will be used.</span>
-</span><span data-line="69"><span class="sd">    &quot;&quot;&quot;</span>
-</span><span data-line="70">    <span class="n">exclude</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
-</span><span data-line="71"><span class="w">    </span><span class="sd">&quot;&quot;&quot;A pattern or list of patterns to skip in the Allowed Hosts middleware.&quot;&quot;&quot;</span>
-</span><span data-line="72">    <span class="n">exclude_opt_key</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
-</span><span data-line="73"><span class="w">    </span><span class="sd">&quot;&quot;&quot;An identifier to use on routes to disable hosts check for a particular route.&quot;&quot;&quot;</span>
-</span><span data-line="74">    <span class="n">exclude_urls_env_key</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;LITESTAR&quot;</span>
-</span><span data-line="75"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Key to use when checking whether a list of excluded urls is passed via ENV.</span>
-</span><span data-line="76">
-</span><span data-line="77"><span class="sd">    OpenTelemetry supports excluding urls by passing an env in the format &#39;{exclude_urls_env_key}_EXCLUDED_URLS&#39;. With</span>
-</span><span data-line="78"><span class="sd">    the default being ``LITESTAR_EXCLUDED_URLS``.</span>
-</span><span data-line="79"><span class="sd">    &quot;&quot;&quot;</span>
-</span><span data-line="80">    <span class="n">exclude_spans</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;receive&quot;</span><span class="p">,</span> <span class="s2">&quot;send&quot;</span><span class="p">]]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
-</span><span data-line="81"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Optionally exclude HTTP send and/or receive spans from the trace.&quot;&quot;&quot;</span>
-</span><span data-line="82">    <span class="n">scopes</span><span class="p">:</span> <span class="n">Scopes</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
-</span><span data-line="83"><span class="w">    </span><span class="sd">&quot;&quot;&quot;ASGI scopes processed by the middleware, if None both ``http`` and ``websocket`` will be processed.&quot;&quot;&quot;</span>
-</span><span data-line="84">    <span class="n">middleware_class</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">OpenTelemetryInstrumentationMiddleware</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
-</span><span data-line="85">        <span class="n">default</span><span class="o">=</span><span class="n">OpenTelemetryInstrumentationMiddleware</span>
-</span><span data-line="86">    <span class="p">)</span>
-</span><span data-line="87"><span class="w">    </span><span class="sd">&quot;&quot;&quot;The middleware class to use.</span>
-</span><span data-line="88">
-</span><span data-line="89"><span class="sd">    Should be a subclass of OpenTelemetry</span>
-</span><span data-line="90"><span class="sd">    InstrumentationMiddleware][litestar.contrib.opentelemetry.OpenTelemetryInstrumentationMiddleware].</span>
-</span><span data-line="91"><span class="sd">    &quot;&quot;&quot;</span>
-</span><span data-line="92">
-</span><span data-line="93">    <span class="nd">@property</span>
-</span><span data-line="94">    <span class="k">def</span><span class="w"> </span><span class="nf">middleware</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DefineMiddleware</span><span class="p">:</span>
-</span><span data-line="95"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Create an instance of :class:`DefineMiddleware &lt;litestar.middleware.base.DefineMiddleware&gt;` that wraps with.</span>
-</span><span data-line="96">
-</span><span data-line="97"><span class="sd">        [OpenTelemetry</span>
-</span><span data-line="98"><span class="sd">        InstrumentationMiddleware][litestar.contrib.opentelemetry.OpenTelemetryInstrumentationMiddleware] or a subclass</span>
-</span><span data-line="99"><span class="sd">        of this middleware.</span>
-</span><span data-line="100">
-</span><span data-line="101"><span class="sd">        Returns:</span>
-</span><span data-line="102"><span class="sd">            An instance of ``DefineMiddleware``.</span>
-</span><span data-line="103"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="104">        <span class="k">return</span> <span class="n">DefineMiddleware</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">middleware_class</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span></div>
+</span><span data-line="39">    <span class="n">after_exception_hook_handler</span><span class="p">:</span> <span class="n">AfterExceptionHookHandler</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+</span><span data-line="40"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Callback which is called with the exception and the scope object for every exception raised.&quot;&quot;&quot;</span>
+</span><span data-line="41">
+</span><span data-line="42">    <span class="n">scope_span_details_extractor</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Scope</span><span class="p">],</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+</span><span data-line="43">        <span class="n">default</span><span class="o">=</span><span class="n">get_route_details_from_scope</span>
+</span><span data-line="44">    <span class="p">)</span>
+</span><span data-line="45"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Callback which should return a string and a tuple, representing the desired default span name and a dictionary</span>
+</span><span data-line="46"><span class="sd">    with any additional span attributes to set.</span>
+</span><span data-line="47"><span class="sd">    &quot;&quot;&quot;</span>
+</span><span data-line="48">    <span class="n">server_request_hook_handler</span><span class="p">:</span> <span class="n">OpenTelemetryHookHandler</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+</span><span data-line="49"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Optional callback which is called with the server span and ASGI scope object for every incoming request.&quot;&quot;&quot;</span>
+</span><span data-line="50">    <span class="n">client_request_hook_handler</span><span class="p">:</span> <span class="n">OpenTelemetryHookHandler</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+</span><span data-line="51"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Optional callback which is called with the internal span and an ASGI scope which is sent as a dictionary for when</span>
+</span><span data-line="52"><span class="sd">    the method receive is called.</span>
+</span><span data-line="53"><span class="sd">    &quot;&quot;&quot;</span>
+</span><span data-line="54">    <span class="n">client_response_hook_handler</span><span class="p">:</span> <span class="n">OpenTelemetryHookHandler</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+</span><span data-line="55"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Optional callback which is called with the internal span and an ASGI event which is sent as a dictionary for when</span>
+</span><span data-line="56"><span class="sd">    the method send is called.</span>
+</span><span data-line="57"><span class="sd">    &quot;&quot;&quot;</span>
+</span><span data-line="58">    <span class="n">meter_provider</span><span class="p">:</span> <span class="n">MeterProvider</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+</span><span data-line="59"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Optional meter provider to use.</span>
+</span><span data-line="60">
+</span><span data-line="61"><span class="sd">    If omitted the current globally configured one is used.</span>
+</span><span data-line="62"><span class="sd">    &quot;&quot;&quot;</span>
+</span><span data-line="63">    <span class="n">tracer_provider</span><span class="p">:</span> <span class="n">TracerProvider</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+</span><span data-line="64"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Optional tracer provider to use.</span>
+</span><span data-line="65">
+</span><span data-line="66"><span class="sd">    If omitted the current globally configured one is used.</span>
+</span><span data-line="67"><span class="sd">    &quot;&quot;&quot;</span>
+</span><span data-line="68">    <span class="n">meter</span><span class="p">:</span> <span class="n">Meter</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+</span><span data-line="69"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Optional meter to use.</span>
+</span><span data-line="70">
+</span><span data-line="71"><span class="sd">    If omitted the provided meter provider or the global one will be used.</span>
+</span><span data-line="72"><span class="sd">    &quot;&quot;&quot;</span>
+</span><span data-line="73">    <span class="n">exclude</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+</span><span data-line="74"><span class="w">    </span><span class="sd">&quot;&quot;&quot;A pattern or list of patterns to skip in the Allowed Hosts middleware.&quot;&quot;&quot;</span>
+</span><span data-line="75">    <span class="n">exclude_opt_key</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+</span><span data-line="76"><span class="w">    </span><span class="sd">&quot;&quot;&quot;An identifier to use on routes to disable hosts check for a particular route.&quot;&quot;&quot;</span>
+</span><span data-line="77">    <span class="n">exclude_urls_env_key</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;LITESTAR&quot;</span>
+</span><span data-line="78"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Key to use when checking whether a list of excluded urls is passed via ENV.</span>
+</span><span data-line="79">
+</span><span data-line="80"><span class="sd">    OpenTelemetry supports excluding urls by passing an env in the format &#39;{exclude_urls_env_key}_EXCLUDED_URLS&#39;. With</span>
+</span><span data-line="81"><span class="sd">    the default being ``LITESTAR_EXCLUDED_URLS``.</span>
+</span><span data-line="82"><span class="sd">    &quot;&quot;&quot;</span>
+</span><span data-line="83">    <span class="n">exclude_spans</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;receive&quot;</span><span class="p">,</span> <span class="s2">&quot;send&quot;</span><span class="p">]]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+</span><span data-line="84"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Optionally exclude HTTP send and/or receive spans from the trace.&quot;&quot;&quot;</span>
+</span><span data-line="85">    <span class="n">scopes</span><span class="p">:</span> <span class="n">Scopes</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+</span><span data-line="86"><span class="w">    </span><span class="sd">&quot;&quot;&quot;ASGI scopes processed by the middleware, if None both ``http`` and ``websocket`` will be processed.&quot;&quot;&quot;</span>
+</span><span data-line="87">    <span class="n">middleware_class</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">OpenTelemetryInstrumentationMiddleware</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+</span><span data-line="88">        <span class="n">default</span><span class="o">=</span><span class="n">OpenTelemetryInstrumentationMiddleware</span>
+</span><span data-line="89">    <span class="p">)</span>
+</span><span data-line="90"><span class="w">    </span><span class="sd">&quot;&quot;&quot;The middleware class to use.</span>
+</span><span data-line="91">
+</span><span data-line="92"><span class="sd">    Should be a subclass of OpenTelemetry</span>
+</span><span data-line="93"><span class="sd">    InstrumentationMiddleware][litestar.contrib.opentelemetry.OpenTelemetryInstrumentationMiddleware].</span>
+</span><span data-line="94"><span class="sd">    &quot;&quot;&quot;</span>
+</span><span data-line="95">
+</span><span data-line="96">    <span class="nd">@property</span>
+</span><span data-line="97">    <span class="k">def</span><span class="w"> </span><span class="nf">middleware</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DefineMiddleware</span><span class="p">:</span>
+</span><span data-line="98"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Create an instance of :class:`DefineMiddleware &lt;litestar.middleware.base.DefineMiddleware&gt;` that wraps with.</span>
+</span><span data-line="99">
+</span><span data-line="100"><span class="sd">        [OpenTelemetry</span>
+</span><span data-line="101"><span class="sd">        InstrumentationMiddleware][litestar.contrib.opentelemetry.OpenTelemetryInstrumentationMiddleware] or a subclass</span>
+</span><span data-line="102"><span class="sd">        of this middleware.</span>
+</span><span data-line="103">
+</span><span data-line="104"><span class="sd">        Returns:</span>
+</span><span data-line="105"><span class="sd">            An instance of ``DefineMiddleware``.</span>
+</span><span data-line="106"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="107">        <span class="k">return</span> <span class="n">DefineMiddleware</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">middleware_class</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span></div>
 
 </span></pre></div>
         </article><button class="back-to-top" type="button">
