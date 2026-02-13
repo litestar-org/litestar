@@ -17,6 +17,7 @@ from opentelemetry.sdk.trace.export.in_memory_span_exporter import InMemorySpanE
 from litestar import WebSocket, get, websocket
 from litestar.config.app import AppConfig
 from litestar.contrib.opentelemetry import OpenTelemetryConfig, OpenTelemetryPlugin
+from litestar.enums import ScopeType
 from litestar.exceptions import http_exceptions
 from litestar.status_codes import HTTP_200_OK
 from litestar.testing import create_test_client
@@ -267,3 +268,77 @@ def test_open_telemetry_middleware_handles_errors_caused_on_middleware(
             "http.route": "GET /",
             "http.status_code": 401,
         }
+
+
+def test_after_exception_hook_handler_called_on_exception(
+    resource: Resource, exporter: InMemorySpanExporter, meter_provider: MeterProvider, request: FixtureRequest
+) -> None:
+    """Test that after_exception_hook_handler is called when an exception occurs."""
+    # Track calls to the hook
+    hook_calls: list[tuple[Exception, Scope]] = []
+
+    def after_exception_hook(exc: Exception, scope: Scope) -> None:
+        hook_calls.append((exc, scope))
+
+    # Create config with the hook handler
+    tracer_provider = TracerProvider(resource=resource)
+    tracer_provider.add_span_processor(SimpleSpanProcessor(exporter))
+    meter = get_meter_provider().get_meter(f"litestar-test-{request.node.nodeid}")
+    config = OpenTelemetryConfig(
+        tracer_provider=tracer_provider, meter=meter, after_exception_hook_handler=after_exception_hook
+    )
+
+    test_exception = ValueError("test error")
+
+    @get("/")
+    def handler() -> dict:
+        raise test_exception
+
+    with create_test_client(handler, plugins=[OpenTelemetryPlugin(config)]) as client:
+        response = client.get("/")
+        assert response.status_code == 500
+
+        # Verify the hook was called exactly once
+        assert len(hook_calls) == 1
+        exc, scope = hook_calls[0]
+
+        # Verify the exception is the one we raised
+        assert exc is test_exception
+        assert isinstance(exc, ValueError)
+        assert str(exc) == "test error"
+
+        # Verify the scope is provided
+        assert scope is not None
+        assert scope["type"] == ScopeType.HTTP
+        assert scope["path"] == "/"
+        assert scope["method"] == "GET"
+
+
+def test_after_exception_hook_handler_not_called_on_success(
+    resource: Resource, exporter: InMemorySpanExporter, meter_provider: MeterProvider, request: FixtureRequest
+) -> None:
+    """Test that after_exception_hook_handler is not called when no exception occurs."""
+    # Track calls to the hook
+    hook_calls: list[tuple[Exception, Scope]] = []
+
+    def after_exception_hook(exc: Exception, scope: Scope) -> None:
+        hook_calls.append((exc, scope))
+
+    # Create config with the hook handler
+    tracer_provider = TracerProvider(resource=resource)
+    tracer_provider.add_span_processor(SimpleSpanProcessor(exporter))
+    meter = get_meter_provider().get_meter(f"litestar-test-{request.node.nodeid}")
+    config = OpenTelemetryConfig(
+        tracer_provider=tracer_provider, meter=meter, after_exception_hook_handler=after_exception_hook
+    )
+
+    @get("/")
+    def handler() -> dict:
+        return {"success": True}
+
+    with create_test_client(handler, plugins=[OpenTelemetryPlugin(config)]) as client:
+        response = client.get("/")
+        assert response.status_code == 200
+
+        # Verify the hook was NOT called
+        assert len(hook_calls) == 0
