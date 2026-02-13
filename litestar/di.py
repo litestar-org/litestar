@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from inspect import isasyncgenfunction, isclass, isfunction, isgeneratorfunction
+from inspect import isasyncgenfunction, isclass, isfunction, isgeneratorfunction, ismethod
 from typing import TYPE_CHECKING, Any
 
 from litestar.exceptions import ImproperlyConfiguredException
@@ -58,7 +58,8 @@ class Provide:
 
         is_class_dependency = isclass(dependency)
         is_function = isfunction(dependency)
-        is_callable_instance = not is_class_dependency and not is_function
+        is_method = ismethod(dependency)
+        is_callable_instance = not is_class_dependency and not is_function and not is_method
         if is_class_dependency or is_callable_instance:
             check_target = dependency.__call__  # type: ignore[operator]
         else:
