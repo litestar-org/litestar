@@ -227,7 +227,7 @@ for ``Body``\ , by using :class:`RequestEncodingType.MESSAGEPACK <.enums.Request
 
         .. literalinclude:: ../../tests/examples/test_request_data.py
             :language: python
-            :lines: 136-141
+            :lines: 140-145
 
 Custom Request
 --------------
