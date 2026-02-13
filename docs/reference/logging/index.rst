@@ -5,5 +5,4 @@ logging
     :titlesonly:
 
     config
-    picologging
-    standard
+    structlog
