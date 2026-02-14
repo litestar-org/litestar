@@ -13,7 +13,7 @@ from litestar.dto import AbstractDTO
 from litestar.enums import RequestEncodingType
 from litestar.handlers import BaseRouteHandler
 from litestar.openapi.config import OpenAPIConfig
-from litestar.openapi.spec import RequestBody
+from litestar.openapi.spec import Example, RequestBody
 from litestar.params import Body
 from litestar.typing import FieldDefinition
 
@@ -217,3 +217,40 @@ def test_unwrap_read_only() -> None:
             }
         }
     }
+
+
+def test_request_body_examples_in_openapi_schema() -> None:
+    @post("/items")
+    async def create_item(
+        data: Annotated[
+            dict[str, Any],
+            Body(
+                examples=[
+                    Example(summary="Example A", value={"name": "Widget"}),
+                    Example(id="custom-id", summary="Example B", value={"name": "Gadget"}),
+                ]
+            ),
+        ],
+    ) -> dict[str, Any]:
+        return data
+
+    app = Litestar([create_item])
+    schema = app.openapi_schema.to_schema()
+
+    examples = schema["paths"]["/items"]["post"]["requestBody"]["content"]["application/json"]["examples"]
+    assert "data-example-1" in examples
+    assert "custom-id" in examples
+    assert examples["data-example-1"]["summary"] == "Example A"
+    assert examples["custom-id"]["value"] == {"name": "Gadget"}
+
+
+def test_request_body_examples_absent_when_not_set() -> None:
+    @post("/items")
+    async def create_item(data: dict[str, Any]) -> dict[str, Any]:
+        return data
+
+    app = Litestar([create_item])
+    schema = app.openapi_schema.to_schema()
+
+    content = schema["paths"]["/items"]["post"]["requestBody"]["content"]["application/json"]
+    assert "examples" not in content
