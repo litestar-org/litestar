@@ -34,7 +34,9 @@ def create_request_body(
     Returns:
         A RequestBody instance.
     """
-    media_type: RequestEncodingType | str = RequestEncodingType.JSON
+    media_type: RequestEncodingType | str = (
+        "application/octet-stream" if data_field.is_subclass_of(bytes) else RequestEncodingType.JSON
+    )
     schema_creator = SchemaCreator.from_openapi_context(context, prefer_alias=True)
     if isinstance(data_field.kwarg_definition, BodyKwarg) and data_field.kwarg_definition.media_type:
         media_type = data_field.kwarg_definition.media_type
