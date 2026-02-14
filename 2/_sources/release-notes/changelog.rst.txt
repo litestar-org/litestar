@@ -3,6 +3,30 @@
 Litestar 2 Changelog
 ====================
 
+.. changelog:: 2.21.0
+    :date: 2026-02-14
+
+    .. change:: DI: Fix handling of bound methods returning (async) generators
+        :type: bugfix
+        :issue: 4596
+        :pr: 4597
+
+        Fix a regression introced in github.com/litestar-org/litestar/pull/4459, that
+        would lead to lead to async generators returned from bound methods of DI
+        providers being recognised as a synchronous callable, instead of an async
+        generator.
+
+    .. change:: Add ``after_exception`` option for ``OpenTelemetryConfig``
+        :type: feature
+        :pr: 4595
+        :issue: 4594
+
+        Add an ``after_exception`` option to
+        :class:`~litestar.contrib.opentelemetry.OpenTelemetryConfig`, which will
+        add that hook to the applications ``after_exception`` hooks, allowing the
+        middleware to react to exception, without handling them.
+
+
 .. changelog:: 2.20.0
     :date: 2026-02-08
 

@@ -1536,6 +1536,35 @@ document.write(`
                   
   <section id="litestar-2-changelog">
 <h1>Litestar 2 Changelog<a class="headerlink" href="#litestar-2-changelog" title="Link to this heading">#</a></h1>
+<section id="2.21.0">
+<h2>2.21.0<a class="headerlink" href="#2.21.0" title="Link to this heading">#</a></h2>
+<strong>Released: </strong>2026-02-14<section id="2.21.0-feature">
+<h3>Features<a class="headerlink" href="#2.21.0-feature" title="Link to this heading">#</a></h3>
+<dl>
+<dt>Add <code class="docutils literal notranslate"><span class="pre">after_exception</span></code> option for <code class="docutils literal notranslate"><span class="pre">OpenTelemetryConfig</span></code><a class="headerlink reference internal" href="#2.21.0-add" id="2.21.0-add">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Add an <code class="docutils literal notranslate"><span class="pre">after_exception</span></code> option to
+<a class="reference internal" href="../reference/contrib/opentelemetry.html#litestar.contrib.opentelemetry.OpenTelemetryConfig" title="litestar.contrib.opentelemetry.OpenTelemetryConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">OpenTelemetryConfig</span></code></a>, which will
+add that hook to the applications <code class="docutils literal notranslate"><span class="pre">after_exception</span></code> hooks, allowing the
+middleware to react to exception, without handling them.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/4594">litestar-org/litestar#4594</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/4595">litestar-org/litestar#4595</a></span></p>
+</div>
+</dd>
+</dl>
+</section>
+<section id="2.21.0-bugfix">
+<h3>Bugfixes<a class="headerlink" href="#2.21.0-bugfix" title="Link to this heading">#</a></h3>
+<dl>
+<dt>DI: Fix handling of bound methods returning (async) generators<a class="headerlink reference internal" href="#2.21.0-di: fix handling of bound methods returning (async) generators" id="2.21.0-di: fix handling of bound methods returning (async) generators">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Fix a regression introced in github.com/litestar-org/litestar/pull/4459, that
+would lead to lead to async generators returned from bound methods of DI
+providers being recognised as a synchronous callable, instead of an async
+generator.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/4596">litestar-org/litestar#4596</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/4597">litestar-org/litestar#4597</a></span></p>
+</div>
+</dd>
+</dl>
+</section>
+</section>
 <section id="2.20.0">
 <h2>2.20.0<a class="headerlink" href="#2.20.0" title="Link to this heading">#</a></h2>
 <strong>Released: </strong>2026-02-08<section id="2.20.0-feature">
@@ -7564,6 +7593,11 @@ the time it takes to <code class="docutils literal notranslate"><span class="pre
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#2.21.0">2.21.0</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#2.21.0-feature">Features</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#2.21.0-bugfix">Bugfixes</a></li>
+</ul>
+</li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#2.20.0">2.20.0</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#2.20.0-feature">Features</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#2.20.0-bugfix">Bugfixes</a></li>
@@ -7868,7 +7902,7 @@ the time it takes to <code class="docutils literal notranslate"><span class="pre
         <div class="footer-item">
 
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
     <br/>
   </p>
 </div>

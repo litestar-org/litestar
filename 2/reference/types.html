@@ -1744,35 +1744,35 @@ errors defaults to ‘strict’.</p>
 <h3>ASGI Scopes<a class="headerlink" href="#asgi-scopes" title="Link to this heading">#</a></h3>
 <dl class="py class">
 <dt class="sig sig-object py" id="litestar.types.ASGIVersion">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.types.</span></span><span class="sig-name descname"><span class="pre">ASGIVersion</span></span><a class="headerlink" href="#litestar.types.ASGIVersion" title="Link to this definition">#</a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.types.</span></span><span class="sig-name descname"><span class="pre">ASGIVersion</span></span><a class="headerlink" href="#litestar.types.ASGIVersion" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.TypedDict" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypedDict</span></code></a></p>
 <p>ASGI spec version.</p>
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="litestar.types.BaseScope">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.types.</span></span><span class="sig-name descname"><span class="pre">BaseScope</span></span><a class="headerlink" href="#litestar.types.BaseScope" title="Link to this definition">#</a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.types.</span></span><span class="sig-name descname"><span class="pre">BaseScope</span></span><a class="headerlink" href="#litestar.types.BaseScope" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">HeaderScope</span></code></p>
 <p>Base ASGI-scope.</p>
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="litestar.types.HTTPScope">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.types.</span></span><span class="sig-name descname"><span class="pre">HTTPScope</span></span><a class="headerlink" href="#litestar.types.HTTPScope" title="Link to this definition">#</a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.types.</span></span><span class="sig-name descname"><span class="pre">HTTPScope</span></span><a class="headerlink" href="#litestar.types.HTTPScope" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#litestar.types.BaseScope" title="litestar.types.asgi_types.BaseScope"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseScope</span></code></a></p>
 <p>HTTP-ASGI-scope.</p>
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="litestar.types.LifeSpanScope">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.types.</span></span><span class="sig-name descname"><span class="pre">LifeSpanScope</span></span><a class="headerlink" href="#litestar.types.LifeSpanScope" title="Link to this definition">#</a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.types.</span></span><span class="sig-name descname"><span class="pre">LifeSpanScope</span></span><a class="headerlink" href="#litestar.types.LifeSpanScope" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.TypedDict" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypedDict</span></code></a></p>
 <p>Lifespan-ASGI-scope.</p>
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="litestar.types.WebSocketScope">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.types.</span></span><span class="sig-name descname"><span class="pre">WebSocketScope</span></span><a class="headerlink" href="#litestar.types.WebSocketScope" title="Link to this definition">#</a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.types.</span></span><span class="sig-name descname"><span class="pre">WebSocketScope</span></span><a class="headerlink" href="#litestar.types.WebSocketScope" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#litestar.types.BaseScope" title="litestar.types.asgi_types.BaseScope"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseScope</span></code></a></p>
 <p>WebSocket-ASGI-scope.</p>
 </dd></dl>
@@ -1782,133 +1782,133 @@ errors defaults to ‘strict’.</p>
 <h3>ASGI Events<a class="headerlink" href="#asgi-events" title="Link to this heading">#</a></h3>
 <dl class="py class">
 <dt class="sig sig-object py" id="litestar.types.HTTPRequestEvent">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.types.</span></span><span class="sig-name descname"><span class="pre">HTTPRequestEvent</span></span><a class="headerlink" href="#litestar.types.HTTPRequestEvent" title="Link to this definition">#</a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.types.</span></span><span class="sig-name descname"><span class="pre">HTTPRequestEvent</span></span><a class="headerlink" href="#litestar.types.HTTPRequestEvent" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.TypedDict" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypedDict</span></code></a></p>
 <p>ASGI <cite>http.request</cite> event.</p>
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="litestar.types.HTTPResponseStartEvent">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.types.</span></span><span class="sig-name descname"><span class="pre">HTTPResponseStartEvent</span></span><a class="headerlink" href="#litestar.types.HTTPResponseStartEvent" title="Link to this definition">#</a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.types.</span></span><span class="sig-name descname"><span class="pre">HTTPResponseStartEvent</span></span><a class="headerlink" href="#litestar.types.HTTPResponseStartEvent" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">HeaderScope</span></code></p>
 <p>ASGI <cite>http.response.start</cite> event.</p>
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="litestar.types.HTTPResponseBodyEvent">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.types.</span></span><span class="sig-name descname"><span class="pre">HTTPResponseBodyEvent</span></span><a class="headerlink" href="#litestar.types.HTTPResponseBodyEvent" title="Link to this definition">#</a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.types.</span></span><span class="sig-name descname"><span class="pre">HTTPResponseBodyEvent</span></span><a class="headerlink" href="#litestar.types.HTTPResponseBodyEvent" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.TypedDict" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypedDict</span></code></a></p>
 <p>ASGI <cite>http.response.body</cite> event.</p>
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="litestar.types.HTTPServerPushEvent">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.types.</span></span><span class="sig-name descname"><span class="pre">HTTPServerPushEvent</span></span><a class="headerlink" href="#litestar.types.HTTPServerPushEvent" title="Link to this definition">#</a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.types.</span></span><span class="sig-name descname"><span class="pre">HTTPServerPushEvent</span></span><a class="headerlink" href="#litestar.types.HTTPServerPushEvent" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">HeaderScope</span></code></p>
 <p>ASGI <cite>http.response.push</cite> event.</p>
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="litestar.types.HTTPDisconnectEvent">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.types.</span></span><span class="sig-name descname"><span class="pre">HTTPDisconnectEvent</span></span><a class="headerlink" href="#litestar.types.HTTPDisconnectEvent" title="Link to this definition">#</a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.types.</span></span><span class="sig-name descname"><span class="pre">HTTPDisconnectEvent</span></span><a class="headerlink" href="#litestar.types.HTTPDisconnectEvent" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.TypedDict" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypedDict</span></code></a></p>
 <p>ASGI <cite>http.disconnect</cite> event.</p>
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="litestar.types.WebSocketConnectEvent">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.types.</span></span><span class="sig-name descname"><span class="pre">WebSocketConnectEvent</span></span><a class="headerlink" href="#litestar.types.WebSocketConnectEvent" title="Link to this definition">#</a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.types.</span></span><span class="sig-name descname"><span class="pre">WebSocketConnectEvent</span></span><a class="headerlink" href="#litestar.types.WebSocketConnectEvent" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.TypedDict" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypedDict</span></code></a></p>
 <p>ASGI <cite>websocket.connect</cite> event.</p>
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="litestar.types.WebSocketAcceptEvent">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.types.</span></span><span class="sig-name descname"><span class="pre">WebSocketAcceptEvent</span></span><a class="headerlink" href="#litestar.types.WebSocketAcceptEvent" title="Link to this definition">#</a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.types.</span></span><span class="sig-name descname"><span class="pre">WebSocketAcceptEvent</span></span><a class="headerlink" href="#litestar.types.WebSocketAcceptEvent" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">HeaderScope</span></code></p>
 <p>ASGI <cite>websocket.accept</cite> event.</p>
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="litestar.types.WebSocketReceiveEvent">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.types.</span></span><span class="sig-name descname"><span class="pre">WebSocketReceiveEvent</span></span><a class="headerlink" href="#litestar.types.WebSocketReceiveEvent" title="Link to this definition">#</a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.types.</span></span><span class="sig-name descname"><span class="pre">WebSocketReceiveEvent</span></span><a class="headerlink" href="#litestar.types.WebSocketReceiveEvent" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.TypedDict" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypedDict</span></code></a></p>
 <p>ASGI <cite>websocket.receive</cite> event.</p>
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="litestar.types.WebSocketSendEvent">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.types.</span></span><span class="sig-name descname"><span class="pre">WebSocketSendEvent</span></span><a class="headerlink" href="#litestar.types.WebSocketSendEvent" title="Link to this definition">#</a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.types.</span></span><span class="sig-name descname"><span class="pre">WebSocketSendEvent</span></span><a class="headerlink" href="#litestar.types.WebSocketSendEvent" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.TypedDict" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypedDict</span></code></a></p>
 <p>ASGI <cite>websocket.send</cite> event.</p>
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="litestar.types.WebSocketResponseStartEvent">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.types.</span></span><span class="sig-name descname"><span class="pre">WebSocketResponseStartEvent</span></span><a class="headerlink" href="#litestar.types.WebSocketResponseStartEvent" title="Link to this definition">#</a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.types.</span></span><span class="sig-name descname"><span class="pre">WebSocketResponseStartEvent</span></span><a class="headerlink" href="#litestar.types.WebSocketResponseStartEvent" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">HeaderScope</span></code></p>
 <p>ASGI <cite>websocket.http.response.start</cite> event.</p>
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="litestar.types.WebSocketResponseBodyEvent">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.types.</span></span><span class="sig-name descname"><span class="pre">WebSocketResponseBodyEvent</span></span><a class="headerlink" href="#litestar.types.WebSocketResponseBodyEvent" title="Link to this definition">#</a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.types.</span></span><span class="sig-name descname"><span class="pre">WebSocketResponseBodyEvent</span></span><a class="headerlink" href="#litestar.types.WebSocketResponseBodyEvent" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.TypedDict" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypedDict</span></code></a></p>
 <p>ASGI <cite>websocket.http.response.body</cite> event.</p>
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="litestar.types.WebSocketDisconnectEvent">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.types.</span></span><span class="sig-name descname"><span class="pre">WebSocketDisconnectEvent</span></span><a class="headerlink" href="#litestar.types.WebSocketDisconnectEvent" title="Link to this definition">#</a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.types.</span></span><span class="sig-name descname"><span class="pre">WebSocketDisconnectEvent</span></span><a class="headerlink" href="#litestar.types.WebSocketDisconnectEvent" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.TypedDict" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypedDict</span></code></a></p>
 <p>ASGI <cite>websocket.disconnect</cite> event.</p>
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="litestar.types.WebSocketCloseEvent">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.types.</span></span><span class="sig-name descname"><span class="pre">WebSocketCloseEvent</span></span><a class="headerlink" href="#litestar.types.WebSocketCloseEvent" title="Link to this definition">#</a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.types.</span></span><span class="sig-name descname"><span class="pre">WebSocketCloseEvent</span></span><a class="headerlink" href="#litestar.types.WebSocketCloseEvent" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.TypedDict" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypedDict</span></code></a></p>
 <p>ASGI <cite>websocket.close</cite> event.</p>
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="litestar.types.LifeSpanStartupEvent">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.types.</span></span><span class="sig-name descname"><span class="pre">LifeSpanStartupEvent</span></span><a class="headerlink" href="#litestar.types.LifeSpanStartupEvent" title="Link to this definition">#</a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.types.</span></span><span class="sig-name descname"><span class="pre">LifeSpanStartupEvent</span></span><a class="headerlink" href="#litestar.types.LifeSpanStartupEvent" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.TypedDict" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypedDict</span></code></a></p>
 <p>ASGI <cite>lifespan.startup</cite> event.</p>
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="litestar.types.LifeSpanShutdownEvent">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.types.</span></span><span class="sig-name descname"><span class="pre">LifeSpanShutdownEvent</span></span><a class="headerlink" href="#litestar.types.LifeSpanShutdownEvent" title="Link to this definition">#</a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.types.</span></span><span class="sig-name descname"><span class="pre">LifeSpanShutdownEvent</span></span><a class="headerlink" href="#litestar.types.LifeSpanShutdownEvent" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.TypedDict" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypedDict</span></code></a></p>
 <p>ASGI <cite>lifespan.shutdown</cite> event.</p>
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="litestar.types.LifeSpanStartupCompleteEvent">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.types.</span></span><span class="sig-name descname"><span class="pre">LifeSpanStartupCompleteEvent</span></span><a class="headerlink" href="#litestar.types.LifeSpanStartupCompleteEvent" title="Link to this definition">#</a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.types.</span></span><span class="sig-name descname"><span class="pre">LifeSpanStartupCompleteEvent</span></span><a class="headerlink" href="#litestar.types.LifeSpanStartupCompleteEvent" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.TypedDict" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypedDict</span></code></a></p>
 <p>ASGI <cite>lifespan.startup.complete</cite> event.</p>
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="litestar.types.LifeSpanStartupFailedEvent">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.types.</span></span><span class="sig-name descname"><span class="pre">LifeSpanStartupFailedEvent</span></span><a class="headerlink" href="#litestar.types.LifeSpanStartupFailedEvent" title="Link to this definition">#</a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.types.</span></span><span class="sig-name descname"><span class="pre">LifeSpanStartupFailedEvent</span></span><a class="headerlink" href="#litestar.types.LifeSpanStartupFailedEvent" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.TypedDict" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypedDict</span></code></a></p>
 <p>ASGI <cite>lifespan.startup.failed</cite> event.</p>
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="litestar.types.LifeSpanShutdownCompleteEvent">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.types.</span></span><span class="sig-name descname"><span class="pre">LifeSpanShutdownCompleteEvent</span></span><a class="headerlink" href="#litestar.types.LifeSpanShutdownCompleteEvent" title="Link to this definition">#</a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.types.</span></span><span class="sig-name descname"><span class="pre">LifeSpanShutdownCompleteEvent</span></span><a class="headerlink" href="#litestar.types.LifeSpanShutdownCompleteEvent" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.TypedDict" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypedDict</span></code></a></p>
 <p>ASGI <cite>lifespan.shutdown.complete</cite> event.</p>
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="litestar.types.LifeSpanShutdownFailedEvent">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.types.</span></span><span class="sig-name descname"><span class="pre">LifeSpanShutdownFailedEvent</span></span><a class="headerlink" href="#litestar.types.LifeSpanShutdownFailedEvent" title="Link to this definition">#</a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.types.</span></span><span class="sig-name descname"><span class="pre">LifeSpanShutdownFailedEvent</span></span><a class="headerlink" href="#litestar.types.LifeSpanShutdownFailedEvent" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.TypedDict" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypedDict</span></code></a></p>
 <p>ASGI <cite>lifespan.shutdown.failed</cite> event.</p>
 </dd></dl>
@@ -2007,7 +2007,7 @@ errors defaults to ‘strict’.</p>
 <h2>Protocols<a class="headerlink" href="#protocols" title="Link to this heading">#</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="litestar.types.Logger">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.types.</span></span><span class="sig-name descname"><span class="pre">Logger</span></span><a class="headerlink" href="#litestar.types.Logger" title="Link to this definition">#</a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.types.</span></span><span class="sig-name descname"><span class="pre">Logger</span></span><a class="headerlink" href="#litestar.types.Logger" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Protocol" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Protocol</span></code></a></p>
 <p>Logger protocol.</p>
 <dl class="py method">
@@ -2236,7 +2236,7 @@ errors defaults to ‘strict’.</p>
 <h2>File types<a class="headerlink" href="#file-types" title="Link to this heading">#</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="litestar.types.FileInfo">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.types.</span></span><span class="sig-name descname"><span class="pre">FileInfo</span></span><a class="headerlink" href="#litestar.types.FileInfo" title="Link to this definition">#</a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.types.</span></span><span class="sig-name descname"><span class="pre">FileInfo</span></span><a class="headerlink" href="#litestar.types.FileInfo" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.TypedDict" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypedDict</span></code></a></p>
 <p>File information gathered from a file system.</p>
 <dl class="py attribute">
@@ -2315,7 +2315,7 @@ errors defaults to ‘strict’.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="litestar.types.FileSystemProtocol">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.types.</span></span><span class="sig-name descname"><span class="pre">FileSystemProtocol</span></span><a class="headerlink" href="#litestar.types.FileSystemProtocol" title="Link to this definition">#</a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.types.</span></span><span class="sig-name descname"><span class="pre">FileSystemProtocol</span></span><a class="headerlink" href="#litestar.types.FileSystemProtocol" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Protocol" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Protocol</span></code></a></p>
 <p>Base protocol used to interact with a file-system.</p>
 <p>This protocol is commensurable with the file systems
@@ -2586,7 +2586,7 @@ exported by the <cite>fsspec &lt;https://filesystem-spec.readthedocs.io/en/lates
         <div class="footer-item">
 
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
     <br/>
   </p>
 </div>
