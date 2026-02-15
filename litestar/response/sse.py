@@ -103,7 +103,7 @@ class ServerSentEventMessage:
     def encode(self) -> bytes:
         buffer = StringIO()
         if self.comment is not None:
-            for chunk in _LINE_BREAK_RE.split(str(self.comment)):
+            for chunk in _LINE_BREAK_RE.split(self.comment):
                 buffer.write(f": {chunk}")
                 buffer.write(self.sep)
 
