@@ -10,7 +10,7 @@ from unittest.mock import MagicMock
 import pytest
 from typing_extensions import TypeAlias
 
-from litestar import Controller, Litestar, MediaType, Response, delete, get, post
+from litestar import Controller, Litestar, MediaType, Response, delete, get, head, post
 from litestar._openapi.datastructures import OpenAPIContext
 from litestar._openapi.responses import (
     ResponseFactory,
@@ -30,6 +30,7 @@ from litestar.openapi.datastructures import ResponseSpec
 from litestar.openapi.spec import Example, OpenAPIHeader, OpenAPIMediaType, OpenAPIResponse, Reference, Schema
 from litestar.openapi.spec.enums import OpenAPIType
 from litestar.response import File, Redirect, Stream, Template
+from litestar.response.base import ASGIResponse
 from litestar.routes import HTTPRoute
 from litestar.status_codes import (
     HTTP_200_OK,
@@ -288,6 +289,75 @@ def test_create_success_response_redirect_override(create_factory: CreateFactory
     assert isinstance(location.schema, Schema)
     assert location.schema.type == OpenAPIType.STRING
     assert location.description
+
+
+def test_create_success_response_asgi_response(create_factory: CreateFactoryFixture) -> None:
+    @get(path="/test", name="test")
+    def handler() -> ASGIResponse:
+        return ASGIResponse()
+
+    handler = get_registered_route_handler(handler, "test")
+    response = create_factory(handler, True).create_success_response()
+
+    assert response.content is None
+
+
+def test_create_success_response_none(create_factory: CreateFactoryFixture) -> None:
+    @get(path="/test", name="test")
+    def handler() -> None:
+        return None
+
+    handler = get_registered_route_handler(handler, "test")
+    response = create_factory(handler, True).create_success_response()
+
+    assert response.content
+    schema = response.content[handler.media_type].schema
+    assert isinstance(schema, Schema)
+    assert schema.type == OpenAPIType.NULL
+
+
+def test_create_success_response_none_no_content(create_factory: CreateFactoryFixture) -> None:
+    @get(path="/test", status_code=HTTP_204_NO_CONTENT, name="test")
+    def handler() -> None:
+        return None
+
+    handler = get_registered_route_handler(handler, "test")
+    response = create_factory(handler, True).create_success_response()
+
+    assert response.content is None
+
+
+def test_create_success_response_none_head(create_factory: CreateFactoryFixture) -> None:
+    @head(path="/test", name="test")
+    def handler() -> None:
+        return None
+
+    handler = get_registered_route_handler(handler, "test")
+    response = create_factory(handler, True).create_success_response()
+
+    assert response.content is None
+
+
+def test_create_success_response_response_none_no_content(create_factory: CreateFactoryFixture) -> None:
+    @get(path="/test", status_code=HTTP_204_NO_CONTENT, name="test")
+    def handler() -> Response[None]:
+        return Response(None)
+
+    handler = get_registered_route_handler(handler, "test")
+    response = create_factory(handler, True).create_success_response()
+
+    assert response.content is None
+
+
+def test_create_success_response_response_none_head(create_factory: CreateFactoryFixture) -> None:
+    @head(path="/test", name="test")
+    def handler() -> Response[None]:
+        return Response(None)
+
+    handler = get_registered_route_handler(handler, "test")
+    response = create_factory(handler, True).create_success_response()
+
+    assert response.content is None
 
 
 def test_create_success_response_no_content_explicit_responsespec(
