@@ -2,7 +2,7 @@
 
 import datetime
 import sys
-from typing import Callable, Union
+from typing import Any, Callable, Union
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -14,7 +14,13 @@ from structlog.types import BindableLogger, WrappedLogger
 
 from litestar import get
 from litestar.exceptions import HTTPException, NotFoundException
-from litestar.logging.config import LoggingConfig, StructlogEventFilter, StructLoggingConfig, default_json_serializer
+from litestar.logging.config import (
+    LoggingConfig,
+    StructlogEventFilter,
+    StructLoggingConfig,
+    _default_exception_logging_handler_factory,
+    default_json_serializer,
+)
 from litestar.plugins.structlog import StructlogConfig, StructlogPlugin
 from litestar.serialization import decode_json
 from litestar.testing import create_test_client
@@ -180,15 +186,15 @@ def test_structlog_config_as_json(isatty: bool, pretty_print_tty: bool, expected
 
 
 @pytest.mark.parametrize(
-    "disable_stack_trace, exception_to_raise, handler_called",
+    "disable_stack_trace, exception_to_raise, expect_tb",
     [
-        # will log the stack trace
+        # will log WITH the stack trace (tb is non-empty)
         [set(), HTTPException, True],
         [set(), ValueError, True],
         [{400}, HTTPException, True],
         [{NameError}, ValueError, True],
         [{400, NameError}, ValueError, True],
-        # will not log the stack trace
+        # will log WITHOUT the stack trace (tb is empty)
         [{NotFoundException}, HTTPException, False],
         [{404}, HTTPException, False],
         [{ValueError}, ValueError, False],
@@ -199,7 +205,7 @@ def test_structlog_config_as_json(isatty: bool, pretty_print_tty: bool, expected
 def test_structlog_disable_stack_trace(
     disable_stack_trace: set[Union[int, type[Exception]]],
     exception_to_raise: type[Exception],
-    handler_called: bool,
+    expect_tb: bool,
 ) -> None:
     mock_handler = MagicMock()
 
@@ -217,7 +223,32 @@ def test_structlog_disable_stack_trace(
         else:
             _ = client.get("/error")
 
-        if handler_called:
-            assert mock_handler.called, "Structlog exception handler should have been called"
+        assert mock_handler.called, "Structlog exception handler should always be called"
+        tb = mock_handler.call_args[0][2]
+        if expect_tb:
+            assert len(tb) > 0, "Stack trace should be present"
         else:
-            assert not mock_handler.called, "Structlog exception handler should not have been called"
+            assert tb == [], "Stack trace should be suppressed but handler should still be called"
+
+
+def test_structlog_default_handler_uses_error_when_stack_trace_suppressed() -> None:
+    """The default structlog exception logging handler should call
+    ``logger.error`` (not ``logger.exception``) when the stack trace is
+    suppressed via ``disable_stack_trace``.  This exercises the ``else``
+    branch inside ``_default_exception_logging_handler_factory(is_struct_logger=True)``.
+    """
+    handler = _default_exception_logging_handler_factory(is_struct_logger=True)
+    mock_logger = MagicMock()
+    scope: Any = {"type": "http", "path": "/error"}
+
+    # With traceback present -> logger.exception
+    handler(mock_logger, scope, ["Traceback ..."])
+    mock_logger.exception.assert_called_once()
+    mock_logger.error.assert_not_called()
+
+    mock_logger.reset_mock()
+
+    # With empty traceback (stack trace suppressed) -> logger.error
+    handler(mock_logger, scope, [])
+    mock_logger.error.assert_called_once()
+    mock_logger.exception.assert_not_called()
