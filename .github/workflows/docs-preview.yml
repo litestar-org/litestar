@@ -20,7 +20,7 @@ jobs:
           persist-credentials: false
 
       - name: Download artifact
-        uses: dawidd6/action-download-artifact@v14
+        uses: dawidd6/action-download-artifact@v15
         with:
           workflow_conclusion: success
           run_id: ${{ github.event.workflow_run.id }}
