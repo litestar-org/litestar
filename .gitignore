@@ -48,3 +48,9 @@ __pypackages__/
 certs/
 pdm.toml
 .zed
+.claude
+.gemini
+specs/
+CLAUDE.md
+AGENTS.md
+GEMINI.md
