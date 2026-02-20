@@ -15,10 +15,12 @@ __all__ = (
     "LoggingConfig",
 )
 
+from litestar.plugins import InitPlugin
 
 if TYPE_CHECKING:
     # these imports are duplicated on purpose so sphinx autodoc can find and link them
 
+    from litestar.config.app import AppConfig
     from litestar.types import GetLogger, LifespanHook, Logger, Scope
     from litestar.types.callable_types import ExceptionLoggingHandler
 
@@ -55,7 +57,7 @@ class ExtraKeyValueFormatter(logging.Formatter):
 
 
 @dataclasses.dataclass(frozen=True)
-class LoggingConfig:
+class LoggingConfig(InitPlugin):
     _handler_queue: ClassVar[queue.Queue | None] = None
     _queue_listener: ClassVar[QueueListener | None] = None
 
@@ -114,6 +116,12 @@ class LoggingConfig:
     'caplog' fixture, as it may not work correctly otherwise
     """
 
+    disable: bool = False
+    """
+    Disable all Litestar loggers. This will register a :class:`logging.NullHandler` for
+    the litestar loggers.
+    """
+
     formatter: type[logging.Formatter] | None = dataclasses.field(default=ExtraKeyValueFormatter)
     """
     Logging formatter to use for the Litestar logger.
@@ -144,16 +152,35 @@ class LoggingConfig:
         Optionally returns a 'LifespanHook' that will be called on application
         shutdown.
         """
-        queue_handler_config = {}
-        if self.configure_queue_handler:
+        handler_name = "litestar_default_handler"
+
+        if self.disable:
+            handlers = {
+                "litestar_default_handler": {
+                    "class": "logging.NullHandler",
+                }
+            }
+        elif self.configure_queue_handler:
             if LoggingConfig._handler_queue is None:
                 LoggingConfig._handler_queue = queue.Queue(-1)
 
-            queue_handler_config = {
+            handlers = {
+                "litestar_default_handler": {
+                    "class": "logging.StreamHandler",
+                    "formatter": "litestar_formatter",
+                },
                 "litestar_queue_handler": {
                     "()": "logging.handlers.QueueHandler",
                     "queue": LoggingConfig._handler_queue,
-                }
+                },
+            }
+            handler_name = "litestar_queue_handler"
+        else:
+            handlers = {
+                "litestar_default_handler": {
+                    "class": "logging.StreamHandler",
+                    "formatter": "litestar_formatter",
+                },
             }
 
         logging.config.dictConfig(
@@ -165,18 +192,10 @@ class LoggingConfig:
                         "format": "%(levelname)s - %(asctime)s - %(name)s - %(message)s",
                     },
                 },
-                "handlers": {
-                    "litestar_stream_handler": {
-                        "class": "logging.StreamHandler",
-                        "formatter": "litestar_formatter",
-                    },
-                    **queue_handler_config,
-                },
+                "handlers": handlers,
                 "loggers": {
                     self.root_logger_name: {
-                        "handlers": [
-                            "litestar_queue_handler" if self.configure_queue_handler else "litestar_stream_handler",
-                        ],
+                        "handlers": [handler_name],
                         "level": self.level,
                         "propagate": self.should_propagate,
                     },
@@ -185,23 +204,42 @@ class LoggingConfig:
         )
 
         if self.formatter is not None:
-            handler = getHandlerByName("litestar_stream_handler")
-            handler.setFormatter(self.formatter(handler.formatter._fmt))  # type: ignore[union-attr]
+            handler = getHandlerByName("litestar_default_handler")
+            if handler.formatter:
+                handler.setFormatter(self.formatter(handler.formatter._fmt))  # type: ignore[union-attr]
 
-        if self.configure_queue_handler:
+        if not self.disable and self.configure_queue_handler:
             if LoggingConfig._queue_listener is None:
                 LoggingConfig._queue_listener = QueueListener(
                     LoggingConfig._handler_queue,  # type: ignore[arg-type]
-                    getHandlerByName("litestar_stream_handler"),
+                    getHandlerByName("litestar_default_handler"),
                 )
                 atexit.register(LoggingConfig._queue_listener.stop)
             if LoggingConfig._queue_listener._thread is None:
                 LoggingConfig._queue_listener.start()
 
-        def shutdown() -> None:
-            # if there's a queue, ensure all log records are processed before we allow
-            # the app to stop
-            if LoggingConfig._handler_queue is not None:
-                LoggingConfig._handler_queue.join()
+    @staticmethod
+    def _shutdown() -> None:
+        # if there's a queue, ensure all log records are processed before we allow
+        # the app to stop
+        if LoggingConfig._handler_queue is not None:
+            LoggingConfig._handler_queue.join()
 
-        return shutdown
+    def _get_plugin(self) -> LoggingPlugin:
+        return LoggingPlugin(self)
+
+
+class LoggingPlugin(InitPlugin):
+    def __init__(self, config: LoggingConfig) -> None:
+        self.config = config
+
+    def on_app_init(self, app_config: AppConfig) -> AppConfig:
+        self.config._configure_logger()
+        if self.config.log_requests:
+            from litestar.middleware.logging import LoggingMiddleware
+
+            app_config.middleware.append(LoggingMiddleware())
+
+        app_config.on_shutdown.append(self.config._shutdown)
+
+        return app_config

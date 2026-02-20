@@ -159,6 +159,13 @@ def test_app_config_object_used(app_config_object: AppConfig, monkeypatch: pytes
         assert mock.called, f"expected {name} to be called"
 
 
+def test_logging_config_none_sets_disabled() -> None:
+    app = Litestar(logging_config=None)
+
+    assert app.logging_config is not None
+    assert app.logging_config.disable is True
+
+
 def test_app_debug_level_sets_logging_config_level() -> None:
     app = Litestar([], debug=True)
 
