@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import enum
+import logging
 import pdb  # noqa: T100
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Any, Callable
@@ -134,7 +135,7 @@ class AppConfig:
     """A list of callables returning async context managers, wrapping the lifespan of the ASGI application"""
     listeners: list[EventListener] = field(default_factory=list)
     """A list of :class:`EventListener <.events.listener.EventListener>`."""
-    logging_config: LoggingConfig = field(default_factory=LoggingConfig)
+    logging_config: LoggingConfig | None = field(default_factory=LoggingConfig)
     """A :class:`~litestar.logging.config.LoggingConfig`"""
     middleware: list[Middleware] = field(default_factory=list)
     """A list of :class:`Middleware <.types.Middleware>`."""
@@ -229,10 +230,10 @@ class AppConfig:
         if self.allowed_hosts and isinstance(self.allowed_hosts, list):
             self.allowed_hosts = AllowedHostsConfig(allowed_hosts=self.allowed_hosts)
 
-        if self.logging_config.log_requests:
-            from litestar.middleware.logging import LoggingMiddleware
+        if self.logging_config is None:
+            self.logging_config = LoggingConfig(disable=True, level=logging.DEBUG if self.debug else logging.INFO)
 
-            self.middleware.append(LoggingMiddleware())
+        self.plugins.append(self.logging_config._get_plugin())
 
 
 class ExperimentalFeatures(str, enum.Enum):
