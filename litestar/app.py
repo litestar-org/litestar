@@ -3,7 +3,6 @@ from __future__ import annotations
 import collections
 import inspect
 import itertools
-import logging
 import pdb  # noqa: T100
 import warnings
 from collections import defaultdict
@@ -38,7 +37,6 @@ from litestar.exceptions import (
 )
 from litestar.handlers import ASGIRouteHandler, BaseRouteHandler, HTTPRouteHandler, WebsocketRouteHandler
 from litestar.handlers.http_handlers._options import create_options_handler
-from litestar.logging import LoggingConfig
 from litestar.middleware._internal.cors import CORSMiddleware
 from litestar.openapi.config import OpenAPIConfig
 from litestar.plugins import (
@@ -69,6 +67,7 @@ if TYPE_CHECKING:
     from litestar.datastructures import CacheControlHeader, ETag
     from litestar.dto import AbstractDTO
     from litestar.events.listener import EventListener
+    from litestar.logging import LoggingConfig
     from litestar.openapi.spec import SecurityRequirement
     from litestar.openapi.spec.open_api import OpenAPI
     from litestar.response import Response
@@ -355,7 +354,7 @@ class Litestar(Router):
             include_in_schema=include_in_schema,
             lifespan=list(lifespan or []),
             listeners=list(listeners or []),
-            logging_config=logging_config or LoggingConfig(level=logging.DEBUG if debug else logging.INFO),
+            logging_config=logging_config,
             middleware=list(middleware or []),
             multipart_form_part_limit=multipart_form_part_limit,
             on_shutdown=list(on_shutdown or []),
@@ -496,9 +495,6 @@ class Litestar(Router):
 
         self.asgi_router.construct_routing_trie()
 
-        logger_shutdown = self.logging_config._configure_logger()
-        if logger_shutdown:
-            self.on_shutdown.append(logger_shutdown)
         self.logger = self.logging_config.get_litestar_logger()
 
         self.asgi_handler = self._create_asgi_handler()
