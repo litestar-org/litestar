@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import sys
 from inspect import getmro
 from sys import exc_info
 from traceback import format_exception
@@ -14,6 +15,9 @@ from litestar.exceptions.responses._debug_response import (
 from litestar.status_codes import HTTP_500_INTERNAL_SERVER_ERROR
 from litestar.utils.empty import value_or_raise
 from litestar.utils.scope.state import ScopeState
+
+if sys.version_info <= (3, 11):
+    from exceptiongroup import ExceptionGroup
 
 if TYPE_CHECKING:
     from starlette.exceptions import HTTPException as StarletteHTTPException
@@ -119,16 +123,20 @@ class ExceptionHandlerMiddleware:
         """
         scope_state = ScopeState.from_scope(scope)
 
-        async def capture_response_started(event: Message) -> None:
-            if event["type"] == "http.response.start":
-                scope_state.response_started = True
-            await send(event)
+        if scope["type"] == ScopeType.HTTP:
+            async def wrapped_send(event: Message) -> None:
+                if event["type"] == "http.response.start":
+                    scope_state.response_started = True
+                await send(event)
+
+        else:
+            wrapped_send = send
 
         try:
-            await self.app(scope, receive, capture_response_started)
-        except Exception as e:
+            await self.app(scope, receive, wrapped_send)
+        except Exception as exc:
             if scope_state.response_started:
-                raise LitestarException("Exception caught after response started") from e
+                raise LitestarException("Exception caught after response started") from exc
 
             litestar_app = scope["litestar_app"]
 
@@ -136,17 +144,22 @@ class ExceptionHandlerMiddleware:
                 self.handle_exception_logging(logger=logger, logging_config=litestar_app.logging_config, scope=scope)
 
             for hook in litestar_app.after_exception:
-                await hook(e, scope)
+                await hook(exc, scope)
 
             if litestar_app.pdb_on_exception:
                 litestar_app.debugger_module.post_mortem()
 
+            # collapse ExceptionGroups with one exception, so we can properly handle
+            # them for dispatching
+            if isinstance(exc, ExceptionGroup) and len(exc.exceptions) == 1:
+                exc = exc.exceptions[0]
+
             if scope["type"] == ScopeType.HTTP:
                 await self.handle_request_exception(
-                    litestar_app=litestar_app, scope=scope, receive=receive, send=send, exc=e
+                    litestar_app=litestar_app, scope=scope, receive=receive, send=send, exc=exc
                 )
             else:
-                await self.handle_websocket_exception(send=send, exc=e)
+                await self.handle_websocket_exception(send=send, exc=exc)
 
     async def handle_request_exception(
         self, litestar_app: Litestar, scope: Scope, receive: Receive, send: Send, exc: Exception
