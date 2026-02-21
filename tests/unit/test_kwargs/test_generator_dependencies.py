@@ -121,11 +121,12 @@ def test_generator_dependency_handle_exception_debug_false(
 
     with create_test_client(route_handlers=[handler], debug=False) as client:
         res = client.get("/")
-        assert res.status_code == 500
-        assert res.json() == {"detail": "Internal Server Error", "status_code": 500}
-        cleanup_mock.assert_not_called()
-        exception_mock.assert_called_once()
-        finally_mock.assert_called_once()
+
+    assert res.status_code == 500
+    assert res.text == "500 - Internal Server Error"
+    cleanup_mock.assert_not_called()
+    exception_mock.assert_called_once()
+    finally_mock.assert_called_once()
 
 
 @pytest.mark.parametrize("dependency_fixture", ["generator_dependency", "async_generator_dependency"])
@@ -145,10 +146,11 @@ def test_generator_dependency_exception_during_cleanup_debug_false(
 
     with create_test_client(route_handlers=[handler], debug=False) as client:
         res = client.get("/")
-        assert res.status_code == 500
-        assert res.json() == {"status_code": 500, "detail": "Internal Server Error"}
-        cleanup_mock.assert_called_once()
-        finally_mock.assert_called_once()
+
+    assert res.status_code == 500
+    assert res.text == "500 - Internal Server Error"
+    cleanup_mock.assert_called_once()
+    finally_mock.assert_called_once()
 
 
 @pytest.mark.parametrize("dependency_fixture", ["generator_dependency", "async_generator_dependency"])

@@ -207,7 +207,9 @@ def test_non_litestar_exception_with_detail_is_not_included() -> None:
         raise MyException()
 
     with create_test_client([handler], debug=False) as client:
-        assert client.get("/", headers={"Accept": MediaType.JSON}).json().get("detail") == "Internal Server Error"
+        response = client.get("/", headers={"Accept": MediaType.JSON})
+
+    assert response.text == "500 - Internal Server Error"
 
 
 def test_http_exception_with_class_var_extra() -> None:

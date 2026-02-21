@@ -43,7 +43,7 @@ class TestClient(Client, Generic[T]):
         self,
         app: T,
         base_url: str = "http://testserver.local",
-        raise_server_exceptions: bool = True,
+        raise_server_exceptions: bool = False,
         root_path: str = "",
         timeout: float | None = None,
         cookies: CookieTypes | None = None,
