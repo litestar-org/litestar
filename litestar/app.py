@@ -3,7 +3,6 @@ from __future__ import annotations
 import collections
 import inspect
 import itertools
-import logging
 import pdb  # noqa: T100
 import warnings
 from collections import defaultdict
@@ -38,7 +37,6 @@ from litestar.exceptions import (
 )
 from litestar.handlers import ASGIRouteHandler, BaseRouteHandler, HTTPRouteHandler, WebsocketRouteHandler
 from litestar.handlers.http_handlers._options import create_options_handler
-from litestar.logging.config import LoggingConfig, get_logger_placeholder
 from litestar.middleware._internal.cors import CORSMiddleware
 from litestar.openapi.config import OpenAPIConfig
 from litestar.plugins import (
@@ -50,7 +48,7 @@ from litestar.plugins import (
 from litestar.router import Router
 from litestar.routes import ASGIRoute, HTTPRoute, WebSocketRoute
 from litestar.stores.registry import StoreRegistry
-from litestar.types import Empty, TypeDecodersSequence
+from litestar.types import Empty, Logger, TypeDecodersSequence
 from litestar.types.internal_types import PathParameterDefinition, RouteHandlerMapItem, TemplateConfigType
 from litestar.utils import ensure_async_callable, envflag, join_paths, unique
 from litestar.utils.dataclass import extract_dataclass_items
@@ -69,7 +67,7 @@ if TYPE_CHECKING:
     from litestar.datastructures import CacheControlHeader, ETag
     from litestar.dto import AbstractDTO
     from litestar.events.listener import EventListener
-    from litestar.logging.config import BaseLoggingConfig
+    from litestar.logging import LoggingConfig
     from litestar.openapi.spec import SecurityRequirement
     from litestar.openapi.spec.open_api import OpenAPI
     from litestar.response import Response
@@ -86,12 +84,10 @@ if TYPE_CHECKING:
         Dependencies,
         EmptyType,
         ExceptionHandlersMap,
-        GetLogger,
         Guard,
         LifeSpanReceive,
         LifeSpanScope,
         LifeSpanSend,
-        Logger,
         Message,
         Middleware,
         OnAppInitHandler,
@@ -141,7 +137,9 @@ class Litestar(Router):
 
     __slots__ = (
         "_debug",
+        "_is_using_litestar_test_client",
         "_lifespan_managers",
+        "_logger_shutdown",
         "_openapi_schema",
         "_server_lifespan_managers",
         "after_exception",
@@ -196,7 +194,7 @@ class Litestar(Router):
         guards: Sequence[Guard] | None = None,
         include_in_schema: bool | EmptyType = Empty,
         listeners: Sequence[EventListener] | None = None,
-        logging_config: BaseLoggingConfig | EmptyType | None = Empty,
+        logging_config: LoggingConfig | None = None,
         middleware: Sequence[Middleware] | None = None,
         multipart_form_part_limit: int = 1000,
         on_app_init: Sequence[OnAppInitHandler] | None = None,
@@ -268,7 +266,7 @@ class Litestar(Router):
             include_in_schema: A boolean flag dictating whether  the route handler should be documented in the OpenAPI schema.
             lifespan: A list of callables returning async context managers, wrapping the lifespan of the ASGI application
             listeners: A sequence of :class:`EventListener <.events.listener.EventListener>`.
-            logging_config: A subclass of :class:`BaseLoggingConfig <.logging.config.BaseLoggingConfig>`.
+            logging_config: A :class:`~litestar.logging.config.LoggingConfig`.
             middleware: A sequence of :class:`Middleware <.types.Middleware>`.
             multipart_form_part_limit: The maximal number of allowed parts in a multipart/formdata request. This limit
                 is intended to protect from DoS attacks.
@@ -328,9 +326,6 @@ class Litestar(Router):
                 connections.
             experimental_features: An iterable of experimental features to enable
         """
-
-        if logging_config is Empty:
-            logging_config = LoggingConfig()
 
         if debug is None:
             debug = envflag("LITESTAR_DEBUG")
@@ -423,9 +418,6 @@ class Litestar(Router):
                 stacklevel=2,
             )
 
-        self.get_logger: GetLogger = get_logger_placeholder
-        self.logger: Logger | None = None
-
         self.after_exception = [ensure_async_callable(h) for h in config.after_exception]
         self.allowed_hosts = cast("AllowedHostsConfig | None", config.allowed_hosts)
         self.before_send = [ensure_async_callable(h) for h in config.before_send]
@@ -443,7 +435,7 @@ class Litestar(Router):
         self.state = config.state
         self.template_engine = config.template_config.engine_instance if config.template_config else None
         self.websocket_class: type[WebSocket] = config.websocket_class or WebSocket
-        self.debug = config.debug
+        self._debug = config.debug
         self.pdb_on_exception: bool = config.pdb_on_exception
         self.debugger_module: Debugger = config.debugger_module
         self.include_in_schema = include_in_schema
@@ -503,11 +495,12 @@ class Litestar(Router):
 
         self.asgi_router.construct_routing_trie()
 
-        if self.logging_config:
-            self.get_logger = self.logging_config.configure()
-            self.logger = self.get_logger("litestar")
+        self.logger = self.logging_config.get_litestar_logger()
 
         self.asgi_handler = self._create_asgi_handler()
+
+    def get_litestar_logger(self, name: str | None = None) -> Logger:
+        return self.logging_config.get_litestar_logger(name)
 
     @staticmethod
     def _patch_opentelemetry_middleware(config: AppConfig) -> AppConfig:
@@ -569,20 +562,6 @@ class Litestar(Router):
     @property
     def debug(self) -> bool:
         return self._debug
-
-    @debug.setter
-    def debug(self, value: bool) -> None:
-        """Sets the debug logging level for the application.
-
-        When possible, it calls the `self.logging_config.set_level` method.  This allows for implementation specific code and APIs to be called.
-        """
-        if self.logger and self.logging_config:
-            self.logging_config.set_level(self.logger, logging.DEBUG if value else logging.INFO)
-        elif self.logger and hasattr(self.logger, "setLevel"):  # pragma: no cover
-            self.logger.setLevel(logging.DEBUG if value else logging.INFO)  # pragma: no cover
-        if isinstance(self.logging_config, LoggingConfig):
-            self.logging_config.loggers["litestar"]["level"] = "DEBUG" if value else "INFO"
-        self._debug = value
 
     async def __call__(
         self,

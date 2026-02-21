@@ -62,7 +62,6 @@ intersphinx_mapping = {
     "alembic": ("https://alembic.sqlalchemy.org/en/latest/", None),
     "click": ("https://click.palletsprojects.com/en/latest/", None),
     "redis": ("https://redis.readthedocs.io/en/stable/", None),
-    "picologging": ("https://microsoft.github.io/picologging/", None),
     "structlog": ("https://www.structlog.org/en/stable/", None),
     "tortoise": ("https://tortoise.github.io/", None),
     "piccolo": ("https://piccolo-orm.readthedocs.io/en/latest/", None),
@@ -261,6 +260,12 @@ ignore_missing_refs = {
     re.compile(r"litestar\.channels\.backends\.asyncpg.*"): {"asyncpg.connection.Connection", "asyncpg.Connection"},
     re.compile(r"litestar\.handlers\.websocket_handlers\.stream.*"): {"WebSocketMode"},
     re.compile(r"litestar\.file_system.*"): {"AnyFileSystem", "SymlinkResolver"},
+    # these exist in struclog, but Sphinx thinks they're classes which they are not; they are type aliases
+    re.compile(r"litestar\.logging\.structlog\.StructLoggingConfig"): {
+        "structlog.typing.Processor",
+        "structlog.typing.Context",
+        "structlog.typing.WrappedLogger",
+    },
 }
 
 # Do not warn about broken links to the following:
