@@ -321,6 +321,22 @@ def test_create_schema_from_msgspec_annotated_type() -> None:
     }
 
 
+def test_create_schema_from_msgspec_annotated_collection_type() -> None:
+    """Regression test for gh-4514: min_length/max_length on list fields should
+    produce minItems/maxItems in the OpenAPI schema."""
+    from uuid import UUID
+
+    class Lookup(msgspec.Struct):
+        list_field: Annotated[list[UUID], msgspec.Meta(min_length=1, max_length=10)]
+        set_field: Annotated[set[int], msgspec.Meta(min_length=2)]
+
+    schema = get_schema_for_field_definition(FieldDefinition.from_kwarg(name="Lookup", annotation=Lookup))
+
+    assert schema.properties["list_field"].min_items == 1  # type: ignore[index, union-attr]
+    assert schema.properties["list_field"].max_items == 10  # type: ignore[index, union-attr]
+    assert schema.properties["set_field"].min_items == 2  # type: ignore[index, union-attr]
+
+
 def test_annotated_types() -> None:
     historical_date = date(year=1980, day=1, month=1)
     today = date.today()
