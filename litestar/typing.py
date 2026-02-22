@@ -18,7 +18,6 @@ except ImportError:
 
 from typing import get_type_hints
 
-import msgspec
 from msgspec import UnsetType
 from typing_extensions import (
     NewType,
@@ -101,29 +100,6 @@ def _annotated_types_extractor(meta: Any, is_sequence_container: bool) -> dict[s
             kwargs["pattern"] = "[[:ascii:]]"
         elif meta.func == str.isdigit:  # pragma: no cover  # coverage quirk: It expects a jump here for branch coverage
             kwargs["pattern"] = "[[:digit:]]"
-    elif isinstance(meta, msgspec.Meta):
-        if meta.gt is not None:
-            kwargs["gt"] = meta.gt
-        if meta.ge is not None:
-            kwargs["ge"] = meta.ge
-        if meta.lt is not None:
-            kwargs["lt"] = meta.lt
-        if meta.le is not None:
-            kwargs["le"] = meta.le
-        if meta.multiple_of is not None:
-            kwargs["multiple_of"] = meta.multiple_of
-        if meta.min_length is not None:
-            if is_sequence_container:
-                kwargs["min_items"] = meta.min_length
-            else:
-                kwargs["min_length"] = meta.min_length
-        if meta.max_length is not None:
-            if is_sequence_container:
-                kwargs["max_items"] = meta.max_length
-            else:
-                kwargs["max_length"] = meta.max_length
-        if meta.pattern is not None:
-            kwargs["pattern"] = meta.pattern
     return kwargs
 
 
