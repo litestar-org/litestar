@@ -205,6 +205,7 @@ class DTOBackend:
         Args:
             model_name: name for the type that should be unique across all transfer types.
             field_definitions: field definitions for the container type.
+            is_root: whether this is the root transfer model or a nested one.
 
         Returns:
             A ``BackendT`` class.

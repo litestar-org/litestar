@@ -11,15 +11,16 @@ import yaml
 
 from litestar import Controller, Litestar, delete, get, patch, post
 from litestar._openapi.plugin import OpenAPIPlugin
+from litestar.dto import DataclassDTO, DTOConfig
 from litestar.enums import MediaType, OpenAPIMediaType, ParamType
 from litestar.openapi import OpenAPIConfig
 from litestar.openapi.plugins import YamlRenderPlugin
-from litestar.openapi.spec import Parameter as OpenAPIParameter, Schema
+from litestar.openapi.spec import Parameter as OpenAPIParameter
+from litestar.openapi.spec import Schema
 from litestar.params import Parameter
 from litestar.serialization.msgspec_hooks import decode_json, encode_json, get_serializer
 from litestar.status_codes import HTTP_200_OK, HTTP_404_NOT_FOUND
 from litestar.testing import create_test_client
-from litestar.dto import DataclassDTO, DTOConfig
 
 CREATE_EXAMPLES_VALUES = (True, False)
 
