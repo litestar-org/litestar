@@ -198,6 +198,7 @@ class DTOBackend:
         self,
         model_name: str,
         field_definitions: tuple[TransferDTOFieldDefinition, ...],
+        is_root: bool = True,
     ) -> type[Struct]:
         """Create a model for data transfer.
 
@@ -208,7 +209,10 @@ class DTOBackend:
         Returns:
             A ``BackendT`` class.
         """
-        struct_name = self.dto_factory.__schema_name__ or self._create_transfer_model_name(model_name)
+        if is_root and self.dto_factory.__schema_name__:
+            struct_name = self.dto_factory.__schema_name__
+        else:
+            struct_name = self._create_transfer_model_name(model_name)
 
         struct = _create_struct_for_field_definitions(
             model_name=struct_name,
@@ -428,7 +432,7 @@ class DTOBackend:
             )
 
             transfer_model = NestedFieldInfo(
-                model=self.create_transfer_model_type(unique_name, nested_field_definitions),
+                model=self.create_transfer_model_type(unique_name, nested_field_definitions, is_root=False),
                 field_definitions=nested_field_definitions,
             )
 
