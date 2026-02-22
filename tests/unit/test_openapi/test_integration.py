@@ -14,11 +14,12 @@ from litestar._openapi.plugin import OpenAPIPlugin
 from litestar.enums import MediaType, OpenAPIMediaType, ParamType
 from litestar.openapi import OpenAPIConfig
 from litestar.openapi.plugins import YamlRenderPlugin
-from litestar.openapi.spec import Parameter as OpenAPIParameter
+from litestar.openapi.spec import Parameter as OpenAPIParameter, Schema
 from litestar.params import Parameter
 from litestar.serialization.msgspec_hooks import decode_json, encode_json, get_serializer
 from litestar.status_codes import HTTP_200_OK, HTTP_404_NOT_FOUND
 from litestar.testing import create_test_client
+from litestar.dto import DataclassDTO, DTOConfig
 
 CREATE_EXAMPLES_VALUES = (True, False)
 
@@ -358,6 +359,52 @@ class Model:
         f"{module_b.__name__}_Model",
     }
     # TODO: expand this test to cover more cases
+
+
+@dataclass
+class _SchemaNameChild:
+    name: str
+
+
+@dataclass
+class _SchemaNamePerson:
+    name: str
+    age: int
+    child: _SchemaNameChild
+
+
+def test_dto_schema_name_with_nested_model() -> None:
+    """__schema_name__ should only apply to the root DTO, not nested child models."""
+
+    class PersonDTO(DataclassDTO[_SchemaNamePerson]):
+        __schema_name__ = "PersonPublic"
+        config = DTOConfig(exclude={"age"})
+
+    @get("/person", return_dto=PersonDTO, sync_to_thread=False)
+    def get_person() -> _SchemaNamePerson:
+        return _SchemaNamePerson(name="test", age=30, child=_SchemaNameChild(name="kid"))
+
+    app = Litestar(route_handlers=[get_person])
+    openapi_plugin = app.plugins.get(OpenAPIPlugin)
+    schemas = openapi_plugin.provide_openapi().components.schemas
+
+    # parent should use the custom name
+    assert schemas is not None
+    assert "PersonPublic" in schemas
+
+    # child should NOT use the parent's custom name
+    # it should have its own schema
+    person_schema = schemas["PersonPublic"]
+    assert isinstance(person_schema, Schema)
+    assert person_schema.properties is not None
+    child_ref = person_schema.properties["child"].ref  # type: ignore[union-attr]
+    assert child_ref != "#/components/schemas/PersonPublic", (
+        "child $ref should not point to the parent's __schema_name__"
+    )
+
+    # a separate child schema should exist
+    child_schema_name = child_ref.split("/")[-1]
+    assert child_schema_name in schemas
 
 
 def test_multiple_handlers_for_same_route() -> None:
