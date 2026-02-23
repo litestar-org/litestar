@@ -294,6 +294,8 @@ class Foo(TypedDict):
 
 
 def test_create_schema_from_msgspec_annotated_type() -> None:
+    from uuid import UUID
+
     class Lookup(msgspec.Struct):
         int_field: Annotated[int, msgspec.Meta(gt=0)]
         str_field: Annotated[
@@ -302,6 +304,8 @@ def test_create_schema_from_msgspec_annotated_type() -> None:
         ]
         bytes_field: Annotated[bytes, msgspec.Meta(max_length=2, min_length=1)]
         default_field: Annotated[str, msgspec.Meta(min_length=1)] = "a"
+        list_field: Annotated[list[UUID], msgspec.Meta(min_length=1, max_length=10)]
+        set_field: Annotated[set[int], msgspec.Meta(min_length=2)]
 
     schema = get_schema_for_field_definition(FieldDefinition.from_kwarg(name="Lookup", annotation=Lookup))
 
@@ -312,26 +316,13 @@ def test_create_schema_from_msgspec_annotated_type() -> None:
     assert schema.properties["str_field"].description == "description"  # type: ignore[index]
     assert schema.properties["str_field"].title == "title"  # type: ignore[index, union-attr]
     assert schema.properties["str_field"].max_length == 16  # type: ignore[index, union-attr]
-    assert sorted(schema.required) == sorted(["int_field", "str_field", "bytes_field"])  # type: ignore[arg-type]
+    assert sorted(schema.required) == sorted(["int_field", "str_field", "bytes_field", "list_field", "set_field"])  # type: ignore[arg-type]
     assert schema.properties["bytes_field"].to_schema() == {  # type: ignore[index]
         "contentEncoding": "utf-8",
         "maxLength": 2,
         "minLength": 1,
         "type": "string",
     }
-
-
-def test_create_schema_from_msgspec_annotated_collection_type() -> None:
-    """Regression test for gh-4514: min_length/max_length on list fields should
-    produce minItems/maxItems in the OpenAPI schema."""
-    from uuid import UUID
-
-    class Lookup(msgspec.Struct):
-        list_field: Annotated[list[UUID], msgspec.Meta(min_length=1, max_length=10)]
-        set_field: Annotated[set[int], msgspec.Meta(min_length=2)]
-
-    schema = get_schema_for_field_definition(FieldDefinition.from_kwarg(name="Lookup", annotation=Lookup))
-
     assert schema.properties["list_field"].min_items == 1  # type: ignore[index, union-attr]
     assert schema.properties["list_field"].max_items == 10  # type: ignore[index, union-attr]
     assert schema.properties["set_field"].min_items == 2  # type: ignore[index, union-attr]
