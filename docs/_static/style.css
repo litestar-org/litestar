@@ -37,3 +37,14 @@ html[data-theme="dark"] .mermaid svg {
 html[data-theme="dark"] .mermaid svg p {
   color: black;
 }
+
+/* Button container wrapping */
+.buttons.wrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.buttons.wrap .btn-no-wrap {
+  flex: 0 0 auto;
+}
