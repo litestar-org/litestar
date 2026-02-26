@@ -124,13 +124,14 @@ class ExceptionHandlerMiddleware:
         scope_state = ScopeState.from_scope(scope)
 
         if scope["type"] == ScopeType.HTTP:
+
             async def wrapped_send(event: Message) -> None:
                 if event["type"] == "http.response.start":
                     scope_state.response_started = True
                 await send(event)
 
         else:
-            wrapped_send = send
+            wrapped_send = send  # type: ignore[assignment]
 
         try:
             await self.app(scope, receive, wrapped_send)

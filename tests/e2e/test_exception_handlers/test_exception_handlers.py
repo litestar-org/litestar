@@ -92,5 +92,5 @@ def test_exception_handler_implicit_media_type() -> None:
         response = client.get("/", params={"q": 1})
 
     assert response.status_code == 400
-    assert response.headers.get("content-type")== "text/plain; charset=utf-8"
+    assert response.headers.get("content-type") == "text/plain; charset=utf-8"
     assert "nope" in response.text

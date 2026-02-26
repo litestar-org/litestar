@@ -8,8 +8,6 @@ import anyio
 from anyio import create_memory_object_stream
 from anyio.streams.stapled import StapledObjectStream
 
-from litestar.utils._exceptions import _collapse_exception_group
-
 if TYPE_CHECKING:
     from types import TracebackType
 

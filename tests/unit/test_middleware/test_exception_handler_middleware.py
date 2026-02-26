@@ -10,7 +10,7 @@ from pytest_mock import MockerFixture
 from starlette.exceptions import HTTPException as StarletteHTTPException
 from structlog.testing import capture_logs
 
-from litestar import Litestar, MediaType, Request, Response, get, asgi
+from litestar import Litestar, MediaType, Request, Response, get
 from litestar.exceptions import HTTPException, InternalServerException, LitestarException, ValidationException
 from litestar.exceptions.responses._debug_response import get_symbol_name
 from litestar.logging.config import LoggingConfig, StructLoggingConfig
