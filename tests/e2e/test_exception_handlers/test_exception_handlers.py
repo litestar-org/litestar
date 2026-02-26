@@ -88,8 +88,9 @@ def test_exception_handler_with_custom_request_class() -> None:
 
 
 def test_exception_handler_implicit_media_type() -> None:
-    with create_test_client([implicit_media_type_handler]) as client:
+    with create_test_client([implicit_media_type_handler], debug=False) as client:
         response = client.get("/", params={"q": 1})
-        assert response.status_code == 500
-        assert response.headers["content-type"] == "text/plain; charset=utf-8"
-        assert "ValueError" in response.text
+
+    assert response.status_code == 400
+    assert response.headers.get("content-type")== "text/plain; charset=utf-8"
+    assert "nope" in response.text

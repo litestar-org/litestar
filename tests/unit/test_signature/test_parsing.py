@@ -180,10 +180,11 @@ def test_collection_union_struct_fields(with_optional: bool) -> None:
     def handler(param: annotation) -> None:  # pyright: ignore
         return None
 
-    with create_test_client([handler]) as client:
+    with create_test_client([handler], debug=True) as client:
         response = client.get("/?param=foo&param=bar&param=123")
-        assert response.status_code == 500
-        assert "TypeError: Type unions may not contain more than one array-like" in response.text
+
+    assert response.status_code == 500
+    assert "TypeError: Type unions may not contain more than one array-like" in response.text
 
 
 def test_dto_data_typed_as_any() -> None:
