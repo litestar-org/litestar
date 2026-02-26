@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import sys
 from inspect import getmro
 from sys import exc_info
 from traceback import format_exception
@@ -16,9 +15,6 @@ from litestar.status_codes import HTTP_500_INTERNAL_SERVER_ERROR
 from litestar.utils._exceptions import _collapse_exception_groups
 from litestar.utils.empty import value_or_raise
 from litestar.utils.scope.state import ScopeState
-
-if sys.version_info <= (3, 11):
-    from exceptiongroup import ExceptionGroup
 
 if TYPE_CHECKING:
     from starlette.exceptions import HTTPException as StarletteHTTPException
