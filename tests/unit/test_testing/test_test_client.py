@@ -164,9 +164,7 @@ async def test_test_client_get_session_data_async(
         assert await client.get_session_data() == session_data
 
 
-async def test_use_testclient_in_endpoint(
-    test_client_backend: "AnyIOBackend", test_client_cls: type[AnyTestClient]
-) -> None:
+async def test_use_testclient_in_endpoint(test_client_backend: "AnyIOBackend") -> None:
     """this test is taken from starlette."""
 
     @get("/")
@@ -196,6 +194,35 @@ async def test_use_testclient_in_endpoint(
         assert response_sync.json() == {"mock": "example"}
 
 
+def test_raise_server_exceptions() -> None:
+    @get("/")
+    def handler() -> None:
+        raise ValueError("foo")
+
+    with pytest.raises(ValueError, match="foo"):
+        with create_test_client([handler], raise_server_exceptions=True) as client:
+            client.get("/")
+
+    with create_test_client([handler], raise_server_exceptions=False) as client:
+        res = client.get("/")
+
+    assert res.status_code == 500
+
+
+async def test_raise_server_exceptions_async() -> None:
+    @get("/")
+    def handler() -> None:
+        raise ValueError("foo")
+
+    with pytest.raises(ValueError, match="foo"):
+        async with create_async_test_client([handler], raise_server_exceptions=True) as client:
+            await client.get("/")
+
+    async with create_async_test_client([handler], raise_server_exceptions=False) as client:
+        res = await client.get("/")
+        assert res.status_code == 500
+
+
 def raise_error(app: Litestar) -> NoReturn:
     raise RuntimeError()
 
@@ -213,13 +240,13 @@ def test_error_handling_on_startup(test_client_backend: "AnyIOBackend") -> None:
 
 
 def test_error_handling_on_shutdown(test_client_backend: "AnyIOBackend") -> None:
-    with pytest.raises(_ExceptionGroup):
+    with pytest.raises(RuntimeError):
         with TestClient(Litestar(on_shutdown=[raise_error]), backend=test_client_backend):
             pass
 
 
 async def test_error_handling_on_shutdown_async() -> None:
-    with pytest.raises(_ExceptionGroup):
+    with pytest.raises(RuntimeError):
         async with AsyncTestClient(Litestar(on_shutdown=[raise_error])):
             pass
 
@@ -230,9 +257,7 @@ def test_warns_problematic_domain(test_client_cls: type[AnyTestClient]) -> None:
 
 
 @pytest.mark.parametrize("method", ["get", "post", "put", "patch", "delete", "head", "options"])
-async def test_client_interface_context_manager(
-    method: str, test_client_backend: "AnyIOBackend", test_client_cls: type[AnyTestClient]
-) -> None:
+def test_client_interface_context_manager(method: str, test_client_backend: "AnyIOBackend") -> None:
     class MockController(Controller):
         @get("/")
         def mock_service_endpoint_get(self) -> dict:

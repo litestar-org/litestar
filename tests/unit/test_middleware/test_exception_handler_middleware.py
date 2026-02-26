@@ -142,7 +142,7 @@ def test_unhandled_exception(scope: HTTPScope, middleware: ExceptionHandlerMiddl
     async def handler() -> None:
         raise AttributeError("oops")
 
-    with pytest.RaisesGroup(pytest.RaisesExc(AttributeError, match="oops")):
+    with pytest.raises(AttributeError, match="oops"):
         with create_test_client([handler], raise_server_exceptions=True) as client:
             client.get("/")
 

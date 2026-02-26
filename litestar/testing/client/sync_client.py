@@ -16,6 +16,7 @@ from litestar.testing.life_span_handler import LifeSpanHandler
 from litestar.testing.transport import ConnectionUpgradeExceptionError, SyncTestClientTransport
 from litestar.testing.websocket_test_session import WebSocketTestSession
 from litestar.types import AnyIOBackend, ASGIApp
+from litestar.utils._exceptions import _collapse_exception_group
 
 if TYPE_CHECKING:
     from collections.abc import Mapping, Sequence
@@ -103,6 +104,8 @@ class TestClient(Client, Generic[T]):
 
     def __enter__(self) -> Self:
         self.exit_stack.enter_context(self.blocking_portal.wrap_async_context_manager(LifeSpanHandler(self.app)))
+        super().__enter__()
+        self.exit_stack.push(super().__exit__)
         return self
 
     def __exit__(
@@ -111,8 +114,11 @@ class TestClient(Client, Generic[T]):
         exc_value: BaseException | None = None,
         traceback: TracebackType | None = None,
     ) -> None:
-        self.exit_stack.__exit__(exc_type, exc_value, traceback)
-        super().__exit__(exc_type)
+        try:
+            self.exit_stack.__exit__(exc_type, exc_value, traceback)
+        except Exception as exc:
+            exc = _collapse_exception_group(exc)
+            raise exc
 
     def websocket_connect(
         self,
