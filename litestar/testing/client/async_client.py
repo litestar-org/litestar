@@ -10,7 +10,7 @@ from httpx import AsyncClient
 from litestar.testing.life_span_handler import LifeSpanHandler
 from litestar.testing.transport import ConnectionUpgradeExceptionError, TestClientTransport
 from litestar.testing.websocket_test_session import AsyncWebSocketTestSession
-from litestar.utils._exceptions import _collapse_exception_group
+from litestar.utils._exceptions import _collapse_exception_groups
 
 if TYPE_CHECKING:
     from collections.abc import Mapping, Sequence
@@ -118,7 +118,7 @@ class AsyncTestClient(AsyncClient, Generic[T]):
         try:
             await self.exit_stack.__aexit__(exc_type, exc_value, traceback)
         except Exception as exc:
-            exc = _collapse_exception_group(exc)
+            exc = _collapse_exception_groups(exc)
             raise exc
 
     async def websocket_connect(
