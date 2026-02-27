@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import inspect
-import logging
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 from dataclasses import fields
@@ -157,20 +156,6 @@ def test_app_config_object_used(app_config_object: AppConfig, monkeypatch: pytes
     # this ensures that each of the properties of the `AppConfig` object have been accessed within `Litestar.__init__()`
     for name, mock in property_mocks:
         assert mock.called, f"expected {name} to be called"
-
-
-def test_logging_config_none_sets_disabled() -> None:
-    app = Litestar(logging_config=None)
-
-    assert app.logging_config is not None
-    assert app.logging_config.disable is True
-
-
-def test_app_debug_level_sets_logging_config_level() -> None:
-    app = Litestar([], debug=True)
-
-    assert app.logging_config.level == logging.DEBUG
-    assert app.logger.level == logging.DEBUG  # type: ignore[attr-defined]
 
 
 def test_set_state() -> None:

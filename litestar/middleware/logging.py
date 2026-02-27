@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Callable
 
 from litestar.constants import (
     HTTP_RESPONSE_BODY,
@@ -23,10 +23,10 @@ __all__ = ("LoggingMiddleware",)
 
 
 if TYPE_CHECKING:
+    import logging
     from collections.abc import Iterable, Sequence
 
     from litestar.connection import Request
-    from litestar.logging import LoggingConfig
     from litestar.types import (
         ASGIApp,
         Logger,
@@ -42,17 +42,16 @@ class LoggingMiddleware(ASGIMiddleware):
     """Logging middleware."""
 
     logger: Logger
-    logging_config: LoggingConfig
 
     scopes = (ScopeType.HTTP,)
 
     def __init__(
         self,
+        logger: logging.Logger | Logger | str | Callable[[], Logger],
         *,
         exclude: str | list[str] | None = None,
         exclude_opt_key: str | None = None,
         include_compressed_body: bool = False,
-        logger_name: str = "litestar",
         request_cookies_to_obfuscate: Iterable[str] = ("session",),
         request_headers_to_obfuscate: Iterable[str] = ("Authorization", "X-API-KEY"),
         response_cookies_to_obfuscate: Iterable[str] = ("session",),
@@ -69,11 +68,11 @@ class LoggingMiddleware(ASGIMiddleware):
         response_log_fields: Sequence[ResponseExtractorField] = ("status_code",),
         parse_body: bool = False,
         parse_query: bool = True,
+        log_structured: bool = False,
     ) -> None:
         self.exclude_opt_key = exclude_opt_key
         self.exclude_path_pattern = tuple(exclude) if isinstance(exclude, list) else exclude
         self.include_compressed_body = include_compressed_body
-        self.logger_name = logger_name
         self.request_cookies_to_obfuscate = frozenset(request_cookies_to_obfuscate)
         self.request_headers_to_obfuscate = frozenset(request_headers_to_obfuscate)
         self.response_cookies_to_obfuscate = frozenset(response_cookies_to_obfuscate)
@@ -82,6 +81,16 @@ class LoggingMiddleware(ASGIMiddleware):
         self.response_log_message = response_log_message
         self.request_log_fields = request_log_fields
         self.response_log_fields = response_log_fields
+        self.log_structured = log_structured
+
+        if isinstance(logger, str):
+            import logging
+
+            self.logger = logging.getLogger(logger)
+        elif callable(logger):
+            self.logger = logger()
+        else:
+            self.logger = logger
 
         self.request_extractor = ConnectionDataExtractor(
             extract_body="body" in self.request_log_fields,
@@ -109,12 +118,6 @@ class LoggingMiddleware(ASGIMiddleware):
         )
 
     async def handle(self, scope: Scope, receive: Receive, send: Send, next_app: ASGIApp) -> None:
-        if not hasattr(self, "logger"):
-            self.logger = scope["litestar_app"].get_litestar_logger(self.logger_name)
-
-        if not hasattr(self, "logging_config"):
-            self.logging_config = scope["litestar_app"].logging_config
-
         if self.response_log_fields:
             send = self.create_send_wrapper(scope=scope, send=send)
 
@@ -158,10 +161,14 @@ class LoggingMiddleware(ASGIMiddleware):
             None
         """
         message = values.pop("message")
-        self.logger.info(message, extra={"litestar": values})
+        if self.log_structured:
+            self.logger.info(message, **values)
+        else:
+            extra_str = ", ".join(f"{k}={v}" for k, v in values.items())
+            self.logger.info(f"{message}: {extra_str}")  # noqa: G004
 
     def _serialize_value(self, serializer: Serializer | None, value: Any) -> Any:
-        if not self.logging_config.can_log_structured_data and isinstance(value, (dict, list, tuple, set)):
+        if not self.log_structured and isinstance(value, (dict, list, tuple, set)):
             value = encode_json(value, serializer)
         return value.decode("utf-8", errors="backslashreplace") if isinstance(value, bytes) else value
 

@@ -8,8 +8,7 @@ from unittest.mock import ANY
 import pytest
 import structlog
 
-from litestar import Litestar, Request, get
-from litestar.logging.structlog import StructLoggingConfig
+from litestar import Litestar, get
 from litestar.middleware.logging import LoggingMiddleware
 from litestar.testing import TestClient
 
@@ -29,18 +28,27 @@ def test_structlog_to_file(tmp_path: Path) -> None:
     log_file = tmp_path / "log.log"
 
     with log_file.open("wt") as file_handle:
+        structlog.reset_defaults()
+        structlog.configure(
+            logger_factory=structlog.WriteLoggerFactory(file=file_handle),
+            processors=[
+                structlog.contextvars.merge_contextvars,
+                structlog.processors.add_log_level,
+                structlog.processors.format_exc_info,
+                structlog.processors.TimeStamper(fmt="iso"),
+                structlog.processors.JSONRenderer(),
+            ],
+        )
+        logger = structlog.getLogger("litestar.test")
 
         @get("/")
-        def handler(request: Request) -> str:
-            request.logger.info("handled", hello="world")
+        def handler() -> str:
+            logger.info("handled", hello="world")
             return "hello"
 
         app = Litestar(
             route_handlers=[handler],
-            middleware=[LoggingMiddleware()],
-            logging_config=StructLoggingConfig(
-                logger_factory=structlog.WriteLoggerFactory(file=file_handle),
-            ),
+            middleware=[LoggingMiddleware(logger, log_structured=True)],
             debug=True,
         )
 

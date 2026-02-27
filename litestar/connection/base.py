@@ -19,7 +19,6 @@ if TYPE_CHECKING:
     from litestar.handlers import BaseRouteHandler
     from litestar.types import DataContainerType, EmptyType
     from litestar.types.asgi_types import Message, Receive, Scope, Send
-    from litestar.types.protocols import Logger
 
 
 __all__ = ("ASGIConnection", "empty_receive", "empty_send")
@@ -267,18 +266,6 @@ class ASGIConnection(Generic[HandlerT, UserT, AuthT, StateT]):
             )
 
         return cast("dict[str, Any]", self.scope["session"])
-
-    @property
-    def logger(self) -> Logger:
-        """Return the ``Logger`` instance for this connection.
-
-        Returns:
-            A ``Logger`` instance.
-
-        Raises:
-            ImproperlyConfiguredException: if ``log_config`` has not been passed to the Litestar constructor.
-        """
-        return self.app.logger
 
     def set_session(self, value: dict[str, Any] | DataContainerType | EmptyType) -> None:
         """Set the session in the connection's ``Scope``.

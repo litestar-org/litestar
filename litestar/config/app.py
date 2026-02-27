@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import enum
-import logging
 import pdb  # noqa: T100
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Any, Callable
@@ -10,7 +9,6 @@ from litestar.config.allowed_hosts import AllowedHostsConfig
 from litestar.config.response_cache import ResponseCacheConfig
 from litestar.datastructures import State
 from litestar.events.emitter import SimpleEventEmitter
-from litestar.logging import LoggingConfig
 from litestar.types.empty import Empty
 
 if TYPE_CHECKING:
@@ -135,8 +133,6 @@ class AppConfig:
     """A list of callables returning async context managers, wrapping the lifespan of the ASGI application"""
     listeners: list[EventListener] = field(default_factory=list)
     """A list of :class:`EventListener <.events.listener.EventListener>`."""
-    logging_config: LoggingConfig | None = field(default_factory=LoggingConfig)
-    """A :class:`~litestar.logging.config.LoggingConfig`"""
     middleware: list[Middleware] = field(default_factory=list)
     """A list of :class:`Middleware <.types.Middleware>`."""
     on_shutdown: list[LifespanHook] = field(default_factory=list)
@@ -229,11 +225,6 @@ class AppConfig:
         """
         if self.allowed_hosts and isinstance(self.allowed_hosts, list):
             self.allowed_hosts = AllowedHostsConfig(allowed_hosts=self.allowed_hosts)
-
-        if self.logging_config is None:
-            self.logging_config = LoggingConfig(disable=True, level=logging.DEBUG if self.debug else logging.INFO)
-
-        self.plugins.append(self.logging_config._get_plugin())
 
 
 class ExperimentalFeatures(str, enum.Enum):

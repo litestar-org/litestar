@@ -3,6 +3,7 @@ from logging import INFO
 from typing import TYPE_CHECKING, Annotated, Any
 
 import pytest
+import structlog
 from structlog.testing import capture_logs
 
 from litestar import Response, get, post
@@ -11,8 +12,6 @@ from litestar.connection import Request
 from litestar.datastructures import Cookie, UploadFile
 from litestar.enums import RequestEncodingType
 from litestar.handlers import HTTPRouteHandler
-from litestar.logging.config import LoggingConfig
-from litestar.logging.structlog import StructLoggingConfig
 from litestar.middleware.logging import LoggingMiddleware
 from litestar.params import Body
 from litestar.status_codes import HTTP_200_OK, HTTP_201_CREATED
@@ -50,7 +49,7 @@ def handler() -> HTTPRouteHandler:
 
 def test_logging_middleware_regular_logger(caplog: "LogCaptureFixture", handler: HTTPRouteHandler) -> None:
     with (
-        create_test_client(route_handlers=[handler], middleware=[LoggingMiddleware()]) as client,
+        create_test_client(route_handlers=[handler], middleware=[LoggingMiddleware("litestar.test")]) as client,
         caplog.at_level(INFO),
     ):
         # Set cookies on the client to avoid warnings about per-request cookies.
@@ -59,23 +58,30 @@ def test_logging_middleware_regular_logger(caplog: "LogCaptureFixture", handler:
     assert response.status_code == HTTP_200_OK
     assert len(caplog.messages) == 2
 
-    assert caplog.messages[0] == "HTTP Request"
-    assert caplog.records[0].litestar == {  # type: ignore[attr-defined]
-        "path": "/",
-        "method": "GET",
-        "content_type": '["",{}]',
-        "path_params": "{}",
-        "query": "{}",
-    }
+    assert caplog.messages[0] == 'HTTP Request: path=/, method=GET, content_type=["",{}], query={}, path_params={}'
 
 
 def test_logging_middleware_struct_logger(handler: HTTPRouteHandler) -> None:
+    structlog.reset_defaults()
+    structlog.configure(
+        processors=[
+            structlog.contextvars.merge_contextvars,
+            structlog.processors.add_log_level,
+            structlog.processors.format_exc_info,
+            structlog.processors.TimeStamper(fmt="iso"),
+            structlog.processors.JSONRenderer(),
+        ],
+    )
+    logger = structlog.getLogger("litestar.test")
+
     with (
         capture_logs() as cap_logs,
         create_test_client(
             route_handlers=[handler],
             middleware=[
                 LoggingMiddleware(
+                    logger,
+                    log_structured=True,
                     request_log_fields=(
                         "path",
                         "method",
@@ -88,7 +94,6 @@ def test_logging_middleware_struct_logger(handler: HTTPRouteHandler) -> None:
                     response_log_fields=("status_code", "cookies", "headers"),
                 )
             ],
-            logging_config=StructLoggingConfig(),
         ) as client,
     ):
         # Set cookies on the client to avoid warnings about per-request cookies.
@@ -132,7 +137,7 @@ def test_logging_middleware_exclude_pattern(caplog: "LogCaptureFixture", handler
     with (
         create_test_client(
             route_handlers=[handler, handler2],
-            middleware=[LoggingMiddleware(exclude=["^/exclude"])],
+            middleware=[LoggingMiddleware("litestar.test", exclude=["^/exclude"])],
         ) as client,
         caplog.at_level(INFO),
     ):
@@ -155,7 +160,8 @@ def test_logging_middleware_exclude_opt_key(caplog: "LogCaptureFixture", handler
 
     with (
         create_test_client(
-            route_handlers=[handler, handler2], middleware=[LoggingMiddleware(exclude_opt_key="skip_logging")]
+            route_handlers=[handler, handler2],
+            middleware=[LoggingMiddleware("litestar.test", exclude_opt_key="skip_logging")],
         ) as client,
         caplog.at_level(INFO),
     ):
@@ -181,6 +187,7 @@ def test_logging_middleware_compressed_response_body(
             compression_config=CompressionConfig(backend="gzip", minimum_size=1),
             middleware=[
                 LoggingMiddleware(
+                    "litestar.test",
                     include_compressed_body=include,
                     response_log_fields=[
                         "body",
@@ -195,9 +202,9 @@ def test_logging_middleware_compressed_response_body(
     assert response.status_code == HTTP_200_OK
     assert len(caplog.messages) == 2
     if include:
-        assert "body" in caplog.records[1].litestar  # type: ignore[attr-defined]
+        assert "body" in caplog.messages[1]
     else:
-        assert "body" not in caplog.records[1].litestar  # type: ignore[attr-defined]
+        assert "body" not in caplog.messages[1]
 
 
 def test_logging_middleware_post_body() -> None:
@@ -206,7 +213,12 @@ def test_logging_middleware_post_body() -> None:
         return data
 
     with create_test_client(
-        route_handlers=[post_handler], middleware=[LoggingMiddleware()], logging_config=LoggingConfig()
+        route_handlers=[post_handler],
+        middleware=[
+            LoggingMiddleware(
+                "litestar.test",
+            )
+        ],
     ) as client:
         res = client.post("/", json={"foo": "bar"})
         assert res.status_code == 201
@@ -222,7 +234,8 @@ async def test_logging_middleware_post_binary_file_without_structlog(monkeypatch
         return f"{len(content)} bytes"
 
     with create_test_client(
-        route_handlers=[post_handler], middleware=[LoggingMiddleware()], logging_config=LoggingConfig()
+        route_handlers=[post_handler],
+        middleware=[LoggingMiddleware("litestar.test")],
     ) as client:
         res = client.post("/", files={"foo": b"\xfa\xfb"})
         assert res.status_code == 201
@@ -237,13 +250,12 @@ def test_logging_messages_are_not_doubled(logger_name: str, caplog: "LogCaptureF
     async def hello_world_handler() -> dict[str, str]:
         return {"hello": "world"}
 
-    logging_middleware_config = LoggingMiddleware(logger_name=logger_name)
+    logging_middleware = LoggingMiddleware("litestar.test")
 
     with (
         create_test_client(
             hello_world_handler,
-            logging_config=LoggingConfig(),
-            middleware=[logging_middleware_config],
+            middleware=[logging_middleware],
         ) as client,
         caplog.at_level(INFO),
     ):
@@ -256,7 +268,9 @@ def test_logging_middleware_log_fields(caplog: "LogCaptureFixture", handler: HTT
     with (
         create_test_client(
             route_handlers=[handler],
-            middleware=[LoggingMiddleware(response_log_fields=["status_code"], request_log_fields=["path"])],
+            middleware=[
+                LoggingMiddleware("litestar.test", response_log_fields=["status_code"], request_log_fields=["path"])
+            ],
         ) as client,
         caplog.at_level(INFO),
     ):
@@ -266,10 +280,8 @@ def test_logging_middleware_log_fields(caplog: "LogCaptureFixture", handler: HTT
         assert response.status_code == HTTP_200_OK
         assert len(caplog.messages) == 2
 
-    assert caplog.messages[0] == "HTTP Request"
-    assert caplog.records[0].litestar == {"path": "/"}  # type: ignore[attr-defined]
-    assert caplog.messages[1] == "HTTP Response"
-    assert caplog.records[1].litestar == {"status_code": 200}  # type: ignore[attr-defined]
+    assert caplog.messages[0] == "HTTP Request: path=/"
+    assert caplog.messages[1] == "HTTP Response: status_code=200"
 
 
 def test_logging_middleware_with_session_middleware(session_backend_config_memory: "ServerSideSessionConfig") -> None:
@@ -285,8 +297,7 @@ def test_logging_middleware_with_session_middleware(session_backend_config_memor
 
     with create_test_client(
         [set_session, get_session],
-        logging_config=LoggingConfig(),
-        middleware=[LoggingMiddleware(), session_backend_config_memory.middleware],
+        middleware=[LoggingMiddleware("litestar.test"), session_backend_config_memory.middleware],
     ) as client:
         response = client.post("/")
         assert response.status_code == HTTP_201_CREATED
@@ -308,7 +319,6 @@ def test_structlog_invalid_request_body_handled() -> None:
 
     with create_test_client(
         route_handlers=[hello_world],
-        logging_config=StructLoggingConfig(),
-        middleware=[LoggingMiddleware()],
+        middleware=[LoggingMiddleware(structlog.get_logger("litestar.test"))],
     ) as client:
         assert client.post("/", headers={"Content-Type": "application/json"}, content=b'{"a": "b",}').status_code == 400

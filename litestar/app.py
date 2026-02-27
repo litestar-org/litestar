@@ -48,7 +48,7 @@ from litestar.plugins import (
 from litestar.router import Router
 from litestar.routes import ASGIRoute, HTTPRoute, WebSocketRoute
 from litestar.stores.registry import StoreRegistry
-from litestar.types import Empty, Logger, TypeDecodersSequence
+from litestar.types import Empty, TypeDecodersSequence
 from litestar.types.internal_types import PathParameterDefinition, RouteHandlerMapItem, TemplateConfigType
 from litestar.utils import ensure_async_callable, envflag, join_paths, unique
 from litestar.utils.dataclass import extract_dataclass_items
@@ -67,7 +67,6 @@ if TYPE_CHECKING:
     from litestar.datastructures import CacheControlHeader, ETag
     from litestar.dto import AbstractDTO
     from litestar.events.listener import EventListener
-    from litestar.logging import LoggingConfig
     from litestar.openapi.spec import SecurityRequirement
     from litestar.openapi.spec.open_api import OpenAPI
     from litestar.response import Response
@@ -153,9 +152,6 @@ class Litestar(Router):
         "debugger_module",
         "event_emitter",
         "experimental_features",
-        "get_logger",
-        "logger",
-        "logging_config",
         "multipart_form_part_limit",
         "on_shutdown",
         "on_startup",
@@ -194,7 +190,6 @@ class Litestar(Router):
         guards: Sequence[Guard] | None = None,
         include_in_schema: bool | EmptyType = Empty,
         listeners: Sequence[EventListener] | None = None,
-        logging_config: LoggingConfig | None = None,
         middleware: Sequence[Middleware] | None = None,
         multipart_form_part_limit: int = 1000,
         on_app_init: Sequence[OnAppInitHandler] | None = None,
@@ -266,7 +261,6 @@ class Litestar(Router):
             include_in_schema: A boolean flag dictating whether  the route handler should be documented in the OpenAPI schema.
             lifespan: A list of callables returning async context managers, wrapping the lifespan of the ASGI application
             listeners: A sequence of :class:`EventListener <.events.listener.EventListener>`.
-            logging_config: A :class:`~litestar.logging.config.LoggingConfig`.
             middleware: A sequence of :class:`Middleware <.types.Middleware>`.
             multipart_form_part_limit: The maximal number of allowed parts in a multipart/formdata request. This limit
                 is intended to protect from DoS attacks.
@@ -354,7 +348,6 @@ class Litestar(Router):
             include_in_schema=include_in_schema,
             lifespan=list(lifespan or []),
             listeners=list(listeners or []),
-            logging_config=logging_config,
             middleware=list(middleware or []),
             multipart_form_part_limit=multipart_form_part_limit,
             on_shutdown=list(on_shutdown or []),
@@ -425,7 +418,6 @@ class Litestar(Router):
         self.cors_config = config.cors_config
         self.csrf_config = config.csrf_config
         self.event_emitter = config.event_emitter_backend(listeners=config.listeners)
-        self.logging_config = config.logging_config
         self.multipart_form_part_limit = config.multipart_form_part_limit
         self.on_shutdown = config.on_shutdown
         self.on_startup = config.on_startup
@@ -495,12 +487,7 @@ class Litestar(Router):
 
         self.asgi_router.construct_routing_trie()
 
-        self.logger = self.logging_config.get_litestar_logger()
-
         self.asgi_handler = self._create_asgi_handler()
-
-    def get_litestar_logger(self, name: str | None = None) -> Logger:
-        return self.logging_config.get_litestar_logger(name)
 
     @staticmethod
     def _patch_opentelemetry_middleware(config: AppConfig) -> AppConfig:
