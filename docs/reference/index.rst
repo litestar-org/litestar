@@ -24,7 +24,6 @@ API reference
     exceptions
     file_system
     handlers
-    logging/index
     middleware/index
     openapi/index
     pagination

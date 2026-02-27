@@ -114,7 +114,7 @@
         :breaking:
         :pr: 4300
 
-        The ``traceback_line_limit`` parameter of :class:`~litestar.logging.config.LoggingConfig` has been removed. This
+        The ``traceback_line_limit`` parameter of ``litestar.logging.config.LoggingConfig`` has been removed. This
         parameter had no effect since version ``2.9.0``, so it can be removed safely from applications without any
         change in behaviour.
 

@@ -289,7 +289,7 @@ or hypercon's `ProxyFixMiddleware <https://hypercorn.readthedocs.io/en/latest/ho
 Logging Middleware
 ------------------
 
-This content has moved to :ref:`usage/logging:Request logging`
+This content has moved to :doc:`/usage/logging`
 
 
 Session Middleware
