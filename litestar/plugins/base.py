@@ -164,6 +164,12 @@ class CLIPlugin:
     def server_lifespan(self, app: Litestar) -> Iterator[None]:
         yield
 
+    def populate_repl_namespace(self, app: Litestar) -> dict[str, Any]:
+        """Return a dict that will be used to populate the REPL namespace of the
+        Litestar shell.
+        """
+        return {}
+
 
 class SerializationPlugin(abc.ABC):
     """Abstract base class for plugins that extend DTO functionality"""
