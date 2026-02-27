@@ -1,4 +1,3 @@
-import sys
 from collections.abc import Generator
 from inspect import getinnerframes
 from typing import TYPE_CHECKING, Any, Callable, Optional
@@ -6,6 +5,7 @@ from unittest.mock import MagicMock
 
 import pydantic
 import pytest
+import structlog
 from pytest_mock import MockerFixture
 from starlette.exceptions import HTTPException as StarletteHTTPException
 from structlog.testing import capture_logs
@@ -13,7 +13,8 @@ from structlog.testing import capture_logs
 from litestar import Litestar, MediaType, Request, Response, WebSocket, get, websocket
 from litestar.exceptions import HTTPException, InternalServerException, LitestarException, ValidationException
 from litestar.exceptions.responses._debug_response import get_symbol_name
-from litestar.logging.config import LoggingConfig, StructLoggingConfig
+from litestar.logging.config import LoggingConfig
+from litestar.logging.structlog import StructLoggingConfig
 from litestar.middleware._internal.exceptions.middleware import (
     ExceptionHandlerMiddleware,
     _starlette_exception_handler,
@@ -30,7 +31,6 @@ if TYPE_CHECKING:
     from _pytest.logging import LogCaptureFixture
 
     from litestar.types import Scope
-    from litestar.types.callable_types import GetLogger
 
 
 async def dummy_app(scope: Any, receive: Any, send: Any) -> None:
@@ -237,13 +237,11 @@ def test_exception_handler_middleware_calls_app_level_after_exception_hook() -> 
         (False, LoggingConfig(log_exceptions="always"), True),
         (True, LoggingConfig(log_exceptions="never"), False),
         (False, LoggingConfig(log_exceptions="never"), False),
-        (True, None, False),
-        (False, None, False),
+        (True, None, True),
+        (False, None, True),
     ],
 )
-@pytest.mark.skipif(sys.version_info >= (3, 13), reason="Broken. Skip because of pending removal in v3")
 def test_exception_handler_default_logging(
-    get_logger: "GetLogger",
     caplog: "LogCaptureFixture",
     is_debug: bool,
     logging_config: Optional[LoggingConfig],
@@ -256,21 +254,21 @@ def test_exception_handler_default_logging(
     app = Litestar([handler], logging_config=logging_config, debug=is_debug)
 
     with caplog.at_level("ERROR", "litestar"), TestClient(app=app) as client:
-        client.app.logger = get_logger("litestar")
         response = client.get("/test")
         assert response.status_code == HTTP_500_INTERNAL_SERVER_ERROR
-        if is_debug:
-            assert "Test debug exception" in response.text
-        else:
-            assert "Internal Server Error" in response.text
 
-        if should_log:
-            assert len(caplog.records) == 1
-            assert caplog.records[0].levelname == "ERROR"
-            assert caplog.records[0].message.startswith("Uncaught exception (connection_type=http, path='/test'):")
-        else:
-            assert not caplog.records
-            assert "Uncaught exception" not in response.text
+    if is_debug:
+        assert "Test debug exception" in response.text
+    else:
+        assert "Internal Server Error" in response.text
+
+    if should_log:
+        assert len(caplog.records) == 1
+        assert caplog.records[0].levelname == "ERROR"
+        assert caplog.records[0].message.startswith("Uncaught exception (connection_type=http, path='/test'):")
+    else:
+        assert not caplog.records
+        assert "Uncaught exception" not in response.text
 
 
 @pytest.mark.parametrize(
@@ -282,38 +280,39 @@ def test_exception_handler_default_logging(
         (False, StructLoggingConfig(log_exceptions="always"), True),
         (True, StructLoggingConfig(log_exceptions="never"), False),
         (False, StructLoggingConfig(log_exceptions="never"), False),
-        (True, None, False),
-        (False, None, False),
     ],
 )
 def test_exception_handler_struct_logging(
-    get_logger: "GetLogger",
     is_debug: bool,
     logging_config: Optional[LoggingConfig],
     should_log: bool,
 ) -> None:
+    structlog.reset_defaults()
+
     @get("/test")
     def handler() -> None:
         raise ValueError("Test debug exception")
 
-    app = Litestar([handler], logging_config=logging_config, debug=is_debug)
-
-    with TestClient(app=app) as client, capture_logs() as cap_logs:
+    with (
+        capture_logs() as cap_logs,
+        TestClient(Litestar([handler], logging_config=logging_config, debug=is_debug)) as client,
+    ):
         response = client.get("/test")
         assert response.status_code == HTTP_500_INTERNAL_SERVER_ERROR
-        if is_debug:
-            assert "Test debug exception" in response.text
-        else:
-            assert "Internal Server Error" in response.text
 
-        if should_log:
-            assert len(cap_logs) == 1
-            assert cap_logs[0].get("connection_type") == "http"
-            assert cap_logs[0].get("path") == "/test"
-            assert cap_logs[0].get("event") == "Uncaught exception"
-            assert cap_logs[0].get("log_level") == "error"
-        else:
-            assert not cap_logs
+    if is_debug:
+        assert "Test debug exception" in response.text
+    else:
+        assert "Internal Server Error" in response.text
+
+    if should_log:
+        assert len(cap_logs) == 1
+        assert cap_logs[0].get("connection_type") == "http"
+        assert cap_logs[0].get("path") == "/test"
+        assert cap_logs[0].get("event") == "Uncaught exception"
+        assert cap_logs[0].get("log_level") == "error"
+    else:
+        assert not cap_logs
 
 
 def handler(_: Any, __: Any) -> Any:
@@ -363,17 +362,14 @@ def test_pdb_on_exception(mocker: MockerFixture) -> None:
     mock_post_mortem.assert_called_once()
 
 
-@pytest.mark.skipif(sys.version_info >= (3, 13), reason="Broken. Skip because of pending removal in v3")
-def test_get_debug_from_scope(get_logger: "GetLogger", caplog: "LogCaptureFixture") -> None:
+def test_get_debug_from_scope(caplog: "LogCaptureFixture") -> None:
     @get("/test")
     def handler() -> None:
         raise ValueError("Test debug exception")
 
-    app = Litestar([handler], debug=False)
-    app.debug = True
+    app = Litestar([handler], debug=True)
 
     with caplog.at_level("ERROR", "litestar"), TestClient(app=app) as client:
-        client.app.logger = get_logger("litestar")
         response = client.get("/test")
 
         assert response.status_code == HTTP_500_INTERNAL_SERVER_ERROR
