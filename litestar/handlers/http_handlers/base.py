@@ -51,11 +51,10 @@ from litestar.types import (
     Send,
     TypeEncodersMap,
 )
-from litestar.types.builtin_types import NoneType
 from litestar.utils import deprecated as litestar_deprecated
 from litestar.utils import ensure_async_callable
 from litestar.utils.empty import value_or_default
-from litestar.utils.predicates import is_async_callable, is_class_and_subclass
+from litestar.utils.predicates import is_async_callable
 from litestar.utils.scope.state import ScopeState
 from litestar.utils.warnings import warn_implicit_sync_to_thread, warn_sync_to_thread_with_async_callable
 
@@ -531,6 +530,15 @@ class HTTPRouteHandler(BaseRouteHandler):
     def request_max_body_size(self) -> int | None:
         return value_or_default(self._request_max_body_size, None)  # pyright: ignore
 
+    @property
+    def returns_content(self) -> bool:
+        """Whether the route handler returns any content in the response body."""
+        return not (
+            self.status_code < 200
+            or self.status_code in {HTTP_204_NO_CONTENT, HTTP_304_NOT_MODIFIED}
+            or self.http_methods == {HttpMethod.HEAD}
+        )
+
     def on_registration(self, route: BaseRoute, app: Litestar) -> None:
         super().on_registration(route=route, app=app)
 
@@ -579,6 +587,15 @@ class HTTPRouteHandler(BaseRouteHandler):
                 f"If {self} should return a value, change the route handler status code to an appropriate value.",
             )
 
+        if self.http_methods == {HttpMethod.HEAD} and not (
+            is_empty_response_annotation(return_type)
+            or return_type.is_subclass_of(File)
+            or return_type.is_subclass_of(ASGIFileResponse)
+        ):
+            raise ImproperlyConfiguredException(
+                f"{self}: Handlers for 'HEAD' requests must not return a value. Either return 'None' or a response type without a body."
+            )
+
         if not self.media_type:
             if return_type.is_subclass_of((str, bytes)) or return_type.annotation is AnyStr:
                 self.media_type = MediaType.TEXT
@@ -590,23 +607,6 @@ class HTTPRouteHandler(BaseRouteHandler):
 
         if "data" in self.parsed_fn_signature.parameters and "GET" in self.http_methods:
             raise ImproperlyConfiguredException("'data' kwarg is unsupported for 'GET' request handlers")
-
-        if self.http_methods == {HttpMethod.HEAD} and not self.parsed_fn_signature.return_type.is_subclass_of(
-            (
-                NoneType,
-                File,
-                ASGIFileResponse,
-            )
-        ):
-            field_definition = self.parsed_fn_signature.return_type
-            if not (
-                is_empty_response_annotation(field_definition)
-                or is_class_and_subclass(field_definition.annotation, File)
-                or is_class_and_subclass(field_definition.annotation, ASGIFileResponse)
-            ):
-                raise ImproperlyConfiguredException(
-                    f"{self}: Handlers for 'HEAD' requests must not return a value. Either return 'None' or a response type without a body."
-                )
 
         if (body_param := self.parsed_fn_signature.parameters.get("body")) and not body_param.is_subclass_of(bytes):
             raise ImproperlyConfiguredException(
