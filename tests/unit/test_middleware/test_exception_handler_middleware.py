@@ -10,7 +10,7 @@ from pytest_mock import MockerFixture
 from starlette.exceptions import HTTPException as StarletteHTTPException
 from structlog.testing import capture_logs
 
-from litestar import Litestar, MediaType, Request, Response, get
+from litestar import Litestar, MediaType, Request, Response, WebSocket, get, websocket
 from litestar.exceptions import HTTPException, InternalServerException, LitestarException, ValidationException
 from litestar.exceptions.responses._debug_response import get_symbol_name
 from litestar.logging.config import LoggingConfig, StructLoggingConfig
@@ -446,3 +446,16 @@ async def test_exception_handler_middleware_response_already_started(scope: HTTP
 
     mock.assert_called_once_with(start_message)
     assert ScopeState.from_scope(scope).response_started
+
+
+@pytest.mark.parametrize("accept", [True, False])
+def test_unhandled_exception_in_websocket_reraised(accept: bool) -> None:
+    @websocket("/")
+    async def handler(socket: WebSocket) -> None:
+        if accept:
+            await socket.accept()
+        raise ValueError("foo")
+
+    with pytest.raises(ValueError, match="foo"):
+        with create_test_client([handler]) as client, client.websocket_connect("/"):
+            pass
