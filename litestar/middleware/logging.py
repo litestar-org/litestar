@@ -41,8 +41,6 @@ if TYPE_CHECKING:
 class LoggingMiddleware(ASGIMiddleware):
     """Logging middleware."""
 
-    logger: Logger
-
     scopes = (ScopeType.HTTP,)
 
     def __init__(
@@ -86,7 +84,7 @@ class LoggingMiddleware(ASGIMiddleware):
         if isinstance(logger, str):
             import logging
 
-            self.logger = logging.getLogger(logger)
+            self.logger: Logger | logging.Logger = logging.getLogger(logger)
         elif callable(logger):
             self.logger = logger()
         else:
