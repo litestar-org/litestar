@@ -11,5 +11,6 @@ deployment strategies, ASGI and WSGI, and so on.
     :titlesonly:
     :caption: Articles
 
+    faq
     sync-vs-async
     deployment/index
