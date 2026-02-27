@@ -211,6 +211,9 @@ class DTOBackend:
         # Only apply the custom __schema_name__ to the root transfer model.
         # Nested models get their own generated name to avoid child $refs
         # pointing to the parent's schema.
+        # model_name only equals model_type.__name__ for the root model.
+        # Nested models have a different name, so __schema_name__ won't
+        # override their generated schema name.
         if model_name == self.model_type.__name__ and self.dto_factory.__schema_name__:
             struct_name = self.dto_factory.__schema_name__
         else:
