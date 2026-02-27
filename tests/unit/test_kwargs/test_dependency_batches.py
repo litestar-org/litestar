@@ -63,7 +63,7 @@ def test_dependency_batches(dependency_tree: set[Dependency], expected_batches: 
 @pytest.mark.parametrize(
     "exception,status_code,text",
     [
-        (ValueError("value_error"), HTTP_500_INTERNAL_SERVER_ERROR, "Exception Group Traceback"),
+        (ValueError("value_error"), HTTP_500_INTERNAL_SERVER_ERROR, "500 - Internal Server Error"),
         (
             HTTPException(status_code=HTTP_422_UNPROCESSABLE_ENTITY, detail="http_exception"),
             HTTP_422_UNPROCESSABLE_ENTITY,
@@ -96,5 +96,6 @@ def test_dependency_batch_with_exception(exception: Exception, status_code: int,
         },
     ) as client:
         response = client.get("/")
-        assert response.status_code == status_code
-        assert text in response.text
+
+    assert response.status_code == status_code
+    assert text in response.text

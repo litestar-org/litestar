@@ -273,16 +273,16 @@ def test_debug_response_created() -> None:
             raise InternalServerException() from e
 
     app = Litestar(route_handlers=[my_route_handler], debug=True)
-    client = TestClient(app=app)
+    with TestClient(app=app) as client:
+        default_response = client.get("/")
+        html_response = client.get("/", headers={"accept": "text/html"})
 
-    response = client.get("/")
-    assert response.status_code == HTTP_500_INTERNAL_SERVER_ERROR
-    assert "text/plain" in response.headers["content-type"]
+    assert default_response.status_code == HTTP_500_INTERNAL_SERVER_ERROR
+    assert "text/plain" in default_response.headers["content-type"]
 
-    response = client.get("/", headers={"accept": "text/html"})
-    assert response.status_code == HTTP_500_INTERNAL_SERVER_ERROR
-    assert "text/html" in response.headers["content-type"]
-    assert "ZeroDivisionError" in response.text
+    assert html_response.status_code == HTTP_500_INTERNAL_SERVER_ERROR
+    assert "text/html" in html_response.headers["content-type"]
+    assert "ZeroDivisionError" in html_response.text
 
 
 def test_handler_error_return_status_500() -> None:

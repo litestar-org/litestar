@@ -217,7 +217,7 @@ def test_structlog_disable_stack_trace(
         else:
             _ = client.get("/error")
 
-        if handler_called:
-            assert mock_handler.called, "Structlog exception handler should have been called"
-        else:
-            assert not mock_handler.called, "Structlog exception handler should not have been called"
+    if handler_called:
+        assert mock_handler.called, "Structlog exception handler should have been called"
+    else:
+        assert not mock_handler.called, "Structlog exception handler should not have been called"

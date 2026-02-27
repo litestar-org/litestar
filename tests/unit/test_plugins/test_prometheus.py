@@ -1,6 +1,5 @@
 import re
 import time
-from http.client import HTTPException
 from pathlib import Path
 from typing import Any
 
@@ -10,6 +9,7 @@ from prometheus_client import REGISTRY
 from pytest_mock import MockerFixture
 
 from litestar import get, post, websocket_listener
+from litestar.exceptions import HTTPException
 from litestar.plugins.prometheus import PrometheusConfig, PrometheusController, PrometheusMiddleware
 from litestar.status_codes import HTTP_200_OK
 from litestar.testing import create_test_client
@@ -35,7 +35,7 @@ def test_prometheus_exporter_metrics_with_http() -> None:
 
     @get("/error")
     def handler_error() -> dict:
-        raise HTTPException("Error Occurred")
+        raise HTTPException("Error Occurred", status_code=500)
 
     with create_test_client(
         [duration_handler, handler_error, PrometheusController], middleware=[config.middleware]

@@ -68,13 +68,15 @@ def create_handle_send(
     ):
 
         async def handle_send(socket: WebSocket, data: Any) -> None:
-            await socket.send_data(data=data, mode=listener._send_mode)
+            if data is not None:
+                await socket.send_data(data=data, mode=listener._send_mode)
 
     else:
 
         async def handle_send(socket: WebSocket, data: Any) -> None:
-            data = json_encoder.encode(data)
-            await socket.send_data(data=data, mode=listener._send_mode)
+            if data is not None:
+                data = json_encoder.encode(data)
+                await socket.send_data(data=data, mode=listener._send_mode)
 
     return handle_send
 

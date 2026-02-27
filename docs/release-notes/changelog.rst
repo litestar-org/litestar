@@ -6,11 +6,45 @@
 .. changelog:: 3.0.0
     :date: 2024-08-30
 
+    .. change:: Remove default exception handler for all unhandled exceptions
+        :type: feature
+        :breaking:
+        :pr: 4610
+
+        Remove the default exception handler for all unhandled exceptions. Unhandled
+        exceptions will now be re-raised, for the server to handle.
+        "Unhandled exceptions" in this context means any exception for which no custom
+        exception handler exist, and that does not derive from :exc:`LitestarException`
+        or :exc:`HTTPException`.
+
+        .. important::
+
+            Your application's runtime behaviour won't change in terms of *if*
+            exceptions get handled. The main difference will be that, for an unhandled
+            exception, it will be the ASGI server that creates a
+            ``500 - Internal Server Error`` response, instead of Litestar
+
+    .. change:: Fix ``raise_server_exceptions`` flag in test clients
+        :type: bugfix
+        :pr: 4610
+
+        Fix the ``raise_server_exceptions``. This flag has been non-functional (i.e. did
+        not change the behaviour at all) since version 1. This is now fixed, and
+        unhandled exceptions will be re-raised by the test client
+
+    .. change:: Fix swallowing of unhandled exceptions in WebSocket client
+        :type: bugfix
+        :pr: 4610
+
+        Fix a bug that could lead to unhandled exceptions raised within websocket
+        handlers, and not derived from :exc:`LitestarException` or :exc:`HTTPException`
+        to be silently swallowed. This would lead to a closing of the WebSocket
+        connection without any indication of an exception
 
     .. change:: Remove all SQLAlchemy modules in favor of direct advanced-alchemy imports
         :type: feature
         :breaking:
-        :pr: TBD
+        :pr: 4340
 
         Remove all SQLAlchemy functionality from Litestar. Both ``litestar.contrib.sqlalchemy``
         and ``litestar.plugins.sqlalchemy`` modules have been completely removed. Users must now
