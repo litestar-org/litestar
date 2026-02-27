@@ -17,6 +17,7 @@ from litestar import Request, get
 from litestar.exceptions import HTTPException, ImproperlyConfiguredException, NotFoundException
 from litestar.logging.config import (
     LoggingConfig,
+    _default_exception_logging_handler_factory,
     _get_default_handlers,
     _get_default_logging_module,
     default_handlers,
@@ -535,15 +536,15 @@ def test_excluded_fields(logging_module: str) -> None:
 
 
 @pytest.mark.parametrize(
-    "disable_stack_trace, exception_to_raise, handler_called",
+    "disable_stack_trace, exception_to_raise, expect_tb",
     [
-        # will log the stack trace
+        # will log WITH the stack trace (tb is non-empty)
         [set(), HTTPException, True],
         [set(), ValueError, True],
         [{400}, HTTPException, True],
         [{NameError}, ValueError, True],
         [{400, NameError}, ValueError, True],
-        # will not log the stack trace
+        # will log WITHOUT the stack trace (tb is empty)
         [{NotFoundException}, HTTPException, False],
         [{404}, HTTPException, False],
         [{ValueError}, ValueError, False],
@@ -554,7 +555,7 @@ def test_excluded_fields(logging_module: str) -> None:
 def test_disable_stack_trace(
     disable_stack_trace: set[Union[int, type[Exception]]],
     exception_to_raise: type[Exception],
-    handler_called: bool,
+    expect_tb: bool,
 ) -> None:
     mock_handler = MagicMock()
 
@@ -570,7 +571,32 @@ def test_disable_stack_trace(
         else:
             _ = client.get("/error")
 
-        if handler_called:
-            assert mock_handler.called, "Exception logging handler should have been called"
+        assert mock_handler.called, "Exception logging handler should always be called"
+        tb = mock_handler.call_args[0][2]
+        if expect_tb:
+            assert len(tb) > 0, "Stack trace should be present"
         else:
-            assert not mock_handler.called, "Exception logging handler should not have been called"
+            assert tb == [], "Stack trace should be suppressed but handler should still be called"
+
+
+def test_default_handler_uses_error_when_stack_trace_suppressed() -> None:
+    """The default exception logging handler should call ``logger.error``
+    (not ``logger.exception``) when the stack trace is suppressed via
+    ``disable_stack_trace``.  This exercises the ``else`` branch inside
+    ``_default_exception_logging_handler_factory(is_struct_logger=False)``.
+    """
+    handler = _default_exception_logging_handler_factory(is_struct_logger=False)
+    mock_logger = MagicMock()
+    scope: Any = {"type": "http", "path": "/error"}
+
+    # With traceback present -> logger.exception
+    handler(mock_logger, scope, ["Traceback ..."])
+    mock_logger.exception.assert_called_once()
+    mock_logger.error.assert_not_called()
+
+    mock_logger.reset_mock()
+
+    # With empty traceback (stack trace suppressed) -> logger.error
+    handler(mock_logger, scope, [])
+    mock_logger.error.assert_called_once()
+    mock_logger.exception.assert_not_called()
