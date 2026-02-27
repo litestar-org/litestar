@@ -303,9 +303,9 @@ def test_create_schema_from_msgspec_annotated_type() -> None:
             msgspec.Meta(max_length=16, examples=["example"], description="description", title="title", pattern=r"\w+"),
         ]
         bytes_field: Annotated[bytes, msgspec.Meta(max_length=2, min_length=1)]
-        default_field: Annotated[str, msgspec.Meta(min_length=1)] = "a"
         list_field: Annotated[list[UUID], msgspec.Meta(min_length=1, max_length=10)]
         set_field: Annotated[set[int], msgspec.Meta(min_length=2)]
+        default_field: Annotated[str, msgspec.Meta(min_length=1)] = "a"
 
     schema = get_schema_for_field_definition(FieldDefinition.from_kwarg(name="Lookup", annotation=Lookup))
 
