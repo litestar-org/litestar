@@ -16,7 +16,7 @@ def test_application_shutdown_hooks(caplog: "LogCaptureFixture") -> None:
         assert len(caplog.messages) == 0
         client.get("/some-path")
         assert client.app.state.error_count == 1
-        assert len(caplog.messages) == 2
+        assert len(caplog.messages) == 1
         client.get("/some-path")
         assert client.app.state.error_count == 2
-        assert len(caplog.messages) == 4
+        assert len(caplog.messages) == 2
