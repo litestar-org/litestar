@@ -21,8 +21,7 @@ if TYPE_CHECKING:
     # these imports are duplicated on purpose so sphinx autodoc can find and link them
 
     from litestar.config.app import AppConfig
-    from litestar.types import GetLogger, LifespanHook, Logger, Scope
-    from litestar.types.callable_types import ExceptionLoggingHandler
+    from litestar.types import GetLogger, LifespanHook, Logger
 
 
 if sys.version_info >= (3, 12):
@@ -31,14 +30,6 @@ else:
 
     def getHandlerByName(name: str) -> logging.Handler:  # noqa: N802
         return cast("logging.Handler", logging._handlers.get(name))  # type: ignore[attr-defined]
-
-
-def _default_exception_logging_handler(logger: Logger, scope: Scope, tb: list[str]) -> None:
-    logger.exception(
-        "Uncaught exception (connection_type=%s, path=%r):",
-        scope["type"],
-        scope["path"],
-    )
 
 
 class ExtraKeyValueFormatter(logging.Formatter):
@@ -67,9 +58,6 @@ class LoggingConfig(InitPlugin):
     level: Literal[0, 10, 20, 30, 40, 50] = logging.INFO
     """Log level"""
 
-    log_exceptions: Literal["always", "debug", "never"] = "always"
-    """When to log exceptions"""
-
     log_requests: bool = False
     """
     Log details about requests.
@@ -79,12 +67,6 @@ class LoggingConfig(InitPlugin):
     To configure request logging more precisely, set ``log_requests=False``, and pass
     the middleware manually.
     """
-
-    disable_stack_trace: set[int | type[Exception]] = dataclasses.field(default_factory=set)
-    """Set of http status codes and exceptions to disable stack trace logging for."""
-
-    exception_logging_handler: ExceptionLoggingHandler = _default_exception_logging_handler
-    """Handler function for logging exceptions."""
 
     get_logger: GetLogger = logging.getLogger
     """

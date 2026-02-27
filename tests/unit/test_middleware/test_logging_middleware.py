@@ -308,7 +308,7 @@ def test_structlog_invalid_request_body_handled() -> None:
 
     with create_test_client(
         route_handlers=[hello_world],
-        logging_config=StructLoggingConfig(log_exceptions="always"),
+        logging_config=StructLoggingConfig(),
         middleware=[LoggingMiddleware()],
     ) as client:
         assert client.post("/", headers={"Content-Type": "application/json"}, content=b'{"a": "b",}').status_code == 400
