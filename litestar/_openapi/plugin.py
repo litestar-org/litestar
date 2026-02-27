@@ -67,6 +67,28 @@ class OpenAPIPlugin(InitPlugin, ReceiveRoutePlugin):
         self._openapi: OpenAPI | None = None
         self._openapi_schema: dict[str, object] | None = None
 
+    def _normalize_default_server(self) -> None:
+        """If the default server is used along with app.path, it changes the server URL."""
+        if self.app.path == "/":
+            return
+        for server in self.openapi_config.servers:
+            if server.url == "/":
+                server.url = self.app.path
+
+    def _normalize_route_path(self, route: HTTPRoute) -> str:
+        """If app.path is used together with Open API config servers, the unnecessary part of the URL is removed.
+
+        Args:
+            route: http route object
+
+        Returns:
+            path: normalized path
+        """
+        path = route.path_format or "/"
+        if self.app.path != "/":
+            return path[len(self.app.path) :] or "/"
+        return path
+
     def _build_openapi(self) -> OpenAPI:
         openapi_config = self.openapi_config
 
@@ -75,11 +97,12 @@ class OpenAPIPlugin(InitPlugin, ReceiveRoutePlugin):
 
             ExampleFactory.seed_random(openapi_config.random_seed)
 
+        self._normalize_default_server()
         openapi = openapi_config.to_openapi_schema()
         context = OpenAPIContext(openapi_config=openapi_config, plugins=self.app.plugins.openapi)
         path_items: dict[str, PathItem] = {}
         for route in self.included_routes.values():
-            path = route.path_format or "/"
+            path = self._normalize_route_path(route)
             path_item = create_path_item_for_route(context, route)
             if existing_path_item := path_items.get(path):
                 path_item = merge_path_item_operations(existing_path_item, path_item, for_path=path)
