@@ -97,11 +97,11 @@ Imports
 +----------------------------------------------------+------------------------------------------------------------------------+
 | ``starlite.TemplateConfig``                        | :class:`.template.TemplateConfig`                                      |
 +----------------------------------------------------+------------------------------------------------------------------------+
-| ``starlite.BaseLoggingConfig``                     | :class:`.logging.config.BaseLoggingConfig`                             |
+| ``starlite.BaseLoggingConfig``                     | ``litestar.logging.config.BaseLoggingConfig``                          |
 +----------------------------------------------------+------------------------------------------------------------------------+
-| ``starlite.LoggingConfig``                         | :class:`.logging.config.LoggingConfig`                                 |
+| ``starlite.LoggingConfig``                         | ``litestar.logging.config.LoggingConfig``                              |
 +----------------------------------------------------+------------------------------------------------------------------------+
-| ``starlite.StructLoggingConfig``                   | :class:`.logging.config.StructLoggingConfig`                           |
+| ``starlite.StructLoggingConfig``                   | ``litestar.logging.config.StructLoggingConfig``                        |
 +----------------------------------------------------+------------------------------------------------------------------------+
 | **Provide**                                                                                                                 |
 +----------------------------------------------------+------------------------------------------------------------------------+

@@ -35,12 +35,6 @@ Installation
     :doc:`RedisStore </usage/stores>`
         :code:`pip install 'litestar[redis]'`
 
-    :ref:`Picologging <usage/logging:using picologging>`
-        :code:`pip install 'litestar[picologging]'`
-
-    :ref:`StructLog <usage/logging:using structlog>`
-        :code:`pip install 'litestar[structlog]'`
-
     :doc:`Prometheus Instrumentation </usage/metrics/prometheus>`
         :code:`pip install 'litestar[prometheus]'`
 

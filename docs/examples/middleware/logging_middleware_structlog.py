@@ -1,4 +1,4 @@
-import logging
+import structlog
 
 from litestar import Litestar, get
 from litestar.middleware.logging import LoggingMiddleware
@@ -13,7 +13,7 @@ app = Litestar(
     route_handlers=[my_handler],
     middleware=[
         LoggingMiddleware(
-            logging.getLogger("my.app"),
+            structlog.get_logger("my.app"),
             request_log_fields=("query", "body"),  # only log query and body fields
         )
     ],

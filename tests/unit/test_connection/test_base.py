@@ -2,7 +2,6 @@ from typing import Any
 
 from litestar import Litestar, get
 from litestar.connection import ASGIConnection
-from litestar.logging.config import LoggingConfig
 from litestar.testing import RequestFactory
 from litestar.types.empty import Empty
 from litestar.utils.scope.state import ScopeState
@@ -13,7 +12,7 @@ def test_connection_base_properties() -> None:
     def handler() -> None:
         return None
 
-    app = Litestar(route_handlers=[handler], logging_config=LoggingConfig())
+    app = Litestar(route_handlers=[handler])
     user = {"name": "moishe"}
     auth = {"key": "value"}
     session = {"session": "abc"}

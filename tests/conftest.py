@@ -22,7 +22,6 @@ from time_machine import travel
 from valkey.asyncio import Valkey as AsyncValkey
 from valkey.client import Valkey
 
-from litestar.logging import LoggingConfig
 from litestar.middleware.session import SessionMiddleware
 from litestar.middleware.session.base import BaseSessionBackend
 from litestar.middleware.session.client_side import ClientSideSessionBackend, CookieBackendConfig
@@ -47,7 +46,6 @@ if TYPE_CHECKING:
         AnyIOBackend,
         ASGIApp,
         ASGIVersion,
-        GetLogger,
         Receive,
         RouteHandlerType,
         Scope,
@@ -316,18 +314,6 @@ def enable_warn_implicit_sync_to_thread(monkeypatch: MonkeyPatch) -> None:
     monkeypatch.setenv("LITESTAR_WARN_IMPLICIT_SYNC_TO_THREAD", "1")
 
 
-@pytest.fixture
-def get_logger() -> GetLogger:
-    # due to the limitations of caplog we have to place this call here.
-    # we also have to allow propagation.
-    return LoggingConfig(
-        logging_module="logging",
-        loggers={
-            "litestar": {"level": "INFO", "handlers": ["queue_listener"], "propagate": True},
-        },
-    ).configure()
-
-
 @pytest.fixture()
 async def redis_client(docker_ip: str, redis_service: None) -> AsyncGenerator[AsyncRedis, None]:
     # this is to get around some weirdness with pytest-asyncio and redis interaction
@@ -359,3 +345,34 @@ async def valkey_client(docker_ip: str, valkey_service: None) -> AsyncGenerator[
 @pytest.fixture(autouse=True)
 def _patch_openapi_config(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr("litestar.app.DEFAULT_OPENAPI_CONFIG", OpenAPIConfig(title="Litestar API", version="1.0.0"))
+
+
+@pytest.fixture(scope="session", autouse=True)
+def litestar_logger() -> logging.Logger:
+    import logging.config
+
+    logging.config.dictConfig(
+        {
+            "version": 1,
+            "disable_existing_loggers": False,
+            "formatters": {
+                "litestar_test_formatter": {
+                    "format": "%(levelname)s - %(asctime)s - %(name)s - %(message)s",
+                },
+            },
+            "handlers": {
+                "litestar_test_handler": {
+                    "class": "logging.StreamHandler",
+                    "formatter": "litestar_test_formatter",
+                },
+            },
+            "loggers": {
+                "litestar.test": {
+                    "handlers": ["litestar_test_handler"],
+                    "level": logging.DEBUG,
+                    "propagate": True,
+                },
+            },
+        }
+    )
+    return logging.getLogger("litestar.test")

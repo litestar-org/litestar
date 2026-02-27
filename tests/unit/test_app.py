@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import inspect
-import logging
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 from dataclasses import fields
@@ -23,7 +22,6 @@ from litestar.exceptions import (
     LitestarWarning,
     NotFoundException,
 )
-from litestar.logging.config import LoggingConfig
 from litestar.plugins import CLIPlugin
 from litestar.status_codes import HTTP_200_OK, HTTP_400_BAD_REQUEST, HTTP_500_INTERNAL_SERVER_ERROR
 from litestar.testing import TestClient, create_test_client
@@ -53,7 +51,6 @@ def app_config_object() -> AppConfig:
         exception_handlers={},
         guards=[],
         listeners=[],
-        logging_config=None,
         middleware=[],
         multipart_form_part_limit=1000,
         on_shutdown=[],
@@ -79,19 +76,6 @@ def test_access_openapi_schema_raises_if_not_configured() -> None:
     app = Litestar(openapi_config=None)
     with pytest.raises(ImproperlyConfiguredException):
         app.openapi_schema
-
-
-def test_set_debug_updates_logging_level() -> None:
-    app = Litestar()
-
-    assert app.logger is not None
-    assert app.logger.level == logging.INFO  # type: ignore[attr-defined]
-
-    app.debug = True
-    assert app.logger.level == logging.DEBUG  # type: ignore[attr-defined]
-
-    app.debug = False
-    assert app.logger.level == logging.INFO  # type: ignore[attr-defined]
 
 
 @pytest.mark.parametrize("env_name,app_attr", [("LITESTAR_DEBUG", "debug"), ("LITESTAR_PDB", "pdb_on_exception")])
@@ -172,27 +156,6 @@ def test_app_config_object_used(app_config_object: AppConfig, monkeypatch: pytes
     # this ensures that each of the properties of the `AppConfig` object have been accessed within `Litestar.__init__()`
     for name, mock in property_mocks:
         assert mock.called, f"expected {name} to be called"
-
-
-def test_app_debug_create_logger() -> None:
-    app = Litestar([], debug=True)
-
-    assert app.logging_config
-    assert app.logging_config.loggers["litestar"]["level"] == "DEBUG"  # type: ignore[attr-defined]
-
-
-def test_app_debug_explicitly_disable_logging() -> None:
-    app = Litestar([], logging_config=None)
-
-    assert not app.logging_config
-
-
-def test_app_debug_update_logging_config() -> None:
-    logging_config = LoggingConfig()
-    app = Litestar([], logging_config=logging_config, debug=True)
-
-    assert app.logging_config is logging_config
-    assert app.logging_config.loggers["litestar"]["level"] == "DEBUG"  # type: ignore[attr-defined]
 
 
 def test_set_state() -> None:
