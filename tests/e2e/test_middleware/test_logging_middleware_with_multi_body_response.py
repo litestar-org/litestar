@@ -24,7 +24,7 @@ async def asgi_app(scope: Scope, receive: Receive, send: Send) -> None:
 
 
 async def test_app() -> None:
-    async with create_async_test_client(asgi_app, middleware=[LoggingMiddleware()]) as client:
+    async with create_async_test_client(asgi_app, middleware=[LoggingMiddleware("litestar.test")]) as client:
         response = await client.get("/")
         assert response.status_code == 200
         assert response.text == "data: 1\ndata: 2\n"

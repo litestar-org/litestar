@@ -1,5 +1,6 @@
+import logging
+
 from litestar import Litestar, get
-from litestar.logging.config import LoggingConfig
 from litestar.middleware.logging import LoggingMiddleware
 
 
@@ -10,9 +11,9 @@ async def my_handler() -> dict[str, str]:
 
 app = Litestar(
     route_handlers=[my_handler],
-    logging_config=LoggingConfig(),
     middleware=[
         LoggingMiddleware(
+            logging.getLogger("my.app"),
             request_log_fields=("query", "body"),  # only log query and body fields
         )
     ],

@@ -345,3 +345,34 @@ async def valkey_client(docker_ip: str, valkey_service: None) -> AsyncGenerator[
 @pytest.fixture(autouse=True)
 def _patch_openapi_config(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr("litestar.app.DEFAULT_OPENAPI_CONFIG", OpenAPIConfig(title="Litestar API", version="1.0.0"))
+
+
+@pytest.fixture(scope="session", autouse=True)
+def litestar_logger() -> logging.Logger:
+    import logging.config
+
+    logging.config.dictConfig(
+        {
+            "version": 1,
+            "disable_existing_loggers": False,
+            "formatters": {
+                "litestar_test_formatter": {
+                    "format": "%(levelname)s - %(asctime)s - %(name)s - %(message)s",
+                },
+            },
+            "handlers": {
+                "litestar_test_handler": {
+                    "class": "logging.StreamHandler",
+                    "formatter": "litestar_test_formatter",
+                },
+            },
+            "loggers": {
+                "litestar.test": {
+                    "handlers": ["litestar_test_handler"],
+                    "level": logging.DEBUG,
+                    "propagate": True,
+                },
+            },
+        }
+    )
+    return logging.getLogger("litestar.test")
