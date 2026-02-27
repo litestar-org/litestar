@@ -79,7 +79,6 @@ full = [
     redis, \
     sqlalchemy, \
     standard, \
-    structlog, \
     valkey, \
     htmx, \
     yaml, \
@@ -102,7 +101,6 @@ standard = [
   "jsbeautifier",
   "uvicorn[standard]",
 ]
-structlog = ["structlog"]
 valkey = ["valkey[libvalkey]>=6.0.2"]
 yaml = ["pyyaml"]
 
@@ -154,6 +152,7 @@ dev = [
   "daphne>=4.0.0",
   "opentelemetry-sdk",
   "httpx-sse",
+  "structlog",
 ]
 
 docs = [
