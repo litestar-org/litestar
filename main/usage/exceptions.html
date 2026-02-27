@@ -459,6 +459,8 @@ data-aria-dark="Switch to auto color mode">
 <li><a class="reference internal" href="#configuration-exceptions">Configuration Exceptions</a></li>
 <li><a class="reference internal" href="#application-exceptions">Application Exceptions</a></li>
 <li><a class="reference internal" href="#exception-handling">Exception handling</a><ul>
+<li><a class="reference internal" href="#built-in-exception-handlers">Built-in exception handlers</a></li>
+<li><a class="reference internal" href="#custom-exception-handlers">Custom exception handlers</a></li>
 <li><a class="reference internal" href="#exception-handling-layers">Exception handling layers</a></li>
 </ul>
 </li>
@@ -598,18 +600,39 @@ If this is not your intent, adjust the exception contents.</p>
 </section>
 <section id="exception-handling">
 <h2>Exception handling<a class="headerlink" href="#exception-handling" title="Link to this heading">¶</a></h2>
-<p>Litestar handles all errors by default by transforming them into <strong>JSON responses</strong>. If the errors are <strong>instances of</strong>
-<a class="reference internal" href="../reference/exceptions.html#litestar.exceptions.HTTPException" title="litestar.exceptions.http_exceptions.HTTPException"><code class="xref py py-class docutils literal notranslate"><span class="pre">HTTPException</span></code></a>, the responses will include the appropriate <code class="docutils literal notranslate"><span class="pre">status_code</span></code>.
-Otherwise, the responses will default to <code class="docutils literal notranslate"><span class="pre">500</span> <span class="pre">-</span> <span class="pre">&quot;Internal</span> <span class="pre">Server</span> <span class="pre">Error&quot;</span></code>.</p>
+<p>There are 2 layers of exception handling:</p>
+<ul class="simple">
+<li><p>Built-in exception handlers, for all exceptions deriving from <a class="reference internal" href="../reference/exceptions.html#litestar.exceptions.LitestarException" title="litestar.exceptions.LitestarException"><code class="xref py py-exc docutils literal notranslate"><span class="pre">LitestarException</span></code></a>
+and <a class="reference internal" href="../reference/exceptions.html#litestar.exceptions.HTTPException" title="litestar.exceptions.HTTPException"><code class="xref py py-exc docutils literal notranslate"><span class="pre">HTTPException</span></code></a></p></li>
+<li><p>User-defined exception handlers</p></li>
+</ul>
+<p>If an exception is raised, Litestar will first attempt to find a user-defined exception
+handler (traversing all application layers from route handler -&gt; application), defaulting
+to the built-in ones.</p>
+<p>If no exception handler is found, the exception will be re-raised, to be handled by the
+ASGI server.</p>
+<section id="built-in-exception-handlers">
+<h3>Built-in exception handlers<a class="headerlink" href="#built-in-exception-handlers" title="Link to this heading">¶</a></h3>
+<p>Exceptions derived from <a class="reference internal" href="../reference/exceptions.html#litestar.exceptions.LitestarException" title="litestar.exceptions.LitestarException"><code class="xref py py-exc docutils literal notranslate"><span class="pre">LitestarException</span></code></a> and <a class="reference internal" href="../reference/exceptions.html#litestar.exceptions.HTTPException" title="litestar.exceptions.HTTPException"><code class="xref py py-exc docutils literal notranslate"><span class="pre">HTTPException</span></code></a> will be
+handled by Litestar’s built-in exception handlers. Error responses for these will
+include the <code class="docutils literal notranslate"><span class="pre">detail</span></code> passed to the exception.</p>
+<p>If a subclass the exception is an <a class="reference internal" href="../reference/exceptions.html#litestar.exceptions.HTTPException" title="litestar.exceptions.HTTPException"><code class="xref py py-exc docutils literal notranslate"><span class="pre">HTTPException</span></code></a>, the response will have the
+status code set on that exception, and default to <code class="docutils literal notranslate"><span class="pre">500</span> <span class="pre">-</span> <span class="pre">&quot;Internal</span> <span class="pre">Server</span> <span class="pre">Error&quot;</span></code>
+otherwise.</p>
+<p>The exception handlers will respect the handler’s media type, and but fall back to JSON.</p>
 <p>The following handler for instance will default to <code class="docutils literal notranslate"><span class="pre">MediaType.TEXT</span></code> so the exception will be raised as text.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">get</span>
-</span><span data-line="2">
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">HTTPException</span>
 </span><span data-line="3">
-</span><span data-line="4"><span class="nd">@get</span><span class="p">(</span><span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-</span><span data-line="5"><span class="k">def</span><span class="w"> </span><span class="nf">handler</span><span class="p">(</span><span class="n">q</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-</span><span data-line="6">    <span class="k">raise</span> <span class="ne">ValueError</span>
+</span><span data-line="4">
+</span><span data-line="5"><span class="nd">@get</span><span class="p">(</span><span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</span><span data-line="6"><span class="k">def</span><span class="w"> </span><span class="nf">handler</span><span class="p">(</span><span class="n">q</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span data-line="7">    <span class="k">raise</span> <span class="n">HTTPException</span><span class="p">(</span><span class="s2">&quot;nope&quot;</span><span class="p">,</span> <span class="n">status_code</span><span class="o">=</span><span class="mi">400</span><span class="p">)</span>
 </span></pre></div>
 </div>
+</section>
+<section id="custom-exception-handlers">
+<h3>Custom exception handlers<a class="headerlink" href="#custom-exception-handlers" title="Link to this heading">¶</a></h3>
 <p>You can customize exception handling by passing a dictionary, mapping either status codes
 or exception classes to callables. For example, if you would like to replace the default
 exception handler with a handler that returns plain-text responses you could do this:</p>
@@ -648,8 +671,9 @@ exception handler with a handler that returns plain-text responses you could do 
 </span></pre></div>
 </div>
 </div>
-<p>The above will define a top level exception handler that will apply the <code class="docutils literal notranslate"><span class="pre">plain_text_exception_handler</span></code> function to all
-exceptions that inherit from <code class="docutils literal notranslate"><span class="pre">HTTPException</span></code>. You could of course be more granular:</p>
+<p>The above will define a top level exception handler that will apply the
+<code class="docutils literal notranslate"><span class="pre">plain_text_exception_handler</span></code> function to all exceptions that inherit from
+<code class="docutils literal notranslate"><span class="pre">HTTPException</span></code>. You could of course be more granular:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">MediaType</span><span class="p">,</span> <span class="n">Request</span><span class="p">,</span> <span class="n">Response</span><span class="p">,</span> <span class="n">get</span>
 </span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">HTTPException</span><span class="p">,</span> <span class="n">ValidationException</span>
 </span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.status_codes</span><span class="w"> </span><span class="kn">import</span> <span class="n">HTTP_500_INTERNAL_SERVER_ERROR</span>
@@ -715,8 +739,9 @@ exceptions that inherit from <code class="docutils literal notranslate"><span cl
 </span></pre></div>
 </div>
 </div>
-<p>The choice whether to use a single function that has switching logic inside it, or multiple functions depends on your
-specific needs.</p>
+<p>The choice whether to use a single function that has switching logic inside it, or
+multiple functions depends on your specific needs.</p>
+</section>
 <section id="exception-handling-layers">
 <h3>Exception handling layers<a class="headerlink" href="#exception-handling-layers" title="Link to this heading">¶</a></h3>
 <p>Since Litestar allows users to define both exception handlers and middlewares in a layered fashion, i.e. on individual
