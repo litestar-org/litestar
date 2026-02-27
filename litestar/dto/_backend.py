@@ -198,19 +198,17 @@ class DTOBackend:
         self,
         model_name: str,
         field_definitions: tuple[TransferDTOFieldDefinition, ...],
-        is_root: bool = True,
     ) -> type[Struct]:
         """Create a model for data transfer.
 
         Args:
             model_name: name for the type that should be unique across all transfer types.
             field_definitions: field definitions for the container type.
-            is_root: whether this is the root transfer model or a nested one.
 
         Returns:
             A ``BackendT`` class.
         """
-        if is_root and self.dto_factory.__schema_name__:
+        if model_name == self.model_type.__name__ and self.dto_factory.__schema_name__:
             struct_name = self.dto_factory.__schema_name__
         else:
             struct_name = self._create_transfer_model_name(model_name)
@@ -433,7 +431,7 @@ class DTOBackend:
             )
 
             transfer_model = NestedFieldInfo(
-                model=self.create_transfer_model_type(unique_name, nested_field_definitions, is_root=False),
+                model=self.create_transfer_model_type(unique_name, nested_field_definitions),
                 field_definitions=nested_field_definitions,
             )
 
