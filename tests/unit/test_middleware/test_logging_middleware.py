@@ -1,4 +1,3 @@
-import sys
 from collections.abc import Generator
 from logging import INFO
 from typing import TYPE_CHECKING, Annotated, Any
@@ -49,7 +48,6 @@ def handler() -> HTTPRouteHandler:
     return handler_fn
 
 
-@pytest.mark.skipif(sys.version_info >= (3, 13), reason="Broken. Skip because of pending removal in v3")
 def test_logging_middleware_regular_logger(caplog: "LogCaptureFixture", handler: HTTPRouteHandler) -> None:
     with (
         create_test_client(route_handlers=[handler], middleware=[LoggingMiddleware()]) as client,
@@ -126,7 +124,6 @@ def test_logging_middleware_struct_logger(handler: HTTPRouteHandler) -> None:
         }
 
 
-@pytest.mark.skipif(sys.version_info >= (3, 13), reason="Broken. Skip because of pending removal in v3")
 def test_logging_middleware_exclude_pattern(caplog: "LogCaptureFixture", handler: HTTPRouteHandler) -> None:
     @get("/exclude")
     def handler2() -> None:
@@ -151,7 +148,6 @@ def test_logging_middleware_exclude_pattern(caplog: "LogCaptureFixture", handler
         assert len(caplog.messages) == 2
 
 
-@pytest.mark.skipif(sys.version_info >= (3, 13), reason="Broken. Skip because of pending removal in v3")
 def test_logging_middleware_exclude_opt_key(caplog: "LogCaptureFixture", handler: HTTPRouteHandler) -> None:
     @get("/exclude", skip_logging=True)
     def handler2() -> None:
@@ -176,7 +172,6 @@ def test_logging_middleware_exclude_opt_key(caplog: "LogCaptureFixture", handler
 
 
 @pytest.mark.parametrize("include", [True, False])
-@pytest.mark.skipif(sys.version_info >= (3, 13), reason="Broken. Skip because of pending removal in v3")
 def test_logging_middleware_compressed_response_body(
     include: bool, caplog: "LogCaptureFixture", handler: HTTPRouteHandler
 ) -> None:
@@ -235,7 +230,6 @@ async def test_logging_middleware_post_binary_file_without_structlog(monkeypatch
 
 
 @pytest.mark.parametrize("logger_name", ("litestar", "other"))
-@pytest.mark.skipif(sys.version_info >= (3, 13), reason="Broken. Skip because of pending removal in v3")
 def test_logging_messages_are_not_doubled(logger_name: str, caplog: "LogCaptureFixture") -> None:
     # https://github.com/litestar-org/litestar/issues/896
 
@@ -258,7 +252,6 @@ def test_logging_messages_are_not_doubled(logger_name: str, caplog: "LogCaptureF
         assert len(caplog.messages) == 2
 
 
-@pytest.mark.skipif(sys.version_info >= (3, 13), reason="Broken. Skip because of pending removal in v3")
 def test_logging_middleware_log_fields(caplog: "LogCaptureFixture", handler: HTTPRouteHandler) -> None:
     with (
         create_test_client(
