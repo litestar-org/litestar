@@ -1,7 +1,7 @@
 OpenTelemetry
 =============
 
-Litestar includes optional OpenTelemetry instrumentation that is exported from ``litestar.contrib.opentelemetry``. To use
+Litestar includes optional OpenTelemetry instrumentation that is exported from ``litestar.plugins.opentelemetry``. To use
 this package, you should first install the required dependencies:
 
 .. code-block:: bash
@@ -16,13 +16,13 @@ this package, you should first install the required dependencies:
     pip install 'litestar[opentelemetry]'
 
 Once these requirements are satisfied, you can instrument your Litestar application by creating an instance
-of :class:`OpenTelemetryConfig <litestar.contrib.opentelemetry.OpenTelemetryConfig>` and passing the middleware it creates to
+of :class:`OpenTelemetryConfig <litestar.plugins.opentelemetry.OpenTelemetryConfig>` and passing the middleware it creates to
 the Litestar constructor:
 
 .. code-block:: python
 
    from litestar import Litestar
-   from litestar.contrib.opentelemetry import OpenTelemetryConfig, OpenTelemetryPlugin
+   from litestar.plugins.opentelemetry import OpenTelemetryConfig, OpenTelemetryPlugin
 
    open_telemetry_config = OpenTelemetryConfig()
 
@@ -32,5 +32,5 @@ The above example will work out of the box if you configure a global ``tracer_pr
 exporter to use these (see the
 `OpenTelemetry Exporter docs <https://opentelemetry.io/docs/instrumentation/python/exporters/>`_ for further details).
 
-You can also pass con figuration to the ``OpenTelemetryConfig`` telling it which providers to use. Consult
-:class:`reference docs <litestar.contrib.opentelemetry.OpenTelemetryConfig>` regarding the configuration options you can use.
+You can also pass configuration to the ``OpenTelemetryConfig`` telling it which providers to use. Consult
+:class:`reference docs <litestar.plugins.opentelemetry.OpenTelemetryConfig>` regarding the configuration options you can use.
