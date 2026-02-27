@@ -71,15 +71,41 @@ When a value fails validation, the result will be a :class:`~litestar.exceptions
 Exception handling
 ------------------
 
-Litestar handles all errors by default by transforming them into **JSON responses**. If the errors are **instances of**
-:class:`~litestar.exceptions.http_exceptions.HTTPException`, the responses will include the appropriate ``status_code``.
-Otherwise, the responses will default to ``500 - "Internal Server Error"``.
+There are 2 layers of exception handling:
 
+- Built-in exception handlers, for all exceptions deriving from :exc:`LitestarException`
+  and :exc:`HTTPException`
+- User-defined exception handlers
+
+If an exception is raised, Litestar will first attempt to find a user-defined exception
+handler (traversing all application layers from route handler -> application), defaulting
+to the built-in ones.
+
+If no exception handler is found, the exception will be re-raised, to be handled by the
+ASGI server.
+
+
+Built-in exception handlers
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Exceptions derived from :exc:`LitestarException` and :exc:`HTTPException` will be
+handled by Litestar's built-in exception handlers. Error responses for these will
+include the ``detail`` passed to the exception.
+
+If a subclass the exception is an :exc:`HTTPException`, the response will have the
+status code set on that exception, and default to ``500 - "Internal Server Error"``
+otherwise.
+
+The exception handlers will respect the handler's media type, and but fall back to JSON.
 
 The following handler for instance will default to ``MediaType.TEXT`` so the exception will be raised as text.
 
 .. literalinclude:: /examples/exceptions/implicit_media_type.py
     :language: python
+
+
+Custom exception handlers
+^^^^^^^^^^^^^^^^^^^^^^^^^
 
 You can customize exception handling by passing a dictionary, mapping either status codes
 or exception classes to callables. For example, if you would like to replace the default
@@ -89,15 +115,16 @@ exception handler with a handler that returns plain-text responses you could do 
     :language: python
 
 
-The above will define a top level exception handler that will apply the ``plain_text_exception_handler`` function to all
-exceptions that inherit from ``HTTPException``. You could of course be more granular:
+The above will define a top level exception handler that will apply the
+``plain_text_exception_handler`` function to all exceptions that inherit from
+``HTTPException``. You could of course be more granular:
 
 .. literalinclude:: /examples/exceptions/per_exception_handlers.py
     :language: python
 
 
-The choice whether to use a single function that has switching logic inside it, or multiple functions depends on your
-specific needs.
+The choice whether to use a single function that has switching logic inside it, or
+multiple functions depends on your specific needs.
 
 
 Exception handling layers
