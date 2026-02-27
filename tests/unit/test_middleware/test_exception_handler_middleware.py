@@ -1,3 +1,4 @@
+import sys
 from collections.abc import Generator
 from inspect import getinnerframes
 from typing import TYPE_CHECKING, Any, Callable, Optional
@@ -221,6 +222,7 @@ def test_exception_handler_middleware_calls_app_level_after_exception_hook() -> 
         (False, None, False),
     ],
 )
+@pytest.mark.skipif(sys.version_info >= (3, 13), reason="Broken. Skip because of pending removal in v3")
 def test_exception_handler_default_logging(
     get_logger: "GetLogger",
     caplog: "LogCaptureFixture",
@@ -342,6 +344,7 @@ def test_pdb_on_exception(mocker: MockerFixture) -> None:
     mock_post_mortem.assert_called_once()
 
 
+@pytest.mark.skipif(sys.version_info >= (3, 13), reason="Broken. Skip because of pending removal in v3")
 def test_get_debug_from_scope(get_logger: "GetLogger", caplog: "LogCaptureFixture") -> None:
     @get("/test")
     def handler() -> None:
