@@ -92,7 +92,9 @@ def fx_backend(
 
     class _Backend(backend_cls):  # type: ignore[valid-type,misc]
         def create_transfer_model_type(
-            self, model_name: str, field_definitions: tuple[TransferDTOFieldDefinition, ...]
+            self,
+            model_name: str,
+            field_definitions: tuple[TransferDTOFieldDefinition, ...],
         ) -> type[Any]:
             """Create a model for data transfer.
 
