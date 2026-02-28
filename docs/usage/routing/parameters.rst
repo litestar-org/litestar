@@ -228,7 +228,7 @@ declared in the route handler. Now, examine these more closely.
   route handler - and in this case it is.
 
   Thus, it is actually required for the router handler function that declares it as an :class:`str` and not an
-  ``str | None``. If a :class:`string <str>` value is provided, it will be tested against the provided regex.
+  ``str | None``.
 * ``controller_param`` is a query param with the key ``controller_param``. It has an :paramref:`~.params.Parameter.lt`
   set to ``100`` defined on the controller, which means the provided value must be less than 100.
 
