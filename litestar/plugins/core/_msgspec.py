@@ -75,6 +75,17 @@ def kwarg_definition_from_field(field: msgspec.inspect.Field) -> tuple[Parameter
         kwargs["max_length"] = field_type.max_length
         if isinstance(field_type, msgspec.inspect.StrType):
             kwargs["pattern"] = field_type.pattern
+    elif isinstance(
+        field_type,
+        (
+            msgspec.inspect.ListType,
+            msgspec.inspect.SetType,
+            msgspec.inspect.FrozenSetType,
+            msgspec.inspect.VarTupleType,
+        ),
+    ):
+        kwargs["min_items"] = field_type.min_length
+        kwargs["max_items"] = field_type.max_length
 
     parameter_defaults = {
         f.name: default for f in dataclasses.fields(ParameterKwarg) if (default := f.default) is not dataclasses.MISSING
