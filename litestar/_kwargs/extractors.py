@@ -1,8 +1,9 @@
 from __future__ import annotations
 
-from collections import defaultdict
-from functools import lru_cache, partial
+from functools import partial
 from typing import TYPE_CHECKING, Any, Callable, NamedTuple, cast
+
+from multidict import MultiDict, MultiDictProxy
 
 from litestar._multipart import parse_multipart_form
 from litestar._parsers import (
@@ -37,7 +38,6 @@ __all__ = (
     "create_connection_value_extractor",
     "create_data_extractor",
     "create_multipart_extractor",
-    "create_query_default_dict",
     "create_url_encoded_data_extractor",
     "headers_extractor",
     "json_extractor",
@@ -81,6 +81,56 @@ def _create_param_mappings(expected_params: set[ParameterDefinition]) -> ParamMa
     )
 
 
+def create_connection_value_extractor_mv_safe(
+    kwargs_model: KwargsModel,
+    connection_key: str,
+    expected_params: set[ParameterDefinition],
+    parser: (Callable[[ASGIConnection, KwargsModel], MultiDict[str] | MultiDictProxy[str]] | None) = None,
+) -> Extractor:
+    """Create a kwargs extractor function which requires values to be a MultiDict, but is safe to use with aliases and sequences
+
+    Args:
+        kwargs_model: The KwargsModel instance.
+        connection_key: The attribute key to use.
+        expected_params: The set of expected params.
+        parser: An optional parser function.
+
+    Returns:
+        An extractor function.
+    """
+
+    alias_and_key_tuples, alias_defaults, alias_to_params = _create_param_mappings(expected_params)
+
+    key_is_sequence = {p.field_name: p.is_sequence for p in expected_params}
+
+    async def extractor(values: dict[str, Any], connection: ASGIConnection) -> None:
+        data: MultiDict[str] | MultiDictProxy[str] = (
+            parser(connection, kwargs_model) if parser else MultiDict(getattr(connection, connection_key, {}))
+        )
+
+        try:
+            connection_mapping = {}
+
+            for alias, key in alias_and_key_tuples:
+                try:
+                    connection_mapping[key] = data.getall(alias) if key_is_sequence[key] else data[alias]
+                except (KeyError, IndexError):
+                    connection_mapping[key] = alias_defaults[alias]
+            values.update(connection_mapping)
+
+        except KeyError as e:
+            param = alias_to_params[e.args[0]]
+            path = URL.from_components(
+                path=connection.url.path,
+                query=connection.url.query,
+            )
+            raise ValidationException(
+                f"Missing required {param.param_type.value} parameter {param.field_alias!r} for path {path}"
+            ) from e
+
+    return extractor
+
+
 def create_connection_value_extractor(
     kwargs_model: KwargsModel,
     connection_key: str,
@@ -122,39 +172,15 @@ def create_connection_value_extractor(
     return extractor
 
 
-@lru_cache(1024)
-def create_query_default_dict(
-    parsed_query: tuple[tuple[str, str], ...], sequence_query_parameter_names: tuple[str, ...]
-) -> defaultdict[str, list[str] | str]:
-    """Transform a list of tuples into a default dict. Ensures non-list values are not wrapped in a list.
-
-    Args:
-        parsed_query: The parsed query list of tuples.
-        sequence_query_parameter_names: A set of query parameters that should be wrapped in list.
-
-    Returns:
-        A default dict
-    """
-    output: defaultdict[str, list[str] | str] = defaultdict(list)
-
-    for k, v in parsed_query:
-        if k in sequence_query_parameter_names:
-            output[k].append(v)  # type: ignore[union-attr]
-        else:
-            output[k] = v
-
-    return output
-
-
-def parse_connection_query_params(connection: ASGIConnection, kwargs_model: KwargsModel) -> dict[str, Any]:
-    """Parse query params and cache the result in scope.
+def parse_connection_query_params(connection: ASGIConnection, kwargs_model: KwargsModel) -> MultiDict[str]:
+    """Parse query params from the raw request and cache the result in scope.
 
     Args:
         connection: The ASGI connection instance.
         kwargs_model: The KwargsModel instance.
 
     Returns:
-        A dictionary of parsed values.
+        A MultiDict of parsed values.
     """
     parsed_query = (
         connection._parsed_query
@@ -162,10 +188,8 @@ def parse_connection_query_params(connection: ASGIConnection, kwargs_model: Kwar
         else parse_query_string(connection.scope.get("query_string", b""))
     )
     ScopeState.from_scope(connection.scope).parsed_query = parsed_query
-    return create_query_default_dict(
-        parsed_query=parsed_query,
-        sequence_query_parameter_names=kwargs_model.sequence_query_parameter_names,
-    )
+
+    return MultiDict(parsed_query)
 
 
 def parse_connection_headers(connection: ASGIConnection, _: KwargsModel) -> Headers:
@@ -385,7 +409,9 @@ async def _extract_multipart(
 
 
 def create_multipart_extractor(
-    field_definition: FieldDefinition, is_data_optional: bool, data_dto: type[AbstractDTO] | None
+    field_definition: FieldDefinition,
+    is_data_optional: bool,
+    data_dto: type[AbstractDTO] | None,
 ) -> Callable[[ASGIConnection[Any, Any, Any, Any]], Coroutine[Any, Any, Any]]:
     """Create a multipart form-data extractor.
 
@@ -409,7 +435,10 @@ def create_multipart_extractor(
         field_definition=field_definition,
     )
 
-    return cast("Callable[[ASGIConnection[Any, Any, Any, Any]], Coroutine[Any, Any, Any]]", extract_multipart)
+    return cast(
+        "Callable[[ASGIConnection[Any, Any, Any, Any]], Coroutine[Any, Any, Any]]",
+        extract_multipart,
+    )
 
 
 def create_url_encoded_data_extractor(
@@ -442,7 +471,8 @@ def create_url_encoded_data_extractor(
         return data_dto(connection).decode_builtins(form_values) if data_dto else form_values
 
     return cast(
-        "Callable[[ASGIConnection[Any, Any, Any, Any]], Coroutine[Any, Any, Any]]", extract_url_encoded_extractor
+        "Callable[[ASGIConnection[Any, Any, Any, Any]], Coroutine[Any, Any, Any]]",
+        extract_url_encoded_extractor,
     )
 
 
@@ -472,13 +502,15 @@ def create_data_extractor(kwargs_model: KwargsModel) -> Extractor:
             )
     elif kwargs_model.expected_msgpack_data:
         data_extractor = cast(
-            "Callable[[ASGIConnection[Any, Any, Any, Any]], Coroutine[Any, Any, Any]]", msgpack_extractor
+            "Callable[[ASGIConnection[Any, Any, Any, Any]], Coroutine[Any, Any, Any]]",
+            msgpack_extractor,
         )
     elif kwargs_model.expected_data_dto:
         data_extractor = create_dto_extractor(data_dto=kwargs_model.expected_data_dto)
     else:
         data_extractor = cast(
-            "Callable[[ASGIConnection[Any, Any, Any, Any]], Coroutine[Any, Any, Any]]", json_extractor
+            "Callable[[ASGIConnection[Any, Any, Any, Any]], Coroutine[Any, Any, Any]]",
+            json_extractor,
         )
 
     async def extractor(
