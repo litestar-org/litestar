@@ -563,7 +563,8 @@ class TransferFunctionFactory:
 
         self._add_stmt(f"{assignment_target} = {source_value_name}")
 
-    def _create_transfer_nested_union_type_data(
+    # complexity is 13 due to the nested union fallthrough fix (#4504)
+    def _create_transfer_nested_union_type_data(  # noqa: C901
         self,
         transfer_type: UnionType,
         source_value_name: str,
@@ -639,9 +640,17 @@ class TransferFunctionFactory:
                 )
             return
 
+        # For unions like Optional[NestedModel], generate isinstance checks for
+        # nested types so their fields get transferred.
+        # Everything else (e.g. None) falls through to the else branch unchanged.
+        has_nested = False
         for inner_type in simple_types:
             if inner_type.nested_field_info:
-                _handle_transfer_instance(inner_type, conditional_="if")
-                return
+                _handle_transfer_instance(inner_type, conditional_="if" if not has_nested else "elif")
+                has_nested = True
+        if has_nested:
+            with self._start_block("else:"):
+                self._add_stmt(f"{assignment_target} = {source_value_name}")
+            return
 
         self._add_stmt(f"{assignment_target} = {source_value_name}")
