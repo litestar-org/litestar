@@ -33,7 +33,7 @@ from litestar.enums import ParamType, ScopeType
 from litestar.exceptions import InternalServerException, ValidationException
 from litestar.params import KwargDefinition, ParameterKwarg
 from litestar.typing import FieldDefinition  # noqa
-from litestar.utils import unwrap_and_get_origin, is_class_and_subclass
+from litestar.utils import is_class_and_subclass, unwrap_and_get_origin
 from litestar.utils.dataclass import simple_asdict
 
 if TYPE_CHECKING:
