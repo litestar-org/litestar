@@ -86,7 +86,7 @@ def _deserializer(target_type: Any, value: Any, default_deserializer: Callable[[
         if isinstance(value, target_type):
             return value
     except TypeError as exc:
-        if (origin := unwrap_and_get_origin(target_type)) is not None:
+        if (origin := unwrap_and_get_origin(target_type)) is not None:  # pragma: no branch
             if isinstance(value, origin):
                 return value
         else:

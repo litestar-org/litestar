@@ -171,7 +171,7 @@ def _iter_flat_literal_args(annotation: Any) -> Iterable[Any]:
         The flattened arguments of the Literal.
     """
     for arg in get_args(annotation):
-        if unwrap_and_get_origin(arg) is Literal:
+        if unwrap_and_get_origin(arg) is Literal:  # pragma: no branch
             yield from _iter_flat_literal_args(arg)
         else:
             yield arg.value if isinstance(arg, Enum) else arg
