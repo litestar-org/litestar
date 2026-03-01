@@ -17,10 +17,10 @@ from litestar.typing import FieldDefinition
 from litestar.utils import is_class_and_subclass, is_generic, is_undefined_sentinel
 from litestar.utils.typing import (
     _substitute_typevars,
-    unwrap_and_get_origin,
     get_safe_generic_origin,
     get_type_hints_with_generics_resolved,
     normalize_type_annotation,
+    unwrap_and_get_origin,
 )
 
 # isort: off

@@ -35,7 +35,6 @@ __all__ = (
     "get_name",
     "get_origin_or_inner_type",
     "get_serializer_from_scope",
-    "unwrap_and_get_origin",
     "is_annotated_type",
     "is_any",
     "is_async_callable",
@@ -55,6 +54,7 @@ __all__ = (
     "normalize_path",
     "unique",
     "unique_name_for_scope",
+    "unwrap_and_get_origin",
     "url_quote",
     "warn_deprecation",
 )
