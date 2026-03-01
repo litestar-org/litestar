@@ -2,11 +2,8 @@
 
 from __future__ import annotations
 
-from typing import Any
-
 from litestar._openapi.exception_detection import detect_exceptions_from_handler
 from litestar.exceptions import (
-    NotAuthorizedException,
     NotFoundException,
     PermissionDeniedException,
 )
@@ -30,10 +27,11 @@ def handler_with_non_http_exception() -> None:
     raise ValueError("bad value")
 
 
-def handler_with_attribute_raise() -> None:
-    from litestar import exceptions
-
-    raise exceptions.NotAuthorizedException(detail="unauthorized")
+def handler_with_bare_raise() -> None:
+    try:
+        pass
+    except Exception:
+        raise
 
 
 def test_detect_single_exception() -> None:
@@ -56,8 +54,29 @@ def test_detect_ignores_non_http_exceptions() -> None:
     assert result == []
 
 
-def test_detect_attribute_raise() -> None:
-    # Attribute-style raises (e.g. exceptions.NotAuthorizedException) should also be detected
-    # Note: this relies on the class being available in the handler's globals after the import
-    result = detect_exceptions_from_handler(handler_with_attribute_raise)
-    assert NotAuthorizedException in result or result == []  # may not resolve if not in globals
+def test_detect_graceful_fallback_for_uninspectable() -> None:
+    # Built-in functions have no inspectable source
+    result = detect_exceptions_from_handler(len)
+    assert result == []
+
+
+def test_detect_bare_raise_ignored() -> None:
+    # A bare raise (no exception class) should not cause errors
+    result = detect_exceptions_from_handler(handler_with_bare_raise)
+    assert result == []
+
+
+def test_detect_attribute_style_raise() -> None:
+    # Attribute-style raises (e.g. module.SomeException) are parsed via ast.Attribute.
+    # The attr name is extracted and resolved against fn_globals.
+    from litestar.exceptions import NotFoundException as _NotFoundException
+
+    def _handler() -> None:
+        from litestar import exceptions
+
+        raise exceptions.NotFoundException(detail="not found")
+
+    # Inject NotFoundException into the handler's module globals so it can be resolved
+    _handler.__globals__["NotFoundException"] = _NotFoundException
+    result = detect_exceptions_from_handler(_handler)
+    assert _NotFoundException in result

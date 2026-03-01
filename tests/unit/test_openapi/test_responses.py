@@ -21,6 +21,7 @@ from litestar.datastructures import Cookie, ResponseHeader
 from litestar.dto import AbstractDTO
 from litestar.exceptions import (
     HTTPException,
+    NotFoundException,
     PermissionDeniedException,
     ValidationException,
 )
@@ -36,6 +37,7 @@ from litestar.status_codes import (
     HTTP_204_NO_CONTENT,
     HTTP_307_TEMPORARY_REDIRECT,
     HTTP_400_BAD_REQUEST,
+    HTTP_404_NOT_FOUND,
     HTTP_406_NOT_ACCEPTABLE,
 )
 from litestar.typing import FieldDefinition
@@ -578,3 +580,17 @@ def test_file_response_media_type(content_media_type: Any, expected: Any, create
 
     response = create_factory(handler).create_success_response()
     assert next(iter(response.content.values())).schema.content_media_type == expected  # type: ignore[union-attr]
+
+
+def test_auto_detect_raised_exceptions(create_factory: CreateFactoryFixture) -> None:
+    """Test that HTTPExceptions raised in handler bodies are auto-detected for OpenAPI docs."""
+
+    @get(name="test")
+    def handler() -> DataclassPerson:
+        raise NotFoundException(detail="not found")
+
+    handler = get_registered_route_handler(handler, "test")
+    responses = create_factory(handler).create_responses(raises_validation_error=False)
+
+    assert responses is not None
+    assert str(HTTP_404_NOT_FOUND) in responses
