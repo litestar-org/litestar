@@ -97,6 +97,16 @@ class ResponseFactory:
         if raises_validation_error and ValidationException not in exceptions:
             exceptions.append(ValidationException)
 
+        # Auto-detect HTTPException subclasses raised in the handler
+        if not self.route_handler.raises:
+            from litestar._openapi.exception_detection import detect_exceptions_from_handler
+            from litestar.utils.helpers import unwrap_partial
+
+            detected = detect_exceptions_from_handler(unwrap_partial(self.route_handler.fn))
+            for exc_cls in detected:
+                if exc_cls not in exceptions:
+                    exceptions.append(exc_cls)
+
         for status_code, response in create_error_responses(exceptions=exceptions):
             responses[status_code] = response
 
