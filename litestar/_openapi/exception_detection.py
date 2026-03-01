@@ -5,12 +5,27 @@ from __future__ import annotations
 import ast
 import inspect
 import textwrap
-from typing import TYPE_CHECKING, Any, Callable
+from typing import Any, Callable
 
-if TYPE_CHECKING:
-    from litestar.exceptions.http_exceptions import HTTPException
+from litestar.exceptions.http_exceptions import HTTPException
 
 __all__ = ("detect_exceptions_from_handler",)
+
+
+def _resolve_callable(fn: Callable[..., Any]) -> Callable[..., Any]:
+    """Resolve the underlying function from various callable types.
+
+    Handles bound methods, classmethods, staticmethods, and wrapped callables
+    so that :func:`inspect.getsource` and ``__globals__`` work correctly.
+    """
+    fn = inspect.unwrap(fn)
+    # bound/unbound methods, classmethods, staticmethods
+    if hasattr(fn, "__func__"):
+        fn = fn.__func__
+    # classes: inspect __init__ for raised exceptions
+    if isinstance(fn, type):
+        fn = fn.__init__  # type: ignore[misc]
+    return fn
 
 
 def detect_exceptions_from_handler(fn: Callable[..., Any]) -> list[type[HTTPException]]:
@@ -20,13 +35,16 @@ def detect_exceptions_from_handler(fn: Callable[..., Any]) -> list[type[HTTPExce
     class names against the handler's global namespace. Only direct subclasses of
     :class:`HTTPException <litestar.exceptions.http_exceptions.HTTPException>` are returned.
 
+    Supports plain functions, bound/unbound methods, classmethods, staticmethods,
+    and classes (inspects ``__init__``).
+
     Args:
         fn: The route handler callable to inspect.
 
     Returns:
         A list of HTTPException subclass types found in ``raise`` statements.
     """
-    from litestar.exceptions.http_exceptions import HTTPException
+    fn = _resolve_callable(fn)
 
     try:
         source = inspect.getsource(fn)

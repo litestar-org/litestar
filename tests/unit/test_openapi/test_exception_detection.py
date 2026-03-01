@@ -102,3 +102,24 @@ def test_detect_attribute_style_raise() -> None:
     _handler.__globals__["NotFoundException"] = _NotFoundException
     result = detect_exceptions_from_handler(_handler)
     assert _NotFoundException in result
+
+
+class _HandlerClass:
+    def __init__(self) -> None:
+        raise NotFoundException(detail="not found")
+
+
+class _HandlerWithMethod:
+    def handle(self) -> None:
+        raise NotFoundException(detail="not found")
+
+
+def test_detect_from_bound_method() -> None:
+    obj = _HandlerWithMethod()
+    result = detect_exceptions_from_handler(obj.handle)
+    assert result == [NotFoundException]
+
+
+def test_detect_from_class() -> None:
+    result = detect_exceptions_from_handler(_HandlerClass)
+    assert result == [NotFoundException]
