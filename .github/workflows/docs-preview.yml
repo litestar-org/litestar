@@ -60,30 +60,33 @@ jobs:
           PR_NUMBER: ${{ env.PR_NUMBER }}
         with:
           script: |
-            const issue_number = process.env.PR_NUMBER
-            const body = "Documentation preview will be available shortly at https://litestar-org.github.io/litestar-docs-preview/" + issue_number
+            const issue_number = parseInt(process.env.PR_NUMBER, 10)
+            const previewUrl = "https://litestar-org.github.io/litestar-docs-preview/" + issue_number
+            const marker = "<!-- docs-preview -->"
+            const section = marker + "\n\n----\n📚 Documentation preview 📚: " + previewUrl + "\n"
 
-            const opts = github.rest.issues.listComments.endpoint.merge({
+            const { data: pr } = await github.rest.pulls.get({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              issue_number: issue_number,
-            });
+              pull_number: issue_number,
+            })
 
-            const comments = await github.paginate(opts)
+            let body = pr.body || ""
 
-            for (const comment of comments) {
-              if (comment.user.id === 41898282 && comment.body === body) {
-                await github.rest.issues.deleteComment({
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
-                  comment_id: comment.id
-                })
-              }
+            if (body.includes(marker)) {
+              // Update existing section
+              body = body.replace(
+                new RegExp(marker + "[\\s\\S]*$"),
+                section,
+              )
+            } else {
+              // Append section
+              body = body + "\n\n" + section
             }
 
-            await github.rest.issues.createComment({
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
-                  issue_number: issue_number,
-                  body: body,
+            await github.rest.pulls.update({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: issue_number,
+              body: body,
             })
