@@ -45,8 +45,8 @@ from litestar.utils.predicates import (
     is_undefined_sentinel,
 )
 from litestar.utils.typing import (
-    unwrap_and_get_origin,
     make_non_optional_union,
+    unwrap_and_get_origin,
     unwrap_new_type,
 )
 
