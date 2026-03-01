@@ -48,6 +48,7 @@ from typing_extensions import (
 )
 
 from litestar.types.builtin_types import NoneType, UnionTypes
+from litestar.utils.deprecation import warn_deprecation
 
 __all__ = (
     "get_instantiable_origin",
@@ -212,8 +213,6 @@ def get_origin_or_inner_type(annotation: Any) -> Any:
     .. deprecated:: 3.0
         Use :func:`unwrap_and_get_origin` instead.
     """
-    from litestar.utils.deprecation import warn_deprecation
-
     warn_deprecation("3.0", "get_origin_or_inner_type", "function", alternative="unwrap_and_get_origin")
     return unwrap_and_get_origin(annotation)
 
