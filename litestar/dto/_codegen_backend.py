@@ -643,14 +643,12 @@ class TransferFunctionFactory:
         # For unions like Optional[NestedModel], generate isinstance checks for
         # nested types so their fields get transferred.
         # Everything else (e.g. None) falls through to the else branch unchanged.
-        has_nested = False
+        # Note: this method is only called when transfer_type.has_nested is True,
+        # so at least one inner type will have nested_field_info.
+        conditional = "if"
         for inner_type in simple_types:
             if inner_type.nested_field_info:
-                _handle_transfer_instance(inner_type, conditional_="if" if not has_nested else "elif")
-                has_nested = True
-        if has_nested:
-            with self._start_block("else:"):
-                self._add_stmt(f"{assignment_target} = {source_value_name}")
-            return
-
-        self._add_stmt(f"{assignment_target} = {source_value_name}")
+                _handle_transfer_instance(inner_type, conditional_=conditional)
+                conditional = "elif"
+        with self._start_block("else:"):
+            self._add_stmt(f"{assignment_target} = {source_value_name}")
