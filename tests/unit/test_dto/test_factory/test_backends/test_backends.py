@@ -49,7 +49,6 @@ class OptionalNestedOuter:
     inner: Optional[OptionalNestedInner] = None
 
 
-
 @dataclass
 class DC:
     a: int
@@ -353,7 +352,6 @@ def test_backend_encode_optional_nested_none(backend_cls: type[DTOBackend]) -> N
     result = to_builtins(data)
     assert result["name"] == "test"
     assert result["inner"] is None
-
 
 
 def test_transfer_only_touches_included_attributes(backend_cls: type[DTOBackend]) -> None:
