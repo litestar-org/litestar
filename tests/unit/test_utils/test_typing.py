@@ -9,9 +9,10 @@ import pytest
 
 from litestar.utils.typing import (
     expand_type_var_in_type_hint,
-    unwrap_and_get_origin,
+    get_origin_or_inner_type,
     get_type_hints_with_generics_resolved,
     make_non_optional_union,
+    unwrap_and_get_origin,
 )
 from tests.models import DataclassPerson, DataclassPet  # noqa: F401
 
@@ -158,3 +159,9 @@ def test_expand_type_var_in_type_hints(
     type_hint: dict[str, Any], namespace: dict[str, Any] | None, expected: dict[str, Any]
 ) -> None:
     assert expand_type_var_in_type_hint(type_hint, namespace) == expected
+
+
+def test_get_origin_or_inner_type_deprecated() -> None:
+    with pytest.warns(DeprecationWarning, match="get_origin_or_inner_type"):
+        result = get_origin_or_inner_type(List[int])
+    assert result == list

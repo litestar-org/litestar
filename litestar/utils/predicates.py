@@ -261,9 +261,7 @@ def is_optional_union(annotation: Any) -> TypeGuard[Any | None]:
             None value or :data:`Optional <typing.Optional>` which is equivalent.
     """
     origin = unwrap_and_get_origin(annotation)
-    return origin is Optional or (
-        unwrap_and_get_origin(annotation) in UnionTypes and NoneType in get_args(annotation)
-    )
+    return origin is Optional or (unwrap_and_get_origin(annotation) in UnionTypes and NoneType in get_args(annotation))
 
 
 def is_class_var(annotation: Any) -> bool:
