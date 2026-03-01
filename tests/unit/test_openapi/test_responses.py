@@ -594,3 +594,19 @@ def test_auto_detect_raised_exceptions(create_factory: CreateFactoryFixture) -> 
 
     assert responses is not None
     assert str(HTTP_404_NOT_FOUND) in responses
+
+
+def test_auto_detect_skips_duplicate_exceptions(create_factory: CreateFactoryFixture) -> None:
+    """Auto-detected exceptions already in the list are not duplicated."""
+
+    @get(name="test")
+    def handler() -> DataclassPerson:
+        raise ValidationException(detail="invalid")
+
+    handler = get_registered_route_handler(handler, "test")
+    responses = create_factory(handler).create_responses(raises_validation_error=True)
+
+    assert responses is not None
+    # ValidationException (400) should appear only once despite being both
+    # added by raises_validation_error and detected in the handler body
+    assert str(HTTP_400_BAD_REQUEST) in responses

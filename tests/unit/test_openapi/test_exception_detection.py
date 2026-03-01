@@ -66,6 +66,28 @@ def test_detect_bare_raise_ignored() -> None:
     assert result == []
 
 
+def handler_with_subscript_call_raise() -> None:
+    exc_classes = [NotFoundException]
+    raise exc_classes[0](detail="not found")
+
+
+def handler_with_subscript_raise() -> None:
+    errors = [NotFoundException(detail="not found")]
+    raise errors[0]
+
+
+def test_detect_complex_call_func_ignored() -> None:
+    # When func is ast.Subscript (not Name or Attribute), it's safely skipped.
+    result = detect_exceptions_from_handler(handler_with_subscript_call_raise)
+    assert result == []
+
+
+def test_detect_subscript_raise_ignored() -> None:
+    # When exc_node is ast.Subscript (not Call or Name), it's safely skipped.
+    result = detect_exceptions_from_handler(handler_with_subscript_raise)
+    assert result == []
+
+
 def test_detect_attribute_style_raise() -> None:
     # Attribute-style raises (e.g. module.SomeException) are parsed via ast.Attribute.
     # The attr name is extracted and resolved against fn_globals.
