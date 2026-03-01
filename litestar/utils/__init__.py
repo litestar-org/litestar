@@ -23,7 +23,7 @@ from .scope import (
 )
 from .sequence import find_index, unique
 from .sync import AsyncIteratorWrapper, ensure_async_callable
-from .typing import get_origin_or_inner_type, make_non_optional_union
+from .typing import get_origin_or_inner_type, make_non_optional_union, unwrap_and_get_origin
 
 __all__ = (
     "AsyncIteratorWrapper",
@@ -54,6 +54,7 @@ __all__ = (
     "normalize_path",
     "unique",
     "unique_name_for_scope",
+    "unwrap_and_get_origin",
     "url_quote",
     "warn_deprecation",
 )

@@ -12,6 +12,7 @@ from litestar.utils.typing import (
     get_origin_or_inner_type,
     get_type_hints_with_generics_resolved,
     make_non_optional_union,
+    unwrap_and_get_origin,
 )
 from tests.models import DataclassPerson, DataclassPet  # noqa: F401
 
@@ -40,10 +41,10 @@ def test_make_non_optional_union(annotation: Any, expected: Any) -> None:
     assert make_non_optional_union(annotation) == expected
 
 
-def test_get_origin_or_inner_type() -> None:
-    assert get_origin_or_inner_type(List[DataclassPerson]) == list
-    assert get_origin_or_inner_type(Annotated[List[DataclassPerson], "foo"]) == list
-    assert get_origin_or_inner_type(Annotated[Dict[str, List[DataclassPerson]], "foo"]) == dict
+def test_unwrap_and_get_origin() -> None:
+    assert unwrap_and_get_origin(List[DataclassPerson]) == list
+    assert unwrap_and_get_origin(Annotated[List[DataclassPerson], "foo"]) == list
+    assert unwrap_and_get_origin(Annotated[Dict[str, List[DataclassPerson]], "foo"]) == dict
 
 
 T = TypeVar("T")
@@ -158,3 +159,9 @@ def test_expand_type_var_in_type_hints(
     type_hint: dict[str, Any], namespace: dict[str, Any] | None, expected: dict[str, Any]
 ) -> None:
     assert expand_type_var_in_type_hint(type_hint, namespace) == expected
+
+
+def test_get_origin_or_inner_type_deprecated() -> None:
+    with pytest.warns(DeprecationWarning, match="get_origin_or_inner_type"):
+        result = get_origin_or_inner_type(List[int])
+    assert result == list
