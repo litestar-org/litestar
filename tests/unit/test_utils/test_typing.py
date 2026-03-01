@@ -9,7 +9,7 @@ import pytest
 
 from litestar.utils.typing import (
     expand_type_var_in_type_hint,
-    get_origin_or_inner_type,
+    unwrap_and_get_origin,
     get_type_hints_with_generics_resolved,
     make_non_optional_union,
 )
@@ -40,10 +40,10 @@ def test_make_non_optional_union(annotation: Any, expected: Any) -> None:
     assert make_non_optional_union(annotation) == expected
 
 
-def test_get_origin_or_inner_type() -> None:
-    assert get_origin_or_inner_type(List[DataclassPerson]) == list
-    assert get_origin_or_inner_type(Annotated[List[DataclassPerson], "foo"]) == list
-    assert get_origin_or_inner_type(Annotated[Dict[str, List[DataclassPerson]], "foo"]) == dict
+def test_unwrap_and_get_origin() -> None:
+    assert unwrap_and_get_origin(List[DataclassPerson]) == list
+    assert unwrap_and_get_origin(Annotated[List[DataclassPerson], "foo"]) == list
+    assert unwrap_and_get_origin(Annotated[Dict[str, List[DataclassPerson]], "foo"]) == dict
 
 
 T = TypeVar("T")

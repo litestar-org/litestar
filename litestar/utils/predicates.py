@@ -37,7 +37,7 @@ from typing_extensions import (
 from litestar.constants import UNDEFINED_SENTINELS
 from litestar.types.builtin_types import NoneType, UnionTypes
 from litestar.utils.helpers import unwrap_partial
-from litestar.utils.typing import get_origin_or_inner_type
+from litestar.utils.typing import unwrap_and_get_origin
 
 if sys.version_info >= (3, 10):
     from inspect import iscoroutinefunction
@@ -114,7 +114,7 @@ def is_dataclass_class(annotation: Any) -> TypeGuard[type[DataclassProtocol]]:
         ``True`` if instance or type of ``dataclass``.
     """
     try:
-        origin = get_origin_or_inner_type(annotation)
+        origin = unwrap_and_get_origin(annotation)
         annotation = origin or annotation
 
         return isclass(annotation) and is_dataclass(annotation)
@@ -134,7 +134,7 @@ def is_class_and_subclass(annotation: Any, type_or_type_tuple: type[T] | tuple[t
     Returns:
         bool
     """
-    origin = get_origin_or_inner_type(annotation)
+    origin = unwrap_and_get_origin(annotation)
     if not origin and not isclass(annotation):
         return False
     try:
@@ -164,7 +164,7 @@ def is_mapping(annotation: Any) -> TypeGuard[Mapping[Any, Any]]:
     Returns:
         A typeguard determining whether the type can be cast as :class:`Mapping <typing.Mapping>`.
     """
-    _type = get_origin_or_inner_type(annotation) or annotation
+    _type = unwrap_and_get_origin(annotation) or annotation
     return isclass(_type) and issubclass(_type, (dict, defaultdict, DefaultDict, Mapping))
 
 
@@ -177,7 +177,7 @@ def is_non_string_iterable(annotation: Any) -> TypeGuard[Iterable[Any]]:
     Returns:
         A typeguard determining whether the type can be cast as :class:`Iterable <typing.Iterable>` that is not a string.
     """
-    origin = get_origin_or_inner_type(annotation)
+    origin = unwrap_and_get_origin(annotation)
     if not origin and not isclass(annotation):
         return False
     try:
@@ -198,7 +198,7 @@ def is_non_string_sequence(annotation: Any) -> TypeGuard[Sequence[Any]]:
     Returns:
         A typeguard determining whether the type can be cast as :class:`Sequence <typing.Sequence>` that is not a string.
     """
-    origin = get_origin_or_inner_type(annotation)
+    origin = unwrap_and_get_origin(annotation)
     if not origin and not isclass(annotation):
         return False
     try:
@@ -234,7 +234,7 @@ def is_any(annotation: Any) -> TypeGuard[Any]:
     return (
         annotation is Any
         or getattr(annotation, "_name", "") == "typing.Any"
-        or (get_origin_or_inner_type(annotation) in UnionTypes and Any in get_args(annotation))
+        or (unwrap_and_get_origin(annotation) in UnionTypes and Any in get_args(annotation))
     )
 
 
@@ -247,7 +247,7 @@ def is_union(annotation: Any) -> bool:
     Returns:
         A boolean determining whether the type is :data:`Union typing.Union>`.
     """
-    return get_origin_or_inner_type(annotation) in UnionTypes
+    return unwrap_and_get_origin(annotation) in UnionTypes
 
 
 def is_optional_union(annotation: Any) -> TypeGuard[Any | None]:
@@ -260,9 +260,9 @@ def is_optional_union(annotation: Any) -> TypeGuard[Any | None]:
         A typeguard determining whether the type is :data:`Union typing.Union>` with a
             None value or :data:`Optional <typing.Optional>` which is equivalent.
     """
-    origin = get_origin_or_inner_type(annotation)
+    origin = unwrap_and_get_origin(annotation)
     return origin is Optional or (
-        get_origin_or_inner_type(annotation) in UnionTypes and NoneType in get_args(annotation)
+        unwrap_and_get_origin(annotation) in UnionTypes and NoneType in get_args(annotation)
     )
 
 
@@ -275,7 +275,7 @@ def is_class_var(annotation: Any) -> bool:
     Returns:
         A boolean.
     """
-    annotation = get_origin_or_inner_type(annotation) or annotation
+    annotation = unwrap_and_get_origin(annotation) or annotation
     return annotation is ClassVar
 
 

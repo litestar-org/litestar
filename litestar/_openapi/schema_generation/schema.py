@@ -45,7 +45,7 @@ from litestar.utils.predicates import (
     is_undefined_sentinel,
 )
 from litestar.utils.typing import (
-    get_origin_or_inner_type,
+    unwrap_and_get_origin,
     make_non_optional_union,
     unwrap_new_type,
 )
@@ -171,7 +171,7 @@ def _iter_flat_literal_args(annotation: Any) -> Iterable[Any]:
         The flattened arguments of the Literal.
     """
     for arg in get_args(annotation):
-        if get_origin_or_inner_type(arg) is Literal:
+        if unwrap_and_get_origin(arg) is Literal:
             yield from _iter_flat_literal_args(arg)
         else:
             yield arg.value if isinstance(arg, Enum) else arg

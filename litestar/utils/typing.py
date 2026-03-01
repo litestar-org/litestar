@@ -56,6 +56,7 @@ __all__ = (
     "instantiable_type_mapping",
     "make_non_optional_union",
     "safe_generic_origin_map",
+    "unwrap_and_get_origin",
     "unwrap_annotation",
 )
 
@@ -187,8 +188,8 @@ def unwrap_new_type(new_type: Any) -> Any:
     return inner
 
 
-def get_origin_or_inner_type(annotation: Any) -> Any:
-    """Get origin or unwrap it. Returns None for non-generic types.
+def unwrap_and_get_origin(annotation: Any) -> Any:
+    """Unwrap annotation and get the instantiable origin type. Returns None for non-generic types.
 
     Args:
         annotation: A type annotation.
@@ -199,10 +200,22 @@ def get_origin_or_inner_type(annotation: Any) -> Any:
     origin = get_origin(annotation)
     if origin in wrapper_type_set:
         inner, _, _ = unwrap_annotation(annotation)
-        # we need to recursively call here 'get_origin_or_inner_type' because we might be dealing
+        # we need to recursively call here 'unwrap_and_get_origin' because we might be dealing
         # with a generic type alias e.g. Annotated[dict[str, list[int]]
-        origin = get_origin_or_inner_type(inner)
+        origin = unwrap_and_get_origin(inner)
     return instantiable_type_mapping.get(origin, origin)
+
+
+def get_origin_or_inner_type(annotation: Any) -> Any:
+    """Deprecated alias for :func:`unwrap_and_get_origin`.
+
+    .. deprecated:: 3.0
+        Use :func:`unwrap_and_get_origin` instead.
+    """
+    from litestar.utils.deprecation import warn_deprecation
+
+    warn_deprecation("3.0", "get_origin_or_inner_type", "function", alternative="unwrap_and_get_origin")
+    return unwrap_and_get_origin(annotation)
 
 
 def get_safe_generic_origin(origin_type: Any, annotation: Any) -> Any:

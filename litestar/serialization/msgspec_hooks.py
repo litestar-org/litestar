@@ -22,7 +22,7 @@ import msgspec
 from litestar.datastructures.secret_values import SecretBytes, SecretString
 from litestar.exceptions import SerializationException
 from litestar.types import Empty, EmptyType, Serializer, TypeDecodersSequence
-from litestar.utils.typing import get_origin_or_inner_type
+from litestar.utils.typing import unwrap_and_get_origin
 
 if TYPE_CHECKING:
     from collections.abc import Mapping
@@ -118,7 +118,7 @@ def default_deserializer(
         # we might get a TypeError here if target_type is a subscribed generic. For
         # performance reasons, we let this happen and only unwrap this when we're
         # certain this might be the case
-        if (origin := get_origin_or_inner_type(target_type)) is not None:
+        if (origin := unwrap_and_get_origin(target_type)) is not None:
             target_type = origin
             if isinstance(value, target_type):
                 return value

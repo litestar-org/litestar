@@ -17,7 +17,7 @@ from litestar.typing import FieldDefinition
 from litestar.utils import is_class_and_subclass, is_generic, is_undefined_sentinel
 from litestar.utils.typing import (
     _substitute_typevars,
-    get_origin_or_inner_type,
+    unwrap_and_get_origin,
     get_safe_generic_origin,
     get_type_hints_with_generics_resolved,
     normalize_type_annotation,
@@ -126,7 +126,7 @@ def is_pydantic_constrained_field(annotation: Any) -> bool:
 
 def pydantic_unwrap_and_get_origin(annotation: Any) -> Any | None:
     if pydantic_v2 is Empty or (pydantic_v1 is not Empty and is_class_and_subclass(annotation, pydantic_v1.BaseModel)):
-        return get_origin_or_inner_type(annotation)
+        return unwrap_and_get_origin(annotation)
 
     origin = annotation.__pydantic_generic_metadata__["origin"]
     return normalize_type_annotation(origin)
