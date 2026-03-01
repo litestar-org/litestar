@@ -63,7 +63,7 @@ jobs:
             const issue_number = parseInt(process.env.PR_NUMBER, 10)
             const previewUrl = "https://litestar-org.github.io/litestar-docs-preview/" + issue_number
             const marker = "<!-- docs-preview -->"
-            const section = marker + "\n\n----\n📚 Documentation preview 📚: " + previewUrl + "\n"
+            const section = marker + "\n\n<hr>\n📚 Documentation preview 📚: " + previewUrl + "\n"
 
             const { data: pr } = await github.rest.pulls.get({
               owner: context.repo.owner,
