@@ -582,7 +582,7 @@ def test_file_response_media_type(content_media_type: Any, expected: Any, create
     assert next(iter(response.content.values())).schema.content_media_type == expected  # type: ignore[union-attr]
 
 
-def test_auto_detect_raised_exceptions(create_factory: CreateFactoryFixture) -> None:
+def test_auto_detect_raised_exceptions() -> None:
     """Test that HTTPExceptions raised in handler bodies are auto-detected for OpenAPI docs."""
 
     @get(name="test")
@@ -590,13 +590,20 @@ def test_auto_detect_raised_exceptions(create_factory: CreateFactoryFixture) -> 
         raise NotFoundException(detail="not found")
 
     handler = get_registered_route_handler(handler, "test")
-    responses = create_factory(handler).create_responses(raises_validation_error=False)
+    factory = ResponseFactory(
+        context=OpenAPIContext(
+            openapi_config=OpenAPIConfig(title="test", version="1.0.0", auto_detect_exceptions=True),
+            plugins=openapi_schema_plugins,
+        ),
+        route_handler=handler,
+    )
+    responses = factory.create_responses(raises_validation_error=False)
 
     assert responses is not None
     assert str(HTTP_404_NOT_FOUND) in responses
 
 
-def test_auto_detect_skips_duplicate_exceptions(create_factory: CreateFactoryFixture) -> None:
+def test_auto_detect_skips_duplicate_exceptions() -> None:
     """Auto-detected exceptions already in the list are not duplicated."""
 
     @get(name="test")
@@ -604,7 +611,14 @@ def test_auto_detect_skips_duplicate_exceptions(create_factory: CreateFactoryFix
         raise ValidationException(detail="invalid")
 
     handler = get_registered_route_handler(handler, "test")
-    responses = create_factory(handler).create_responses(raises_validation_error=True)
+    factory = ResponseFactory(
+        context=OpenAPIContext(
+            openapi_config=OpenAPIConfig(title="test", version="1.0.0", auto_detect_exceptions=True),
+            plugins=openapi_schema_plugins,
+        ),
+        route_handler=handler,
+    )
+    responses = factory.create_responses(raises_validation_error=True)
 
     assert responses is not None
     # ValidationException (400) should appear only once despite being both

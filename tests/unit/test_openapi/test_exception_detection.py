@@ -77,13 +77,13 @@ def handler_with_subscript_raise() -> None:
 
 
 def test_detect_complex_call_func_ignored() -> None:
-    # When func is ast.Subscript (not Name or Attribute), it's safely skipped.
+    # Subscript-based calls (exc_classes[0](...)) are not resolved by the tokenizer.
     result = detect_exceptions_from_handler(handler_with_subscript_call_raise)
     assert result == []
 
 
 def test_detect_subscript_raise_ignored() -> None:
-    # When exc_node is ast.Subscript (not Call or Name), it's safely skipped.
+    # Subscript-based raises (errors[0]) are not resolved by the tokenizer.
     result = detect_exceptions_from_handler(handler_with_subscript_raise)
     assert result == []
 

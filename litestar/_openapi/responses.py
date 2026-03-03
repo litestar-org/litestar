@@ -98,7 +98,7 @@ class ResponseFactory:
             exceptions.append(ValidationException)
 
         # Auto-detect HTTPException subclasses raised in the handler
-        if not self.route_handler.raises:
+        if not self.route_handler.raises and self.context.openapi_config.auto_detect_exceptions:
             from litestar._openapi.exception_detection import detect_exceptions_from_handler
             from litestar.utils.helpers import unwrap_partial
 
