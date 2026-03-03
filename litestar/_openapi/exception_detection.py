@@ -20,8 +20,7 @@ def _resolve_callable(fn: Callable[..., Any]) -> Callable[..., Any]:
     """
     fn = inspect.unwrap(fn)
     # bound/unbound methods, classmethods, staticmethods
-    if hasattr(fn, "__func__"):
-        fn = fn.__func__
+    fn = getattr(fn, "__func__", fn)
     # classes: inspect __init__ for raised exceptions
     if isinstance(fn, type):
         fn = fn.__init__  # type: ignore[misc]
