@@ -1,9 +1,7 @@
 from __future__ import annotations
 
 from inspect import getmro
-from sys import exc_info
-from traceback import format_exception
-from typing import TYPE_CHECKING, Any, Union, cast
+from typing import TYPE_CHECKING, Any, cast
 
 from litestar.enums import ScopeType
 from litestar.exceptions import HTTPException, LitestarException, WebSocketException
@@ -23,12 +21,10 @@ if TYPE_CHECKING:
     from litestar.app import Litestar
     from litestar.connection import Request
     from litestar.handlers import BaseRouteHandler
-    from litestar.logging import BaseLoggingConfig
     from litestar.types import (
         ASGIApp,
         ExceptionHandler,
         ExceptionHandlersMap,
-        Logger,
         Message,
         Receive,
         Scope,
@@ -138,9 +134,6 @@ class ExceptionHandlerMiddleware:
 
             litestar_app = scope["litestar_app"]
 
-            if litestar_app.logging_config and (logger := litestar_app.logger):
-                self.handle_exception_logging(logger=logger, logging_config=litestar_app.logging_config, scope=scope)
-
             for hook in litestar_app.after_exception:
                 await hook(exc, scope)
 
@@ -229,27 +222,3 @@ class ExceptionHandlerMiddleware:
         if isinstance(exc, HTTPException):
             return create_exception_response
         return None
-
-    def handle_exception_logging(self, logger: Logger, logging_config: BaseLoggingConfig, scope: Scope) -> None:
-        """Handle logging - if the litestar app has a logging config in place.
-
-        Args:
-            logger: A logger instance.
-            logging_config: Logging Config instance.
-            scope: The ASGI connection scope.
-
-        Returns:
-            None
-        """
-        exc = exc_info()
-        exc_detail: set[Union[Exception, int]] = {exc[0], getattr(exc[0], "status_code", None)}  # type: ignore[arg-type]  # noqa: UP007
-
-        if (
-            (
-                logging_config.log_exceptions == "always"
-                or (logging_config.log_exceptions == "debug" and self._get_debug_scope(scope))
-            )
-            and logging_config.exception_logging_handler
-            and exc_detail.isdisjoint(logging_config.disable_stack_trace)
-        ):
-            logging_config.exception_logging_handler(logger, scope, format_exception(*exc))

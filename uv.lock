@@ -2031,7 +2031,6 @@ full = [
     { name = "minijinja" },
     { name = "opentelemetry-instrumentation-asgi" },
     { name = "piccolo" },
-    { name = "picologging", marker = "python_full_version < '3.13'" },
     { name = "polyfactory" },
     { name = "prometheus-client" },
     { name = "pydantic" },
@@ -2039,7 +2038,6 @@ full = [
     { name = "pyjwt" },
     { name = "pyyaml" },
     { name = "redis", extra = ["hiredis"] },
-    { name = "structlog" },
     { name = "uvicorn", extra = ["standard"] },
     { name = "valkey", extra = ["libvalkey"] },
     { name = "zstandard", marker = "python_full_version < '3.14'" },
@@ -2067,9 +2065,6 @@ piccolo = [
     { name = "litestar-piccolo" },
     { name = "piccolo" },
 ]
-picologging = [
-    { name = "picologging", marker = "python_full_version < '3.13'" },
-]
 polyfactory = [
     { name = "polyfactory" },
 ]
@@ -2091,9 +2086,6 @@ standard = [
     { name = "jinja2" },
     { name = "jsbeautifier" },
     { name = "uvicorn", extra = ["standard"] },
-]
-structlog = [
-    { name = "structlog" },
 ]
 valkey = [
     { name = "valkey", extra = ["libvalkey"] },
@@ -2125,6 +2117,7 @@ dev = [
     { name = "psycopg2-binary" },
     { name = "python-dotenv" },
     { name = "starlette" },
+    { name = "structlog" },
     { name = "trio" },
 ]
 docs = [
@@ -2190,8 +2183,7 @@ requires-dist = [
     { name = "jinja2", marker = "extra == 'standard'" },
     { name = "jsbeautifier", marker = "extra == 'cli'" },
     { name = "jsbeautifier", marker = "extra == 'standard'" },
-    { name = "litestar", extras = ["annotated-types", "attrs", "brotli", "cli", "cryptography", "jinja", "jwt", "mako", "minijinja", "opentelemetry", "piccolo", "polyfactory", "picologging", "prometheus", "pydantic", "redis", "sqlalchemy", "standard", "structlog", "valkey", "htmx", "yaml", "zstd"], marker = "python_full_version < '3.13' and extra == 'full'" },
-    { name = "litestar", extras = ["annotated-types", "attrs", "brotli", "cli", "cryptography", "jinja", "jwt", "mako", "minijinja", "opentelemetry", "piccolo", "polyfactory", "prometheus", "pydantic", "redis", "sqlalchemy", "standard", "structlog", "valkey", "htmx", "yaml", "zstd"], marker = "python_full_version >= '3.13' and extra == 'full'" },
+    { name = "litestar", extras = ["annotated-types", "attrs", "brotli", "cli", "cryptography", "jinja", "jwt", "mako", "minijinja", "opentelemetry", "piccolo", "polyfactory", "prometheus", "pydantic", "redis", "sqlalchemy", "standard", "valkey", "htmx", "yaml", "zstd"], marker = "extra == 'full'" },
     { name = "litestar-htmx", marker = "extra == 'htmx'", specifier = ">=0.4.0" },
     { name = "litestar-piccolo", marker = "extra == 'piccolo'" },
     { name = "mako", marker = "extra == 'mako'", specifier = ">=1.2.4" },
@@ -2201,7 +2193,6 @@ requires-dist = [
     { name = "multipart", specifier = ">=1.2.0" },
     { name = "opentelemetry-instrumentation-asgi", marker = "extra == 'opentelemetry'" },
     { name = "piccolo", marker = "extra == 'piccolo'" },
-    { name = "picologging", marker = "python_full_version < '3.13' and extra == 'picologging'" },
     { name = "polyfactory", marker = "extra == 'polyfactory'", specifier = ">=2.6.3" },
     { name = "prometheus-client", marker = "extra == 'prometheus'" },
     { name = "pydantic", marker = "extra == 'pydantic'" },
@@ -2212,14 +2203,13 @@ requires-dist = [
     { name = "rich", specifier = ">=13.0.0" },
     { name = "rich-click" },
     { name = "sniffio", specifier = ">=1.3.1" },
-    { name = "structlog", marker = "extra == 'structlog'" },
     { name = "typing-extensions" },
     { name = "uvicorn", extras = ["standard"], marker = "extra == 'cli'" },
     { name = "uvicorn", extras = ["standard"], marker = "extra == 'standard'" },
     { name = "valkey", extras = ["libvalkey"], marker = "extra == 'valkey'", specifier = ">=6.0.2" },
     { name = "zstandard", marker = "python_full_version < '3.14' and extra == 'zstd'", specifier = ">=0.24.0" },
 ]
-provides-extras = ["annotated-types", "attrs", "brotli", "zstd", "cli", "cryptography", "full", "htmx", "jinja", "jwt", "mako", "minijinja", "opentelemetry", "piccolo", "picologging", "polyfactory", "prometheus", "pydantic", "redis", "sqlalchemy", "standard", "structlog", "valkey", "yaml"]
+provides-extras = ["annotated-types", "attrs", "brotli", "zstd", "cli", "cryptography", "full", "htmx", "jinja", "jwt", "mako", "minijinja", "opentelemetry", "piccolo", "polyfactory", "prometheus", "pydantic", "redis", "sqlalchemy", "standard", "valkey", "yaml"]
 
 [package.metadata.requires-dev]
 dev = [
@@ -2241,6 +2231,7 @@ dev = [
     { name = "psycopg2-binary" },
     { name = "python-dotenv" },
     { name = "starlette" },
+    { name = "structlog" },
     { name = "trio" },
 ]
 docs = [
@@ -2879,42 +2870,6 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/53/b2/875530d43342890ff1856377c2706daf1290f0a20458a33a05502f05e343/piccolo-1.28.0.tar.gz", hash = "sha256:64dfb5a1cbdff166f8510c215b2f13a68d06e1b5b7542669b77964dbad64797a", size = 288166, upload-time = "2025-07-29T08:14:14.866Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/22/c2/db23403346e2e7b424fa730b5593caa96e062984634b9381c0bfa2aab12e/piccolo-1.28.0-py3-none-any.whl", hash = "sha256:553f28536f213cb717eaceeec4dc41caaf4501a2b737d183bd1c261fcc58d2e7", size = 409367, upload-time = "2025-07-29T08:14:12.568Z" },
-]
-
-[[package]]
-name = "picologging"
-version = "0.9.3"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/2d/6d/3fd3423e0391cf7bfb78d6d7510da77068aeb73a0c6db22a6a0078413cab/picologging-0.9.3.tar.gz", hash = "sha256:6921f86ea0875ac85e252188627e9f04b872895327a7028e06c825ddb888a825", size = 103751, upload-time = "2023-09-29T09:30:58.488Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/a8/13/ef1eb916f920a04ceebf2419ed3a3a7ec86afe88d0ab535b1692489ed788/picologging-0.9.3-cp310-cp310-macosx_10_15_universal2.whl", hash = "sha256:3d3219765be2430c4e434ff66a90147bd29db56cd24be00c5999d9827b08d479", size = 163223, upload-time = "2023-09-29T09:29:46.123Z" },
-    { url = "https://files.pythonhosted.org/packages/cc/59/89fdceb1267e62e27b61e0b06b20bc76fea17b375a2a0d9ab8bd4d635d07/picologging-0.9.3-cp310-cp310-macosx_10_15_x86_64.whl", hash = "sha256:1c4755c06c37b53e70ebdc9cd2b39c835221a12c5ef149cfaad9b6073b41ee89", size = 98747, upload-time = "2023-09-29T09:29:47.689Z" },
-    { url = "https://files.pythonhosted.org/packages/3f/eb/651438c3733250bf2f437a18268a8ea8dcdab8e4b795a00b4fb7bd21efd5/picologging-0.9.3-cp310-cp310-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:b582222a768f2bc28ca4a34aa41a008c6aa3430cf1f128b2440e93f691d0d714", size = 165551, upload-time = "2023-09-29T09:29:49.544Z" },
-    { url = "https://files.pythonhosted.org/packages/3c/40/6d830b59d01d2ab8fb22fc8430d734a3176992cd66c52e1eca7012af3f8d/picologging-0.9.3-cp310-cp310-manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:f833de82e5fd9a981f64ebfadc3f4d12fe75ef31897e796ba04f6e28455e42c9", size = 177158, upload-time = "2023-09-29T09:29:51.533Z" },
-    { url = "https://files.pythonhosted.org/packages/55/86/ba8c330808709ca0d34a89efa49b487577b4dfc3f03cb6fd7e1960f1d01e/picologging-0.9.3-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:b21e46794ef29fda0033a2bcfc38ec7a5fea78a6353a5f74f7a6374c0c0d3d15", size = 165298, upload-time = "2023-09-29T09:29:52.951Z" },
-    { url = "https://files.pythonhosted.org/packages/59/39/ba0d22a86e49058f89a1a2fa250b2e51404b22f038a843f3fcc3d697bd24/picologging-0.9.3-cp310-cp310-win32.whl", hash = "sha256:3ef12744c17fb670e5028315019589fe21527d1546463ef9baf9a454dcd3d7c4", size = 78095, upload-time = "2023-09-29T09:29:54.973Z" },
-    { url = "https://files.pythonhosted.org/packages/97/0d/9ecf95e091c06363041f4822faa75cc137a77e7c4d029243bd5f032f6a8e/picologging-0.9.3-cp310-cp310-win_amd64.whl", hash = "sha256:09f27425175ae23cca0fb49bb55622073589cb57f73bdd2c7f72f4cf05419c3e", size = 86671, upload-time = "2023-09-29T09:29:56.222Z" },
-    { url = "https://files.pythonhosted.org/packages/6a/bf/af16546887682e76979a5920fdf170b715c485b0c0a37954115837dad046/picologging-0.9.3-cp311-cp311-macosx_10_15_universal2.whl", hash = "sha256:fbd88e3dde71d72ac72dfe6a23a52e13fcdf2c9cf033e13a8f2718746fed942b", size = 163401, upload-time = "2023-09-29T09:29:57.686Z" },
-    { url = "https://files.pythonhosted.org/packages/eb/88/97907480df34edcc8382a82bdcb7b2090d55b2de4b64e270e5c732447da0/picologging-0.9.3-cp311-cp311-macosx_10_15_x86_64.whl", hash = "sha256:542628ccdc7a1eb321e5a7533803577a943c7d84e62456b681037f7bbc8abe26", size = 98808, upload-time = "2023-09-29T09:29:59.756Z" },
-    { url = "https://files.pythonhosted.org/packages/5e/a4/1c3acd317d54ad1cadfc729f63eb6205bc90027e5ea3f6c366e9bc2ae17f/picologging-0.9.3-cp311-cp311-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:78ed29eea9f28d28edb39fa81b448fd27bdf510d4e4c79fe64e08742c782a965", size = 165660, upload-time = "2023-09-29T09:30:02.195Z" },
-    { url = "https://files.pythonhosted.org/packages/97/f3/67e19ea6595ad31ebd8bd398f3fe1899709bc7f439fce1694a154e2d7e20/picologging-0.9.3-cp311-cp311-manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:6a38eb07ef48218712ce9f860b4a27e5086a89a89af7c5bcc1eaed6fb1e3eafd", size = 177284, upload-time = "2023-09-29T09:30:04.663Z" },
-    { url = "https://files.pythonhosted.org/packages/da/55/4c67d07472870e5d81f5fd1b38fe0b0ab9f08ad140ae4a6ae3d2aa029832/picologging-0.9.3-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:3495969c6a8e1e2fa8d2bc89b8478bce10716bb6617f50822667909e79478cb4", size = 165449, upload-time = "2023-09-29T09:30:07.294Z" },
-    { url = "https://files.pythonhosted.org/packages/76/05/b0f47219c5230943e1d03bc92bbd74af94ef7bf471e425163296f5b0f05e/picologging-0.9.3-cp311-cp311-win32.whl", hash = "sha256:c97f0ab43ee32924b33cadd176c5bfe404e85e2bc6ae5e4c713c6d4cb4c7e6f3", size = 78141, upload-time = "2023-09-29T09:30:09.038Z" },
-    { url = "https://files.pythonhosted.org/packages/1c/38/e1e54b0ddc798173a209b932e939f3f37d2bb4d8cc24c528745a32a08035/picologging-0.9.3-cp311-cp311-win_amd64.whl", hash = "sha256:f8d448e063b8a2cbe3c76d2d7ca2beb523779a31a8b14ee0a452ec1247ce56b8", size = 86727, upload-time = "2023-09-29T09:30:10.516Z" },
-    { url = "https://files.pythonhosted.org/packages/65/4a/cfd4d86d23ed1535e6728a13e56a1374105430dad894bb7395e78c0cd974/picologging-0.9.3-cp312-cp312-macosx_10_15_universal2.whl", hash = "sha256:70e6957df044af10ff35d293b8ebad3f04bbfa99f88bcf4fd2a8248d1cd46320", size = 164148, upload-time = "2023-09-29T09:30:12.027Z" },
-    { url = "https://files.pythonhosted.org/packages/c6/71/7adec10b32be86f54666006e75ee7c941d7823fd4b89289660d4261e8c6d/picologging-0.9.3-cp312-cp312-macosx_10_15_x86_64.whl", hash = "sha256:32d18fb7c089afe9c2a8cb1493021417c872f807d74f3fd6da85e43226664ccd", size = 99348, upload-time = "2023-09-29T09:30:13.945Z" },
-    { url = "https://files.pythonhosted.org/packages/02/d3/06225fd4e5d09e35aedd82cf2c608c8a7cbe6da0b977c166af1895f6f370/picologging-0.9.3-cp312-cp312-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:025a6262280374413142648cf5be7944136c54a5cc84b0ff5b2416928d7aec96", size = 166198, upload-time = "2023-09-29T09:30:15.295Z" },
-    { url = "https://files.pythonhosted.org/packages/c5/69/84a6cb4a9f2f427ba3e207c6a640db7d5f2557ae56cd10a64cdfdf9541ea/picologging-0.9.3-cp312-cp312-manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:feaf33a2fd8a9431f3f4de9693569952ebce6e4c92cabe642327130a1d378b6c", size = 178075, upload-time = "2023-09-29T09:30:17.543Z" },
-    { url = "https://files.pythonhosted.org/packages/96/b9/b7bc99e4193688d1316189e3b8c9788105361f2d9b00fd64ef7911a3a7b9/picologging-0.9.3-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:06d315458ff92a2df6ce07540b390212d179e3ef2d08b48c356df72be8d0ce2d", size = 166276, upload-time = "2023-09-29T09:30:19.608Z" },
-    { url = "https://files.pythonhosted.org/packages/9b/6e/21abb1f3efdb4797b792d5afcb215f38971eff412c7d4e6ee5d85d86bcb9/picologging-0.9.3-cp312-cp312-win32.whl", hash = "sha256:502a17cbf7303499e1edcb01b3503caeac204aa5d5f888d4b5ecdb113f0c25ee", size = 78613, upload-time = "2023-09-29T09:30:21.104Z" },
-    { url = "https://files.pythonhosted.org/packages/34/29/1f3aa01d4b2f97583d7c98259f49cdb425e4980518a7c8348d552dd6a30b/picologging-0.9.3-cp312-cp312-win_amd64.whl", hash = "sha256:16f111cdf7a210eb07bd06932c9a8ff06dc830e213c8a0efbb769e586d1f3efb", size = 87018, upload-time = "2023-09-29T09:30:23.047Z" },
-    { url = "https://files.pythonhosted.org/packages/22/6d/3fde8f7cac72f76365b962b8a9178d56e0806fb040761a6ed4cd4157b253/picologging-0.9.3-cp39-cp39-macosx_10_15_universal2.whl", hash = "sha256:b4c7f4bf9a5fa291e0f8f8b669f6ea35943ccf2a962903472591ae377de58825", size = 163221, upload-time = "2023-09-29T09:30:47.139Z" },
-    { url = "https://files.pythonhosted.org/packages/cb/8c/c1054b46f18e81ba2f145b557b28aef0c09510375dae3ff6ec4e98262f6f/picologging-0.9.3-cp39-cp39-macosx_10_15_x86_64.whl", hash = "sha256:ea5663f5907910405edf75d438c05b24b66fd23cb997d7d28dfaabdea9b78211", size = 98745, upload-time = "2023-09-29T09:30:48.605Z" },
-    { url = "https://files.pythonhosted.org/packages/29/87/760b848042b1087fa87e5b5a48cd77bf943716965270332bd92aba68b70f/picologging-0.9.3-cp39-cp39-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:a629db4cbbb96e66d01d34c93d197c04cb71838830c6652033ee8d2ebe76d01f", size = 165538, upload-time = "2023-09-29T09:30:50.107Z" },
-    { url = "https://files.pythonhosted.org/packages/45/d4/234dddc7102630273bd10b6bc8d0e4e046841edc390491ae9d306052c2b2/picologging-0.9.3-cp39-cp39-manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:759f21dda1bf9ee52c7fa91c1faf47aa3585f4f604d5d38de02f3bcd32d7369f", size = 177133, upload-time = "2023-09-29T09:30:52.306Z" },
-    { url = "https://files.pythonhosted.org/packages/9f/4d/a243d32fd5613a948a2f3ba3a1307fe5942fe96173e09809856a071ff890/picologging-0.9.3-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:3d4bb95e708ad973217cc2cbb6e058f777ae2539a5cf131824c66fd701adfe71", size = 165272, upload-time = "2023-09-29T09:30:53.803Z" },
-    { url = "https://files.pythonhosted.org/packages/11/2c/c8da2fd086e2118c70094648e9f62014ac676b28821069ef011e09f3d89a/picologging-0.9.3-cp39-cp39-win32.whl", hash = "sha256:35e11311c71678813112e03649fa8dacad2f4ee5c3a424e515876df96c66b89b", size = 78146, upload-time = "2023-09-29T09:30:55.704Z" },
-    { url = "https://files.pythonhosted.org/packages/e5/ac/0a0d965301cb78c60b25ebf963e07773d74e7cc9be9edbc9c6ce902ccf80/picologging-0.9.3-cp39-cp39-win_amd64.whl", hash = "sha256:e1ab2768f4c178df653bd6cc94ca31d9b94c6d4a90012598a185e80ea66f1a8f", size = 86760, upload-time = "2023-09-29T09:30:57.007Z" },
 ]
 
 [[package]]
@@ -4517,11 +4472,14 @@ wheels = [
 
 [[package]]
 name = "structlog"
-version = "24.4.0"
+version = "25.5.0"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/78/a3/e811a94ac3853826805253c906faa99219b79951c7d58605e89c79e65768/structlog-24.4.0.tar.gz", hash = "sha256:b27bfecede327a6d2da5fbc96bd859f114ecc398a6389d664f62085ee7ae6fc4", size = 1348634, upload-time = "2024-07-17T12:38:43.483Z" }
+dependencies = [
+    { name = "typing-extensions", marker = "python_full_version < '3.11'" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/ef/52/9ba0f43b686e7f3ddfeaa78ac3af750292662284b3661e91ad5494f21dbc/structlog-25.5.0.tar.gz", hash = "sha256:098522a3bebed9153d4570c6d0288abf80a031dfdb2048d59a49e9dc2190fc98", size = 1460830, upload-time = "2025-10-27T08:28:23.028Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/bf/65/813fc133609ebcb1299be6a42e5aea99d6344afb35ccb43f67e7daaa3b92/structlog-24.4.0-py3-none-any.whl", hash = "sha256:597f61e80a91cc0749a9fd2a098ed76715a1c8a01f73e336b746504d1aad7610", size = 67180, upload-time = "2024-07-17T12:38:41.043Z" },
+    { url = "https://files.pythonhosted.org/packages/a8/45/a132b9074aa18e799b891b91ad72133c98d8042c70f6240e4c5f9dabee2f/structlog-25.5.0-py3-none-any.whl", hash = "sha256:a8453e9b9e636ec59bd9e79bbd4a72f025981b3ba0f5837aebf48f02f37a7f9f", size = 72510, upload-time = "2025-10-27T08:28:21.535Z" },
 ]
 
 [[package]]

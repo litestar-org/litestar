@@ -1,9 +1,9 @@
-import sys
 from collections.abc import Generator
 from logging import INFO
 from typing import TYPE_CHECKING, Annotated, Any
 
 import pytest
+import structlog
 from structlog.testing import capture_logs
 
 from litestar import Response, get, post
@@ -11,11 +11,8 @@ from litestar.config.compression import CompressionConfig
 from litestar.connection import Request
 from litestar.datastructures import Cookie, UploadFile
 from litestar.enums import RequestEncodingType
-from litestar.exceptions import ImproperlyConfiguredException
 from litestar.handlers import HTTPRouteHandler
-from litestar.logging.config import LoggingConfig, StructLoggingConfig
-from litestar.middleware import logging as middleware_logging
-from litestar.middleware.logging import LoggingMiddlewareConfig
+from litestar.middleware.logging import LoggingMiddleware
 from litestar.params import Body
 from litestar.status_codes import HTTP_200_OK, HTTP_201_CREATED
 from litestar.testing import create_test_client
@@ -26,7 +23,6 @@ if TYPE_CHECKING:
     from pytest import MonkeyPatch
 
     from litestar.middleware.session.server_side import ServerSideSessionConfig
-    from litestar.types.callable_types import GetLogger
 
 
 pytestmark = pytest.mark.usefixtures("reset_httpx_logging")
@@ -51,46 +47,54 @@ def handler() -> HTTPRouteHandler:
     return handler_fn
 
 
-def test_logging_middleware_config_validation() -> None:
-    with pytest.raises(ImproperlyConfiguredException):
-        LoggingMiddlewareConfig(response_log_fields=None)  # type: ignore[arg-type]
-
-    with pytest.raises(ImproperlyConfiguredException):
-        LoggingMiddlewareConfig(request_log_fields=None)  # type: ignore[arg-type]
-
-
-@pytest.mark.skipif(sys.version_info >= (3, 13), reason="Broken. Skip because of pending removal in v3")
-def test_logging_middleware_regular_logger(
-    get_logger: "GetLogger", caplog: "LogCaptureFixture", handler: HTTPRouteHandler
-) -> None:
+def test_logging_middleware_regular_logger(caplog: "LogCaptureFixture", handler: HTTPRouteHandler) -> None:
     with (
-        create_test_client(route_handlers=[handler], middleware=[LoggingMiddlewareConfig().middleware]) as client,
+        create_test_client(route_handlers=[handler], middleware=[LoggingMiddleware("litestar.test")]) as client,
         caplog.at_level(INFO),
     ):
         # Set cookies on the client to avoid warnings about per-request cookies.
-        client.app.get_logger = get_logger
         client.cookies = {"request-cookie": "abc"}
         response = client.get("/", headers={"request-header": "1"})
-        assert response.status_code == HTTP_200_OK
-        assert len(caplog.messages) == 2
+    assert response.status_code == HTTP_200_OK
+    assert len(caplog.messages) == 2
 
-        assert (
-            caplog.messages[0] == 'HTTP Request: path=/, method=GET, content_type=["",{}], '
-            'headers={"host":"testserver.local","accept":"*/*","accept-encoding":"gzip, '
-            'deflate, br, zstd","connection":"keep-alive","user-agent":"testclient",'
-            '"request-header":"1","cookie":"request-cookie=abc"}, '
-            'cookies={"request-cookie":"abc"}, query={}, path_params={}, body=None'
-        )
+    assert caplog.messages[0] == 'HTTP Request: path=/, method=GET, content_type=["",{}], query={}, path_params={}'
 
 
 def test_logging_middleware_struct_logger(handler: HTTPRouteHandler) -> None:
+    structlog.reset_defaults()
+    structlog.configure(
+        processors=[
+            structlog.contextvars.merge_contextvars,
+            structlog.processors.add_log_level,
+            structlog.processors.format_exc_info,
+            structlog.processors.TimeStamper(fmt="iso"),
+            structlog.processors.JSONRenderer(),
+        ],
+    )
+    logger = structlog.getLogger("litestar.test")
+
     with (
+        capture_logs() as cap_logs,
         create_test_client(
             route_handlers=[handler],
-            middleware=[LoggingMiddlewareConfig().middleware],
-            logging_config=StructLoggingConfig(),
+            middleware=[
+                LoggingMiddleware(
+                    logger,
+                    log_structured=True,
+                    request_log_fields=(
+                        "path",
+                        "method",
+                        "content_type",
+                        "headers",
+                        "cookies",
+                        "query",
+                        "path_params",
+                    ),
+                    response_log_fields=("status_code", "cookies", "headers"),
+                )
+            ],
         ) as client,
-        capture_logs() as cap_logs,
     ):
         # Set cookies on the client to avoid warnings about per-request cookies.
         client.cookies = {"request-cookie": "abc"}
@@ -98,9 +102,9 @@ def test_logging_middleware_struct_logger(handler: HTTPRouteHandler) -> None:
         assert response.status_code == HTTP_200_OK
         assert len(cap_logs) == 2
         assert cap_logs[0] == {
+            "event": "HTTP Request",
             "path": "/",
             "method": "GET",
-            "body": None,
             "content_type": ("", {}),
             "headers": {
                 "host": "testserver.local",
@@ -114,35 +118,31 @@ def test_logging_middleware_struct_logger(handler: HTTPRouteHandler) -> None:
             "cookies": {"request-cookie": "abc"},
             "query": {},
             "path_params": {},
-            "event": "HTTP Request",
             "log_level": "info",
         }
         assert cap_logs[1] == {
+            "event": "HTTP Response",
             "status_code": 200,
             "cookies": {"first-cookie": "abc", "Path": "/", "SameSite": "lax", "second-cookie": "xxx"},
             "headers": {"token": "123", "regular": "abc", "content-length": "17", "content-type": "application/json"},
-            "body": '{"hello":"world"}',
-            "event": "HTTP Response",
             "log_level": "info",
         }
 
 
-@pytest.mark.skipif(sys.version_info >= (3, 13), reason="Broken. Skip because of pending removal in v3")
-def test_logging_middleware_exclude_pattern(
-    get_logger: "GetLogger", caplog: "LogCaptureFixture", handler: HTTPRouteHandler
-) -> None:
+def test_logging_middleware_exclude_pattern(caplog: "LogCaptureFixture", handler: HTTPRouteHandler) -> None:
     @get("/exclude")
     def handler2() -> None:
         return None
 
-    config = LoggingMiddlewareConfig(exclude=["^/exclude"])
     with (
-        create_test_client(route_handlers=[handler, handler2], middleware=[config.middleware]) as client,
+        create_test_client(
+            route_handlers=[handler, handler2],
+            middleware=[LoggingMiddleware("litestar.test", exclude=["^/exclude"])],
+        ) as client,
         caplog.at_level(INFO),
     ):
         # Set cookies on the client to avoid warnings about per-request cookies.
         client.cookies = {"request-cookie": "abc"}
-        client.app.get_logger = get_logger
 
         response = client.get("/exclude")
         assert response.status_code == HTTP_200_OK
@@ -153,22 +153,20 @@ def test_logging_middleware_exclude_pattern(
         assert len(caplog.messages) == 2
 
 
-@pytest.mark.skipif(sys.version_info >= (3, 13), reason="Broken. Skip because of pending removal in v3")
-def test_logging_middleware_exclude_opt_key(
-    get_logger: "GetLogger", caplog: "LogCaptureFixture", handler: HTTPRouteHandler
-) -> None:
+def test_logging_middleware_exclude_opt_key(caplog: "LogCaptureFixture", handler: HTTPRouteHandler) -> None:
     @get("/exclude", skip_logging=True)
     def handler2() -> None:
         return None
 
-    config = LoggingMiddlewareConfig(exclude_opt_key="skip_logging")
     with (
-        create_test_client(route_handlers=[handler, handler2], middleware=[config.middleware]) as client,
+        create_test_client(
+            route_handlers=[handler, handler2],
+            middleware=[LoggingMiddleware("litestar.test", exclude_opt_key="skip_logging")],
+        ) as client,
         caplog.at_level(INFO),
     ):
         # Set cookies on the client to avoid warnings about per-request cookies.
         client.cookies = {"request-cookie": "abc"}
-        client.app.get_logger = get_logger
 
         response = client.get("/exclude")
         assert response.status_code == HTTP_200_OK
@@ -180,28 +178,33 @@ def test_logging_middleware_exclude_opt_key(
 
 
 @pytest.mark.parametrize("include", [True, False])
-@pytest.mark.skipif(sys.version_info >= (3, 13), reason="Broken. Skip because of pending removal in v3")
 def test_logging_middleware_compressed_response_body(
-    get_logger: "GetLogger", include: bool, caplog: "LogCaptureFixture", handler: HTTPRouteHandler
+    include: bool, caplog: "LogCaptureFixture", handler: HTTPRouteHandler
 ) -> None:
     with (
         create_test_client(
             route_handlers=[handler],
             compression_config=CompressionConfig(backend="gzip", minimum_size=1),
-            middleware=[LoggingMiddlewareConfig(include_compressed_body=include).middleware],
+            middleware=[
+                LoggingMiddleware(
+                    "litestar.test",
+                    include_compressed_body=include,
+                    response_log_fields=[
+                        "body",
+                    ],
+                )
+            ],
         ) as client,
-        caplog.at_level(INFO),
     ):
         # Set cookies on the client to avoid warnings about per-request cookies.
         client.cookies = {"request-cookie": "abc"}
-        client.app.get_logger = get_logger
         response = client.get("/", headers={"request-header": "1"})
-        assert response.status_code == HTTP_200_OK
-        assert len(caplog.messages) == 2
-        if include:
-            assert "body=" in caplog.messages[1]
-        else:
-            assert "body=" not in caplog.messages[1]
+    assert response.status_code == HTTP_200_OK
+    assert len(caplog.messages) == 2
+    if include:
+        assert "body" in caplog.messages[1]
+    else:
+        assert "body" not in caplog.messages[1]
 
 
 def test_logging_middleware_post_body() -> None:
@@ -210,7 +213,12 @@ def test_logging_middleware_post_body() -> None:
         return data
 
     with create_test_client(
-        route_handlers=[post_handler], middleware=[LoggingMiddlewareConfig().middleware], logging_config=LoggingConfig()
+        route_handlers=[post_handler],
+        middleware=[
+            LoggingMiddleware(
+                "litestar.test",
+            )
+        ],
     ) as client:
         res = client.post("/", json={"foo": "bar"})
         assert res.status_code == 201
@@ -225,11 +233,9 @@ async def test_logging_middleware_post_binary_file_without_structlog(monkeypatch
         content = await data.read()
         return f"{len(content)} bytes"
 
-    # force LoggingConfig to not parse body data
-    monkeypatch.setattr(middleware_logging, "structlog_installed", False)
-
     with create_test_client(
-        route_handlers=[post_handler], middleware=[LoggingMiddlewareConfig().middleware], logging_config=LoggingConfig()
+        route_handlers=[post_handler],
+        middleware=[LoggingMiddleware("litestar.test")],
     ) as client:
         res = client.post("/", files={"foo": b"\xfa\xfb"})
         assert res.status_code == 201
@@ -237,54 +243,45 @@ async def test_logging_middleware_post_binary_file_without_structlog(monkeypatch
 
 
 @pytest.mark.parametrize("logger_name", ("litestar", "other"))
-@pytest.mark.skipif(sys.version_info >= (3, 13), reason="Broken. Skip because of pending removal in v3")
-def test_logging_messages_are_not_doubled(
-    get_logger: "GetLogger", logger_name: str, caplog: "LogCaptureFixture"
-) -> None:
+def test_logging_messages_are_not_doubled(logger_name: str, caplog: "LogCaptureFixture") -> None:
     # https://github.com/litestar-org/litestar/issues/896
 
     @get("/")
     async def hello_world_handler() -> dict[str, str]:
         return {"hello": "world"}
 
-    logging_middleware_config = LoggingMiddlewareConfig(logger_name=logger_name)
+    logging_middleware = LoggingMiddleware("litestar.test")
 
     with (
         create_test_client(
             hello_world_handler,
-            logging_config=LoggingConfig(),
-            middleware=[logging_middleware_config.middleware],
+            middleware=[logging_middleware],
         ) as client,
         caplog.at_level(INFO),
     ):
-        client.app.get_logger = get_logger
         response = client.get("/")
         assert response.status_code == HTTP_200_OK
         assert len(caplog.messages) == 2
 
 
-@pytest.mark.skipif(sys.version_info >= (3, 13), reason="Broken. Skip because of pending removal in v3")
-def test_logging_middleware_log_fields(
-    get_logger: "GetLogger", caplog: "LogCaptureFixture", handler: HTTPRouteHandler
-) -> None:
+def test_logging_middleware_log_fields(caplog: "LogCaptureFixture", handler: HTTPRouteHandler) -> None:
     with (
         create_test_client(
             route_handlers=[handler],
             middleware=[
-                LoggingMiddlewareConfig(response_log_fields=["status_code"], request_log_fields=["path"]).middleware
+                LoggingMiddleware("litestar.test", response_log_fields=["status_code"], request_log_fields=["path"])
             ],
         ) as client,
         caplog.at_level(INFO),
     ):
         # Set cookies on the client to avoid warnings about per-request cookies.
-        client.app.get_logger = get_logger
         client.cookies = {"request-cookie": "abc"}
         response = client.get("/", headers={"request-header": "1"})
         assert response.status_code == HTTP_200_OK
         assert len(caplog.messages) == 2
 
-        assert caplog.messages[0] == "HTTP Request: path=/"
-        assert caplog.messages[1] == "HTTP Response: status_code=200"
+    assert caplog.messages[0] == "HTTP Request: path=/"
+    assert caplog.messages[1] == "HTTP Response: status_code=200"
 
 
 def test_logging_middleware_with_session_middleware(session_backend_config_memory: "ServerSideSessionConfig") -> None:
@@ -298,12 +295,9 @@ def test_logging_middleware_with_session_middleware(session_backend_config_memor
     async def get_session() -> None:
         pass
 
-    logging_middleware_config = LoggingMiddlewareConfig()
-
     with create_test_client(
         [set_session, get_session],
-        logging_config=LoggingConfig(),
-        middleware=[logging_middleware_config.middleware, session_backend_config_memory.middleware],
+        middleware=[LoggingMiddleware("litestar.test"), session_backend_config_memory.middleware],
     ) as client:
         response = client.post("/")
         assert response.status_code == HTTP_201_CREATED
@@ -325,7 +319,6 @@ def test_structlog_invalid_request_body_handled() -> None:
 
     with create_test_client(
         route_handlers=[hello_world],
-        logging_config=StructLoggingConfig(log_exceptions="always"),
-        middleware=[LoggingMiddlewareConfig().middleware],
+        middleware=[LoggingMiddleware(structlog.get_logger("litestar.test"))],
     ) as client:
         assert client.post("/", headers={"Content-Type": "application/json"}, content=b'{"a": "b",}').status_code == 400

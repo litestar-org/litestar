@@ -23,7 +23,6 @@ if TYPE_CHECKING:
     from litestar.datastructures import CacheControlHeader, ETag, State
     from litestar.dto import AbstractDTO
     from litestar.events import BaseEventEmitterBackend, EventListener
-    from litestar.logging.config import BaseLoggingConfig
     from litestar.middleware.session.base import BaseBackendConfig
     from litestar.openapi.config import OpenAPIConfig
     from litestar.openapi.spec import SecurityRequirement
@@ -77,7 +76,6 @@ def create_test_client(
     guards: Sequence[Guard] | None = None,
     include_in_schema: bool | EmptyType = Empty,
     listeners: Sequence[EventListener] | None = None,
-    logging_config: BaseLoggingConfig | EmptyType | None = Empty,
     middleware: Sequence[Middleware] | None = None,
     multipart_form_part_limit: int = 1000,
     on_app_init: Sequence[OnAppInitHandler] | None = None,
@@ -183,7 +181,6 @@ def create_test_client(
         include_in_schema: A boolean flag dictating whether  the route handler should be documented in the OpenAPI schema.
         lifespan: A list of callables returning async context managers, wrapping the lifespan of the ASGI application
         listeners: A sequence of :class:`EventListener <.events.listener.EventListener>`.
-        logging_config: A subclass of :class:`BaseLoggingConfig <.logging.config.BaseLoggingConfig>`.
         middleware: A sequence of :class:`Middleware <.types.Middleware>`.
         multipart_form_part_limit: The maximal number of allowed parts in a multipart/formdata request. This limit
             is intended to protect from DoS attacks.
@@ -267,7 +264,6 @@ def create_test_client(
         guards=guards,
         include_in_schema=include_in_schema,
         listeners=listeners,
-        logging_config=logging_config,
         middleware=middleware,
         multipart_form_part_limit=multipart_form_part_limit,
         on_app_init=on_app_init,
@@ -334,7 +330,6 @@ def create_async_test_client(
     include_in_schema: bool | EmptyType = Empty,
     lifespan: list[Callable[[Litestar], AbstractAsyncContextManager] | AbstractAsyncContextManager] | None = None,
     listeners: Sequence[EventListener] | None = None,
-    logging_config: BaseLoggingConfig | EmptyType | None = Empty,
     middleware: Sequence[Middleware] | None = None,
     multipart_form_part_limit: int = 1000,
     on_app_init: Sequence[OnAppInitHandler] | None = None,
@@ -437,7 +432,6 @@ def create_async_test_client(
         include_in_schema: A boolean flag dictating whether  the route handler should be documented in the OpenAPI schema.
         lifespan: A list of callables returning async context managers, wrapping the lifespan of the ASGI application
         listeners: A sequence of :class:`EventListener <.events.listener.EventListener>`.
-        logging_config: A subclass of :class:`BaseLoggingConfig <.logging.config.BaseLoggingConfig>`.
         middleware: A sequence of :class:`Middleware <.types.Middleware>`.
         multipart_form_part_limit: The maximal number of allowed parts in a multipart/formdata request. This limit
             is intended to protect from DoS attacks.
@@ -520,7 +514,6 @@ def create_async_test_client(
         include_in_schema=include_in_schema,
         lifespan=lifespan,
         listeners=listeners,
-        logging_config=logging_config,
         middleware=middleware,
         multipart_form_part_limit=multipart_form_part_limit,
         on_app_init=on_app_init,
