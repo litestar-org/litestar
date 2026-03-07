@@ -3,6 +3,25 @@
 Litestar 2 Changelog
 ====================
 
+.. changelog:: 2.21.1
+    :date: 2026-03-07
+
+    .. change:: DTO: Fix nested DTO schema reference for DTOs with a ``__schema_name__``
+        :type: bugfix
+        :issue: 4599
+        :pr: 4606
+
+        Fix a bug where DTOs with a ``__schema_name__`` and nested models, the nested
+        model's ``$ref`` wrongly pointed to the parent's custom schema name.
+
+    .. change:: DTO: Fix ``TypeError`` for deeply nested optional fields
+        :type: bugfix
+        :issue: 4504, 3785
+        :pr: 4616
+
+        Fix a bug in the DTO codegen backend that would result in a :exc:`TypeError`
+        when a value for a deeply nested, optional field was missing.
+
 .. changelog:: 2.21.0
     :date: 2026-02-14
 
