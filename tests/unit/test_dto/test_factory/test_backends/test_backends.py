@@ -615,14 +615,14 @@ def test_transfer_nested_simple_type_union(
     # https://github.com/litestar-org/litestar/issues/4273
 
     module = create_module(f"""
-from typing import Union
+from typing import Union, List
 import msgspec
 
 class Inner(msgspec.Struct):
     value: str
 
 class Outer(msgspec.Struct):
-    some_field: Union[{simple_type}, list[Inner]]
+    some_field: Union[{simple_type}, List[Inner]]
 """)
 
     backend = DTOCodegenBackend(
@@ -637,7 +637,7 @@ class Outer(msgspec.Struct):
     data = backend.populate_data_from_builtins({"some_field": value}, asgi_connection)
     assert isinstance(data, module.Outer)
     if isinstance(value, list):
-        assert data.some_field == msgspec.convert(value, type=list[module.Inner])  # type: ignore[name-defined]
+        assert data.some_field == msgspec.convert(value, type=List[module.Inner])  # type: ignore[name-defined]
     elif isinstance(value, dict):
         assert data.some_field == msgspec.convert(value, type=module.Inner)
     else:
@@ -649,7 +649,7 @@ def test_nested_union_with_multiple_composite_types_raises(
     create_module: Callable[[str], ModuleType],
 ) -> None:
     module = create_module("""
-from typing import Union
+from typing import Union, List, Dict
 import dataclasses
 
 @dataclasses.dataclass
@@ -659,13 +659,13 @@ class Inner:
 
 @dataclasses.dataclass
 class Outer:
-    some_field: Union[list[str], dict[str, str], Inner]
+    some_field: Union[List[str], Dict[str, str], Inner]
 """)
 
     with pytest.raises(
         RuntimeError,
         match=re.escape(
-            "Multiple composite types within unions are not supported. Received: list[str], dict[str, str]"
+            "Multiple composite types within unions are not supported. Received: typing.List[str], typing.Dict[str, str]"
         ),
     ):
         DTOCodegenBackend(
