@@ -192,7 +192,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2"><a class="reference internal" href="../file_systems.html">File Systems</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../htmx.html">HTMX</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../lifecycle-hooks.html">Life Cycle Hooks</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../logging.html">Logging</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../logging.html">Request logging</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../metrics/index.html">Metrics</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../metrics/open-telemetry.html">OpenTelemetry</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../metrics/prometheus.html">Prometheus</a></li>
@@ -292,12 +292,6 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2"><a class="reference internal" href="../../reference/exceptions.html">exceptions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/file_system.html">file_system</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/handlers.html">handlers</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../reference/logging/index.html">logging</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../reference/logging/config.html">config</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../reference/logging/picologging.html">picologging</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../reference/logging/standard.html">standard</a></li>
-</ul>
-</li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/middleware/index.html">middleware</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/middleware/allowed_hosts.html">allowed_hosts</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/middleware/authentication.html">authentication</a></li>
@@ -329,7 +323,6 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/problem_details.html">problem details</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/prometheus.html">prometheus</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/pydantic.html">pydantic</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/structlog.html">structlog</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/repository/index.html">repository</a><ul>
@@ -582,7 +575,7 @@ a DTO for use with a SQLAlchemy model:</p>
 <div class="admonition">
 <p class="admonition-title">Run it</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span data-line="1">&gt;<span class="w"> </span>curl<span class="w"> </span>http://127.0.0.1:8000/users<span class="w"> </span>-H<span class="w"> </span>Content-Type:<span class="w"> </span>application/json<span class="w"> </span>-d<span class="w"> </span><span class="o">{</span><span class="s2">&quot;name&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span>,<span class="s2">&quot;password&quot;</span>:<span class="s2">&quot;xyz&quot;</span>,<span class="s2">&quot;created_at&quot;</span>:<span class="s2">&quot;2023-04-24T00:00:00Z&quot;</span><span class="o">}</span>
-</span><span data-line="2"><span class="o">{</span><span class="s2">&quot;id&quot;</span>:<span class="s2">&quot;c1e01748-ab37-4e00-bbc3-4777c1b6c188&quot;</span>,<span class="s2">&quot;name&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span>,<span class="s2">&quot;password&quot;</span>:<span class="s2">&quot;xyz&quot;</span>,<span class="s2">&quot;created_at&quot;</span>:<span class="s2">&quot;2023-04-24T00:00:00Z&quot;</span><span class="o">}</span>
+</span><span data-line="2"><span class="o">{</span><span class="s2">&quot;id&quot;</span>:<span class="s2">&quot;beec1b0b-9562-404f-9706-30460f5864f2&quot;</span>,<span class="s2">&quot;name&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span>,<span class="s2">&quot;password&quot;</span>:<span class="s2">&quot;xyz&quot;</span>,<span class="s2">&quot;created_at&quot;</span>:<span class="s2">&quot;2023-04-24T00:00:00Z&quot;</span><span class="o">}</span>
 </span></pre></div>
 </div>
 </div>
@@ -644,7 +637,7 @@ configuration.</p>
 <div class="admonition">
 <p class="admonition-title">Run it</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span data-line="1">&gt;<span class="w"> </span>curl<span class="w"> </span>http://127.0.0.1:8000/users<span class="w"> </span>-H<span class="w"> </span>Content-Type:<span class="w"> </span>application/json<span class="w"> </span>-d<span class="w"> </span><span class="o">{</span><span class="s2">&quot;name&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span>,<span class="s2">&quot;password&quot;</span>:<span class="s2">&quot;xyz&quot;</span>,<span class="s2">&quot;created_at&quot;</span>:<span class="s2">&quot;2023-04-24T00:00:00Z&quot;</span><span class="o">}</span>
-</span><span data-line="2"><span class="o">{</span><span class="s2">&quot;created_at&quot;</span>:<span class="s2">&quot;0001-01-01T00:00:00&quot;</span>,<span class="s2">&quot;id&quot;</span>:<span class="s2">&quot;3c96101b-9a0e-4565-a4cd-8b3da37db5a2&quot;</span>,<span class="s2">&quot;name&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span><span class="o">}</span>
+</span><span data-line="2"><span class="o">{</span><span class="s2">&quot;created_at&quot;</span>:<span class="s2">&quot;0001-01-01T00:00:00&quot;</span>,<span class="s2">&quot;id&quot;</span>:<span class="s2">&quot;8af47faa-6afb-4ea1-9009-5a14ea0c68bb&quot;</span>,<span class="s2">&quot;name&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span><span class="o">}</span>
 </span></pre></div>
 </div>
 </div>
@@ -790,7 +783,7 @@ type parameter of <code class="docutils literal notranslate"><span class="pre">a
 <div class="admonition">
 <p class="admonition-title">Run it</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span data-line="1">&gt;<span class="w"> </span>curl<span class="w"> </span>http://127.0.0.1:8000/users<span class="w"> </span>-H<span class="w"> </span>Content-Type:<span class="w"> </span>application/json<span class="w"> </span>-d<span class="w"> </span><span class="o">{</span><span class="s2">&quot;userName&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span>,<span class="s2">&quot;password&quot;</span>:<span class="s2">&quot;xyz&quot;</span>,<span class="s2">&quot;created_at&quot;</span>:<span class="s2">&quot;2023-04-24T00:00:00Z&quot;</span><span class="o">}</span>
-</span><span data-line="2"><span class="o">{</span><span class="s2">&quot;created_at&quot;</span>:<span class="s2">&quot;0001-01-01T00:00:00&quot;</span>,<span class="s2">&quot;id&quot;</span>:<span class="s2">&quot;7ccd71ae-d233-427b-9a4d-7ade9baf0c85&quot;</span>,<span class="s2">&quot;userName&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span><span class="o">}</span>
+</span><span data-line="2"><span class="o">{</span><span class="s2">&quot;created_at&quot;</span>:<span class="s2">&quot;0001-01-01T00:00:00&quot;</span>,<span class="s2">&quot;id&quot;</span>:<span class="s2">&quot;f767fc01-091b-4496-80ff-2c785cdd3c79&quot;</span>,<span class="s2">&quot;userName&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span><span class="o">}</span>
 </span></pre></div>
 </div>
 </div>
@@ -835,7 +828,7 @@ type parameter of <code class="docutils literal notranslate"><span class="pre">a
 <div class="admonition">
 <p class="admonition-title">Run it</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span data-line="1">&gt;<span class="w"> </span>curl<span class="w"> </span>http://127.0.0.1:8000/users<span class="w"> </span>-H<span class="w"> </span>Content-Type:<span class="w"> </span>application/json<span class="w"> </span>-d<span class="w"> </span><span class="o">{</span><span class="s2">&quot;firstName&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span>,<span class="s2">&quot;password&quot;</span>:<span class="s2">&quot;xyz&quot;</span>,<span class="s2">&quot;createdAt&quot;</span>:<span class="s2">&quot;2023-04-24T00:00:00Z&quot;</span><span class="o">}</span>
-</span><span data-line="2"><span class="o">{</span><span class="s2">&quot;createdAt&quot;</span>:<span class="s2">&quot;0001-01-01T00:00:00&quot;</span>,<span class="s2">&quot;id&quot;</span>:<span class="s2">&quot;9c5138d2-9d19-40d6-99cb-409d1fd38026&quot;</span>,<span class="s2">&quot;firstName&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span><span class="o">}</span>
+</span><span data-line="2"><span class="o">{</span><span class="s2">&quot;createdAt&quot;</span>:<span class="s2">&quot;0001-01-01T00:00:00&quot;</span>,<span class="s2">&quot;id&quot;</span>:<span class="s2">&quot;8cb766b3-4628-452f-bea6-63a6aff3fdd3&quot;</span>,<span class="s2">&quot;firstName&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span><span class="o">}</span>
 </span></pre></div>
 </div>
 </div>
@@ -1046,7 +1039,7 @@ handler.</p>
 <div class="admonition">
 <p class="admonition-title">Run it</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span data-line="1">&gt;<span class="w"> </span>curl<span class="w"> </span>http://127.0.0.1:8000/users<span class="w"> </span>-H<span class="w"> </span>Content-Type:<span class="w"> </span>application/json<span class="w"> </span>-d<span class="w"> </span><span class="o">{</span><span class="s2">&quot;name&quot;</span>:<span class="s2">&quot;Peter&quot;</span>,<span class="s2">&quot;email&quot;</span>:<span class="w"> </span><span class="s2">&quot;peter@example.com&quot;</span>,<span class="w"> </span><span class="s2">&quot;age&quot;</span>:41<span class="o">}</span>
-</span><span data-line="2"><span class="o">{</span><span class="s2">&quot;name&quot;</span>:<span class="s2">&quot;Peter&quot;</span>,<span class="s2">&quot;email&quot;</span>:<span class="s2">&quot;peter@example.com&quot;</span>,<span class="s2">&quot;age&quot;</span>:41,<span class="s2">&quot;id&quot;</span>:<span class="s2">&quot;04bd7e79-c88d-40b2-aea5-f9ebd5ff046f&quot;</span><span class="o">}</span>
+</span><span data-line="2"><span class="o">{</span><span class="s2">&quot;name&quot;</span>:<span class="s2">&quot;Peter&quot;</span>,<span class="s2">&quot;email&quot;</span>:<span class="s2">&quot;peter@example.com&quot;</span>,<span class="s2">&quot;age&quot;</span>:41,<span class="s2">&quot;id&quot;</span>:<span class="s2">&quot;d45ae785-8a2d-4394-8772-7dc5e339de73&quot;</span><span class="o">}</span>
 </span></pre></div>
 </div>
 </div>
@@ -1092,7 +1085,7 @@ type of the data that it will contain, and provides useful methods for interacti
 <div class="admonition">
 <p class="admonition-title">Run it</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span data-line="1">&gt;<span class="w"> </span>curl<span class="w"> </span>http://127.0.0.1:8000/users<span class="w"> </span>-H<span class="w"> </span>Content-Type:<span class="w"> </span>application/json<span class="w"> </span>-d<span class="w"> </span><span class="o">{</span><span class="s2">&quot;name&quot;</span>:<span class="s2">&quot;Peter&quot;</span>,<span class="w"> </span><span class="s2">&quot;email&quot;</span>:<span class="w"> </span><span class="s2">&quot;peter@example.com&quot;</span>,<span class="w"> </span><span class="s2">&quot;age&quot;</span>:41<span class="o">}</span>
-</span><span data-line="2"><span class="o">{</span><span class="s2">&quot;name&quot;</span>:<span class="s2">&quot;Peter&quot;</span>,<span class="s2">&quot;email&quot;</span>:<span class="s2">&quot;peter@example.com&quot;</span>,<span class="s2">&quot;age&quot;</span>:41,<span class="s2">&quot;id&quot;</span>:<span class="s2">&quot;d348e2e1-d89a-4cf5-97bf-e11bb4e7a731&quot;</span><span class="o">}</span>
+</span><span data-line="2"><span class="o">{</span><span class="s2">&quot;name&quot;</span>:<span class="s2">&quot;Peter&quot;</span>,<span class="s2">&quot;email&quot;</span>:<span class="s2">&quot;peter@example.com&quot;</span>,<span class="s2">&quot;age&quot;</span>:41,<span class="s2">&quot;id&quot;</span>:<span class="s2">&quot;9acc450a-b6ce-47fe-ad94-af3c78aa5131&quot;</span><span class="o">}</span>
 </span></pre></div>
 </div>
 </div>

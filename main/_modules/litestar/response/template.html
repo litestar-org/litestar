@@ -192,7 +192,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2"><a class="reference internal" href="../../../usage/file_systems.html">File Systems</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../usage/htmx.html">HTMX</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../usage/lifecycle-hooks.html">Life Cycle Hooks</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../usage/logging.html">Logging</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage/logging.html">Request logging</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../usage/metrics/index.html">Metrics</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../usage/metrics/open-telemetry.html">OpenTelemetry</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../usage/metrics/prometheus.html">Prometheus</a></li>
@@ -292,12 +292,6 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2"><a class="reference internal" href="../../../reference/exceptions.html">exceptions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../reference/file_system.html">file_system</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../reference/handlers.html">handlers</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../reference/logging/index.html">logging</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../../reference/logging/config.html">config</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../reference/logging/picologging.html">picologging</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../reference/logging/standard.html">standard</a></li>
-</ul>
-</li>
 <li class="toctree-l2"><a class="reference internal" href="../../../reference/middleware/index.html">middleware</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../reference/middleware/allowed_hosts.html">allowed_hosts</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../reference/middleware/authentication.html">authentication</a></li>
@@ -329,7 +323,6 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l3"><a class="reference internal" href="../../../reference/plugins/problem_details.html">problem details</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../reference/plugins/prometheus.html">prometheus</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../reference/plugins/pydantic.html">pydantic</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../reference/plugins/structlog.html">structlog</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../../reference/repository/index.html">repository</a><ul>
@@ -533,7 +526,7 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="24">
 </span><span data-line="25">
 <div class="viewcode-block" id="Template">
-<a class="viewcode-back" href="../../../reference/response/index.html#litestar.response.Template">[docs]</a>
+<a class="viewcode-back" href="../../../reference/response/template.html#litestar.response.Template">[docs]</a>
 </span><span data-line="26"><span class="k">class</span><span class="w"> </span><span class="nc">Template</span><span class="p">(</span><span class="n">Response</span><span class="p">[</span><span class="nb">bytes</span><span class="p">]):</span>
 </span><span data-line="27"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Template-based response, rendering a given template into a bytes string.&quot;&quot;&quot;</span>
 </span><span data-line="28">
@@ -544,7 +537,7 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="33">    <span class="p">)</span>
 </span><span data-line="34">
 <div class="viewcode-block" id="Template.__init__">
-<a class="viewcode-back" href="../../../reference/response/index.html#litestar.response.Template.__init__">[docs]</a>
+<a class="viewcode-back" href="../../../reference/response/template.html#litestar.response.Template.__init__">[docs]</a>
 </span><span data-line="35">    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
 </span><span data-line="36">        <span class="bp">self</span><span class="p">,</span>
 </span><span data-line="37">        <span class="n">template_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -596,7 +589,7 @@ data-aria-dark="Switch to auto color mode">
 
 </span><span data-line="83">
 <div class="viewcode-block" id="Template.create_template_context">
-<a class="viewcode-back" href="../../../reference/response/index.html#litestar.response.Template.create_template_context">[docs]</a>
+<a class="viewcode-back" href="../../../reference/response/template.html#litestar.response.Template.create_template_context">[docs]</a>
 </span><span data-line="84">    <span class="k">def</span><span class="w"> </span><span class="nf">create_template_context</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
 </span><span data-line="85"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a context object for the template.</span>
 </span><span data-line="86">
@@ -615,7 +608,7 @@ data-aria-dark="Switch to auto color mode">
 
 </span><span data-line="99">
 <div class="viewcode-block" id="Template.to_asgi_response">
-<a class="viewcode-back" href="../../../reference/response/index.html#litestar.response.Template.to_asgi_response">[docs]</a>
+<a class="viewcode-back" href="../../../reference/response/template.html#litestar.response.Template.to_asgi_response">[docs]</a>
 </span><span data-line="100">    <span class="k">def</span><span class="w"> </span><span class="nf">to_asgi_response</span><span class="p">(</span>
 </span><span data-line="101">        <span class="bp">self</span><span class="p">,</span>
 </span><span data-line="102">        <span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">,</span>

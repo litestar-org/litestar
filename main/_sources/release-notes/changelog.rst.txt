@@ -4,7 +4,39 @@
 =============
 
 .. changelog:: 3.0.0
-    :date: 2024-08-30
+    :date: 2364-01-27
+
+    .. change:: Remove logging config and related constructs
+        :type: feature
+        :breaking:
+        :pr: 4615
+        :issue: 2858, 3913, 3455
+
+        Remove Litestar's logging configuration, and related modules. In particular,
+        the following have been removed:
+
+        - ``Litestar.logging_config`` parameter
+        - ``Litestar.logger`` attribute
+        - ``Litestar.get_logger`` method
+        - ``AppConfig.logging_config`` attribute
+        - ``ASGIConnection.logger`` property
+        - ``litestar.logging`` module
+        - ``litestar.plugins.structlog`` module
+        - ``litestar.middleware.lgging.LoggingMiddlewareConfig`` class
+
+        Aside from debugging, there is only one place where Litestar logs, which is
+        :class:`~litestar.middleware.logging.LoggingMiddleware`, which has been changed
+        to accept a logger directly.
+        ``litestar.middleware.lgging.LoggingMiddlewareConfig`` has also been removed,
+        with ``LoggingMiddleware`` now accepting all configuration arguments directly.
+
+        Users that have previously relied on Litestar to configure logging, can simply
+        use the standard logging configuration provided by their logging library of
+        choice.
+
+        .. seealso::
+            :doc:`/usage/logging`
+
 
     .. change:: Remove default exception handler for all unhandled exceptions
         :type: feature
@@ -114,7 +146,7 @@
         :breaking:
         :pr: 4300
 
-        The ``traceback_line_limit`` parameter of :class:`~litestar.logging.config.LoggingConfig` has been removed. This
+        The ``traceback_line_limit`` parameter of ``litestar.logging.config.LoggingConfig`` has been removed. This
         parameter had no effect since version ``2.9.0``, so it can be removed safely from applications without any
         change in behaviour.
 

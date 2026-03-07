@@ -192,7 +192,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2"><a class="reference internal" href="../../usage/file_systems.html">File Systems</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../usage/htmx.html">HTMX</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../usage/lifecycle-hooks.html">Life Cycle Hooks</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../usage/logging.html">Logging</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../usage/logging.html">Request logging</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../usage/metrics/index.html">Metrics</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../usage/metrics/open-telemetry.html">OpenTelemetry</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../usage/metrics/prometheus.html">Prometheus</a></li>
@@ -292,12 +292,6 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2"><a class="reference internal" href="../../reference/exceptions.html">exceptions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/file_system.html">file_system</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/handlers.html">handlers</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../reference/logging/index.html">logging</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../reference/logging/config.html">config</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../reference/logging/picologging.html">picologging</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../reference/logging/standard.html">standard</a></li>
-</ul>
-</li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/middleware/index.html">middleware</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/middleware/allowed_hosts.html">allowed_hosts</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/middleware/authentication.html">authentication</a></li>
@@ -329,7 +323,6 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/problem_details.html">problem details</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/prometheus.html">prometheus</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/pydantic.html">pydantic</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/structlog.html">structlog</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/repository/index.html">repository</a><ul>
@@ -528,7 +521,7 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="19">
 </span><span data-line="20">
 </span><span data-line="21"><span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
-</span><span data-line="22">    <span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Coroutine</span><span class="p">,</span> <span class="n">Iterable</span>
+</span><span data-line="22">    <span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Coroutine</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">Set</span>
 </span><span data-line="23">
 </span><span data-line="24">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.connection</span><span class="w"> </span><span class="kn">import</span> <span class="n">ASGIConnection</span>
 </span><span data-line="25">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">Method</span>
@@ -604,8 +597,8 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="88">        <span class="n">extract_path_params</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
 </span><span data-line="89">        <span class="n">extract_query</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
 </span><span data-line="90">        <span class="n">extract_scheme</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-</span><span data-line="91">        <span class="n">obfuscate_cookies</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="92">        <span class="n">obfuscate_headers</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="91">        <span class="n">obfuscate_cookies</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="92">        <span class="n">obfuscate_headers</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 </span><span data-line="93">        <span class="n">parse_body</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
 </span><span data-line="94">        <span class="n">parse_query</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
 </span><span data-line="95">        <span class="n">skip_parse_malformed_body</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
@@ -892,8 +885,8 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="334">        <span class="n">extract_cookies</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
 </span><span data-line="335">        <span class="n">extract_headers</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
 </span><span data-line="336">        <span class="n">extract_status_code</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-</span><span data-line="337">        <span class="n">obfuscate_cookies</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="338">        <span class="n">obfuscate_headers</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="337">        <span class="n">obfuscate_cookies</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="338">        <span class="n">obfuscate_headers</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 </span><span data-line="339">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 </span><span data-line="340"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize ``ResponseDataExtractor`` with options.</span>
 </span><span data-line="341">

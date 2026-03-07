@@ -192,7 +192,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2"><a class="reference internal" href="../file_systems.html">File Systems</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../htmx.html">HTMX</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../lifecycle-hooks.html">Life Cycle Hooks</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../logging.html">Logging</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../logging.html">Request logging</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../metrics/index.html">Metrics</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../metrics/open-telemetry.html">OpenTelemetry</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../metrics/prometheus.html">Prometheus</a></li>
@@ -292,12 +292,6 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2"><a class="reference internal" href="../../reference/exceptions.html">exceptions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/file_system.html">file_system</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/handlers.html">handlers</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../reference/logging/index.html">logging</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../reference/logging/config.html">config</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../reference/logging/picologging.html">picologging</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../reference/logging/standard.html">standard</a></li>
-</ul>
-</li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/middleware/index.html">middleware</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/middleware/allowed_hosts.html">allowed_hosts</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/middleware/authentication.html">authentication</a></li>
@@ -329,7 +323,6 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/problem_details.html">problem details</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/prometheus.html">prometheus</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/pydantic.html">pydantic</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/structlog.html">structlog</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/repository/index.html">repository</a><ul>
@@ -469,11 +462,7 @@ data-aria-dark="Switch to auto color mode">
 <li><a class="reference internal" href="#using-behind-a-proxy">Using behind a proxy</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#logging-middleware">Logging Middleware</a><ul>
-<li><a class="reference internal" href="#obfuscating-logging-output">Obfuscating Logging Output</a></li>
-<li><a class="reference internal" href="#compression-and-logging-of-response-body">Compression and Logging of Response Body</a></li>
-</ul>
-</li>
+<li><a class="reference internal" href="#logging-middleware">Logging Middleware</a></li>
 <li><a class="reference internal" href="#session-middleware">Session Middleware</a><ul>
 <li><a class="reference internal" href="#setting-up-the-middleware">Setting up the middleware</a></li>
 <li><a class="reference internal" href="#client-side-sessions">Client-side sessions</a></li>
@@ -817,55 +806,7 @@ or hypercon’s <a class="reference external" href="https://hypercorn.readthedoc
 </section>
 <section id="logging-middleware">
 <h2>Logging Middleware<a class="headerlink" href="#logging-middleware" title="Link to this heading">¶</a></h2>
-<p>Litestar ships with a robust logging middleware that allows logging HTTP request and responses while building on
-the Litestar’s <a class="reference internal" href="../logging.html#logging-usage"><span class="std std-ref">logging configuration</span></a>:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
-</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.logging.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">LoggingConfig</span>
-</span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.middleware.logging</span><span class="w"> </span><span class="kn">import</span> <span class="n">LoggingMiddlewareConfig</span>
-</span><span data-line="4">
-</span><span data-line="5"><span class="n">logging_middleware_config</span> <span class="o">=</span> <span class="n">LoggingMiddlewareConfig</span><span class="p">()</span>
-</span><span data-line="6">
-</span><span data-line="7">
-</span><span data-line="8"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-</span><span data-line="9"><span class="k">def</span><span class="w"> </span><span class="nf">my_handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
-</span><span data-line="10">    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;hello&quot;</span><span class="p">:</span> <span class="s2">&quot;world&quot;</span><span class="p">}</span>
-</span><span data-line="11">
-</span><span data-line="12">
-</span><span data-line="13"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
-</span><span data-line="14">    <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">my_handler</span><span class="p">],</span>
-</span><span data-line="15">    <span class="n">logging_config</span><span class="o">=</span><span class="n">LoggingConfig</span><span class="p">(),</span>
-</span><span data-line="16">    <span class="n">middleware</span><span class="o">=</span><span class="p">[</span><span class="n">logging_middleware_config</span><span class="o">.</span><span class="n">middleware</span><span class="p">],</span>
-</span><span data-line="17"><span class="p">)</span>
-</span></pre></div>
-</div>
-<p>The logging middleware uses the logger configuration defined on the application level, which allows for using any supported logging tool, depending on the configuration used
-(see <a class="reference internal" href="../logging.html#logging-usage"><span class="std std-ref">logging configuration</span></a> for more details).</p>
-<section id="obfuscating-logging-output">
-<h3>Obfuscating Logging Output<a class="headerlink" href="#obfuscating-logging-output" title="Link to this heading">¶</a></h3>
-<p>Sometimes certain data, e.g. request or response headers, needs to be obfuscated. This is supported by the middleware
-configuration:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.middleware.logging</span><span class="w"> </span><span class="kn">import</span> <span class="n">LoggingMiddlewareConfig</span>
-</span><span data-line="2">
-</span><span data-line="3"><span class="n">logging_middleware_config</span> <span class="o">=</span> <span class="n">LoggingMiddlewareConfig</span><span class="p">(</span>
-</span><span data-line="4">    <span class="n">request_cookies_to_obfuscate</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;my-custom-session-key&quot;</span><span class="p">},</span>
-</span><span data-line="5">    <span class="n">response_cookies_to_obfuscate</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;my-custom-session-key&quot;</span><span class="p">},</span>
-</span><span data-line="6">    <span class="n">request_headers_to_obfuscate</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;my-custom-header&quot;</span><span class="p">},</span>
-</span><span data-line="7">    <span class="n">response_headers_to_obfuscate</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;my-custom-header&quot;</span><span class="p">},</span>
-</span><span data-line="8"><span class="p">)</span>
-</span></pre></div>
-</div>
-<p>The middleware will obfuscate the headers <code class="docutils literal notranslate"><span class="pre">Authorization</span></code> and <code class="docutils literal notranslate"><span class="pre">X-API-KEY</span></code> , and the cookie <code class="docutils literal notranslate"><span class="pre">session</span></code> by default.</p>
-</section>
-<section id="compression-and-logging-of-response-body">
-<h3>Compression and Logging of Response Body<a class="headerlink" href="#compression-and-logging-of-response-body" title="Link to this heading">¶</a></h3>
-<p>If both <a class="reference internal" href="../../reference/config.html#litestar.config.compression.CompressionConfig" title="litestar.config.compression.CompressionConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">CompressionConfig</span></code></a> and
-<a class="reference internal" href="../../reference/middleware/logging.html#litestar.middleware.logging.LoggingMiddleware" title="litestar.middleware.logging.LoggingMiddleware"><code class="xref py py-class docutils literal notranslate"><span class="pre">LoggingMiddleware</span></code></a> have been defined for the application, the response
-body will be omitted from response logging if it has been compressed, even if <code class="docutils literal notranslate"><span class="pre">&quot;body&quot;</span></code> has been included in
-<a class="reference internal" href="../../reference/middleware/logging.html#litestar.middleware.logging.LoggingMiddlewareConfig.response_log_fields" title="litestar.middleware.logging.LoggingMiddlewareConfig.response_log_fields"><code class="xref py py-class docutils literal notranslate"><span class="pre">response_log_fields</span></code></a>. To force the body of
-compressed responses to be logged, set
-<a class="reference internal" href="../../reference/middleware/logging.html#litestar.middleware.logging.LoggingMiddlewareConfig.include_compressed_body" title="litestar.middleware.logging.LoggingMiddlewareConfig.include_compressed_body"><code class="xref py py-attr docutils literal notranslate"><span class="pre">include_compressed_body</span></code></a> to <code class="docutils literal notranslate"><span class="pre">True</span></code> , in
-addition to including <code class="docutils literal notranslate"><span class="pre">&quot;body&quot;</span></code> in <code class="docutils literal notranslate"><span class="pre">response_log_fields</span></code>.</p>
-</section>
+<p>This content has moved to <a class="reference internal" href="../logging.html"><span class="doc">Request logging</span></a></p>
 </section>
 <section id="session-middleware">
 <h2>Session Middleware<a class="headerlink" href="#session-middleware" title="Link to this heading">¶</a></h2>

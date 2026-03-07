@@ -192,7 +192,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2"><a class="reference internal" href="../usage/file_systems.html">File Systems</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../usage/htmx.html">HTMX</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../usage/lifecycle-hooks.html">Life Cycle Hooks</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../usage/logging.html">Logging</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../usage/logging.html">Request logging</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../usage/metrics/index.html">Metrics</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../usage/metrics/open-telemetry.html">OpenTelemetry</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../usage/metrics/prometheus.html">Prometheus</a></li>
@@ -292,12 +292,6 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2"><a class="reference internal" href="exceptions.html">exceptions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="file_system.html">file_system</a></li>
 <li class="toctree-l2"><a class="reference internal" href="handlers.html">handlers</a></li>
-<li class="toctree-l2"><a class="reference internal" href="logging/index.html">logging</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="logging/config.html">config</a></li>
-<li class="toctree-l3"><a class="reference internal" href="logging/picologging.html">picologging</a></li>
-<li class="toctree-l3"><a class="reference internal" href="logging/standard.html">standard</a></li>
-</ul>
-</li>
 <li class="toctree-l2"><a class="reference internal" href="middleware/index.html">middleware</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="middleware/allowed_hosts.html">allowed_hosts</a></li>
 <li class="toctree-l3"><a class="reference internal" href="middleware/authentication.html">authentication</a></li>
@@ -329,7 +323,6 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l3"><a class="reference internal" href="plugins/problem_details.html">problem details</a></li>
 <li class="toctree-l3"><a class="reference internal" href="plugins/prometheus.html">prometheus</a></li>
 <li class="toctree-l3"><a class="reference internal" href="plugins/pydantic.html">pydantic</a></li>
-<li class="toctree-l3"><a class="reference internal" href="plugins/structlog.html">structlog</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="repository/index.html">repository</a><ul>
@@ -468,7 +461,6 @@ data-aria-dark="Switch to auto color mode">
 <li><a class="reference internal" href="#litestar.connection.ASGIConnection.client"><code class="docutils literal notranslate">client</span></code></a></li>
 <li><a class="reference internal" href="#litestar.connection.ASGIConnection.cookies"><code class="docutils literal notranslate">cookies</span></code></a></li>
 <li><a class="reference internal" href="#litestar.connection.ASGIConnection.headers"><code class="docutils literal notranslate">headers</span></code></a></li>
-<li><a class="reference internal" href="#litestar.connection.ASGIConnection.logger"><code class="docutils literal notranslate">logger</span></code></a></li>
 <li><a class="reference internal" href="#litestar.connection.ASGIConnection.path_params"><code class="docutils literal notranslate">path_params</span></code></a></li>
 <li><a class="reference internal" href="#litestar.connection.ASGIConnection.query_params"><code class="docutils literal notranslate">query_params</span></code></a></li>
 <li><a class="reference internal" href="#litestar.connection.ASGIConnection.route_handler"><code class="docutils literal notranslate">route_handler</span></code></a></li>
@@ -570,32 +562,6 @@ data-aria-dark="Switch to auto color mode">
         <article class="yue" role="main">
           <section id="module-litestar.connection">
 <span id="connection"></span><h1>connection<a class="headerlink" href="#module-litestar.connection" title="Link to this heading">¶</a></h1>
-<p>Some code in this module was adapted from <a class="reference external" href="https://github.com/encode/starlette/blob/master/starlette/requests.py">https://github.com/encode/starlette/blob/master/starlette/requests.py</a> and
-<a class="reference external" href="https://github.com/encode/starlette/blob/master/starlette/websockets.py">https://github.com/encode/starlette/blob/master/starlette/websockets.py</a>.</p>
-<p>Copyright © 2018, [Encode OSS Ltd](<a class="reference external" href="https://www.encode.io/">https://www.encode.io/</a>).
-All rights reserved.</p>
-<p>Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are met:</p>
-<ul class="simple">
-<li><p>Redistributions of source code must retain the above copyright notice, this
-list of conditions and the following disclaimer.</p></li>
-<li><p>Redistributions in binary form must reproduce the above copyright notice,
-this list of conditions and the following disclaimer in the documentation
-and/or other materials provided with the distribution.</p></li>
-<li><p>Neither the name of the copyright holder nor the names of its
-contributors may be used to endorse or promote products derived from
-this software without specific prior written permission.</p></li>
-</ul>
-<p>THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS “AS IS”
-AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
-FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="litestar.connection.ASGIConnection">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.connection.</span></span><span class="sig-name descname"><span class="pre">ASGIConnection</span></span><a class="reference internal" href="../_modules/litestar/connection/base.html#ASGIConnection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#litestar.connection.ASGIConnection" title="Link to this definition">¶</a></dt>
@@ -713,20 +679,6 @@ the session data to be cleared.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>A Headers instance with the request’s scope[“headers”] value.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="litestar.connection.ASGIConnection.logger">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">logger</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="types.html#litestar.types.Logger" title="litestar.types.Logger"><span class="pre">Logger</span></a></em><a class="headerlink" href="#litestar.connection.ASGIConnection.logger" title="Link to this definition">¶</a></dt>
-<dd><p>Return the <code class="docutils literal notranslate"><span class="pre">Logger</span></code> instance for this connection.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>A <code class="docutils literal notranslate"><span class="pre">Logger</span></code> instance.</p>
-</dd>
-<dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference internal" href="exceptions.html#litestar.exceptions.ImproperlyConfiguredException" title="litestar.exceptions.ImproperlyConfiguredException"><strong>ImproperlyConfiguredException</strong></a> – if <code class="docutils literal notranslate"><span class="pre">log_config</span></code> has not been passed to the Litestar constructor.</p>
 </dd>
 </dl>
 </dd></dl>

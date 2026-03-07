@@ -192,7 +192,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2"><a class="reference internal" href="../usage/file_systems.html">File Systems</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../usage/htmx.html">HTMX</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../usage/lifecycle-hooks.html">Life Cycle Hooks</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../usage/logging.html">Logging</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../usage/logging.html">Request logging</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../usage/metrics/index.html">Metrics</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../usage/metrics/open-telemetry.html">OpenTelemetry</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../usage/metrics/prometheus.html">Prometheus</a></li>
@@ -292,12 +292,6 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2"><a class="reference internal" href="../reference/exceptions.html">exceptions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/file_system.html">file_system</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/handlers.html">handlers</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../reference/logging/index.html">logging</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../reference/logging/config.html">config</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../reference/logging/picologging.html">picologging</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../reference/logging/standard.html">standard</a></li>
-</ul>
-</li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/middleware/index.html">middleware</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../reference/middleware/allowed_hosts.html">allowed_hosts</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/middleware/authentication.html">authentication</a></li>
@@ -329,7 +323,6 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l3"><a class="reference internal" href="../reference/plugins/problem_details.html">problem details</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/plugins/prometheus.html">prometheus</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/plugins/pydantic.html">pydantic</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../reference/plugins/structlog.html">structlog</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/repository/index.html">repository</a><ul>
@@ -515,9 +508,37 @@ data-aria-dark="Switch to auto color mode">
 <h1>3.x Changelog<a class="headerlink" href="#x-changelog" title="Link to this heading">¶</a></h1>
 <section id="3.0.0">
 <h2>3.0.0<a class="headerlink" href="#3.0.0" title="Link to this heading">¶</a></h2>
-<strong>Released: </strong>2024-08-30<section id="3.0.0-feature">
+<strong>Released: </strong>2364-01-27<section id="3.0.0-feature">
 <h3>Features<a class="headerlink" href="#3.0.0-feature" title="Link to this heading">¶</a></h3>
 <dl>
+<dt>Remove logging config and related constructs<a class="headerlink reference internal" href="#3.0.0-remove logging config and related constructs" id="3.0.0-remove logging config and related constructs">#</a><span class="breaking-change">breaking</span></dt><dd><div class="changelog-change docutils container">
+<p>Remove Litestar’s logging configuration, and related modules. In particular,
+the following have been removed:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Litestar.logging_config</span></code> parameter</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Litestar.logger</span></code> attribute</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Litestar.get_logger</span></code> method</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">AppConfig.logging_config</span></code> attribute</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ASGIConnection.logger</span></code> property</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">litestar.logging</span></code> module</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">litestar.plugins.structlog</span></code> module</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">litestar.middleware.lgging.LoggingMiddlewareConfig</span></code> class</p></li>
+</ul>
+<p>Aside from debugging, there is only one place where Litestar logs, which is
+<a class="reference internal" href="../reference/middleware/logging.html#litestar.middleware.logging.LoggingMiddleware" title="litestar.middleware.logging.LoggingMiddleware"><code class="xref py py-class docutils literal notranslate"><span class="pre">LoggingMiddleware</span></code></a>, which has been changed
+to accept a logger directly.
+<code class="docutils literal notranslate"><span class="pre">litestar.middleware.lgging.LoggingMiddlewareConfig</span></code> has also been removed,
+with <code class="docutils literal notranslate"><span class="pre">LoggingMiddleware</span></code> now accepting all configuration arguments directly.</p>
+<p>Users that have previously relied on Litestar to configure logging, can simply
+use the standard logging configuration provided by their logging library of
+choice.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="../usage/logging.html"><span class="doc">Request logging</span></a></p>
+</div>
+<p>References: <span><a class="reference external" href="https://github.com/litestar-org/litestar/issues/2858,">https://github.com/litestar-org/litestar/issues/2858,</a></span>, <span><a class="reference external" href="https://github.com/litestar-org/litestar/issues/3913,">https://github.com/litestar-org/litestar/issues/3913,</a></span>, <span><a class="reference external" href="https://github.com/litestar-org/litestar/issues/3455">https://github.com/litestar-org/litestar/issues/3455</a></span>, <span><a class="reference external" href="https://github.com/litestar-org/litestar/pull/4615">https://github.com/litestar-org/litestar/pull/4615</a></span></p>
+</div>
+</dd>
 <dt>Remove default exception handler for all unhandled exceptions<a class="headerlink reference internal" href="#3.0.0-remove default exception handler for all unhandled exceptions" id="3.0.0-remove default exception handler for all unhandled exceptions">#</a><span class="breaking-change">breaking</span></dt><dd><div class="changelog-change docutils container">
 <p>Remove the default exception handler for all unhandled exceptions. Unhandled
 exceptions will now be re-raised, for the server to handle.
@@ -600,7 +621,7 @@ which they run internally within a dedicated thread + event loop.</p>
 </div>
 </dd>
 <dt>Remove deprecated <code class="docutils literal notranslate"><span class="pre">traceback_line_limit</span></code> parameter of <code class="docutils literal notranslate"><span class="pre">LoggingConfig</span></code><a class="headerlink reference internal" href="#3.0.0-remove deprecated" id="3.0.0-remove deprecated">#</a><span class="breaking-change">breaking</span></dt><dd><div class="changelog-change docutils container">
-<p>The <code class="docutils literal notranslate"><span class="pre">traceback_line_limit</span></code> parameter of <a class="reference internal" href="../reference/logging/config.html#litestar.logging.config.LoggingConfig" title="litestar.logging.config.LoggingConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">LoggingConfig</span></code></a> has been removed. This
+<p>The <code class="docutils literal notranslate"><span class="pre">traceback_line_limit</span></code> parameter of <code class="docutils literal notranslate"><span class="pre">litestar.logging.config.LoggingConfig</span></code> has been removed. This
 parameter had no effect since version <code class="docutils literal notranslate"><span class="pre">2.9.0</span></code>, so it can be removed safely from applications without any
 change in behaviour.</p>
 <p>References: <span><a class="reference external" href="https://github.com/litestar-org/litestar/pull/4300">https://github.com/litestar-org/litestar/pull/4300</a></span></p>

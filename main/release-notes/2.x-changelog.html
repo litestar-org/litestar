@@ -192,7 +192,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2"><a class="reference internal" href="../usage/file_systems.html">File Systems</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../usage/htmx.html">HTMX</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../usage/lifecycle-hooks.html">Life Cycle Hooks</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../usage/logging.html">Logging</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../usage/logging.html">Request logging</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../usage/metrics/index.html">Metrics</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../usage/metrics/open-telemetry.html">OpenTelemetry</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../usage/metrics/prometheus.html">Prometheus</a></li>
@@ -292,12 +292,6 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2"><a class="reference internal" href="../reference/exceptions.html">exceptions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/file_system.html">file_system</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/handlers.html">handlers</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../reference/logging/index.html">logging</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../reference/logging/config.html">config</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../reference/logging/picologging.html">picologging</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../reference/logging/standard.html">standard</a></li>
-</ul>
-</li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/middleware/index.html">middleware</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../reference/middleware/allowed_hosts.html">allowed_hosts</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/middleware/authentication.html">authentication</a></li>
@@ -329,7 +323,6 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l3"><a class="reference internal" href="../reference/plugins/problem_details.html">problem details</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/plugins/prometheus.html">prometheus</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/plugins/pydantic.html">pydantic</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../reference/plugins/structlog.html">structlog</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/repository/index.html">repository</a><ul>
@@ -1040,8 +1033,8 @@ added to the exception response.</p>
 <h3>Features<a class="headerlink" href="#2.6.0-feature" title="Link to this heading">¶</a></h3>
 <dl>
 <dt>Enable disabling configuring <code class="docutils literal notranslate"><span class="pre">root</span></code> logger within <code class="docutils literal notranslate"><span class="pre">LoggingConfig</span></code><a class="headerlink reference internal" href="#2.6.0-enable disabling configuring" id="2.6.0-enable disabling configuring">#</a></dt><dd><div class="changelog-change docutils container">
-<p>The option <a class="reference internal" href="../reference/logging/config.html#litestar.logging.config.LoggingConfig.configure_root_logger" title="litestar.logging.config.LoggingConfig.configure_root_logger"><code class="xref py py-attr docutils literal notranslate"><span class="pre">configure_root_logger</span></code></a> was
-added to <a class="reference internal" href="../reference/logging/config.html#litestar.logging.config.LoggingConfig" title="litestar.logging.config.LoggingConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">LoggingConfig</span></code></a> attribute. It is enabled by
+<p>The option <code class="docutils literal notranslate"><span class="pre">litestar.logging.config.LoggingConfig.configure_root_logger</span></code> was
+added to <code class="docutils literal notranslate"><span class="pre">litestar.logging.config.LoggingConfig</span></code> attribute. It is enabled by
 default to not implement a breaking change.</p>
 <p>When set to <code class="docutils literal notranslate"><span class="pre">False</span></code> the <code class="docutils literal notranslate"><span class="pre">root</span></code> logger will not be modified for <code class="docutils literal notranslate"><span class="pre">logging</span></code>
 or <code class="docutils literal notranslate"><span class="pre">picologging</span></code> loggers.</p>
@@ -1450,7 +1443,7 @@ temporary file has been rolled to disk</p></li>
 </dd>
 <dt>Fix error message of <code class="docutils literal notranslate"><span class="pre">get_logger_placeholder()</span></code><a class="headerlink reference internal" href="#2.4.5-fix error message of" id="2.4.5-fix error message of">#</a></dt><dd><div class="changelog-change docutils container">
 <p>Using a method on
-<a class="reference internal" href="../reference/connection.html#litestar.connection.ASGIConnection.logger" title="litestar.connection.ASGIConnection.logger"><code class="xref py py-attr docutils literal notranslate"><span class="pre">Request.logger</span></code></a> when not
+<code class="docutils literal notranslate"><span class="pre">Request.logger</span></code> when not
 setting a <code class="docutils literal notranslate"><span class="pre">logging_config</span></code> on the application would result in a non-descriptive
 <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.14)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">TypeError</span></code></a>. An <a class="reference internal" href="../reference/exceptions.html#litestar.exceptions.ImproperlyConfiguredException" title="litestar.exceptions.ImproperlyConfiguredException"><code class="xref py py-exc docutils literal notranslate"><span class="pre">ImproperlyConfiguredException</span></code></a> with an explanation is
 now raised instead.</p>

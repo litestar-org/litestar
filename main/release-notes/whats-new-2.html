@@ -192,7 +192,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2"><a class="reference internal" href="../usage/file_systems.html">File Systems</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../usage/htmx.html">HTMX</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../usage/lifecycle-hooks.html">Life Cycle Hooks</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../usage/logging.html">Logging</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../usage/logging.html">Request logging</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../usage/metrics/index.html">Metrics</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../usage/metrics/open-telemetry.html">OpenTelemetry</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../usage/metrics/prometheus.html">Prometheus</a></li>
@@ -292,12 +292,6 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2"><a class="reference internal" href="../reference/exceptions.html">exceptions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/file_system.html">file_system</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/handlers.html">handlers</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../reference/logging/index.html">logging</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../reference/logging/config.html">config</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../reference/logging/picologging.html">picologging</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../reference/logging/standard.html">standard</a></li>
-</ul>
-</li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/middleware/index.html">middleware</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../reference/middleware/allowed_hosts.html">allowed_hosts</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/middleware/authentication.html">authentication</a></li>
@@ -329,7 +323,6 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l3"><a class="reference internal" href="../reference/plugins/problem_details.html">problem details</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/plugins/prometheus.html">prometheus</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/plugins/pydantic.html">pydantic</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../reference/plugins/structlog.html">structlog</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/repository/index.html">repository</a><ul>
@@ -645,13 +638,13 @@ following the last alpha release of Starlite 2.0,
 <td><p><a class="reference internal" href="../reference/template.html#litestar.template.TemplateConfig" title="litestar.template.TemplateConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">template.TemplateConfig</span></code></a></p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">starlite.BaseLoggingConfig</span></code></p></td>
-<td><p><a class="reference internal" href="../reference/logging/config.html#litestar.logging.config.BaseLoggingConfig" title="litestar.logging.config.BaseLoggingConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">logging.config.BaseLoggingConfig</span></code></a></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">litestar.logging.config.BaseLoggingConfig</span></code></p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">starlite.LoggingConfig</span></code></p></td>
-<td><p><a class="reference internal" href="../reference/logging/config.html#litestar.logging.config.LoggingConfig" title="litestar.logging.config.LoggingConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">logging.config.LoggingConfig</span></code></a></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">litestar.logging.config.LoggingConfig</span></code></p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">starlite.StructLoggingConfig</span></code></p></td>
-<td><p><a class="reference internal" href="../reference/logging/config.html#litestar.logging.config.StructLoggingConfig" title="litestar.logging.config.StructLoggingConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">logging.config.StructLoggingConfig</span></code></a></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">litestar.logging.config.StructLoggingConfig</span></code></p></td>
 </tr>
 <tr class="row-even"><td colspan="2"><p><strong>Provide</strong></p></td>
 </tr>
@@ -1129,7 +1122,7 @@ and can be used to define DTOs:</p>
 <div class="admonition">
 <p class="admonition-title">Run it</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span data-line="1">&gt;<span class="w"> </span>curl<span class="w"> </span>http://127.0.0.1:8000/users<span class="w"> </span>-H<span class="w"> </span>Content-Type:<span class="w"> </span>application/json<span class="w"> </span>-d<span class="w"> </span><span class="o">{</span><span class="s2">&quot;userName&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span>,<span class="s2">&quot;password&quot;</span>:<span class="s2">&quot;xyz&quot;</span>,<span class="s2">&quot;created_at&quot;</span>:<span class="s2">&quot;2023-04-24T00:00:00Z&quot;</span><span class="o">}</span>
-</span><span data-line="2"><span class="o">{</span><span class="s2">&quot;created_at&quot;</span>:<span class="s2">&quot;0001-01-01T00:00:00&quot;</span>,<span class="s2">&quot;id&quot;</span>:<span class="s2">&quot;84fe33d0-130a-4f5d-a167-b1229e1e8a90&quot;</span>,<span class="s2">&quot;userName&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span><span class="o">}</span>
+</span><span data-line="2"><span class="o">{</span><span class="s2">&quot;created_at&quot;</span>:<span class="s2">&quot;0001-01-01T00:00:00&quot;</span>,<span class="s2">&quot;id&quot;</span>:<span class="s2">&quot;57585499-9679-4154-b18c-eb487f1bd771&quot;</span>,<span class="s2">&quot;userName&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span><span class="o">}</span>
 </span></pre></div>
 </div>
 </div>
@@ -1246,7 +1239,7 @@ and can be used to define DTOs:</p>
 <div class="admonition">
 <p class="admonition-title">Run it</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span data-line="1">&gt;<span class="w"> </span>curl<span class="w"> </span>http://127.0.0.1:8000/users<span class="w"> </span>-H<span class="w"> </span>Content-Type:<span class="w"> </span>application/json<span class="w"> </span>-d<span class="w"> </span><span class="o">{</span><span class="s2">&quot;name&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span>,<span class="s2">&quot;password&quot;</span>:<span class="s2">&quot;xyz&quot;</span>,<span class="s2">&quot;created_at&quot;</span>:<span class="s2">&quot;2023-04-24T00:00:00Z&quot;</span><span class="o">}</span>
-</span><span data-line="2"><span class="o">{</span><span class="s2">&quot;created_at&quot;</span>:<span class="s2">&quot;0001-01-01T00:00:00&quot;</span>,<span class="s2">&quot;id&quot;</span>:<span class="s2">&quot;917c3c51-a908-41df-8b3f-c80caeafd0f0&quot;</span>,<span class="s2">&quot;name&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span><span class="o">}</span>
+</span><span data-line="2"><span class="o">{</span><span class="s2">&quot;created_at&quot;</span>:<span class="s2">&quot;0001-01-01T00:00:00&quot;</span>,<span class="s2">&quot;id&quot;</span>:<span class="s2">&quot;736e83b0-46ff-496d-86da-d1d6374b27fb&quot;</span>,<span class="s2">&quot;name&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span><span class="o">}</span>
 </span></pre></div>
 </div>
 </div>
