@@ -32,7 +32,6 @@ Routing
 
             from flask import Flask
 
-
             app = Flask(__name__)
 
 
@@ -77,7 +76,6 @@ Path parameters
         .. code-block:: python
 
             from flask import Flask
-
 
             app = Flask(__name__)
 
@@ -146,7 +144,6 @@ the request can be accessed through an optional parameter in the handler functio
         .. code-block:: python
 
             from flask import Flask, request
-
 
             app = Flask(__name__)
 
@@ -275,12 +272,14 @@ in Litestar.
 
 .. code-block:: python
 
-   from litestar import Litestar
-   from litestar.static_files import create_static_files_router
+    from litestar import Litestar
+    from litestar.static_files import create_static_files_router
 
-    app = Litestar(route_handlers=[
-        create_static_files_router(path="/static", directories=["assets"]),
-    ])
+    app = Litestar(
+        route_handlers=[
+            create_static_files_router(path="/static", directories=["assets"]),
+        ]
+    )
 
 ..  seealso::
 
@@ -303,7 +302,6 @@ In addition to Jinja, Litestar supports `Mako <https://www.makotemplates.org/>`_
         .. code-block:: python
 
             from flask import Flask, render_template
-
 
             app = Flask(__name__)
 
@@ -332,7 +330,9 @@ In addition to Jinja, Litestar supports `Mako <https://www.makotemplates.org/>`_
 
             app = Litestar(
                 [hello],
-                template_config=TemplateConfig(directory="templates", engine=JinjaTemplateEngine),
+                template_config=TemplateConfig(
+                    directory="templates", engine=JinjaTemplateEngine
+                ),
             )
 
 
@@ -352,7 +352,6 @@ Setting cookies and headers
         .. code-block:: python
 
             from flask import Flask, make_response
-
 
             app = Flask(__name__)
 
@@ -416,7 +415,6 @@ For redirects, instead of ``redirect`` use ``Redirect``:
 
             from flask import Flask, redirect, url_for
 
-
             app = Flask(__name__)
 
 
@@ -467,7 +465,6 @@ Instead of using the ``abort`` function, raise an ``HTTPException``:
 
             from flask import Flask, abort
 
-
             app = Flask(__name__)
 
 
@@ -510,7 +507,6 @@ Setting status codes
         .. code-block:: python
 
             from flask import Flask
-
 
             app = Flask(__name__)
 
@@ -557,7 +553,6 @@ the data returned is intended to be serialized into JSON and will do so unless t
         .. code-block:: python
 
             from flask import Flask, Response
-
 
             app = Flask(__name__)
 
@@ -616,7 +611,6 @@ Error handling
 
             from flask import Flask
             from werkzeug.exceptions import HTTPException
-
 
             app = Flask(__name__)
 

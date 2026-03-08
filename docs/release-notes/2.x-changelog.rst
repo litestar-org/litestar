@@ -276,8 +276,10 @@
             from litestar import post, Litestar
             from litestar.dto import MsgspecDTO
 
+
             class Request(msgspec.Struct):
                 foo: Annotated[str, msgspec.Meta(min_length=3)]
+
 
             @post("/example/", dto=MsgspecDTO[Request])
             async def example(data: Request) -> Request:
@@ -449,7 +451,9 @@
         .. code-block:: python
 
             app = Litestar(
-                static_files_config=[StaticFilesConfig(path="/static", directories=["some_dir"])]
+                static_files_config=[
+                    StaticFilesConfig(path="/static", directories=["some_dir"])
+                ]
             )
 
 
@@ -724,7 +728,9 @@
 
             @post(path="/")
             async def upload_files_object(
-                data: Annotated[FileUpload, Body(media_type=RequestEncodingType.MULTI_PART)]
+                data: Annotated[
+                    FileUpload, Body(media_type=RequestEncodingType.MULTI_PART)
+                ],
             ) -> list[str]:
                 pass
 
@@ -1190,7 +1196,9 @@
                 bars: list[Bar]
 
 
-            FooDTO = DataclassDTO[Annotated[Foo, DTOConfig(rename_fields={"bars.0.id": "bar_id"})]]
+            FooDTO = DataclassDTO[
+                Annotated[Foo, DTOConfig(rename_fields={"bars.0.id": "bar_id"})]
+            ]
 
 
 .. changelog:: 2.3.2
@@ -1777,7 +1785,9 @@
         .. code-block:: python
 
             locations, total_count = await model_service.list_and_count(
-                statement=select(Model).where(ST_DWithin(UniqueLocation.location, geog, 1000)),
+                statement=select(Model).where(
+                    ST_DWithin(UniqueLocation.location, geog, 1000)
+                ),
                 account_id=str(account_id),
             )
 
