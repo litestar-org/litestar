@@ -721,9 +721,6 @@ If you want to send a different event type, you can use a dictionary with the ke
 
     You can further customize all the sse parameters, add comments, and set the retry duration by using the :class:`ServerSentEvent <.response.ServerSentEvent>` class directly or by using the :class:`ServerSentEventMessage <.response.ServerSentEventMessage>` or dictionaries with the appropriate keys.
 
-Keepalive Pings
-^^^^^^^^^^^^^^^
-
 To prevent reverse proxies or clients from closing idle SSE connections, use the ``ping_interval`` parameter:
 
 .. code-block:: python
