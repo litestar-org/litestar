@@ -219,12 +219,12 @@ async def test_sse_ping_with_str_chunks() -> None:
 
     received: list[bytes] = []
 
-    async def mock_send(message: "Message") -> None:
+    async def mock_send(message: Message) -> None:
         if message.get("type") == "http.response.body":
             body = message.get("body", b"")
             received.append(body if isinstance(body, bytes) else b"")
 
-    async def mock_receive() -> "HTTPDisconnectEvent":
+    async def mock_receive() -> HTTPDisconnectEvent:
         await anyio.sleep(10)
         return {"type": "http.disconnect"}
 
