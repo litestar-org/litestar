@@ -8,7 +8,7 @@ from httpx_sse import aconnect_sse
 from litestar import get
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.response import ServerSentEvent
-from litestar.response.sse import ServerSentEventMessage
+from litestar.response.sse import ASGIStreamingSSEResponse, ServerSentEventMessage
 from litestar.testing import create_async_test_client
 from litestar.types import SSEData
 
@@ -195,3 +195,34 @@ async def test_sse_concurrent_ping_and_data() -> None:
         # All 20 data events should be present
         for i in range(20):
             assert f"data: {i}\r\n" in body
+
+
+async def test_sse_ping_with_str_chunks() -> None:
+    """ASGIStreamingSSEResponse handles str chunks correctly when ping is enabled."""
+
+    async def str_iterator() -> AsyncIterator[str]:
+        yield "hello"
+        yield "world"
+
+    response = ASGIStreamingSSEResponse(
+        iterator=str_iterator(),
+        ping_interval=0.1,
+        media_type="text/event-stream",
+        status_code=200,
+    )
+
+    received: list[bytes] = []
+
+    async def mock_send(message: dict) -> None:  # type: ignore[type-arg]
+        if message.get("type") == "http.response.body":
+            received.append(message.get("body", b""))
+
+    async def mock_receive() -> dict:  # type: ignore[type-arg]
+        await anyio.sleep(10)
+        return {"type": "http.disconnect"}
+
+    await response.send_body(mock_send, mock_receive)
+
+    body = b"".join(received).decode()
+    assert "hello" in body
+    assert "world" in body
