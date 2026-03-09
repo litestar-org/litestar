@@ -1,4 +1,7 @@
+from __future__ import annotations
+
 from collections.abc import AsyncIterator, Iterator
+from typing import TYPE_CHECKING
 
 import anyio
 import pytest
@@ -11,6 +14,9 @@ from litestar.response import ServerSentEvent
 from litestar.response.sse import ASGIStreamingSSEResponse, ServerSentEventMessage
 from litestar.testing import create_async_test_client
 from litestar.types import SSEData
+
+if TYPE_CHECKING:
+    from litestar.types.asgi_types import HTTPDisconnectEvent, Message
 
 
 async def test_sse_steaming_response() -> None:
@@ -213,11 +219,12 @@ async def test_sse_ping_with_str_chunks() -> None:
 
     received: list[bytes] = []
 
-    async def mock_send(message: dict) -> None:  # type: ignore[type-arg]
+    async def mock_send(message: "Message") -> None:
         if message.get("type") == "http.response.body":
-            received.append(message.get("body", b""))
+            body = message.get("body", b"")
+            received.append(body if isinstance(body, bytes) else b"")
 
-    async def mock_receive() -> dict:  # type: ignore[type-arg]
+    async def mock_receive() -> "HTTPDisconnectEvent":
         await anyio.sleep(10)
         return {"type": "http.disconnect"}
 
