@@ -99,3 +99,99 @@ async def test_various_sse_inputs(input: str, expected_events: list[HTTPXServerS
 def test_invalid_content_type_raises() -> None:
     with pytest.raises(ImproperlyConfiguredException):
         ServerSentEvent(content=object())  # type: ignore[arg-type]
+
+
+async def test_sse_without_ping_interval_works_unchanged() -> None:
+    """Regression test: SSE without ping_interval behaves exactly as before."""
+
+    @get("/test")
+    async def handler() -> ServerSentEvent:
+        async def gen() -> AsyncIterator[str]:
+            for i in range(3):
+                yield str(i)
+
+        return ServerSentEvent(gen())
+
+    async with create_async_test_client(handler) as client:
+        async with aconnect_sse(client, "GET", f"{client.base_url}/test") as event_source:
+            events = [sse async for sse in event_source.aiter_sse()]
+            assert len(events) == 3
+            for idx, sse in enumerate(events):
+                assert sse.data == str(idx)
+
+
+async def test_sse_ping_interval_sends_keepalive_comments() -> None:
+    """SSE with ping_interval sends keepalive comments during idle periods."""
+
+    @get("/test")
+    async def handler() -> ServerSentEvent:
+        async def gen() -> AsyncIterator[str]:
+            await anyio.sleep(0.35)
+            yield "done"
+
+        return ServerSentEvent(gen(), ping_interval=0.1)
+
+    async with create_async_test_client(handler) as client:
+        response = await client.get("/test")
+        body = response.content.decode()
+        # Should contain at least one ping comment
+        assert ": ping\r\n\r\n" in body
+        # Should also contain the actual data
+        assert "data: done" in body
+
+
+async def test_sse_ping_uses_comments_not_events() -> None:
+    """Pings must be SSE comments (start with ':'), not 'event: ping'."""
+
+    @get("/test")
+    async def handler() -> ServerSentEvent:
+        async def gen() -> AsyncIterator[str]:
+            await anyio.sleep(0.25)
+            yield "data"
+
+        return ServerSentEvent(gen(), ping_interval=0.1)
+
+    async with create_async_test_client(handler) as client:
+        response = await client.get("/test")
+        body = response.content.decode()
+        assert ": ping\r\n" in body
+        assert "event: ping" not in body
+
+
+async def test_sse_ping_stops_when_stream_ends() -> None:
+    """Ping task should stop cleanly when the stream ends without task leaks."""
+
+    @get("/test")
+    async def handler() -> ServerSentEvent:
+        async def gen() -> AsyncIterator[str]:
+            yield "hello"
+            yield "world"
+
+        return ServerSentEvent(gen(), ping_interval=0.1)
+
+    async with create_async_test_client(handler) as client:
+        async with aconnect_sse(client, "GET", f"{client.base_url}/test") as event_source:
+            events = [sse async for sse in event_source.aiter_sse()]
+            assert len(events) == 2
+            assert events[0].data == "hello"
+            assert events[1].data == "world"
+
+
+async def test_sse_concurrent_ping_and_data() -> None:
+    """Rapid data emission with short ping interval should not corrupt the response."""
+
+    @get("/test")
+    async def handler() -> ServerSentEvent:
+        async def gen() -> AsyncIterator[str]:
+            for i in range(20):
+                await anyio.sleep(0.02)
+                yield str(i)
+
+        return ServerSentEvent(gen(), ping_interval=0.05)
+
+    async with create_async_test_client(handler) as client:
+        response = await client.get("/test")
+        body = response.content.decode()
+        # All 20 data events should be present
+        for i in range(20):
+            assert f"data: {i}\r\n" in body

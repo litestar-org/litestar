@@ -16,6 +16,14 @@
         applications already using Pydantic 2. Applications using Pydantic 1 or a mix
         between 1 and 2 should upgrade to Pydantic 2.
 
+    .. change:: Add ``ping_interval`` to ``ServerSentEvent`` for keepalive pings
+        :type: feature
+        :issue: 4082
+
+        Added optional ``ping_interval`` parameter to :class:`ServerSentEvent <litestar.response.ServerSentEvent>` that
+        sends SSE comment keepalive pings at the specified interval to prevent connection timeouts from reverse proxies
+        or clients.
+
     .. change:: Remove logging config and related constructs
         :type: feature
         :breaking:

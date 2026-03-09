@@ -721,6 +721,25 @@ If you want to send a different event type, you can use a dictionary with the ke
 
     You can further customize all the sse parameters, add comments, and set the retry duration by using the :class:`ServerSentEvent <.response.ServerSentEvent>` class directly or by using the :class:`ServerSentEventMessage <.response.ServerSentEventMessage>` or dictionaries with the appropriate keys.
 
+Keepalive Pings
+~~~~~~~~~~~~~~~
+
+To prevent reverse proxies or clients from closing idle SSE connections, use the ``ping_interval`` parameter:
+
+.. code-block:: python
+
+    @get("/stream")
+    async def stream_handler() -> ServerSentEvent:
+        async def generator():
+            while True:
+                data = await get_data()
+                yield data
+
+        return ServerSentEvent(generator(), ping_interval=15)
+
+This sends an SSE comment (``: ping``) every 15 seconds to keep the connection alive. SSE comments are invisible to
+``EventSource`` clients and will not trigger message events.
+
 
 Template Responses
 ------------------
