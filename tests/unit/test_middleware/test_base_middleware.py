@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Union
+from typing import TYPE_CHECKING, Any, Union, cast
 from unittest.mock import MagicMock, call
 from warnings import catch_warnings
 
@@ -9,6 +9,7 @@ from litestar.datastructures.headers import MutableScopeHeaders
 from litestar.enums import ScopeType
 from litestar.exceptions import LitestarWarning, ValidationException
 from litestar.middleware import AbstractMiddleware, ASGIMiddleware, DefineMiddleware
+from litestar.middleware._utils import should_bypass_middleware
 from litestar.response.base import ASGIResponse
 from litestar.status_codes import HTTP_400_BAD_REQUEST
 from litestar.testing import create_test_client
@@ -409,3 +410,54 @@ def test_asgi_middleware_exclude_by_opt_key() -> None:
     with create_test_client(handler, middleware=[SubclassMiddleware()]) as client:
         assert client.get("/").status_code == 200
         mock.assert_not_called()
+
+
+def test_should_bypass_middleware_exclude_opt_key_without_route_handler_in_scope() -> None:
+    """Test that should_bypass_middleware does not raise KeyError when
+    'route_handler' is not yet set in the ASGI scope.
+
+    This can happen when a middleware wraps the entire ASGI application
+    (including the router), such as OpenTelemetry, and runs before the
+    route has been resolved.
+
+    Regression test for https://github.com/litestar-org/litestar/issues/4468
+    """
+    scope = cast("Scope", {"type": "http", "path": "/test", "method": "GET"})
+    result = should_bypass_middleware(
+        exclude_opt_key="skip_middleware",
+        scope=scope,
+        scopes={ScopeType.HTTP},
+    )
+    # Without route_handler in scope, the middleware should NOT be bypassed
+    # (it cannot determine if the handler opts out, so it should run)
+    assert result is False
+
+
+def test_should_bypass_middleware_exclude_opt_key_with_route_handler_in_scope() -> None:
+    """Test that should_bypass_middleware correctly checks exclude_opt_key
+    when route_handler IS present in scope."""
+    handler_mock = MagicMock()
+    handler_mock.opt = {"skip_middleware": True}
+
+    scope = cast("Scope", {"type": "http", "path": "/test", "method": "GET", "route_handler": handler_mock})
+    result = should_bypass_middleware(
+        exclude_opt_key="skip_middleware",
+        scope=scope,
+        scopes={ScopeType.HTTP},
+    )
+    assert result is True
+
+
+def test_should_bypass_middleware_exclude_opt_key_handler_without_opt() -> None:
+    """Test that should_bypass_middleware does not bypass when the route_handler
+    exists but does not have the opt key set."""
+    handler_mock = MagicMock()
+    handler_mock.opt = {}
+
+    scope = cast("Scope", {"type": "http", "path": "/test", "method": "GET", "route_handler": handler_mock})
+    result = should_bypass_middleware(
+        exclude_opt_key="skip_middleware",
+        scope=scope,
+        scopes={ScopeType.HTTP},
+    )
+    assert result is False
