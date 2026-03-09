@@ -148,11 +148,9 @@ class ASGIStreamingSSEResponse(ASGIStreamingResponse):
         self._send_lock = anyio.Lock() if ping_interval is not None else None
 
     async def _send(self, send: Send, payload: bytes) -> None:
-        """Send a body chunk, using a lock when ping is enabled for concurrent safety."""
-        if self._send_lock is not None:
-            async with self._send_lock:
-                await send({"type": "http.response.body", "body": payload, "more_body": True})
-        else:
+        """Send a body chunk with lock for concurrent ping/stream safety."""
+        assert self._send_lock is not None  # noqa: S101
+        async with self._send_lock:
             await send({"type": "http.response.body", "body": payload, "more_body": True})
 
     async def _ping(self, send: Send, stop_event: anyio.Event) -> None:
