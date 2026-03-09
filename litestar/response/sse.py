@@ -175,8 +175,8 @@ class ASGIStreamingSSEResponse(ASGIStreamingResponse):
             tg.start_soon(self._ping, send, stop_event)
 
             async for chunk in self.iterator:
-                payload = chunk if isinstance(chunk, bytes) else chunk.encode(self.encoding)
-                await self._send(send, payload)
+                data = chunk if isinstance(chunk, bytes) else chunk.encode(self.encoding)
+                await self._send(send, data)
 
             stop_event.set()
             tg.cancel_scope.cancel()
@@ -273,10 +273,6 @@ class ServerSentEvent(Stream):
         cookies = self.cookies if cookies is None else itertools.chain(self.cookies, cookies)
         media_type = get_enum_string_value(media_type or self.media_type or MediaType.JSON)
 
-        iterator = self.iterator
-        if not isinstance(iterator, (Iterable, Iterator, AsyncIterable, AsyncIterator)) and callable(iterator):
-            iterator = iterator()
-
         return ASGIStreamingSSEResponse(
             ping_interval=self.ping_interval,
             background=self.background or background,
@@ -285,7 +281,7 @@ class ServerSentEvent(Stream):
             encoding=self.encoding,
             headers=headers,
             is_head_response=is_head_response,
-            iterator=iterator,
+            iterator=self.iterator,
             media_type=media_type,
             status_code=self.status_code or status_code,
         )
