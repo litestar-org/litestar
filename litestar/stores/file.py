@@ -1,8 +1,8 @@
 from __future__ import annotations
 
+import hashlib
 import os
 import shutil
-import unicodedata
 from tempfile import mkstemp
 from typing import TYPE_CHECKING
 
@@ -21,12 +21,20 @@ if TYPE_CHECKING:
 
 
 def _safe_file_name(name: str) -> str:
-    name = unicodedata.normalize("NFKD", name)
-    return "".join(c if c.isalnum() else str(ord(c)) for c in name)
+    return hashlib.blake2s(name.encode()).hexdigest()
 
 
 class FileStore(NamespacedStore):
-    """File based, thread and process safe, asynchronous key/value store."""
+    """File based, thread and process safe, asynchronous key/value store.
+
+    .. note::
+
+        To ensure arbitrary keys can safely be stored on any file system without
+        potentially causing issues due to path separators or collisions, they are
+        hashed with BLAKE2 before being interpreted as a file path. This means that the
+        cache key becomes opaque inside the store, and a key does not translate to a
+        file with that name on the file system.
+    """
 
     __slots__ = {"create_directories": "flag to create directories in path", "path": "file path"}
 

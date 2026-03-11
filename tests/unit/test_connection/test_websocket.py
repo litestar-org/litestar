@@ -402,7 +402,7 @@ def test_websocket_exception() -> None:
         raise RuntimeError
 
     with (
-        pytest.RaisesGroup(pytest.RaisesExc(RuntimeError)),
+        pytest.raises(RuntimeError),
         TestClient(app) as client,
         client.websocket_connect("/123?a=abc"),
     ):

@@ -186,14 +186,24 @@ def test_listener_return_none() -> None:
 
 
 def test_listener_return_optional_none() -> None:
-    @websocket_listener("/")
-    def handler(data: str) -> Optional[str]:
+    @websocket_listener("/s")
+    def str_handler(data: str) -> Optional[str]:
         return "world" if data == "hello" else None
 
-    with create_test_client([handler]) as client, client.websocket_connect("/") as ws:
-        ws.send_text("hello")
-        assert ws.receive_text() == "world"
-        ws.send_text("goodbye")
+    @websocket_listener("/d")
+    def dict_handler(data: str) -> Optional[dict[str, str]]:
+        return {"message": "world"} if data == "hello" else None
+
+    with create_test_client([str_handler, dict_handler]) as client:
+        with client.websocket_connect("/s") as ws:
+            ws.send_text("hello")
+            assert ws.receive_text() == "world"
+            ws.send_text("goodbye")
+
+        with client.websocket_connect("/d") as ws:
+            ws.send_text("hello")
+            assert ws.receive_json() == {"message": "world"}
+            ws.send_text("goodbye")
 
 
 def test_listener_pass_socket(mock: MagicMock) -> None:

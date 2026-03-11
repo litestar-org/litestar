@@ -1,10 +1,9 @@
-from litestar import Litestar, Request, get
+from litestar import Litestar, get
 from litestar.datastructures import ResponseHeader
 
 
 @get("/")
-async def hello_world1(request: Request) -> None:
-    request.logger.info("inside request")
+async def hello_world1() -> None:
     return
 
 

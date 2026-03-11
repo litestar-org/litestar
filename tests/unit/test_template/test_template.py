@@ -167,7 +167,11 @@ def test_template_scenarios(tmp_path: Path, engine: TemplateEngineProtocol, test
     def index() -> Template:
         return Template(template_name=test_case["template_name"], template_str=test_case["template_str"])
 
-    with create_test_client([index], template_config=TemplateConfig(directory=tmp_path, engine=engine)) as client:
+    with create_test_client(
+        [index],
+        template_config=TemplateConfig(directory=tmp_path, engine=engine),
+        debug=True,
+    ) as client:
         if "raises" in test_case and test_case["raises"] is ValueError:
             response = client.get("/")
             assert response.status_code == 500

@@ -46,7 +46,7 @@ class TestClientTransport(AsyncBaseTransport, Generic[T]):
     def __init__(
         self,
         client: T,
-        raise_server_exceptions: bool = True,
+        raise_server_exceptions: bool = False,
         root_path: str = "",
     ) -> None:
         self.client = client
@@ -168,14 +168,20 @@ class TestClientTransport(AsyncBaseTransport, Generic[T]):
             if self.raise_server_exceptions:
                 raise exc
             return Response(
-                status_code=HTTP_500_INTERNAL_SERVER_ERROR, headers=[], stream=ByteStream(b""), request=request
+                status_code=HTTP_500_INTERNAL_SERVER_ERROR,
+                headers=[],
+                stream=ByteStream(b"500 - Internal Server Error"),
+                request=request,
             )
         else:
             if not context["response_started"]:  # pragma: no cover
                 if self.raise_server_exceptions:
                     assert context["response_started"], "TestClient did not receive any response."  # noqa: S101
                 return Response(
-                    status_code=HTTP_500_INTERNAL_SERVER_ERROR, headers=[], stream=ByteStream(b""), request=request
+                    status_code=HTTP_500_INTERNAL_SERVER_ERROR,
+                    headers=[],
+                    stream=ByteStream(b"500 - Internal Server Error"),
+                    request=request,
                 )
 
             stream = ByteStream(raw_kwargs.pop("stream", BytesIO()).read())
@@ -189,7 +195,7 @@ class SyncTestClientTransport(BaseTransport):
     def __init__(
         self,
         client: TestClient,
-        raise_server_exceptions: bool = True,
+        raise_server_exceptions: bool = False,
         root_path: str = "",
     ):
         self.client = client

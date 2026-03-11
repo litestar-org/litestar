@@ -39,6 +39,17 @@ class NestedDC:
 
 
 @dataclass
+class OptionalNestedInner:
+    value: str
+
+
+@dataclass
+class OptionalNestedOuter:
+    name: str
+    inner: Optional[OptionalNestedInner] = None
+
+
+@dataclass
 class DC:
     a: int
     nested: NestedDC
@@ -321,6 +332,26 @@ def test_backend_encode_collection_data(
     )
     data = backend.encode_data([STRUCTURED])
     assert encode_json(data) == COLLECTION_RAW
+
+
+def test_backend_encode_optional_nested_none(backend_cls: type[DTOBackend]) -> None:
+    """Encoding a model with an optional nested field set to None should not crash."""
+
+    class OuterDTO(DataclassDTO[OptionalNestedOuter]):
+        config = DTOConfig()
+
+    backend = backend_cls(
+        handler_id="test",
+        dto_factory=OuterDTO,
+        field_definition=FieldDefinition.from_annotation(OptionalNestedOuter),
+        model_type=OptionalNestedOuter,
+        wrapper_attribute_name=None,
+        is_data_field=False,
+    )
+    data = backend.encode_data(OptionalNestedOuter(name="test", inner=None))
+    result = to_builtins(data)
+    assert result["name"] == "test"
+    assert result["inner"] is None
 
 
 def test_transfer_only_touches_included_attributes(backend_cls: type[DTOBackend]) -> None:

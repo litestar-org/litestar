@@ -55,18 +55,6 @@ def test_token(
             "1",
         ),
         (
-            "HS256",
-            "",
-        ),
-        (
-            None,
-            None,
-        ),
-        (
-            "HS256",
-            None,
-        ),
-        (
             "",
             None,
         ),
@@ -85,7 +73,7 @@ def test_encode_validation(algorithm: str, secret: str) -> None:
         Token(
             sub="123",
             exp=(datetime.now(timezone.utc) + timedelta(seconds=30)),
-        ).encode(algorithm="nope", secret=secret)
+        ).encode(algorithm=algorithm, secret=secret)
 
 
 def test_decode_validation() -> None:
@@ -183,7 +171,7 @@ def test_strict_aud_with_multiple_audiences_raises(audience: str | list[str]) ->
         )
 
 
-@pytest.mark.parametrize("audience", ["foo", ["foo", "bar"]])
+@pytest.mark.parametrize("audience", ["foo", ["foo"]])
 def test_strict_aud_with_one_element_sequence(audience: str | list[str]) -> None:
     # when validating with strict audience, PyJWT requires that the 'audience' parameter
     # is passed as a string - one element lists are not allowed. Since we allow these
@@ -194,7 +182,7 @@ def test_strict_aud_with_one_element_sequence(audience: str | list[str]) -> None
         encoded,
         secret=secret,
         algorithm="HS256",
-        audience=["foo"],
+        audience=audience,
         strict_audience=True,
     )
 
@@ -236,7 +224,7 @@ def test_custom_decode_payload() -> None:
             encoded_token: str,
             secret: str | bytes,
             algorithms: list[str],
-            issuer: list[str] | None = None,
+            issuer: str | Sequence[str] | None = None,
             audience: str | Sequence[str] | None = None,
             options: JWTDecodeOptions | None = None,
         ) -> Any:
@@ -262,3 +250,23 @@ def test_token_encode_includes_custom_headers() -> None:
     assert header["alg"] == "HS256"
     assert "kid" in header
     assert header["kid"] == custom_headers["kid"]
+
+
+@pytest.mark.parametrize("issuer", [None, "text", ["list", "of", "values"]])
+def test_token_issuer(issuer: str | list[str] | None) -> None:
+    iss = issuer[0] if isinstance(issuer, list) else issuer
+    secret = secrets.token_hex()
+    encoded = Token(
+        exp=datetime.now() + timedelta(days=1),
+        sub="foo",
+        iss=iss,
+    ).encode(secret, "HS256")
+
+    token = Token.decode(
+        encoded,
+        secret=secret,
+        algorithm="HS256",
+        issuer=issuer,
+    )
+
+    assert token.iss == iss

@@ -1,8 +1,6 @@
 from __future__ import annotations
 
-from collections.abc import Collection, Iterable
-from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Callable
 
 from litestar.constants import (
     HTTP_RESPONSE_BODY,
@@ -15,17 +13,19 @@ from litestar.data_extractors import (
     ResponseExtractorField,
 )
 from litestar.enums import ScopeType
-from litestar.exceptions import ImproperlyConfiguredException
-from litestar.middleware.base import AbstractMiddleware, DefineMiddleware
+from litestar.middleware.base import ASGIMiddleware
 from litestar.serialization import encode_json
 from litestar.utils.empty import value_or_default
 from litestar.utils.scope import get_serializer_from_scope
 from litestar.utils.scope.state import ScopeState
 
-__all__ = ("LoggingMiddleware", "LoggingMiddlewareConfig")
+__all__ = ("LoggingMiddleware",)
 
 
 if TYPE_CHECKING:
+    import logging
+    from collections.abc import Iterable, Sequence
+
     from litestar.connection import Request
     from litestar.types import (
         ASGIApp,
@@ -37,80 +37,92 @@ if TYPE_CHECKING:
         Serializer,
     )
 
-try:
-    from structlog.types import BindableLogger
 
-    structlog_installed = True
-except ImportError:
-    BindableLogger = object  # type: ignore[assignment, misc]
-    structlog_installed = False
-
-
-class LoggingMiddleware(AbstractMiddleware):
+class LoggingMiddleware(ASGIMiddleware):
     """Logging middleware."""
 
-    logger: Logger
+    scopes = (ScopeType.HTTP,)
 
-    def __init__(self, app: ASGIApp, config: LoggingMiddlewareConfig) -> None:
-        """Initialize ``LoggingMiddleware``.
+    def __init__(
+        self,
+        logger: logging.Logger | Logger | str | Callable[[], Logger],
+        *,
+        exclude: str | list[str] | None = None,
+        exclude_opt_key: str | None = None,
+        include_compressed_body: bool = False,
+        request_cookies_to_obfuscate: Iterable[str] = ("session",),
+        request_headers_to_obfuscate: Iterable[str] = ("Authorization", "X-API-KEY"),
+        response_cookies_to_obfuscate: Iterable[str] = ("session",),
+        response_headers_to_obfuscate: Iterable[str] = ("Authorization", "X-API-KEY"),
+        request_log_message: str = "HTTP Request",
+        response_log_message: str = "HTTP Response",
+        request_log_fields: Sequence[RequestExtractorField] = (
+            "path",
+            "method",
+            "content_type",
+            "query",
+            "path_params",
+        ),
+        response_log_fields: Sequence[ResponseExtractorField] = ("status_code",),
+        parse_body: bool = False,
+        parse_query: bool = True,
+        log_structured: bool = False,
+    ) -> None:
+        self.exclude_opt_key = exclude_opt_key
+        self.exclude_path_pattern = tuple(exclude) if isinstance(exclude, list) else exclude
+        self.include_compressed_body = include_compressed_body
+        self.request_cookies_to_obfuscate = frozenset(request_cookies_to_obfuscate)
+        self.request_headers_to_obfuscate = frozenset(request_headers_to_obfuscate)
+        self.response_cookies_to_obfuscate = frozenset(response_cookies_to_obfuscate)
+        self.response_headers_to_obfuscate = frozenset(response_headers_to_obfuscate)
+        self.request_log_message = request_log_message
+        self.response_log_message = response_log_message
+        self.request_log_fields = request_log_fields
+        self.response_log_fields = response_log_fields
+        self.log_structured = log_structured
 
-        Args:
-            app: The ``next`` ASGI app to call.
-            config: An instance of LoggingMiddlewareConfig.
-        """
-        super().__init__(
-            app=app, scopes={ScopeType.HTTP}, exclude=config.exclude, exclude_opt_key=config.exclude_opt_key
-        )
-        self.is_struct_logger = structlog_installed
-        self.config = config
+        if isinstance(logger, str):
+            import logging
+
+            self.logger: Logger | logging.Logger = logging.getLogger(logger)
+        elif callable(logger):
+            self.logger = logger()
+        else:
+            self.logger = logger
 
         self.request_extractor = ConnectionDataExtractor(
-            extract_body="body" in self.config.request_log_fields,
-            extract_client="client" in self.config.request_log_fields,
-            extract_content_type="content_type" in self.config.request_log_fields,
-            extract_cookies="cookies" in self.config.request_log_fields,
-            extract_headers="headers" in self.config.request_log_fields,
-            extract_method="method" in self.config.request_log_fields,
-            extract_path="path" in self.config.request_log_fields,
-            extract_path_params="path_params" in self.config.request_log_fields,
-            extract_query="query" in self.config.request_log_fields,
-            extract_scheme="scheme" in self.config.request_log_fields,
-            obfuscate_cookies=self.config.request_cookies_to_obfuscate,
-            obfuscate_headers=self.config.request_headers_to_obfuscate,
-            parse_body=self.is_struct_logger,
-            parse_query=self.is_struct_logger,
+            extract_body="body" in self.request_log_fields,
+            extract_client="client" in self.request_log_fields,
+            extract_content_type="content_type" in self.request_log_fields,
+            extract_cookies="cookies" in self.request_log_fields,
+            extract_headers="headers" in self.request_log_fields,
+            extract_method="method" in self.request_log_fields,
+            extract_path="path" in self.request_log_fields,
+            extract_path_params="path_params" in self.request_log_fields,
+            extract_query="query" in self.request_log_fields,
+            extract_scheme="scheme" in self.request_log_fields,
+            obfuscate_cookies=self.request_cookies_to_obfuscate,
+            obfuscate_headers=self.request_headers_to_obfuscate,
+            parse_body=parse_body,
+            parse_query=parse_query,
             skip_parse_malformed_body=True,
         )
         self.response_extractor = ResponseDataExtractor(
-            extract_body="body" in self.config.response_log_fields,
-            extract_headers="headers" in self.config.response_log_fields,
-            extract_status_code="status_code" in self.config.response_log_fields,
-            obfuscate_cookies=self.config.response_cookies_to_obfuscate,
-            obfuscate_headers=self.config.response_headers_to_obfuscate,
+            extract_body="body" in self.response_log_fields,
+            extract_headers="headers" in self.response_log_fields,
+            extract_status_code="status_code" in self.response_log_fields,
+            obfuscate_cookies=self.response_cookies_to_obfuscate,
+            obfuscate_headers=self.response_headers_to_obfuscate,
         )
 
-    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
-        """ASGI callable.
-
-        Args:
-            scope: The ASGI connection scope.
-            receive: The ASGI receive function.
-            send: The ASGI send function.
-
-        Returns:
-            None
-        """
-        if not hasattr(self, "logger"):
-            self.logger = scope["litestar_app"].get_logger(self.config.logger_name)
-            self.is_struct_logger = structlog_installed and repr(self.logger).startswith("<BoundLoggerLazyProxy")
-
-        if self.config.response_log_fields:
+    async def handle(self, scope: Scope, receive: Receive, send: Send, next_app: ASGIApp) -> None:
+        if self.response_log_fields:
             send = self.create_send_wrapper(scope=scope, send=send)
 
-        if self.config.request_log_fields:
+        if self.request_log_fields:
             await self.log_request(scope=scope, receive=receive)
 
-        await self.app(scope, receive, send)
+        await next_app(scope, receive, send)
 
     async def log_request(self, scope: Scope, receive: Receive) -> None:
         """Extract request data and log the message.
@@ -147,15 +159,14 @@ class LoggingMiddleware(AbstractMiddleware):
             None
         """
         message = values.pop("message")
-        if self.is_struct_logger:
+        if self.log_structured:
             self.logger.info(message, **values)
         else:
-            value_strings = [f"{key}={value}" for key, value in values.items()]
-            log_message = f"{message}: {', '.join(value_strings)}"
-            self.logger.info(log_message)
+            extra_str = ", ".join(f"{k}={v}" for k, v in values.items())
+            self.logger.info(f"{message}: {extra_str}")  # noqa: G004
 
     def _serialize_value(self, serializer: Serializer | None, value: Any) -> Any:
-        if not self.is_struct_logger and isinstance(value, (dict, list, tuple, set)):
+        if not self.log_structured and isinstance(value, (dict, list, tuple, set)):
             value = encode_json(value, serializer)
         return value.decode("utf-8", errors="backslashreplace") if isinstance(value, bytes) else value
 
@@ -169,12 +180,12 @@ class LoggingMiddleware(AbstractMiddleware):
             An dict.
         """
 
-        data: dict[str, Any] = {"message": self.config.request_log_message}
+        data: dict[str, Any] = {"message": self.request_log_message}
         serializer = get_serializer_from_scope(request.scope)
 
-        extracted_data = await self.request_extractor.extract(connection=request, fields=self.config.request_log_fields)
+        extracted_data = await self.request_extractor.extract(connection=request, fields=self.request_log_fields)
 
-        for key in self.config.request_log_fields:
+        for key in self.request_log_fields:
             data[key] = self._serialize_value(serializer, extracted_data.get(key))
         return data
 
@@ -187,7 +198,7 @@ class LoggingMiddleware(AbstractMiddleware):
         Returns:
             An dict.
         """
-        data: dict[str, Any] = {"message": self.config.response_log_message}
+        data: dict[str, Any] = {"message": self.response_log_message}
         serializer = get_serializer_from_scope(scope)
         connection_state = ScopeState.from_scope(scope)
         extracted_data = self.response_extractor(
@@ -199,11 +210,11 @@ class LoggingMiddleware(AbstractMiddleware):
             ),
         )
         response_body_compressed = value_or_default(connection_state.response_compressed, False)
-        for key in self.config.response_log_fields:
+        for key in self.response_log_fields:
             value: Any
             value = extracted_data.get(key)
             if key == "body" and response_body_compressed:
-                if self.config.include_compressed_body:
+                if self.include_compressed_body:
                     data[key] = value
                 continue
             data[key] = self._serialize_value(serializer, value)
@@ -234,132 +245,3 @@ class LoggingMiddleware(AbstractMiddleware):
             await send(message)
 
         return send_wrapper
-
-
-@dataclass
-class LoggingMiddlewareConfig:
-    """Configuration for ``LoggingMiddleware``"""
-
-    exclude: str | list[str] | None = field(default=None)
-    """List of paths to exclude from logging."""
-    exclude_opt_key: str | None = field(default=None)
-    """An identifier to use on routes to disable logging for a particular route."""
-    include_compressed_body: bool = field(default=False)
-    """Include body of compressed response in middleware. If `"body"` not set in.
-    :attr:`response_log_fields <LoggingMiddlewareConfig.response_log_fields>` this config value is ignored.
-    """
-    logger_name: str = field(default="litestar")
-    """Name of the logger to retrieve using `app.get_logger("<name>")`."""
-    request_cookies_to_obfuscate: set[str] = field(default_factory=lambda: {"session"})
-    """Request cookie keys to obfuscate.
-
-    Obfuscated values are replaced with '*****'.
-    """
-    request_headers_to_obfuscate: set[str] = field(default_factory=lambda: {"Authorization", "X-API-KEY"})
-    """Request header keys to obfuscate.
-
-    Obfuscated values are replaced with '*****'.
-    """
-    response_cookies_to_obfuscate: set[str] = field(default_factory=lambda: {"session"})
-    """Response cookie keys to obfuscate.
-
-    Obfuscated values are replaced with '*****'.
-    """
-    response_headers_to_obfuscate: set[str] = field(default_factory=lambda: {"Authorization", "X-API-KEY"})
-    """Response header keys to obfuscate.
-
-    Obfuscated values are replaced with '*****'.
-    """
-    request_log_message: str = field(default="HTTP Request")
-    """Log message to prepend when logging a request."""
-    response_log_message: str = field(default="HTTP Response")
-    """Log message to prepend when logging a response."""
-    request_log_fields: Collection[RequestExtractorField] = field(
-        default=(
-            "path",
-            "method",
-            "content_type",
-            "headers",
-            "cookies",
-            "query",
-            "path_params",
-            "body",
-        )
-    )
-    """Fields to extract and log from the request.
-
-    Notes:
-        -  The order of fields in the iterable determines the order of the log message logged out.
-            Thus, re-arranging the log-message is as simple as changing the iterable.
-        -  To turn off logging of requests, use and empty iterable.
-    """
-    response_log_fields: Collection[ResponseExtractorField] = field(
-        default=(
-            "status_code",
-            "cookies",
-            "headers",
-            "body",
-        )
-    )
-    """Fields to extract and log from the response. The order of fields in the iterable determines the order of the log
-    message logged out.
-
-    Notes:
-        -  The order of fields in the iterable determines the order of the log message logged out.
-            Thus, re-arranging the log-message is as simple as changing the iterable.
-        -  To turn off logging of responses, use and empty iterable.
-    """
-    middleware_class: type[LoggingMiddleware] = field(default=LoggingMiddleware)
-    """Middleware class to use.
-
-    Should be a subclass of [litestar.middleware.LoggingMiddleware].
-    """
-
-    def __post_init__(self) -> None:
-        """Override default Pydantic type conversion for iterables.
-
-        Args:
-            value: An iterable
-
-        Returns:
-            The `value` argument cast as a tuple.
-        """
-        if not isinstance(self.response_log_fields, Iterable):
-            raise ImproperlyConfiguredException("response_log_fields must be a valid Iterable")
-
-        if not isinstance(self.request_log_fields, Iterable):
-            raise ImproperlyConfiguredException("request_log_fields must be a valid Iterable")
-
-        self.response_log_fields = tuple(self.response_log_fields)
-        self.request_log_fields = tuple(self.request_log_fields)
-
-    @property
-    def middleware(self) -> DefineMiddleware:
-        """Use this property to insert the config into a middleware list on one of the application layers.
-
-        Examples:
-            .. code-block::  python
-
-                from litestar import Litestar, Request, get
-                from litestar.logging import LoggingConfig
-                from litestar.middleware.logging import LoggingMiddlewareConfig
-
-                logging_config = LoggingConfig()
-
-                logging_middleware_config = LoggingMiddlewareConfig()
-
-
-                @get("/")
-                def my_handler(request: Request) -> None: ...
-
-
-                app = Litestar(
-                    route_handlers=[my_handler],
-                    logging_config=logging_config,
-                    middleware=[logging_middleware_config.middleware],
-                )
-
-        Returns:
-            An instance of DefineMiddleware including ``self`` as the config kwarg value.
-        """
-        return DefineMiddleware(self.middleware_class, config=self)
