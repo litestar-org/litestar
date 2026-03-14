@@ -35,5 +35,5 @@ def app(http_test_client: httpx.AsyncClient) -> Litestar:
 
 def test_handler(app: Litestar) -> None:
     with TestClient(app) as client:
-        response = client.get("/")
+        response = client.get("/", timeout=10.0)
         assert response.json() == {"status": 200}
