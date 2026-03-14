@@ -44,6 +44,12 @@ repos:
     rev: "v1.0.0"
     hooks:
       - id: sphinx-lint
+  - repo: https://github.com/adamchainz/blacken-docs
+    rev: "1.19.1"
+    hooks:
+      - id: blacken-docs
+        args: ["--line-length=80"]
+        types_or: [rst, markdown]
   - repo: local
     hooks:
       - id: pypi-readme

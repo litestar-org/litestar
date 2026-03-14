@@ -114,21 +114,12 @@ be the *last* middleware on the *last* layer (i.e. the route handler).
     async def handler() -> None:
         pass
 
+
     router = Router(
-        "/",
-        [handler],
-        middleware=[
-            ThirdMiddleware(),
-            FourthMiddleware()
-        ]
+        "/", [handler], middleware=[ThirdMiddleware(), FourthMiddleware()]
     )
 
-    app = Litestar(
-        middleware=[
-            FirstMiddleware(),
-            SecondMiddleware()
-        ]
-    )
+    app = Litestar(middleware=[FirstMiddleware(), SecondMiddleware()])
 
 Constraints and plugins
 ~~~~~~~~~~~~~~~~~~~~~~~
@@ -204,7 +195,9 @@ follows:
    class MiddlewareProtocol(Protocol):
        def __init__(self, app: ASGIApp, **kwargs: Any) -> None: ...
 
-       async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None: ...
+       async def __call__(
+           self, scope: Scope, receive: Receive, send: Send
+       ) -> None: ...
 
 The ``__init__`` method receives and sets "app". *It's important to understand* that app is not an instance of Litestar in
 this case, but rather the next middleware in the stack, which is also an ASGI app.
@@ -229,10 +222,14 @@ specifies:
 
 
    class MyRequestLoggingMiddleware(MiddlewareProtocol):
-       def __init__(self, app: ASGIApp) -> None:  # can have other parameters as well
+       def __init__(
+           self, app: ASGIApp
+       ) -> None:  # can have other parameters as well
            self.app = app
 
-       async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
+       async def __call__(
+           self, scope: Scope, receive: Receive, send: Send
+       ) -> None:
            if scope["type"] == "http":
                request = Request(scope)
                logger.info("Got request: %s - %s", request.method, request.url)
@@ -266,7 +263,9 @@ explore another example - redirecting the request to a different url from a midd
        def __init__(self, app: ASGIApp) -> None:
            self.app = app
 
-       async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
+       async def __call__(
+           self, scope: Scope, receive: Receive, send: Send
+       ) -> None:
            if Request(scope).session is None:
                response = ASGIRedirectResponse(path="/login")
                await response(scope, receive, send)
@@ -308,7 +307,9 @@ this by doing the following:
            super().__init__(app)
            self.app = app
 
-       async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
+       async def __call__(
+           self, scope: Scope, receive: Receive, send: Send
+       ) -> None:
            if scope["type"] == "http":
                start_time = time.monotonic()
 
@@ -344,7 +345,9 @@ create middleware:
        exclude = ["first_path", "second_path"]
        exclude_opt_key = "exclude_from_middleware"
 
-       async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
+       async def __call__(
+           self, scope: Scope, receive: Receive, send: Send
+       ) -> None:
            start_time = time.monotonic()
 
            async def send_wrapper(message: "Message") -> None:
