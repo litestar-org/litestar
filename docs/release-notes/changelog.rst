@@ -6,6 +6,14 @@
 .. changelog:: 3.0.0
     :date: 2364-01-27
 
+    .. change:: Add ``ping_interval`` to ``ServerSentEvent`` for keepalive pings
+        :type: feature
+        :issue: 4082
+
+        Added optional ``ping_interval`` parameter to :class:`ServerSentEvent <litestar.response.ServerSentEvent>` that
+        sends SSE comment keepalive pings at the specified interval to prevent connection timeouts from reverse proxies
+        or clients.
+
     .. change:: Remove logging config and related constructs
         :type: feature
         :breaking:
