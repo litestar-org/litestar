@@ -769,9 +769,9 @@ calculate the best matching return media type.</p>
 <p class="admonition-title">Run it</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span data-line="1">&gt;<span class="w"> </span>curl<span class="w"> </span>http://127.0.0.1:8000/resource
 </span><span data-line="2">Hello<span class="w"> </span>World!
-</span><span data-line="3">&gt;<span class="w"> </span>curl<span class="w"> </span>http://127.0.0.1:8000/resource<span class="w"> </span>-H<span class="w"> </span>Accept:<span class="w"> </span>text/html
+</span><span data-line="3">&gt;<span class="w"> </span>curl<span class="w"> </span>http://127.0.0.1:8000/resource<span class="w"> </span>-H<span class="w"> </span><span class="s1">&#39;Accept: text/html&#39;</span>
 </span><span data-line="4">&lt;h1&gt;Hello<span class="w"> </span>World!&lt;/h1&gt;
-</span><span data-line="5">&gt;<span class="w"> </span>curl<span class="w"> </span>http://127.0.0.1:8000/resource<span class="w"> </span>-H<span class="w"> </span>Accept:<span class="w"> </span>application/xml
+</span><span data-line="5">&gt;<span class="w"> </span>curl<span class="w"> </span>http://127.0.0.1:8000/resource<span class="w"> </span>-H<span class="w"> </span><span class="s1">&#39;Accept: application/xml&#39;</span>
 </span><span data-line="6">&lt;xml&gt;&lt;msg&gt;Hello<span class="w"> </span>World!&lt;/msg&gt;&lt;/xml&gt;
 </span></pre></div>
 </div>
