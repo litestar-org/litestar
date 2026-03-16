@@ -159,6 +159,68 @@ def test_extra_fields() -> None:
     assert token.extras == {}
 
 
+@pytest.mark.parametrize(
+    ("raw_token_data", "decode_kwargs"),
+    [
+        (
+            {
+                "sub": "foo",
+                "iat": datetime.now(timezone.utc),
+            },
+            {"verify_exp": False},
+        ),
+        (
+            {
+                "sub": "foo",
+                "exp": datetime.now(timezone.utc) + timedelta(days=1),
+            },
+            {},
+        ),
+        (
+            {
+                "exp": datetime.now(timezone.utc) + timedelta(days=1),
+                "iat": datetime.now(timezone.utc),
+            },
+            {"verify_exp": False},
+        ),
+    ],
+)
+def test_missing_required_claims_raise_not_authorized(
+    raw_token_data: dict[str, Any], decode_kwargs: dict[str, Any]
+) -> None:
+    token_secret = secrets.token_hex()
+    encoded_token = jwt.encode(payload=raw_token_data, key=token_secret, algorithm="HS256")
+
+    with pytest.raises(NotAuthorizedException):
+        Token.decode(
+            encoded_token=encoded_token,
+            secret=token_secret,
+            algorithm="HS256",
+            **decode_kwargs,
+        )
+
+
+def test_invalid_datetime_claim_raises_not_authorized() -> None:
+    token_secret = secrets.token_hex()
+    encoded_token = jwt.encode(
+        payload={
+            "sub": "foo",
+            "exp": "not-a-timestamp",
+            "iat": datetime.now(timezone.utc),
+        },
+        key=token_secret,
+        algorithm="HS256",
+    )
+
+    with pytest.raises(NotAuthorizedException):
+        Token.decode(
+            encoded_token=encoded_token,
+            secret=token_secret,
+            algorithm="HS256",
+            verify_exp=False,
+        )
+
+
 @pytest.mark.parametrize("audience", [None, ["foo", "bar"]])
 def test_strict_aud_with_multiple_audiences_raises(audience: str | list[str]) -> None:
     with pytest.raises(ValueError, match="When using 'strict_audience=True'"):
