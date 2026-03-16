@@ -687,52 +687,68 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="178">            <span class="c1"># msgspec can do these conversions as well, but to keep backwards</span>
 </span><span data-line="179">            <span class="c1"># compatibility, we do it ourselves, since the datetime parsing works a</span>
 </span><span data-line="180">            <span class="c1"># little bit different there</span>
-</span><span data-line="181">            <span class="n">payload</span><span class="p">[</span><span class="s2">&quot;exp&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">fromtimestamp</span><span class="p">(</span><span class="n">payload</span><span class="p">[</span><span class="s2">&quot;exp&quot;</span><span class="p">],</span> <span class="n">tz</span><span class="o">=</span><span class="n">timezone</span><span class="o">.</span><span class="n">utc</span><span class="p">)</span>
-</span><span data-line="182">            <span class="n">payload</span><span class="p">[</span><span class="s2">&quot;iat&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">fromtimestamp</span><span class="p">(</span><span class="n">payload</span><span class="p">[</span><span class="s2">&quot;iat&quot;</span><span class="p">],</span> <span class="n">tz</span><span class="o">=</span><span class="n">timezone</span><span class="o">.</span><span class="n">utc</span><span class="p">)</span>
-</span><span data-line="183">            <span class="n">extra_fields</span> <span class="o">=</span> <span class="n">payload</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="o">-</span> <span class="p">{</span><span class="n">f</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">dataclasses</span><span class="o">.</span><span class="n">fields</span><span class="p">(</span><span class="bp">cls</span><span class="p">)}</span>
-</span><span data-line="184">            <span class="n">extras</span> <span class="o">=</span> <span class="n">payload</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;extras&quot;</span><span class="p">,</span> <span class="p">{})</span>
-</span><span data-line="185">            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">extra_fields</span><span class="p">:</span>
-</span><span data-line="186">                <span class="n">extras</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">payload</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
-</span><span data-line="187">            <span class="k">return</span> <span class="n">msgspec</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="n">payload</span><span class="p">,</span> <span class="bp">cls</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-</span><span data-line="188">        <span class="k">except</span> <span class="p">(</span>
-</span><span data-line="189">            <span class="ne">KeyError</span><span class="p">,</span>
-</span><span data-line="190">            <span class="n">jwt</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">InvalidTokenError</span><span class="p">,</span>
-</span><span data-line="191">            <span class="n">ImproperlyConfiguredException</span><span class="p">,</span>
-</span><span data-line="192">            <span class="n">msgspec</span><span class="o">.</span><span class="n">ValidationError</span><span class="p">,</span>
-</span><span data-line="193">        <span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-</span><span data-line="194">            <span class="k">raise</span> <span class="n">NotAuthorizedException</span><span class="p">(</span><span class="s2">&quot;Invalid token&quot;</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span></div>
+</span><span data-line="181">            <span class="n">payload</span><span class="p">[</span><span class="s2">&quot;exp&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_decode_datetime_claim</span><span class="p">(</span><span class="n">payload</span><span class="p">,</span> <span class="s2">&quot;exp&quot;</span><span class="p">)</span>
+</span><span data-line="182">            <span class="n">payload</span><span class="p">[</span><span class="s2">&quot;iat&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_decode_datetime_claim</span><span class="p">(</span><span class="n">payload</span><span class="p">,</span> <span class="s2">&quot;iat&quot;</span><span class="p">)</span>
+</span><span data-line="183">            <span class="bp">cls</span><span class="o">.</span><span class="n">_require_claim</span><span class="p">(</span><span class="n">payload</span><span class="p">,</span> <span class="s2">&quot;sub&quot;</span><span class="p">)</span>
+</span><span data-line="184">            <span class="n">extra_fields</span> <span class="o">=</span> <span class="n">payload</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="o">-</span> <span class="p">{</span><span class="n">f</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">dataclasses</span><span class="o">.</span><span class="n">fields</span><span class="p">(</span><span class="bp">cls</span><span class="p">)}</span>
+</span><span data-line="185">            <span class="n">extras</span> <span class="o">=</span> <span class="n">payload</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;extras&quot;</span><span class="p">,</span> <span class="p">{})</span>
+</span><span data-line="186">            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">extra_fields</span><span class="p">:</span>
+</span><span data-line="187">                <span class="n">extras</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">payload</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+</span><span data-line="188">            <span class="k">return</span> <span class="n">msgspec</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="n">payload</span><span class="p">,</span> <span class="bp">cls</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</span><span data-line="189">        <span class="k">except</span> <span class="p">(</span>
+</span><span data-line="190">            <span class="ne">KeyError</span><span class="p">,</span>
+</span><span data-line="191">            <span class="n">jwt</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">InvalidTokenError</span><span class="p">,</span>
+</span><span data-line="192">            <span class="n">ImproperlyConfiguredException</span><span class="p">,</span>
+</span><span data-line="193">            <span class="n">msgspec</span><span class="o">.</span><span class="n">ValidationError</span><span class="p">,</span>
+</span><span data-line="194">        <span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+</span><span data-line="195">            <span class="k">raise</span> <span class="n">NotAuthorizedException</span><span class="p">(</span><span class="s2">&quot;Invalid token&quot;</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span></div>
 
-</span><span data-line="195">
+</span><span data-line="196">
+</span><span data-line="197">    <span class="nd">@classmethod</span>
+</span><span data-line="198">    <span class="k">def</span><span class="w"> </span><span class="nf">_require_claim</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">payload</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">claim</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+</span><span data-line="199">        <span class="k">try</span><span class="p">:</span>
+</span><span data-line="200">            <span class="k">return</span> <span class="n">payload</span><span class="p">[</span><span class="n">claim</span><span class="p">]</span>
+</span><span data-line="201">        <span class="k">except</span> <span class="ne">KeyError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+</span><span data-line="202">            <span class="k">raise</span> <span class="n">NotAuthorizedException</span><span class="p">(</span><span class="s2">&quot;Invalid token&quot;</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
+</span><span data-line="203">
+</span><span data-line="204">    <span class="nd">@classmethod</span>
+</span><span data-line="205">    <span class="k">def</span><span class="w"> </span><span class="nf">_decode_datetime_claim</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">payload</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">claim</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">datetime</span><span class="p">:</span>
+</span><span data-line="206">        <span class="n">claim_value</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_require_claim</span><span class="p">(</span><span class="n">payload</span><span class="p">,</span> <span class="n">claim</span><span class="p">)</span>
+</span><span data-line="207">        <span class="k">try</span><span class="p">:</span>
+</span><span data-line="208">            <span class="k">return</span> <span class="n">datetime</span><span class="o">.</span><span class="n">fromtimestamp</span><span class="p">(</span><span class="n">claim_value</span><span class="p">,</span> <span class="n">tz</span><span class="o">=</span><span class="n">timezone</span><span class="o">.</span><span class="n">utc</span><span class="p">)</span>
+</span><span data-line="209">        <span class="k">except</span> <span class="p">(</span><span class="ne">OSError</span><span class="p">,</span> <span class="ne">OverflowError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>
+</span><span data-line="210">            <span class="k">raise</span> <span class="n">NotAuthorizedException</span><span class="p">(</span><span class="s2">&quot;Invalid token&quot;</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="kc">None</span>
+</span><span data-line="211">
 <div class="viewcode-block" id="Token.encode">
 <a class="viewcode-back" href="../../../../reference/security/jwt.html#litestar.security.jwt.Token.encode">[docs]</a>
-</span><span data-line="196">    <span class="k">def</span><span class="w"> </span><span class="nf">encode</span><span class="p">(</span>
-</span><span data-line="197">        <span class="bp">self</span><span class="p">,</span>
-</span><span data-line="198">        <span class="n">secret</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">bytes</span><span class="p">,</span>
-</span><span data-line="199">        <span class="n">algorithm</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-</span><span data-line="200">        <span class="n">headers</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="201">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-</span><span data-line="202"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Encode the token instance into a string.</span>
-</span><span data-line="203">
-</span><span data-line="204"><span class="sd">        Args:</span>
-</span><span data-line="205"><span class="sd">            secret: The secret with which the JWT is encoded.</span>
-</span><span data-line="206"><span class="sd">            algorithm: The algorithm used to encode the JWT.</span>
-</span><span data-line="207"><span class="sd">            headers: Optional headers to include in the JWT (e.g., {&quot;kid&quot;: &quot;...&quot;}).</span>
-</span><span data-line="208">
-</span><span data-line="209"><span class="sd">        Returns:</span>
-</span><span data-line="210"><span class="sd">            An encoded token string.</span>
-</span><span data-line="211">
-</span><span data-line="212"><span class="sd">        Raises:</span>
-</span><span data-line="213"><span class="sd">            ImproperlyConfiguredException: If encoding fails.</span>
-</span><span data-line="214"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="215">        <span class="k">try</span><span class="p">:</span>
-</span><span data-line="216">            <span class="k">return</span> <span class="n">jwt</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span>
-</span><span data-line="217">                <span class="n">payload</span><span class="o">=</span><span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">asdict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">v</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">},</span>
-</span><span data-line="218">                <span class="n">key</span><span class="o">=</span><span class="n">secret</span><span class="p">,</span>
-</span><span data-line="219">                <span class="n">algorithm</span><span class="o">=</span><span class="n">algorithm</span><span class="p">,</span>
-</span><span data-line="220">                <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span>
-</span><span data-line="221">            <span class="p">)</span>
-</span><span data-line="222">        <span class="k">except</span> <span class="p">(</span><span class="n">jwt</span><span class="o">.</span><span class="n">DecodeError</span><span class="p">,</span> <span class="ne">NotImplementedError</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-</span><span data-line="223">            <span class="k">raise</span> <span class="n">ImproperlyConfiguredException</span><span class="p">(</span><span class="s2">&quot;Failed to encode token&quot;</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span></div>
+</span><span data-line="212">    <span class="k">def</span><span class="w"> </span><span class="nf">encode</span><span class="p">(</span>
+</span><span data-line="213">        <span class="bp">self</span><span class="p">,</span>
+</span><span data-line="214">        <span class="n">secret</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">bytes</span><span class="p">,</span>
+</span><span data-line="215">        <span class="n">algorithm</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+</span><span data-line="216">        <span class="n">headers</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="217">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span data-line="218"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Encode the token instance into a string.</span>
+</span><span data-line="219">
+</span><span data-line="220"><span class="sd">        Args:</span>
+</span><span data-line="221"><span class="sd">            secret: The secret with which the JWT is encoded.</span>
+</span><span data-line="222"><span class="sd">            algorithm: The algorithm used to encode the JWT.</span>
+</span><span data-line="223"><span class="sd">            headers: Optional headers to include in the JWT (e.g., {&quot;kid&quot;: &quot;...&quot;}).</span>
+</span><span data-line="224">
+</span><span data-line="225"><span class="sd">        Returns:</span>
+</span><span data-line="226"><span class="sd">            An encoded token string.</span>
+</span><span data-line="227">
+</span><span data-line="228"><span class="sd">        Raises:</span>
+</span><span data-line="229"><span class="sd">            ImproperlyConfiguredException: If encoding fails.</span>
+</span><span data-line="230"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="231">        <span class="k">try</span><span class="p">:</span>
+</span><span data-line="232">            <span class="k">return</span> <span class="n">jwt</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span>
+</span><span data-line="233">                <span class="n">payload</span><span class="o">=</span><span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">asdict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">v</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">},</span>
+</span><span data-line="234">                <span class="n">key</span><span class="o">=</span><span class="n">secret</span><span class="p">,</span>
+</span><span data-line="235">                <span class="n">algorithm</span><span class="o">=</span><span class="n">algorithm</span><span class="p">,</span>
+</span><span data-line="236">                <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span>
+</span><span data-line="237">            <span class="p">)</span>
+</span><span data-line="238">        <span class="k">except</span> <span class="p">(</span><span class="n">jwt</span><span class="o">.</span><span class="n">DecodeError</span><span class="p">,</span> <span class="ne">NotImplementedError</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+</span><span data-line="239">            <span class="k">raise</span> <span class="n">ImproperlyConfiguredException</span><span class="p">(</span><span class="s2">&quot;Failed to encode token&quot;</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span></div>
 </div>
 
 </span></pre></div>
