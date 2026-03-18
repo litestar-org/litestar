@@ -354,10 +354,11 @@ def test_symlinked_file_without_symlink_resolution_support_on_file_system_raises
             directories=[tmp_path],
         )
 
-    with create_test_client(router, raise_server_exceptions=True) as client:
+    with create_test_client(router, debug=True) as client:
         res = client.get("/linked.txt")
-        assert res.status_code == 500
-        assert "does not support resolving symlinks" in res.text
+
+    assert res.status_code == 500
+    assert "does not support resolving symlinks" in res.text
 
 
 @pytest.mark.parametrize("file_system", (BaseLocalFileSystem(), maybe_wrap_fsspec_file_system(LocalFileSystem())))

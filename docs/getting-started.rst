@@ -35,19 +35,13 @@ Installation
     :doc:`RedisStore </usage/stores>`
         :code:`pip install 'litestar[redis]'`
 
-    :ref:`Picologging <usage/logging:using picologging>`
-        :code:`pip install 'litestar[picologging]'`
-
-    :ref:`StructLog <usage/logging:using structlog>`
-        :code:`pip install 'litestar[structlog]'`
-
     :doc:`Prometheus Instrumentation </usage/metrics/prometheus>`
         :code:`pip install 'litestar[prometheus]'`
 
     :doc:`Open Telemetry Instrumentation </usage/metrics/open-telemetry>`
         :code:`pip install 'litestar[opentelemetry]'`
 
-    :doc:`SQLAlchemy </usage/databases/sqlalchemy/index>` (via `Advanced-Alchemy <https://docs.advanced-alchemy.litestar.dev/latest/>`_)
+    :doc:`SQLAlchemy </usage/databases/sqlalchemy/index>` (via `Advanced-Alchemy <https://advanced-alchemy.litestar.dev/latest/>`_)
         :code:`pip install 'litestar[sqlalchemy]'`
 
     :doc:`Jinja Templating </usage/templating>`

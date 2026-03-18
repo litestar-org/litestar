@@ -121,3 +121,37 @@ def test_cors_applied_on_exception_response_if_origin_is_present(
             assert response.headers.get("Access-Control-Allow-Origin") == origin
         else:
             assert not response.headers.get("Access-Control-Allow-Origin")
+
+
+@pytest.mark.parametrize(
+    "allow_origin,origin,host,should_allow",
+    [
+        ("httpx://good.example", "https://goodXexample", "example.com", False),
+        ("https://*good.example", "https://very.good.example", "very.good.example", True),
+        ("https://*good.example", "https://verygood.example", "vergood.example", True),
+        ("https://*good.example", "https://good.example", "good.example", True),
+        ("https://*good.example", "https://bad.example", "bad.example", False),
+        ("https://*.good.example", "https://very.good.example", "very.good.example", True),
+        ("https://*.good.example", "https://verygood.example", "verygood.example", False),
+        ("https://*.good.example", "https://some.verygood.example", "verygood.example", False),
+        ("https://*.good.example", "https://good.example", "good.example", False),
+    ],
+)
+def test_cors_test_regex_escape(allow_origin: str, origin: str, host: str, should_allow: bool) -> None:
+    @get("/")
+    async def handler() -> None:
+        return None
+
+    with create_test_client(
+        [handler],
+        cors_config=CORSConfig(
+            allow_origins=[allow_origin],
+            allow_credentials=True,
+        ),
+    ) as client:
+        res = client.get("/", headers={"Origin": origin, "Host": host})
+
+    if should_allow:
+        assert "Access-Control-Allow-Origin" in res.headers
+    else:
+        assert "Access-Control-Allow-Origin" not in res.headers

@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import inspect
-import logging
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 from dataclasses import fields
@@ -23,7 +22,6 @@ from litestar.exceptions import (
     LitestarWarning,
     NotFoundException,
 )
-from litestar.logging.config import LoggingConfig
 from litestar.plugins import CLIPlugin
 from litestar.status_codes import HTTP_200_OK, HTTP_400_BAD_REQUEST, HTTP_500_INTERNAL_SERVER_ERROR
 from litestar.testing import TestClient, create_test_client
@@ -53,7 +51,6 @@ def app_config_object() -> AppConfig:
         exception_handlers={},
         guards=[],
         listeners=[],
-        logging_config=None,
         middleware=[],
         multipart_form_part_limit=1000,
         on_shutdown=[],
@@ -79,19 +76,6 @@ def test_access_openapi_schema_raises_if_not_configured() -> None:
     app = Litestar(openapi_config=None)
     with pytest.raises(ImproperlyConfiguredException):
         app.openapi_schema
-
-
-def test_set_debug_updates_logging_level() -> None:
-    app = Litestar()
-
-    assert app.logger is not None
-    assert app.logger.level == logging.INFO  # type: ignore[attr-defined]
-
-    app.debug = True
-    assert app.logger.level == logging.DEBUG  # type: ignore[attr-defined]
-
-    app.debug = False
-    assert app.logger.level == logging.INFO  # type: ignore[attr-defined]
 
 
 @pytest.mark.parametrize("env_name,app_attr", [("LITESTAR_DEBUG", "debug"), ("LITESTAR_PDB", "pdb_on_exception")])
@@ -174,27 +158,6 @@ def test_app_config_object_used(app_config_object: AppConfig, monkeypatch: pytes
         assert mock.called, f"expected {name} to be called"
 
 
-def test_app_debug_create_logger() -> None:
-    app = Litestar([], debug=True)
-
-    assert app.logging_config
-    assert app.logging_config.loggers["litestar"]["level"] == "DEBUG"  # type: ignore[attr-defined]
-
-
-def test_app_debug_explicitly_disable_logging() -> None:
-    app = Litestar([], logging_config=None)
-
-    assert not app.logging_config
-
-
-def test_app_debug_update_logging_config() -> None:
-    logging_config = LoggingConfig()
-    app = Litestar([], logging_config=logging_config, debug=True)
-
-    assert app.logging_config is logging_config
-    assert app.logging_config.loggers["litestar"]["level"] == "DEBUG"  # type: ignore[attr-defined]
-
-
 def test_set_state() -> None:
     def modify_state_in_hook(app_config: AppConfig) -> AppConfig:
         assert isinstance(app_config.state, State)
@@ -273,16 +236,16 @@ def test_debug_response_created() -> None:
             raise InternalServerException() from e
 
     app = Litestar(route_handlers=[my_route_handler], debug=True)
-    client = TestClient(app=app)
+    with TestClient(app=app) as client:
+        default_response = client.get("/")
+        html_response = client.get("/", headers={"accept": "text/html"})
 
-    response = client.get("/")
-    assert response.status_code == HTTP_500_INTERNAL_SERVER_ERROR
-    assert "text/plain" in response.headers["content-type"]
+    assert default_response.status_code == HTTP_500_INTERNAL_SERVER_ERROR
+    assert "text/plain" in default_response.headers["content-type"]
 
-    response = client.get("/", headers={"accept": "text/html"})
-    assert response.status_code == HTTP_500_INTERNAL_SERVER_ERROR
-    assert "text/html" in response.headers["content-type"]
-    assert "ZeroDivisionError" in response.text
+    assert html_response.status_code == HTTP_500_INTERNAL_SERVER_ERROR
+    assert "text/html" in html_response.headers["content-type"]
+    assert "ZeroDivisionError" in html_response.text
 
 
 def test_handler_error_return_status_500() -> None:

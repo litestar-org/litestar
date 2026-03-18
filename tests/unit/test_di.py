@@ -314,3 +314,40 @@ async def test_stateful_async_generator_with_cleanup() -> None:
     with pytest.raises(StopAsyncIteration):
         await gen2.__anext__()
     assert factory.cleanup_count == 2
+
+
+def test_bound_async_generator_method_detection() -> None:
+    """Test that bound methods which are async generators are correctly detected.
+
+    Regression test for: https://github.com/litestar-org/litestar/issues/4596
+    """
+
+    class Config:
+        async def provide_data(self) -> AsyncGenerator[str, None]:
+            yield "data"
+
+    config = Config()
+    provide = Provide(dependency=config.provide_data, sync_to_thread=None)
+
+    # Should correctly detect as async generator
+    assert provide.has_async_generator_dependency is True
+    assert provide.has_sync_generator_dependency is False
+    # Async generators are treated as sync callable (no await needed when calling)
+    assert provide.has_sync_callable is True
+
+
+def test_bound_sync_generator_method_detection() -> None:
+    """Test that bound methods which are sync generators are correctly detected."""
+
+    class Config:
+        def provide_data(self) -> Generator[str, None, None]:
+            yield "data"
+
+    config = Config()
+    provide = Provide(dependency=config.provide_data, sync_to_thread=None)
+
+    # Should correctly detect as sync generator
+    assert provide.has_sync_generator_dependency is True
+    assert provide.has_async_generator_dependency is False
+    # Sync generators are treated as sync callables
+    assert provide.has_sync_callable is True

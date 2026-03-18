@@ -1,10 +1,11 @@
 from __future__ import annotations
 
 import re
+import uuid
 from dataclasses import dataclass, field
 from functools import cached_property
 from re import Pattern
-from typing import TYPE_CHECKING, Literal
+from typing import TYPE_CHECKING, Final, Literal
 
 from litestar.constants import DEFAULT_ALLOWED_CORS_HEADERS
 
@@ -13,6 +14,11 @@ __all__ = ("CORSConfig",)
 
 if TYPE_CHECKING:
     from litestar.types import Method
+
+
+# this is just a UUID, so we can be sure it's not contained within the string we're
+# calling '.replace' on
+_RE_ESCAPE_PLACEHOLDER: Final = uuid.uuid4().hex
 
 
 @dataclass
@@ -60,10 +66,14 @@ class CORSConfig:
         Returns:
             A compiled regex of the allowed path.
         """
-        origins = self.allow_origins
+        # escape the allowed origins, while turning '*' into wildcard '.*' matches
+        origins = [
+            re.escape(o.replace("*", _RE_ESCAPE_PLACEHOLDER)).replace(_RE_ESCAPE_PLACEHOLDER, ".*")
+            for o in self.allow_origins
+        ]
         if self.allow_origin_regex:
             origins.append(self.allow_origin_regex)
-        return re.compile("|".join([origin.replace("*.", r".*\.") for origin in origins]))
+        return re.compile("|".join(origins))
 
     @cached_property
     def is_allow_all_origins(self) -> bool:

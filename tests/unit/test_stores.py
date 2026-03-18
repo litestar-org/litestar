@@ -397,7 +397,41 @@ async def test_file_init_subdirectory_negative(file_store_create_directories_fla
 async def test_file_path(file_store: FileStore) -> None:
     await file_store.set("foo", b"bar")
 
-    assert await (file_store.path / "foo").exists()
+    assert await (file_store.path / file_store._path_from_key("foo")).exists()
+
+
+@pytest.mark.parametrize(
+    "key_one, key_two",
+    [
+        ("foo/bar", "foobar"),  # os path separator
+        ("foo\\bar", "foobar"),  # os path separator
+        ("foo/../bar", "foobar"),  # directory traversal
+        ("fook-", "fook45"),  # char encoding
+        ("fooK", "fooK"),  # unicode confusable (Kelvin symbol vs K) # noqa: RUF001
+        ("foo\\n", "foo92n"),  # a newline?
+        ("foo\r\nbar", "foobar"),  # a CRLF
+        ("foo\u0000bar", "foobar"),  # NUL byte stripping
+        ("Foo", "foo"),  # lowercasing
+        ("fooß", "fooss"),  # ß folding (relevant in de_DE)
+        ("fooß", "fooẞ"),  # lower an uppercase ß
+        ("café", "cafe\u0301"),  # composed vs decomposed é
+        ("Å", "A\u030a"),  # ring-above normalization
+        ("Å", "Å"),  # Angstrom sign vs A-ring
+        ("fooΟ", "fooO"),  # greek omicron vs latin O  # noqa: RUF001
+        ("fooа", "fooa"),  # cyrillic a vs Latin a  # noqa: RUF001
+        ("foo\u00a0bar", "foo bar"),  # non-breaking space vs space
+        ("foo\tbar", "foo bar"),  # tab normalization
+        ("foo%2Fbar", "foo/bar"),  # percent-encoded slash
+        ("foo%2e%2e%2fbar", "foo/../bar"),  # encoded traversal
+        ("a" * 255 + "X", "a" * 255 + "Y"),  # filesystem length truncation
+    ],
+)
+async def test_file_normalize_key(file_store: FileStore, key_one: str, key_two: str) -> None:
+    await file_store.set(key_one, b"one")
+    await file_store.set(key_two, b"two")
+
+    assert await file_store.get(key_one) == b"one"
+    assert await file_store.get(key_two) == b"two"
 
 
 def test_file_with_namespace(file_store: FileStore) -> None:
@@ -515,7 +549,9 @@ async def test_file_store_handle_rename_fail(file_store: FileStore, mocker: Mock
 
     await file_store.set("foo", "bar")
     mock_unlink.assert_called_once()
-    assert Path(mock_unlink.call_args_list[0].args[0]).with_suffix("") == file_store.path.joinpath("foo")
+    assert Path(mock_unlink.call_args_list[0].args[0]).with_suffix("") == file_store.path.joinpath(
+        file_store._path_from_key("foo")
+    )
 
 
 @pytest.mark.xdist_group("redis")

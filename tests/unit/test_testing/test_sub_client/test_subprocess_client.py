@@ -35,7 +35,7 @@ def fx_sync_client() -> Iterator[httpx.Client]:
 
 async def test_run_app() -> None:
     """Ensure that method returns application url if started successfully"""
-    with run_app(workdir=ROOT, app=APP) as url:
+    with run_app(workdir=ROOT, app=APP, capture_output=False) as url:
         assert isinstance(url, str)
         assert url.startswith("http://127.0.0.1:")
 
@@ -46,7 +46,7 @@ async def test_run_app_exception() -> None:
     To simulate this, we set retry_count=0, so that we don't check if the application has started.
     """
     with pytest.raises(StartupError):
-        with run_app(workdir=ROOT, app=APP, retry_count=0):
+        with run_app(workdir=ROOT, app=APP, retry_count=0, capture_output=False):
             ...
 
 
@@ -70,3 +70,24 @@ def test_subprocess_sync_client(sync_client: httpx.Client) -> None:
         for event in event_source.iter_sse():
             assert event.data == "hello"
             break
+
+
+def test_log_endpoint_capture_output_true(capfd: pytest.CaptureFixture[str]) -> None:
+    """With capture_output=True, subprocess print statements are captured."""
+    with subprocess_sync_client(workdir=ROOT, app=APP, capture_output=True) as client:
+        response = client.post("/log", params={"message": "capfd-exists-test"})
+        assert response.status_code == 201
+
+    captured = capfd.readouterr()
+    assert "Received log entry: capfd-exists-test" in captured.out
+
+
+def test_log_endpoint_capture_output_false(capfd: pytest.CaptureFixture[str]) -> None:
+    """With capture_output=False, subprocess print statements are suppressed."""
+    with subprocess_sync_client(workdir=ROOT, app=APP, capture_output=False) as client:
+        response = client.post("/log", params={"message": "capfd-not-exists-test"})
+        assert response.status_code == 201
+
+    captured = capfd.readouterr()
+    assert "Received log entry: capfd-not-exists-test" not in captured.out
+    assert "Received log entry: capfd-not-exists-test" not in captured.err

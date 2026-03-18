@@ -30,7 +30,7 @@ def _normalize_datetime(value: datetime) -> datetime:
         A datetime instance
     """
     if value.tzinfo is not None:
-        value.astimezone(timezone.utc)
+        value = value.astimezone(timezone.utc)
 
     return value.replace(microsecond=0)
 
@@ -91,7 +91,7 @@ class Token:
         encoded_token: str,
         secret: str | bytes,
         algorithms: list[str],
-        issuer: list[str] | None = None,
+        issuer: str | Sequence[str] | None = None,
         audience: str | Sequence[str] | None = None,
         options: JWTDecodeOptions | None = None,
     ) -> Any:
@@ -172,14 +172,15 @@ class Token:
                 secret=secret,
                 algorithms=[algorithm],
                 audience=audience,
-                issuer=list(issuer) if issuer else None,
+                issuer=issuer,
                 options=options,
             )
             # msgspec can do these conversions as well, but to keep backwards
             # compatibility, we do it ourselves, since the datetime parsing works a
             # little bit different there
-            payload["exp"] = datetime.fromtimestamp(payload["exp"], tz=timezone.utc)
-            payload["iat"] = datetime.fromtimestamp(payload["iat"], tz=timezone.utc)
+            payload["exp"] = cls._decode_datetime_claim(payload, "exp")
+            payload["iat"] = cls._decode_datetime_claim(payload, "iat")
+            cls._require_claim(payload, "sub")
             extra_fields = payload.keys() - {f.name for f in dataclasses.fields(cls)}
             extras = payload.setdefault("extras", {})
             for key in extra_fields:
@@ -192,6 +193,21 @@ class Token:
             msgspec.ValidationError,
         ) as e:
             raise NotAuthorizedException("Invalid token") from e
+
+    @classmethod
+    def _require_claim(cls, payload: dict[str, Any], claim: str) -> Any:
+        try:
+            return payload[claim]
+        except KeyError as e:
+            raise NotAuthorizedException("Invalid token") from e
+
+    @classmethod
+    def _decode_datetime_claim(cls, payload: dict[str, Any], claim: str) -> datetime:
+        claim_value = cls._require_claim(payload, claim)
+        try:
+            return datetime.fromtimestamp(claim_value, tz=timezone.utc)
+        except (OSError, OverflowError, TypeError, ValueError):
+            raise NotAuthorizedException("Invalid token") from None
 
     def encode(
         self,

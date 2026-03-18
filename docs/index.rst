@@ -49,12 +49,14 @@
    :doc:`OpenAPI schema generation </usage/openapi/index>`, `MessagePack <https://msgpack.org/>`_,
    :doc:`middlewares </usage/middleware/index>`, a great :doc:`CLI </usage/cli>` experience, and much more.
 
-.. container:: buttons
+.. container:: buttons wrap
 
-    :doc:`Get Started <getting-started>`
-    `Usage Docs <usage>`_
-    `API Docs <reference>`_
-    `Blog <https://blog.litestar.dev>`_
+   .. raw:: html
+
+      <a href="getting-started.html" class="btn-no-wrap">Get Started</a>
+      <a href="usage/index.html" class="btn-no-wrap">Usage Docs</a>
+      <a href="reference/index.html" class="btn-no-wrap">API Docs</a>
+      <a href="https://blog.litestar.dev" class="btn-no-wrap">Blog</a>
 
 .. grid:: 1 1 2 3
     :padding: 0

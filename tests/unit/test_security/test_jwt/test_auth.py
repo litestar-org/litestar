@@ -38,7 +38,6 @@ def mock_db() -> MemoryStore:
     ),
     auth_header=sampled_from(["Authorization", "X-API-Key"]),
     default_token_expiration=timedeltas(min_value=timedelta(seconds=30), max_value=timedelta(weeks=1)),
-    token_secret=text(min_size=10),
     response_status_code=integers(min_value=200, max_value=201),
     token_expiration=timedeltas(min_value=timedelta(seconds=30), max_value=timedelta(weeks=1)),
     token_issuer=one_of(none(), text(max_size=256)),
@@ -52,7 +51,6 @@ async def test_jwt_auth(
     algorithm: str,
     auth_header: str,
     default_token_expiration: timedelta,
-    token_secret: str,
     response_status_code: int,
     token_expiration: timedelta,
     token_issuer: Optional[str],
@@ -72,6 +70,8 @@ async def test_jwt_auth(
         if token.jti:
             return mock_block_list.get(token.jti) == "revoked"
         return False
+
+    token_secret = secrets.token_hex()
 
     jwt_auth = JWTAuth[Any](
         algorithm=algorithm,
@@ -216,7 +216,6 @@ async def test_jwt_auth_custom_token_cls(auth_cls: Any) -> None:
     auth_header=sampled_from(["Authorization", "X-API-Key"]),
     auth_cookie=sampled_from(["token", "accessToken"]),
     default_token_expiration=timedeltas(min_value=timedelta(seconds=30), max_value=timedelta(weeks=1)),
-    token_secret=text(min_size=10),
     response_status_code=integers(min_value=200, max_value=201),
     token_expiration=timedeltas(min_value=timedelta(seconds=30), max_value=timedelta(weeks=1)),
     token_issuer=one_of(none(), text(max_size=256)),
@@ -231,7 +230,6 @@ async def test_jwt_cookie_auth(
     auth_header: str,
     auth_cookie: str,
     default_token_expiration: timedelta,
-    token_secret: str,
     response_status_code: int,
     token_expiration: timedelta,
     token_issuer: Optional[str],
@@ -252,6 +250,8 @@ async def test_jwt_cookie_auth(
         if token.jti:
             return mock_block_list.get(token.jti) == "revoked"
         return False
+
+    token_secret = secrets.token_hex()
 
     jwt_auth = JWTCookieAuth(
         algorithm=algorithm,
@@ -377,7 +377,7 @@ async def test_path_exclusion() -> None:
         return None
 
     jwt_auth = JWTAuth[Any](
-        token_secret="abc123",
+        token_secret=secrets.token_hex(),
         retrieve_user_handler=retrieve_user_handler,
         exclude=["north", "south"],
     )
@@ -408,7 +408,7 @@ async def test_path_exclusion() -> None:
 
 
 def test_jwt_auth_openapi() -> None:
-    jwt_auth = JWTAuth[Any](token_secret="abc123", retrieve_user_handler=lambda _: None)  # type: ignore[arg-type, misc]
+    jwt_auth = JWTAuth[Any](token_secret=secrets.token_hex(), retrieve_user_handler=lambda _: None)  # type: ignore[arg-type, misc]
     assert jwt_auth.openapi_components.to_schema() == {
         "schemas": {},
         "securitySchemes": {
@@ -457,7 +457,7 @@ async def test_oauth2_password_bearer_auth_openapi(mock_db: "MemoryStore") -> No
 
     jwt_auth = OAuth2PasswordBearerAuth(
         token_url="/login",
-        token_secret="abc123",
+        token_secret=secrets.token_hex(),
         retrieve_user_handler=retrieve_user_handler,  # type: ignore[var-annotated]
     )
 
@@ -528,7 +528,7 @@ def test_type_encoders() -> None:
 
     jwt_cookie_auth = JWTCookieAuth[User](
         retrieve_user_handler=retrieve_user_handler,
-        token_secret="abc1234",
+        token_secret=secrets.token_hex(),
         exclude=["/"],
         type_encoders={CustomUser: lambda u: {"id": u.id}},
     )
@@ -552,16 +552,16 @@ async def retrieve_user_handler(token: Token, connection: "ASGIConnection[Any, A
     (
         JWTAuth[User](
             retrieve_user_handler=retrieve_user_handler,
-            token_secret="abc1234",
+            token_secret=secrets.token_hex(),
             exclude=["/"],
         ),
         JWTCookieAuth[User](
             retrieve_user_handler=retrieve_user_handler,
-            token_secret="abc1234",
+            token_secret=secrets.token_hex(),
             exclude=["/"],
         ),
         OAuth2PasswordBearerAuth(
-            token_url="/", exclude=["/"], token_secret="abc123", retrieve_user_handler=retrieve_user_handler
+            token_url="/", exclude=["/"], token_secret=secrets.token_hex(), retrieve_user_handler=retrieve_user_handler
         ),
     ),
 )
@@ -581,16 +581,16 @@ def test_returns_token_in_response_when_configured(config: JWTAuth) -> None:
     (
         JWTAuth[User](
             retrieve_user_handler=retrieve_user_handler,
-            token_secret="abc1234",
+            token_secret=secrets.token_hex(),
             exclude=["/"],
         ),
         JWTCookieAuth[User](
             retrieve_user_handler=retrieve_user_handler,
-            token_secret="abc1234",
+            token_secret=secrets.token_hex(),
             exclude=["/"],
         ),
         OAuth2PasswordBearerAuth(
-            token_url="/", exclude=["/"], token_secret="abc123", retrieve_user_handler=retrieve_user_handler
+            token_url="/", exclude=["/"], token_secret=secrets.token_hex(), retrieve_user_handler=retrieve_user_handler
         ),
     ),
 )
@@ -627,8 +627,8 @@ async def test_jwt_auth_validation_error_returns_not_authorized() -> None:
             {
                 "sub": "foo",
                 "exp": (datetime.now() + timedelta(days=1)).timestamp(),
-                "iat": datetime.now().timestamp(),
-                "iss": {"foo": "bar"},
+                "iat": str(datetime.now().timestamp()) + "abc",
+                "iss": "some_authority",
             },
             key=token_secret,
         ),

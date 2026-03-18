@@ -409,8 +409,8 @@
         :type: feature
         :pr: 2969
 
-        The option :attr:`~litestar.logging.config.LoggingConfig.configure_root_logger` was
-        added to :class:`~litestar.logging.config.LoggingConfig` attribute. It is enabled by
+        The option ``litestar.logging.config.LoggingConfig.configure_root_logger`` was
+        added to ``litestar.logging.config.LoggingConfig`` attribute. It is enabled by
         default to not implement a breaking change.
 
         When set to ``False`` the ``root`` logger will not be modified for ``logging``
@@ -844,7 +844,7 @@
         :pr: 2919
 
         Using a method on
-        :attr:`Request.logger <litestar.connection.ASGIConnection.logger>` when not
+        ``Request.logger`` when not
         setting a ``logging_config`` on the application would result in a non-descriptive
         :exc:`TypeError`. An :exc:`ImproperlyConfiguredException` with an explanation is
         now raised instead.
@@ -1788,12 +1788,12 @@
         Converts the repository to use :func:`lambda_stmt <sqlalchemy.sql.expression.lambda_stmt>`
         instead of the normal ``select``
 
-    .. change:: SQLAlchemy: Swap to the `advanced_alchemy <https://docs.advanced-alchemy.jolt.rs>`_ implementations
+    .. change:: SQLAlchemy: Swap to the `advanced_alchemy <https://advanced-alchemy.litestar.dev>`_ implementations
         :type: feature
         :pr: 2312
 
         Swaps the internal SQLAlchemy repository to use the external
-        `advanced_alchemy <https://docs.advanced-alchemy.jolt.rs>`_ library implementations
+        `advanced_alchemy <https://advanced-alchemy.litestar.dev>`_ library implementations
 
     .. change:: Remove usages of deprecated ``ExceptionHandlerMiddleware`` ``debug`` parameter
         :type: bugfix

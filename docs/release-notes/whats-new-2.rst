@@ -97,11 +97,11 @@ Imports
 +----------------------------------------------------+------------------------------------------------------------------------+
 | ``starlite.TemplateConfig``                        | :class:`.template.TemplateConfig`                                      |
 +----------------------------------------------------+------------------------------------------------------------------------+
-| ``starlite.BaseLoggingConfig``                     | :class:`.logging.config.BaseLoggingConfig`                             |
+| ``starlite.BaseLoggingConfig``                     | ``litestar.logging.config.BaseLoggingConfig``                          |
 +----------------------------------------------------+------------------------------------------------------------------------+
-| ``starlite.LoggingConfig``                         | :class:`.logging.config.LoggingConfig`                                 |
+| ``starlite.LoggingConfig``                         | ``litestar.logging.config.LoggingConfig``                              |
 +----------------------------------------------------+------------------------------------------------------------------------+
-| ``starlite.StructLoggingConfig``                   | :class:`.logging.config.StructLoggingConfig`                           |
+| ``starlite.StructLoggingConfig``                   | ``litestar.logging.config.StructLoggingConfig``                        |
 +----------------------------------------------------+------------------------------------------------------------------------+
 | **Provide**                                                                                                                 |
 +----------------------------------------------------+------------------------------------------------------------------------+
@@ -296,7 +296,7 @@ TODO: Migration instructions
 
 .. seealso::
     SQLAlchemy usage documentation was available in v2, but SQLAlchemy support was moved into a move comprehensive standalone library for v3. See the
-    `advanced-alchemy documentation <https://docs.advanced-alchemy.litestar.dev/>`_ for API reference
+    `advanced-alchemy documentation <https://advanced-alchemy.litestar.dev/>`_ for API reference
 
 
 Removal of Pydantic models

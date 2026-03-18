@@ -167,20 +167,21 @@ def test_missing_dependency_exception_differing_package_name() -> None:
 
 
 @pytest.mark.parametrize("media_type", (MediaType.HTML, MediaType.JSON, MediaType.TEXT))
-def test_default_exception_handling_of_internal_server_errors(media_type: MediaType) -> None:
+def test_default_debug_exception_handling_of_internal_server_errors(media_type: MediaType) -> None:
     @get("/")
     def handler() -> None:
         raise ValueError("internal problem")
 
-    with create_test_client(handler) as client:
+    with create_test_client(handler, debug=True) as client:
         response = client.get("/", headers={"Accept": media_type})
-        assert response.status_code == HTTP_500_INTERNAL_SERVER_ERROR
-        if media_type == MediaType.HTML:
-            assert response.text.startswith("<!doctype html>")
-        elif media_type == MediaType.JSON:
-            assert response.json().get("details").startswith("Traceback (most recent call last")
-        else:
-            assert response.text.startswith("Traceback (most recent call last")
+
+    assert response.status_code == HTTP_500_INTERNAL_SERVER_ERROR
+    if media_type == MediaType.HTML:
+        assert response.text.startswith("<!doctype html>")
+    elif media_type == MediaType.JSON:
+        assert response.json().get("details").startswith("Traceback (most recent call last")
+    else:
+        assert response.text.startswith("Traceback (most recent call last")
 
 
 def test_non_litestar_exception_with_status_code_is_500() -> None:
@@ -207,7 +208,9 @@ def test_non_litestar_exception_with_detail_is_not_included() -> None:
         raise MyException()
 
     with create_test_client([handler], debug=False) as client:
-        assert client.get("/", headers={"Accept": MediaType.JSON}).json().get("detail") == "Internal Server Error"
+        response = client.get("/", headers={"Accept": MediaType.JSON})
+
+    assert response.text == "500 - Internal Server Error"
 
 
 def test_http_exception_with_class_var_extra() -> None:

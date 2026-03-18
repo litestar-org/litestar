@@ -74,43 +74,15 @@ full = [
     opentelemetry, \
     piccolo, \
     polyfactory, \
-    picologging, \
     prometheus, \
     pydantic, \
     redis, \
     sqlalchemy, \
     standard, \
-    structlog, \
     valkey, \
     htmx, \
     yaml, \
-    zstd]; \
-    python_version < \"3.13\"""",
-
-  # full extra without picologging
-  """litestar[annotated-types, \
-    attrs, \
-    brotli, \
-    cli, \
-    cryptography, \
-    jinja, \
-    jwt, \
-    mako, \
-    minijinja, \
-    opentelemetry, \
-    piccolo, \
-    polyfactory, \
-    prometheus, \
-    pydantic, \
-    redis, \
-    sqlalchemy, \
-    standard, \
-    structlog, \
-    valkey, \
-    htmx, \
-    yaml, \
-    zstd]; \
-    python_version >= \"3.13\"""",
+    zstd]""",
 ]
 htmx = ["litestar-htmx>=0.4.0"]
 jinja = ["jinja2>=3.1.2"]
@@ -119,7 +91,6 @@ mako = ["mako>=1.2.4"]
 minijinja = ["minijinja>=1.0.0"]
 opentelemetry = ["opentelemetry-instrumentation-asgi"]
 piccolo = ["piccolo", "litestar-piccolo"]
-picologging = ["picologging; python_version < \"3.13\""]
 polyfactory = ["polyfactory>=2.6.3"]
 prometheus = ["prometheus-client"]
 pydantic = ["pydantic", "email-validator", "pydantic-extra-types"]
@@ -130,7 +101,6 @@ standard = [
   "jsbeautifier",
   "uvicorn[standard]",
 ]
-structlog = ["structlog"]
 valkey = ["valkey[libvalkey]>=6.0.2"]
 yaml = ["pyyaml"]
 
@@ -182,6 +152,7 @@ dev = [
   "daphne>=4.0.0",
   "opentelemetry-sdk",
   "httpx-sse",
+  "structlog",
 ]
 
 docs = [
@@ -327,8 +298,6 @@ module = [
   "pytimeparse.*",
   "importlib_resources",
   "exceptiongroup",
-  "picologging",
-  "picologging.*",
   "zstandard",
   "zstandard.*"
 ]

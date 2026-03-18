@@ -24,7 +24,7 @@ from opentelemetry.trace import Span, TracerProvider  # pyright: ignore
 if TYPE_CHECKING:
     from opentelemetry.metrics import Meter, MeterProvider
 
-    from litestar.types import Scope, Scopes
+    from litestar.types import AfterExceptionHookHandler, Scope, Scopes
 
 OpenTelemetryHookHandler = Callable[[Span, dict], None]
 
@@ -35,6 +35,9 @@ class OpenTelemetryConfig:
 
     Consult the [OpenTelemetry ASGI documentation](https://opentelemetry-python-contrib.readthedocs.io/en/latest/instrumentation/asgi/asgi.html) for more info about the configuration options.
     """
+
+    after_exception_hook_handler: AfterExceptionHookHandler | None = field(default=None)
+    """Callback which is called with the exception and the scope object for every exception raised."""
 
     scope_span_details_extractor: Callable[[Scope], tuple[str, dict[str, Any]]] = field(
         default=get_route_details_from_scope
