@@ -143,7 +143,7 @@ def exec_examples(app_file: Path, run_configs: list[list[str]]) -> str:
                     logger.error(f"Example: {app_file}:{args} yielded no results")
                 continue
 
-            result = "\n".join(("> " + (" ".join(clean_args)), *stdout))
+            result = "\n".join(("> " + (shlex.join(clean_args)), *stdout))
             results.append(result)
 
     return "\n".join(results)

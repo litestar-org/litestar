@@ -20,7 +20,7 @@ jobs:
           persist-credentials: false
 
       - name: Download artifact
-        uses: dawidd6/action-download-artifact@v16
+        uses: dawidd6/action-download-artifact@v19
         with:
           workflow_conclusion: success
           run_id: ${{ github.event.workflow_run.id }}
@@ -38,7 +38,7 @@ jobs:
 
       - name: Generate GitHub App Token
         id: generate-token
-        uses: actions/create-github-app-token@v2
+        uses: actions/create-github-app-token@v3
         with:
           app-id: ${{ secrets.APP_ID }}
           private-key: ${{ secrets.APP_PRIVATE_KEY }}
