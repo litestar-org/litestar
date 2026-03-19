@@ -6,6 +6,8 @@ from typing import TYPE_CHECKING, Any
 from litestar.openapi.spec.base import BaseSchemaObject
 
 if TYPE_CHECKING:
+    from collections.abc import Mapping
+
     from litestar.openapi.spec.encoding import Encoding
     from litestar.openapi.spec.example import Example
     from litestar.openapi.spec.reference import Reference
@@ -32,7 +34,7 @@ class OpenAPIMediaType(BaseSchemaObject):
     example provided by the schema.
     """
 
-    examples: dict[str, Example | Reference] | None = None
+    examples: Mapping[str, Example | Reference] | None = None
     """Examples of the media type.
 
     Each example object SHOULD match the media type and specified schema if present.
