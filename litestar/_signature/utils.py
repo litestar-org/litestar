@@ -1,18 +1,18 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Callable
+from typing import TYPE_CHECKING, Any
 
 from litestar.constants import SKIP_VALIDATION_NAMES
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.params import DependencyKwarg
-from litestar.types import Empty, TypeDecodersSequence
+from litestar.types import Empty
 
 if TYPE_CHECKING:
     from litestar.typing import FieldDefinition
     from litestar.utils.signature import ParsedSignature
 
 
-__all__ = ("_get_decoder_for_type", "_normalize_annotation", "_validate_signature_dependencies")
+__all__ = ("_normalize_annotation", "_validate_signature_dependencies")
 
 
 def _validate_signature_dependencies(
@@ -49,10 +49,3 @@ def _normalize_annotation(field_definition: FieldDefinition) -> Any:
         return Any
 
     return field_definition.annotation
-
-
-def _get_decoder_for_type(target_type: Any, type_decoders: TypeDecodersSequence) -> Callable[[type, Any], Any] | None:
-    return next(
-        (decoder for predicate, decoder in type_decoders if predicate(target_type)),
-        None,
-    )

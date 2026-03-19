@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import re
 from functools import partial
-from pathlib import Path, PurePath
 from typing import (
     TYPE_CHECKING,
     Annotated,
@@ -15,25 +14,22 @@ from typing import (
     Union,
     cast,
 )
-from uuid import UUID
 
 from msgspec import NODEFAULT, Meta, Struct, ValidationError, convert, defstruct
 from msgspec.structs import asdict
 
 from litestar._signature.types import ExtendedMsgSpecValidationError
 from litestar._signature.utils import (
-    _get_decoder_for_type,
     _normalize_annotation,
     _validate_signature_dependencies,
 )
-from litestar.datastructures.state import ImmutableState
 from litestar.datastructures.url import URL
 from litestar.dto import AbstractDTO, DTOData
 from litestar.enums import ParamType, ScopeType
 from litestar.exceptions import InternalServerException, ValidationException
 from litestar.params import KwargDefinition, ParameterKwarg
 from litestar.typing import FieldDefinition  # noqa
-from litestar.utils import get_origin_or_inner_type, is_class_and_subclass
+from litestar.utils import get_origin_or_inner_type
 from litestar.utils.dataclass import simple_asdict
 
 if TYPE_CHECKING:
@@ -73,10 +69,6 @@ MSGSPEC_CONSTRAINT_FIELDS = (
 
 ERR_RE = re.compile(r"`\$\.(.+)`$")
 
-DEFAULT_TYPE_DECODERS = [
-    (lambda x: is_class_and_subclass(x, (Path, PurePath, ImmutableState, UUID)), lambda t, v: t(v)),
-]
-
 
 def _deserializer(target_type: Any, value: Any, default_deserializer: Callable[[Any, Any], Any]) -> Any:
     if isinstance(value, DTOData):
@@ -91,9 +83,6 @@ def _deserializer(target_type: Any, value: Any, default_deserializer: Callable[[
                 return value
         else:
             raise exc
-
-    if decoder := getattr(target_type, "_decoder", None):
-        return decoder(target_type, value)
 
     return default_deserializer(target_type, value)
 
@@ -263,7 +252,6 @@ class SignatureModel(Struct):
 
             annotation = cls._create_annotation(
                 field_definition=field_definition,
-                type_decoders=[*(type_decoders or []), *DEFAULT_TYPE_DECODERS],
                 meta_data=meta_data,
                 data_dto=data_dto,
             )
@@ -289,7 +277,6 @@ class SignatureModel(Struct):
     def _create_annotation(
         cls,
         field_definition: FieldDefinition,
-        type_decoders: TypeDecodersSequence,
         meta_data: Meta | None = None,
         data_dto: type[AbstractDTO] | None = None,
     ) -> Any:
@@ -306,17 +293,12 @@ class SignatureModel(Struct):
             types = [
                 cls._create_annotation(
                     field_definition=inner_type,
-                    type_decoders=type_decoders,
                     meta_data=meta_data,
                 )
                 for inner_type in field_definition.inner_types
                 if not inner_type.is_none_type
             ]
             return Optional[Union[tuple(types)]] if field_definition.is_optional else Union[tuple(types)]  # pyright: ignore
-
-        if decoder := _get_decoder_for_type(annotation, type_decoders=type_decoders):
-            # FIXME: temporary (hopefully) hack, see: https://github.com/jcrist/msgspec/issues/497
-            setattr(annotation, "_decoder", decoder)
 
         if meta_data:
             annotation = Annotated[annotation, meta_data]  # pyright: ignore
