@@ -151,6 +151,42 @@ def test_query_param_arrays(expected_type: Any, provided_value: Any, default: An
         assert response.status_code == expected_response_code
 
 
+def test_query_param_duplicate_with_some_lists() -> None:
+    test_path = "/test"
+
+    @get(test_path)
+    def test_method(
+        some_string: Annotated[str, Parameter(query="a", required=True)],
+        list_str: Annotated[list[str], Parameter(query="a", required=True)],
+    ) -> None:
+        assert some_string == "bar" or some_string == "foo"
+        assert list_str == ["foo", "bar"]
+        return
+
+    with create_test_client(test_method) as client:
+        params = "a=foo&a=bar"
+        response = client.get(f"{test_path}?{params}")
+        assert response.status_code == 200
+
+
+def test_query_param_duplicate_with_some_lists_defaults() -> None:
+    test_path = "/test"
+
+    @get(test_path)
+    def test_method(
+        some_string: Annotated[str, Parameter(query="a", required=False, default="bar")],
+        list_str: Annotated[Optional[list[str]], Parameter(query="a", required=False, default=None)],
+    ) -> None:
+        assert some_string == "bar" or some_string == "foo"
+        assert list_str == ["foo", "bar"]
+        return
+
+    with create_test_client(test_method) as client:
+        params = "a=foo&a=bar"
+        response = client.get(f"{test_path}?{params}")
+        assert response.status_code == 200
+
+
 def test_query_kwarg() -> None:
     test_path = "/test"
 
