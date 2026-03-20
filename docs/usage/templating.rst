@@ -84,7 +84,9 @@ The above example will create a jinja Environment instance, but you can also pas
     from litestar.template import TemplateConfig
     from jinja2 import Environment, DictLoader
 
-    my_custom_env = Environment(loader=DictLoader({"index.html": "Hello {{name}}!"}))
+    my_custom_env = Environment(
+        loader=DictLoader({"index.html": "Hello {{name}}!"})
+    )
     app = Litestar(
         template_config=TemplateConfig(
             instance=JinjaTemplateEngine.from_environment(my_custom_env)
@@ -113,7 +115,9 @@ argument which should be the template class, and it specifies two methods:
 
 
    class TemplateEngineProtocol(Protocol[SomeTemplate]):
-       def __init__(self, directory: Union[DirectoryPath, List[DirectoryPath]]) -> None:
+       def __init__(
+           self, directory: Union[DirectoryPath, List[DirectoryPath]]
+       ) -> None:
            """Builds a template engine."""
            ...
 
@@ -358,7 +362,9 @@ container, so simply pass a string keyed dictionary of values:
 
    @get(path="/info")
    def info() -> Template:
-       return Template(template_name="info.html", context={"numbers": "1234567890"})
+       return Template(
+           template_name="info.html", context={"numbers": "1234567890"}
+       )
 
 
 Template callables
