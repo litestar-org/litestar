@@ -13,9 +13,12 @@ import anyio
 from litestar.concurrency import sync_to_thread
 from litestar.enums import MediaType
 from litestar.exceptions import ImproperlyConfiguredException
+from litestar.response.base import ASGIResponse
 from litestar.response.streaming import ASGIStreamingResponse, Stream
 from litestar.utils import AsyncIteratorWrapper
 from litestar.utils.helpers import get_enum_string_value
+
+__all__ = ("ASGIStreamingSSEResponse", "ServerSentEvent", "ServerSentEventMessage")
 
 if TYPE_CHECKING:
     from litestar.background_tasks import BackgroundTask, BackgroundTasks
@@ -221,6 +224,8 @@ class ServerSentEvent(Stream):
                 (``: ping``) is sent at the specified interval to prevent connection timeouts from
                 reverse proxies or clients. Defaults to ``None`` (no pings).
         """
+        if ping_interval is not None and ping_interval <= 0:
+            raise ImproperlyConfiguredException("ping_interval must be a positive number")
         self.ping_interval = ping_interval
         super().__init__(
             content=_ServerSentEventIterator(
@@ -252,8 +257,11 @@ class ServerSentEvent(Stream):
         media_type: MediaType | str | None = None,
         status_code: int | None = None,
         type_encoders: TypeEncodersMap | None = None,
-    ) -> ASGIStreamingSSEResponse:
-        """Create an ASGIStreamingSSEResponse with optional keepalive ping support.
+    ) -> ASGIResponse:
+        """Create an ASGI streaming response, with optional keepalive ping support.
+
+        When ``ping_interval`` is set, returns an :class:`ASGIStreamingSSEResponse` that
+        sends periodic SSE comment pings. Otherwise delegates to the parent implementation.
 
         Args:
             background: Background task(s) to be executed after the response is sent.
@@ -267,8 +275,20 @@ class ServerSentEvent(Stream):
             type_encoders: A dictionary of type encoders to use for encoding the response content.
 
         Returns:
-            An ASGIStreamingSSEResponse instance.
+            An ASGIStreamingResponse (or ASGIStreamingSSEResponse when ping_interval is set).
         """
+        if self.ping_interval is None:
+            return super().to_asgi_response(
+                request,
+                background=background,
+                cookies=cookies,
+                headers=headers,
+                is_head_response=is_head_response,
+                media_type=media_type,
+                status_code=status_code,
+                type_encoders=type_encoders,
+            )
+
         headers = {**headers, **self.headers} if headers is not None else self.headers
         cookies = self.cookies if cookies is None else itertools.chain(self.cookies, cookies)
         media_type = get_enum_string_value(media_type or self.media_type or MediaType.JSON)
