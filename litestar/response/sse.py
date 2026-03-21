@@ -13,7 +13,6 @@ import anyio
 from litestar.concurrency import sync_to_thread
 from litestar.enums import MediaType
 from litestar.exceptions import ImproperlyConfiguredException
-from litestar.response.base import ASGIResponse
 from litestar.response.streaming import ASGIStreamingResponse, Stream
 from litestar.utils import AsyncIteratorWrapper
 from litestar.utils.helpers import get_enum_string_value
@@ -24,6 +23,7 @@ if TYPE_CHECKING:
     from litestar.background_tasks import BackgroundTask, BackgroundTasks
     from litestar.connection import Request
     from litestar.datastructures.cookie import Cookie
+    from litestar.response.base import ASGIResponse
     from litestar.types import Receive, ResponseCookies, ResponseHeaders, Send, SSEData, StreamType, TypeEncodersMap
 
 _LINE_BREAK_RE = re.compile(r"\r\n|\r|\n")
