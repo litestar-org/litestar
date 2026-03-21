@@ -203,6 +203,61 @@ async def test_sse_concurrent_ping_and_data() -> None:
             assert f"data: {i}\r\n" in body
 
 
+def test_sse_ping_interval_rejects_zero() -> None:
+    """ping_interval=0 should raise ImproperlyConfiguredException."""
+
+    async def gen() -> AsyncIterator[str]:
+        yield "data"
+
+    with pytest.raises(ImproperlyConfiguredException, match="ping_interval must be a positive number"):
+        ServerSentEvent(gen(), ping_interval=0)
+
+
+def test_sse_ping_interval_rejects_negative() -> None:
+    """ping_interval=-1 should raise ImproperlyConfiguredException."""
+
+    async def gen() -> AsyncIterator[str]:
+        yield "data"
+
+    with pytest.raises(ImproperlyConfiguredException, match="ping_interval must be a positive number"):
+        ServerSentEvent(gen(), ping_interval=-1)
+
+
+async def test_sse_ping_with_empty_generator() -> None:
+    """Ping task shuts down cleanly when generator yields nothing."""
+
+    async def empty_gen() -> AsyncIterator[str]:
+        return
+        yield  # make it an async generator
+
+    @get("/test")
+    async def handler() -> ServerSentEvent:
+        return ServerSentEvent(empty_gen(), ping_interval=1)
+
+    async with create_async_test_client(handler) as client:
+        response = await client.get("/test")
+        assert response.status_code == 200
+
+
+async def test_sse_large_ping_interval_no_pings_sent() -> None:
+    """With a very large ping_interval, no pings should be sent for a short-lived stream."""
+
+    @get("/test")
+    async def handler() -> ServerSentEvent:
+        async def gen() -> AsyncIterator[str]:
+            yield "data1"
+            yield "data2"
+
+        return ServerSentEvent(gen(), ping_interval=99999)
+
+    async with create_async_test_client(handler) as client:
+        response = await client.get("/test")
+        assert response.status_code == 200
+        assert b": ping" not in response.content
+        assert b"data: data1" in response.content
+        assert b"data: data2" in response.content
+
+
 async def test_sse_ping_with_str_chunks() -> None:
     """ASGIStreamingSSEResponse handles str chunks correctly when ping is enabled."""
 
