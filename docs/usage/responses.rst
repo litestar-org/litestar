@@ -734,8 +734,14 @@ To prevent reverse proxies or clients from closing idle SSE connections, use the
 
         return ServerSentEvent(generator(), ping_interval=15)
 
-This sends an SSE comment (``: ping``) every 15 seconds to keep the connection alive. SSE comments are invisible to
-``EventSource`` clients and will not trigger message events.
+The ``ping_interval`` value is in **seconds**. This sends an SSE comment (``: ping``) every 15 seconds to keep the
+connection alive. SSE comments are invisible to ``EventSource`` clients and will not trigger message events.
+Pings begin after the first interval elapses (no immediate ping on connect).
+
+.. tip::
+
+    Common values are 15–30 seconds, depending on your reverse proxy's idle timeout
+    (e.g., nginx defaults to 60 seconds, Telegram Mini Apps time out after 60 seconds).
 
 
 Template Responses
