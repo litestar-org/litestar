@@ -5,10 +5,10 @@ from typing import TYPE_CHECKING, Any, Callable, Literal, NamedTuple
 __all__ = (
     "ControllerRouterHandler",
     "PathParameterDefinition",
-    "PathParameterDefinition",
     "ReservedKwargs",
     "RouteHandlerMapItem",
     "RouteHandlerType",
+    "TemplateConfigType",
 )
 
 if TYPE_CHECKING:
