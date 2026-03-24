@@ -16,7 +16,7 @@ T = TypeVar("T")
 D = TypeVar("D")
 
 if sys.version_info >= (3, 10):
-    async_next = anext  # type: ignore[name-defined]  # noqa: F821
+    async_next = anext  # type: ignore[name-defined]
 else:
 
     async def async_next(gen: AsyncGenerator[T, Any], default: D | EmptyType = Empty) -> T | D:

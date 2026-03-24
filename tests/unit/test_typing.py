@@ -316,9 +316,9 @@ def test_is_required() -> None:
         not_required: NotRequired[str]
 
     class Bar(msgspec.Struct):
-        unset: Union[str, msgspec.UnsetType] = msgspec.UNSET  # noqa: UP007
+        unset: Union[str, msgspec.UnsetType] = msgspec.UNSET
         with_default: str = ""
-        with_none_default: Union[str, None] = None  # noqa: UP007
+        with_none_default: Union[str, None] = None
 
     assert FieldDefinition.from_annotation(get_type_hints(Foo, include_extras=True)["required"]).is_required is True
     assert (
