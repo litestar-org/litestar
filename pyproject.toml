@@ -433,7 +433,7 @@ lint.select = [
 
 line-length = 120
 src = ["litestar", "tests", "docs/examples"]
-target-version = "py39"
+target-version = "py311"
 
 [tool.ruff.lint.pydocstyle]
 convention = "google"
