@@ -1,8 +1,9 @@
 from __future__ import annotations
 
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from time import time
-from typing import TYPE_CHECKING, Any, Callable, Literal, cast
+from typing import TYPE_CHECKING, Any, Literal, cast
 
 from litestar.datastructures import MutableScopeHeaders
 from litestar.enums import ScopeType

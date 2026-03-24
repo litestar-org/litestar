@@ -4,11 +4,10 @@ from __future__ import annotations
 
 import datetime
 import re
+from collections.abc import Callable
 from dataclasses import dataclass
 from inspect import isclass
-from typing import TYPE_CHECKING, Annotated, Any, Callable, Literal, Optional, get_type_hints
-
-from typing_extensions import NotRequired
+from typing import TYPE_CHECKING, Annotated, Any, Literal, NotRequired, Optional, get_type_hints
 
 from litestar.openapi.spec import Example
 from litestar.params import KwargDefinition, ParameterKwarg
@@ -48,8 +47,7 @@ except ImportError:
 
 if TYPE_CHECKING:
     from types import ModuleType
-
-    from typing_extensions import TypeGuard
+    from typing import TypeGuard
 
 
 def is_pydantic_model_class(

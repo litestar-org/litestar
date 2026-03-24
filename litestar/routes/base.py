@@ -2,10 +2,11 @@ from __future__ import annotations
 
 import re
 from abc import ABC, abstractmethod
+from collections.abc import Callable
 from datetime import date, datetime, time, timedelta
 from decimal import Decimal
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Callable, Generic, TypeVar
+from typing import TYPE_CHECKING, Any, Generic, TypeVar
 from uuid import UUID
 
 import msgspec

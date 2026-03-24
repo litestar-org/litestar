@@ -5,7 +5,7 @@ Uses a `dict` for storage.
 
 from __future__ import annotations
 
-from datetime import datetime, timezone, tzinfo, UTC
+from datetime import UTC, datetime, tzinfo
 from typing import TYPE_CHECKING, Generic, Protocol, TypeVar
 from uuid import uuid4
 

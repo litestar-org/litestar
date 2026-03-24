@@ -1,9 +1,10 @@
 from __future__ import annotations
 
 import dataclasses
+from collections.abc import Callable
 from dataclasses import dataclass
 from types import ModuleType
-from typing import Annotated, Callable, Generic, Optional, TypeVar, cast
+from typing import Annotated, Generic, Optional, TypeVar, cast
 
 import msgspec
 import pytest

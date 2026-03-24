@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Callable
+from collections.abc import Callable
+from typing import TYPE_CHECKING, Any
 
 from litestar.constants import SKIP_VALIDATION_NAMES
 from litestar.exceptions import ImproperlyConfiguredException

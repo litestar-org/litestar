@@ -14,7 +14,7 @@ from litestar.dto.data_structures import DTOFieldDefinition
 from litestar.typing import FieldDefinition
 
 if TYPE_CHECKING:
-    from typing import Callable
+    from collections.abc import Callable
 
 
 @pytest.fixture

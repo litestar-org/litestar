@@ -1,7 +1,7 @@
 import zlib
-from collections.abc import AsyncIterator
+from collections.abc import AsyncIterator, Callable
 from io import BytesIO
-from typing import Callable, Literal, Union
+from typing import Literal, Union
 from unittest.mock import MagicMock
 
 import pytest

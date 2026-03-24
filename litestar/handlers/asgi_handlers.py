@@ -1,7 +1,8 @@
 from __future__ import annotations
 
 import warnings
-from typing import TYPE_CHECKING, Any, Callable
+from collections.abc import Callable
+from typing import TYPE_CHECKING, Any
 
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.handlers.base import BaseRouteHandler

@@ -2,9 +2,10 @@ from __future__ import annotations
 
 import asyncio
 from asyncio import CancelledError, Queue, Task, create_task
+from collections.abc import Callable
 from contextlib import AbstractAsyncContextManager, asynccontextmanager, suppress
 from functools import partial
-from typing import TYPE_CHECKING, Callable
+from typing import TYPE_CHECKING
 
 import msgspec.json
 

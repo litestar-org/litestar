@@ -7,11 +7,11 @@ import random
 import shutil
 import string
 import sys
-from collections.abc import AsyncGenerator, Generator
+from collections.abc import AsyncGenerator, Callable, Generator
 from datetime import datetime
 from os import urandom
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Callable, Union, cast
+from typing import TYPE_CHECKING, Any, Union, cast
 from unittest.mock import AsyncMock, MagicMock
 
 import pytest

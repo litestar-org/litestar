@@ -1,8 +1,9 @@
 import dataclasses
 import secrets
 import string
-from datetime import datetime, timedelta, timezone, UTC
-from typing import TYPE_CHECKING, Any, Callable, Optional
+from collections.abc import Callable
+from datetime import UTC, datetime, timedelta
+from typing import TYPE_CHECKING, Any, Optional, TypeAlias
 from uuid import uuid4
 
 import jwt
@@ -10,7 +11,6 @@ import msgspec
 import pytest
 from hypothesis import given, settings
 from hypothesis.strategies import dictionaries, integers, none, one_of, sampled_from, text, timedeltas
-from typing_extensions import TypeAlias
 
 from litestar import Litestar, Request, Response, get
 from litestar.security.jwt import JWTAuth, JWTCookieAuth, OAuth2PasswordBearerAuth, Token

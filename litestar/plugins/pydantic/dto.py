@@ -2,10 +2,10 @@ from __future__ import annotations
 
 import dataclasses
 from dataclasses import replace
-from typing import TYPE_CHECKING, Annotated, Any, Generic, TypeVar
+from typing import TYPE_CHECKING, Annotated, Any, Generic, TypeAlias, TypeVar
 from warnings import warn
 
-from typing_extensions import TypeAlias, override
+from typing_extensions import override
 
 from litestar.dto.base_dto import AbstractDTO
 from litestar.dto.data_structures import DTOFieldDefinition

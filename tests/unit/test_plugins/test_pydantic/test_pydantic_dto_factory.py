@@ -1,7 +1,8 @@
 from __future__ import annotations
 
+from collections.abc import Callable
 from dataclasses import replace
-from typing import TYPE_CHECKING, Annotated, Callable
+from typing import TYPE_CHECKING, Annotated
 from unittest.mock import ANY
 
 import pydantic as pydantic_v2
@@ -15,7 +16,7 @@ from litestar.typing import FieldDefinition
 from . import PydanticVersion
 
 if TYPE_CHECKING:
-    from typing import Callable
+    from collections.abc import Callable
 
 
 @pytest.fixture

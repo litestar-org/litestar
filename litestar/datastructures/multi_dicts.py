@@ -10,8 +10,7 @@ from litestar.datastructures.upload_file import UploadFile
 
 if TYPE_CHECKING:
     from collections.abc import Generator, Iterable, Mapping
-
-    from typing_extensions import Self
+    from typing import Self
 
 
 __all__ = ("FormMultiDict", "ImmutableMultiDict", "MultiDict", "MultiMixin")

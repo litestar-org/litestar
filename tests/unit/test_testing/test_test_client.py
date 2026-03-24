@@ -1,7 +1,7 @@
 import asyncio
 import contextlib
-from collections.abc import AsyncGenerator
-from typing import TYPE_CHECKING, Callable, NoReturn, Union, cast
+from collections.abc import AsyncGenerator, Callable
+from typing import TYPE_CHECKING, NoReturn, Union, cast
 
 import anyio
 from _pytest.fixtures import FixtureRequest

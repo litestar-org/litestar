@@ -2,8 +2,9 @@ from __future__ import annotations
 
 import enum
 import pdb  # noqa: T100
+from collections.abc import Callable
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, Any, Callable
+from typing import TYPE_CHECKING, Any
 
 from litestar.config.allowed_hosts import AllowedHostsConfig
 from litestar.config.response_cache import ResponseCacheConfig

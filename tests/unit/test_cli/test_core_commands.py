@@ -2,9 +2,9 @@ import io
 import os
 import re
 import sys
-from collections.abc import Generator
+from collections.abc import Callable, Generator
 from pathlib import Path
-from typing import Callable, Literal, Optional, Union
+from typing import Literal, Optional, Union
 from unittest.mock import MagicMock
 
 import pytest

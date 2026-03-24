@@ -2,7 +2,8 @@ from __future__ import annotations
 
 import abc
 from abc import abstractmethod
-from typing import TYPE_CHECKING, Any, Callable, Protocol, runtime_checkable
+from collections.abc import Callable
+from typing import TYPE_CHECKING, Any, Protocol, runtime_checkable
 
 from litestar.enums import ScopeType
 from litestar.middleware._utils import (

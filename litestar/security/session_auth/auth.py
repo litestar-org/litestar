@@ -1,7 +1,8 @@
 from __future__ import annotations
 
+from collections.abc import Callable
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, Any, Callable, Generic, cast
+from typing import TYPE_CHECKING, Any, Generic, cast
 
 from litestar.middleware.base import DefineMiddleware
 from litestar.middleware.session.base import BaseBackendConfig, BaseSessionBackendT

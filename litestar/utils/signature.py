@@ -5,9 +5,7 @@ import typing
 from dataclasses import dataclass, replace
 from inspect import Signature, getmembers, isclass, ismethod
 from itertools import chain
-from typing import TYPE_CHECKING, Annotated, Any, Union, get_type_hints
-
-from typing_extensions import Self, get_args, get_origin
+from typing import TYPE_CHECKING, Annotated, Any, Self, Union, get_args, get_origin, get_type_hints
 
 from litestar import connection, datastructures, types
 from litestar.types import Empty

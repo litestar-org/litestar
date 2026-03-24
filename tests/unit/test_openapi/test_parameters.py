@@ -1,9 +1,8 @@
 import dataclasses
-from typing import TYPE_CHECKING, Annotated, Any, Optional, cast
+from typing import TYPE_CHECKING, Annotated, Any, NewType, Optional, cast
 from uuid import UUID
 
 import pytest
-from typing_extensions import NewType
 
 from litestar import Controller, Litestar, Router, get
 from litestar._openapi.datastructures import OpenAPIContext

@@ -5,7 +5,7 @@ import secrets
 import sys
 from collections.abc import Sequence
 from dataclasses import asdict
-from datetime import datetime, timedelta, timezone, UTC
+from datetime import UTC, datetime, timedelta
 from typing import Any
 from uuid import uuid4
 

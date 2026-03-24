@@ -1,14 +1,14 @@
 from __future__ import annotations
 
+from collections.abc import Callable
 from dataclasses import dataclass
 from http import HTTPStatus
 from pathlib import Path
 from types import ModuleType
-from typing import Any, Callable, TypedDict, TypeVar
+from typing import Any, TypeAlias, TypedDict, TypeVar
 from unittest.mock import MagicMock
 
 import pytest
-from typing_extensions import TypeAlias
 
 from litestar import Controller, Litestar, MediaType, Response, delete, get, post
 from litestar._openapi.datastructures import OpenAPIContext

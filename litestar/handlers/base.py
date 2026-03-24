@@ -1,8 +1,9 @@
 from __future__ import annotations
 
 import functools
+from collections.abc import Callable
 from functools import partial
-from typing import TYPE_CHECKING, Any, Callable, NoReturn, cast
+from typing import TYPE_CHECKING, Any, NoReturn, cast
 
 from litestar._signature import SignatureModel
 from litestar.di import Provide
@@ -29,8 +30,7 @@ from litestar.utils.signature import ParsedSignature, add_types_to_signature_nam
 
 if TYPE_CHECKING:
     from collections.abc import Iterable, Mapping, Sequence
-
-    from typing_extensions import Self
+    from typing import Self
 
     from litestar._kwargs import KwargsModel
     from litestar.app import Litestar

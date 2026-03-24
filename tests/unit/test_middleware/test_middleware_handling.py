@@ -1,7 +1,7 @@
 import logging
-from collections.abc import Awaitable
+from collections.abc import Awaitable, Callable
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Any, Callable, cast
+from typing import TYPE_CHECKING, Any, cast
 
 import pytest
 from pytest_mock import MockerFixture

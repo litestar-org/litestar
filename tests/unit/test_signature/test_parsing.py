@@ -1,7 +1,7 @@
-from collections.abc import Iterable, Sequence
+from collections.abc import Callable, Iterable, Sequence
 from dataclasses import dataclass
 from types import ModuleType
-from typing import Annotated, Any, Callable, Optional, Union
+from typing import Annotated, Any, Optional, Union
 from unittest.mock import MagicMock
 
 import msgspec

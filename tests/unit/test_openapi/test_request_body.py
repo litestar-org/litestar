@@ -1,5 +1,6 @@
+from collections.abc import Callable
 from dataclasses import dataclass
-from typing import Annotated, Any, Callable, TypedDict
+from typing import Annotated, Any, TypedDict
 from unittest.mock import ANY, MagicMock
 
 import pytest

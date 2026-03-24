@@ -1,13 +1,12 @@
 from __future__ import annotations
 
-from datetime import datetime, timezone, UTC
-from typing import TYPE_CHECKING, Annotated, Optional, cast
+from datetime import UTC, datetime
+from typing import TYPE_CHECKING, Annotated, Literal, Optional, cast
 
 import pydantic as pydantic_v2
 import pytest
 from pydantic import AwareDatetime
 from pydantic import v1 as pydantic_v1
-from typing_extensions import Literal
 
 from litestar import Request, post
 from litestar.dto import DTOConfig

@@ -1,9 +1,10 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
+from collections.abc import Callable
 from copy import copy
 from dataclasses import field
-from typing import TYPE_CHECKING, Any, Callable, Generic, TypeVar, cast
+from typing import TYPE_CHECKING, Any, Generic, TypeVar, cast
 
 from litestar import Response
 from litestar.utils.sync import ensure_async_callable

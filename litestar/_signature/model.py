@@ -1,13 +1,13 @@
 from __future__ import annotations
 
 import re
+from collections.abc import Callable
 from functools import partial
 from pathlib import Path, PurePath
 from typing import (
     TYPE_CHECKING,
     Annotated,
     Any,
-    Callable,
     ClassVar,
     Literal,
     Optional,
@@ -38,8 +38,7 @@ from litestar.utils.dataclass import simple_asdict
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
-
-    from typing_extensions import NotRequired
+    from typing import NotRequired
 
     from litestar.connection import ASGIConnection
     from litestar.types import AnyCallable, TypeDecodersSequence

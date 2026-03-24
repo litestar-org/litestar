@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Callable, Literal, NamedTuple
+from collections.abc import Callable
+from typing import TYPE_CHECKING, Any, Literal, NamedTuple
 
 __all__ = (
     "ControllerRouterHandler",
@@ -12,7 +13,7 @@ __all__ = (
 )
 
 if TYPE_CHECKING:
-    from typing_extensions import TypeAlias
+    from typing import TypeAlias
 
     from litestar.controller import Controller
     from litestar.handlers import BaseRouteHandler

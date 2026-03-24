@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-from collections.abc import Sequence
+from collections.abc import Callable, Sequence
 from dataclasses import dataclass, field
 from types import ModuleType
-from typing import TYPE_CHECKING, Annotated, Callable, Generic, Optional, TypeVar, cast
+from typing import TYPE_CHECKING, Annotated, Generic, Optional, TypeVar, cast
 from unittest.mock import MagicMock
 from uuid import UUID
 

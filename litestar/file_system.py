@@ -4,12 +4,13 @@ import abc
 import os
 import os.path
 import pathlib
+from collections.abc import Callable
 from datetime import datetime
 from stat import S_ISDIR
-from typing import TYPE_CHECKING, Any, Callable, ClassVar, Final, Union, cast
+from typing import TYPE_CHECKING, Any, ClassVar, Final, NotRequired, TypeAlias, Union, cast
 
 import anyio
-from typing_extensions import NotRequired, TypeAlias, TypedDict
+from typing_extensions import TypedDict
 
 from litestar.concurrency import sync_to_thread
 from litestar.plugins import InitPlugin

@@ -1,7 +1,8 @@
 from __future__ import annotations
 
 import inspect
-from typing import TYPE_CHECKING, Any, Callable, Literal, TypedDict, cast
+from collections.abc import Callable
+from typing import TYPE_CHECKING, Any, Literal, TypedDict, cast
 
 from litestar._parsers import parse_cookie_string
 from litestar.connection.request import Request

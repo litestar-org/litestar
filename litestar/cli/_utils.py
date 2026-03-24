@@ -6,14 +6,15 @@ import inspect
 import os
 import re
 import sys
+from collections.abc import Callable
 from dataclasses import dataclass
-from datetime import datetime, timedelta, timezone, UTC
+from datetime import UTC, datetime, timedelta
 from functools import wraps
 from importlib.util import find_spec
 from itertools import chain
 from os import getenv
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Callable, TypeVar, cast
+from typing import TYPE_CHECKING, Any, TypeVar, cast
 
 from litestar.cli._suggestions import suggest_option
 

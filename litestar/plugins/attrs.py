@@ -1,8 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
-
-from typing_extensions import TypeGuard
+from typing import TYPE_CHECKING, Any, TypeGuard
 
 from litestar.exceptions import MissingDependencyException
 from litestar.plugins import OpenAPISchemaPlugin

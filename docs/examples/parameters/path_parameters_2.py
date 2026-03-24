@@ -1,4 +1,4 @@
-from datetime import datetime, timezone, UTC
+from datetime import UTC, datetime
 
 from pydantic import BaseModel
 

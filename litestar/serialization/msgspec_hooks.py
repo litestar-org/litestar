@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from collections import deque
+from collections.abc import Callable
 from datetime import date, datetime, time
 from decimal import Decimal
 from functools import partial
@@ -14,7 +15,7 @@ from ipaddress import (
 )
 from pathlib import Path, PurePath
 from re import Pattern
-from typing import TYPE_CHECKING, Any, Callable, TypeVar, overload
+from typing import TYPE_CHECKING, Any, TypeVar, overload
 from uuid import UUID
 
 import msgspec

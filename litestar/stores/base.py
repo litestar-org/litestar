@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from datetime import datetime, timedelta, timezone, UTC
+from datetime import UTC, datetime, timedelta
 from typing import TYPE_CHECKING
 
 from msgspec import Struct
@@ -10,8 +10,7 @@ from msgspec.msgpack import encode as msgpack_encode
 
 if TYPE_CHECKING:
     from types import TracebackType
-
-    from typing_extensions import Self
+    from typing import Self
 
 
 __all__ = ("NamespacedStore", "StorageObject", "Store")

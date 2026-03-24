@@ -1,12 +1,11 @@
 from collections import defaultdict, deque
-from collections.abc import AsyncGenerator, Iterable, Mapping, MutableMapping, Sequence
+from collections.abc import AsyncGenerator, Callable, Iterable, Mapping, MutableMapping, Sequence
 from dataclasses import MISSING, dataclass
 from functools import partial
 from inspect import Signature
 from typing import (
     Annotated,
     Any,
-    Callable,
     ClassVar,
     Generic,
     Optional,

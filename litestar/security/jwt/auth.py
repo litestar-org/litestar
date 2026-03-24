@@ -1,8 +1,9 @@
 from __future__ import annotations
 
+from collections.abc import Callable
 from dataclasses import asdict, dataclass, field
-from datetime import datetime, timedelta, timezone, UTC
-from typing import TYPE_CHECKING, Any, Callable, Generic, Literal, cast
+from datetime import UTC, datetime, timedelta
+from typing import TYPE_CHECKING, Any, Generic, Literal, cast
 
 from typing_extensions import TypeVar
 

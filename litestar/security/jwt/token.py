@@ -3,7 +3,7 @@ from __future__ import annotations
 import dataclasses
 from collections.abc import Sequence  # noqa: TC003
 from dataclasses import asdict, dataclass, field
-from datetime import datetime, timezone, UTC
+from datetime import UTC, datetime
 from typing import TYPE_CHECKING, Any, TypedDict
 
 import jwt
@@ -12,7 +12,7 @@ import msgspec
 from litestar.exceptions import ImproperlyConfiguredException, NotAuthorizedException
 
 if TYPE_CHECKING:
-    from typing_extensions import Self
+    from typing import Self
 
 __all__ = (
     "JWTDecodeOptions",

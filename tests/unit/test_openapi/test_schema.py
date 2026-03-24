@@ -1,6 +1,6 @@
 import sys
 from dataclasses import dataclass
-from datetime import date, datetime, timezone, UTC
+from datetime import UTC, date, datetime
 from enum import Enum, auto
 from typing import (
     TYPE_CHECKING,
@@ -9,6 +9,7 @@ from typing import (
     Generic,
     Literal,
     Optional,
+    TypeAlias,
     TypedDict,
     TypeVar,
     Union,
@@ -18,7 +19,7 @@ import annotated_types
 import msgspec
 import pytest
 from msgspec import Struct
-from typing_extensions import TypeAlias, TypeAliasType
+from typing_extensions import TypeAliasType
 
 from litestar import Controller, MediaType, get, post
 from litestar._openapi.schema_generation.plugins import openapi_schema_plugins
@@ -43,8 +44,8 @@ from tests.helpers import get_schema_for_field_definition
 from tests.models import DataclassPerson, DataclassPet
 
 if TYPE_CHECKING:
+    from collections.abc import Callable
     from types import ModuleType
-    from typing import Callable
 
 T = TypeVar("T")
 

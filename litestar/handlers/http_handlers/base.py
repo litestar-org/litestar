@@ -1,8 +1,9 @@
 from __future__ import annotations
 
 import contextlib
+from collections.abc import Callable
 from enum import Enum
-from typing import TYPE_CHECKING, AnyStr, Callable, TypedDict, cast
+from typing import TYPE_CHECKING, AnyStr, TypedDict, cast
 
 from msgspec.msgpack import decode as _decode_msgpack_plain
 

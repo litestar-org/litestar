@@ -1,7 +1,8 @@
 from __future__ import annotations
 
+from collections.abc import Callable
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, Any, Callable, final
+from typing import TYPE_CHECKING, Any, final
 from urllib.parse import urlencode
 
 from litestar.status_codes import (

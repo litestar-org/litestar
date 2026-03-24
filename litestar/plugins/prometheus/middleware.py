@@ -1,8 +1,9 @@
 from __future__ import annotations
 
 import time
+from collections.abc import Callable
 from functools import wraps
-from typing import TYPE_CHECKING, Any, Callable, ClassVar, cast
+from typing import TYPE_CHECKING, Any, ClassVar, cast
 
 from litestar.connection.request import Request
 from litestar.enums import ScopeType

@@ -1,9 +1,10 @@
 from __future__ import annotations
 
 import asyncio
+from collections.abc import Callable
 from contextlib import AsyncExitStack
 from functools import partial
-from typing import TYPE_CHECKING, Callable, overload
+from typing import TYPE_CHECKING, overload
 
 import asyncpg
 

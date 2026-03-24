@@ -4,7 +4,7 @@ import os
 import pathlib
 import secrets
 from collections.abc import AsyncGenerator
-from datetime import datetime, timezone, UTC
+from datetime import UTC, datetime
 from email.utils import formatdate
 from os import urandom
 from pathlib import Path

@@ -1,8 +1,9 @@
 from __future__ import annotations
 
 from collections import defaultdict
+from collections.abc import Callable
 from functools import lru_cache, partial
-from typing import TYPE_CHECKING, Any, Callable, NamedTuple, cast
+from typing import TYPE_CHECKING, Any, NamedTuple, cast
 
 from litestar._multipart import parse_multipart_form
 from litestar._parsers import (

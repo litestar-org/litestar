@@ -13,12 +13,12 @@ from typing import (
     TYPE_CHECKING,
     Any,
     Literal,
+    Self,
     Union,
     cast,
+    get_args,
 )
 from uuid import UUID
-
-from typing_extensions import Self, get_args
 
 from litestar._openapi.datastructures import SchemaRegistry
 from litestar._openapi.schema_generation.constrained_fields import (

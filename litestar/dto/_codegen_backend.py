@@ -8,12 +8,11 @@ import linecache
 import re
 import secrets
 import textwrap
-from collections.abc import Generator, Mapping
+from collections.abc import Callable, Generator, Mapping
 from contextlib import AbstractContextManager, contextmanager, nullcontext
 from typing import (
     TYPE_CHECKING,
     Any,
-    Callable,
     Protocol,
     cast,
 )

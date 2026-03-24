@@ -1,5 +1,4 @@
-from collections.abc import Awaitable
-from typing import Callable
+from collections.abc import Awaitable, Callable
 from unittest.mock import AsyncMock
 
 from litestar import Controller, Litestar, Router, get
