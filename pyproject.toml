@@ -393,6 +393,8 @@ lint.ignore = [
   "PLC0415", # `import` should be at the top-level of a file
   "PLW1641", # Object does not implement `__hash__` method
   "SIM103",  # 'Return the condition directly': This is a bit overzealous
+  "UP038",   # Use `X | Y` in `isinstance` call instead of `(X, Y)`
+  "UP007",   # Use `X | Y` for type annotations
 ]
 lint.select = [
   "A",   # flake8-builtins
