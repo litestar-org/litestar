@@ -7,7 +7,7 @@ import os
 import re
 import sys
 from dataclasses import dataclass
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta, timezone, UTC
 from functools import wraps
 from importlib.util import find_spec
 from itertools import chain
@@ -533,8 +533,8 @@ def _generate_self_signed_cert(certfile_path: Path, keyfile_path: Path, common_n
         .issuer_name(subject)
         .public_key(key.public_key())
         .serial_number(x509.random_serial_number())
-        .not_valid_before(datetime.now(tz=timezone.utc))
-        .not_valid_after(datetime.now(tz=timezone.utc) + timedelta(days=365))
+        .not_valid_before(datetime.now(tz=UTC))
+        .not_valid_after(datetime.now(tz=UTC) + timedelta(days=365))
         .add_extension(x509.SubjectAlternativeName([x509.DNSName(common_name)]), critical=False)
         .add_extension(x509.ExtendedKeyUsage([x509.OID_SERVER_AUTH]), critical=False)
         .sign(key, hashes.SHA256(), default_backend())

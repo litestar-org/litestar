@@ -1,6 +1,6 @@
 import sys
 from dataclasses import dataclass
-from datetime import date, datetime, timezone
+from datetime import date, datetime, timezone, UTC
 from enum import Enum, auto
 from typing import (
     TYPE_CHECKING,
@@ -343,12 +343,12 @@ def test_annotated_types() -> None:
     assert schema.properties["constrained_float"].maximum == 10  # type: ignore[index, union-attr]
     assert datetime.fromtimestamp(
         schema.properties["constrained_date"].exclusive_minimum,  # type: ignore[arg-type, index, union-attr]
-        tz=timezone.utc,
-    ) == datetime.fromordinal(historical_date.toordinal()).replace(tzinfo=timezone.utc)
+        tz=UTC,
+    ) == datetime.fromordinal(historical_date.toordinal()).replace(tzinfo=UTC)
     assert datetime.fromtimestamp(
         schema.properties["constrained_date"].exclusive_maximum,  # type: ignore[arg-type, index, union-attr]
-        tz=timezone.utc,
-    ) == datetime.fromordinal(today.toordinal()).replace(tzinfo=timezone.utc)
+        tz=UTC,
+    ) == datetime.fromordinal(today.toordinal()).replace(tzinfo=UTC)
     assert schema.properties["constrained_lower_case"].description == "must be in lower case"  # type: ignore[index]
     assert schema.properties["constrained_upper_case"].description == "must be in upper case"  # type: ignore[index]
     assert schema.properties["constrained_is_ascii"].pattern == "[[:ascii:]]"  # type: ignore[index, union-attr]

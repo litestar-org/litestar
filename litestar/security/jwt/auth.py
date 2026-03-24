@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass, field
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta, timezone, UTC
 from typing import TYPE_CHECKING, Any, Callable, Generic, Literal, cast
 
 from typing_extensions import TypeVar
@@ -236,7 +236,7 @@ class BaseJWTAuth(Generic[UserType, TokenT], AbstractSecurityConfig[UserType, To
         """
         token = self.token_cls(
             sub=identifier,
-            exp=(datetime.now(timezone.utc) + (token_expiration or self.default_token_expiration)),
+            exp=(datetime.now(UTC) + (token_expiration or self.default_token_expiration)),
             iss=token_issuer,
             aud=token_audience,
             jti=token_unique_jwt_id,

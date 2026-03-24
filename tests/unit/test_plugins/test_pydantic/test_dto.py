@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import datetime, timezone, UTC
 from typing import TYPE_CHECKING, Annotated, Optional, cast
 
 import pydantic as pydantic_v2
@@ -38,7 +38,7 @@ def test_aware_datetime_serialization_v2(use_experimental_dto_backend: bool) -> 
         return data
 
     with create_test_client(handler) as client:
-        data = PydanticAwareDatetimeModel(tz_aware_datetime=datetime.now(tz=timezone.utc))
+        data = PydanticAwareDatetimeModel(tz_aware_datetime=datetime.now(tz=UTC))
         dict_payload = _model_dump(data)
         json_payload = _model_dump_json(data)
 

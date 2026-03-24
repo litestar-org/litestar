@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import date, datetime, timezone
+from datetime import date, datetime, timezone, UTC
 from re import Pattern
 from typing import TYPE_CHECKING
 
@@ -57,9 +57,9 @@ def create_date_constrained_field_schema(
                 schema,
                 schema_attr,
                 datetime.combine(
-                    datetime.fromtimestamp(attr, tz=timezone.utc) if isinstance(attr, (float, int)) else attr,
+                    datetime.fromtimestamp(attr, tz=UTC) if isinstance(attr, (float, int)) else attr,
                     datetime.min.time(),
-                    tzinfo=timezone.utc,
+                    tzinfo=UTC,
                 ).timestamp(),
             )
 

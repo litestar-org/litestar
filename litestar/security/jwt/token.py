@@ -3,7 +3,7 @@ from __future__ import annotations
 import dataclasses
 from collections.abc import Sequence  # noqa: TC003
 from dataclasses import asdict, dataclass, field
-from datetime import datetime, timezone
+from datetime import datetime, timezone, UTC
 from typing import TYPE_CHECKING, Any, TypedDict
 
 import jwt
@@ -30,7 +30,7 @@ def _normalize_datetime(value: datetime) -> datetime:
         A datetime instance
     """
     if value.tzinfo is not None:
-        value = value.astimezone(timezone.utc)
+        value = value.astimezone(UTC)
 
     return value.replace(microsecond=0)
 
@@ -54,7 +54,7 @@ class Token:
     """Expiration - datetime for token expiration."""
     sub: str
     """Subject - usually a unique identifier of the user or equivalent entity."""
-    iat: datetime = field(default_factory=lambda: _normalize_datetime(datetime.now(timezone.utc)))
+    iat: datetime = field(default_factory=lambda: _normalize_datetime(datetime.now(UTC)))
     """Issued at - should always be current now."""
     iss: str | None = field(default=None)
     """Issuer - optional unique identifier for the issuer."""
@@ -71,7 +71,7 @@ class Token:
 
         if isinstance(self.exp, datetime) and (
             (exp := _normalize_datetime(self.exp)).timestamp()
-            >= _normalize_datetime(datetime.now(timezone.utc)).timestamp()
+            >= _normalize_datetime(datetime.now(UTC)).timestamp()
         ):
             self.exp = exp
         else:
@@ -79,7 +79,7 @@ class Token:
 
         if isinstance(self.iat, datetime) and (
             (iat := _normalize_datetime(self.iat)).timestamp()
-            <= _normalize_datetime(datetime.now(timezone.utc)).timestamp()
+            <= _normalize_datetime(datetime.now(UTC)).timestamp()
         ):
             self.iat = iat
         else:
@@ -205,7 +205,7 @@ class Token:
     def _decode_datetime_claim(cls, payload: dict[str, Any], claim: str) -> datetime:
         claim_value = cls._require_claim(payload, claim)
         try:
-            return datetime.fromtimestamp(claim_value, tz=timezone.utc)
+            return datetime.fromtimestamp(claim_value, tz=UTC)
         except (OSError, OverflowError, TypeError, ValueError):
             raise NotAuthorizedException("Invalid token") from None
 
