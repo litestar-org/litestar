@@ -120,6 +120,59 @@ class Token:
         )
 
     @classmethod
+    def _build_decode_options(
+        cls,
+        audience: str | Sequence[str] | None,
+        issuer: str | Sequence[str] | None,
+        require_claims: Sequence[str] | None,
+        verify_exp: bool,
+        verify_nbf: bool,
+        strict_audience: bool,
+    ) -> tuple[JWTDecodeOptions, str | Sequence[str] | None]:
+        """Build JWT decode options and resolve the audience value.
+
+        Returns:
+            A tuple of (options, resolved_audience).
+        """
+        options: JWTDecodeOptions = {
+            "verify_aud": bool(audience),
+            "verify_iss": bool(issuer),
+        }
+        if require_claims:
+            options["require"] = list(require_claims)
+        if verify_exp is False:
+            options["verify_exp"] = False
+        if verify_nbf is False:
+            options["verify_nbf"] = False
+        if strict_audience:
+            if audience is None or (not isinstance(audience, str) and len(audience) != 1):
+                raise ValueError("When using 'strict_audience=True', 'audience' must be a sequence of length 1")
+            options["strict_aud"] = True
+            # although not documented, pyjwt requires audience to be a string if
+            # using the strict_aud option
+            if not isinstance(audience, str):
+                audience = audience[0]
+        return options, audience
+
+    @classmethod
+    def _construct_without_validation(cls, payload: dict[str, Any]) -> Self:
+        """Construct a Token instance without running ``__post_init__`` validation.
+
+        When decoding with leeway, the token's ``exp`` may be slightly in the past
+        (within the leeway window). PyJWT already validated the expiry with leeway,
+        so we bypass ``__post_init__`` validation which would reject it.
+        """
+        token = object.__new__(cls)
+        for f in dataclasses.fields(cls):
+            if f.name in payload:
+                object.__setattr__(token, f.name, payload[f.name])
+            elif f.default is not dataclasses.MISSING:
+                object.__setattr__(token, f.name, f.default)
+            elif f.default_factory is not dataclasses.MISSING:
+                object.__setattr__(token, f.name, f.default_factory())
+        return token
+
+    @classmethod
     def decode(
         cls,
         encoded_token: str,
@@ -164,25 +217,14 @@ class Token:
         Raises:
             NotAuthorizedException: If the token is invalid.
         """
-
-        options: JWTDecodeOptions = {
-            "verify_aud": bool(audience),
-            "verify_iss": bool(issuer),
-        }
-        if require_claims:
-            options["require"] = list(require_claims)
-        if verify_exp is False:
-            options["verify_exp"] = False
-        if verify_nbf is False:
-            options["verify_nbf"] = False
-        if strict_audience:
-            if audience is None or (not isinstance(audience, str) and len(audience) != 1):
-                raise ValueError("When using 'strict_audience=True', 'audience' must be a sequence of length 1")
-            options["strict_aud"] = True
-            # although not documented, pyjwt requires audience to be a string if
-            # using the strict_aud option
-            if not isinstance(audience, str):
-                audience = audience[0]
+        options, audience = cls._build_decode_options(
+            audience=audience,
+            issuer=issuer,
+            require_claims=require_claims,
+            verify_exp=verify_exp,
+            verify_nbf=verify_nbf,
+            strict_audience=strict_audience,
+        )
 
         try:
             try:
@@ -216,19 +258,8 @@ class Token:
             extras = payload.setdefault("extras", {})
             for key in extra_fields:
                 extras[key] = payload.pop(key)
-            # When decoding with leeway, the token's exp may be slightly in the past
-            # (within the leeway window). PyJWT already validated the expiry with leeway,
-            # so we bypass __post_init__ validation which would reject it.
             if leeway:
-                token = object.__new__(cls)
-                for f in dataclasses.fields(cls):
-                    if f.name in payload:
-                        object.__setattr__(token, f.name, payload[f.name])
-                    elif f.default is not dataclasses.MISSING:
-                        object.__setattr__(token, f.name, f.default)
-                    elif f.default_factory is not dataclasses.MISSING:
-                        object.__setattr__(token, f.name, f.default_factory())
-                return token
+                return cls._construct_without_validation(payload)
             return msgspec.convert(payload, cls, strict=False)
         except (
             KeyError,
