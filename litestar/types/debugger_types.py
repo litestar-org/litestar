@@ -1,5 +1,5 @@
 from types import ModuleType, TracebackType
-from typing import Any, Optional, Protocol, TypeAlias, Union
+from typing import Any, Protocol, TypeAlias, Union
 
 
 class PDBProtocol(Protocol):

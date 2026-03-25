@@ -1,5 +1,4 @@
 from dataclasses import dataclass, field
-from typing import Optional
 
 from litestar import Litestar, MediaType, Request, post
 from litestar.exceptions import HTTPException

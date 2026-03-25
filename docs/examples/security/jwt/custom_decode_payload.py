@@ -1,6 +1,6 @@
 import dataclasses
 from collections.abc import Sequence
-from typing import Any, Optional, Union
+from typing import Any, Union
 
 from litestar.security.jwt.token import JWTDecodeOptions, Token
 

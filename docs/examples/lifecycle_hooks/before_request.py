@@ -1,5 +1,3 @@
-from typing import Optional
-
 from litestar import Litestar, Request, get
 
 

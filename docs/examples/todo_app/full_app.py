@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-from typing import Optional
 
 from litestar import Litestar, get, post, put
 from litestar.exceptions import NotFoundException

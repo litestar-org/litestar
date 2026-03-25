@@ -1,6 +1,6 @@
 import secrets
 from os import environ
-from typing import Any, Optional
+from typing import Any
 from uuid import UUID
 
 from pydantic import BaseModel, EmailStr

@@ -1,5 +1,5 @@
 from os import environ
-from typing import Any, Optional
+from typing import Any
 from uuid import UUID, uuid4
 
 from pydantic import BaseModel, EmailStr

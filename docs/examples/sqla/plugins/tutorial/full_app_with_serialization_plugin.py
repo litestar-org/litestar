@@ -1,6 +1,5 @@
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
-from typing import Optional
 
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError, NoResultFound

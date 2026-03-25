@@ -1,6 +1,5 @@
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
-from typing import Optional
 
 from advanced_alchemy.extensions.litestar import SQLAlchemySerializationPlugin
 from sqlalchemy import select

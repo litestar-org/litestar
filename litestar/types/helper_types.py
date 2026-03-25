@@ -6,7 +6,6 @@ from typing import (
     TYPE_CHECKING,
     Any,
     Literal,
-    Optional,
     TypeVar,
     Union,
 )

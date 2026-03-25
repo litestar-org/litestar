@@ -1,5 +1,3 @@
-from typing import Optional
-
 from polyfactory.factories.pydantic_factory import ModelFactory
 from pydantic import BaseModel
 

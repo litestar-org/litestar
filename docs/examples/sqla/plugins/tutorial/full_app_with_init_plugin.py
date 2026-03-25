@@ -1,5 +1,4 @@
 from collections.abc import AsyncGenerator
-from typing import Optional
 
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError, NoResultFound

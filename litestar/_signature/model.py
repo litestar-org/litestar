@@ -310,7 +310,7 @@ class SignatureModel(Struct):
                 for inner_type in field_definition.inner_types
                 if not inner_type.is_none_type
             ]
-            return Optional[Union[tuple(types)]] if field_definition.is_optional else Union[tuple(types)]  # pyright: ignore
+            return Optional[Union[tuple(types)]] if field_definition.is_optional else Union[tuple(types)]  # pyright: ignore # noqa: UP045
 
         if decoder := _get_decoder_for_type(annotation, type_decoders=type_decoders):
             # FIXME: temporary (hopefully) hack, see: https://github.com/jcrist/msgspec/issues/497

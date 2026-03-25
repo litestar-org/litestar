@@ -1,5 +1,4 @@
 from collections.abc import AsyncGenerator
-from typing import Optional
 
 from advanced_alchemy.extensions.litestar import (
     SQLAlchemyAsyncConfig,
