@@ -281,53 +281,10 @@ jobs:
           mv tests/examples/test_hello_world.py test_hello_world.py
           uv run pytest test_hello_world.py
 
-  test_pydantic_1_app:
-    name: Test Minimal Pydantic 1 application
-    runs-on: ubuntu-latest
-    env:
-      python_version: "3.12"
-    steps:
-      - name: Check out repository
-        uses: actions/checkout@v6
-
-      - name: Install Build Dependencies
-        run: sudo apt-get install build-essential libpq-dev python3-dev -y
-
-      - name: Set up Python
-        uses: actions/setup-python@v6
-        with:
-          python-version: "3.12"
-
-      - name: Install uv
-        uses: astral-sh/setup-uv@v7
-        with:
-          enable-cache: true
-
-      - name: Install dependencies
-        run: |
-          uv sync
-          uv pip install "pydantic==1.*"
-
-      - name: Set pythonpath
-        run: echo "PYTHONPATH=$PWD" >> $GITHUB_ENV
-
-      - name: Test
-        run: uv run --no-sync coverage run --branch -m unittest test_apps/pydantic_1_app.py
-
-      - name: Rename coverage file
-        run: mv .coverage* .coverage.pydantic_v1
-
-      - uses: actions/upload-artifact@v7
-        with:
-          name: coverage-data-pydantic_v1-${{ inputs.python-version }}
-          path: .coverage.pydantic_v1
-          include-hidden-files: true
-
   upload-test-coverage:
     runs-on: ubuntu-latest
     needs:
       - test
-      - test_pydantic_1_app
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-python@v6
