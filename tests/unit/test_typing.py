@@ -264,7 +264,7 @@ def test_field_definition_is_typeddict_predicate() -> None:
 
     assert FieldDefinition.from_annotation(GenericTypedDictClass).is_typeddict_type is True
     assert FieldDefinition.from_annotation(GenericTypedDictClass[int]).is_typeddict_type is True
-    assert FieldDefinition.from_annotation(GenericTypedDictClass[T]).is_typeddict_type is True
+    assert FieldDefinition.from_annotation(GenericTypedDictClass[T]).is_typeddict_type is True  # type: ignore[valid-type]
 
 
 def test_field_definition_is_subclass_of() -> None:
