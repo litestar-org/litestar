@@ -4,7 +4,6 @@ import abc
 import os
 import os.path
 import pathlib
-from collections.abc import Callable
 from datetime import datetime
 from stat import S_ISDIR
 from typing import TYPE_CHECKING, Any, ClassVar, Final, NotRequired, TypeAlias, Union, cast
@@ -30,7 +29,7 @@ __all__ = (
 
 if TYPE_CHECKING:
     import io
-    from collections.abc import AsyncGenerator, Awaitable, Mapping
+    from collections.abc import AsyncGenerator, Awaitable, Callable, Mapping
 
     from fsspec import AbstractFileSystem as FsspecFileSystem
     from fsspec.asyn import AsyncFileSystem as FsspecAsyncFileSystem

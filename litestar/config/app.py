@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import enum
 import pdb  # noqa: T100
-from collections.abc import Callable
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Any
 
@@ -13,6 +12,7 @@ from litestar.events.emitter import SimpleEventEmitter
 from litestar.types.empty import Empty
 
 if TYPE_CHECKING:
+    from collections.abc import Callable
     from contextlib import AbstractAsyncContextManager
 
     from litestar import Litestar, Response

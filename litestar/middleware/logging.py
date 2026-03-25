@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from collections.abc import Callable
 from typing import TYPE_CHECKING, Any
 
 from litestar.constants import (
@@ -25,7 +24,7 @@ __all__ = ("LoggingMiddleware",)
 
 if TYPE_CHECKING:
     import logging
-    from collections.abc import Iterable, Sequence
+    from collections.abc import Callable, Iterable, Sequence
 
     from litestar.connection import Request
     from litestar.types import (

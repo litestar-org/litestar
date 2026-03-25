@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import asyncio
 from asyncio import CancelledError, Queue, Task, create_task
-from collections.abc import Callable
 from contextlib import AbstractAsyncContextManager, asynccontextmanager, suppress
 from functools import partial
 from typing import TYPE_CHECKING
@@ -18,7 +17,7 @@ from litestar.serialization import default_serializer
 from .subscriber import BacklogStrategy, EventCallback, Subscriber
 
 if TYPE_CHECKING:
-    from collections.abc import AsyncGenerator, Awaitable, Iterable
+    from collections.abc import AsyncGenerator, Awaitable, Callable, Iterable
     from types import TracebackType
 
     from litestar.channels.backends.base import ChannelsBackend

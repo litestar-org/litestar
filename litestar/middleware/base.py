@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import abc
 from abc import abstractmethod
-from collections.abc import Callable
 from typing import TYPE_CHECKING, Any, Protocol, runtime_checkable
 
 from litestar.enums import ScopeType
@@ -20,6 +19,8 @@ __all__ = (
 )
 
 if TYPE_CHECKING:
+    from collections.abc import Callable
+
     from litestar.middleware.constraints import MiddlewareConstraints
     from litestar.types import RouteHandlerType, Scopes
     from litestar.types.asgi_types import ASGIApp, Receive, Scope, Send

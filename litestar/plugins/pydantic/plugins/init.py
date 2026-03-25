@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from collections.abc import Callable
 from contextlib import suppress
 from functools import partial
 from typing import TYPE_CHECKING, Any, TypeGuard, TypeVar, cast
@@ -34,6 +33,8 @@ except ImportError:
 
 
 if TYPE_CHECKING:
+    from collections.abc import Callable
+
     import pydantic as pydantic_v2_mandatory
 
     from litestar.config.app import AppConfig

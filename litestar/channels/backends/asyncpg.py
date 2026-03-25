@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import asyncio
-from collections.abc import Callable
 from contextlib import AsyncExitStack
 from functools import partial
 from typing import TYPE_CHECKING, overload
@@ -12,7 +11,7 @@ from litestar.channels import ChannelsBackend
 from litestar.exceptions import ImproperlyConfiguredException
 
 if TYPE_CHECKING:
-    from collections.abc import AsyncGenerator, Awaitable, Iterable
+    from collections.abc import AsyncGenerator, Awaitable, Callable, Iterable
 
 
 class AsyncPgChannelsBackend(ChannelsBackend):

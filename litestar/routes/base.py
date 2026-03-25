@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import re
 from abc import ABC, abstractmethod
-from collections.abc import Callable
 from datetime import date, datetime, time, timedelta
 from decimal import Decimal
 from pathlib import Path
@@ -18,6 +17,8 @@ from litestar.utils import join_paths, normalize_path
 ScopeT = TypeVar("ScopeT", bound="BaseScope")
 
 if TYPE_CHECKING:
+    from collections.abc import Callable
+
     from litestar.types import BaseScope, Receive, Send
 
 

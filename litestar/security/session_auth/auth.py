@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from collections.abc import Callable
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Any, Generic, cast
 
@@ -13,7 +12,7 @@ from litestar.security.session_auth.middleware import MiddlewareWrapper, Session
 __all__ = ("SessionAuth",)
 
 if TYPE_CHECKING:
-    from collections.abc import Iterable, Sequence
+    from collections.abc import Callable, Iterable, Sequence
 
     from litestar.connection import ASGIConnection
     from litestar.di import Provide

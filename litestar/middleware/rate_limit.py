@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from collections.abc import Callable
 from dataclasses import dataclass, field
 from time import time
 from typing import TYPE_CHECKING, Any, Literal, cast
@@ -21,7 +20,7 @@ __all__ = (
 
 
 if TYPE_CHECKING:
-    from collections.abc import Awaitable
+    from collections.abc import Awaitable, Callable
 
     from litestar import Litestar
     from litestar.connection import Request

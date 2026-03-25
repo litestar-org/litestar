@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from collections.abc import Callable
 from functools import wraps
 from inspect import Parameter, Signature
 from typing import TYPE_CHECKING, Any
@@ -14,7 +13,7 @@ from litestar.utils import ensure_async_callable
 from litestar.utils.helpers import unwrap_partial
 
 if TYPE_CHECKING:
-    from collections.abc import Coroutine
+    from collections.abc import Callable, Coroutine
 
     from litestar import WebSocket
     from litestar.handlers.websocket_handlers.listener import WebsocketListenerRouteHandler

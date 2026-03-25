@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import functools
-from collections.abc import Callable
 from functools import partial
 from typing import TYPE_CHECKING, Any, NoReturn, cast
 
@@ -29,7 +28,7 @@ from litestar.utils.helpers import unwrap_partial
 from litestar.utils.signature import ParsedSignature, add_types_to_signature_namespace, merge_signature_namespaces
 
 if TYPE_CHECKING:
-    from collections.abc import Iterable, Mapping, Sequence
+    from collections.abc import Callable, Iterable, Mapping, Sequence
     from typing import Self
 
     from litestar._kwargs import KwargsModel

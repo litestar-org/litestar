@@ -3,7 +3,7 @@ from __future__ import annotations
 import dataclasses
 import typing
 from abc import abstractmethod
-from collections.abc import Callable, Collection
+from collections.abc import Collection
 from inspect import getmodule
 from typing import TYPE_CHECKING, Generic, NotRequired, TypeVar, get_type_hints
 
@@ -23,7 +23,7 @@ from litestar.typing import FieldDefinition
 from litestar.utils.signature import ParsedSignature
 
 if TYPE_CHECKING:
-    from collections.abc import Collection, Generator
+    from collections.abc import Callable, Collection, Generator
     from typing import Any, ClassVar, Self
 
     from litestar._openapi.schema_generation import SchemaCreator

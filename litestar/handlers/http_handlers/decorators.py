@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from collections.abc import Callable, Mapping, Sequence
+from collections.abc import Mapping, Sequence
 from typing import TYPE_CHECKING, Any
 
 from litestar.enums import HttpMethod, MediaType
@@ -28,7 +28,7 @@ from litestar.types import (
 )
 
 if TYPE_CHECKING:
-    from collections.abc import Mapping, Sequence
+    from collections.abc import Callable, Mapping, Sequence
     from typing import Any
 
     from litestar.background_tasks import BackgroundTask, BackgroundTasks

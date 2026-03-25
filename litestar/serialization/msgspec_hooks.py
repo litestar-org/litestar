@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from collections import deque
-from collections.abc import Callable
 from datetime import date, datetime, time
 from decimal import Decimal
 from functools import partial
@@ -26,7 +25,7 @@ from litestar.types import Empty, EmptyType, Serializer, TypeDecodersSequence
 from litestar.utils.typing import get_origin_or_inner_type
 
 if TYPE_CHECKING:
-    from collections.abc import Mapping
+    from collections.abc import Callable, Mapping
 
     from litestar.types import TypeEncodersMap
 

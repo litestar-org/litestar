@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import re
-from collections.abc import Callable
 from functools import partial
 from pathlib import Path, PurePath
 from typing import (
@@ -37,7 +36,7 @@ from litestar.utils import get_origin_or_inner_type, is_class_and_subclass
 from litestar.utils.dataclass import simple_asdict
 
 if TYPE_CHECKING:
-    from collections.abc import Sequence
+    from collections.abc import Callable, Sequence
     from typing import NotRequired
 
     from litestar.connection import ASGIConnection

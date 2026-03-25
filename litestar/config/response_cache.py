@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from collections.abc import Callable
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Any, final
 from urllib.parse import urlencode
@@ -13,6 +12,8 @@ from litestar.status_codes import (
 )
 
 if TYPE_CHECKING:
+    from collections.abc import Callable
+
     from litestar import Litestar
     from litestar.connection import Request
     from litestar.stores.base import Store

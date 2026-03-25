@@ -6,7 +6,6 @@ import inspect
 import os
 import re
 import sys
-from collections.abc import Callable
 from dataclasses import dataclass
 from datetime import UTC, datetime, timedelta
 from functools import wraps
@@ -38,7 +37,7 @@ from litestar.middleware import DefineMiddleware
 from litestar.utils import envflag, get_name
 
 if TYPE_CHECKING:
-    from collections.abc import Generator, Iterable, Sequence
+    from collections.abc import Callable, Generator, Iterable, Sequence
     from types import ModuleType
 
     try:

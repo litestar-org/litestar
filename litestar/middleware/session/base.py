@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from collections.abc import Callable
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -21,7 +20,7 @@ __all__ = ("BaseBackendConfig", "BaseSessionBackend", "SessionMiddleware")
 
 
 if TYPE_CHECKING:
-    from collections.abc import Awaitable
+    from collections.abc import Awaitable, Callable
 
     from litestar.types import ASGIApp, Message, Receive, Scope, Scopes, ScopeSession, Send
 

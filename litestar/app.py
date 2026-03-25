@@ -6,7 +6,6 @@ import itertools
 import pdb  # noqa: T100
 import warnings
 from collections import defaultdict
-from collections.abc import Callable
 from contextlib import (
     AbstractAsyncContextManager,
     AsyncExitStack,
@@ -57,7 +56,7 @@ from litestar.utils.predicates import is_async_callable, is_class_and_subclass
 from litestar.utils.warnings import warn_pdb_on_exception
 
 if TYPE_CHECKING:
-    from collections.abc import AsyncGenerator, Generator, Iterable, Mapping, Sequence
+    from collections.abc import AsyncGenerator, Callable, Generator, Iterable, Mapping, Sequence
     from typing import Self
 
     from litestar.config.compression import CompressionConfig

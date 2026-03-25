@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from collections.abc import Callable
 from typing import TYPE_CHECKING, Any, Literal, NamedTuple
 
 __all__ = (
@@ -13,6 +12,7 @@ __all__ = (
 )
 
 if TYPE_CHECKING:
+    from collections.abc import Callable
     from typing import TypeAlias
 
     from litestar.controller import Controller

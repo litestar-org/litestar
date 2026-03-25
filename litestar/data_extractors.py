@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import inspect
-from collections.abc import Callable
 from typing import TYPE_CHECKING, Any, Literal, TypedDict, cast
 
 from litestar._parsers import parse_cookie_string
@@ -20,7 +19,7 @@ __all__ = (
 
 
 if TYPE_CHECKING:
-    from collections.abc import Coroutine, Iterable, Set
+    from collections.abc import Callable, Coroutine, Iterable, Set
 
     from litestar.connection import ASGIConnection
     from litestar.types import Method

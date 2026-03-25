@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from collections.abc import Callable
 from typing import TYPE_CHECKING
 
 from litestar.exceptions import NotAuthorizedException
@@ -14,7 +13,7 @@ __all__ = ("JWTAuthenticationMiddleware", "JWTCookieAuthenticationMiddleware")
 
 
 if TYPE_CHECKING:
-    from collections.abc import Awaitable, Sequence
+    from collections.abc import Awaitable, Callable, Sequence
     from typing import Any
 
     from litestar.connection import ASGIConnection

@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from collections.abc import Callable
 from contextlib import AbstractAsyncContextManager
 from inspect import isasyncgen
 from typing import TYPE_CHECKING, Any
@@ -13,7 +12,7 @@ __all__ = ("DependencyCleanupGroup",)
 
 
 if TYPE_CHECKING:
-    from collections.abc import AsyncGenerator, Awaitable, Generator
+    from collections.abc import AsyncGenerator, Awaitable, Callable, Generator
     from types import TracebackType
 
     from litestar.types import AnyGenerator
