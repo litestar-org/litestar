@@ -377,3 +377,47 @@ def test_decode_with_leeway_does_not_allow_long_expired_token() -> None:
             algorithm="HS256",
             leeway=timedelta(seconds=10),
         )
+
+
+def test_decode_with_leeway_backward_compat_subclass() -> None:
+    """Test that a subclass overriding decode_payload without leeway still works."""
+
+    @dataclasses.dataclass
+    class LegacyToken(Token):
+        @classmethod
+        def decode_payload(
+            cls,
+            encoded_token: str,
+            secret: str | bytes,
+            algorithms: list[str],
+            issuer: str | Sequence[str] | None = None,
+            audience: str | Sequence[str] | None = None,
+            options: JWTDecodeOptions | None = None,
+        ) -> Any:
+            return super().decode_payload(
+                encoded_token=encoded_token,
+                secret=secret,
+                algorithms=algorithms,
+                issuer=issuer,
+                audience=audience,
+                options=options,
+            )
+
+    secret = secrets.token_hex()
+    # Use a valid (non-expired) token to test backward compat path
+    raw_token = {
+        "sub": "foo",
+        "iat": datetime.now(timezone.utc) - timedelta(minutes=5),
+        "exp": datetime.now(timezone.utc) + timedelta(minutes=5),
+    }
+    encoded_token = jwt.encode(payload=raw_token, key=secret, algorithm="HS256")
+
+    # Leeway is passed to decode, but the subclass decode_payload doesn't accept it.
+    # The backward-compat try/except TypeError path should handle this.
+    token = LegacyToken.decode(
+        encoded_token=encoded_token,
+        secret=secret,
+        algorithm="HS256",
+        leeway=timedelta(seconds=10),
+    )
+    assert token.sub == "foo"
