@@ -5,7 +5,7 @@ Uses a `dict` for storage.
 
 from __future__ import annotations
 
-from datetime import datetime, timezone, tzinfo
+from datetime import UTC, datetime, tzinfo
 from typing import TYPE_CHECKING, Generic, Protocol, TypeVar
 from uuid import uuid4
 
@@ -42,7 +42,7 @@ class GenericAsyncMockRepository(AbstractAsyncRepository[ModelT], Generic[ModelT
     _model_has_updated_at: bool
 
     def __init__(
-        self, id_factory: Callable[[], Any] = uuid4, tz: tzinfo = timezone.utc, allow_ids_on_add: bool = False, **_: Any
+        self, id_factory: Callable[[], Any] = uuid4, tz: tzinfo = UTC, allow_ids_on_add: bool = False, **_: Any
     ) -> None:
         super().__init__()
         self._id_factory = id_factory
@@ -420,7 +420,7 @@ class GenericSyncMockRepository(AbstractSyncRepository[ModelT], Generic[ModelT])
     def __init__(
         self,
         id_factory: Callable[[], Any] = uuid4,
-        tz: tzinfo = timezone.utc,
+        tz: tzinfo = UTC,
         allow_ids_on_add: bool = False,
         **_: Any,
     ) -> None:

@@ -1,14 +1,14 @@
 from __future__ import annotations
 
-from collections.abc import Generator, Iterable, Iterator, Mapping, MutableMapping
+from collections.abc import Callable, Generator, Iterable, Iterator, Mapping, MutableMapping
 from copy import deepcopy
 from threading import RLock
-from typing import TYPE_CHECKING, Any, Callable
+from typing import TYPE_CHECKING, Any
 
 from litestar.utils.scope.state import CONNECTION_STATE_KEY
 
 if TYPE_CHECKING:
-    from typing_extensions import Self
+    from typing import Self
 
 __all__ = ("ImmutableState", "State")
 

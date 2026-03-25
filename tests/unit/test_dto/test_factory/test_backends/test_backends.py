@@ -2,9 +2,10 @@ from __future__ import annotations
 
 import inspect
 import re
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from types import ModuleType
-from typing import TYPE_CHECKING, Callable, Optional
+from typing import TYPE_CHECKING, Optional
 from unittest.mock import MagicMock
 
 import msgspec

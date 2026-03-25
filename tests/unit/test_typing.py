@@ -260,13 +260,11 @@ def test_field_definition_is_typeddict_predicate() -> None:
     assert FieldDefinition.from_annotation(NormalClass).is_typeddict_type is False
     assert FieldDefinition.from_annotation(TypedDictClass).is_typeddict_type is True
 
-    if sys.version_info >= (3, 11):
+    class GenericTypedDictClass(TypedDict, Generic[T]): ...
 
-        class GenericTypedDictClass(TypedDict, Generic[T]): ...
-
-        assert FieldDefinition.from_annotation(GenericTypedDictClass).is_typeddict_type is True
-        assert FieldDefinition.from_annotation(GenericTypedDictClass[int]).is_typeddict_type is True
-        assert FieldDefinition.from_annotation(GenericTypedDictClass[T]).is_typeddict_type is True
+    assert FieldDefinition.from_annotation(GenericTypedDictClass).is_typeddict_type is True
+    assert FieldDefinition.from_annotation(GenericTypedDictClass[int]).is_typeddict_type is True
+    assert FieldDefinition.from_annotation(GenericTypedDictClass[T]).is_typeddict_type is True  # type: ignore[valid-type]
 
 
 def test_field_definition_is_subclass_of() -> None:
@@ -316,9 +314,9 @@ def test_is_required() -> None:
         not_required: NotRequired[str]
 
     class Bar(msgspec.Struct):
-        unset: Union[str, msgspec.UnsetType] = msgspec.UNSET  # noqa: UP007
+        unset: Union[str, msgspec.UnsetType] = msgspec.UNSET
         with_default: str = ""
-        with_none_default: Union[str, None] = None  # noqa: UP007
+        with_none_default: Union[str, None] = None
 
     assert FieldDefinition.from_annotation(get_type_hints(Foo, include_extras=True)["required"]).is_required is True
     assert (

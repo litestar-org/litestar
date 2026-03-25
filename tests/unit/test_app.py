@@ -1,10 +1,10 @@
 from __future__ import annotations
 
 import inspect
-from collections.abc import AsyncGenerator
+from collections.abc import AsyncGenerator, Callable
 from contextlib import asynccontextmanager
 from dataclasses import fields
-from typing import TYPE_CHECKING, Any, Callable
+from typing import TYPE_CHECKING, Any
 from unittest.mock import MagicMock, Mock, PropertyMock
 
 import pytest

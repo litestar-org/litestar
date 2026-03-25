@@ -2,12 +2,13 @@ from __future__ import annotations
 
 import inspect
 import warnings
+from collections.abc import Callable
 from inspect import Parameter
 from types import ModuleType
-from typing import Annotated, Any, Callable, Generic, Optional, TypeVar, Union, get_type_hints
+from typing import Annotated, Any, Generic, NotRequired, Optional, Required, TypeVar, Union, get_args, get_type_hints
 
 import pytest
-from typing_extensions import NotRequired, Required, TypedDict, get_args
+from typing_extensions import TypedDict
 
 from litestar import Controller, post
 from litestar.exceptions import ImproperlyConfiguredException

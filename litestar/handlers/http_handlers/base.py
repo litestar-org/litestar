@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import contextlib
 from enum import Enum
-from typing import TYPE_CHECKING, AnyStr, Callable, TypedDict, cast
+from typing import TYPE_CHECKING, AnyStr, TypedDict, cast
 
 from msgspec.msgpack import decode as _decode_msgpack_plain
 
@@ -60,7 +60,7 @@ from litestar.utils.scope.state import ScopeState
 from litestar.utils.warnings import warn_implicit_sync_to_thread, warn_sync_to_thread_with_async_callable
 
 if TYPE_CHECKING:
-    from collections.abc import Awaitable, Iterable, Mapping, Sequence
+    from collections.abc import Awaitable, Callable, Iterable, Mapping, Sequence
     from typing import Any
 
     from litestar import Litestar, Router

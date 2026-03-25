@@ -18,11 +18,11 @@ if TYPE_CHECKING:
     )
     from pathlib import Path, PurePath
     from re import Pattern
+    from typing import TypeAlias
     from uuid import UUID
 
     from msgspec import Raw, Struct
     from msgspec.msgpack import Ext
-    from typing_extensions import TypeAlias
 
     from litestar.types import DataclassProtocol, TypedDictClass
 

@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from functools import cached_property
 from inspect import isclass
-from typing import TYPE_CHECKING, Callable, Generic, TypeVar, cast
+from typing import TYPE_CHECKING, Generic, TypeVar, cast
 
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.template import TemplateEngineProtocol
@@ -11,6 +11,8 @@ from litestar.template import TemplateEngineProtocol
 __all__ = ("TemplateConfig",)
 
 if TYPE_CHECKING:
+    from collections.abc import Callable
+
     from litestar.types import PathType
 
 EngineType = TypeVar("EngineType", bound=TemplateEngineProtocol)

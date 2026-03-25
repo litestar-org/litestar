@@ -3,7 +3,7 @@ from __future__ import annotations
 import enum
 import pdb  # noqa: T100
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, Any, Callable
+from typing import TYPE_CHECKING, Any
 
 from litestar.config.allowed_hosts import AllowedHostsConfig
 from litestar.config.response_cache import ResponseCacheConfig
@@ -12,6 +12,7 @@ from litestar.events.emitter import SimpleEventEmitter
 from litestar.types.empty import Empty
 
 if TYPE_CHECKING:
+    from collections.abc import Callable
     from contextlib import AbstractAsyncContextManager
 
     from litestar import Litestar, Response

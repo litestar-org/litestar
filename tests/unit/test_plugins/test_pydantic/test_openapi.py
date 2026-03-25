@@ -1,8 +1,9 @@
+from collections.abc import Callable
 from datetime import date, timedelta
 from decimal import Decimal
 from re import Pattern
 from types import ModuleType
-from typing import Annotated, Any, Callable, Optional, Union, cast
+from typing import Annotated, Any, Optional, Union, cast
 
 import annotated_types
 import pydantic as pydantic_v2

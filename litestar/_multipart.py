@@ -16,7 +16,6 @@ from litestar.exceptions import ClientException
 
 __all__ = ("parse_content_header", "parse_multipart_form")
 
-from litestar.utils.compat import async_next
 
 if TYPE_CHECKING:
     from collections.abc import AsyncGenerator
@@ -77,7 +76,7 @@ async def parse_multipart_form(  # noqa: C901
 
     fields: defaultdict[str, list[Any]] = defaultdict(list)
 
-    chunk = await async_next(stream, b"")
+    chunk = await anext(stream, b"")
     if not chunk:
         return fields
 
@@ -119,7 +118,7 @@ async def parse_multipart_form(  # noqa: C901
                         data = bytearray()
                         segment = None
 
-                chunk = await async_next(stream, b"")
+                chunk = await anext(stream, b"")
 
     except ParserError as exc:
         # if an exception is raised, make sure that all 'UploadFile's are closed

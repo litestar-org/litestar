@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Callable
+from typing import TYPE_CHECKING, Any
 
 from litestar.constants import SKIP_VALIDATION_NAMES
 from litestar.exceptions import ImproperlyConfiguredException
@@ -8,6 +8,8 @@ from litestar.params import DependencyKwarg
 from litestar.types import Empty, TypeDecodersSequence
 
 if TYPE_CHECKING:
+    from collections.abc import Callable
+
     from litestar.typing import FieldDefinition
     from litestar.utils.signature import ParsedSignature
 

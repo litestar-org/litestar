@@ -1,10 +1,8 @@
-from typing import Optional
-
 from litestar import Litestar, get
 
 
 @get("/", sync_to_thread=False)
-def index(param: Optional[str] = None) -> dict[str, Optional[str]]:
+def index(param: str | None = None) -> dict[str, str | None]:
     return {"param": param}
 
 

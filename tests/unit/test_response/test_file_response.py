@@ -4,7 +4,7 @@ import os
 import pathlib
 import secrets
 from collections.abc import AsyncGenerator
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from email.utils import formatdate
 from os import urandom
 from pathlib import Path
@@ -106,15 +106,13 @@ def test_file_response_last_modified(tmpdir: Path) -> None:
     "mtime,expected_last_modified",
     [
         pytest.param(
-            datetime(2000, 1, 2, 3, 4, 5, tzinfo=timezone.utc).timestamp(),
+            datetime(2000, 1, 2, 3, 4, 5, tzinfo=UTC).timestamp(),
             "Sun, 02 Jan 2000 03:04:05 GMT",
             id="timestamp",
         ),
+        pytest.param(datetime(2000, 1, 2, 3, 4, 5, tzinfo=UTC), "Sun, 02 Jan 2000 03:04:05 GMT", id="datetime"),
         pytest.param(
-            datetime(2000, 1, 2, 3, 4, 5, tzinfo=timezone.utc), "Sun, 02 Jan 2000 03:04:05 GMT", id="datetime"
-        ),
-        pytest.param(
-            datetime(2000, 1, 2, 3, 4, 5, tzinfo=timezone.utc).isoformat(),
+            datetime(2000, 1, 2, 3, 4, 5, tzinfo=UTC).isoformat(),
             "Sun, 02 Jan 2000 03:04:05 GMT",
             id="isoformat",
         ),

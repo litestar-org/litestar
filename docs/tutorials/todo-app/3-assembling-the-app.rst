@@ -64,9 +64,8 @@ route handler receives data of a ``TodoItem`` the same way as the ``POST`` handl
 .. literalinclude:: /examples/todo_app/full_app.py
     :language: python
     :caption: ``app.py``
-    :lines: 49
-    :lineno-start: 49
-
+    :lines: 48
+    :lineno-start: 48
 
 An instance of ``Litestar`` is created, including the previously defined route handlers.
 This app can now be served using an ASGI server like

@@ -4,11 +4,10 @@ from __future__ import annotations
 
 import datetime
 import re
+from collections.abc import Callable
 from dataclasses import dataclass
 from inspect import isclass
-from typing import TYPE_CHECKING, Annotated, Any, Callable, Literal, Optional, get_type_hints
-
-from typing_extensions import NotRequired
+from typing import TYPE_CHECKING, Annotated, Any, Literal, NotRequired, Optional, get_type_hints
 
 from litestar.openapi.spec import Example
 from litestar.params import KwargDefinition, ParameterKwarg
@@ -48,8 +47,7 @@ except ImportError:
 
 if TYPE_CHECKING:
     from types import ModuleType
-
-    from typing_extensions import TypeGuard
+    from typing import TypeGuard
 
 
 def is_pydantic_model_class(
@@ -156,7 +154,7 @@ def pydantic_get_type_hints_with_generics_resolved(
             )
         args = annotation.__pydantic_generic_metadata__["args"]
         parameters = origin.__pydantic_generic_metadata__["parameters"]
-        typevar_map = dict(zip(parameters, args))
+        typevar_map = dict(zip(parameters, args, strict=False))
 
     return {n: _substitute_typevars(type_, typevar_map) for n, type_ in model_annotations.items()}
 
@@ -457,7 +455,7 @@ def get_model_info(
         model_annotations = {
             k: f.outer_type_  # type: ignore[union-attr]
             if f.required or f.default  # type: ignore[union-attr]
-            else (NotRequired[f.outer_type_] if f.default_factory else Optional[f.outer_type_])  # type: ignore[union-attr]
+            else (NotRequired[f.outer_type_] if f.default_factory else Optional[f.outer_type_])  # type: ignore[union-attr] # noqa: UP045
             for k, f in model.__fields__.items()  # type: ignore[union-attr]
         }
 

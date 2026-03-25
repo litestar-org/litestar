@@ -3,12 +3,13 @@ from __future__ import annotations
 import asyncio
 import contextvars
 from functools import partial
-from typing import TYPE_CHECKING, Callable, TypeVar
+from typing import TYPE_CHECKING, TypeVar
 
 import sniffio
 from typing_extensions import ParamSpec
 
 if TYPE_CHECKING:
+    from collections.abc import Callable
     from concurrent.futures import ThreadPoolExecutor
 
     import trio

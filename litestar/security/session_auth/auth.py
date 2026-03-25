@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, Any, Callable, Generic, cast
+from typing import TYPE_CHECKING, Any, Generic, cast
 
 from litestar.middleware.base import DefineMiddleware
 from litestar.middleware.session.base import BaseBackendConfig, BaseSessionBackendT
@@ -12,7 +12,7 @@ from litestar.security.session_auth.middleware import MiddlewareWrapper, Session
 __all__ = ("SessionAuth",)
 
 if TYPE_CHECKING:
-    from collections.abc import Iterable, Sequence
+    from collections.abc import Callable, Iterable, Sequence
 
     from litestar.connection import ASGIConnection
     from litestar.di import Provide

@@ -270,7 +270,7 @@ def get_type_hints_with_generics_resolved(
         if type_hints is None:  # pragma: no cover
             type_hints = get_type_hints(origin, globalns=globalns, localns=localns, include_extras=include_extras)
         # the __parameters__ is only available on the origin itself and not the annotation
-        typevar_map = dict(zip(origin.__parameters__, get_args(annotation)))
+        typevar_map = dict(zip(origin.__parameters__, get_args(annotation), strict=True))
 
     return {n: _substitute_typevars(type_, typevar_map) for n, type_ in type_hints.items()}
 

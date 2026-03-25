@@ -5,7 +5,6 @@ from contextlib import AbstractAsyncContextManager, asynccontextmanager
 from typing import (
     TYPE_CHECKING,
     Any,
-    Callable,
     Optional,
     overload,
 )
@@ -35,7 +34,7 @@ from ._utils import (
 from .route_handler import WebsocketRouteHandler
 
 if TYPE_CHECKING:
-    from collections.abc import AsyncGenerator, Coroutine, Mapping, Sequence
+    from collections.abc import AsyncGenerator, Callable, Coroutine, Mapping, Sequence
 
     from litestar import Litestar, Router
     from litestar.dto import AbstractDTO

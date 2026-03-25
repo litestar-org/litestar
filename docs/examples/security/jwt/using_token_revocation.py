@@ -1,5 +1,5 @@
 from os import environ
-from typing import Any, Optional
+from typing import Any
 from uuid import UUID, uuid4
 
 from pydantic import BaseModel, EmailStr
@@ -29,7 +29,7 @@ BLOCKLIST: dict[str, str] = {}
 # Notes:
 # - 'User' can be any arbitrary value you decide upon.
 # - The callable can be either sync or async - both will work.
-async def retrieve_user_handler(token: Token, connection: "ASGIConnection[Any, Any, Any, Any]") -> Optional[User]:
+async def retrieve_user_handler(token: Token, connection: "ASGIConnection[Any, Any, Any, Any]") -> User | None:
     # logic here to retrieve the user instance
     return MOCK_DB.get(token.sub)
 

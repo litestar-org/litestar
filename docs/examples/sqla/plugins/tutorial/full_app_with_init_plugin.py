@@ -1,5 +1,4 @@
 from collections.abc import AsyncGenerator
-from typing import Optional
 
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError, NoResultFound
@@ -46,7 +45,7 @@ async def get_todo_by_title(todo_name: str, session: AsyncSession) -> TodoItem:
         raise NotFoundException(detail=f"TODO {todo_name!r} not found") from e
 
 
-async def get_todo_list(done: Optional[bool], session: AsyncSession) -> list[TodoItem]:
+async def get_todo_list(done: bool | None, session: AsyncSession) -> list[TodoItem]:
     query = select(TodoItem)
     if done is not None:
         query = query.where(TodoItem.done.is_(done))
@@ -56,7 +55,7 @@ async def get_todo_list(done: Optional[bool], session: AsyncSession) -> list[Tod
 
 
 @get("/")
-async def get_list(transaction: AsyncSession, done: Optional[bool] = None) -> list[TodoItem]:
+async def get_list(transaction: AsyncSession, done: bool | None = None) -> list[TodoItem]:
     return await get_todo_list(done, transaction)
 
 

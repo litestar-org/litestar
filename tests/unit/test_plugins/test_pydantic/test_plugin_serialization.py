@@ -31,7 +31,7 @@ YESTERDAY_DATE = TODAY - datetime.timedelta(days=1)
 FUTURE_DATE = TODAY + datetime.timedelta(days=1)
 YESTERDAY_DATETIME = datetime.datetime(2023, 6, 14, 12, 0, 0)
 FUTURE_DATETIME = datetime.datetime(2030, 6, 16, 12, 0, 0)
-AWARE_DATETIME = datetime.datetime(2023, 6, 15, 12, 0, 0, tzinfo=datetime.timezone.utc)
+AWARE_DATETIME = datetime.datetime(2023, 6, 15, 12, 0, 0, tzinfo=datetime.UTC)
 NAIVE_DATETIME = datetime.datetime(2023, 6, 15, 12, 0, 0).replace(tzinfo=None)
 
 

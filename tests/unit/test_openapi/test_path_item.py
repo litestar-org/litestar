@@ -1,12 +1,12 @@
 from __future__ import annotations
 
 import dataclasses
+from collections.abc import Callable
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, Any, Callable, cast
+from typing import TYPE_CHECKING, Any, TypeAlias, cast
 from unittest.mock import MagicMock
 
 import pytest
-from typing_extensions import TypeAlias
 
 from litestar import Controller, HttpMethod, Litestar, Request, Router, delete, get, route
 from litestar._openapi.datastructures import OpenAPIContext

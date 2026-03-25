@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING, Any, Final
 from litestar.types import Empty, EmptyType
 
 if TYPE_CHECKING:
-    from typing_extensions import Self
+    from typing import Self
 
     from litestar.datastructures import URL, Accept, Headers, UploadFile
     from litestar.types.asgi_types import Scope

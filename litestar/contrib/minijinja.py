@@ -22,8 +22,7 @@ except ImportError as e:
     raise MissingDependencyException("minijinja") from e
 
 if TYPE_CHECKING:
-    from collections.abc import Mapping
-    from typing import Callable
+    from collections.abc import Callable, Mapping
 
     C = TypeVar("C", bound="Callable")
 

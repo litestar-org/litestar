@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from collections.abc import Mapping, Sequence
-from typing import TYPE_CHECKING, Any, Callable, Literal
+from collections.abc import Callable, Mapping, Sequence
+from typing import TYPE_CHECKING, Any, Literal
 
 from litestar.app import DEFAULT_OPENAPI_CONFIG, Litestar
 from litestar.controller import Controller

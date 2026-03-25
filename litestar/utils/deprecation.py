@@ -2,8 +2,11 @@ from __future__ import annotations
 
 import inspect
 from functools import wraps
-from typing import Callable, Literal, TypeVar
+from typing import TYPE_CHECKING, Literal, TypeVar
 from warnings import warn
+
+if TYPE_CHECKING:
+    from collections.abc import Callable
 
 from typing_extensions import ParamSpec
 

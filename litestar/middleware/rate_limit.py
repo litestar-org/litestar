@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from time import time
-from typing import TYPE_CHECKING, Any, Callable, Literal, cast
+from typing import TYPE_CHECKING, Any, Literal, cast
 
 from litestar.datastructures import MutableScopeHeaders
 from litestar.enums import ScopeType
@@ -20,7 +20,7 @@ __all__ = (
 
 
 if TYPE_CHECKING:
-    from collections.abc import Awaitable
+    from collections.abc import Awaitable, Callable
 
     from litestar import Litestar
     from litestar.connection import Request

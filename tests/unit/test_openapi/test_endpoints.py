@@ -1,7 +1,8 @@
 from collections.abc import Callable, Sequence
+from typing import TypeAlias
 
 import pytest
-from typing_extensions import ParamSpec, TypeAlias
+from typing_extensions import ParamSpec
 
 from litestar import Controller
 from litestar.enums import MediaType

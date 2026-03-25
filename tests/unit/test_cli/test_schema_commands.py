@@ -1,7 +1,8 @@
 from __future__ import annotations
 
+from collections.abc import Callable
 from json import dumps as json_dumps
-from typing import TYPE_CHECKING, Callable
+from typing import TYPE_CHECKING
 
 import pytest
 from yaml import dump as dump_yaml

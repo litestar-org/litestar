@@ -2,10 +2,10 @@ from __future__ import annotations
 
 import dataclasses
 from dataclasses import replace
-from typing import TYPE_CHECKING, Annotated, Any, Generic, TypeVar
+from typing import TYPE_CHECKING, Annotated, Any, Generic, TypeAlias, TypeVar
 from warnings import warn
 
-from typing_extensions import TypeAlias, override
+from typing_extensions import override
 
 from litestar.dto.base_dto import AbstractDTO
 from litestar.dto.data_structures import DTOFieldDefinition
@@ -45,7 +45,7 @@ except ImportError:
     from pydantic import ValidationError as ValidationErrorV1  # type: ignore[assignment]
 
     ValidationErrorV2 = ValidationErrorV1  # type: ignore[assignment, misc]
-    ModelType = "pydantic_v1.BaseModel"  # type: ignore[misc]
+    ModelType = "pydantic_v1.BaseModel"  # type: ignore[misc, assignment]
 
 
 T = TypeVar("T", bound="ModelType | Collection[ModelType]")

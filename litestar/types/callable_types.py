@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-from collections.abc import AsyncGenerator, Awaitable, Generator
-from typing import TYPE_CHECKING, Any, Callable, TypeVar
+from collections.abc import AsyncGenerator, Awaitable, Callable, Generator
+from typing import TYPE_CHECKING, Any, TypeVar
 
 if TYPE_CHECKING:
-    from typing_extensions import TypeAlias
+    from typing import TypeAlias
 
     from litestar.app import Litestar
     from litestar.config.app import AppConfig

@@ -1,10 +1,9 @@
 from __future__ import annotations
 
-import sys
 from collections import defaultdict, deque
 from collections.abc import Iterable as CollectionsIterable
 from dataclasses import is_dataclass
-from inspect import isclass
+from inspect import isclass, iscoroutinefunction
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -38,13 +37,6 @@ from litestar.constants import UNDEFINED_SENTINELS
 from litestar.types.builtin_types import NoneType, UnionTypes
 from litestar.utils.helpers import unwrap_partial
 from litestar.utils.typing import get_origin_or_inner_type
-
-if sys.version_info >= (3, 10):
-    from inspect import iscoroutinefunction
-else:  # pragma: no cover
-    # In Python 3.9, AsyncMock is not detected
-    # as a coroutine function, so one test was failing.
-    from asyncio import iscoroutinefunction
 
 if TYPE_CHECKING:
     from litestar.types.protocols import DataclassProtocol

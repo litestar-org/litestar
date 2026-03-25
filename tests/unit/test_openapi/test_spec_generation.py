@@ -1,6 +1,7 @@
 import sys
+from collections.abc import Callable
 from types import ModuleType
-from typing import Any, Callable
+from typing import Any
 
 import pytest
 from msgspec import Struct

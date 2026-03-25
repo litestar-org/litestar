@@ -1,7 +1,8 @@
 from __future__ import annotations
 
+from collections.abc import Callable
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, Any, Callable, Literal
+from typing import TYPE_CHECKING, Any, Literal
 
 from litestar.contrib.opentelemetry._utils import get_route_details_from_scope
 from litestar.contrib.opentelemetry.middleware import (

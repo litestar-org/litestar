@@ -5,9 +5,7 @@ import typing
 from dataclasses import dataclass, replace
 from inspect import Signature, getmembers, isclass, ismethod
 from itertools import chain
-from typing import TYPE_CHECKING, Annotated, Any, Union, get_type_hints
-
-from typing_extensions import Self, get_args, get_origin
+from typing import TYPE_CHECKING, Annotated, Any, Self, Union, get_args, get_origin, get_type_hints
 
 from litestar import connection, datastructures, types
 from litestar.types import Empty
@@ -19,12 +17,6 @@ if TYPE_CHECKING:
     from collections.abc import Sequence
 
     from litestar.types import AnyCallable
-
-if sys.version_info < (3, 11):
-    from typing import _get_defaults  # type: ignore[attr-defined]
-else:
-
-    def _get_defaults(_: Any) -> Any: ...
 
 
 __all__ = (
@@ -165,11 +157,6 @@ def get_fn_type_hints(fn: Any, namespace: dict[str, Any] | None = None) -> dict[
         **(namespace or {}),
     }
     hints = get_type_hints(fn_to_inspect, globalns=namespace, include_extras=True)
-
-    if sys.version_info < (3, 11):
-        # see https://github.com/litestar-org/litestar/pull/2516
-        defaults = _get_defaults(fn_to_inspect)
-        hints = _unwrap_implicit_optional_hints(defaults, hints)
 
     return hints
 

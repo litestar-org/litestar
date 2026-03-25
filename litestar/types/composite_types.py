@@ -1,9 +1,9 @@
 from __future__ import annotations
 
+from collections.abc import Callable
 from typing import (
     TYPE_CHECKING,
     Any,
-    Callable,
     Literal,
     Union,
 )
@@ -26,8 +26,7 @@ if TYPE_CHECKING:
     from collections.abc import Mapping, MutableMapping, Sequence
     from os import PathLike
     from pathlib import Path
-
-    from typing_extensions import TypeAlias
+    from typing import TypeAlias
 
     from litestar.datastructures.cookie import Cookie
     from litestar.datastructures.response_header import ResponseHeader

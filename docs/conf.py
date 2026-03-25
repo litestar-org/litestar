@@ -275,8 +275,8 @@ linkcheck_ignore = [
     "http://testserver",
 ]
 
-auto_pytabs_min_version = (3, 8)
-auto_pytabs_max_version = (3, 12)
+auto_pytabs_min_version = (3, 11)
+auto_pytabs_max_version = (3, 14)
 auto_pytabs_compat_mode = True
 
 autosectionlabel_prefix_document = True

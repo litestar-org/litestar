@@ -1,11 +1,11 @@
 import dataclasses
 from enum import Enum
-from typing import Optional
+from typing import NotRequired, Optional, Required
 from uuid import UUID
 
 import msgspec
 from polyfactory.factories import DataclassFactory
-from typing_extensions import NotRequired, ReadOnly, Required, TypedDict
+from typing_extensions import ReadOnly, TypedDict
 
 
 class Species(str, Enum):

@@ -7,7 +7,7 @@ keywords = ["api", "rest", "asgi", "litestar", "starlite"]
 license = { text = "MIT" }
 name = "litestar"
 readme = "docs/PYPI_README.md"
-requires-python = ">=3.9,<4.0"
+requires-python = ">=3.11"
 version = "3.0.0b0"
 
 
@@ -38,16 +38,13 @@ classifiers = [
 dependencies = [
   "anyio>=3",
   "httpx>=0.22",
-  "exceptiongroup; python_version < \"3.11\"",
-  "importlib-metadata; python_version < \"3.10\"",
   "msgspec>=0.19.0",
   "multidict>=6.0.2",
   "typing-extensions",
   "click",
   "rich>=13.0.0",
   "rich-click",
-  "multipart>=1.2.0",
-  "exceptiongroup>=1.2.2; python_version < \"3.11\"",
+  "multipart>=1.3.1",
   "sniffio>=1.3.1",
 ]
 
@@ -257,7 +254,7 @@ enable_error_code = [
 ]
 packages = ["litestar", "tests"]
 plugins = ["pydantic.mypy"]
-python_version = "3.9"
+python_version = "3.11"
 
 disallow_any_generics = false
 local_partial_types = true
@@ -344,7 +341,7 @@ exclude = [
   "tests/unit/test_repository/test_generic_mock_repository.py",
 ]
 include = ["litestar", "tests"]
-pythonVersion = "3.9"
+pythonVersion = "3.11"
 reportUnnecessaryTypeIgnoreComments = true
 
 [tool.slotscheck]
@@ -396,6 +393,9 @@ lint.ignore = [
   "PLC0415", # `import` should be at the top-level of a file
   "PLW1641", # Object does not implement `__hash__` method
   "SIM103",  # 'Return the condition directly': This is a bit overzealous
+  "UP038",   # Use `X | Y` in `isinstance` call instead of `(X, Y)`
+  "UP007",   # Use `X | Y` for type annotations
+  "RET504"   # Unnecessary assignment before `return` statement
 ]
 lint.select = [
   "A",   # flake8-builtins
@@ -436,7 +436,7 @@ lint.select = [
 
 line-length = 120
 src = ["litestar", "tests", "docs/examples"]
-target-version = "py39"
+target-version = "py311"
 
 [tool.ruff.lint.pydocstyle]
 convention = "google"
@@ -494,6 +494,7 @@ known-first-party = ["litestar", "tests", "examples"]
   "TC",
   "TRY",
   "E721",
+  "UP045",
 ]
 "tests/unit/test_contrib/test_sqlalchemy/**/*.*" = ["UP006"]
 "tests/unit/test_openapi/test_typescript_converter/test_converter.py" = ["W293"]

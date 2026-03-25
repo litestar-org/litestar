@@ -2,11 +2,9 @@
 
 from __future__ import annotations
 
-from collections.abc import Mapping
+from collections.abc import Callable, Mapping
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, Any, Callable, TypeVar
-
-from typing_extensions import TypeAlias
+from typing import TYPE_CHECKING, Any, TypeAlias, TypeVar
 
 from litestar.exceptions.http_exceptions import HTTPException
 from litestar.plugins.base import InitPlugin

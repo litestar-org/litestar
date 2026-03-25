@@ -1,6 +1,6 @@
 import sys
 from dataclasses import dataclass
-from datetime import date, datetime, timezone
+from datetime import UTC, date, datetime
 from enum import Enum, auto
 from typing import (
     TYPE_CHECKING,
@@ -9,6 +9,7 @@ from typing import (
     Generic,
     Literal,
     Optional,
+    TypeAlias,
     TypedDict,
     TypeVar,
     Union,
@@ -18,7 +19,7 @@ import annotated_types
 import msgspec
 import pytest
 from msgspec import Struct
-from typing_extensions import TypeAlias, TypeAliasType
+from typing_extensions import TypeAliasType
 
 from litestar import Controller, MediaType, get, post
 from litestar._openapi.schema_generation.plugins import openapi_schema_plugins
@@ -43,8 +44,8 @@ from tests.helpers import get_schema_for_field_definition
 from tests.models import DataclassPerson, DataclassPet
 
 if TYPE_CHECKING:
+    from collections.abc import Callable
     from types import ModuleType
-    from typing import Callable
 
 T = TypeVar("T")
 
@@ -343,12 +344,12 @@ def test_annotated_types() -> None:
     assert schema.properties["constrained_float"].maximum == 10  # type: ignore[index, union-attr]
     assert datetime.fromtimestamp(
         schema.properties["constrained_date"].exclusive_minimum,  # type: ignore[arg-type, index, union-attr]
-        tz=timezone.utc,
-    ) == datetime.fromordinal(historical_date.toordinal()).replace(tzinfo=timezone.utc)
+        tz=UTC,
+    ) == datetime.fromordinal(historical_date.toordinal()).replace(tzinfo=UTC)
     assert datetime.fromtimestamp(
         schema.properties["constrained_date"].exclusive_maximum,  # type: ignore[arg-type, index, union-attr]
-        tz=timezone.utc,
-    ) == datetime.fromordinal(today.toordinal()).replace(tzinfo=timezone.utc)
+        tz=UTC,
+    ) == datetime.fromordinal(today.toordinal()).replace(tzinfo=UTC)
     assert schema.properties["constrained_lower_case"].description == "must be in lower case"  # type: ignore[index]
     assert schema.properties["constrained_upper_case"].description == "must be in upper case"  # type: ignore[index]
     assert schema.properties["constrained_is_ascii"].pattern == "[[:ascii:]]"  # type: ignore[index, union-attr]
@@ -380,15 +381,15 @@ class MsgspecGeneric(Struct, Generic[T]):
 
 annotations: list[type] = [DataclassGeneric[int], MsgspecGeneric[int]]
 
+
 # Generic TypedDict was only supported from 3.11 onwards
-if sys.version_info >= (3, 11):
+class TypedDictGeneric(TypedDict, Generic[T]):
+    foo: T
+    optional_foo: Optional[T]
+    annotated_foo: Annotated[T, object()]
 
-    class TypedDictGeneric(TypedDict, Generic[T]):
-        foo: T
-        optional_foo: Optional[T]
-        annotated_foo: Annotated[T, object()]
 
-    annotations.append(TypedDictGeneric[int])
+annotations.append(TypedDictGeneric[int])
 
 
 @pytest.mark.parametrize("cls", annotations)

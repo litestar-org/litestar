@@ -6,13 +6,12 @@ from typing import (
     TYPE_CHECKING,
     Any,
     Literal,
-    Optional,
     TypeVar,
     Union,
 )
 
 if TYPE_CHECKING:
-    from typing_extensions import TypeAlias
+    from typing import TypeAlias
 
     from litestar.response.sse import ServerSentEventMessage
 
@@ -21,7 +20,7 @@ T = TypeVar("T")
 
 __all__ = ("AnyIOBackend", "MaybePartial", "OptionalSequence", "SSEData", "StreamType", "SyncOrAsyncUnion")
 
-OptionalSequence: TypeAlias = Optional[Sequence[T]]
+OptionalSequence: TypeAlias = Sequence[T] | None
 """Types 'T' as union of Sequence[T] and None."""
 
 SyncOrAsyncUnion: TypeAlias = Union[T, Awaitable[T]]

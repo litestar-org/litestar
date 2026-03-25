@@ -3,8 +3,8 @@ from __future__ import annotations
 import dataclasses
 import functools
 import warnings
-from collections.abc import AsyncGenerator, Awaitable, Mapping
-from typing import TYPE_CHECKING, Any, Callable, cast
+from collections.abc import AsyncGenerator, Awaitable, Callable, Mapping
+from typing import TYPE_CHECKING, Any, cast
 
 import anyio
 from msgspec.json import Encoder as JsonEncoder

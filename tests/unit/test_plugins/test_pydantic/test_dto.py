@@ -1,13 +1,12 @@
 from __future__ import annotations
 
-from datetime import datetime, timezone
-from typing import TYPE_CHECKING, Annotated, Optional, cast
+from datetime import UTC, datetime
+from typing import TYPE_CHECKING, Annotated, Literal, Optional, cast
 
 import pydantic as pydantic_v2
 import pytest
 from pydantic import AwareDatetime
 from pydantic import v1 as pydantic_v1
-from typing_extensions import Literal
 
 from litestar import Request, post
 from litestar.dto import DTOConfig
@@ -38,7 +37,7 @@ def test_aware_datetime_serialization_v2(use_experimental_dto_backend: bool) -> 
         return data
 
     with create_test_client(handler) as client:
-        data = PydanticAwareDatetimeModel(tz_aware_datetime=datetime.now(tz=timezone.utc))
+        data = PydanticAwareDatetimeModel(tz_aware_datetime=datetime.now(tz=UTC))
         dict_payload = _model_dump(data)
         json_payload = _model_dump_json(data)
 

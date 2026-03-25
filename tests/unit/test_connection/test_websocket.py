@@ -5,8 +5,8 @@ were meant to ensure our compatibility with their API.
 
 from __future__ import annotations
 
-from collections.abc import AsyncGenerator, Awaitable
-from typing import TYPE_CHECKING, Any, Callable, Literal
+from collections.abc import AsyncGenerator, Awaitable, Callable
+from typing import TYPE_CHECKING, Any, Literal
 from unittest.mock import MagicMock
 
 import anyio
@@ -20,7 +20,6 @@ from litestar.handlers.websocket_handlers import websocket
 from litestar.status_codes import WS_1001_GOING_AWAY
 from litestar.testing import TestClient, create_test_client
 from litestar.types.asgi_types import WebSocketMode
-from litestar.utils.compat import async_next
 
 if TYPE_CHECKING:
     from litestar.types import Receive, Scope, Send
@@ -252,7 +251,7 @@ async def consume_gen(generator: AsyncGenerator[Any, Any], count: int, timeout: 
     async def consumer() -> list[Any]:
         result = []
         for _ in range(count):
-            result.append(await async_next(generator))
+            result.append(await anext(generator))
         return result
 
     with anyio.fail_after(timeout):

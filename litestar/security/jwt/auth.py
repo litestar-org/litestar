@@ -1,8 +1,8 @@
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass, field
-from datetime import datetime, timedelta, timezone
-from typing import TYPE_CHECKING, Any, Callable, Generic, Literal, cast
+from datetime import UTC, datetime, timedelta
+from typing import TYPE_CHECKING, Any, Generic, Literal, cast
 
 from typing_extensions import TypeVar
 
@@ -20,7 +20,7 @@ __all__ = ("BaseJWTAuth", "JWTAuth", "JWTCookieAuth", "OAuth2Login", "OAuth2Pass
 
 
 if TYPE_CHECKING:
-    from collections.abc import Iterable, Sequence
+    from collections.abc import Callable, Iterable, Sequence
 
     from litestar import Response
     from litestar.connection import ASGIConnection
@@ -236,7 +236,7 @@ class BaseJWTAuth(Generic[UserType, TokenT], AbstractSecurityConfig[UserType, To
         """
         token = self.token_cls(
             sub=identifier,
-            exp=(datetime.now(timezone.utc) + (token_expiration or self.default_token_expiration)),
+            exp=(datetime.now(UTC) + (token_expiration or self.default_token_expiration)),
             iss=token_issuer,
             aud=token_audience,
             jti=token_unique_jwt_id,

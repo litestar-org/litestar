@@ -4,13 +4,12 @@ back again, to bytes.
 
 from __future__ import annotations
 
-from collections.abc import Collection, Mapping, Set
+from collections.abc import Callable, Collection, Mapping, Set
 from dataclasses import replace
 from typing import (
     TYPE_CHECKING,
     Annotated,
     Any,
-    Callable,
     ClassVar,
     Final,
     Protocol,

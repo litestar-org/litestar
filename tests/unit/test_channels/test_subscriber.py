@@ -7,7 +7,6 @@ import pytest
 
 from litestar.channels import Subscriber
 from litestar.channels.subscriber import BacklogStrategy
-from litestar.utils.compat import async_next
 from tests.unit.test_channels.util import get_from_stream
 
 
@@ -91,7 +90,7 @@ async def test_qsize() -> None:
 
     assert subscriber.qsize == 1  # type: ignore[comparison-overlap]
 
-    await async_next(subscriber.iter_events())  # type: ignore[unreachable]
+    await anext(subscriber.iter_events())  # type: ignore[unreachable]
 
     assert not subscriber.qsize
 

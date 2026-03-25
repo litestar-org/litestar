@@ -106,7 +106,7 @@ def parse_path_params(
     """
     return {
         param_definition.name: param_definition.parser(value) if param_definition.parser else value
-        for param_definition, value in zip(parameter_definitions, path_param_values)
+        for param_definition, value in zip(parameter_definitions, path_param_values, strict=False)
     }
 
 

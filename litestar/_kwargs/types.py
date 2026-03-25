@@ -1,9 +1,7 @@
 from __future__ import annotations
 
-from collections.abc import Awaitable
-from typing import Any, Callable
-
-from typing_extensions import TypeAlias
+from collections.abc import Awaitable, Callable
+from typing import Any, TypeAlias
 
 from litestar.connection import ASGIConnection
 

@@ -3,9 +3,9 @@ from __future__ import annotations
 import asyncio
 from asyncio import CancelledError, Queue, QueueFull
 from collections import deque
-from collections.abc import AsyncGenerator, Awaitable
+from collections.abc import AsyncGenerator, Awaitable, Callable
 from contextlib import AsyncExitStack, asynccontextmanager, suppress
-from typing import TYPE_CHECKING, Any, Callable, Generic, Literal, TypeVar
+from typing import TYPE_CHECKING, Any, Generic, Literal, TypeVar
 
 if TYPE_CHECKING:
     from litestar.channels import ChannelsPlugin

@@ -21,6 +21,7 @@ from litestar.utils._exceptions import _collapse_exception_groups
 if TYPE_CHECKING:
     from collections.abc import Mapping, Sequence
     from types import TracebackType
+    from typing import Self
 
     from httpx._client import UseClientDefault
     from httpx._types import (
@@ -29,7 +30,6 @@ if TYPE_CHECKING:
         HeaderTypes,
         QueryParamTypes,
     )
-    from typing_extensions import Self
 
     from litestar.middleware.session.base import BaseBackendConfig, BaseSessionBackend
 

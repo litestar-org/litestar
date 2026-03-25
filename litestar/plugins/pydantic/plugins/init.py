@@ -2,11 +2,11 @@ from __future__ import annotations
 
 from contextlib import suppress
 from functools import partial
-from typing import TYPE_CHECKING, Any, Callable, TypeVar, cast
+from typing import TYPE_CHECKING, Any, TypeGuard, TypeVar, cast
 from uuid import UUID
 
 from msgspec import ValidationError
-from typing_extensions import Buffer, TypeGuard
+from typing_extensions import Buffer
 
 from litestar._signature.types import ExtendedMsgSpecValidationError
 from litestar.exceptions import MissingDependencyException
@@ -33,6 +33,8 @@ except ImportError:
 
 
 if TYPE_CHECKING:
+    from collections.abc import Callable
+
     import pydantic as pydantic_v2_mandatory
 
     from litestar.config.app import AppConfig

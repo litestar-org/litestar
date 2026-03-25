@@ -16,7 +16,6 @@ from litestar.channels.backends.memory import MemoryChannelsBackend
 from litestar.channels.backends.psycopg import PsycoPgChannelsBackend
 from litestar.channels.backends.redis import RedisChannelsStreamBackend
 from litestar.exceptions import ImproperlyConfiguredException
-from litestar.utils.compat import async_next
 
 
 @pytest.fixture(
@@ -68,7 +67,7 @@ async def test_pub_sub(channels_backend: ChannelsBackend, channels: set[str]) ->
     event_generator = channels_backend.stream_events()
     received = set()
     for _ in channels:
-        received.add(await async_next(event_generator))
+        received.add(await anext(event_generator))
     assert received == {(c, b"something") for c in channels}
 
 
@@ -80,7 +79,7 @@ async def test_pub_sub_unsubscribe(channels_backend: ChannelsBackend) -> None:
     await channels_backend.unsubscribe(["foo"])
     await channels_backend.publish(b"something", ["bar"])
 
-    assert await asyncio.wait_for(async_next(event_generator), timeout=0.01) == ("bar", b"something")
+    assert await asyncio.wait_for(anext(event_generator), timeout=0.01) == ("bar", b"something")
 
 
 async def test_pub_sub_no_subscriptions(channels_backend: ChannelsBackend) -> None:
@@ -88,7 +87,7 @@ async def test_pub_sub_no_subscriptions(channels_backend: ChannelsBackend) -> No
 
     event_generator = channels_backend.stream_events()
     with pytest.raises((asyncio.TimeoutError, TimeoutError)):
-        await asyncio.wait_for(async_next(event_generator), timeout=0.01)
+        await asyncio.wait_for(anext(event_generator), timeout=0.01)
 
 
 @pytest.mark.flaky(reruns=5)  # this should not really happen but just in case, we retry
@@ -97,12 +96,12 @@ async def test_pub_sub_no_subscriptions_by_unsubscribes(channels_backend: Channe
     await channels_backend.publish(b"something", ["foo"])
 
     event_generator = channels_backend.stream_events()
-    await asyncio.wait_for(async_next(event_generator), timeout=0.01)
+    await asyncio.wait_for(anext(event_generator), timeout=0.01)
     await channels_backend.unsubscribe(["foo"])
     await channels_backend.publish(b"something", ["foo"])
 
     with pytest.raises((asyncio.TimeoutError, TimeoutError)):
-        await asyncio.wait_for(async_next(event_generator), timeout=0.01)
+        await asyncio.wait_for(anext(event_generator), timeout=0.01)
 
 
 async def test_pub_sub_shutdown_leftover_messages(channels_backend_instance: ChannelsBackend) -> None:
@@ -211,14 +210,14 @@ async def test_asyncpg_backend_stream_before_startup_raises() -> None:
     backend = AsyncPgChannelsBackend(make_connection=AsyncMock())
 
     with pytest.raises(RuntimeError):
-        await asyncio.wait_for(async_next(backend.stream_events()), timeout=0.01)
+        await asyncio.wait_for(anext(backend.stream_events()), timeout=0.01)
 
 
 async def test_memory_backend_stream_before_startup_raises() -> None:
     backend = MemoryChannelsBackend()
 
     with pytest.raises(RuntimeError):
-        await asyncio.wait_for(async_next(backend.stream_events()), timeout=0.01)
+        await asyncio.wait_for(anext(backend.stream_events()), timeout=0.01)
 
 
 async def test_memory_backend_unsubscribe_clears_all_history() -> None:

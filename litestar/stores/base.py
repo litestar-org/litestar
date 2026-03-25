@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from typing import TYPE_CHECKING
 
 from msgspec import Struct
@@ -10,8 +10,7 @@ from msgspec.msgpack import encode as msgpack_encode
 
 if TYPE_CHECKING:
     from types import TracebackType
-
-    from typing_extensions import Self
+    from typing import Self
 
 
 __all__ = ("NamespacedStore", "StorageObject", "Store")
@@ -122,13 +121,13 @@ class StorageObject(Struct):
             expires_in = timedelta(seconds=expires_in)
         return cls(
             data=data,
-            expires_at=(datetime.now(tz=timezone.utc) + expires_in) if expires_in else None,
+            expires_at=(datetime.now(tz=UTC) + expires_in) if expires_in else None,
         )
 
     @property
     def expired(self) -> bool:
         """Return if the :class:`StorageObject` is expired"""
-        return self.expires_at is not None and datetime.now(tz=timezone.utc) >= self.expires_at
+        return self.expires_at is not None and datetime.now(tz=UTC) >= self.expires_at
 
     @property
     def expires_in(self) -> int:
@@ -136,7 +135,7 @@ class StorageObject(Struct):
         was set, return ``-1``.
         """
         if self.expires_at:
-            return int(self.expires_at.timestamp() - datetime.now(tz=timezone.utc).timestamp())
+            return int(self.expires_at.timestamp() - datetime.now(tz=UTC).timestamp())
         return -1
 
     def to_bytes(self) -> bytes:

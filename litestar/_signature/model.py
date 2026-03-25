@@ -7,7 +7,6 @@ from typing import (
     TYPE_CHECKING,
     Annotated,
     Any,
-    Callable,
     ClassVar,
     Literal,
     Optional,
@@ -37,9 +36,8 @@ from litestar.utils import get_origin_or_inner_type, is_class_and_subclass
 from litestar.utils.dataclass import simple_asdict
 
 if TYPE_CHECKING:
-    from collections.abc import Sequence
-
-    from typing_extensions import NotRequired
+    from collections.abc import Callable, Sequence
+    from typing import NotRequired
 
     from litestar.connection import ASGIConnection
     from litestar.types import AnyCallable, TypeDecodersSequence
@@ -312,7 +310,7 @@ class SignatureModel(Struct):
                 for inner_type in field_definition.inner_types
                 if not inner_type.is_none_type
             ]
-            return Optional[Union[tuple(types)]] if field_definition.is_optional else Union[tuple(types)]  # pyright: ignore
+            return Optional[Union[tuple(types)]] if field_definition.is_optional else Union[tuple(types)]  # pyright: ignore # noqa: UP045
 
         if decoder := _get_decoder_for_type(annotation, type_decoders=type_decoders):
             # FIXME: temporary (hopefully) hack, see: https://github.com/jcrist/msgspec/issues/497

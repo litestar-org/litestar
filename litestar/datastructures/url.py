@@ -9,7 +9,7 @@ from litestar.datastructures import MultiDict
 from litestar.types import Empty
 
 if TYPE_CHECKING:
-    from typing_extensions import Self
+    from typing import Self
 
     from litestar.types import EmptyType, Scope
 

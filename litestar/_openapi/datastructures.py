@@ -216,7 +216,7 @@ class SchemaRegistry:
 
             full_keys = [registered_schema.key for registered_schema in name_group]
             names = ["_".join(k) for k in self.remove_common_prefix(full_keys)]
-            for name_, registered_schema in zip(names, name_group):
+            for name_, registered_schema in zip(names, name_group, strict=False):
                 self.set_reference_paths(name_, registered_schema)
                 components_schemas[name_] = registered_schema.schema
 
