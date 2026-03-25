@@ -65,7 +65,7 @@ class PydanticPlugin(InitPlugin):
 
     def __init__(
         self,
-        exclude:PydanticV2FieldsListType | None = None,
+        exclude: PydanticV2FieldsListType | None = None,
         exclude_defaults: bool = False,
         exclude_none: bool = False,
         exclude_unset: bool = False,

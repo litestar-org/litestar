@@ -3,7 +3,6 @@ from unittest.mock import ANY
 
 import pydantic as pydantic_v2
 import pytest
-from pydantic import v1 as pydantic_v1
 
 from litestar import get, post
 from litestar.enums import RequestEncodingType
@@ -12,44 +11,9 @@ from litestar.params import Body, Parameter
 from litestar.plugins.pydantic import PydanticDTO, PydanticInitPlugin, PydanticPlugin
 from litestar.status_codes import HTTP_400_BAD_REQUEST
 from litestar.testing import create_test_client
-from tests.unit.test_plugins.test_pydantic.models import PydanticPerson, PydanticV1Person
+from tests.unit.test_plugins.test_pydantic.models import PydanticPerson
 
 from . import BaseModelType, PydanticVersion
-
-
-@pytest.mark.parametrize(("meta",), [(None,), (Body(media_type=RequestEncodingType.URL_ENCODED),)])
-def test_pydantic_v1_validation_error_raises_400(meta: Any) -> None:
-    class Model(pydantic_v1.BaseModel):
-        foo: str = pydantic_v1.Field(max_length=2)
-
-    ModelDTO = PydanticDTO[Model]
-
-    annotation: Any
-    annotation = Annotated[Model, meta] if meta is not None else Model
-
-    @post(dto=ModelDTO, signature_namespace={"annotation": annotation})
-    def handler(data: annotation) -> Any:  # pyright: ignore
-        return data
-
-    model_json = {"foo": "too long"}
-    expected_errors: list[dict[str, Any]]
-
-    expected_errors = [
-        {
-            "loc": ["foo"],
-            "msg": "ensure this value has at most 2 characters",
-            "type": "value_error.any_str.max_length",
-            "ctx": {"limit_value": 2},
-        }
-    ]
-
-    with create_test_client(route_handlers=handler) as client:
-        kws = {"data": model_json} if meta else {"json": model_json}
-        response = client.post("/", **kws)  # type: ignore[arg-type]
-        extra = response.json()["extra"]
-
-        assert response.status_code == 400
-        assert extra == expected_errors
 
 
 @pytest.mark.parametrize(("meta",), [(None,), (Body(media_type=RequestEncodingType.URL_ENCODED),)])
@@ -99,17 +63,6 @@ def test_default_error_handling() -> None:
         extra = response.json().get("extra")
         assert extra is not None
         assert len(extra) == 5
-
-
-def test_default_error_handling_v1() -> None:
-    @post("/{param:int}")
-    def my_route_handler(param: int, data: PydanticV1Person) -> None: ...
-
-    with create_test_client(my_route_handler) as client:
-        response = client.post("/123", json={"first_name": "moishe"})
-        extra = response.json().get("extra")
-        assert extra is not None
-        assert len(extra) == 4
 
 
 def test_serialize_raw_errors_v2() -> None:
@@ -199,16 +152,6 @@ def test_signature_model_invalid_input(base_model: BaseModelType, pydantic_versi
             ]
 
 
-class V1ModelWithPrivateFields(pydantic_v1.BaseModel):
-    class Config:
-        underscore_fields_are_private = True
-
-    _field: str = pydantic_v1.PrivateAttr()
-    # include an invalid annotation here to ensure we never touch those fields
-    _underscore_field: "foo"  # type: ignore[name-defined] # noqa: F821
-    bar: str
-
-
 class V2ModelWithPrivateFields(pydantic_v2.BaseModel):
     class Config:
         underscore_fields_are_private = True
@@ -217,7 +160,7 @@ class V2ModelWithPrivateFields(pydantic_v2.BaseModel):
     bar: str
 
 
-@pytest.mark.parametrize("model_type", [V1ModelWithPrivateFields, V2ModelWithPrivateFields])
+@pytest.mark.parametrize("model_type", [V2ModelWithPrivateFields])
 def test_private_fields(model_type: BaseModelType) -> None:
     @post("/")
     async def handler(data: V2ModelWithPrivateFields) -> V2ModelWithPrivateFields:
@@ -234,16 +177,7 @@ def test_private_fields(model_type: BaseModelType) -> None:
     [
         pytest.param(pydantic_v2.BaseModel, pydantic_v2.JsonValue, {"foo": "bar"}, id="pydantic_v2.JsonValue"),
         pytest.param(
-            pydantic_v1.BaseModel, pydantic_v1.IPvAnyAddress, "127.0.0.1", id="pydantic_v1.IPvAnyAddress (v4)"
-        ),
-        pytest.param(
             pydantic_v2.BaseModel, pydantic_v2.IPvAnyAddress, "127.0.0.1", id="pydantic_v2.IPvAnyAddress (v4)"
-        ),
-        pytest.param(
-            pydantic_v1.BaseModel,
-            pydantic_v1.IPvAnyAddress,
-            "2001:db8::ff00:42:8329",
-            id="pydantic_v1.IPvAnyAddress (v6)",
         ),
         pytest.param(
             pydantic_v2.BaseModel,
@@ -252,16 +186,7 @@ def test_private_fields(model_type: BaseModelType) -> None:
             id="pydantic_v2.IPvAnyAddress (v6)",
         ),
         pytest.param(
-            pydantic_v1.BaseModel, pydantic_v1.IPvAnyInterface, "127.0.0.1/24", id="pydantic_v1.IPvAnyInterface (v4)"
-        ),
-        pytest.param(
             pydantic_v2.BaseModel, pydantic_v2.IPvAnyInterface, "127.0.0.1/24", id="pydantic_v2.IPvAnyInterface (v4)"
-        ),
-        pytest.param(
-            pydantic_v1.BaseModel,
-            pydantic_v1.IPvAnyInterface,
-            "2001:db8::ff00:42:8329/128",
-            id="pydantic_v1.IPvAnyInterface (v6)",
         ),
         pytest.param(
             pydantic_v2.BaseModel,
@@ -270,16 +195,7 @@ def test_private_fields(model_type: BaseModelType) -> None:
             id="pydantic_v2.IPvAnyInterface (v6)",
         ),
         pytest.param(
-            pydantic_v1.BaseModel, pydantic_v1.IPvAnyNetwork, "127.0.0.1/32", id="pydantic_v1.IPvAnyNetwork (v4)"
-        ),
-        pytest.param(
             pydantic_v2.BaseModel, pydantic_v2.IPvAnyNetwork, "127.0.0.1/32", id="pydantic_v2.IPvAnyNetwork (v4)"
-        ),
-        pytest.param(
-            pydantic_v1.BaseModel,
-            pydantic_v1.IPvAnyNetwork,
-            "2001:db8::ff00:42:8329/128",
-            id="pydantic_v1.IPvAnyNetwork (v6)",
         ),
         pytest.param(
             pydantic_v2.BaseModel,
@@ -287,7 +203,6 @@ def test_private_fields(model_type: BaseModelType) -> None:
             "2001:db8::ff00:42:8329/128",
             id="pydantic_v2.IPvAnyNetwork (v6)",
         ),
-        pytest.param(pydantic_v1.BaseModel, pydantic_v1.EmailStr, "test@example.com", id="pydantic_v1.EmailStr"),
         pytest.param(pydantic_v2.BaseModel, pydantic_v2.EmailStr, "test@example.com", id="pydantic_v2.EmailStr"),
     ],
 )
@@ -330,30 +245,17 @@ def test_dto_with_non_instantiable_types(base_model: BaseModelType, type_: Any, 
         "Use alias in response",
     ),
 )
-def test_params_with_v1_and_v2_models(plugin_params: dict, response: dict) -> None:
-    class ModelV1(pydantic_v1.BaseModel):  # pyright: ignore
-        alias: str = pydantic_v1.fields.Field(alias="prefer_alias")  # pyright: ignore
-        default: str = "default"
-        none: None = None
-
-        class Config:
-            allow_population_by_field_name = True
-
+def test_params(plugin_params: dict, response: dict) -> None:
     class ModelV2(pydantic_v2.BaseModel):
         alias: str = pydantic_v2.fields.Field(serialization_alias="prefer_alias")
         default: str = "default"
         none: None = None
 
-    @post("/v1")
-    async def handler_v1() -> ModelV1:
-        return ModelV1(alias="prefer_alias")  # type: ignore[call-arg]
-
     @post("/v2")
     async def handler_v2() -> ModelV2:
         return ModelV2(alias="prefer_alias")
 
-    with create_test_client([handler_v1, handler_v2], plugins=[PydanticPlugin(**plugin_params)]) as client:
-        assert client.post("/v1").json() == response
+    with create_test_client([handler_v2], plugins=[PydanticPlugin(**plugin_params)]) as client:
         assert client.post("/v2").json() == response
 
 
@@ -388,12 +290,10 @@ def test_v2_strict_validate(
 
 
 def test_model_defaults(pydantic_version: PydanticVersion) -> None:
-    lib = pydantic_v1 if pydantic_version == "v1" else pydantic_v2
-
-    class Model(lib.BaseModel):  # type: ignore[misc, name-defined]
+    class Model(pydantic_v2.BaseModel):  # type: ignore[misc, name-defined]
         a: int
-        b: int = lib.Field(default=1)
-        c: int = lib.Field(default_factory=lambda: 3)
+        b: int = pydantic_v2.Field(default=1)
+        c: int = pydantic_v2.Field(default_factory=lambda: 3)
 
     @post("/")
     async def handler(data: Model) -> dict[str, int]:
