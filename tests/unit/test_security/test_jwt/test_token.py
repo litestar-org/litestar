@@ -332,3 +332,47 @@ def test_token_issuer(issuer: str | list[str] | None) -> None:
     )
 
     assert token.iss == iss
+
+
+@pytest.mark.parametrize("leeway", [10, 10.0, timedelta(seconds=10)])
+def test_decode_with_leeway_allows_recently_expired_token(leeway: float | timedelta) -> None:
+    """Test that a recently expired token can be decoded when leeway is provided."""
+    secret = secrets.token_hex()
+    raw_token = {
+        "sub": "foo",
+        "iat": datetime.now(timezone.utc) - timedelta(minutes=5),
+        "exp": datetime.now(timezone.utc) - timedelta(seconds=5),
+    }
+    encoded_token = jwt.encode(payload=raw_token, key=secret, algorithm="HS256")
+
+    # Without leeway, decoding should fail
+    with pytest.raises(NotAuthorizedException):
+        Token.decode(encoded_token=encoded_token, secret=secret, algorithm="HS256")
+
+    # With leeway, decoding should succeed
+    token = Token.decode(
+        encoded_token=encoded_token,
+        secret=secret,
+        algorithm="HS256",
+        leeway=leeway,
+    )
+    assert token.sub == "foo"
+
+
+def test_decode_with_leeway_does_not_allow_long_expired_token() -> None:
+    """Test that a token expired well beyond the leeway is still rejected."""
+    secret = secrets.token_hex()
+    raw_token = {
+        "sub": "foo",
+        "iat": datetime.now(timezone.utc) - timedelta(hours=2),
+        "exp": datetime.now(timezone.utc) - timedelta(hours=1),
+    }
+    encoded_token = jwt.encode(payload=raw_token, key=secret, algorithm="HS256")
+
+    with pytest.raises(NotAuthorizedException):
+        Token.decode(
+            encoded_token=encoded_token,
+            secret=secret,
+            algorithm="HS256",
+            leeway=timedelta(seconds=10),
+        )
