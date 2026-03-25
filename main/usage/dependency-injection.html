@@ -629,6 +629,10 @@ response is sent (in case of HTTP requests)</p>
 </div>
 <section id="a-basic-example">
 <h3>A basic example<a class="headerlink" href="#a-basic-example" title="Link to this heading">¶</a></h3>
+<div class="sd-tab-set docutils">
+<input id="sd-tab-item-0" name="sd-tab-set-0" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="3.11" for="sd-tab-item-0">
+Python 3.11+</label><div class="sd-tab-content docutils">
 <div class="literal-block-wrapper docutils container" id="id1">
 <div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">dependencies.py</span></code></span><a class="headerlink" href="#id1" title="Link to this code">¶</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Generator</span>
@@ -656,6 +660,39 @@ response is sent (in case of HTTP requests)</p>
 </span></pre></div>
 </div>
 </div>
+</div>
+<input checked="checked" id="sd-tab-item-1" name="sd-tab-set-0" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="3.13" for="sd-tab-item-1">
+Python 3.13+</label><div class="sd-tab-content docutils">
+<div class="literal-block-wrapper docutils container" id="id2">
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">dependencies.py</span></code></span><a class="headerlink" href="#id2" title="Link to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Generator</span>
+</span><span data-line="2">
+</span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
+</span><span data-line="4"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.di</span><span class="w"> </span><span class="kn">import</span> <span class="n">Provide</span>
+</span><span data-line="5">
+</span><span data-line="6"><span class="n">CONNECTION</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;open&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">}</span>
+</span><span data-line="7">
+</span><span data-line="8">
+</span><span data-line="9"><span class="k">def</span><span class="w"> </span><span class="nf">generator_function</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bool</span><span class="p">]]:</span>
+</span><span data-line="10"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Set connection to open and close it after the handler returns.&quot;&quot;&quot;</span>
+</span><span data-line="11">    <span class="n">CONNECTION</span><span class="p">[</span><span class="s2">&quot;open&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+</span><span data-line="12">    <span class="k">yield</span> <span class="n">CONNECTION</span>
+</span><span data-line="13">    <span class="n">CONNECTION</span><span class="p">[</span><span class="s2">&quot;open&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+</span><span data-line="14">
+</span><span data-line="15">
+</span><span data-line="16"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">dependencies</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;conn&quot;</span><span class="p">:</span> <span class="n">Provide</span><span class="p">(</span><span class="n">generator_function</span><span class="p">)})</span>
+</span><span data-line="17"><span class="k">def</span><span class="w"> </span><span class="nf">index</span><span class="p">(</span><span class="n">conn</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bool</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bool</span><span class="p">]:</span>
+</span><span data-line="18"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the current connection state.&quot;&quot;&quot;</span>
+</span><span data-line="19">    <span class="k">return</span> <span class="n">conn</span>
+</span><span data-line="20">
+</span><span data-line="21">
+</span><span data-line="22"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">index</span><span class="p">])</span>
+</span></pre></div>
+</div>
+</div>
+</div>
+</div>
 <p>If you run the code you’ll see that <code class="docutils literal notranslate"><span class="pre">CONNECTION</span></code> has been reset after the handler function
 returned:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.testing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TestClient</span>
@@ -673,8 +710,12 @@ returned:</p>
 generator, at the point where it first <code class="docutils literal notranslate"><span class="pre">yield</span></code> ed. This makes it possible to adapt behaviour
 of the dependency based on exceptions, for example rolling back a database session on error
 and committing otherwise.</p>
-<div class="literal-block-wrapper docutils container" id="id2">
-<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">dependencies.py</span></code></span><a class="headerlink" href="#id2" title="Link to this code">¶</a></div>
+<div class="sd-tab-set docutils">
+<input id="sd-tab-item-2" name="sd-tab-set-1" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="3.11" for="sd-tab-item-2">
+Python 3.11+</label><div class="sd-tab-content docutils">
+<div class="literal-block-wrapper docutils container" id="id3">
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">dependencies.py</span></code></span><a class="headerlink" href="#id3" title="Link to this code">¶</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Generator</span>
 </span><span data-line="2">
 </span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
@@ -708,6 +749,49 @@ and committing otherwise.</p>
 </span><span data-line="31">
 </span><span data-line="32"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">index</span><span class="p">])</span>
 </span></pre></div>
+</div>
+</div>
+</div>
+<input checked="checked" id="sd-tab-item-3" name="sd-tab-set-1" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="3.13" for="sd-tab-item-3">
+Python 3.13+</label><div class="sd-tab-content docutils">
+<div class="literal-block-wrapper docutils container" id="id4">
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">dependencies.py</span></code></span><a class="headerlink" href="#id4" title="Link to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Generator</span>
+</span><span data-line="2">
+</span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
+</span><span data-line="4"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.di</span><span class="w"> </span><span class="kn">import</span> <span class="n">Provide</span>
+</span><span data-line="5">
+</span><span data-line="6"><span class="n">STATE</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;result&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;connection&quot;</span><span class="p">:</span> <span class="s2">&quot;closed&quot;</span><span class="p">}</span>
+</span><span data-line="7">
+</span><span data-line="8">
+</span><span data-line="9"><span class="k">def</span><span class="w"> </span><span class="nf">generator_function</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+</span><span data-line="10"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Set the connection state to open and close it after the handler returns.</span>
+</span><span data-line="11">
+</span><span data-line="12"><span class="sd">    If an error occurs, set `result` to `&quot;error&quot;`, else set it to `&quot;OK&quot;`.</span>
+</span><span data-line="13"><span class="sd">    &quot;&quot;&quot;</span>
+</span><span data-line="14">    <span class="k">try</span><span class="p">:</span>
+</span><span data-line="15">        <span class="n">STATE</span><span class="p">[</span><span class="s2">&quot;connection&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;open&quot;</span>
+</span><span data-line="16">        <span class="k">yield</span> <span class="s2">&quot;hello&quot;</span>
+</span><span data-line="17">        <span class="n">STATE</span><span class="p">[</span><span class="s2">&quot;result&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;OK&quot;</span>
+</span><span data-line="18">    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+</span><span data-line="19">        <span class="n">STATE</span><span class="p">[</span><span class="s2">&quot;result&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;error&quot;</span>
+</span><span data-line="20">    <span class="k">finally</span><span class="p">:</span>
+</span><span data-line="21">        <span class="n">STATE</span><span class="p">[</span><span class="s2">&quot;connection&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;closed&quot;</span>
+</span><span data-line="22">
+</span><span data-line="23">
+</span><span data-line="24"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/{name:str}&quot;</span><span class="p">,</span> <span class="n">dependencies</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="n">Provide</span><span class="p">(</span><span class="n">generator_function</span><span class="p">)})</span>
+</span><span data-line="25"><span class="k">def</span><span class="w"> </span><span class="nf">index</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+</span><span data-line="26"><span class="w">    </span><span class="sd">&quot;&quot;&quot;If `name` is &quot;John&quot;, return a message, otherwise raise an error.&quot;&quot;&quot;</span>
+</span><span data-line="27">    <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;John&quot;</span><span class="p">:</span>
+</span><span data-line="28">        <span class="k">return</span> <span class="p">{</span><span class="n">name</span><span class="p">:</span> <span class="n">message</span><span class="p">}</span>
+</span><span data-line="29">    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">()</span>
+</span><span data-line="30">
+</span><span data-line="31">
+</span><span data-line="32"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">index</span><span class="p">])</span>
+</span></pre></div>
+</div>
+</div>
 </div>
 </div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.testing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TestClient</span>
@@ -888,8 +972,8 @@ request, even with <code class="docutils literal notranslate"><span class="pre">
 <h3>Dependency validation<a class="headerlink" href="#dependency-validation" title="Link to this heading">¶</a></h3>
 <p>By default, injected dependency values are validated by Litestar, for example, this application will raise an
 internal server error:</p>
-<div class="literal-block-wrapper docutils container" id="id3">
-<div class="code-block-caption"><span class="caption-text">Dependency validation error</span><a class="headerlink" href="#id3" title="Link to this code">¶</a></div>
+<div class="literal-block-wrapper docutils container" id="id5">
+<div class="code-block-caption"><span class="caption-text">Dependency validation error</span><a class="headerlink" href="#id5" title="Link to this code">¶</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
 </span><span data-line="2">
 </span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
@@ -912,8 +996,8 @@ internal server error:</p>
 </div>
 </div>
 <p>Dependency validation can be toggled using the <a class="reference internal" href="../reference/params.html#litestar.params.Dependency" title="litestar.params.Dependency"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dependency</span></code></a> function.</p>
-<div class="literal-block-wrapper docutils container" id="id4">
-<div class="code-block-caption"><span class="caption-text">Dependency validation error</span><a class="headerlink" href="#id4" title="Link to this code">¶</a></div>
+<div class="literal-block-wrapper docutils container" id="id6">
+<div class="code-block-caption"><span class="caption-text">Dependency validation error</span><a class="headerlink" href="#id6" title="Link to this code">¶</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Annotated</span><span class="p">,</span> <span class="n">Any</span>
 </span><span data-line="2">
 </span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
@@ -947,8 +1031,8 @@ about your application.</p>
 <p>Depending on your application design, it is possible to have a dependency declared in a handler or
 <a class="reference internal" href="../reference/di.html#litestar.di.Provide" title="litestar.di.Provide"><code class="xref py py-class docutils literal notranslate"><span class="pre">Provide</span></code></a> function that has a default value. If the dependency isn’t provided for the route, the
 default should be used by the function.</p>
-<div class="literal-block-wrapper docutils container" id="id5">
-<div class="code-block-caption"><span class="caption-text">Dependency with default value</span><a class="headerlink" href="#id5" title="Link to this code">¶</a></div>
+<div class="literal-block-wrapper docutils container" id="id7">
+<div class="code-block-caption"><span class="caption-text">Dependency with default value</span><a class="headerlink" href="#id7" title="Link to this code">¶</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
 </span><span data-line="2">
 </span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
@@ -970,8 +1054,8 @@ default should be used by the function.</p>
 <p>This doesn’t fail, but due to the way the application determines parameter types, it is inferred to be a query
 parameter.</p>
 <p>By declaring the parameter to be a dependency, Litestar knows to exclude it from the docs:</p>
-<div class="literal-block-wrapper docutils container" id="id6">
-<div class="code-block-caption"><span class="caption-text">Dependency with default value</span><a class="headerlink" href="#id6" title="Link to this code">¶</a></div>
+<div class="literal-block-wrapper docutils container" id="id8">
+<div class="code-block-caption"><span class="caption-text">Dependency with default value</span><a class="headerlink" href="#id8" title="Link to this code">¶</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Annotated</span><span class="p">,</span> <span class="n">Any</span>
 </span><span data-line="2">
 </span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
@@ -997,8 +1081,8 @@ parameter.</p>
 <p>The other side of the same coin is when a dependency isn’t provided, and no default is specified. Without the dependency
 marker, the parameter is assumed to be a query parameter and the route will most likely fail when accessed.</p>
 <p>If the parameter is marked as a dependency, this allows us to fail early instead:</p>
-<div class="literal-block-wrapper docutils container" id="id7">
-<div class="code-block-caption"><span class="caption-text">Dependency not provided error</span><a class="headerlink" href="#id7" title="Link to this code">¶</a></div>
+<div class="literal-block-wrapper docutils container" id="id9">
+<div class="code-block-caption"><span class="caption-text">Dependency not provided error</span><a class="headerlink" href="#id9" title="Link to this code">¶</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Annotated</span><span class="p">,</span> <span class="n">Any</span>
 </span><span data-line="2">
 </span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>

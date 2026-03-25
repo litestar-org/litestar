@@ -766,6 +766,10 @@ requests addressed to a given path.</p>
 <details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
 <summary class="sd-summary-title sd-card-header">
 <span class="sd-summary-text">Click to see an example of mounting an ASGI app</span><span class="sd-summary-state-marker sd-summary-chevron-right"><svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-right" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.72 18.78a.75.75 0 0 1 0-1.06L14.44 12 8.72 6.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018l6.25 6.25a.75.75 0 0 1 0 1.06l-6.25 6.25a.75.75 0 0 1-1.06 0Z"></path></svg></span></summary><div class="sd-summary-content sd-card-body docutils">
+<div class="sd-tab-set docutils">
+<input id="sd-tab-item-0" name="sd-tab-set-0" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="3.11" for="sd-tab-item-0">
+Python 3.11+</label><div class="sd-tab-content docutils">
 <div class="literal-block-wrapper docutils container" id="id10">
 <div class="code-block-caption"><span class="caption-text">Mounting an ASGI App</span><a class="headerlink" href="#id10" title="Link to this code">¶</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
@@ -799,6 +803,44 @@ requests addressed to a given path.</p>
 </div>
 </div>
 </div>
+<input checked="checked" id="sd-tab-item-1" name="sd-tab-set-0" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="3.14" for="sd-tab-item-1">
+Python 3.14+</label><div class="sd-tab-content docutils">
+<div class="literal-block-wrapper docutils container" id="id11">
+<div class="code-block-caption"><span class="caption-text">Mounting an ASGI App</span><a class="headerlink" href="#id11" title="Link to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
+</span><span data-line="3">
+</span><span data-line="4"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">asgi</span>
+</span><span data-line="5"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.response.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">ASGIResponse</span>
+</span><span data-line="6">
+</span><span data-line="7"><span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+</span><span data-line="8">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">Receive</span><span class="p">,</span> <span class="n">Scope</span><span class="p">,</span> <span class="n">Send</span>
+</span><span data-line="9">
+</span><span data-line="10">
+</span><span data-line="11"><span class="nd">@asgi</span><span class="p">(</span><span class="s2">&quot;/some/sub-path&quot;</span><span class="p">,</span> <span class="n">is_mount</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">copy_scope</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span data-line="12"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">my_asgi_app</span><span class="p">(</span><span class="n">scope</span><span class="p">:</span> <span class="n">Scope</span><span class="p">,</span> <span class="n">receive</span><span class="p">:</span> <span class="n">Receive</span><span class="p">,</span> <span class="n">send</span><span class="p">:</span> <span class="n">Send</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="13"><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+</span><span data-line="14"><span class="sd">    Args:</span>
+</span><span data-line="15"><span class="sd">        scope: The ASGI connection scope.</span>
+</span><span data-line="16"><span class="sd">        receive: The ASGI receive function.</span>
+</span><span data-line="17"><span class="sd">        send: The ASGI send function.</span>
+</span><span data-line="18">
+</span><span data-line="19"><span class="sd">    Returns:</span>
+</span><span data-line="20"><span class="sd">        None</span>
+</span><span data-line="21"><span class="sd">    &quot;&quot;&quot;</span>
+</span><span data-line="22">    <span class="n">body</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">({</span><span class="s2">&quot;forwarded_path&quot;</span><span class="p">:</span> <span class="n">scope</span><span class="p">[</span><span class="s2">&quot;path&quot;</span><span class="p">]})</span>
+</span><span data-line="23">    <span class="n">response</span> <span class="o">=</span> <span class="n">ASGIResponse</span><span class="p">(</span><span class="n">body</span><span class="o">=</span><span class="n">body</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">))</span>
+</span><span data-line="24">    <span class="k">await</span> <span class="n">response</span><span class="p">(</span><span class="n">scope</span><span class="p">,</span> <span class="n">receive</span><span class="p">,</span> <span class="n">send</span><span class="p">)</span>
+</span><span data-line="25">
+</span><span data-line="26">
+</span><span data-line="27"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">my_asgi_app</span><span class="p">])</span>
+</span></pre></div>
+</div>
+</div>
+</div>
+</div>
+</div>
 </details><p>The handler function will receive all requests with an url that begins with <code class="docutils literal notranslate"><span class="pre">/some/sub-path</span></code>, e.g, <code class="docutils literal notranslate"><span class="pre">/some/sub-path</span></code>,
 <code class="docutils literal notranslate"><span class="pre">/some/sub-path/abc</span></code>, <code class="docutils literal notranslate"><span class="pre">/some/sub-path/123/another/sub-path</span></code>, etc.</p>
 <div class="info admonition">
@@ -813,8 +855,12 @@ party libraries. The following example is identical in principle to the one abov
 <details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
 <summary class="sd-summary-title sd-card-header">
 <span class="sd-summary-text">Click to see an example of mounting a Starlette app</span><span class="sd-summary-state-marker sd-summary-chevron-right"><svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-right" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.72 18.78a.75.75 0 0 1 0-1.06L14.44 12 8.72 6.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018l6.25 6.25a.75.75 0 0 1 0 1.06l-6.25 6.25a.75.75 0 0 1-1.06 0Z"></path></svg></span></summary><div class="sd-summary-content sd-card-body docutils">
-<div class="literal-block-wrapper docutils container" id="id11">
-<div class="code-block-caption"><span class="caption-text">Mounting a Starlette App</span><a class="headerlink" href="#id11" title="Link to this code">¶</a></div>
+<div class="sd-tab-set docutils">
+<input id="sd-tab-item-2" name="sd-tab-set-1" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="3.11" for="sd-tab-item-2">
+Python 3.11+</label><div class="sd-tab-content docutils">
+<div class="literal-block-wrapper docutils container" id="id12">
+<div class="code-block-caption"><span class="caption-text">Mounting a Starlette App</span><a class="headerlink" href="#id12" title="Link to this code">¶</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
 </span><span data-line="2">
 </span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">starlette.applications</span><span class="w"> </span><span class="kn">import</span> <span class="n">Starlette</span>
@@ -845,6 +891,46 @@ party libraries. The following example is identical in principle to the one abov
 </span><span data-line="28">
 </span><span data-line="29"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">starlette_app</span><span class="p">])</span>
 </span></pre></div>
+</div>
+</div>
+</div>
+<input checked="checked" id="sd-tab-item-3" name="sd-tab-set-1" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="3.14" for="sd-tab-item-3">
+Python 3.14+</label><div class="sd-tab-content docutils">
+<div class="literal-block-wrapper docutils container" id="id13">
+<div class="code-block-caption"><span class="caption-text">Mounting a Starlette App</span><a class="headerlink" href="#id13" title="Link to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
+</span><span data-line="2">
+</span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">starlette.applications</span><span class="w"> </span><span class="kn">import</span> <span class="n">Starlette</span>
+</span><span data-line="4"><span class="kn">from</span><span class="w"> </span><span class="nn">starlette.responses</span><span class="w"> </span><span class="kn">import</span> <span class="n">JSONResponse</span>
+</span><span data-line="5"><span class="kn">from</span><span class="w"> </span><span class="nn">starlette.routing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Route</span>
+</span><span data-line="6">
+</span><span data-line="7"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">asgi</span>
+</span><span data-line="8">
+</span><span data-line="9"><span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+</span><span data-line="10">    <span class="kn">from</span><span class="w"> </span><span class="nn">starlette.requests</span><span class="w"> </span><span class="kn">import</span> <span class="n">Request</span>
+</span><span data-line="11">
+</span><span data-line="12">
+</span><span data-line="13"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">index</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">JSONResponse</span><span class="p">:</span>
+</span><span data-line="14"><span class="w">    </span><span class="sd">&quot;&quot;&quot;A generic starlette handler.&quot;&quot;&quot;</span>
+</span><span data-line="15">    <span class="k">return</span> <span class="n">JSONResponse</span><span class="p">({</span><span class="s2">&quot;forwarded_path&quot;</span><span class="p">:</span> <span class="n">request</span><span class="o">.</span><span class="n">url</span><span class="o">.</span><span class="n">path</span><span class="p">})</span>
+</span><span data-line="16">
+</span><span data-line="17">
+</span><span data-line="18"><span class="n">starlette_app</span> <span class="o">=</span> <span class="n">asgi</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/some/sub-path&quot;</span><span class="p">,</span> <span class="n">is_mount</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">copy_scope</span><span class="o">=</span><span class="kc">True</span><span class="p">)(</span>
+</span><span data-line="19">    <span class="n">Starlette</span><span class="p">(</span>
+</span><span data-line="20">        <span class="n">routes</span><span class="o">=</span><span class="p">[</span>
+</span><span data-line="21">            <span class="n">Route</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">index</span><span class="p">),</span>
+</span><span data-line="22">            <span class="n">Route</span><span class="p">(</span><span class="s2">&quot;/abc/&quot;</span><span class="p">,</span> <span class="n">index</span><span class="p">),</span>
+</span><span data-line="23">            <span class="n">Route</span><span class="p">(</span><span class="s2">&quot;/123/another/sub-path/&quot;</span><span class="p">,</span> <span class="n">index</span><span class="p">),</span>
+</span><span data-line="24">        <span class="p">],</span>
+</span><span data-line="25">    <span class="p">)</span>
+</span><span data-line="26"><span class="p">)</span>
+</span><span data-line="27">
+</span><span data-line="28">
+</span><span data-line="29"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">starlette_app</span><span class="p">])</span>
+</span></pre></div>
+</div>
+</div>
 </div>
 </div>
 </div>

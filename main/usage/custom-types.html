@@ -521,6 +521,10 @@ the layer closest to the route handler will take precedence.</p>
 <a class="reference internal" href="applications.html#layered-architecture"><span class="std std-ref">Layered architecture</span></a></p>
 </div>
 <p>Here is an example:</p>
+<div class="sd-tab-set docutils">
+<input id="sd-tab-item-0" name="sd-tab-set-0" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="3.11" for="sd-tab-item-0">
+Python 3.11+</label><div class="sd-tab-content docutils">
 <div class="literal-block-wrapper docutils container" id="id1">
 <div class="code-block-caption"><span class="caption-text">Tell Litestar how to encode and decode a custom type</span><a class="headerlink" href="#id1" title="Link to this code">¶</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
@@ -601,6 +605,92 @@ the layer closest to the route handler will take precedence.</p>
 </span></pre></div>
 </div>
 </div>
+</div>
+<input checked="checked" id="sd-tab-item-1" name="sd-tab-set-0" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="3.14" for="sd-tab-item-1">
+Python 3.14+</label><div class="sd-tab-content docutils">
+<div class="literal-block-wrapper docutils container" id="id2">
+<div class="code-block-caption"><span class="caption-text">Tell Litestar how to encode and decode a custom type</span><a class="headerlink" href="#id2" title="Link to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
+</span><span data-line="2">
+</span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">msgspec</span><span class="w"> </span><span class="kn">import</span> <span class="n">Struct</span>
+</span><span data-line="4">
+</span><span data-line="5"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">post</span>
+</span><span data-line="6">
+</span><span data-line="7">
+</span><span data-line="8"><span class="k">class</span><span class="w"> </span><span class="nc">TenantUser</span><span class="p">:</span>
+</span><span data-line="9"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Custom Type that represents a user associated to a tenant</span>
+</span><span data-line="10">
+</span><span data-line="11"><span class="sd">    Parsed from / serialized to a combined tenant + user id string of the form</span>
+</span><span data-line="12">
+</span><span data-line="13"><span class="sd">        TENANTPREFIX_USERID</span>
+</span><span data-line="14">
+</span><span data-line="15"><span class="sd">    i.e. separated by underscore.</span>
+</span><span data-line="16"><span class="sd">    &quot;&quot;&quot;</span>
+</span><span data-line="17">
+</span><span data-line="18">    <span class="n">tenant_prefix</span><span class="p">:</span> <span class="nb">str</span>
+</span><span data-line="19">    <span class="n">user_id</span><span class="p">:</span> <span class="nb">str</span>
+</span><span data-line="20">
+</span><span data-line="21">    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tenant_prefix</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">user_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="22">        <span class="bp">self</span><span class="o">.</span><span class="n">tenant_prefix</span> <span class="o">=</span> <span class="n">tenant_prefix</span>
+</span><span data-line="23">        <span class="bp">self</span><span class="o">.</span><span class="n">user_id</span> <span class="o">=</span> <span class="n">user_id</span>
+</span><span data-line="24">
+</span><span data-line="25">    <span class="nd">@classmethod</span>
+</span><span data-line="26">    <span class="k">def</span><span class="w"> </span><span class="nf">from_string</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">s</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TenantUser</span><span class="p">:</span>
+</span><span data-line="27">        <span class="n">splits</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">,</span> <span class="n">maxsplit</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</span><span data-line="28">        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">splits</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+</span><span data-line="29">            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+</span><span data-line="30">                <span class="s2">&quot;Could not split up tenant user id string. &quot;</span>
+</span><span data-line="31">                <span class="s2">&quot;Expecting underscore for separation of tenant prefix and user id.&quot;</span>
+</span><span data-line="32">            <span class="p">)</span>
+</span><span data-line="33">        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">tenant_prefix</span><span class="o">=</span><span class="n">splits</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">user_id</span><span class="o">=</span><span class="n">splits</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+</span><span data-line="34">
+</span><span data-line="35">    <span class="k">def</span><span class="w"> </span><span class="nf">to_combined_str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span data-line="36">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">tenant_prefix</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_id</span>
+</span><span data-line="37">
+</span><span data-line="38">
+</span><span data-line="39"><span class="k">def</span><span class="w"> </span><span class="nf">tenant_user_type_predicate</span><span class="p">(</span><span class="nb">type</span><span class="p">:</span> <span class="nb">type</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+</span><span data-line="40">    <span class="k">return</span> <span class="nb">type</span> <span class="ow">is</span> <span class="n">TenantUser</span>
+</span><span data-line="41">
+</span><span data-line="42">
+</span><span data-line="43"><span class="k">def</span><span class="w"> </span><span class="nf">tenant_user_enc_hook</span><span class="p">(</span><span class="n">u</span><span class="p">:</span> <span class="n">TenantUser</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+</span><span data-line="44">    <span class="k">return</span> <span class="n">u</span><span class="o">.</span><span class="n">to_combined_str</span><span class="p">()</span>
+</span><span data-line="45">
+</span><span data-line="46">
+</span><span data-line="47"><span class="k">def</span><span class="w"> </span><span class="nf">tenant_user_dec_hook</span><span class="p">(</span><span class="n">tenant_user_id_str</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TenantUser</span><span class="p">:</span>
+</span><span data-line="48">    <span class="k">return</span> <span class="n">TenantUser</span><span class="o">.</span><span class="n">from_string</span><span class="p">(</span><span class="n">tenant_user_id_str</span><span class="p">)</span>
+</span><span data-line="49">
+</span><span data-line="50">
+</span><span data-line="51"><span class="k">def</span><span class="w"> </span><span class="nf">general_dec_hook</span><span class="p">(</span><span class="nb">type</span><span class="p">:</span> <span class="nb">type</span><span class="p">,</span> <span class="n">obj</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+</span><span data-line="52">    <span class="k">if</span> <span class="n">tenant_user_type_predicate</span><span class="p">(</span><span class="nb">type</span><span class="p">):</span>
+</span><span data-line="53">        <span class="k">return</span> <span class="n">tenant_user_dec_hook</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+</span><span data-line="54">
+</span><span data-line="55">    <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Encountered unknown type during decoding: </span><span class="si">{</span><span class="nb">type</span><span class="si">!s}</span><span class="s2">&quot;</span><span class="p">)</span>
+</span><span data-line="56">
+</span><span data-line="57">
+</span><span data-line="58"><span class="k">class</span><span class="w"> </span><span class="nc">UserAsset</span><span class="p">(</span><span class="n">Struct</span><span class="p">):</span>
+</span><span data-line="59">    <span class="n">user</span><span class="p">:</span> <span class="n">TenantUser</span>
+</span><span data-line="60">    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+</span><span data-line="61">
+</span><span data-line="62">
+</span><span data-line="63"><span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/asset&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</span><span data-line="64"><span class="k">def</span><span class="w"> </span><span class="nf">create_asset</span><span class="p">(</span>
+</span><span data-line="65">    <span class="n">data</span><span class="p">:</span> <span class="n">UserAsset</span><span class="p">,</span>
+</span><span data-line="66"><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">UserAsset</span><span class="p">:</span>
+</span><span data-line="67">    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">user</span><span class="p">,</span> <span class="n">TenantUser</span><span class="p">)</span>
+</span><span data-line="68">    <span class="k">return</span> <span class="n">data</span>
+</span><span data-line="69">
+</span><span data-line="70">
+</span><span data-line="71"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
+</span><span data-line="72">    <span class="p">[</span><span class="n">create_asset</span><span class="p">],</span>
+</span><span data-line="73">    <span class="n">type_encoders</span><span class="o">=</span><span class="p">{</span><span class="n">TenantUser</span><span class="p">:</span> <span class="n">tenant_user_enc_hook</span><span class="p">},</span>  <span class="c1"># tell litestar how to encode TenantUser</span>
+</span><span data-line="74">    <span class="n">type_decoders</span><span class="o">=</span><span class="p">[(</span><span class="n">tenant_user_type_predicate</span><span class="p">,</span> <span class="n">general_dec_hook</span><span class="p">)],</span>  <span class="c1"># tell litestar how to decode TenantUser</span>
+</span><span data-line="75"><span class="p">)</span>
+</span></pre></div>
+</div>
+</div>
+</div>
+</div>
 <div class="admonition">
 <p class="admonition-title">Run it</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span data-line="1">&gt;<span class="w"> </span>curl<span class="w"> </span>http://127.0.0.1:8000/asset<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>-H<span class="w"> </span><span class="s1">&#39;Content-Type: application/json&#39;</span><span class="w"> </span>-d<span class="w"> </span><span class="s1">&#39;{&quot;name&quot;:&quot;SomeAsset&quot;,&quot;user&quot;:&quot;TenantA_Somebody&quot;}&#39;</span>
@@ -612,8 +702,12 @@ the layer closest to the route handler will take precedence.</p>
 <section id="custom-pydantic-types">
 <h2>Custom Pydantic types<a class="headerlink" href="#custom-pydantic-types" title="Link to this heading">¶</a></h2>
 <p>If you use a custom Pydantic type you can use it directly:</p>
-<div class="literal-block-wrapper docutils container" id="id2">
-<div class="code-block-caption"><span class="caption-text">Tell Litestar how to encode and decode a custom Pydantic type</span><a class="headerlink" href="#id2" title="Link to this code">¶</a></div>
+<div class="sd-tab-set docutils">
+<input id="sd-tab-item-2" name="sd-tab-set-1" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="3.11" for="sd-tab-item-2">
+Python 3.11+</label><div class="sd-tab-content docutils">
+<div class="literal-block-wrapper docutils container" id="id3">
+<div class="code-block-caption"><span class="caption-text">Tell Litestar how to encode and decode a custom Pydantic type</span><a class="headerlink" href="#id3" title="Link to this code">¶</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Annotated</span>
 </span><span data-line="2">
 </span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">BeforeValidator</span><span class="p">,</span> <span class="n">ConfigDict</span><span class="p">,</span> <span class="n">PlainSerializer</span><span class="p">,</span> <span class="n">WithJsonSchema</span>
@@ -679,6 +773,81 @@ the layer closest to the route handler will take precedence.</p>
 </span><span data-line="63">    <span class="p">[</span><span class="n">create_asset</span><span class="p">],</span>
 </span><span data-line="64"><span class="p">)</span>
 </span></pre></div>
+</div>
+</div>
+</div>
+<input checked="checked" id="sd-tab-item-3" name="sd-tab-set-1" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="3.14" for="sd-tab-item-3">
+Python 3.14+</label><div class="sd-tab-content docutils">
+<div class="literal-block-wrapper docutils container" id="id4">
+<div class="code-block-caption"><span class="caption-text">Tell Litestar how to encode and decode a custom Pydantic type</span><a class="headerlink" href="#id4" title="Link to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Annotated</span>
+</span><span data-line="2">
+</span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">BeforeValidator</span><span class="p">,</span> <span class="n">ConfigDict</span><span class="p">,</span> <span class="n">PlainSerializer</span><span class="p">,</span> <span class="n">WithJsonSchema</span>
+</span><span data-line="4">
+</span><span data-line="5"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">post</span>
+</span><span data-line="6">
+</span><span data-line="7">
+</span><span data-line="8"><span class="k">class</span><span class="w"> </span><span class="nc">TenantUser</span><span class="p">:</span>
+</span><span data-line="9"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Custom Type that represents a user associated to a tenant</span>
+</span><span data-line="10">
+</span><span data-line="11"><span class="sd">    Parsed from / serialized to a combined tenant + user id string of the form</span>
+</span><span data-line="12">
+</span><span data-line="13"><span class="sd">        TENANTPREFIX_USERID</span>
+</span><span data-line="14">
+</span><span data-line="15"><span class="sd">    i.e. separated by underscore.</span>
+</span><span data-line="16"><span class="sd">    &quot;&quot;&quot;</span>
+</span><span data-line="17">
+</span><span data-line="18">    <span class="n">tenant_prefix</span><span class="p">:</span> <span class="nb">str</span>
+</span><span data-line="19">    <span class="n">user_id</span><span class="p">:</span> <span class="nb">str</span>
+</span><span data-line="20">
+</span><span data-line="21">    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tenant_prefix</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">user_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="22">        <span class="bp">self</span><span class="o">.</span><span class="n">tenant_prefix</span> <span class="o">=</span> <span class="n">tenant_prefix</span>
+</span><span data-line="23">        <span class="bp">self</span><span class="o">.</span><span class="n">user_id</span> <span class="o">=</span> <span class="n">user_id</span>
+</span><span data-line="24">
+</span><span data-line="25">    <span class="nd">@classmethod</span>
+</span><span data-line="26">    <span class="k">def</span><span class="w"> </span><span class="nf">from_string</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">s</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TenantUser</span><span class="p">:</span>
+</span><span data-line="27">        <span class="n">splits</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">,</span> <span class="n">maxsplit</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</span><span data-line="28">        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">splits</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+</span><span data-line="29">            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+</span><span data-line="30">                <span class="s2">&quot;Could not split up tenant user id string. &quot;</span>
+</span><span data-line="31">                <span class="s2">&quot;Expecting underscore for separation of tenant prefix and user id.&quot;</span>
+</span><span data-line="32">            <span class="p">)</span>
+</span><span data-line="33">        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">tenant_prefix</span><span class="o">=</span><span class="n">splits</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">user_id</span><span class="o">=</span><span class="n">splits</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+</span><span data-line="34">
+</span><span data-line="35">    <span class="k">def</span><span class="w"> </span><span class="nf">to_combined_str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span data-line="36">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">tenant_prefix</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_id</span>
+</span><span data-line="37">
+</span><span data-line="38">
+</span><span data-line="39"><span class="n">PydAnnotatedTenantUser</span> <span class="o">=</span> <span class="n">Annotated</span><span class="p">[</span>
+</span><span data-line="40">    <span class="n">TenantUser</span><span class="p">,</span>
+</span><span data-line="41">    <span class="n">BeforeValidator</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">TenantUser</span><span class="o">.</span><span class="n">from_string</span><span class="p">(</span><span class="n">x</span><span class="p">)),</span>
+</span><span data-line="42">    <span class="n">PlainSerializer</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">to_combined_str</span><span class="p">(),</span> <span class="n">return_type</span><span class="o">=</span><span class="nb">str</span><span class="p">),</span>
+</span><span data-line="43">    <span class="n">WithJsonSchema</span><span class="p">({</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">},</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;serialization&quot;</span><span class="p">),</span>
+</span><span data-line="44"><span class="p">]</span>
+</span><span data-line="45">
+</span><span data-line="46">
+</span><span data-line="47"><span class="k">class</span><span class="w"> </span><span class="nc">UserAsset</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+</span><span data-line="48">    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">arbitrary_types_allowed</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span data-line="49">
+</span><span data-line="50">    <span class="n">user</span><span class="p">:</span> <span class="n">PydAnnotatedTenantUser</span>
+</span><span data-line="51">    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+</span><span data-line="52">
+</span><span data-line="53">
+</span><span data-line="54"><span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/asset&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</span><span data-line="55"><span class="k">def</span><span class="w"> </span><span class="nf">create_asset</span><span class="p">(</span>
+</span><span data-line="56">    <span class="n">data</span><span class="p">:</span> <span class="n">UserAsset</span><span class="p">,</span>
+</span><span data-line="57"><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">UserAsset</span><span class="p">:</span>
+</span><span data-line="58">    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">user</span><span class="p">,</span> <span class="n">TenantUser</span><span class="p">)</span>
+</span><span data-line="59">    <span class="k">return</span> <span class="n">data</span>
+</span><span data-line="60">
+</span><span data-line="61">
+</span><span data-line="62"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
+</span><span data-line="63">    <span class="p">[</span><span class="n">create_asset</span><span class="p">],</span>
+</span><span data-line="64"><span class="p">)</span>
+</span></pre></div>
+</div>
+</div>
 </div>
 </div>
 <div class="admonition">

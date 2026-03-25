@@ -507,7 +507,7 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="5"><span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">date</span><span class="p">,</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span> <span class="n">timedelta</span>
 </span><span data-line="6"><span class="kn">from</span><span class="w"> </span><span class="nn">decimal</span><span class="w"> </span><span class="kn">import</span> <span class="n">Decimal</span>
 </span><span data-line="7"><span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
-</span><span data-line="8"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Generic</span><span class="p">,</span> <span class="n">TypeVar</span>
+</span><span data-line="8"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Generic</span><span class="p">,</span> <span class="n">TypeVar</span>
 </span><span data-line="9"><span class="kn">from</span><span class="w"> </span><span class="nn">uuid</span><span class="w"> </span><span class="kn">import</span> <span class="n">UUID</span>
 </span><span data-line="10">
 </span><span data-line="11"><span class="kn">import</span><span class="w"> </span><span class="nn">msgspec</span>
@@ -519,165 +519,167 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="17"><span class="n">ScopeT</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;ScopeT&quot;</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="s2">&quot;BaseScope&quot;</span><span class="p">)</span>
 </span><span data-line="18">
 </span><span data-line="19"><span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
-</span><span data-line="20">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseScope</span><span class="p">,</span> <span class="n">Receive</span><span class="p">,</span> <span class="n">Send</span>
+</span><span data-line="20">    <span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Callable</span>
 </span><span data-line="21">
-</span><span data-line="22">
-</span><span data-line="23"><span class="k">def</span><span class="w"> </span><span class="nf">_parse_datetime</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">datetime</span><span class="p">:</span>
-</span><span data-line="24">    <span class="k">return</span> <span class="n">msgspec</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">datetime</span><span class="p">)</span>
-</span><span data-line="25">
-</span><span data-line="26">
-</span><span data-line="27"><span class="k">def</span><span class="w"> </span><span class="nf">_parse_date</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">date</span><span class="p">:</span>
-</span><span data-line="28">    <span class="k">return</span> <span class="n">msgspec</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">date</span><span class="p">)</span>
-</span><span data-line="29">
-</span><span data-line="30">
-</span><span data-line="31"><span class="k">def</span><span class="w"> </span><span class="nf">_parse_time</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">time</span><span class="p">:</span>
-</span><span data-line="32">    <span class="k">return</span> <span class="n">msgspec</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">time</span><span class="p">)</span>
-</span><span data-line="33">
-</span><span data-line="34">
-</span><span data-line="35"><span class="k">def</span><span class="w"> </span><span class="nf">_parse_timedelta</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">timedelta</span><span class="p">:</span>
-</span><span data-line="36">    <span class="k">try</span><span class="p">:</span>
-</span><span data-line="37">        <span class="k">return</span> <span class="n">msgspec</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">timedelta</span><span class="p">)</span>
-</span><span data-line="38">    <span class="k">except</span> <span class="n">msgspec</span><span class="o">.</span><span class="n">ValidationError</span><span class="p">:</span>
-</span><span data-line="39">        <span class="k">return</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">value</span><span class="p">)))</span>
-</span><span data-line="40">
-</span><span data-line="41">
-</span><span data-line="42"><span class="n">param_match_regex</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;{(.*?)}&quot;</span><span class="p">)</span>
+</span><span data-line="22">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseScope</span><span class="p">,</span> <span class="n">Receive</span><span class="p">,</span> <span class="n">Send</span>
+</span><span data-line="23">
+</span><span data-line="24">
+</span><span data-line="25"><span class="k">def</span><span class="w"> </span><span class="nf">_parse_datetime</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">datetime</span><span class="p">:</span>
+</span><span data-line="26">    <span class="k">return</span> <span class="n">msgspec</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">datetime</span><span class="p">)</span>
+</span><span data-line="27">
+</span><span data-line="28">
+</span><span data-line="29"><span class="k">def</span><span class="w"> </span><span class="nf">_parse_date</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">date</span><span class="p">:</span>
+</span><span data-line="30">    <span class="k">return</span> <span class="n">msgspec</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">date</span><span class="p">)</span>
+</span><span data-line="31">
+</span><span data-line="32">
+</span><span data-line="33"><span class="k">def</span><span class="w"> </span><span class="nf">_parse_time</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">time</span><span class="p">:</span>
+</span><span data-line="34">    <span class="k">return</span> <span class="n">msgspec</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">time</span><span class="p">)</span>
+</span><span data-line="35">
+</span><span data-line="36">
+</span><span data-line="37"><span class="k">def</span><span class="w"> </span><span class="nf">_parse_timedelta</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">timedelta</span><span class="p">:</span>
+</span><span data-line="38">    <span class="k">try</span><span class="p">:</span>
+</span><span data-line="39">        <span class="k">return</span> <span class="n">msgspec</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">timedelta</span><span class="p">)</span>
+</span><span data-line="40">    <span class="k">except</span> <span class="n">msgspec</span><span class="o">.</span><span class="n">ValidationError</span><span class="p">:</span>
+</span><span data-line="41">        <span class="k">return</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">value</span><span class="p">)))</span>
+</span><span data-line="42">
 </span><span data-line="43">
-</span><span data-line="44"><span class="n">param_type_map</span> <span class="o">=</span> <span class="p">{</span>
-</span><span data-line="45">    <span class="s2">&quot;str&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-</span><span data-line="46">    <span class="s2">&quot;int&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
-</span><span data-line="47">    <span class="s2">&quot;float&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
-</span><span data-line="48">    <span class="s2">&quot;uuid&quot;</span><span class="p">:</span> <span class="n">UUID</span><span class="p">,</span>
-</span><span data-line="49">    <span class="s2">&quot;decimal&quot;</span><span class="p">:</span> <span class="n">Decimal</span><span class="p">,</span>
-</span><span data-line="50">    <span class="s2">&quot;date&quot;</span><span class="p">:</span> <span class="n">date</span><span class="p">,</span>
-</span><span data-line="51">    <span class="s2">&quot;datetime&quot;</span><span class="p">:</span> <span class="n">datetime</span><span class="p">,</span>
-</span><span data-line="52">    <span class="s2">&quot;time&quot;</span><span class="p">:</span> <span class="n">time</span><span class="p">,</span>
-</span><span data-line="53">    <span class="s2">&quot;timedelta&quot;</span><span class="p">:</span> <span class="n">timedelta</span><span class="p">,</span>
-</span><span data-line="54">    <span class="s2">&quot;path&quot;</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span>
-</span><span data-line="55"><span class="p">}</span>
-</span><span data-line="56">
-</span><span data-line="57">
-</span><span data-line="58"><span class="n">parsers_map</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Any</span><span class="p">],</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{</span>
-</span><span data-line="59">    <span class="nb">float</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
-</span><span data-line="60">    <span class="nb">int</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
-</span><span data-line="61">    <span class="n">Decimal</span><span class="p">:</span> <span class="n">Decimal</span><span class="p">,</span>
-</span><span data-line="62">    <span class="n">UUID</span><span class="p">:</span> <span class="n">UUID</span><span class="p">,</span>
-</span><span data-line="63">    <span class="n">date</span><span class="p">:</span> <span class="n">_parse_date</span><span class="p">,</span>
-</span><span data-line="64">    <span class="n">datetime</span><span class="p">:</span> <span class="n">_parse_datetime</span><span class="p">,</span>
-</span><span data-line="65">    <span class="n">time</span><span class="p">:</span> <span class="n">_parse_time</span><span class="p">,</span>
-</span><span data-line="66">    <span class="n">timedelta</span><span class="p">:</span> <span class="n">_parse_timedelta</span><span class="p">,</span>
-</span><span data-line="67"><span class="p">}</span>
-</span><span data-line="68">
-</span><span data-line="69">
+</span><span data-line="44"><span class="n">param_match_regex</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;{(.*?)}&quot;</span><span class="p">)</span>
+</span><span data-line="45">
+</span><span data-line="46"><span class="n">param_type_map</span> <span class="o">=</span> <span class="p">{</span>
+</span><span data-line="47">    <span class="s2">&quot;str&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+</span><span data-line="48">    <span class="s2">&quot;int&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+</span><span data-line="49">    <span class="s2">&quot;float&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+</span><span data-line="50">    <span class="s2">&quot;uuid&quot;</span><span class="p">:</span> <span class="n">UUID</span><span class="p">,</span>
+</span><span data-line="51">    <span class="s2">&quot;decimal&quot;</span><span class="p">:</span> <span class="n">Decimal</span><span class="p">,</span>
+</span><span data-line="52">    <span class="s2">&quot;date&quot;</span><span class="p">:</span> <span class="n">date</span><span class="p">,</span>
+</span><span data-line="53">    <span class="s2">&quot;datetime&quot;</span><span class="p">:</span> <span class="n">datetime</span><span class="p">,</span>
+</span><span data-line="54">    <span class="s2">&quot;time&quot;</span><span class="p">:</span> <span class="n">time</span><span class="p">,</span>
+</span><span data-line="55">    <span class="s2">&quot;timedelta&quot;</span><span class="p">:</span> <span class="n">timedelta</span><span class="p">,</span>
+</span><span data-line="56">    <span class="s2">&quot;path&quot;</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span>
+</span><span data-line="57"><span class="p">}</span>
+</span><span data-line="58">
+</span><span data-line="59">
+</span><span data-line="60"><span class="n">parsers_map</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Any</span><span class="p">],</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{</span>
+</span><span data-line="61">    <span class="nb">float</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+</span><span data-line="62">    <span class="nb">int</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+</span><span data-line="63">    <span class="n">Decimal</span><span class="p">:</span> <span class="n">Decimal</span><span class="p">,</span>
+</span><span data-line="64">    <span class="n">UUID</span><span class="p">:</span> <span class="n">UUID</span><span class="p">,</span>
+</span><span data-line="65">    <span class="n">date</span><span class="p">:</span> <span class="n">_parse_date</span><span class="p">,</span>
+</span><span data-line="66">    <span class="n">datetime</span><span class="p">:</span> <span class="n">_parse_datetime</span><span class="p">,</span>
+</span><span data-line="67">    <span class="n">time</span><span class="p">:</span> <span class="n">_parse_time</span><span class="p">,</span>
+</span><span data-line="68">    <span class="n">timedelta</span><span class="p">:</span> <span class="n">_parse_timedelta</span><span class="p">,</span>
+</span><span data-line="69"><span class="p">}</span>
+</span><span data-line="70">
+</span><span data-line="71">
 <div class="viewcode-block" id="BaseRoute">
 <a class="viewcode-back" href="../../../reference/routes.html#litestar.routes.BaseRoute">[docs]</a>
-</span><span data-line="70"><span class="k">class</span><span class="w"> </span><span class="nc">BaseRoute</span><span class="p">(</span><span class="n">ABC</span><span class="p">,</span> <span class="n">Generic</span><span class="p">[</span><span class="n">ScopeT</span><span class="p">]):</span>
-</span><span data-line="71"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Base Route class used by Litestar.</span>
-</span><span data-line="72">
-</span><span data-line="73"><span class="sd">    It&#39;s an abstract class meant to be extended.</span>
-</span><span data-line="74"><span class="sd">    &quot;&quot;&quot;</span>
-</span><span data-line="75">
-</span><span data-line="76">    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span>
-</span><span data-line="77">        <span class="s2">&quot;app&quot;</span><span class="p">,</span>
-</span><span data-line="78">        <span class="s2">&quot;handler_names&quot;</span><span class="p">,</span>
-</span><span data-line="79">        <span class="s2">&quot;methods&quot;</span><span class="p">,</span>
-</span><span data-line="80">        <span class="s2">&quot;path&quot;</span><span class="p">,</span>
-</span><span data-line="81">        <span class="s2">&quot;path_components&quot;</span><span class="p">,</span>
-</span><span data-line="82">        <span class="s2">&quot;path_format&quot;</span><span class="p">,</span>
-</span><span data-line="83">        <span class="s2">&quot;path_parameters&quot;</span><span class="p">,</span>
-</span><span data-line="84">        <span class="s2">&quot;scope_type&quot;</span><span class="p">,</span>
-</span><span data-line="85">    <span class="p">)</span>
-</span><span data-line="86">
+</span><span data-line="72"><span class="k">class</span><span class="w"> </span><span class="nc">BaseRoute</span><span class="p">(</span><span class="n">ABC</span><span class="p">,</span> <span class="n">Generic</span><span class="p">[</span><span class="n">ScopeT</span><span class="p">]):</span>
+</span><span data-line="73"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Base Route class used by Litestar.</span>
+</span><span data-line="74">
+</span><span data-line="75"><span class="sd">    It&#39;s an abstract class meant to be extended.</span>
+</span><span data-line="76"><span class="sd">    &quot;&quot;&quot;</span>
+</span><span data-line="77">
+</span><span data-line="78">    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span>
+</span><span data-line="79">        <span class="s2">&quot;app&quot;</span><span class="p">,</span>
+</span><span data-line="80">        <span class="s2">&quot;handler_names&quot;</span><span class="p">,</span>
+</span><span data-line="81">        <span class="s2">&quot;methods&quot;</span><span class="p">,</span>
+</span><span data-line="82">        <span class="s2">&quot;path&quot;</span><span class="p">,</span>
+</span><span data-line="83">        <span class="s2">&quot;path_components&quot;</span><span class="p">,</span>
+</span><span data-line="84">        <span class="s2">&quot;path_format&quot;</span><span class="p">,</span>
+</span><span data-line="85">        <span class="s2">&quot;path_parameters&quot;</span><span class="p">,</span>
+</span><span data-line="86">        <span class="s2">&quot;scope_type&quot;</span><span class="p">,</span>
+</span><span data-line="87">    <span class="p">)</span>
+</span><span data-line="88">
 <div class="viewcode-block" id="BaseRoute.__init__">
 <a class="viewcode-back" href="../../../reference/routes.html#litestar.routes.BaseRoute.__init__">[docs]</a>
-</span><span data-line="87">    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
-</span><span data-line="88">        <span class="bp">self</span><span class="p">,</span>
-</span><span data-line="89">        <span class="o">*</span><span class="p">,</span>
-</span><span data-line="90">        <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-</span><span data-line="91">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="92"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize the route.</span>
-</span><span data-line="93">
-</span><span data-line="94"><span class="sd">        Args:</span>
-</span><span data-line="95"><span class="sd">            path: Base path of the route</span>
-</span><span data-line="96"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="97">        <span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">path_format</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">path_components</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">path_parameters</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span></div>
+</span><span data-line="89">    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+</span><span data-line="90">        <span class="bp">self</span><span class="p">,</span>
+</span><span data-line="91">        <span class="o">*</span><span class="p">,</span>
+</span><span data-line="92">        <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+</span><span data-line="93">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="94"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize the route.</span>
+</span><span data-line="95">
+</span><span data-line="96"><span class="sd">        Args:</span>
+</span><span data-line="97"><span class="sd">            path: Base path of the route</span>
+</span><span data-line="98"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="99">        <span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">path_format</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">path_components</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">path_parameters</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span></div>
 
-</span><span data-line="98">
+</span><span data-line="100">
 <div class="viewcode-block" id="BaseRoute.handle">
 <a class="viewcode-back" href="../../../reference/routes.html#litestar.routes.BaseRoute.handle">[docs]</a>
-</span><span data-line="99">    <span class="nd">@abstractmethod</span>
-</span><span data-line="100">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">handle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scope</span><span class="p">:</span> <span class="n">ScopeT</span><span class="p">,</span> <span class="n">receive</span><span class="p">:</span> <span class="n">Receive</span><span class="p">,</span> <span class="n">send</span><span class="p">:</span> <span class="n">Send</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="101"><span class="w">        </span><span class="sd">&quot;&quot;&quot;ASGI App of the route.</span>
-</span><span data-line="102">
-</span><span data-line="103"><span class="sd">        Args:</span>
-</span><span data-line="104"><span class="sd">            scope: The ASGI connection scope.</span>
-</span><span data-line="105"><span class="sd">            receive: The ASGI receive function.</span>
-</span><span data-line="106"><span class="sd">            send: The ASGI send function.</span>
-</span><span data-line="107">
-</span><span data-line="108"><span class="sd">        Returns:</span>
-</span><span data-line="109"><span class="sd">            None</span>
-</span><span data-line="110"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="111">        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Route subclasses must implement handle which serves as the ASGI app entry point&quot;</span><span class="p">)</span></div>
+</span><span data-line="101">    <span class="nd">@abstractmethod</span>
+</span><span data-line="102">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">handle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scope</span><span class="p">:</span> <span class="n">ScopeT</span><span class="p">,</span> <span class="n">receive</span><span class="p">:</span> <span class="n">Receive</span><span class="p">,</span> <span class="n">send</span><span class="p">:</span> <span class="n">Send</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="103"><span class="w">        </span><span class="sd">&quot;&quot;&quot;ASGI App of the route.</span>
+</span><span data-line="104">
+</span><span data-line="105"><span class="sd">        Args:</span>
+</span><span data-line="106"><span class="sd">            scope: The ASGI connection scope.</span>
+</span><span data-line="107"><span class="sd">            receive: The ASGI receive function.</span>
+</span><span data-line="108"><span class="sd">            send: The ASGI send function.</span>
+</span><span data-line="109">
+</span><span data-line="110"><span class="sd">        Returns:</span>
+</span><span data-line="111"><span class="sd">            None</span>
+</span><span data-line="112"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="113">        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Route subclasses must implement handle which serves as the ASGI app entry point&quot;</span><span class="p">)</span></div>
 
-</span><span data-line="112">
-</span><span data-line="113">    <span class="nd">@staticmethod</span>
-</span><span data-line="114">    <span class="k">def</span><span class="w"> </span><span class="nf">_validate_path_parameter</span><span class="p">(</span><span class="n">param</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="115"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Validate that a path parameter adheres to the required format and datatypes.</span>
-</span><span data-line="116">
-</span><span data-line="117"><span class="sd">        Raises:</span>
-</span><span data-line="118"><span class="sd">            ImproperlyConfiguredException: If the parameter has an invalid format.</span>
-</span><span data-line="119"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="120">        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">param</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">))</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
-</span><span data-line="121">            <span class="k">raise</span> <span class="n">ImproperlyConfiguredException</span><span class="p">(</span>
-</span><span data-line="122">                <span class="sa">f</span><span class="s2">&quot;Path parameters should be declared with a type using the following pattern: &#39;</span><span class="se">{{</span><span class="s2">parameter_name:type</span><span class="se">}}</span><span class="s2">&#39;, e.g. &#39;/my-path/</span><span class="se">{{</span><span class="s2">my_param:int</span><span class="se">}}</span><span class="s2">&#39; in path: &#39;</span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">&#39;&quot;</span>
-</span><span data-line="123">            <span class="p">)</span>
-</span><span data-line="124">        <span class="n">param_name</span><span class="p">,</span> <span class="n">param_type</span> <span class="o">=</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">param</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">))</span>
-</span><span data-line="125">        <span class="k">if</span> <span class="ow">not</span> <span class="n">param_name</span><span class="p">:</span>
-</span><span data-line="126">            <span class="k">raise</span> <span class="n">ImproperlyConfiguredException</span><span class="p">(</span><span class="s2">&quot;Path parameter names should be of length greater than zero&quot;</span><span class="p">)</span>
-</span><span data-line="127">        <span class="k">if</span> <span class="n">param_type</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">param_type_map</span><span class="p">:</span>
-</span><span data-line="128">            <span class="k">raise</span> <span class="n">ImproperlyConfiguredException</span><span class="p">(</span>
-</span><span data-line="129">                <span class="sa">f</span><span class="s2">&quot;Path parameters should be declared with an allowed type, i.e. one of </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">param_type_map</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span><span class="si">}</span><span class="s2"> in path: &#39;</span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">&#39;&quot;</span>
-</span><span data-line="130">            <span class="p">)</span>
-</span><span data-line="131">
-</span><span data-line="132">    <span class="nd">@classmethod</span>
-</span><span data-line="133">    <span class="k">def</span><span class="w"> </span><span class="nf">_parse_path</span><span class="p">(</span>
-</span><span data-line="134">        <span class="bp">cls</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span>
-</span><span data-line="135">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span> <span class="o">|</span> <span class="n">PathParameterDefinition</span><span class="p">],</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">PathParameterDefinition</span><span class="p">]]:</span>
-</span><span data-line="136"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Normalize and parse a path.</span>
-</span><span data-line="137">
-</span><span data-line="138"><span class="sd">        Splits the path into a list of components, parsing any that are path parameters. Also builds the OpenAPI</span>
-</span><span data-line="139"><span class="sd">        compatible path, which does not include the type of the path parameters.</span>
-</span><span data-line="140">
-</span><span data-line="141"><span class="sd">        Returns:</span>
-</span><span data-line="142"><span class="sd">            A 3-tuple of the normalized path, the OpenAPI formatted path, and the list of parsed components.</span>
-</span><span data-line="143"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="144">        <span class="n">path</span> <span class="o">=</span> <span class="n">normalize_path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
-</span><span data-line="145">
-</span><span data-line="146">        <span class="n">parsed_components</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span> <span class="o">|</span> <span class="n">PathParameterDefinition</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
-</span><span data-line="147">        <span class="n">path_format_components</span> <span class="o">=</span> <span class="p">[]</span>
-</span><span data-line="148">        <span class="n">path_parameters</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">PathParameterDefinition</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
-</span><span data-line="149">
-</span><span data-line="150">        <span class="n">components</span> <span class="o">=</span> <span class="p">[</span><span class="n">component</span> <span class="k">for</span> <span class="n">component</span> <span class="ow">in</span> <span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="n">component</span><span class="p">]</span>
-</span><span data-line="151">        <span class="k">for</span> <span class="n">component</span> <span class="ow">in</span> <span class="n">components</span><span class="p">:</span>
-</span><span data-line="152">            <span class="k">if</span> <span class="n">param_match</span> <span class="o">:=</span> <span class="n">param_match_regex</span><span class="o">.</span><span class="n">fullmatch</span><span class="p">(</span><span class="n">component</span><span class="p">):</span>
-</span><span data-line="153">                <span class="n">param</span> <span class="o">=</span> <span class="n">param_match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-</span><span data-line="154">                <span class="bp">cls</span><span class="o">.</span><span class="n">_validate_path_parameter</span><span class="p">(</span><span class="n">param</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
-</span><span data-line="155">                <span class="n">param_name</span><span class="p">,</span> <span class="n">param_type</span> <span class="o">=</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">param</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">))</span>
-</span><span data-line="156">                <span class="n">type_class</span> <span class="o">=</span> <span class="n">param_type_map</span><span class="p">[</span><span class="n">param_type</span><span class="p">]</span>
-</span><span data-line="157">                <span class="n">parser</span> <span class="o">=</span> <span class="n">parsers_map</span><span class="p">[</span><span class="n">type_class</span><span class="p">]</span> <span class="k">if</span> <span class="n">type_class</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">{</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">}</span> <span class="k">else</span> <span class="kc">None</span>
-</span><span data-line="158">                <span class="k">if</span> <span class="n">param_name</span> <span class="ow">in</span> <span class="n">path_parameters</span><span class="p">:</span>
-</span><span data-line="159">                    <span class="k">raise</span> <span class="n">ImproperlyConfiguredException</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Duplicate parameter &#39;</span><span class="si">{</span><span class="n">param_name</span><span class="si">}</span><span class="s2">&#39; detected in &#39;</span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">&#39;.&quot;</span><span class="p">)</span>
-</span><span data-line="160">                <span class="n">param_definition</span> <span class="o">=</span> <span class="n">PathParameterDefinition</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">param_name</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">type_class</span><span class="p">,</span> <span class="n">full</span><span class="o">=</span><span class="n">param</span><span class="p">,</span> <span class="n">parser</span><span class="o">=</span><span class="n">parser</span><span class="p">)</span>
-</span><span data-line="161">                <span class="n">parsed_components</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">param_definition</span><span class="p">)</span>
-</span><span data-line="162">                <span class="n">path_parameters</span><span class="p">[</span><span class="n">param_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">param_definition</span>
-</span><span data-line="163">                <span class="n">path_format_components</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;{&quot;</span> <span class="o">+</span> <span class="n">param_name</span> <span class="o">+</span> <span class="s2">&quot;}&quot;</span><span class="p">)</span>
-</span><span data-line="164">            <span class="k">else</span><span class="p">:</span>
-</span><span data-line="165">                <span class="n">parsed_components</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">component</span><span class="p">)</span>
-</span><span data-line="166">                <span class="n">path_format_components</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">component</span><span class="p">)</span>
-</span><span data-line="167">
-</span><span data-line="168">        <span class="n">path_format</span> <span class="o">=</span> <span class="n">join_paths</span><span class="p">(</span><span class="n">path_format_components</span><span class="p">)</span>
+</span><span data-line="114">
+</span><span data-line="115">    <span class="nd">@staticmethod</span>
+</span><span data-line="116">    <span class="k">def</span><span class="w"> </span><span class="nf">_validate_path_parameter</span><span class="p">(</span><span class="n">param</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="117"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Validate that a path parameter adheres to the required format and datatypes.</span>
+</span><span data-line="118">
+</span><span data-line="119"><span class="sd">        Raises:</span>
+</span><span data-line="120"><span class="sd">            ImproperlyConfiguredException: If the parameter has an invalid format.</span>
+</span><span data-line="121"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="122">        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">param</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">))</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
+</span><span data-line="123">            <span class="k">raise</span> <span class="n">ImproperlyConfiguredException</span><span class="p">(</span>
+</span><span data-line="124">                <span class="sa">f</span><span class="s2">&quot;Path parameters should be declared with a type using the following pattern: &#39;</span><span class="se">{{</span><span class="s2">parameter_name:type</span><span class="se">}}</span><span class="s2">&#39;, e.g. &#39;/my-path/</span><span class="se">{{</span><span class="s2">my_param:int</span><span class="se">}}</span><span class="s2">&#39; in path: &#39;</span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">&#39;&quot;</span>
+</span><span data-line="125">            <span class="p">)</span>
+</span><span data-line="126">        <span class="n">param_name</span><span class="p">,</span> <span class="n">param_type</span> <span class="o">=</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">param</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">))</span>
+</span><span data-line="127">        <span class="k">if</span> <span class="ow">not</span> <span class="n">param_name</span><span class="p">:</span>
+</span><span data-line="128">            <span class="k">raise</span> <span class="n">ImproperlyConfiguredException</span><span class="p">(</span><span class="s2">&quot;Path parameter names should be of length greater than zero&quot;</span><span class="p">)</span>
+</span><span data-line="129">        <span class="k">if</span> <span class="n">param_type</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">param_type_map</span><span class="p">:</span>
+</span><span data-line="130">            <span class="k">raise</span> <span class="n">ImproperlyConfiguredException</span><span class="p">(</span>
+</span><span data-line="131">                <span class="sa">f</span><span class="s2">&quot;Path parameters should be declared with an allowed type, i.e. one of </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">param_type_map</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span><span class="si">}</span><span class="s2"> in path: &#39;</span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">&#39;&quot;</span>
+</span><span data-line="132">            <span class="p">)</span>
+</span><span data-line="133">
+</span><span data-line="134">    <span class="nd">@classmethod</span>
+</span><span data-line="135">    <span class="k">def</span><span class="w"> </span><span class="nf">_parse_path</span><span class="p">(</span>
+</span><span data-line="136">        <span class="bp">cls</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span>
+</span><span data-line="137">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span> <span class="o">|</span> <span class="n">PathParameterDefinition</span><span class="p">],</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">PathParameterDefinition</span><span class="p">]]:</span>
+</span><span data-line="138"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Normalize and parse a path.</span>
+</span><span data-line="139">
+</span><span data-line="140"><span class="sd">        Splits the path into a list of components, parsing any that are path parameters. Also builds the OpenAPI</span>
+</span><span data-line="141"><span class="sd">        compatible path, which does not include the type of the path parameters.</span>
+</span><span data-line="142">
+</span><span data-line="143"><span class="sd">        Returns:</span>
+</span><span data-line="144"><span class="sd">            A 3-tuple of the normalized path, the OpenAPI formatted path, and the list of parsed components.</span>
+</span><span data-line="145"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="146">        <span class="n">path</span> <span class="o">=</span> <span class="n">normalize_path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+</span><span data-line="147">
+</span><span data-line="148">        <span class="n">parsed_components</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span> <span class="o">|</span> <span class="n">PathParameterDefinition</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+</span><span data-line="149">        <span class="n">path_format_components</span> <span class="o">=</span> <span class="p">[]</span>
+</span><span data-line="150">        <span class="n">path_parameters</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">PathParameterDefinition</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+</span><span data-line="151">
+</span><span data-line="152">        <span class="n">components</span> <span class="o">=</span> <span class="p">[</span><span class="n">component</span> <span class="k">for</span> <span class="n">component</span> <span class="ow">in</span> <span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="n">component</span><span class="p">]</span>
+</span><span data-line="153">        <span class="k">for</span> <span class="n">component</span> <span class="ow">in</span> <span class="n">components</span><span class="p">:</span>
+</span><span data-line="154">            <span class="k">if</span> <span class="n">param_match</span> <span class="o">:=</span> <span class="n">param_match_regex</span><span class="o">.</span><span class="n">fullmatch</span><span class="p">(</span><span class="n">component</span><span class="p">):</span>
+</span><span data-line="155">                <span class="n">param</span> <span class="o">=</span> <span class="n">param_match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+</span><span data-line="156">                <span class="bp">cls</span><span class="o">.</span><span class="n">_validate_path_parameter</span><span class="p">(</span><span class="n">param</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
+</span><span data-line="157">                <span class="n">param_name</span><span class="p">,</span> <span class="n">param_type</span> <span class="o">=</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">param</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">))</span>
+</span><span data-line="158">                <span class="n">type_class</span> <span class="o">=</span> <span class="n">param_type_map</span><span class="p">[</span><span class="n">param_type</span><span class="p">]</span>
+</span><span data-line="159">                <span class="n">parser</span> <span class="o">=</span> <span class="n">parsers_map</span><span class="p">[</span><span class="n">type_class</span><span class="p">]</span> <span class="k">if</span> <span class="n">type_class</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">{</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">}</span> <span class="k">else</span> <span class="kc">None</span>
+</span><span data-line="160">                <span class="k">if</span> <span class="n">param_name</span> <span class="ow">in</span> <span class="n">path_parameters</span><span class="p">:</span>
+</span><span data-line="161">                    <span class="k">raise</span> <span class="n">ImproperlyConfiguredException</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Duplicate parameter &#39;</span><span class="si">{</span><span class="n">param_name</span><span class="si">}</span><span class="s2">&#39; detected in &#39;</span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">&#39;.&quot;</span><span class="p">)</span>
+</span><span data-line="162">                <span class="n">param_definition</span> <span class="o">=</span> <span class="n">PathParameterDefinition</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">param_name</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">type_class</span><span class="p">,</span> <span class="n">full</span><span class="o">=</span><span class="n">param</span><span class="p">,</span> <span class="n">parser</span><span class="o">=</span><span class="n">parser</span><span class="p">)</span>
+</span><span data-line="163">                <span class="n">parsed_components</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">param_definition</span><span class="p">)</span>
+</span><span data-line="164">                <span class="n">path_parameters</span><span class="p">[</span><span class="n">param_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">param_definition</span>
+</span><span data-line="165">                <span class="n">path_format_components</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;{&quot;</span> <span class="o">+</span> <span class="n">param_name</span> <span class="o">+</span> <span class="s2">&quot;}&quot;</span><span class="p">)</span>
+</span><span data-line="166">            <span class="k">else</span><span class="p">:</span>
+</span><span data-line="167">                <span class="n">parsed_components</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">component</span><span class="p">)</span>
+</span><span data-line="168">                <span class="n">path_format_components</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">component</span><span class="p">)</span>
 </span><span data-line="169">
-</span><span data-line="170">        <span class="k">return</span> <span class="n">path</span><span class="p">,</span> <span class="n">path_format</span><span class="p">,</span> <span class="n">parsed_components</span><span class="p">,</span> <span class="n">path_parameters</span></div>
+</span><span data-line="170">        <span class="n">path_format</span> <span class="o">=</span> <span class="n">join_paths</span><span class="p">(</span><span class="n">path_format_components</span><span class="p">)</span>
+</span><span data-line="171">
+</span><span data-line="172">        <span class="k">return</span> <span class="n">path</span><span class="p">,</span> <span class="n">path_format</span><span class="p">,</span> <span class="n">parsed_components</span><span class="p">,</span> <span class="n">path_parameters</span></div>
 
 </span></pre></div>
         </article><button class="back-to-top" type="button">

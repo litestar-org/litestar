@@ -533,388 +533,387 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="31">
 </span><span data-line="32"><span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 </span><span data-line="33">
-</span><span data-line="34"><span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Awaitable</span><span class="p">,</span> <span class="n">Iterable</span>
+</span><span data-line="34"><span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Awaitable</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Iterable</span>
 </span><span data-line="35"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
 </span><span data-line="36">    <span class="n">TYPE_CHECKING</span><span class="p">,</span>
 </span><span data-line="37">    <span class="n">Any</span><span class="p">,</span>
-</span><span data-line="38">    <span class="n">Callable</span><span class="p">,</span>
-</span><span data-line="39">    <span class="n">Literal</span><span class="p">,</span>
-</span><span data-line="40">    <span class="n">TypedDict</span><span class="p">,</span>
-</span><span data-line="41">    <span class="n">Union</span><span class="p">,</span>
-</span><span data-line="42"><span class="p">)</span>
-</span><span data-line="43">
-</span><span data-line="44"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.enums</span><span class="w"> </span><span class="kn">import</span> <span class="n">HttpMethod</span>
-</span><span data-line="45">
-</span><span data-line="46"><span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span>
-</span><span data-line="47">    <span class="s2">&quot;ASGIApp&quot;</span><span class="p">,</span>
-</span><span data-line="48">    <span class="s2">&quot;ASGIVersion&quot;</span><span class="p">,</span>
-</span><span data-line="49">    <span class="s2">&quot;BaseScope&quot;</span><span class="p">,</span>
-</span><span data-line="50">    <span class="s2">&quot;HTTPDisconnectEvent&quot;</span><span class="p">,</span>
-</span><span data-line="51">    <span class="s2">&quot;HTTPReceiveMessage&quot;</span><span class="p">,</span>
-</span><span data-line="52">    <span class="s2">&quot;HTTPRequestEvent&quot;</span><span class="p">,</span>
-</span><span data-line="53">    <span class="s2">&quot;HTTPResponseBodyEvent&quot;</span><span class="p">,</span>
-</span><span data-line="54">    <span class="s2">&quot;HTTPResponseStartEvent&quot;</span><span class="p">,</span>
-</span><span data-line="55">    <span class="s2">&quot;HTTPScope&quot;</span><span class="p">,</span>
-</span><span data-line="56">    <span class="s2">&quot;HTTPSendMessage&quot;</span><span class="p">,</span>
-</span><span data-line="57">    <span class="s2">&quot;HTTPServerPushEvent&quot;</span><span class="p">,</span>
-</span><span data-line="58">    <span class="s2">&quot;HeaderScope&quot;</span><span class="p">,</span>
-</span><span data-line="59">    <span class="s2">&quot;LifeSpanReceive&quot;</span><span class="p">,</span>
-</span><span data-line="60">    <span class="s2">&quot;LifeSpanReceiveMessage&quot;</span><span class="p">,</span>
-</span><span data-line="61">    <span class="s2">&quot;LifeSpanScope&quot;</span><span class="p">,</span>
-</span><span data-line="62">    <span class="s2">&quot;LifeSpanSend&quot;</span><span class="p">,</span>
-</span><span data-line="63">    <span class="s2">&quot;LifeSpanSendMessage&quot;</span><span class="p">,</span>
-</span><span data-line="64">    <span class="s2">&quot;LifeSpanShutdownCompleteEvent&quot;</span><span class="p">,</span>
-</span><span data-line="65">    <span class="s2">&quot;LifeSpanShutdownEvent&quot;</span><span class="p">,</span>
-</span><span data-line="66">    <span class="s2">&quot;LifeSpanShutdownFailedEvent&quot;</span><span class="p">,</span>
-</span><span data-line="67">    <span class="s2">&quot;LifeSpanStartupCompleteEvent&quot;</span><span class="p">,</span>
-</span><span data-line="68">    <span class="s2">&quot;LifeSpanStartupEvent&quot;</span><span class="p">,</span>
-</span><span data-line="69">    <span class="s2">&quot;LifeSpanStartupFailedEvent&quot;</span><span class="p">,</span>
-</span><span data-line="70">    <span class="s2">&quot;Message&quot;</span><span class="p">,</span>
-</span><span data-line="71">    <span class="s2">&quot;Method&quot;</span><span class="p">,</span>
-</span><span data-line="72">    <span class="s2">&quot;RawHeaders&quot;</span><span class="p">,</span>
-</span><span data-line="73">    <span class="s2">&quot;RawHeadersList&quot;</span><span class="p">,</span>
-</span><span data-line="74">    <span class="s2">&quot;Receive&quot;</span><span class="p">,</span>
-</span><span data-line="75">    <span class="s2">&quot;ReceiveMessage&quot;</span><span class="p">,</span>
-</span><span data-line="76">    <span class="s2">&quot;Scope&quot;</span><span class="p">,</span>
-</span><span data-line="77">    <span class="s2">&quot;ScopeSession&quot;</span><span class="p">,</span>
-</span><span data-line="78">    <span class="s2">&quot;Send&quot;</span><span class="p">,</span>
-</span><span data-line="79">    <span class="s2">&quot;WebSocketAcceptEvent&quot;</span><span class="p">,</span>
-</span><span data-line="80">    <span class="s2">&quot;WebSocketCloseEvent&quot;</span><span class="p">,</span>
-</span><span data-line="81">    <span class="s2">&quot;WebSocketConnectEvent&quot;</span><span class="p">,</span>
-</span><span data-line="82">    <span class="s2">&quot;WebSocketDisconnectEvent&quot;</span><span class="p">,</span>
-</span><span data-line="83">    <span class="s2">&quot;WebSocketMode&quot;</span><span class="p">,</span>
-</span><span data-line="84">    <span class="s2">&quot;WebSocketReceiveEvent&quot;</span><span class="p">,</span>
-</span><span data-line="85">    <span class="s2">&quot;WebSocketReceiveMessage&quot;</span><span class="p">,</span>
-</span><span data-line="86">    <span class="s2">&quot;WebSocketResponseBodyEvent&quot;</span><span class="p">,</span>
-</span><span data-line="87">    <span class="s2">&quot;WebSocketResponseStartEvent&quot;</span><span class="p">,</span>
-</span><span data-line="88">    <span class="s2">&quot;WebSocketScope&quot;</span><span class="p">,</span>
-</span><span data-line="89">    <span class="s2">&quot;WebSocketSendEvent&quot;</span><span class="p">,</span>
-</span><span data-line="90">    <span class="s2">&quot;WebSocketSendMessage&quot;</span><span class="p">,</span>
-</span><span data-line="91"><span class="p">)</span>
-</span><span data-line="92">
-</span><span data-line="93"><span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
-</span><span data-line="94">    <span class="kn">from</span><span class="w"> </span><span class="nn">typing_extensions</span><span class="w"> </span><span class="kn">import</span> <span class="n">TypeAlias</span>
-</span><span data-line="95">
-</span><span data-line="96">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.app</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span>
-</span><span data-line="97">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.enums</span><span class="w"> </span><span class="kn">import</span> <span class="n">ScopeType</span>
-</span><span data-line="98">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.types.empty</span><span class="w"> </span><span class="kn">import</span> <span class="n">EmptyType</span>
-</span><span data-line="99">
-</span><span data-line="100">    <span class="kn">from</span><span class="w"> </span><span class="nn">.internal_types</span><span class="w"> </span><span class="kn">import</span> <span class="n">RouteHandlerType</span>
-</span><span data-line="101">    <span class="kn">from</span><span class="w"> </span><span class="nn">.serialization</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataContainerType</span>
-</span><span data-line="102">
-</span><span data-line="103"><span class="n">HttpMethodName</span><span class="p">:</span> <span class="n">TypeAlias</span> <span class="o">=</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span> <span class="s2">&quot;POST&quot;</span><span class="p">,</span> <span class="s2">&quot;DELETE&quot;</span><span class="p">,</span> <span class="s2">&quot;PATCH&quot;</span><span class="p">,</span> <span class="s2">&quot;PUT&quot;</span><span class="p">,</span> <span class="s2">&quot;HEAD&quot;</span><span class="p">,</span> <span class="s2">&quot;TRACE&quot;</span><span class="p">,</span> <span class="s2">&quot;OPTIONS&quot;</span><span class="p">]</span>
-</span><span data-line="104"><span class="n">Method</span><span class="p">:</span> <span class="n">TypeAlias</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span><span class="n">HttpMethodName</span><span class="p">,</span> <span class="n">HttpMethod</span><span class="p">]</span>
-</span><span data-line="105"><span class="n">ScopeSession</span><span class="p">:</span> <span class="n">TypeAlias</span> <span class="o">=</span> <span class="s2">&quot;EmptyType | dict[str, Any] | DataContainerType | None&quot;</span>
+</span><span data-line="38">    <span class="n">Literal</span><span class="p">,</span>
+</span><span data-line="39">    <span class="n">TypedDict</span><span class="p">,</span>
+</span><span data-line="40">    <span class="n">Union</span><span class="p">,</span>
+</span><span data-line="41"><span class="p">)</span>
+</span><span data-line="42">
+</span><span data-line="43"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.enums</span><span class="w"> </span><span class="kn">import</span> <span class="n">HttpMethod</span>
+</span><span data-line="44">
+</span><span data-line="45"><span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span>
+</span><span data-line="46">    <span class="s2">&quot;ASGIApp&quot;</span><span class="p">,</span>
+</span><span data-line="47">    <span class="s2">&quot;ASGIVersion&quot;</span><span class="p">,</span>
+</span><span data-line="48">    <span class="s2">&quot;BaseScope&quot;</span><span class="p">,</span>
+</span><span data-line="49">    <span class="s2">&quot;HTTPDisconnectEvent&quot;</span><span class="p">,</span>
+</span><span data-line="50">    <span class="s2">&quot;HTTPReceiveMessage&quot;</span><span class="p">,</span>
+</span><span data-line="51">    <span class="s2">&quot;HTTPRequestEvent&quot;</span><span class="p">,</span>
+</span><span data-line="52">    <span class="s2">&quot;HTTPResponseBodyEvent&quot;</span><span class="p">,</span>
+</span><span data-line="53">    <span class="s2">&quot;HTTPResponseStartEvent&quot;</span><span class="p">,</span>
+</span><span data-line="54">    <span class="s2">&quot;HTTPScope&quot;</span><span class="p">,</span>
+</span><span data-line="55">    <span class="s2">&quot;HTTPSendMessage&quot;</span><span class="p">,</span>
+</span><span data-line="56">    <span class="s2">&quot;HTTPServerPushEvent&quot;</span><span class="p">,</span>
+</span><span data-line="57">    <span class="s2">&quot;HeaderScope&quot;</span><span class="p">,</span>
+</span><span data-line="58">    <span class="s2">&quot;LifeSpanReceive&quot;</span><span class="p">,</span>
+</span><span data-line="59">    <span class="s2">&quot;LifeSpanReceiveMessage&quot;</span><span class="p">,</span>
+</span><span data-line="60">    <span class="s2">&quot;LifeSpanScope&quot;</span><span class="p">,</span>
+</span><span data-line="61">    <span class="s2">&quot;LifeSpanSend&quot;</span><span class="p">,</span>
+</span><span data-line="62">    <span class="s2">&quot;LifeSpanSendMessage&quot;</span><span class="p">,</span>
+</span><span data-line="63">    <span class="s2">&quot;LifeSpanShutdownCompleteEvent&quot;</span><span class="p">,</span>
+</span><span data-line="64">    <span class="s2">&quot;LifeSpanShutdownEvent&quot;</span><span class="p">,</span>
+</span><span data-line="65">    <span class="s2">&quot;LifeSpanShutdownFailedEvent&quot;</span><span class="p">,</span>
+</span><span data-line="66">    <span class="s2">&quot;LifeSpanStartupCompleteEvent&quot;</span><span class="p">,</span>
+</span><span data-line="67">    <span class="s2">&quot;LifeSpanStartupEvent&quot;</span><span class="p">,</span>
+</span><span data-line="68">    <span class="s2">&quot;LifeSpanStartupFailedEvent&quot;</span><span class="p">,</span>
+</span><span data-line="69">    <span class="s2">&quot;Message&quot;</span><span class="p">,</span>
+</span><span data-line="70">    <span class="s2">&quot;Method&quot;</span><span class="p">,</span>
+</span><span data-line="71">    <span class="s2">&quot;RawHeaders&quot;</span><span class="p">,</span>
+</span><span data-line="72">    <span class="s2">&quot;RawHeadersList&quot;</span><span class="p">,</span>
+</span><span data-line="73">    <span class="s2">&quot;Receive&quot;</span><span class="p">,</span>
+</span><span data-line="74">    <span class="s2">&quot;ReceiveMessage&quot;</span><span class="p">,</span>
+</span><span data-line="75">    <span class="s2">&quot;Scope&quot;</span><span class="p">,</span>
+</span><span data-line="76">    <span class="s2">&quot;ScopeSession&quot;</span><span class="p">,</span>
+</span><span data-line="77">    <span class="s2">&quot;Send&quot;</span><span class="p">,</span>
+</span><span data-line="78">    <span class="s2">&quot;WebSocketAcceptEvent&quot;</span><span class="p">,</span>
+</span><span data-line="79">    <span class="s2">&quot;WebSocketCloseEvent&quot;</span><span class="p">,</span>
+</span><span data-line="80">    <span class="s2">&quot;WebSocketConnectEvent&quot;</span><span class="p">,</span>
+</span><span data-line="81">    <span class="s2">&quot;WebSocketDisconnectEvent&quot;</span><span class="p">,</span>
+</span><span data-line="82">    <span class="s2">&quot;WebSocketMode&quot;</span><span class="p">,</span>
+</span><span data-line="83">    <span class="s2">&quot;WebSocketReceiveEvent&quot;</span><span class="p">,</span>
+</span><span data-line="84">    <span class="s2">&quot;WebSocketReceiveMessage&quot;</span><span class="p">,</span>
+</span><span data-line="85">    <span class="s2">&quot;WebSocketResponseBodyEvent&quot;</span><span class="p">,</span>
+</span><span data-line="86">    <span class="s2">&quot;WebSocketResponseStartEvent&quot;</span><span class="p">,</span>
+</span><span data-line="87">    <span class="s2">&quot;WebSocketScope&quot;</span><span class="p">,</span>
+</span><span data-line="88">    <span class="s2">&quot;WebSocketSendEvent&quot;</span><span class="p">,</span>
+</span><span data-line="89">    <span class="s2">&quot;WebSocketSendMessage&quot;</span><span class="p">,</span>
+</span><span data-line="90"><span class="p">)</span>
+</span><span data-line="91">
+</span><span data-line="92"><span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+</span><span data-line="93">    <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TypeAlias</span>
+</span><span data-line="94">
+</span><span data-line="95">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.app</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span>
+</span><span data-line="96">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.enums</span><span class="w"> </span><span class="kn">import</span> <span class="n">ScopeType</span>
+</span><span data-line="97">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.types.empty</span><span class="w"> </span><span class="kn">import</span> <span class="n">EmptyType</span>
+</span><span data-line="98">
+</span><span data-line="99">    <span class="kn">from</span><span class="w"> </span><span class="nn">.internal_types</span><span class="w"> </span><span class="kn">import</span> <span class="n">RouteHandlerType</span>
+</span><span data-line="100">    <span class="kn">from</span><span class="w"> </span><span class="nn">.serialization</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataContainerType</span>
+</span><span data-line="101">
+</span><span data-line="102"><span class="n">HttpMethodName</span><span class="p">:</span> <span class="n">TypeAlias</span> <span class="o">=</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span> <span class="s2">&quot;POST&quot;</span><span class="p">,</span> <span class="s2">&quot;DELETE&quot;</span><span class="p">,</span> <span class="s2">&quot;PATCH&quot;</span><span class="p">,</span> <span class="s2">&quot;PUT&quot;</span><span class="p">,</span> <span class="s2">&quot;HEAD&quot;</span><span class="p">,</span> <span class="s2">&quot;TRACE&quot;</span><span class="p">,</span> <span class="s2">&quot;OPTIONS&quot;</span><span class="p">]</span>
+</span><span data-line="103"><span class="n">Method</span><span class="p">:</span> <span class="n">TypeAlias</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span><span class="n">HttpMethodName</span><span class="p">,</span> <span class="n">HttpMethod</span><span class="p">]</span>
+</span><span data-line="104"><span class="n">ScopeSession</span><span class="p">:</span> <span class="n">TypeAlias</span> <span class="o">=</span> <span class="s2">&quot;EmptyType | dict[str, Any] | DataContainerType | None&quot;</span>
+</span><span data-line="105">
 </span><span data-line="106">
-</span><span data-line="107">
 <div class="viewcode-block" id="ASGIVersion">
 <a class="viewcode-back" href="../../../reference/types.html#litestar.types.ASGIVersion">[docs]</a>
-</span><span data-line="108"><span class="k">class</span><span class="w"> </span><span class="nc">ASGIVersion</span><span class="p">(</span><span class="n">TypedDict</span><span class="p">):</span>
-</span><span data-line="109"><span class="w">    </span><span class="sd">&quot;&quot;&quot;ASGI spec version.&quot;&quot;&quot;</span>
-</span><span data-line="110">
-</span><span data-line="111">    <span class="n">spec_version</span><span class="p">:</span> <span class="nb">str</span>
-</span><span data-line="112">    <span class="n">version</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;3.0&quot;</span><span class="p">]</span></div>
+</span><span data-line="107"><span class="k">class</span><span class="w"> </span><span class="nc">ASGIVersion</span><span class="p">(</span><span class="n">TypedDict</span><span class="p">):</span>
+</span><span data-line="108"><span class="w">    </span><span class="sd">&quot;&quot;&quot;ASGI spec version.&quot;&quot;&quot;</span>
+</span><span data-line="109">
+</span><span data-line="110">    <span class="n">spec_version</span><span class="p">:</span> <span class="nb">str</span>
+</span><span data-line="111">    <span class="n">version</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;3.0&quot;</span><span class="p">]</span></div>
 
+</span><span data-line="112">
 </span><span data-line="113">
-</span><span data-line="114">
-</span><span data-line="115"><span class="k">class</span><span class="w"> </span><span class="nc">HeaderScope</span><span class="p">(</span><span class="n">TypedDict</span><span class="p">):</span>
-</span><span data-line="116"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Base class for ASGI-scopes that supports headers.&quot;&quot;&quot;</span>
-</span><span data-line="117">
-</span><span data-line="118">    <span class="n">headers</span><span class="p">:</span> <span class="n">RawHeaders</span>
+</span><span data-line="114"><span class="k">class</span><span class="w"> </span><span class="nc">HeaderScope</span><span class="p">(</span><span class="n">TypedDict</span><span class="p">):</span>
+</span><span data-line="115"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Base class for ASGI-scopes that supports headers.&quot;&quot;&quot;</span>
+</span><span data-line="116">
+</span><span data-line="117">    <span class="n">headers</span><span class="p">:</span> <span class="n">RawHeaders</span>
+</span><span data-line="118">
 </span><span data-line="119">
-</span><span data-line="120">
 <div class="viewcode-block" id="BaseScope">
 <a class="viewcode-back" href="../../../reference/types.html#litestar.types.BaseScope">[docs]</a>
-</span><span data-line="121"><span class="k">class</span><span class="w"> </span><span class="nc">BaseScope</span><span class="p">(</span><span class="n">HeaderScope</span><span class="p">):</span>
-</span><span data-line="122"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Base ASGI-scope.&quot;&quot;&quot;</span>
-</span><span data-line="123">
-</span><span data-line="124">    <span class="n">app</span><span class="p">:</span> <span class="n">Litestar</span>  <span class="c1"># deprecated</span>
-</span><span data-line="125">    <span class="n">litestar_app</span><span class="p">:</span> <span class="n">Litestar</span>
-</span><span data-line="126">    <span class="n">asgi</span><span class="p">:</span> <span class="n">ASGIVersion</span>
-</span><span data-line="127">    <span class="n">auth</span><span class="p">:</span> <span class="n">Any</span>
-</span><span data-line="128">    <span class="n">client</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span>
-</span><span data-line="129">    <span class="n">extensions</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">object</span><span class="p">,</span> <span class="nb">object</span><span class="p">]]</span> <span class="o">|</span> <span class="kc">None</span>
-</span><span data-line="130">    <span class="n">http_version</span><span class="p">:</span> <span class="nb">str</span>
-</span><span data-line="131">    <span class="n">path</span><span class="p">:</span> <span class="nb">str</span>
-</span><span data-line="132">    <span class="n">path_params</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span>
-</span><span data-line="133">    <span class="n">path_template</span><span class="p">:</span> <span class="nb">str</span>
-</span><span data-line="134">    <span class="n">query_string</span><span class="p">:</span> <span class="nb">bytes</span>
-</span><span data-line="135">    <span class="n">raw_path</span><span class="p">:</span> <span class="nb">bytes</span>
-</span><span data-line="136">    <span class="n">root_path</span><span class="p">:</span> <span class="nb">str</span>
-</span><span data-line="137">    <span class="n">route_handler</span><span class="p">:</span> <span class="n">RouteHandlerType</span>
-</span><span data-line="138">    <span class="n">scheme</span><span class="p">:</span> <span class="nb">str</span>
-</span><span data-line="139">    <span class="n">server</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span>
-</span><span data-line="140">    <span class="n">session</span><span class="p">:</span> <span class="n">ScopeSession</span>
-</span><span data-line="141">    <span class="n">state</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span>
-</span><span data-line="142">    <span class="n">user</span><span class="p">:</span> <span class="n">Any</span></div>
+</span><span data-line="120"><span class="k">class</span><span class="w"> </span><span class="nc">BaseScope</span><span class="p">(</span><span class="n">HeaderScope</span><span class="p">):</span>
+</span><span data-line="121"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Base ASGI-scope.&quot;&quot;&quot;</span>
+</span><span data-line="122">
+</span><span data-line="123">    <span class="n">app</span><span class="p">:</span> <span class="n">Litestar</span>  <span class="c1"># deprecated</span>
+</span><span data-line="124">    <span class="n">litestar_app</span><span class="p">:</span> <span class="n">Litestar</span>
+</span><span data-line="125">    <span class="n">asgi</span><span class="p">:</span> <span class="n">ASGIVersion</span>
+</span><span data-line="126">    <span class="n">auth</span><span class="p">:</span> <span class="n">Any</span>
+</span><span data-line="127">    <span class="n">client</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span>
+</span><span data-line="128">    <span class="n">extensions</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">object</span><span class="p">,</span> <span class="nb">object</span><span class="p">]]</span> <span class="o">|</span> <span class="kc">None</span>
+</span><span data-line="129">    <span class="n">http_version</span><span class="p">:</span> <span class="nb">str</span>
+</span><span data-line="130">    <span class="n">path</span><span class="p">:</span> <span class="nb">str</span>
+</span><span data-line="131">    <span class="n">path_params</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span>
+</span><span data-line="132">    <span class="n">path_template</span><span class="p">:</span> <span class="nb">str</span>
+</span><span data-line="133">    <span class="n">query_string</span><span class="p">:</span> <span class="nb">bytes</span>
+</span><span data-line="134">    <span class="n">raw_path</span><span class="p">:</span> <span class="nb">bytes</span>
+</span><span data-line="135">    <span class="n">root_path</span><span class="p">:</span> <span class="nb">str</span>
+</span><span data-line="136">    <span class="n">route_handler</span><span class="p">:</span> <span class="n">RouteHandlerType</span>
+</span><span data-line="137">    <span class="n">scheme</span><span class="p">:</span> <span class="nb">str</span>
+</span><span data-line="138">    <span class="n">server</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span>
+</span><span data-line="139">    <span class="n">session</span><span class="p">:</span> <span class="n">ScopeSession</span>
+</span><span data-line="140">    <span class="n">state</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span>
+</span><span data-line="141">    <span class="n">user</span><span class="p">:</span> <span class="n">Any</span></div>
 
+</span><span data-line="142">
 </span><span data-line="143">
-</span><span data-line="144">
 <div class="viewcode-block" id="HTTPScope">
 <a class="viewcode-back" href="../../../reference/types.html#litestar.types.HTTPScope">[docs]</a>
-</span><span data-line="145"><span class="k">class</span><span class="w"> </span><span class="nc">HTTPScope</span><span class="p">(</span><span class="n">BaseScope</span><span class="p">):</span>
-</span><span data-line="146"><span class="w">    </span><span class="sd">&quot;&quot;&quot;HTTP-ASGI-scope.&quot;&quot;&quot;</span>
-</span><span data-line="147">
-</span><span data-line="148">    <span class="n">method</span><span class="p">:</span> <span class="n">HttpMethodName</span>
-</span><span data-line="149">    <span class="nb">type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="n">ScopeType</span><span class="o">.</span><span class="n">HTTP</span><span class="p">]</span></div>
+</span><span data-line="144"><span class="k">class</span><span class="w"> </span><span class="nc">HTTPScope</span><span class="p">(</span><span class="n">BaseScope</span><span class="p">):</span>
+</span><span data-line="145"><span class="w">    </span><span class="sd">&quot;&quot;&quot;HTTP-ASGI-scope.&quot;&quot;&quot;</span>
+</span><span data-line="146">
+</span><span data-line="147">    <span class="n">method</span><span class="p">:</span> <span class="n">HttpMethodName</span>
+</span><span data-line="148">    <span class="nb">type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="n">ScopeType</span><span class="o">.</span><span class="n">HTTP</span><span class="p">]</span></div>
 
+</span><span data-line="149">
 </span><span data-line="150">
-</span><span data-line="151">
 <div class="viewcode-block" id="WebSocketScope">
 <a class="viewcode-back" href="../../../reference/types.html#litestar.types.WebSocketScope">[docs]</a>
-</span><span data-line="152"><span class="k">class</span><span class="w"> </span><span class="nc">WebSocketScope</span><span class="p">(</span><span class="n">BaseScope</span><span class="p">):</span>
-</span><span data-line="153"><span class="w">    </span><span class="sd">&quot;&quot;&quot;WebSocket-ASGI-scope.&quot;&quot;&quot;</span>
-</span><span data-line="154">
-</span><span data-line="155">    <span class="n">subprotocols</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
-</span><span data-line="156">    <span class="nb">type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="n">ScopeType</span><span class="o">.</span><span class="n">WEBSOCKET</span><span class="p">]</span></div>
+</span><span data-line="151"><span class="k">class</span><span class="w"> </span><span class="nc">WebSocketScope</span><span class="p">(</span><span class="n">BaseScope</span><span class="p">):</span>
+</span><span data-line="152"><span class="w">    </span><span class="sd">&quot;&quot;&quot;WebSocket-ASGI-scope.&quot;&quot;&quot;</span>
+</span><span data-line="153">
+</span><span data-line="154">    <span class="n">subprotocols</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
+</span><span data-line="155">    <span class="nb">type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="n">ScopeType</span><span class="o">.</span><span class="n">WEBSOCKET</span><span class="p">]</span></div>
 
+</span><span data-line="156">
 </span><span data-line="157">
-</span><span data-line="158">
 <div class="viewcode-block" id="LifeSpanScope">
 <a class="viewcode-back" href="../../../reference/types.html#litestar.types.LifeSpanScope">[docs]</a>
-</span><span data-line="159"><span class="k">class</span><span class="w"> </span><span class="nc">LifeSpanScope</span><span class="p">(</span><span class="n">TypedDict</span><span class="p">):</span>
-</span><span data-line="160"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Lifespan-ASGI-scope.&quot;&quot;&quot;</span>
-</span><span data-line="161">
-</span><span data-line="162">    <span class="n">app</span><span class="p">:</span> <span class="n">Litestar</span>
-</span><span data-line="163">    <span class="n">asgi</span><span class="p">:</span> <span class="n">ASGIVersion</span>
-</span><span data-line="164">    <span class="nb">type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;lifespan&quot;</span><span class="p">]</span></div>
+</span><span data-line="158"><span class="k">class</span><span class="w"> </span><span class="nc">LifeSpanScope</span><span class="p">(</span><span class="n">TypedDict</span><span class="p">):</span>
+</span><span data-line="159"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Lifespan-ASGI-scope.&quot;&quot;&quot;</span>
+</span><span data-line="160">
+</span><span data-line="161">    <span class="n">app</span><span class="p">:</span> <span class="n">Litestar</span>
+</span><span data-line="162">    <span class="n">asgi</span><span class="p">:</span> <span class="n">ASGIVersion</span>
+</span><span data-line="163">    <span class="nb">type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;lifespan&quot;</span><span class="p">]</span></div>
 
+</span><span data-line="164">
 </span><span data-line="165">
-</span><span data-line="166">
 <div class="viewcode-block" id="HTTPRequestEvent">
 <a class="viewcode-back" href="../../../reference/types.html#litestar.types.HTTPRequestEvent">[docs]</a>
-</span><span data-line="167"><span class="k">class</span><span class="w"> </span><span class="nc">HTTPRequestEvent</span><span class="p">(</span><span class="n">TypedDict</span><span class="p">):</span>
-</span><span data-line="168"><span class="w">    </span><span class="sd">&quot;&quot;&quot;ASGI `http.request` event.&quot;&quot;&quot;</span>
-</span><span data-line="169">
-</span><span data-line="170">    <span class="nb">type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;http.request&quot;</span><span class="p">]</span>
-</span><span data-line="171">    <span class="n">body</span><span class="p">:</span> <span class="nb">bytes</span>
-</span><span data-line="172">    <span class="n">more_body</span><span class="p">:</span> <span class="nb">bool</span></div>
+</span><span data-line="166"><span class="k">class</span><span class="w"> </span><span class="nc">HTTPRequestEvent</span><span class="p">(</span><span class="n">TypedDict</span><span class="p">):</span>
+</span><span data-line="167"><span class="w">    </span><span class="sd">&quot;&quot;&quot;ASGI `http.request` event.&quot;&quot;&quot;</span>
+</span><span data-line="168">
+</span><span data-line="169">    <span class="nb">type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;http.request&quot;</span><span class="p">]</span>
+</span><span data-line="170">    <span class="n">body</span><span class="p">:</span> <span class="nb">bytes</span>
+</span><span data-line="171">    <span class="n">more_body</span><span class="p">:</span> <span class="nb">bool</span></div>
 
+</span><span data-line="172">
 </span><span data-line="173">
-</span><span data-line="174">
 <div class="viewcode-block" id="HTTPResponseStartEvent">
 <a class="viewcode-back" href="../../../reference/types.html#litestar.types.HTTPResponseStartEvent">[docs]</a>
-</span><span data-line="175"><span class="k">class</span><span class="w"> </span><span class="nc">HTTPResponseStartEvent</span><span class="p">(</span><span class="n">HeaderScope</span><span class="p">):</span>
-</span><span data-line="176"><span class="w">    </span><span class="sd">&quot;&quot;&quot;ASGI `http.response.start` event.&quot;&quot;&quot;</span>
-</span><span data-line="177">
-</span><span data-line="178">    <span class="nb">type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;http.response.start&quot;</span><span class="p">]</span>
-</span><span data-line="179">    <span class="n">status</span><span class="p">:</span> <span class="nb">int</span></div>
+</span><span data-line="174"><span class="k">class</span><span class="w"> </span><span class="nc">HTTPResponseStartEvent</span><span class="p">(</span><span class="n">HeaderScope</span><span class="p">):</span>
+</span><span data-line="175"><span class="w">    </span><span class="sd">&quot;&quot;&quot;ASGI `http.response.start` event.&quot;&quot;&quot;</span>
+</span><span data-line="176">
+</span><span data-line="177">    <span class="nb">type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;http.response.start&quot;</span><span class="p">]</span>
+</span><span data-line="178">    <span class="n">status</span><span class="p">:</span> <span class="nb">int</span></div>
 
+</span><span data-line="179">
 </span><span data-line="180">
-</span><span data-line="181">
 <div class="viewcode-block" id="HTTPResponseBodyEvent">
 <a class="viewcode-back" href="../../../reference/types.html#litestar.types.HTTPResponseBodyEvent">[docs]</a>
-</span><span data-line="182"><span class="k">class</span><span class="w"> </span><span class="nc">HTTPResponseBodyEvent</span><span class="p">(</span><span class="n">TypedDict</span><span class="p">):</span>
-</span><span data-line="183"><span class="w">    </span><span class="sd">&quot;&quot;&quot;ASGI `http.response.body` event.&quot;&quot;&quot;</span>
-</span><span data-line="184">
-</span><span data-line="185">    <span class="nb">type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;http.response.body&quot;</span><span class="p">]</span>
-</span><span data-line="186">    <span class="n">body</span><span class="p">:</span> <span class="nb">bytes</span>
-</span><span data-line="187">    <span class="n">more_body</span><span class="p">:</span> <span class="nb">bool</span></div>
+</span><span data-line="181"><span class="k">class</span><span class="w"> </span><span class="nc">HTTPResponseBodyEvent</span><span class="p">(</span><span class="n">TypedDict</span><span class="p">):</span>
+</span><span data-line="182"><span class="w">    </span><span class="sd">&quot;&quot;&quot;ASGI `http.response.body` event.&quot;&quot;&quot;</span>
+</span><span data-line="183">
+</span><span data-line="184">    <span class="nb">type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;http.response.body&quot;</span><span class="p">]</span>
+</span><span data-line="185">    <span class="n">body</span><span class="p">:</span> <span class="nb">bytes</span>
+</span><span data-line="186">    <span class="n">more_body</span><span class="p">:</span> <span class="nb">bool</span></div>
 
+</span><span data-line="187">
 </span><span data-line="188">
-</span><span data-line="189">
 <div class="viewcode-block" id="HTTPServerPushEvent">
 <a class="viewcode-back" href="../../../reference/types.html#litestar.types.HTTPServerPushEvent">[docs]</a>
-</span><span data-line="190"><span class="k">class</span><span class="w"> </span><span class="nc">HTTPServerPushEvent</span><span class="p">(</span><span class="n">HeaderScope</span><span class="p">):</span>
-</span><span data-line="191"><span class="w">    </span><span class="sd">&quot;&quot;&quot;ASGI `http.response.push` event.&quot;&quot;&quot;</span>
-</span><span data-line="192">
-</span><span data-line="193">    <span class="nb">type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;http.response.push&quot;</span><span class="p">]</span>
-</span><span data-line="194">    <span class="n">path</span><span class="p">:</span> <span class="nb">str</span></div>
+</span><span data-line="189"><span class="k">class</span><span class="w"> </span><span class="nc">HTTPServerPushEvent</span><span class="p">(</span><span class="n">HeaderScope</span><span class="p">):</span>
+</span><span data-line="190"><span class="w">    </span><span class="sd">&quot;&quot;&quot;ASGI `http.response.push` event.&quot;&quot;&quot;</span>
+</span><span data-line="191">
+</span><span data-line="192">    <span class="nb">type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;http.response.push&quot;</span><span class="p">]</span>
+</span><span data-line="193">    <span class="n">path</span><span class="p">:</span> <span class="nb">str</span></div>
 
+</span><span data-line="194">
 </span><span data-line="195">
-</span><span data-line="196">
 <div class="viewcode-block" id="HTTPDisconnectEvent">
 <a class="viewcode-back" href="../../../reference/types.html#litestar.types.HTTPDisconnectEvent">[docs]</a>
-</span><span data-line="197"><span class="k">class</span><span class="w"> </span><span class="nc">HTTPDisconnectEvent</span><span class="p">(</span><span class="n">TypedDict</span><span class="p">):</span>
-</span><span data-line="198"><span class="w">    </span><span class="sd">&quot;&quot;&quot;ASGI `http.disconnect` event.&quot;&quot;&quot;</span>
-</span><span data-line="199">
-</span><span data-line="200">    <span class="nb">type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;http.disconnect&quot;</span><span class="p">]</span></div>
+</span><span data-line="196"><span class="k">class</span><span class="w"> </span><span class="nc">HTTPDisconnectEvent</span><span class="p">(</span><span class="n">TypedDict</span><span class="p">):</span>
+</span><span data-line="197"><span class="w">    </span><span class="sd">&quot;&quot;&quot;ASGI `http.disconnect` event.&quot;&quot;&quot;</span>
+</span><span data-line="198">
+</span><span data-line="199">    <span class="nb">type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;http.disconnect&quot;</span><span class="p">]</span></div>
 
+</span><span data-line="200">
 </span><span data-line="201">
-</span><span data-line="202">
 <div class="viewcode-block" id="WebSocketConnectEvent">
 <a class="viewcode-back" href="../../../reference/types.html#litestar.types.WebSocketConnectEvent">[docs]</a>
-</span><span data-line="203"><span class="k">class</span><span class="w"> </span><span class="nc">WebSocketConnectEvent</span><span class="p">(</span><span class="n">TypedDict</span><span class="p">):</span>
-</span><span data-line="204"><span class="w">    </span><span class="sd">&quot;&quot;&quot;ASGI `websocket.connect` event.&quot;&quot;&quot;</span>
-</span><span data-line="205">
-</span><span data-line="206">    <span class="nb">type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;websocket.connect&quot;</span><span class="p">]</span></div>
+</span><span data-line="202"><span class="k">class</span><span class="w"> </span><span class="nc">WebSocketConnectEvent</span><span class="p">(</span><span class="n">TypedDict</span><span class="p">):</span>
+</span><span data-line="203"><span class="w">    </span><span class="sd">&quot;&quot;&quot;ASGI `websocket.connect` event.&quot;&quot;&quot;</span>
+</span><span data-line="204">
+</span><span data-line="205">    <span class="nb">type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;websocket.connect&quot;</span><span class="p">]</span></div>
 
+</span><span data-line="206">
 </span><span data-line="207">
-</span><span data-line="208">
 <div class="viewcode-block" id="WebSocketAcceptEvent">
 <a class="viewcode-back" href="../../../reference/types.html#litestar.types.WebSocketAcceptEvent">[docs]</a>
-</span><span data-line="209"><span class="k">class</span><span class="w"> </span><span class="nc">WebSocketAcceptEvent</span><span class="p">(</span><span class="n">HeaderScope</span><span class="p">):</span>
-</span><span data-line="210"><span class="w">    </span><span class="sd">&quot;&quot;&quot;ASGI `websocket.accept` event.&quot;&quot;&quot;</span>
-</span><span data-line="211">
-</span><span data-line="212">    <span class="nb">type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;websocket.accept&quot;</span><span class="p">]</span>
-</span><span data-line="213">    <span class="n">subprotocol</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span></div>
+</span><span data-line="208"><span class="k">class</span><span class="w"> </span><span class="nc">WebSocketAcceptEvent</span><span class="p">(</span><span class="n">HeaderScope</span><span class="p">):</span>
+</span><span data-line="209"><span class="w">    </span><span class="sd">&quot;&quot;&quot;ASGI `websocket.accept` event.&quot;&quot;&quot;</span>
+</span><span data-line="210">
+</span><span data-line="211">    <span class="nb">type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;websocket.accept&quot;</span><span class="p">]</span>
+</span><span data-line="212">    <span class="n">subprotocol</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span></div>
 
+</span><span data-line="213">
 </span><span data-line="214">
-</span><span data-line="215">
 <div class="viewcode-block" id="WebSocketReceiveEvent">
 <a class="viewcode-back" href="../../../reference/types.html#litestar.types.WebSocketReceiveEvent">[docs]</a>
-</span><span data-line="216"><span class="k">class</span><span class="w"> </span><span class="nc">WebSocketReceiveEvent</span><span class="p">(</span><span class="n">TypedDict</span><span class="p">):</span>
-</span><span data-line="217"><span class="w">    </span><span class="sd">&quot;&quot;&quot;ASGI `websocket.receive` event.&quot;&quot;&quot;</span>
-</span><span data-line="218">
-</span><span data-line="219">    <span class="nb">type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;websocket.receive&quot;</span><span class="p">]</span>
-</span><span data-line="220">    <span class="nb">bytes</span><span class="p">:</span> <span class="nb">bytes</span> <span class="o">|</span> <span class="kc">None</span>
-</span><span data-line="221">    <span class="n">text</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span></div>
+</span><span data-line="215"><span class="k">class</span><span class="w"> </span><span class="nc">WebSocketReceiveEvent</span><span class="p">(</span><span class="n">TypedDict</span><span class="p">):</span>
+</span><span data-line="216"><span class="w">    </span><span class="sd">&quot;&quot;&quot;ASGI `websocket.receive` event.&quot;&quot;&quot;</span>
+</span><span data-line="217">
+</span><span data-line="218">    <span class="nb">type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;websocket.receive&quot;</span><span class="p">]</span>
+</span><span data-line="219">    <span class="nb">bytes</span><span class="p">:</span> <span class="nb">bytes</span> <span class="o">|</span> <span class="kc">None</span>
+</span><span data-line="220">    <span class="n">text</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span></div>
 
+</span><span data-line="221">
 </span><span data-line="222">
-</span><span data-line="223">
 <div class="viewcode-block" id="WebSocketSendEvent">
 <a class="viewcode-back" href="../../../reference/types.html#litestar.types.WebSocketSendEvent">[docs]</a>
-</span><span data-line="224"><span class="k">class</span><span class="w"> </span><span class="nc">WebSocketSendEvent</span><span class="p">(</span><span class="n">TypedDict</span><span class="p">):</span>
-</span><span data-line="225"><span class="w">    </span><span class="sd">&quot;&quot;&quot;ASGI `websocket.send` event.&quot;&quot;&quot;</span>
-</span><span data-line="226">
-</span><span data-line="227">    <span class="nb">type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;websocket.send&quot;</span><span class="p">]</span>
-</span><span data-line="228">    <span class="nb">bytes</span><span class="p">:</span> <span class="nb">bytes</span> <span class="o">|</span> <span class="kc">None</span>
-</span><span data-line="229">    <span class="n">text</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span></div>
+</span><span data-line="223"><span class="k">class</span><span class="w"> </span><span class="nc">WebSocketSendEvent</span><span class="p">(</span><span class="n">TypedDict</span><span class="p">):</span>
+</span><span data-line="224"><span class="w">    </span><span class="sd">&quot;&quot;&quot;ASGI `websocket.send` event.&quot;&quot;&quot;</span>
+</span><span data-line="225">
+</span><span data-line="226">    <span class="nb">type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;websocket.send&quot;</span><span class="p">]</span>
+</span><span data-line="227">    <span class="nb">bytes</span><span class="p">:</span> <span class="nb">bytes</span> <span class="o">|</span> <span class="kc">None</span>
+</span><span data-line="228">    <span class="n">text</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span></div>
 
+</span><span data-line="229">
 </span><span data-line="230">
-</span><span data-line="231">
 <div class="viewcode-block" id="WebSocketResponseStartEvent">
 <a class="viewcode-back" href="../../../reference/types.html#litestar.types.WebSocketResponseStartEvent">[docs]</a>
-</span><span data-line="232"><span class="k">class</span><span class="w"> </span><span class="nc">WebSocketResponseStartEvent</span><span class="p">(</span><span class="n">HeaderScope</span><span class="p">):</span>
-</span><span data-line="233"><span class="w">    </span><span class="sd">&quot;&quot;&quot;ASGI `websocket.http.response.start` event.&quot;&quot;&quot;</span>
-</span><span data-line="234">
-</span><span data-line="235">    <span class="nb">type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;websocket.http.response.start&quot;</span><span class="p">]</span>
-</span><span data-line="236">    <span class="n">status</span><span class="p">:</span> <span class="nb">int</span></div>
+</span><span data-line="231"><span class="k">class</span><span class="w"> </span><span class="nc">WebSocketResponseStartEvent</span><span class="p">(</span><span class="n">HeaderScope</span><span class="p">):</span>
+</span><span data-line="232"><span class="w">    </span><span class="sd">&quot;&quot;&quot;ASGI `websocket.http.response.start` event.&quot;&quot;&quot;</span>
+</span><span data-line="233">
+</span><span data-line="234">    <span class="nb">type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;websocket.http.response.start&quot;</span><span class="p">]</span>
+</span><span data-line="235">    <span class="n">status</span><span class="p">:</span> <span class="nb">int</span></div>
 
+</span><span data-line="236">
 </span><span data-line="237">
-</span><span data-line="238">
 <div class="viewcode-block" id="WebSocketResponseBodyEvent">
 <a class="viewcode-back" href="../../../reference/types.html#litestar.types.WebSocketResponseBodyEvent">[docs]</a>
-</span><span data-line="239"><span class="k">class</span><span class="w"> </span><span class="nc">WebSocketResponseBodyEvent</span><span class="p">(</span><span class="n">TypedDict</span><span class="p">):</span>
-</span><span data-line="240"><span class="w">    </span><span class="sd">&quot;&quot;&quot;ASGI `websocket.http.response.body` event.&quot;&quot;&quot;</span>
-</span><span data-line="241">
-</span><span data-line="242">    <span class="nb">type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;websocket.http.response.body&quot;</span><span class="p">]</span>
-</span><span data-line="243">    <span class="n">body</span><span class="p">:</span> <span class="nb">bytes</span>
-</span><span data-line="244">    <span class="n">more_body</span><span class="p">:</span> <span class="nb">bool</span></div>
+</span><span data-line="238"><span class="k">class</span><span class="w"> </span><span class="nc">WebSocketResponseBodyEvent</span><span class="p">(</span><span class="n">TypedDict</span><span class="p">):</span>
+</span><span data-line="239"><span class="w">    </span><span class="sd">&quot;&quot;&quot;ASGI `websocket.http.response.body` event.&quot;&quot;&quot;</span>
+</span><span data-line="240">
+</span><span data-line="241">    <span class="nb">type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;websocket.http.response.body&quot;</span><span class="p">]</span>
+</span><span data-line="242">    <span class="n">body</span><span class="p">:</span> <span class="nb">bytes</span>
+</span><span data-line="243">    <span class="n">more_body</span><span class="p">:</span> <span class="nb">bool</span></div>
 
+</span><span data-line="244">
 </span><span data-line="245">
-</span><span data-line="246">
 <div class="viewcode-block" id="WebSocketDisconnectEvent">
 <a class="viewcode-back" href="../../../reference/types.html#litestar.types.WebSocketDisconnectEvent">[docs]</a>
-</span><span data-line="247"><span class="k">class</span><span class="w"> </span><span class="nc">WebSocketDisconnectEvent</span><span class="p">(</span><span class="n">TypedDict</span><span class="p">):</span>
-</span><span data-line="248"><span class="w">    </span><span class="sd">&quot;&quot;&quot;ASGI `websocket.disconnect` event.&quot;&quot;&quot;</span>
-</span><span data-line="249">
-</span><span data-line="250">    <span class="nb">type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;websocket.disconnect&quot;</span><span class="p">]</span>
-</span><span data-line="251">    <span class="n">code</span><span class="p">:</span> <span class="nb">int</span>
-</span><span data-line="252">    <span class="n">reason</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span></div>
+</span><span data-line="246"><span class="k">class</span><span class="w"> </span><span class="nc">WebSocketDisconnectEvent</span><span class="p">(</span><span class="n">TypedDict</span><span class="p">):</span>
+</span><span data-line="247"><span class="w">    </span><span class="sd">&quot;&quot;&quot;ASGI `websocket.disconnect` event.&quot;&quot;&quot;</span>
+</span><span data-line="248">
+</span><span data-line="249">    <span class="nb">type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;websocket.disconnect&quot;</span><span class="p">]</span>
+</span><span data-line="250">    <span class="n">code</span><span class="p">:</span> <span class="nb">int</span>
+</span><span data-line="251">    <span class="n">reason</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span></div>
 
+</span><span data-line="252">
 </span><span data-line="253">
-</span><span data-line="254">
 <div class="viewcode-block" id="WebSocketCloseEvent">
 <a class="viewcode-back" href="../../../reference/types.html#litestar.types.WebSocketCloseEvent">[docs]</a>
-</span><span data-line="255"><span class="k">class</span><span class="w"> </span><span class="nc">WebSocketCloseEvent</span><span class="p">(</span><span class="n">TypedDict</span><span class="p">):</span>
-</span><span data-line="256"><span class="w">    </span><span class="sd">&quot;&quot;&quot;ASGI `websocket.close` event.&quot;&quot;&quot;</span>
-</span><span data-line="257">
-</span><span data-line="258">    <span class="nb">type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;websocket.close&quot;</span><span class="p">]</span>
-</span><span data-line="259">    <span class="n">code</span><span class="p">:</span> <span class="nb">int</span>
-</span><span data-line="260">    <span class="n">reason</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span></div>
+</span><span data-line="254"><span class="k">class</span><span class="w"> </span><span class="nc">WebSocketCloseEvent</span><span class="p">(</span><span class="n">TypedDict</span><span class="p">):</span>
+</span><span data-line="255"><span class="w">    </span><span class="sd">&quot;&quot;&quot;ASGI `websocket.close` event.&quot;&quot;&quot;</span>
+</span><span data-line="256">
+</span><span data-line="257">    <span class="nb">type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;websocket.close&quot;</span><span class="p">]</span>
+</span><span data-line="258">    <span class="n">code</span><span class="p">:</span> <span class="nb">int</span>
+</span><span data-line="259">    <span class="n">reason</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span></div>
 
+</span><span data-line="260">
 </span><span data-line="261">
-</span><span data-line="262">
 <div class="viewcode-block" id="LifeSpanStartupEvent">
 <a class="viewcode-back" href="../../../reference/types.html#litestar.types.LifeSpanStartupEvent">[docs]</a>
-</span><span data-line="263"><span class="k">class</span><span class="w"> </span><span class="nc">LifeSpanStartupEvent</span><span class="p">(</span><span class="n">TypedDict</span><span class="p">):</span>
-</span><span data-line="264"><span class="w">    </span><span class="sd">&quot;&quot;&quot;ASGI `lifespan.startup` event.&quot;&quot;&quot;</span>
-</span><span data-line="265">
-</span><span data-line="266">    <span class="nb">type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;lifespan.startup&quot;</span><span class="p">]</span></div>
+</span><span data-line="262"><span class="k">class</span><span class="w"> </span><span class="nc">LifeSpanStartupEvent</span><span class="p">(</span><span class="n">TypedDict</span><span class="p">):</span>
+</span><span data-line="263"><span class="w">    </span><span class="sd">&quot;&quot;&quot;ASGI `lifespan.startup` event.&quot;&quot;&quot;</span>
+</span><span data-line="264">
+</span><span data-line="265">    <span class="nb">type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;lifespan.startup&quot;</span><span class="p">]</span></div>
 
+</span><span data-line="266">
 </span><span data-line="267">
-</span><span data-line="268">
 <div class="viewcode-block" id="LifeSpanShutdownEvent">
 <a class="viewcode-back" href="../../../reference/types.html#litestar.types.LifeSpanShutdownEvent">[docs]</a>
-</span><span data-line="269"><span class="k">class</span><span class="w"> </span><span class="nc">LifeSpanShutdownEvent</span><span class="p">(</span><span class="n">TypedDict</span><span class="p">):</span>
-</span><span data-line="270"><span class="w">    </span><span class="sd">&quot;&quot;&quot;ASGI `lifespan.shutdown` event.&quot;&quot;&quot;</span>
-</span><span data-line="271">
-</span><span data-line="272">    <span class="nb">type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;lifespan.shutdown&quot;</span><span class="p">]</span></div>
+</span><span data-line="268"><span class="k">class</span><span class="w"> </span><span class="nc">LifeSpanShutdownEvent</span><span class="p">(</span><span class="n">TypedDict</span><span class="p">):</span>
+</span><span data-line="269"><span class="w">    </span><span class="sd">&quot;&quot;&quot;ASGI `lifespan.shutdown` event.&quot;&quot;&quot;</span>
+</span><span data-line="270">
+</span><span data-line="271">    <span class="nb">type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;lifespan.shutdown&quot;</span><span class="p">]</span></div>
 
+</span><span data-line="272">
 </span><span data-line="273">
-</span><span data-line="274">
 <div class="viewcode-block" id="LifeSpanStartupCompleteEvent">
 <a class="viewcode-back" href="../../../reference/types.html#litestar.types.LifeSpanStartupCompleteEvent">[docs]</a>
-</span><span data-line="275"><span class="k">class</span><span class="w"> </span><span class="nc">LifeSpanStartupCompleteEvent</span><span class="p">(</span><span class="n">TypedDict</span><span class="p">):</span>
-</span><span data-line="276"><span class="w">    </span><span class="sd">&quot;&quot;&quot;ASGI `lifespan.startup.complete` event.&quot;&quot;&quot;</span>
-</span><span data-line="277">
-</span><span data-line="278">    <span class="nb">type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;lifespan.startup.complete&quot;</span><span class="p">]</span></div>
+</span><span data-line="274"><span class="k">class</span><span class="w"> </span><span class="nc">LifeSpanStartupCompleteEvent</span><span class="p">(</span><span class="n">TypedDict</span><span class="p">):</span>
+</span><span data-line="275"><span class="w">    </span><span class="sd">&quot;&quot;&quot;ASGI `lifespan.startup.complete` event.&quot;&quot;&quot;</span>
+</span><span data-line="276">
+</span><span data-line="277">    <span class="nb">type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;lifespan.startup.complete&quot;</span><span class="p">]</span></div>
 
+</span><span data-line="278">
 </span><span data-line="279">
-</span><span data-line="280">
 <div class="viewcode-block" id="LifeSpanStartupFailedEvent">
 <a class="viewcode-back" href="../../../reference/types.html#litestar.types.LifeSpanStartupFailedEvent">[docs]</a>
-</span><span data-line="281"><span class="k">class</span><span class="w"> </span><span class="nc">LifeSpanStartupFailedEvent</span><span class="p">(</span><span class="n">TypedDict</span><span class="p">):</span>
-</span><span data-line="282"><span class="w">    </span><span class="sd">&quot;&quot;&quot;ASGI `lifespan.startup.failed` event.&quot;&quot;&quot;</span>
-</span><span data-line="283">
-</span><span data-line="284">    <span class="nb">type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;lifespan.startup.failed&quot;</span><span class="p">]</span>
-</span><span data-line="285">    <span class="n">message</span><span class="p">:</span> <span class="nb">str</span></div>
+</span><span data-line="280"><span class="k">class</span><span class="w"> </span><span class="nc">LifeSpanStartupFailedEvent</span><span class="p">(</span><span class="n">TypedDict</span><span class="p">):</span>
+</span><span data-line="281"><span class="w">    </span><span class="sd">&quot;&quot;&quot;ASGI `lifespan.startup.failed` event.&quot;&quot;&quot;</span>
+</span><span data-line="282">
+</span><span data-line="283">    <span class="nb">type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;lifespan.startup.failed&quot;</span><span class="p">]</span>
+</span><span data-line="284">    <span class="n">message</span><span class="p">:</span> <span class="nb">str</span></div>
 
+</span><span data-line="285">
 </span><span data-line="286">
-</span><span data-line="287">
 <div class="viewcode-block" id="LifeSpanShutdownCompleteEvent">
 <a class="viewcode-back" href="../../../reference/types.html#litestar.types.LifeSpanShutdownCompleteEvent">[docs]</a>
-</span><span data-line="288"><span class="k">class</span><span class="w"> </span><span class="nc">LifeSpanShutdownCompleteEvent</span><span class="p">(</span><span class="n">TypedDict</span><span class="p">):</span>
-</span><span data-line="289"><span class="w">    </span><span class="sd">&quot;&quot;&quot;ASGI `lifespan.shutdown.complete` event.&quot;&quot;&quot;</span>
-</span><span data-line="290">
-</span><span data-line="291">    <span class="nb">type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;lifespan.shutdown.complete&quot;</span><span class="p">]</span></div>
+</span><span data-line="287"><span class="k">class</span><span class="w"> </span><span class="nc">LifeSpanShutdownCompleteEvent</span><span class="p">(</span><span class="n">TypedDict</span><span class="p">):</span>
+</span><span data-line="288"><span class="w">    </span><span class="sd">&quot;&quot;&quot;ASGI `lifespan.shutdown.complete` event.&quot;&quot;&quot;</span>
+</span><span data-line="289">
+</span><span data-line="290">    <span class="nb">type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;lifespan.shutdown.complete&quot;</span><span class="p">]</span></div>
 
+</span><span data-line="291">
 </span><span data-line="292">
-</span><span data-line="293">
 <div class="viewcode-block" id="LifeSpanShutdownFailedEvent">
 <a class="viewcode-back" href="../../../reference/types.html#litestar.types.LifeSpanShutdownFailedEvent">[docs]</a>
-</span><span data-line="294"><span class="k">class</span><span class="w"> </span><span class="nc">LifeSpanShutdownFailedEvent</span><span class="p">(</span><span class="n">TypedDict</span><span class="p">):</span>
-</span><span data-line="295"><span class="w">    </span><span class="sd">&quot;&quot;&quot;ASGI `lifespan.shutdown.failed` event.&quot;&quot;&quot;</span>
-</span><span data-line="296">
-</span><span data-line="297">    <span class="nb">type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;lifespan.shutdown.failed&quot;</span><span class="p">]</span>
-</span><span data-line="298">    <span class="n">message</span><span class="p">:</span> <span class="nb">str</span></div>
+</span><span data-line="293"><span class="k">class</span><span class="w"> </span><span class="nc">LifeSpanShutdownFailedEvent</span><span class="p">(</span><span class="n">TypedDict</span><span class="p">):</span>
+</span><span data-line="294"><span class="w">    </span><span class="sd">&quot;&quot;&quot;ASGI `lifespan.shutdown.failed` event.&quot;&quot;&quot;</span>
+</span><span data-line="295">
+</span><span data-line="296">    <span class="nb">type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;lifespan.shutdown.failed&quot;</span><span class="p">]</span>
+</span><span data-line="297">    <span class="n">message</span><span class="p">:</span> <span class="nb">str</span></div>
 
+</span><span data-line="298">
 </span><span data-line="299">
-</span><span data-line="300">
-</span><span data-line="301"><span class="n">HTTPReceiveMessage</span><span class="p">:</span> <span class="n">TypeAlias</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span>
-</span><span data-line="302">    <span class="n">HTTPRequestEvent</span><span class="p">,</span>
-</span><span data-line="303">    <span class="n">HTTPDisconnectEvent</span><span class="p">,</span>
-</span><span data-line="304"><span class="p">]</span>
-</span><span data-line="305"><span class="n">WebSocketReceiveMessage</span><span class="p">:</span> <span class="n">TypeAlias</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span>
-</span><span data-line="306">    <span class="n">WebSocketConnectEvent</span><span class="p">,</span>
-</span><span data-line="307">    <span class="n">WebSocketReceiveEvent</span><span class="p">,</span>
-</span><span data-line="308">    <span class="n">WebSocketDisconnectEvent</span><span class="p">,</span>
-</span><span data-line="309"><span class="p">]</span>
-</span><span data-line="310"><span class="n">LifeSpanReceiveMessage</span><span class="p">:</span> <span class="n">TypeAlias</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span>
-</span><span data-line="311">    <span class="n">LifeSpanStartupEvent</span><span class="p">,</span>
-</span><span data-line="312">    <span class="n">LifeSpanShutdownEvent</span><span class="p">,</span>
-</span><span data-line="313"><span class="p">]</span>
-</span><span data-line="314"><span class="n">HTTPSendMessage</span><span class="p">:</span> <span class="n">TypeAlias</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span>
-</span><span data-line="315">    <span class="n">HTTPResponseStartEvent</span><span class="p">,</span>
-</span><span data-line="316">    <span class="n">HTTPResponseBodyEvent</span><span class="p">,</span>
-</span><span data-line="317">    <span class="n">HTTPServerPushEvent</span><span class="p">,</span>
-</span><span data-line="318">    <span class="n">HTTPDisconnectEvent</span><span class="p">,</span>
-</span><span data-line="319"><span class="p">]</span>
-</span><span data-line="320"><span class="n">WebSocketSendMessage</span><span class="p">:</span> <span class="n">TypeAlias</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span>
-</span><span data-line="321">    <span class="n">WebSocketAcceptEvent</span><span class="p">,</span>
-</span><span data-line="322">    <span class="n">WebSocketSendEvent</span><span class="p">,</span>
-</span><span data-line="323">    <span class="n">WebSocketResponseStartEvent</span><span class="p">,</span>
-</span><span data-line="324">    <span class="n">WebSocketResponseBodyEvent</span><span class="p">,</span>
-</span><span data-line="325">    <span class="n">WebSocketCloseEvent</span><span class="p">,</span>
-</span><span data-line="326"><span class="p">]</span>
-</span><span data-line="327"><span class="n">LifeSpanSendMessage</span><span class="p">:</span> <span class="n">TypeAlias</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span>
-</span><span data-line="328">    <span class="n">LifeSpanStartupCompleteEvent</span><span class="p">,</span>
-</span><span data-line="329">    <span class="n">LifeSpanStartupFailedEvent</span><span class="p">,</span>
-</span><span data-line="330">    <span class="n">LifeSpanShutdownCompleteEvent</span><span class="p">,</span>
-</span><span data-line="331">    <span class="n">LifeSpanShutdownFailedEvent</span><span class="p">,</span>
-</span><span data-line="332"><span class="p">]</span>
-</span><span data-line="333"><span class="n">LifeSpanReceive</span><span class="p">:</span> <span class="n">TypeAlias</span> <span class="o">=</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">Awaitable</span><span class="p">[</span><span class="n">LifeSpanReceiveMessage</span><span class="p">]]</span>
-</span><span data-line="334"><span class="n">LifeSpanSend</span><span class="p">:</span> <span class="n">TypeAlias</span> <span class="o">=</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">LifeSpanSendMessage</span><span class="p">],</span> <span class="n">Awaitable</span><span class="p">[</span><span class="kc">None</span><span class="p">]]</span>
-</span><span data-line="335"><span class="n">Message</span><span class="p">:</span> <span class="n">TypeAlias</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span><span class="n">HTTPSendMessage</span><span class="p">,</span> <span class="n">WebSocketSendMessage</span><span class="p">]</span>
-</span><span data-line="336"><span class="n">ReceiveMessage</span><span class="p">:</span> <span class="n">TypeAlias</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span><span class="n">HTTPReceiveMessage</span><span class="p">,</span> <span class="n">WebSocketReceiveMessage</span><span class="p">]</span>
-</span><span data-line="337"><span class="n">Scope</span><span class="p">:</span> <span class="n">TypeAlias</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span><span class="n">HTTPScope</span><span class="p">,</span> <span class="n">WebSocketScope</span><span class="p">]</span>
-</span><span data-line="338"><span class="n">Receive</span><span class="p">:</span> <span class="n">TypeAlias</span> <span class="o">=</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">Awaitable</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">HTTPReceiveMessage</span><span class="p">,</span> <span class="n">WebSocketReceiveMessage</span><span class="p">]]]</span>
-</span><span data-line="339"><span class="n">Send</span><span class="p">:</span> <span class="n">TypeAlias</span> <span class="o">=</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Message</span><span class="p">],</span> <span class="n">Awaitable</span><span class="p">[</span><span class="kc">None</span><span class="p">]]</span>
-</span><span data-line="340"><span class="n">ASGIApp</span><span class="p">:</span> <span class="n">TypeAlias</span> <span class="o">=</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Scope</span><span class="p">,</span> <span class="n">Receive</span><span class="p">,</span> <span class="n">Send</span><span class="p">],</span> <span class="n">Awaitable</span><span class="p">[</span><span class="kc">None</span><span class="p">]]</span>
-</span><span data-line="341"><span class="n">RawHeaders</span><span class="p">:</span> <span class="n">TypeAlias</span> <span class="o">=</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">bytes</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">]]</span>
-</span><span data-line="342"><span class="n">RawHeadersList</span><span class="p">:</span> <span class="n">TypeAlias</span> <span class="o">=</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">bytes</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">]]</span>
-</span><span data-line="343"><span class="n">WebSocketMode</span><span class="p">:</span> <span class="n">TypeAlias</span> <span class="o">=</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;text&quot;</span><span class="p">,</span> <span class="s2">&quot;binary&quot;</span><span class="p">]</span>
+</span><span data-line="300"><span class="n">HTTPReceiveMessage</span><span class="p">:</span> <span class="n">TypeAlias</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span>
+</span><span data-line="301">    <span class="n">HTTPRequestEvent</span><span class="p">,</span>
+</span><span data-line="302">    <span class="n">HTTPDisconnectEvent</span><span class="p">,</span>
+</span><span data-line="303"><span class="p">]</span>
+</span><span data-line="304"><span class="n">WebSocketReceiveMessage</span><span class="p">:</span> <span class="n">TypeAlias</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span>
+</span><span data-line="305">    <span class="n">WebSocketConnectEvent</span><span class="p">,</span>
+</span><span data-line="306">    <span class="n">WebSocketReceiveEvent</span><span class="p">,</span>
+</span><span data-line="307">    <span class="n">WebSocketDisconnectEvent</span><span class="p">,</span>
+</span><span data-line="308"><span class="p">]</span>
+</span><span data-line="309"><span class="n">LifeSpanReceiveMessage</span><span class="p">:</span> <span class="n">TypeAlias</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span>
+</span><span data-line="310">    <span class="n">LifeSpanStartupEvent</span><span class="p">,</span>
+</span><span data-line="311">    <span class="n">LifeSpanShutdownEvent</span><span class="p">,</span>
+</span><span data-line="312"><span class="p">]</span>
+</span><span data-line="313"><span class="n">HTTPSendMessage</span><span class="p">:</span> <span class="n">TypeAlias</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span>
+</span><span data-line="314">    <span class="n">HTTPResponseStartEvent</span><span class="p">,</span>
+</span><span data-line="315">    <span class="n">HTTPResponseBodyEvent</span><span class="p">,</span>
+</span><span data-line="316">    <span class="n">HTTPServerPushEvent</span><span class="p">,</span>
+</span><span data-line="317">    <span class="n">HTTPDisconnectEvent</span><span class="p">,</span>
+</span><span data-line="318"><span class="p">]</span>
+</span><span data-line="319"><span class="n">WebSocketSendMessage</span><span class="p">:</span> <span class="n">TypeAlias</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span>
+</span><span data-line="320">    <span class="n">WebSocketAcceptEvent</span><span class="p">,</span>
+</span><span data-line="321">    <span class="n">WebSocketSendEvent</span><span class="p">,</span>
+</span><span data-line="322">    <span class="n">WebSocketResponseStartEvent</span><span class="p">,</span>
+</span><span data-line="323">    <span class="n">WebSocketResponseBodyEvent</span><span class="p">,</span>
+</span><span data-line="324">    <span class="n">WebSocketCloseEvent</span><span class="p">,</span>
+</span><span data-line="325"><span class="p">]</span>
+</span><span data-line="326"><span class="n">LifeSpanSendMessage</span><span class="p">:</span> <span class="n">TypeAlias</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span>
+</span><span data-line="327">    <span class="n">LifeSpanStartupCompleteEvent</span><span class="p">,</span>
+</span><span data-line="328">    <span class="n">LifeSpanStartupFailedEvent</span><span class="p">,</span>
+</span><span data-line="329">    <span class="n">LifeSpanShutdownCompleteEvent</span><span class="p">,</span>
+</span><span data-line="330">    <span class="n">LifeSpanShutdownFailedEvent</span><span class="p">,</span>
+</span><span data-line="331"><span class="p">]</span>
+</span><span data-line="332"><span class="n">LifeSpanReceive</span><span class="p">:</span> <span class="n">TypeAlias</span> <span class="o">=</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">Awaitable</span><span class="p">[</span><span class="n">LifeSpanReceiveMessage</span><span class="p">]]</span>
+</span><span data-line="333"><span class="n">LifeSpanSend</span><span class="p">:</span> <span class="n">TypeAlias</span> <span class="o">=</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">LifeSpanSendMessage</span><span class="p">],</span> <span class="n">Awaitable</span><span class="p">[</span><span class="kc">None</span><span class="p">]]</span>
+</span><span data-line="334"><span class="n">Message</span><span class="p">:</span> <span class="n">TypeAlias</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span><span class="n">HTTPSendMessage</span><span class="p">,</span> <span class="n">WebSocketSendMessage</span><span class="p">]</span>
+</span><span data-line="335"><span class="n">ReceiveMessage</span><span class="p">:</span> <span class="n">TypeAlias</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span><span class="n">HTTPReceiveMessage</span><span class="p">,</span> <span class="n">WebSocketReceiveMessage</span><span class="p">]</span>
+</span><span data-line="336"><span class="n">Scope</span><span class="p">:</span> <span class="n">TypeAlias</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span><span class="n">HTTPScope</span><span class="p">,</span> <span class="n">WebSocketScope</span><span class="p">]</span>
+</span><span data-line="337"><span class="n">Receive</span><span class="p">:</span> <span class="n">TypeAlias</span> <span class="o">=</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">Awaitable</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">HTTPReceiveMessage</span><span class="p">,</span> <span class="n">WebSocketReceiveMessage</span><span class="p">]]]</span>
+</span><span data-line="338"><span class="n">Send</span><span class="p">:</span> <span class="n">TypeAlias</span> <span class="o">=</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Message</span><span class="p">],</span> <span class="n">Awaitable</span><span class="p">[</span><span class="kc">None</span><span class="p">]]</span>
+</span><span data-line="339"><span class="n">ASGIApp</span><span class="p">:</span> <span class="n">TypeAlias</span> <span class="o">=</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Scope</span><span class="p">,</span> <span class="n">Receive</span><span class="p">,</span> <span class="n">Send</span><span class="p">],</span> <span class="n">Awaitable</span><span class="p">[</span><span class="kc">None</span><span class="p">]]</span>
+</span><span data-line="340"><span class="n">RawHeaders</span><span class="p">:</span> <span class="n">TypeAlias</span> <span class="o">=</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">bytes</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">]]</span>
+</span><span data-line="341"><span class="n">RawHeadersList</span><span class="p">:</span> <span class="n">TypeAlias</span> <span class="o">=</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">bytes</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">]]</span>
+</span><span data-line="342"><span class="n">WebSocketMode</span><span class="p">:</span> <span class="n">TypeAlias</span> <span class="o">=</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;text&quot;</span><span class="p">,</span> <span class="s2">&quot;binary&quot;</span><span class="p">]</span>
 </span></pre></div>
         </article><button class="back-to-top" type="button">
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">

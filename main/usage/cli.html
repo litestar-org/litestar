@@ -693,12 +693,12 @@ You can achieve this by adding the special <code class="docutils literal notrans
 <p>This makes them suitable for tasks that should happen exactly once, like initializing a database.</p>
 <div class="sd-tab-set docutils">
 <input id="sd-tab-item-4" name="sd-tab-set-1" type="radio">
-<label class="sd-tab-label" data-sync-group="tab" data-sync-id="3.8" for="sd-tab-item-4">
-Python 3.8+</label><div class="sd-tab-content docutils">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="3.11" for="sd-tab-item-4">
+Python 3.11+</label><div class="sd-tab-content docutils">
 <div class="literal-block-wrapper docutils container" id="id11">
 <div class="code-block-caption"><span class="caption-text">Using the <cite>server_lifespan</cite> hook</span><a class="headerlink" href="#id11" title="Link to this code">¶</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">contextlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">contextmanager</span>
-</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Generator</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Generator</span>
 </span><span data-line="3">
 </span><span data-line="4"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span>
 </span><span data-line="5"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.plugins.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">CLIPlugin</span>
@@ -721,8 +721,8 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 </div>
 </div>
 <input checked="checked" id="sd-tab-item-5" name="sd-tab-set-1" type="radio">
-<label class="sd-tab-label" data-sync-group="tab" data-sync-id="3.9" for="sd-tab-item-5">
-Python 3.9+</label><div class="sd-tab-content docutils">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="3.13" for="sd-tab-item-5">
+Python 3.13+</label><div class="sd-tab-content docutils">
 <div class="literal-block-wrapper docutils container" id="id12">
 <div class="code-block-caption"><span class="caption-text">Using the <cite>server_lifespan</cite> hook</span><a class="headerlink" href="#id12" title="Link to this code">¶</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">contextlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">contextmanager</span>
@@ -735,7 +735,7 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 </span><span data-line="8"><span class="k">class</span><span class="w"> </span><span class="nc">StartupPrintPlugin</span><span class="p">(</span><span class="n">CLIPlugin</span><span class="p">):</span>
 </span><span data-line="9">
 </span><span data-line="10">    <span class="nd">@contextmanager</span>
-</span><span data-line="11">    <span class="k">def</span><span class="w"> </span><span class="nf">server_lifespan</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">app</span><span class="p">:</span> <span class="n">Litestar</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+</span><span data-line="11">    <span class="k">def</span><span class="w"> </span><span class="nf">server_lifespan</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">app</span><span class="p">:</span> <span class="n">Litestar</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="kc">None</span><span class="p">]:</span>
 </span><span data-line="12">        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;i_run_before_startup_plugin&quot;</span><span class="p">)</span>  <span class="c1"># noqa: T201</span>
 </span><span data-line="13">        <span class="k">try</span><span class="p">:</span>
 </span><span data-line="14">            <span class="k">yield</span>

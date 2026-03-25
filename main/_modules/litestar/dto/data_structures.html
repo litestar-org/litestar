@@ -508,139 +508,140 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="6"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">FieldDefinition</span>
 </span><span data-line="7">
 </span><span data-line="8"><span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
-</span><span data-line="9">    <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Callable</span>
-</span><span data-line="10">
-</span><span data-line="11">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.dto</span><span class="w"> </span><span class="kn">import</span> <span class="n">DTOField</span>
-</span><span data-line="12">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.dto._backend</span><span class="w"> </span><span class="kn">import</span> <span class="n">DTOBackend</span>
-</span><span data-line="13">
-</span><span data-line="14"><span class="n">T</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;T&quot;</span><span class="p">)</span>
-</span><span data-line="15">
+</span><span data-line="9">    <span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Callable</span>
+</span><span data-line="10">    <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
+</span><span data-line="11">
+</span><span data-line="12">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.dto</span><span class="w"> </span><span class="kn">import</span> <span class="n">DTOField</span>
+</span><span data-line="13">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.dto._backend</span><span class="w"> </span><span class="kn">import</span> <span class="n">DTOBackend</span>
+</span><span data-line="14">
+</span><span data-line="15"><span class="n">T</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;T&quot;</span><span class="p">)</span>
 </span><span data-line="16">
+</span><span data-line="17">
 <div class="viewcode-block" id="DTOData">
 <a class="viewcode-back" href="../../../reference/dto/data_structures.html#litestar.dto.data_structures.DTOData">[docs]</a>
-</span><span data-line="17"><span class="k">class</span><span class="w"> </span><span class="nc">DTOData</span><span class="p">(</span><span class="n">Generic</span><span class="p">[</span><span class="n">T</span><span class="p">]):</span>
-</span><span data-line="18"><span class="w">    </span><span class="sd">&quot;&quot;&quot;DTO validated data and utility methods.&quot;&quot;&quot;</span>
-</span><span data-line="19">
-</span><span data-line="20">    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;_backend&quot;</span><span class="p">,</span> <span class="s2">&quot;_data_as_builtins&quot;</span><span class="p">)</span>
-</span><span data-line="21">
+</span><span data-line="18"><span class="k">class</span><span class="w"> </span><span class="nc">DTOData</span><span class="p">(</span><span class="n">Generic</span><span class="p">[</span><span class="n">T</span><span class="p">]):</span>
+</span><span data-line="19"><span class="w">    </span><span class="sd">&quot;&quot;&quot;DTO validated data and utility methods.&quot;&quot;&quot;</span>
+</span><span data-line="20">
+</span><span data-line="21">    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;_backend&quot;</span><span class="p">,</span> <span class="s2">&quot;_data_as_builtins&quot;</span><span class="p">)</span>
+</span><span data-line="22">
 <div class="viewcode-block" id="DTOData.__init__">
 <a class="viewcode-back" href="../../../reference/dto/data_structures.html#litestar.dto.data_structures.DTOData.__init__">[docs]</a>
-</span><span data-line="22">    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">backend</span><span class="p">:</span> <span class="n">DTOBackend</span><span class="p">,</span> <span class="n">data_as_builtins</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="23">        <span class="bp">self</span><span class="o">.</span><span class="n">_backend</span> <span class="o">=</span> <span class="n">backend</span>
-</span><span data-line="24">        <span class="bp">self</span><span class="o">.</span><span class="n">_data_as_builtins</span> <span class="o">=</span> <span class="n">data_as_builtins</span></div>
+</span><span data-line="23">    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">backend</span><span class="p">:</span> <span class="n">DTOBackend</span><span class="p">,</span> <span class="n">data_as_builtins</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="24">        <span class="bp">self</span><span class="o">.</span><span class="n">_backend</span> <span class="o">=</span> <span class="n">backend</span>
+</span><span data-line="25">        <span class="bp">self</span><span class="o">.</span><span class="n">_data_as_builtins</span> <span class="o">=</span> <span class="n">data_as_builtins</span></div>
 
-</span><span data-line="25">
+</span><span data-line="26">
 <div class="viewcode-block" id="DTOData.create_instance">
 <a class="viewcode-back" href="../../../reference/dto/data_structures.html#litestar.dto.data_structures.DTOData.create_instance">[docs]</a>
-</span><span data-line="26">    <span class="k">def</span><span class="w"> </span><span class="nf">create_instance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">T</span><span class="p">:</span>
-</span><span data-line="27"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Create an instance of the DTO validated data.</span>
-</span><span data-line="28">
-</span><span data-line="29"><span class="sd">        Args:</span>
-</span><span data-line="30"><span class="sd">            **kwargs: Additional data to create the instance with. Takes precedence over DTO validated data.</span>
-</span><span data-line="31"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="32">        <span class="n">data</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_data_as_builtins</span><span class="p">)</span>
-</span><span data-line="33">        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-</span><span data-line="34">            <span class="n">_set_nested_dict_value</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">k</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;__&quot;</span><span class="p">),</span> <span class="n">v</span><span class="p">)</span>
-</span><span data-line="35">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_backend</span><span class="o">.</span><span class="n">transfer_data_from_builtins</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>  <span class="c1"># type: ignore[no-any-return]</span></div>
+</span><span data-line="27">    <span class="k">def</span><span class="w"> </span><span class="nf">create_instance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">T</span><span class="p">:</span>
+</span><span data-line="28"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Create an instance of the DTO validated data.</span>
+</span><span data-line="29">
+</span><span data-line="30"><span class="sd">        Args:</span>
+</span><span data-line="31"><span class="sd">            **kwargs: Additional data to create the instance with. Takes precedence over DTO validated data.</span>
+</span><span data-line="32"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="33">        <span class="n">data</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_data_as_builtins</span><span class="p">)</span>
+</span><span data-line="34">        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+</span><span data-line="35">            <span class="n">_set_nested_dict_value</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">k</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;__&quot;</span><span class="p">),</span> <span class="n">v</span><span class="p">)</span>
+</span><span data-line="36">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_backend</span><span class="o">.</span><span class="n">transfer_data_from_builtins</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>  <span class="c1"># type: ignore[no-any-return]</span></div>
 
-</span><span data-line="36">
+</span><span data-line="37">
 <div class="viewcode-block" id="DTOData.update_instance">
 <a class="viewcode-back" href="../../../reference/dto/data_structures.html#litestar.dto.data_structures.DTOData.update_instance">[docs]</a>
-</span><span data-line="37">    <span class="k">def</span><span class="w"> </span><span class="nf">update_instance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">:</span> <span class="n">T</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">T</span><span class="p">:</span>
-</span><span data-line="38"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Update an instance with the DTO validated data.</span>
-</span><span data-line="39">
-</span><span data-line="40"><span class="sd">        Args:</span>
-</span><span data-line="41"><span class="sd">            instance: The instance to update.</span>
-</span><span data-line="42"><span class="sd">            **kwargs: Additional data to update the instance with. Takes precedence over DTO validated data.</span>
-</span><span data-line="43"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="44">        <span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">_data_as_builtins</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">}</span>
-</span><span data-line="45">        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-</span><span data-line="46">            <span class="nb">setattr</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
-</span><span data-line="47">        <span class="k">return</span> <span class="n">instance</span></div>
+</span><span data-line="38">    <span class="k">def</span><span class="w"> </span><span class="nf">update_instance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">:</span> <span class="n">T</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">T</span><span class="p">:</span>
+</span><span data-line="39"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Update an instance with the DTO validated data.</span>
+</span><span data-line="40">
+</span><span data-line="41"><span class="sd">        Args:</span>
+</span><span data-line="42"><span class="sd">            instance: The instance to update.</span>
+</span><span data-line="43"><span class="sd">            **kwargs: Additional data to update the instance with. Takes precedence over DTO validated data.</span>
+</span><span data-line="44"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="45">        <span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">_data_as_builtins</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">}</span>
+</span><span data-line="46">        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+</span><span data-line="47">            <span class="nb">setattr</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+</span><span data-line="48">        <span class="k">return</span> <span class="n">instance</span></div>
 
-</span><span data-line="48">
+</span><span data-line="49">
 <div class="viewcode-block" id="DTOData.as_builtins">
 <a class="viewcode-back" href="../../../reference/dto/data_structures.html#litestar.dto.data_structures.DTOData.as_builtins">[docs]</a>
-</span><span data-line="49">    <span class="k">def</span><span class="w"> </span><span class="nf">as_builtins</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
-</span><span data-line="50"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the DTO validated data as builtins.&quot;&quot;&quot;</span>
-</span><span data-line="51">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data_as_builtins</span></div>
+</span><span data-line="50">    <span class="k">def</span><span class="w"> </span><span class="nf">as_builtins</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+</span><span data-line="51"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the DTO validated data as builtins.&quot;&quot;&quot;</span>
+</span><span data-line="52">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data_as_builtins</span></div>
 </div>
 
-</span><span data-line="52">
 </span><span data-line="53">
-</span><span data-line="54"><span class="k">def</span><span class="w"> </span><span class="nf">_set_nested_dict_value</span><span class="p">(</span><span class="n">d</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">keys</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">value</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="55">    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">keys</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-</span><span data-line="56">        <span class="n">d</span><span class="p">[</span><span class="n">keys</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">=</span> <span class="n">value</span>
-</span><span data-line="57">    <span class="k">else</span><span class="p">:</span>
-</span><span data-line="58">        <span class="n">key</span> <span class="o">=</span> <span class="n">keys</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-</span><span data-line="59">        <span class="n">d</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="p">{})</span>
-</span><span data-line="60">        <span class="n">_set_nested_dict_value</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="n">key</span><span class="p">],</span> <span class="n">keys</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span> <span class="n">value</span><span class="p">)</span>
-</span><span data-line="61">
+</span><span data-line="54">
+</span><span data-line="55"><span class="k">def</span><span class="w"> </span><span class="nf">_set_nested_dict_value</span><span class="p">(</span><span class="n">d</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">keys</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">value</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="56">    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">keys</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+</span><span data-line="57">        <span class="n">d</span><span class="p">[</span><span class="n">keys</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">=</span> <span class="n">value</span>
+</span><span data-line="58">    <span class="k">else</span><span class="p">:</span>
+</span><span data-line="59">        <span class="n">key</span> <span class="o">=</span> <span class="n">keys</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+</span><span data-line="60">        <span class="n">d</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="p">{})</span>
+</span><span data-line="61">        <span class="n">_set_nested_dict_value</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="n">key</span><span class="p">],</span> <span class="n">keys</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span> <span class="n">value</span><span class="p">)</span>
 </span><span data-line="62">
+</span><span data-line="63">
 <div class="viewcode-block" id="DTOFieldDefinition">
 <a class="viewcode-back" href="../../../reference/dto/data_structures.html#litestar.dto.data_structures.DTOFieldDefinition">[docs]</a>
-</span><span data-line="63"><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</span><span data-line="64"><span class="k">class</span><span class="w"> </span><span class="nc">DTOFieldDefinition</span><span class="p">(</span><span class="n">FieldDefinition</span><span class="p">):</span>
-</span><span data-line="65"><span class="w">    </span><span class="sd">&quot;&quot;&quot;A model field representation for purposes of generating a DTO backend model type.&quot;&quot;&quot;</span>
-</span><span data-line="66">
-</span><span data-line="67">    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span>
-</span><span data-line="68">        <span class="s2">&quot;default_factory&quot;</span><span class="p">,</span>
-</span><span data-line="69">        <span class="s2">&quot;dto_field&quot;</span><span class="p">,</span>
-</span><span data-line="70">        <span class="s2">&quot;model_name&quot;</span><span class="p">,</span>
-</span><span data-line="71">        <span class="s2">&quot;passthrough_constraints&quot;</span><span class="p">,</span>
-</span><span data-line="72">    <span class="p">)</span>
-</span><span data-line="73">
-</span><span data-line="74">    <span class="n">model_name</span><span class="p">:</span> <span class="nb">str</span>
-</span><span data-line="75"><span class="w">    </span><span class="sd">&quot;&quot;&quot;The name of the model for which the field is generated.&quot;&quot;&quot;</span>
-</span><span data-line="76">    <span class="n">default_factory</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[],</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span>
-</span><span data-line="77"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Default factory of the field.&quot;&quot;&quot;</span>
-</span><span data-line="78">    <span class="n">dto_field</span><span class="p">:</span> <span class="n">DTOField</span>
-</span><span data-line="79"><span class="w">    </span><span class="sd">&quot;&quot;&quot;DTO field configuration.&quot;&quot;&quot;</span>
-</span><span data-line="80">    <span class="n">passthrough_constraints</span><span class="p">:</span> <span class="nb">bool</span>
-</span><span data-line="81"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Pass constraints of the source annotation to be validated by the DTO backend&quot;&quot;&quot;</span>
-</span><span data-line="82">
+</span><span data-line="64"><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span data-line="65"><span class="k">class</span><span class="w"> </span><span class="nc">DTOFieldDefinition</span><span class="p">(</span><span class="n">FieldDefinition</span><span class="p">):</span>
+</span><span data-line="66"><span class="w">    </span><span class="sd">&quot;&quot;&quot;A model field representation for purposes of generating a DTO backend model type.&quot;&quot;&quot;</span>
+</span><span data-line="67">
+</span><span data-line="68">    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span>
+</span><span data-line="69">        <span class="s2">&quot;default_factory&quot;</span><span class="p">,</span>
+</span><span data-line="70">        <span class="s2">&quot;dto_field&quot;</span><span class="p">,</span>
+</span><span data-line="71">        <span class="s2">&quot;model_name&quot;</span><span class="p">,</span>
+</span><span data-line="72">        <span class="s2">&quot;passthrough_constraints&quot;</span><span class="p">,</span>
+</span><span data-line="73">    <span class="p">)</span>
+</span><span data-line="74">
+</span><span data-line="75">    <span class="n">model_name</span><span class="p">:</span> <span class="nb">str</span>
+</span><span data-line="76"><span class="w">    </span><span class="sd">&quot;&quot;&quot;The name of the model for which the field is generated.&quot;&quot;&quot;</span>
+</span><span data-line="77">    <span class="n">default_factory</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[],</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span>
+</span><span data-line="78"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Default factory of the field.&quot;&quot;&quot;</span>
+</span><span data-line="79">    <span class="n">dto_field</span><span class="p">:</span> <span class="n">DTOField</span>
+</span><span data-line="80"><span class="w">    </span><span class="sd">&quot;&quot;&quot;DTO field configuration.&quot;&quot;&quot;</span>
+</span><span data-line="81">    <span class="n">passthrough_constraints</span><span class="p">:</span> <span class="nb">bool</span>
+</span><span data-line="82"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Pass constraints of the source annotation to be validated by the DTO backend&quot;&quot;&quot;</span>
+</span><span data-line="83">
 <div class="viewcode-block" id="DTOFieldDefinition.from_field_definition">
 <a class="viewcode-back" href="../../../reference/dto/data_structures.html#litestar.dto.data_structures.DTOFieldDefinition.from_field_definition">[docs]</a>
-</span><span data-line="83">    <span class="nd">@classmethod</span>
-</span><span data-line="84">    <span class="k">def</span><span class="w"> </span><span class="nf">from_field_definition</span><span class="p">(</span>
-</span><span data-line="85">        <span class="bp">cls</span><span class="p">,</span>
-</span><span data-line="86">        <span class="n">field_definition</span><span class="p">:</span> <span class="n">FieldDefinition</span><span class="p">,</span>
-</span><span data-line="87">        <span class="n">model_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-</span><span data-line="88">        <span class="n">default_factory</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[],</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="89">        <span class="n">dto_field</span><span class="p">:</span> <span class="n">DTOField</span><span class="p">,</span>
-</span><span data-line="90">        <span class="n">passthrough_constraints</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-</span><span data-line="91">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DTOFieldDefinition</span><span class="p">:</span>
-</span><span data-line="92"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a :class:`FieldDefinition` from a :class:`FieldDefinition`.</span>
-</span><span data-line="93">
-</span><span data-line="94"><span class="sd">        Args:</span>
-</span><span data-line="95"><span class="sd">            field_definition: A :class:`FieldDefinition` to create a :class:`FieldDefinition` from.</span>
-</span><span data-line="96"><span class="sd">            model_name: The name of the model.</span>
-</span><span data-line="97"><span class="sd">            default_factory: Default factory function, if any.</span>
-</span><span data-line="98"><span class="sd">            dto_field: DTOField instance.</span>
-</span><span data-line="99"><span class="sd">            passthrough_constraints: Pass constraints of the source annotation to be validated by the DTO backend</span>
-</span><span data-line="100">
-</span><span data-line="101"><span class="sd">        Returns:</span>
-</span><span data-line="102"><span class="sd">            A :class:`FieldDefinition` instance.</span>
-</span><span data-line="103"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="104">        <span class="k">return</span> <span class="n">DTOFieldDefinition</span><span class="p">(</span>
-</span><span data-line="105">            <span class="n">annotation</span><span class="o">=</span><span class="n">field_definition</span><span class="o">.</span><span class="n">annotation</span><span class="p">,</span>
-</span><span data-line="106">            <span class="n">args</span><span class="o">=</span><span class="n">field_definition</span><span class="o">.</span><span class="n">args</span><span class="p">,</span>
-</span><span data-line="107">            <span class="n">default</span><span class="o">=</span><span class="n">field_definition</span><span class="o">.</span><span class="n">default</span><span class="p">,</span>
-</span><span data-line="108">            <span class="n">default_factory</span><span class="o">=</span><span class="n">default_factory</span><span class="p">,</span>
-</span><span data-line="109">            <span class="n">dto_field</span><span class="o">=</span><span class="n">dto_field</span><span class="p">,</span>
-</span><span data-line="110">            <span class="n">extra</span><span class="o">=</span><span class="n">field_definition</span><span class="o">.</span><span class="n">extra</span><span class="p">,</span>
-</span><span data-line="111">            <span class="n">inner_types</span><span class="o">=</span><span class="n">field_definition</span><span class="o">.</span><span class="n">inner_types</span><span class="p">,</span>
-</span><span data-line="112">            <span class="n">instantiable_origin</span><span class="o">=</span><span class="n">field_definition</span><span class="o">.</span><span class="n">instantiable_origin</span><span class="p">,</span>
-</span><span data-line="113">            <span class="n">kwarg_definition</span><span class="o">=</span><span class="n">field_definition</span><span class="o">.</span><span class="n">kwarg_definition</span><span class="p">,</span>
-</span><span data-line="114">            <span class="n">metadata</span><span class="o">=</span><span class="n">field_definition</span><span class="o">.</span><span class="n">metadata</span><span class="p">,</span>
-</span><span data-line="115">            <span class="n">model_name</span><span class="o">=</span><span class="n">model_name</span><span class="p">,</span>
-</span><span data-line="116">            <span class="n">name</span><span class="o">=</span><span class="n">field_definition</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
-</span><span data-line="117">            <span class="n">origin</span><span class="o">=</span><span class="n">field_definition</span><span class="o">.</span><span class="n">origin</span><span class="p">,</span>
-</span><span data-line="118">            <span class="n">raw</span><span class="o">=</span><span class="n">field_definition</span><span class="o">.</span><span class="n">raw</span><span class="p">,</span>
-</span><span data-line="119">            <span class="n">safe_generic_origin</span><span class="o">=</span><span class="n">field_definition</span><span class="o">.</span><span class="n">safe_generic_origin</span><span class="p">,</span>
-</span><span data-line="120">            <span class="n">type_wrappers</span><span class="o">=</span><span class="n">field_definition</span><span class="o">.</span><span class="n">type_wrappers</span><span class="p">,</span>
-</span><span data-line="121">            <span class="n">passthrough_constraints</span><span class="o">=</span><span class="n">passthrough_constraints</span><span class="p">,</span>
-</span><span data-line="122">        <span class="p">)</span></div>
+</span><span data-line="84">    <span class="nd">@classmethod</span>
+</span><span data-line="85">    <span class="k">def</span><span class="w"> </span><span class="nf">from_field_definition</span><span class="p">(</span>
+</span><span data-line="86">        <span class="bp">cls</span><span class="p">,</span>
+</span><span data-line="87">        <span class="n">field_definition</span><span class="p">:</span> <span class="n">FieldDefinition</span><span class="p">,</span>
+</span><span data-line="88">        <span class="n">model_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+</span><span data-line="89">        <span class="n">default_factory</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[],</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="90">        <span class="n">dto_field</span><span class="p">:</span> <span class="n">DTOField</span><span class="p">,</span>
+</span><span data-line="91">        <span class="n">passthrough_constraints</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+</span><span data-line="92">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DTOFieldDefinition</span><span class="p">:</span>
+</span><span data-line="93"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a :class:`FieldDefinition` from a :class:`FieldDefinition`.</span>
+</span><span data-line="94">
+</span><span data-line="95"><span class="sd">        Args:</span>
+</span><span data-line="96"><span class="sd">            field_definition: A :class:`FieldDefinition` to create a :class:`FieldDefinition` from.</span>
+</span><span data-line="97"><span class="sd">            model_name: The name of the model.</span>
+</span><span data-line="98"><span class="sd">            default_factory: Default factory function, if any.</span>
+</span><span data-line="99"><span class="sd">            dto_field: DTOField instance.</span>
+</span><span data-line="100"><span class="sd">            passthrough_constraints: Pass constraints of the source annotation to be validated by the DTO backend</span>
+</span><span data-line="101">
+</span><span data-line="102"><span class="sd">        Returns:</span>
+</span><span data-line="103"><span class="sd">            A :class:`FieldDefinition` instance.</span>
+</span><span data-line="104"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="105">        <span class="k">return</span> <span class="n">DTOFieldDefinition</span><span class="p">(</span>
+</span><span data-line="106">            <span class="n">annotation</span><span class="o">=</span><span class="n">field_definition</span><span class="o">.</span><span class="n">annotation</span><span class="p">,</span>
+</span><span data-line="107">            <span class="n">args</span><span class="o">=</span><span class="n">field_definition</span><span class="o">.</span><span class="n">args</span><span class="p">,</span>
+</span><span data-line="108">            <span class="n">default</span><span class="o">=</span><span class="n">field_definition</span><span class="o">.</span><span class="n">default</span><span class="p">,</span>
+</span><span data-line="109">            <span class="n">default_factory</span><span class="o">=</span><span class="n">default_factory</span><span class="p">,</span>
+</span><span data-line="110">            <span class="n">dto_field</span><span class="o">=</span><span class="n">dto_field</span><span class="p">,</span>
+</span><span data-line="111">            <span class="n">extra</span><span class="o">=</span><span class="n">field_definition</span><span class="o">.</span><span class="n">extra</span><span class="p">,</span>
+</span><span data-line="112">            <span class="n">inner_types</span><span class="o">=</span><span class="n">field_definition</span><span class="o">.</span><span class="n">inner_types</span><span class="p">,</span>
+</span><span data-line="113">            <span class="n">instantiable_origin</span><span class="o">=</span><span class="n">field_definition</span><span class="o">.</span><span class="n">instantiable_origin</span><span class="p">,</span>
+</span><span data-line="114">            <span class="n">kwarg_definition</span><span class="o">=</span><span class="n">field_definition</span><span class="o">.</span><span class="n">kwarg_definition</span><span class="p">,</span>
+</span><span data-line="115">            <span class="n">metadata</span><span class="o">=</span><span class="n">field_definition</span><span class="o">.</span><span class="n">metadata</span><span class="p">,</span>
+</span><span data-line="116">            <span class="n">model_name</span><span class="o">=</span><span class="n">model_name</span><span class="p">,</span>
+</span><span data-line="117">            <span class="n">name</span><span class="o">=</span><span class="n">field_definition</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+</span><span data-line="118">            <span class="n">origin</span><span class="o">=</span><span class="n">field_definition</span><span class="o">.</span><span class="n">origin</span><span class="p">,</span>
+</span><span data-line="119">            <span class="n">raw</span><span class="o">=</span><span class="n">field_definition</span><span class="o">.</span><span class="n">raw</span><span class="p">,</span>
+</span><span data-line="120">            <span class="n">safe_generic_origin</span><span class="o">=</span><span class="n">field_definition</span><span class="o">.</span><span class="n">safe_generic_origin</span><span class="p">,</span>
+</span><span data-line="121">            <span class="n">type_wrappers</span><span class="o">=</span><span class="n">field_definition</span><span class="o">.</span><span class="n">type_wrappers</span><span class="p">,</span>
+</span><span data-line="122">            <span class="n">passthrough_constraints</span><span class="o">=</span><span class="n">passthrough_constraints</span><span class="p">,</span>
+</span><span data-line="123">        <span class="p">)</span></div>
 </div>
 
 </span></pre></div>

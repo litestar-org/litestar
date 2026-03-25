@@ -502,81 +502,79 @@ data-aria-dark="Switch to auto color mode">
           <h1>Source code for litestar.plugins.attrs</h1><div class="highlight"><pre>
 <span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 </span><span data-line="2">
-</span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Any</span>
+</span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">TypeGuard</span>
 </span><span data-line="4">
-</span><span data-line="5"><span class="kn">from</span><span class="w"> </span><span class="nn">typing_extensions</span><span class="w"> </span><span class="kn">import</span> <span class="n">TypeGuard</span>
-</span><span data-line="6">
-</span><span data-line="7"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">MissingDependencyException</span>
-</span><span data-line="8"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.plugins</span><span class="w"> </span><span class="kn">import</span> <span class="n">OpenAPISchemaPlugin</span>
-</span><span data-line="9"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">Empty</span>
-</span><span data-line="10"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">FieldDefinition</span>
-</span><span data-line="11"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">is_optional_union</span>
-</span><span data-line="12">
-</span><span data-line="13"><span class="k">try</span><span class="p">:</span>
-</span><span data-line="14">    <span class="kn">import</span><span class="w"> </span><span class="nn">attr</span>
-</span><span data-line="15">    <span class="kn">import</span><span class="w"> </span><span class="nn">attrs</span>
-</span><span data-line="16"><span class="k">except</span> <span class="ne">ImportError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-</span><span data-line="17">    <span class="k">raise</span> <span class="n">MissingDependencyException</span><span class="p">(</span><span class="s2">&quot;attrs&quot;</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
-</span><span data-line="18">
-</span><span data-line="19"><span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
-</span><span data-line="20">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar._openapi.schema_generation</span><span class="w"> </span><span class="kn">import</span> <span class="n">SchemaCreator</span>
-</span><span data-line="21">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.openapi.spec</span><span class="w"> </span><span class="kn">import</span> <span class="n">Schema</span>
+</span><span data-line="5"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">MissingDependencyException</span>
+</span><span data-line="6"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.plugins</span><span class="w"> </span><span class="kn">import</span> <span class="n">OpenAPISchemaPlugin</span>
+</span><span data-line="7"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">Empty</span>
+</span><span data-line="8"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">FieldDefinition</span>
+</span><span data-line="9"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">is_optional_union</span>
+</span><span data-line="10">
+</span><span data-line="11"><span class="k">try</span><span class="p">:</span>
+</span><span data-line="12">    <span class="kn">import</span><span class="w"> </span><span class="nn">attr</span>
+</span><span data-line="13">    <span class="kn">import</span><span class="w"> </span><span class="nn">attrs</span>
+</span><span data-line="14"><span class="k">except</span> <span class="ne">ImportError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+</span><span data-line="15">    <span class="k">raise</span> <span class="n">MissingDependencyException</span><span class="p">(</span><span class="s2">&quot;attrs&quot;</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
+</span><span data-line="16">
+</span><span data-line="17"><span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+</span><span data-line="18">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar._openapi.schema_generation</span><span class="w"> </span><span class="kn">import</span> <span class="n">SchemaCreator</span>
+</span><span data-line="19">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.openapi.spec</span><span class="w"> </span><span class="kn">import</span> <span class="n">Schema</span>
+</span><span data-line="20">
+</span><span data-line="21"><span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;AttrsSchemaPlugin&quot;</span><span class="p">,</span> <span class="s2">&quot;is_attrs_class&quot;</span><span class="p">)</span>
 </span><span data-line="22">
-</span><span data-line="23"><span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;AttrsSchemaPlugin&quot;</span><span class="p">,</span> <span class="s2">&quot;is_attrs_class&quot;</span><span class="p">)</span>
-</span><span data-line="24">
-</span><span data-line="25">
+</span><span data-line="23">
 <div class="viewcode-block" id="AttrsSchemaPlugin">
 <a class="viewcode-back" href="../../../reference/plugins/attrs.html#litestar.plugins.attrs.AttrsSchemaPlugin">[docs]</a>
-</span><span data-line="26"><span class="k">class</span><span class="w"> </span><span class="nc">AttrsSchemaPlugin</span><span class="p">(</span><span class="n">OpenAPISchemaPlugin</span><span class="p">):</span>
+</span><span data-line="24"><span class="k">class</span><span class="w"> </span><span class="nc">AttrsSchemaPlugin</span><span class="p">(</span><span class="n">OpenAPISchemaPlugin</span><span class="p">):</span>
 <div class="viewcode-block" id="AttrsSchemaPlugin.is_plugin_supported_type">
 <a class="viewcode-back" href="../../../reference/plugins/attrs.html#litestar.plugins.attrs.AttrsSchemaPlugin.is_plugin_supported_type">[docs]</a>
-</span><span data-line="27">    <span class="nd">@staticmethod</span>
-</span><span data-line="28">    <span class="k">def</span><span class="w"> </span><span class="nf">is_plugin_supported_type</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-</span><span data-line="29">        <span class="k">return</span> <span class="n">is_attrs_class</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="ow">or</span> <span class="n">is_attrs_class</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">))</span></div>
+</span><span data-line="25">    <span class="nd">@staticmethod</span>
+</span><span data-line="26">    <span class="k">def</span><span class="w"> </span><span class="nf">is_plugin_supported_type</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+</span><span data-line="27">        <span class="k">return</span> <span class="n">is_attrs_class</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="ow">or</span> <span class="n">is_attrs_class</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">))</span></div>
 
-</span><span data-line="30">
+</span><span data-line="28">
 <div class="viewcode-block" id="AttrsSchemaPlugin.to_openapi_schema">
 <a class="viewcode-back" href="../../../reference/plugins/attrs.html#litestar.plugins.attrs.AttrsSchemaPlugin.to_openapi_schema">[docs]</a>
-</span><span data-line="31">    <span class="k">def</span><span class="w"> </span><span class="nf">to_openapi_schema</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">field_definition</span><span class="p">:</span> <span class="n">FieldDefinition</span><span class="p">,</span> <span class="n">schema_creator</span><span class="p">:</span> <span class="n">SchemaCreator</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Schema</span><span class="p">:</span>
-</span><span data-line="32"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Given a type annotation, transform it into an OpenAPI schema class.</span>
-</span><span data-line="33">
-</span><span data-line="34"><span class="sd">        Args:</span>
-</span><span data-line="35"><span class="sd">            field_definition: FieldDefinition instance.</span>
-</span><span data-line="36"><span class="sd">            schema_creator: An instance of the schema creator class</span>
-</span><span data-line="37">
-</span><span data-line="38"><span class="sd">        Returns:</span>
-</span><span data-line="39"><span class="sd">            An :class:`OpenAPI &lt;litestar.openapi.spec.schema.Schema&gt;` instance.</span>
-</span><span data-line="40"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="41">
-</span><span data-line="42">        <span class="n">type_hints</span> <span class="o">=</span> <span class="n">field_definition</span><span class="o">.</span><span class="n">get_type_hints</span><span class="p">(</span><span class="n">include_extras</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">resolve_generics</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</span><span data-line="43">        <span class="n">attr_fields</span> <span class="o">=</span> <span class="n">attr</span><span class="o">.</span><span class="n">fields_dict</span><span class="p">(</span><span class="n">field_definition</span><span class="o">.</span><span class="n">type_</span><span class="p">)</span>
-</span><span data-line="44">        <span class="k">return</span> <span class="n">schema_creator</span><span class="o">.</span><span class="n">create_component_schema</span><span class="p">(</span>
-</span><span data-line="45">            <span class="n">field_definition</span><span class="p">,</span>
-</span><span data-line="46">            <span class="n">required</span><span class="o">=</span><span class="nb">sorted</span><span class="p">(</span>
-</span><span data-line="47">                <span class="n">field_name</span>
-</span><span data-line="48">                <span class="k">for</span> <span class="n">field_name</span><span class="p">,</span> <span class="n">attribute</span> <span class="ow">in</span> <span class="n">attr_fields</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
-</span><span data-line="49">                <span class="k">if</span> <span class="n">attribute</span><span class="o">.</span><span class="n">default</span> <span class="ow">is</span> <span class="n">attrs</span><span class="o">.</span><span class="n">NOTHING</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">is_optional_union</span><span class="p">(</span><span class="n">type_hints</span><span class="p">[</span><span class="n">field_name</span><span class="p">])</span>
-</span><span data-line="50">            <span class="p">),</span>
-</span><span data-line="51">            <span class="n">property_fields</span><span class="o">=</span><span class="p">{</span>
-</span><span data-line="52">                <span class="n">field_name</span><span class="p">:</span> <span class="n">FieldDefinition</span><span class="o">.</span><span class="n">from_kwarg</span><span class="p">(</span><span class="n">type_hints</span><span class="p">[</span><span class="n">field_name</span><span class="p">],</span> <span class="n">field_name</span><span class="p">)</span> <span class="k">for</span> <span class="n">field_name</span> <span class="ow">in</span> <span class="n">attr_fields</span>
-</span><span data-line="53">            <span class="p">},</span>
-</span><span data-line="54">        <span class="p">)</span></div>
+</span><span data-line="29">    <span class="k">def</span><span class="w"> </span><span class="nf">to_openapi_schema</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">field_definition</span><span class="p">:</span> <span class="n">FieldDefinition</span><span class="p">,</span> <span class="n">schema_creator</span><span class="p">:</span> <span class="n">SchemaCreator</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Schema</span><span class="p">:</span>
+</span><span data-line="30"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Given a type annotation, transform it into an OpenAPI schema class.</span>
+</span><span data-line="31">
+</span><span data-line="32"><span class="sd">        Args:</span>
+</span><span data-line="33"><span class="sd">            field_definition: FieldDefinition instance.</span>
+</span><span data-line="34"><span class="sd">            schema_creator: An instance of the schema creator class</span>
+</span><span data-line="35">
+</span><span data-line="36"><span class="sd">        Returns:</span>
+</span><span data-line="37"><span class="sd">            An :class:`OpenAPI &lt;litestar.openapi.spec.schema.Schema&gt;` instance.</span>
+</span><span data-line="38"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="39">
+</span><span data-line="40">        <span class="n">type_hints</span> <span class="o">=</span> <span class="n">field_definition</span><span class="o">.</span><span class="n">get_type_hints</span><span class="p">(</span><span class="n">include_extras</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">resolve_generics</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span data-line="41">        <span class="n">attr_fields</span> <span class="o">=</span> <span class="n">attr</span><span class="o">.</span><span class="n">fields_dict</span><span class="p">(</span><span class="n">field_definition</span><span class="o">.</span><span class="n">type_</span><span class="p">)</span>
+</span><span data-line="42">        <span class="k">return</span> <span class="n">schema_creator</span><span class="o">.</span><span class="n">create_component_schema</span><span class="p">(</span>
+</span><span data-line="43">            <span class="n">field_definition</span><span class="p">,</span>
+</span><span data-line="44">            <span class="n">required</span><span class="o">=</span><span class="nb">sorted</span><span class="p">(</span>
+</span><span data-line="45">                <span class="n">field_name</span>
+</span><span data-line="46">                <span class="k">for</span> <span class="n">field_name</span><span class="p">,</span> <span class="n">attribute</span> <span class="ow">in</span> <span class="n">attr_fields</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+</span><span data-line="47">                <span class="k">if</span> <span class="n">attribute</span><span class="o">.</span><span class="n">default</span> <span class="ow">is</span> <span class="n">attrs</span><span class="o">.</span><span class="n">NOTHING</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">is_optional_union</span><span class="p">(</span><span class="n">type_hints</span><span class="p">[</span><span class="n">field_name</span><span class="p">])</span>
+</span><span data-line="48">            <span class="p">),</span>
+</span><span data-line="49">            <span class="n">property_fields</span><span class="o">=</span><span class="p">{</span>
+</span><span data-line="50">                <span class="n">field_name</span><span class="p">:</span> <span class="n">FieldDefinition</span><span class="o">.</span><span class="n">from_kwarg</span><span class="p">(</span><span class="n">type_hints</span><span class="p">[</span><span class="n">field_name</span><span class="p">],</span> <span class="n">field_name</span><span class="p">)</span> <span class="k">for</span> <span class="n">field_name</span> <span class="ow">in</span> <span class="n">attr_fields</span>
+</span><span data-line="51">            <span class="p">},</span>
+</span><span data-line="52">        <span class="p">)</span></div>
 </div>
 
-</span><span data-line="55">
-</span><span data-line="56">
+</span><span data-line="53">
+</span><span data-line="54">
 <div class="viewcode-block" id="is_attrs_class">
 <a class="viewcode-back" href="../../../reference/plugins/attrs.html#litestar.plugins.attrs.is_attrs_class">[docs]</a>
-</span><span data-line="57"><span class="k">def</span><span class="w"> </span><span class="nf">is_attrs_class</span><span class="p">(</span><span class="n">annotation</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TypeGuard</span><span class="p">[</span><span class="nb">type</span><span class="p">[</span><span class="n">attrs</span><span class="o">.</span><span class="n">AttrsInstance</span><span class="p">]]:</span>  <span class="c1"># pyright: ignore</span>
-</span><span data-line="58"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Given a type annotation determine if the annotation is a class that includes an attrs attribute.</span>
-</span><span data-line="59">
-</span><span data-line="60"><span class="sd">    Args:</span>
-</span><span data-line="61"><span class="sd">        annotation: A type.</span>
-</span><span data-line="62">
-</span><span data-line="63"><span class="sd">    Returns:</span>
-</span><span data-line="64"><span class="sd">        A typeguard determining whether the type is an attrs class.</span>
-</span><span data-line="65"><span class="sd">    &quot;&quot;&quot;</span>
-</span><span data-line="66">    <span class="k">return</span> <span class="n">attrs</span><span class="o">.</span><span class="n">has</span><span class="p">(</span><span class="n">annotation</span><span class="p">)</span> <span class="k">if</span> <span class="n">attrs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">Empty</span> <span class="k">else</span> <span class="kc">False</span>  <span class="c1"># type: ignore[comparison-overlap]</span></div>
+</span><span data-line="55"><span class="k">def</span><span class="w"> </span><span class="nf">is_attrs_class</span><span class="p">(</span><span class="n">annotation</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TypeGuard</span><span class="p">[</span><span class="nb">type</span><span class="p">[</span><span class="n">attrs</span><span class="o">.</span><span class="n">AttrsInstance</span><span class="p">]]:</span>  <span class="c1"># pyright: ignore</span>
+</span><span data-line="56"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Given a type annotation determine if the annotation is a class that includes an attrs attribute.</span>
+</span><span data-line="57">
+</span><span data-line="58"><span class="sd">    Args:</span>
+</span><span data-line="59"><span class="sd">        annotation: A type.</span>
+</span><span data-line="60">
+</span><span data-line="61"><span class="sd">    Returns:</span>
+</span><span data-line="62"><span class="sd">        A typeguard determining whether the type is an attrs class.</span>
+</span><span data-line="63"><span class="sd">    &quot;&quot;&quot;</span>
+</span><span data-line="64">    <span class="k">return</span> <span class="n">attrs</span><span class="o">.</span><span class="n">has</span><span class="p">(</span><span class="n">annotation</span><span class="p">)</span> <span class="k">if</span> <span class="n">attrs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">Empty</span> <span class="k">else</span> <span class="kc">False</span>  <span class="c1"># type: ignore[comparison-overlap]</span></div>
 
 </span></pre></div>
         </article><button class="back-to-top" type="button">

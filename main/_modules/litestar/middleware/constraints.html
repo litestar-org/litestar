@@ -504,429 +504,427 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="2"><span class="kn">import</span><span class="w"> </span><span class="nn">dataclasses</span>
 </span><span data-line="3"><span class="kn">import</span><span class="w"> </span><span class="nn">functools</span>
 </span><span data-line="4"><span class="kn">import</span><span class="w"> </span><span class="nn">inspect</span>
-</span><span data-line="5"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">cast</span>
+</span><span data-line="5"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">Self</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">cast</span>
 </span><span data-line="6">
-</span><span data-line="7"><span class="kn">from</span><span class="w"> </span><span class="nn">typing_extensions</span><span class="w"> </span><span class="kn">import</span> <span class="n">Self</span>
-</span><span data-line="8">
-</span><span data-line="9"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">LitestarException</span>
-</span><span data-line="10"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.middleware.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">ASGIMiddleware</span>
-</span><span data-line="11"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">Middleware</span>
-</span><span data-line="12"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.utils.module_loader</span><span class="w"> </span><span class="kn">import</span> <span class="n">import_string</span>
-</span><span data-line="13">
-</span><span data-line="14"><span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
-</span><span data-line="15">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.types.composite_types</span><span class="w"> </span><span class="kn">import</span> <span class="n">MiddlewareFactory</span>
-</span><span data-line="16">
-</span><span data-line="17"><span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span>
-</span><span data-line="18">    <span class="s2">&quot;ConstraintViolationError&quot;</span><span class="p">,</span>
-</span><span data-line="19">    <span class="s2">&quot;CycleError&quot;</span><span class="p">,</span>
-</span><span data-line="20">    <span class="s2">&quot;MiddlewareConstraintError&quot;</span><span class="p">,</span>
-</span><span data-line="21">    <span class="s2">&quot;MiddlewareConstraints&quot;</span><span class="p">,</span>
-</span><span data-line="22">    <span class="s2">&quot;MiddlewareForwardRef&quot;</span><span class="p">,</span>
-</span><span data-line="23">    <span class="s2">&quot;check_middleware_constraints&quot;</span><span class="p">,</span>
-</span><span data-line="24"><span class="p">)</span>
-</span><span data-line="25">
-</span><span data-line="26">
+</span><span data-line="7"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">LitestarException</span>
+</span><span data-line="8"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.middleware.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">ASGIMiddleware</span>
+</span><span data-line="9"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">Middleware</span>
+</span><span data-line="10"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.utils.module_loader</span><span class="w"> </span><span class="kn">import</span> <span class="n">import_string</span>
+</span><span data-line="11">
+</span><span data-line="12"><span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+</span><span data-line="13">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.types.composite_types</span><span class="w"> </span><span class="kn">import</span> <span class="n">MiddlewareFactory</span>
+</span><span data-line="14">
+</span><span data-line="15"><span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span>
+</span><span data-line="16">    <span class="s2">&quot;ConstraintViolationError&quot;</span><span class="p">,</span>
+</span><span data-line="17">    <span class="s2">&quot;CycleError&quot;</span><span class="p">,</span>
+</span><span data-line="18">    <span class="s2">&quot;MiddlewareConstraintError&quot;</span><span class="p">,</span>
+</span><span data-line="19">    <span class="s2">&quot;MiddlewareConstraints&quot;</span><span class="p">,</span>
+</span><span data-line="20">    <span class="s2">&quot;MiddlewareForwardRef&quot;</span><span class="p">,</span>
+</span><span data-line="21">    <span class="s2">&quot;check_middleware_constraints&quot;</span><span class="p">,</span>
+</span><span data-line="22"><span class="p">)</span>
+</span><span data-line="23">
+</span><span data-line="24">
 <div class="viewcode-block" id="MiddlewareConstraintError">
 <a class="viewcode-back" href="../../../reference/middleware/constraints.html#litestar.middleware.constraints.MiddlewareConstraintError">[docs]</a>
-</span><span data-line="27"><span class="k">class</span><span class="w"> </span><span class="nc">MiddlewareConstraintError</span><span class="p">(</span><span class="n">LitestarException</span><span class="p">):</span>
-</span><span data-line="28">    <span class="k">pass</span></div>
+</span><span data-line="25"><span class="k">class</span><span class="w"> </span><span class="nc">MiddlewareConstraintError</span><span class="p">(</span><span class="n">LitestarException</span><span class="p">):</span>
+</span><span data-line="26">    <span class="k">pass</span></div>
 
-</span><span data-line="29">
-</span><span data-line="30">
+</span><span data-line="27">
+</span><span data-line="28">
 <div class="viewcode-block" id="ConstraintViolationError">
 <a class="viewcode-back" href="../../../reference/middleware/constraints.html#litestar.middleware.constraints.ConstraintViolationError">[docs]</a>
-</span><span data-line="31"><span class="k">class</span><span class="w"> </span><span class="nc">ConstraintViolationError</span><span class="p">(</span><span class="n">MiddlewareConstraintError</span><span class="p">):</span>
-</span><span data-line="32">    <span class="k">pass</span></div>
+</span><span data-line="29"><span class="k">class</span><span class="w"> </span><span class="nc">ConstraintViolationError</span><span class="p">(</span><span class="n">MiddlewareConstraintError</span><span class="p">):</span>
+</span><span data-line="30">    <span class="k">pass</span></div>
 
-</span><span data-line="33">
-</span><span data-line="34">
+</span><span data-line="31">
+</span><span data-line="32">
 <div class="viewcode-block" id="CycleError">
 <a class="viewcode-back" href="../../../reference/middleware/constraints.html#litestar.middleware.constraints.CycleError">[docs]</a>
-</span><span data-line="35"><span class="k">class</span><span class="w"> </span><span class="nc">CycleError</span><span class="p">(</span><span class="n">MiddlewareConstraintError</span><span class="p">):</span>
-</span><span data-line="36">    <span class="k">pass</span></div>
+</span><span data-line="33"><span class="k">class</span><span class="w"> </span><span class="nc">CycleError</span><span class="p">(</span><span class="n">MiddlewareConstraintError</span><span class="p">):</span>
+</span><span data-line="34">    <span class="k">pass</span></div>
 
-</span><span data-line="37">
-</span><span data-line="38">
+</span><span data-line="35">
+</span><span data-line="36">
 <div class="viewcode-block" id="MiddlewareForwardRef">
 <a class="viewcode-back" href="../../../reference/middleware/constraints.html#litestar.middleware.constraints.MiddlewareForwardRef">[docs]</a>
-</span><span data-line="39"><span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</span><span data-line="40"><span class="k">class</span><span class="w"> </span><span class="nc">MiddlewareForwardRef</span><span class="p">:</span>
-</span><span data-line="41"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Forward reference to a middleware&quot;&quot;&quot;</span>
-</span><span data-line="42">
-</span><span data-line="43">    <span class="n">target</span><span class="p">:</span> <span class="nb">str</span>
-</span><span data-line="44"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Absolute path to an importable name of the middleware&quot;&quot;&quot;</span>
-</span><span data-line="45">    <span class="n">ignore_import_error</span><span class="p">:</span> <span class="nb">bool</span>
-</span><span data-line="46"><span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-</span><span data-line="47"><span class="sd">    If &#39;True&#39;, ignore :exc:`ImportError`\ s will be ignored when resolving the</span>
-</span><span data-line="48"><span class="sd">    middleware</span>
-</span><span data-line="49"><span class="sd">    &quot;&quot;&quot;</span>
-</span><span data-line="50">
-</span><span data-line="51">    <span class="nd">@staticmethod</span>
-</span><span data-line="52">    <span class="nd">@functools</span><span class="o">.</span><span class="n">cache</span>
-</span><span data-line="53">    <span class="k">def</span><span class="w"> </span><span class="nf">_resolve</span><span class="p">(</span><span class="n">target</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">ignore_not_found</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Middleware | None&quot;</span><span class="p">:</span>
-</span><span data-line="54">        <span class="k">try</span><span class="p">:</span>
-</span><span data-line="55">            <span class="k">return</span> <span class="n">cast</span><span class="p">(</span><span class="s2">&quot;Middleware&quot;</span><span class="p">,</span> <span class="n">import_string</span><span class="p">(</span><span class="n">target</span><span class="p">))</span>
-</span><span data-line="56">        <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
-</span><span data-line="57">            <span class="k">if</span> <span class="n">ignore_not_found</span><span class="p">:</span>
-</span><span data-line="58">                <span class="k">return</span> <span class="kc">None</span>
-</span><span data-line="59">            <span class="k">raise</span>
-</span><span data-line="60">
+</span><span data-line="37"><span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span data-line="38"><span class="k">class</span><span class="w"> </span><span class="nc">MiddlewareForwardRef</span><span class="p">:</span>
+</span><span data-line="39"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Forward reference to a middleware&quot;&quot;&quot;</span>
+</span><span data-line="40">
+</span><span data-line="41">    <span class="n">target</span><span class="p">:</span> <span class="nb">str</span>
+</span><span data-line="42"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Absolute path to an importable name of the middleware&quot;&quot;&quot;</span>
+</span><span data-line="43">    <span class="n">ignore_import_error</span><span class="p">:</span> <span class="nb">bool</span>
+</span><span data-line="44"><span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+</span><span data-line="45"><span class="sd">    If &#39;True&#39;, ignore :exc:`ImportError`\ s will be ignored when resolving the</span>
+</span><span data-line="46"><span class="sd">    middleware</span>
+</span><span data-line="47"><span class="sd">    &quot;&quot;&quot;</span>
+</span><span data-line="48">
+</span><span data-line="49">    <span class="nd">@staticmethod</span>
+</span><span data-line="50">    <span class="nd">@functools</span><span class="o">.</span><span class="n">cache</span>
+</span><span data-line="51">    <span class="k">def</span><span class="w"> </span><span class="nf">_resolve</span><span class="p">(</span><span class="n">target</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">ignore_not_found</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Middleware | None&quot;</span><span class="p">:</span>
+</span><span data-line="52">        <span class="k">try</span><span class="p">:</span>
+</span><span data-line="53">            <span class="k">return</span> <span class="n">cast</span><span class="p">(</span><span class="s2">&quot;Middleware&quot;</span><span class="p">,</span> <span class="n">import_string</span><span class="p">(</span><span class="n">target</span><span class="p">))</span>
+</span><span data-line="54">        <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+</span><span data-line="55">            <span class="k">if</span> <span class="n">ignore_not_found</span><span class="p">:</span>
+</span><span data-line="56">                <span class="k">return</span> <span class="kc">None</span>
+</span><span data-line="57">            <span class="k">raise</span>
+</span><span data-line="58">
 <div class="viewcode-block" id="MiddlewareForwardRef.resolve">
 <a class="viewcode-back" href="../../../reference/middleware/constraints.html#litestar.middleware.constraints.MiddlewareForwardRef.resolve">[docs]</a>
-</span><span data-line="61">    <span class="k">def</span><span class="w"> </span><span class="nf">resolve</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Middleware | None&quot;</span><span class="p">:</span>
-</span><span data-line="62"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Resolve the reference to a concrete value by importing the target path.</span>
-</span><span data-line="63">
-</span><span data-line="64"><span class="sd">        If ``ignore_import_error=True`` and an :exc:`ImportError` is raised, ignore the</span>
-</span><span data-line="65"><span class="sd">        error and return ``None``</span>
-</span><span data-line="66"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="67">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resolve</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">target</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ignore_import_error</span><span class="p">)</span></div>
+</span><span data-line="59">    <span class="k">def</span><span class="w"> </span><span class="nf">resolve</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Middleware | None&quot;</span><span class="p">:</span>
+</span><span data-line="60"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Resolve the reference to a concrete value by importing the target path.</span>
+</span><span data-line="61">
+</span><span data-line="62"><span class="sd">        If ``ignore_import_error=True`` and an :exc:`ImportError` is raised, ignore the</span>
+</span><span data-line="63"><span class="sd">        error and return ``None``</span>
+</span><span data-line="64"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="65">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resolve</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">target</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ignore_import_error</span><span class="p">)</span></div>
 </div>
 
-</span><span data-line="68">
-</span><span data-line="69">
-</span><span data-line="70"><span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span>
-</span><span data-line="71"><span class="k">class</span><span class="w"> </span><span class="nc">_ResolvedMiddlewareConstraints</span><span class="p">:</span>
-</span><span data-line="72">    <span class="n">before</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="s2">&quot;Middleware | MiddlewareFactory&quot;</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span>
-</span><span data-line="73">    <span class="n">after</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="s2">&quot;Middleware | MiddlewareFactory&quot;</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span>
-</span><span data-line="74">    <span class="n">first</span><span class="p">:</span> <span class="nb">bool</span>
-</span><span data-line="75">    <span class="n">last</span><span class="p">:</span> <span class="nb">bool</span>
-</span><span data-line="76">    <span class="n">unique</span><span class="p">:</span> <span class="nb">bool</span>
-</span><span data-line="77">
-</span><span data-line="78">    <span class="nd">@property</span>
-</span><span data-line="79">    <span class="k">def</span><span class="w"> </span><span class="nf">is_empty</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-</span><span data-line="80">        <span class="k">return</span> <span class="ow">not</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">before</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">after</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">first</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">last</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">unique</span><span class="p">)</span>
-</span><span data-line="81">
-</span><span data-line="82">
+</span><span data-line="66">
+</span><span data-line="67">
+</span><span data-line="68"><span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span>
+</span><span data-line="69"><span class="k">class</span><span class="w"> </span><span class="nc">_ResolvedMiddlewareConstraints</span><span class="p">:</span>
+</span><span data-line="70">    <span class="n">before</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="s2">&quot;Middleware | MiddlewareFactory&quot;</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span>
+</span><span data-line="71">    <span class="n">after</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="s2">&quot;Middleware | MiddlewareFactory&quot;</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span>
+</span><span data-line="72">    <span class="n">first</span><span class="p">:</span> <span class="nb">bool</span>
+</span><span data-line="73">    <span class="n">last</span><span class="p">:</span> <span class="nb">bool</span>
+</span><span data-line="74">    <span class="n">unique</span><span class="p">:</span> <span class="nb">bool</span>
+</span><span data-line="75">
+</span><span data-line="76">    <span class="nd">@property</span>
+</span><span data-line="77">    <span class="k">def</span><span class="w"> </span><span class="nf">is_empty</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+</span><span data-line="78">        <span class="k">return</span> <span class="ow">not</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">before</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">after</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">first</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">last</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">unique</span><span class="p">)</span>
+</span><span data-line="79">
+</span><span data-line="80">
 <div class="viewcode-block" id="MiddlewareConstraints">
 <a class="viewcode-back" href="../../../reference/middleware/constraints.html#litestar.middleware.constraints.MiddlewareConstraints">[docs]</a>
-</span><span data-line="83"><span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</span><span data-line="84"><span class="k">class</span><span class="w"> </span><span class="nc">MiddlewareConstraints</span><span class="p">:</span>
-</span><span data-line="85"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Constraints for a middleware.&quot;&quot;&quot;</span>
-</span><span data-line="86">
-</span><span data-line="87">    <span class="n">before</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="s2">&quot;MiddlewareForwardRef | Middleware | MiddlewareFactory&quot;</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="p">()</span>
-</span><span data-line="88"><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-</span><span data-line="89"><span class="sd">    Tuple of middlewares that, if present, need to appear *before* the middleware this</span>
-</span><span data-line="90"><span class="sd">    constraint is applied to (i.e. closer to the application)</span>
-</span><span data-line="91"><span class="sd">    &quot;&quot;&quot;</span>
-</span><span data-line="92">    <span class="n">after</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="s2">&quot;MiddlewareForwardRef | Middleware | MiddlewareFactory&quot;</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="p">()</span>
-</span><span data-line="93"><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-</span><span data-line="94"><span class="sd">    Tuple of middlewares that, if present, need to appear *after* the middleware this</span>
-</span><span data-line="95"><span class="sd">    constraint is applied to (i.e. closer to the handler)</span>
-</span><span data-line="96"><span class="sd">    &quot;&quot;&quot;</span>
-</span><span data-line="97">    <span class="n">first</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
-</span><span data-line="98"><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-</span><span data-line="99"><span class="sd">    If ``True``, require the middleware to be the first (i.e. the first middleware</span>
-</span><span data-line="100"><span class="sd">    on the application).</span>
-</span><span data-line="101">
-</span><span data-line="102"><span class="sd">    Mutually exclusive with ``last=True``. Implicitly sets ``unique=True``</span>
-</span><span data-line="103"><span class="sd">    &quot;&quot;&quot;</span>
-</span><span data-line="104">    <span class="n">last</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
-</span><span data-line="105"><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-</span><span data-line="106"><span class="sd">    If ``True``, require the middleware to be the last (i.e. the last middleware on</span>
-</span><span data-line="107"><span class="sd">    the handler).</span>
-</span><span data-line="108">
-</span><span data-line="109"><span class="sd">    Mutually exclusive with ``first=True``. Implicitly sets ``unique=True``</span>
-</span><span data-line="110"><span class="sd">    &quot;&quot;&quot;</span>
-</span><span data-line="111">    <span class="n">unique</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
-</span><span data-line="112"><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-</span><span data-line="113"><span class="sd">    If ``True``, require the middleware to be the only one of its type</span>
-</span><span data-line="114"><span class="sd">    &quot;&quot;&quot;</span>
-</span><span data-line="115">
-</span><span data-line="116">    <span class="k">def</span><span class="w"> </span><span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="117">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">first</span><span class="p">:</span>
-</span><span data-line="118">            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">last</span><span class="p">:</span>
-</span><span data-line="119">                <span class="k">raise</span> <span class="n">MiddlewareConstraintError</span><span class="p">(</span><span class="s2">&quot;Cannot set &#39;first=True&#39; if &#39;last=True&#39;&quot;</span><span class="p">)</span>
-</span><span data-line="120">            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">unique</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
-</span><span data-line="121">                <span class="k">raise</span> <span class="n">MiddlewareConstraintError</span><span class="p">(</span><span class="s2">&quot;Cannot set &#39;first=True&#39; if &#39;unique=False&#39;&quot;</span><span class="p">)</span>
-</span><span data-line="122">            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">after</span><span class="p">:</span>
-</span><span data-line="123">                <span class="k">raise</span> <span class="n">MiddlewareConstraintError</span><span class="p">(</span><span class="s2">&quot;Cannot set &#39;first=True&#39; if if &#39;after&#39; is not empty&quot;</span><span class="p">)</span>
-</span><span data-line="124">
-</span><span data-line="125">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">last</span><span class="p">:</span>
-</span><span data-line="126">            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">unique</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
-</span><span data-line="127">                <span class="k">raise</span> <span class="n">MiddlewareConstraintError</span><span class="p">(</span><span class="s2">&quot;Cannot set &#39;last=True&#39; if &#39;unique=False&#39;&quot;</span><span class="p">)</span>
-</span><span data-line="128">            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">before</span><span class="p">:</span>
-</span><span data-line="129">                <span class="k">raise</span> <span class="n">MiddlewareConstraintError</span><span class="p">(</span><span class="s2">&quot;Cannot set &#39;last=True&#39; if &#39;before&#39; is not empty&quot;</span><span class="p">)</span>
-</span><span data-line="130">
+</span><span data-line="81"><span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span data-line="82"><span class="k">class</span><span class="w"> </span><span class="nc">MiddlewareConstraints</span><span class="p">:</span>
+</span><span data-line="83"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Constraints for a middleware.&quot;&quot;&quot;</span>
+</span><span data-line="84">
+</span><span data-line="85">    <span class="n">before</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="s2">&quot;MiddlewareForwardRef | Middleware | MiddlewareFactory&quot;</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="p">()</span>
+</span><span data-line="86"><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+</span><span data-line="87"><span class="sd">    Tuple of middlewares that, if present, need to appear *before* the middleware this</span>
+</span><span data-line="88"><span class="sd">    constraint is applied to (i.e. closer to the application)</span>
+</span><span data-line="89"><span class="sd">    &quot;&quot;&quot;</span>
+</span><span data-line="90">    <span class="n">after</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="s2">&quot;MiddlewareForwardRef | Middleware | MiddlewareFactory&quot;</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="p">()</span>
+</span><span data-line="91"><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+</span><span data-line="92"><span class="sd">    Tuple of middlewares that, if present, need to appear *after* the middleware this</span>
+</span><span data-line="93"><span class="sd">    constraint is applied to (i.e. closer to the handler)</span>
+</span><span data-line="94"><span class="sd">    &quot;&quot;&quot;</span>
+</span><span data-line="95">    <span class="n">first</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+</span><span data-line="96"><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+</span><span data-line="97"><span class="sd">    If ``True``, require the middleware to be the first (i.e. the first middleware</span>
+</span><span data-line="98"><span class="sd">    on the application).</span>
+</span><span data-line="99">
+</span><span data-line="100"><span class="sd">    Mutually exclusive with ``last=True``. Implicitly sets ``unique=True``</span>
+</span><span data-line="101"><span class="sd">    &quot;&quot;&quot;</span>
+</span><span data-line="102">    <span class="n">last</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+</span><span data-line="103"><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+</span><span data-line="104"><span class="sd">    If ``True``, require the middleware to be the last (i.e. the last middleware on</span>
+</span><span data-line="105"><span class="sd">    the handler).</span>
+</span><span data-line="106">
+</span><span data-line="107"><span class="sd">    Mutually exclusive with ``first=True``. Implicitly sets ``unique=True``</span>
+</span><span data-line="108"><span class="sd">    &quot;&quot;&quot;</span>
+</span><span data-line="109">    <span class="n">unique</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+</span><span data-line="110"><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+</span><span data-line="111"><span class="sd">    If ``True``, require the middleware to be the only one of its type</span>
+</span><span data-line="112"><span class="sd">    &quot;&quot;&quot;</span>
+</span><span data-line="113">
+</span><span data-line="114">    <span class="k">def</span><span class="w"> </span><span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="115">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">first</span><span class="p">:</span>
+</span><span data-line="116">            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">last</span><span class="p">:</span>
+</span><span data-line="117">                <span class="k">raise</span> <span class="n">MiddlewareConstraintError</span><span class="p">(</span><span class="s2">&quot;Cannot set &#39;first=True&#39; if &#39;last=True&#39;&quot;</span><span class="p">)</span>
+</span><span data-line="118">            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">unique</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
+</span><span data-line="119">                <span class="k">raise</span> <span class="n">MiddlewareConstraintError</span><span class="p">(</span><span class="s2">&quot;Cannot set &#39;first=True&#39; if &#39;unique=False&#39;&quot;</span><span class="p">)</span>
+</span><span data-line="120">            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">after</span><span class="p">:</span>
+</span><span data-line="121">                <span class="k">raise</span> <span class="n">MiddlewareConstraintError</span><span class="p">(</span><span class="s2">&quot;Cannot set &#39;first=True&#39; if if &#39;after&#39; is not empty&quot;</span><span class="p">)</span>
+</span><span data-line="122">
+</span><span data-line="123">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">last</span><span class="p">:</span>
+</span><span data-line="124">            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">unique</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
+</span><span data-line="125">                <span class="k">raise</span> <span class="n">MiddlewareConstraintError</span><span class="p">(</span><span class="s2">&quot;Cannot set &#39;last=True&#39; if &#39;unique=False&#39;&quot;</span><span class="p">)</span>
+</span><span data-line="126">            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">before</span><span class="p">:</span>
+</span><span data-line="127">                <span class="k">raise</span> <span class="n">MiddlewareConstraintError</span><span class="p">(</span><span class="s2">&quot;Cannot set &#39;last=True&#39; if &#39;before&#39; is not empty&quot;</span><span class="p">)</span>
+</span><span data-line="128">
 <div class="viewcode-block" id="MiddlewareConstraints.require_unique">
 <a class="viewcode-back" href="../../../reference/middleware/constraints.html#litestar.middleware.constraints.MiddlewareConstraints.require_unique">[docs]</a>
-</span><span data-line="131">    <span class="k">def</span><span class="w"> </span><span class="nf">require_unique</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">unique</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
-</span><span data-line="132"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a new constraint with a ``unique`` value set&quot;&quot;&quot;</span>
-</span><span data-line="133">        <span class="k">return</span> <span class="n">dataclasses</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">unique</span><span class="o">=</span><span class="n">unique</span><span class="p">)</span></div>
+</span><span data-line="129">    <span class="k">def</span><span class="w"> </span><span class="nf">require_unique</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">unique</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
+</span><span data-line="130"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a new constraint with a ``unique`` value set&quot;&quot;&quot;</span>
+</span><span data-line="131">        <span class="k">return</span> <span class="n">dataclasses</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">unique</span><span class="o">=</span><span class="n">unique</span><span class="p">)</span></div>
 
-</span><span data-line="134">
+</span><span data-line="132">
 <div class="viewcode-block" id="MiddlewareConstraints.apply_first">
 <a class="viewcode-back" href="../../../reference/middleware/constraints.html#litestar.middleware.constraints.MiddlewareConstraints.apply_first">[docs]</a>
-</span><span data-line="135">    <span class="k">def</span><span class="w"> </span><span class="nf">apply_first</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
-</span><span data-line="136"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a new constraint with ``first=True``. Overrides ``last=True``&quot;&quot;&quot;</span>
-</span><span data-line="137">        <span class="k">return</span> <span class="n">dataclasses</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">first</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">last</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">unique</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+</span><span data-line="133">    <span class="k">def</span><span class="w"> </span><span class="nf">apply_first</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
+</span><span data-line="134"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a new constraint with ``first=True``. Overrides ``last=True``&quot;&quot;&quot;</span>
+</span><span data-line="135">        <span class="k">return</span> <span class="n">dataclasses</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">first</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">last</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">unique</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
-</span><span data-line="138">
+</span><span data-line="136">
 <div class="viewcode-block" id="MiddlewareConstraints.apply_last">
 <a class="viewcode-back" href="../../../reference/middleware/constraints.html#litestar.middleware.constraints.MiddlewareConstraints.apply_last">[docs]</a>
-</span><span data-line="139">    <span class="k">def</span><span class="w"> </span><span class="nf">apply_last</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
-</span><span data-line="140"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a new constraint with ``first=True``. Overrides ``first=True``&quot;&quot;&quot;</span>
-</span><span data-line="141">        <span class="k">return</span> <span class="n">dataclasses</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">first</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">last</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">unique</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+</span><span data-line="137">    <span class="k">def</span><span class="w"> </span><span class="nf">apply_last</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
+</span><span data-line="138"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a new constraint with ``first=True``. Overrides ``first=True``&quot;&quot;&quot;</span>
+</span><span data-line="139">        <span class="k">return</span> <span class="n">dataclasses</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">first</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">last</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">unique</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
-</span><span data-line="142">
+</span><span data-line="140">
 <div class="viewcode-block" id="MiddlewareConstraints.apply_before">
 <a class="viewcode-back" href="../../../reference/middleware/constraints.html#litestar.middleware.constraints.MiddlewareConstraints.apply_before">[docs]</a>
-</span><span data-line="143">    <span class="k">def</span><span class="w"> </span><span class="nf">apply_before</span><span class="p">(</span>
-</span><span data-line="144">        <span class="bp">self</span><span class="p">,</span>
-</span><span data-line="145">        <span class="n">other</span><span class="p">:</span> <span class="s2">&quot;str | Middleware | MiddlewareFactory | MiddlewareForwardRef&quot;</span><span class="p">,</span>
-</span><span data-line="146">        <span class="n">ignore_import_error</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-</span><span data-line="147">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
-</span><span data-line="148"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return new :class:`~litestar.middleware.constraints.MiddlewareConstraints` with</span>
-</span><span data-line="149"><span class="sd">        ``other`` added to existing ``before`` constraint.</span>
-</span><span data-line="150">
-</span><span data-line="151"><span class="sd">        :param other: Middleware this middleware needs to be applied before. If passed a string,</span>
-</span><span data-line="152"><span class="sd">            create a :class:`~litestar.middleware.constraints.MiddlewareForwardRef` that resolves</span>
-</span><span data-line="153"><span class="sd">            to the actual middleware at runtime</span>
-</span><span data-line="154"><span class="sd">        :param ignore_import_error: If ``True`` and ``other`` is a string, ignore the constraint if</span>
-</span><span data-line="155"><span class="sd">            an :exc:`ImportError` occurs when trying to import it</span>
-</span><span data-line="156"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="157">        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-</span><span data-line="158">            <span class="n">other</span> <span class="o">=</span> <span class="n">MiddlewareForwardRef</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">other</span><span class="p">,</span> <span class="n">ignore_import_error</span><span class="o">=</span><span class="n">ignore_import_error</span><span class="p">)</span>
-</span><span data-line="159">
-</span><span data-line="160">        <span class="k">return</span> <span class="n">dataclasses</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">before</span><span class="o">=</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">before</span><span class="p">,</span> <span class="n">other</span><span class="p">))</span></div>
+</span><span data-line="141">    <span class="k">def</span><span class="w"> </span><span class="nf">apply_before</span><span class="p">(</span>
+</span><span data-line="142">        <span class="bp">self</span><span class="p">,</span>
+</span><span data-line="143">        <span class="n">other</span><span class="p">:</span> <span class="s2">&quot;str | Middleware | MiddlewareFactory | MiddlewareForwardRef&quot;</span><span class="p">,</span>
+</span><span data-line="144">        <span class="n">ignore_import_error</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+</span><span data-line="145">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
+</span><span data-line="146"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return new :class:`~litestar.middleware.constraints.MiddlewareConstraints` with</span>
+</span><span data-line="147"><span class="sd">        ``other`` added to existing ``before`` constraint.</span>
+</span><span data-line="148">
+</span><span data-line="149"><span class="sd">        :param other: Middleware this middleware needs to be applied before. If passed a string,</span>
+</span><span data-line="150"><span class="sd">            create a :class:`~litestar.middleware.constraints.MiddlewareForwardRef` that resolves</span>
+</span><span data-line="151"><span class="sd">            to the actual middleware at runtime</span>
+</span><span data-line="152"><span class="sd">        :param ignore_import_error: If ``True`` and ``other`` is a string, ignore the constraint if</span>
+</span><span data-line="153"><span class="sd">            an :exc:`ImportError` occurs when trying to import it</span>
+</span><span data-line="154"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="155">        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+</span><span data-line="156">            <span class="n">other</span> <span class="o">=</span> <span class="n">MiddlewareForwardRef</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">other</span><span class="p">,</span> <span class="n">ignore_import_error</span><span class="o">=</span><span class="n">ignore_import_error</span><span class="p">)</span>
+</span><span data-line="157">
+</span><span data-line="158">        <span class="k">return</span> <span class="n">dataclasses</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">before</span><span class="o">=</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">before</span><span class="p">,</span> <span class="n">other</span><span class="p">))</span></div>
 
-</span><span data-line="161">
+</span><span data-line="159">
 <div class="viewcode-block" id="MiddlewareConstraints.apply_after">
 <a class="viewcode-back" href="../../../reference/middleware/constraints.html#litestar.middleware.constraints.MiddlewareConstraints.apply_after">[docs]</a>
-</span><span data-line="162">    <span class="k">def</span><span class="w"> </span><span class="nf">apply_after</span><span class="p">(</span>
-</span><span data-line="163">        <span class="bp">self</span><span class="p">,</span>
-</span><span data-line="164">        <span class="n">other</span><span class="p">:</span> <span class="s2">&quot;str | Middleware | MiddlewareFactory | MiddlewareForwardRef&quot;</span><span class="p">,</span>
-</span><span data-line="165">        <span class="n">ignore_import_error</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-</span><span data-line="166">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
-</span><span data-line="167"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return new :class:`~litestar.middleware.constraints.MiddlewareConstraints` with</span>
-</span><span data-line="168"><span class="sd">        ``other`` added to existing ``after`` constraint.</span>
-</span><span data-line="169">
-</span><span data-line="170"><span class="sd">        :param other: Middleware this middleware needs to be applied before. If passed a string,</span>
-</span><span data-line="171"><span class="sd">            create a :class:`~litestar.middleware.constraints.MiddlewareForwardRef` that resolves</span>
-</span><span data-line="172"><span class="sd">            to the actual middleware at runtime</span>
-</span><span data-line="173"><span class="sd">        :param ignore_import_error: If ``True`` and ``other`` is a string, ignore the constraint if</span>
-</span><span data-line="174"><span class="sd">            an :exc:`ImportError` occurs when trying to import it</span>
-</span><span data-line="175"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="176">        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-</span><span data-line="177">            <span class="n">other</span> <span class="o">=</span> <span class="n">MiddlewareForwardRef</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">other</span><span class="p">,</span> <span class="n">ignore_import_error</span><span class="o">=</span><span class="n">ignore_import_error</span><span class="p">)</span>
+</span><span data-line="160">    <span class="k">def</span><span class="w"> </span><span class="nf">apply_after</span><span class="p">(</span>
+</span><span data-line="161">        <span class="bp">self</span><span class="p">,</span>
+</span><span data-line="162">        <span class="n">other</span><span class="p">:</span> <span class="s2">&quot;str | Middleware | MiddlewareFactory | MiddlewareForwardRef&quot;</span><span class="p">,</span>
+</span><span data-line="163">        <span class="n">ignore_import_error</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+</span><span data-line="164">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
+</span><span data-line="165"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return new :class:`~litestar.middleware.constraints.MiddlewareConstraints` with</span>
+</span><span data-line="166"><span class="sd">        ``other`` added to existing ``after`` constraint.</span>
+</span><span data-line="167">
+</span><span data-line="168"><span class="sd">        :param other: Middleware this middleware needs to be applied before. If passed a string,</span>
+</span><span data-line="169"><span class="sd">            create a :class:`~litestar.middleware.constraints.MiddlewareForwardRef` that resolves</span>
+</span><span data-line="170"><span class="sd">            to the actual middleware at runtime</span>
+</span><span data-line="171"><span class="sd">        :param ignore_import_error: If ``True`` and ``other`` is a string, ignore the constraint if</span>
+</span><span data-line="172"><span class="sd">            an :exc:`ImportError` occurs when trying to import it</span>
+</span><span data-line="173"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="174">        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+</span><span data-line="175">            <span class="n">other</span> <span class="o">=</span> <span class="n">MiddlewareForwardRef</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">other</span><span class="p">,</span> <span class="n">ignore_import_error</span><span class="o">=</span><span class="n">ignore_import_error</span><span class="p">)</span>
+</span><span data-line="176">
+</span><span data-line="177">        <span class="k">return</span> <span class="n">dataclasses</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">after</span><span class="o">=</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">after</span><span class="p">,</span> <span class="n">other</span><span class="p">))</span></div>
+
 </span><span data-line="178">
-</span><span data-line="179">        <span class="k">return</span> <span class="n">dataclasses</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">after</span><span class="o">=</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">after</span><span class="p">,</span> <span class="n">other</span><span class="p">))</span></div>
+</span><span data-line="179">    <span class="nd">@staticmethod</span>
+</span><span data-line="180">    <span class="k">def</span><span class="w"> </span><span class="nf">_resolve_middleware</span><span class="p">(</span>
+</span><span data-line="181">        <span class="n">middlewares</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="s2">&quot;Middleware | MiddlewareFactory | MiddlewareForwardRef&quot;</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span>
+</span><span data-line="182">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="s2">&quot;Middleware | MiddlewareFactory&quot;</span><span class="p">,</span> <span class="o">...</span><span class="p">]:</span>
+</span><span data-line="183">        <span class="n">resolved</span> <span class="o">=</span> <span class="p">[]</span>
+</span><span data-line="184">        <span class="k">for</span> <span class="n">middleware</span> <span class="ow">in</span> <span class="n">middlewares</span><span class="p">:</span>
+</span><span data-line="185">            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">middleware</span><span class="p">,</span> <span class="n">MiddlewareForwardRef</span><span class="p">):</span>
+</span><span data-line="186">                <span class="k">if</span> <span class="p">(</span><span class="n">resolved_middleware</span> <span class="o">:=</span> <span class="n">middleware</span><span class="o">.</span><span class="n">resolve</span><span class="p">())</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="187">                    <span class="k">continue</span>
+</span><span data-line="188">                <span class="n">middleware</span> <span class="o">=</span> <span class="n">resolved_middleware</span>
+</span><span data-line="189">            <span class="n">resolved</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">middleware</span><span class="p">)</span>
+</span><span data-line="190">        <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">resolved</span><span class="p">)</span>
+</span><span data-line="191">
+</span><span data-line="192">    <span class="k">def</span><span class="w"> </span><span class="nf">_resolve</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">_ResolvedMiddlewareConstraints</span><span class="p">:</span>
+</span><span data-line="193">        <span class="k">return</span> <span class="n">_ResolvedMiddlewareConstraints</span><span class="p">(</span>
+</span><span data-line="194">            <span class="n">before</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_resolve_middleware</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">before</span><span class="p">),</span>
+</span><span data-line="195">            <span class="n">after</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_resolve_middleware</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">after</span><span class="p">),</span>
+</span><span data-line="196">            <span class="n">first</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">first</span><span class="p">,</span>
+</span><span data-line="197">            <span class="n">last</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">last</span><span class="p">,</span>
+</span><span data-line="198">            <span class="n">unique</span><span class="o">=</span><span class="kc">False</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">unique</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">unique</span><span class="p">,</span>
+</span><span data-line="199">        <span class="p">)</span></div>
 
-</span><span data-line="180">
-</span><span data-line="181">    <span class="nd">@staticmethod</span>
-</span><span data-line="182">    <span class="k">def</span><span class="w"> </span><span class="nf">_resolve_middleware</span><span class="p">(</span>
-</span><span data-line="183">        <span class="n">middlewares</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="s2">&quot;Middleware | MiddlewareFactory | MiddlewareForwardRef&quot;</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span>
-</span><span data-line="184">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="s2">&quot;Middleware | MiddlewareFactory&quot;</span><span class="p">,</span> <span class="o">...</span><span class="p">]:</span>
-</span><span data-line="185">        <span class="n">resolved</span> <span class="o">=</span> <span class="p">[]</span>
-</span><span data-line="186">        <span class="k">for</span> <span class="n">middleware</span> <span class="ow">in</span> <span class="n">middlewares</span><span class="p">:</span>
-</span><span data-line="187">            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">middleware</span><span class="p">,</span> <span class="n">MiddlewareForwardRef</span><span class="p">):</span>
-</span><span data-line="188">                <span class="k">if</span> <span class="p">(</span><span class="n">resolved_middleware</span> <span class="o">:=</span> <span class="n">middleware</span><span class="o">.</span><span class="n">resolve</span><span class="p">())</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="189">                    <span class="k">continue</span>
-</span><span data-line="190">                <span class="n">middleware</span> <span class="o">=</span> <span class="n">resolved_middleware</span>
-</span><span data-line="191">            <span class="n">resolved</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">middleware</span><span class="p">)</span>
-</span><span data-line="192">        <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">resolved</span><span class="p">)</span>
-</span><span data-line="193">
-</span><span data-line="194">    <span class="k">def</span><span class="w"> </span><span class="nf">_resolve</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">_ResolvedMiddlewareConstraints</span><span class="p">:</span>
-</span><span data-line="195">        <span class="k">return</span> <span class="n">_ResolvedMiddlewareConstraints</span><span class="p">(</span>
-</span><span data-line="196">            <span class="n">before</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_resolve_middleware</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">before</span><span class="p">),</span>
-</span><span data-line="197">            <span class="n">after</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_resolve_middleware</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">after</span><span class="p">),</span>
-</span><span data-line="198">            <span class="n">first</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">first</span><span class="p">,</span>
-</span><span data-line="199">            <span class="n">last</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">last</span><span class="p">,</span>
-</span><span data-line="200">            <span class="n">unique</span><span class="o">=</span><span class="kc">False</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">unique</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">unique</span><span class="p">,</span>
-</span><span data-line="201">        <span class="p">)</span></div>
-
-</span><span data-line="202">
-</span><span data-line="203">
-</span><span data-line="204"><span class="k">def</span><span class="w"> </span><span class="nf">_fully_qualified_name</span><span class="p">(</span><span class="n">obj</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-</span><span data-line="205">    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="vm">__module__</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="vm">__qualname__</span><span class="si">}</span><span class="s2">&quot;</span>
-</span><span data-line="206">
-</span><span data-line="207">
-</span><span data-line="208"><span class="k">def</span><span class="w"> </span><span class="nf">_dfs</span><span class="p">(</span><span class="n">node</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span> <span class="n">graph</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">object</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">object</span><span class="p">]],</span> <span class="n">visiting</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">object</span><span class="p">],</span> <span class="n">visited</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">object</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-</span><span data-line="209">    <span class="k">if</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">visiting</span><span class="p">:</span>
-</span><span data-line="210">        <span class="k">return</span> <span class="kc">True</span>
-</span><span data-line="211">
-</span><span data-line="212">    <span class="k">if</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">visited</span><span class="p">:</span>
-</span><span data-line="213">        <span class="k">return</span> <span class="kc">False</span>
-</span><span data-line="214">
-</span><span data-line="215">    <span class="n">visiting</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
-</span><span data-line="216">    <span class="k">if</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">graph</span><span class="p">:</span>
-</span><span data-line="217">        <span class="k">for</span> <span class="n">neighbor</span> <span class="ow">in</span> <span class="n">graph</span><span class="p">[</span><span class="n">node</span><span class="p">]:</span>
-</span><span data-line="218">            <span class="k">if</span> <span class="n">_dfs</span><span class="p">(</span><span class="n">neighbor</span><span class="p">,</span> <span class="n">graph</span><span class="o">=</span><span class="n">graph</span><span class="p">,</span> <span class="n">visiting</span><span class="o">=</span><span class="n">visiting</span><span class="p">,</span> <span class="n">visited</span><span class="o">=</span><span class="n">visited</span><span class="p">):</span>
-</span><span data-line="219">                <span class="k">return</span> <span class="kc">True</span>
-</span><span data-line="220">    <span class="n">visiting</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
-</span><span data-line="221">    <span class="n">visited</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
-</span><span data-line="222">    <span class="k">return</span> <span class="kc">False</span>
-</span><span data-line="223">
-</span><span data-line="224">
-</span><span data-line="225"><span class="k">def</span><span class="w"> </span><span class="nf">_detect_constraints_cycle</span><span class="p">(</span><span class="n">graph</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">object</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">object</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="226">    <span class="n">visited</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">object</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
-</span><span data-line="227">    <span class="n">visiting</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">object</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
-</span><span data-line="228">
-</span><span data-line="229">    <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">graph</span><span class="p">:</span>
-</span><span data-line="230">        <span class="k">if</span> <span class="n">_dfs</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">graph</span><span class="o">=</span><span class="n">graph</span><span class="p">,</span> <span class="n">visiting</span><span class="o">=</span><span class="n">visiting</span><span class="p">,</span> <span class="n">visited</span><span class="o">=</span><span class="n">visited</span><span class="p">):</span>
-</span><span data-line="231">            <span class="k">raise</span> <span class="n">CycleError</span><span class="p">()</span>
-</span><span data-line="232">
-</span><span data-line="233">
-</span><span data-line="234"><span class="k">def</span><span class="w"> </span><span class="nf">_check_positional_constraints</span><span class="p">(</span>
-</span><span data-line="235">    <span class="n">graph</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">object</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">object</span><span class="p">]],</span>
-</span><span data-line="236">    <span class="n">positions</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">object</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]],</span>
-</span><span data-line="237">    <span class="n">directional_constraints</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">object</span><span class="p">,</span> <span class="nb">object</span><span class="p">],</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;before&quot;</span><span class="p">,</span> <span class="s2">&quot;after&quot;</span><span class="p">]],</span>
-</span><span data-line="238"><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="239">    <span class="n">_detect_constraints_cycle</span><span class="p">(</span><span class="n">graph</span><span class="p">)</span>
-</span><span data-line="240">
-</span><span data-line="241">    <span class="k">for</span> <span class="n">node_u</span><span class="p">,</span> <span class="n">predecessors</span> <span class="ow">in</span> <span class="n">graph</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-</span><span data-line="242">        <span class="n">u_positions</span> <span class="o">=</span> <span class="n">positions</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">node_u</span><span class="p">)</span>
-</span><span data-line="243">        <span class="k">if</span> <span class="ow">not</span> <span class="n">u_positions</span><span class="p">:</span>
-</span><span data-line="244">            <span class="k">continue</span>
-</span><span data-line="245">        <span class="n">max_u_pos</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">u_positions</span><span class="p">)</span>
-</span><span data-line="246">
-</span><span data-line="247">        <span class="k">for</span> <span class="n">node_v</span> <span class="ow">in</span> <span class="n">predecessors</span><span class="p">:</span>
-</span><span data-line="248">            <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">v_positions</span> <span class="o">:=</span> <span class="n">positions</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">node_v</span><span class="p">)):</span>
-</span><span data-line="249">                <span class="k">continue</span>
-</span><span data-line="250">            <span class="n">min_v_pos</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">v_positions</span><span class="p">)</span>
-</span><span data-line="251">            <span class="k">if</span> <span class="n">max_u_pos</span> <span class="o">&gt;=</span> <span class="n">min_v_pos</span><span class="p">:</span>
-</span><span data-line="252">                <span class="n">constraint</span> <span class="o">=</span> <span class="n">directional_constraints</span><span class="p">[(</span><span class="n">node_u</span><span class="p">,</span> <span class="n">node_v</span><span class="p">)]</span>
-</span><span data-line="253">                <span class="n">first</span> <span class="o">=</span> <span class="n">node_u</span>
-</span><span data-line="254">                <span class="n">second</span> <span class="o">=</span> <span class="n">node_v</span>
-</span><span data-line="255">                <span class="n">first_idx</span> <span class="o">=</span> <span class="n">max_u_pos</span>
-</span><span data-line="256">                <span class="n">second_idx</span> <span class="o">=</span> <span class="n">min_v_pos</span>
-</span><span data-line="257">                <span class="c1"># since we&#39;ve converted all constraints to a &#39;before&#39; check while</span>
-</span><span data-line="258">                <span class="c1"># building the graph, retrieve the original constraint type</span>
-</span><span data-line="259">                <span class="c1"># (&#39;before&#39;, &#39;after&#39;) for this violation, and flip the nodes of &#39;after&#39;</span>
-</span><span data-line="260">                <span class="c1"># constraints again, so we can construct an error message</span>
-</span><span data-line="261">                <span class="k">if</span> <span class="n">constraint</span> <span class="o">==</span> <span class="s2">&quot;after&quot;</span><span class="p">:</span>
-</span><span data-line="262">                    <span class="n">first</span><span class="p">,</span> <span class="n">second</span> <span class="o">=</span> <span class="n">second</span><span class="p">,</span> <span class="n">first</span>
-</span><span data-line="263">                    <span class="n">first_idx</span><span class="p">,</span> <span class="n">second_idx</span> <span class="o">=</span> <span class="n">second_idx</span><span class="p">,</span> <span class="n">first_idx</span>
-</span><span data-line="264">                <span class="n">first_name</span> <span class="o">=</span> <span class="n">_fully_qualified_name</span><span class="p">(</span><span class="n">first</span><span class="p">)</span>
-</span><span data-line="265">                <span class="n">second_name</span> <span class="o">=</span> <span class="n">_fully_qualified_name</span><span class="p">(</span><span class="n">second</span><span class="p">)</span>
-</span><span data-line="266">
-</span><span data-line="267">                <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span>
-</span><span data-line="268">                    <span class="sa">f</span><span class="s2">&quot;All instances of </span><span class="si">{</span><span class="n">first_name</span><span class="si">!r}</span><span class="s2"> must come </span><span class="si">{</span><span class="n">constraint</span><span class="si">}</span><span class="s2"> any &quot;</span>
-</span><span data-line="269">                    <span class="sa">f</span><span class="s2">&quot;instance of </span><span class="si">{</span><span class="n">second_name</span><span class="si">!r}</span><span class="s2">. Found instance of </span><span class="si">{</span><span class="n">first_name</span><span class="si">!r}</span><span class="s2"> &quot;</span>
-</span><span data-line="270">                    <span class="sa">f</span><span class="s2">&quot;at index </span><span class="si">{</span><span class="n">first_idx</span><span class="si">}</span><span class="s2">, instance of </span><span class="si">{</span><span class="n">second_name</span><span class="si">!r}</span><span class="s2"> at index &quot;</span>
-</span><span data-line="271">                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">second_idx</span><span class="si">}</span><span class="s2">.&quot;</span>
-</span><span data-line="272">                <span class="p">)</span>
-</span><span data-line="273">                <span class="k">raise</span> <span class="n">ConstraintViolationError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
-</span><span data-line="274">
-</span><span data-line="275">
-</span><span data-line="276"><span class="k">def</span><span class="w"> </span><span class="nf">_check_first_last_constraints</span><span class="p">(</span>
-</span><span data-line="277">    <span class="n">want_first</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">object</span><span class="p">],</span>
-</span><span data-line="278">    <span class="n">want_last</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">object</span><span class="p">],</span>
-</span><span data-line="279">    <span class="n">positions</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">object</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]],</span>
-</span><span data-line="280">    <span class="n">total_count</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
-</span><span data-line="281"><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="282">    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">want_first</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-</span><span data-line="283">        <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Multiple middlewares define &#39;first=True&#39;: </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="n">_fully_qualified_name</span><span class="p">,</span><span class="w"> </span><span class="n">want_first</span><span class="p">))</span><span class="si">}</span><span class="s2">&quot;</span>
-</span><span data-line="284">        <span class="k">raise</span> <span class="n">MiddlewareConstraintError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
-</span><span data-line="285">
-</span><span data-line="286">    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">want_last</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-</span><span data-line="287">        <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Multiple middlewares define &#39;last=True&#39;: </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="n">_fully_qualified_name</span><span class="p">,</span><span class="w"> </span><span class="n">want_last</span><span class="p">))</span><span class="si">}</span><span class="s2">&quot;</span>
-</span><span data-line="288">        <span class="k">raise</span> <span class="n">MiddlewareConstraintError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
-</span><span data-line="289">
-</span><span data-line="290">    <span class="k">if</span> <span class="n">want_first</span><span class="p">:</span>
-</span><span data-line="291">        <span class="n">first</span> <span class="o">=</span> <span class="n">want_first</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-</span><span data-line="292">        <span class="n">first_positions</span> <span class="o">=</span> <span class="n">positions</span><span class="p">[</span><span class="n">first</span><span class="p">]</span>
-</span><span data-line="293">        <span class="n">max_pos_first</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">first_positions</span><span class="p">)</span>
-</span><span data-line="294">        <span class="k">if</span> <span class="n">max_pos_first</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-</span><span data-line="295">            <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span>
-</span><span data-line="296">                <span class="sa">f</span><span class="s2">&quot;Middleware </span><span class="si">{</span><span class="n">_fully_qualified_name</span><span class="p">(</span><span class="n">first</span><span class="p">)</span><span class="si">!r}</span><span class="s2"> is required to be in the &quot;</span>
-</span><span data-line="297">                <span class="sa">f</span><span class="s2">&quot;first position, but was found at index </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span><span class="w"> </span><span class="n">first_positions</span><span class="p">))</span><span class="si">}</span><span class="s2">. &quot;</span>
-</span><span data-line="298">                <span class="s2">&quot;(Violates constraint &#39;first=True&#39;)&quot;</span>
-</span><span data-line="299">            <span class="p">)</span>
-</span><span data-line="300">            <span class="k">raise</span> <span class="n">ConstraintViolationError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
-</span><span data-line="301">
-</span><span data-line="302">    <span class="k">if</span> <span class="n">want_last</span><span class="p">:</span>
-</span><span data-line="303">        <span class="n">last</span> <span class="o">=</span> <span class="n">want_last</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-</span><span data-line="304">        <span class="n">last_positions</span> <span class="o">=</span> <span class="n">positions</span><span class="p">[</span><span class="n">last</span><span class="p">]</span>
-</span><span data-line="305">        <span class="n">max_pos_first</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">last_positions</span><span class="p">)</span>
-</span><span data-line="306">        <span class="n">expected_index</span> <span class="o">=</span> <span class="n">total_count</span> <span class="o">-</span> <span class="mi">1</span>
-</span><span data-line="307">        <span class="k">if</span> <span class="n">max_pos_first</span> <span class="o">!=</span> <span class="n">expected_index</span><span class="p">:</span>
-</span><span data-line="308">            <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span>
-</span><span data-line="309">                <span class="sa">f</span><span class="s2">&quot;Middleware </span><span class="si">{</span><span class="n">_fully_qualified_name</span><span class="p">(</span><span class="n">last</span><span class="p">)</span><span class="si">!r}</span><span class="s2"> is required to be in the &quot;</span>
-</span><span data-line="310">                <span class="sa">f</span><span class="s2">&quot;last position (index </span><span class="si">{</span><span class="n">expected_index</span><span class="si">}</span><span class="s2"> of </span><span class="si">{</span><span class="n">expected_index</span><span class="si">}</span><span class="s2">), but was &quot;</span>
-</span><span data-line="311">                <span class="sa">f</span><span class="s2">&quot;found at index </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span><span class="w"> </span><span class="n">last_positions</span><span class="p">))</span><span class="si">}</span><span class="s2">. &quot;</span>
-</span><span data-line="312">                <span class="s2">&quot;(Violates constraint &#39;last=True&#39;)&quot;</span>
-</span><span data-line="313">            <span class="p">)</span>
-</span><span data-line="314">            <span class="k">raise</span> <span class="n">ConstraintViolationError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
-</span><span data-line="315">
-</span><span data-line="316">
-</span><span data-line="317"><span class="k">def</span><span class="w"> </span><span class="nf">_check_unique_constraints</span><span class="p">(</span><span class="n">unique</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">object</span><span class="p">],</span> <span class="n">positions</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">object</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="318">    <span class="k">for</span> <span class="n">middleware</span> <span class="ow">in</span> <span class="n">unique</span><span class="p">:</span>
-</span><span data-line="319">        <span class="n">found_positions</span> <span class="o">=</span> <span class="n">positions</span><span class="p">[</span><span class="n">middleware</span><span class="p">]</span>
-</span><span data-line="320">        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">found_positions</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-</span><span data-line="321">            <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span>
-</span><span data-line="322">                <span class="sa">f</span><span class="s2">&quot;Middleware </span><span class="si">{</span><span class="n">_fully_qualified_name</span><span class="p">(</span><span class="n">middleware</span><span class="p">)</span><span class="si">!r}</span><span class="s2"> must be unique. &quot;</span>
-</span><span data-line="323">                <span class="sa">f</span><span class="s2">&quot;Found </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">found_positions</span><span class="p">)</span><span class="si">}</span><span class="s2"> instances (indices &quot;</span>
-</span><span data-line="324">                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span><span class="w"> </span><span class="n">found_positions</span><span class="p">))</span><span class="si">}</span><span class="s2">). &quot;</span>
-</span><span data-line="325">                <span class="s2">&quot;(Violates constraints &#39;unique=True&#39;)&quot;</span>
-</span><span data-line="326">            <span class="p">)</span>
-</span><span data-line="327">            <span class="k">raise</span> <span class="n">ConstraintViolationError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
-</span><span data-line="328">
-</span><span data-line="329">
-</span><span data-line="330"><span class="k">def</span><span class="w"> </span><span class="nf">check_middleware_constraints</span><span class="p">(</span><span class="n">middlewares</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">Middleware</span><span class="p">,</span> <span class="o">...</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="331">    <span class="n">want_first</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">object</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
-</span><span data-line="332">    <span class="n">want_last</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">object</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
-</span><span data-line="333">    <span class="n">unique</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">object</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
-</span><span data-line="334">
-</span><span data-line="335">    <span class="c1"># simple &quot;graph&quot; that tracks a middleware and its neighbors, according to the spec</span>
-</span><span data-line="336">    <span class="c1"># we&#39;re given. to keep things simple, we&#39;re converting all requirements into a form</span>
-</span><span data-line="337">    <span class="c1"># of &#39;node -&gt; list[predecessor]&#39;, and remember the original constraint</span>
-</span><span data-line="338">    <span class="n">graph</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">object</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">object</span><span class="p">]]</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
-</span><span data-line="339">    <span class="n">directional_constraints</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">object</span><span class="p">,</span> <span class="nb">object</span><span class="p">],</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;before&quot;</span><span class="p">,</span> <span class="s2">&quot;after&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
-</span><span data-line="340">
-</span><span data-line="341">    <span class="c1"># keep track of the positions of *all* instances of a middleware; there may be more</span>
-</span><span data-line="342">    <span class="c1"># than one instance of a specific type</span>
-</span><span data-line="343">    <span class="n">positions</span><span class="p">:</span> <span class="n">collections</span><span class="o">.</span><span class="n">defaultdict</span><span class="p">[</span><span class="nb">object</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
-</span><span data-line="344">
-</span><span data-line="345">    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">middleware</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">middlewares</span><span class="p">):</span>
-</span><span data-line="346">        <span class="n">middleware_type</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">object</span><span class="p">,</span> <span class="nb">type</span><span class="p">]</span>
-</span><span data-line="347">        <span class="k">if</span> <span class="n">inspect</span><span class="o">.</span><span class="n">isfunction</span><span class="p">(</span><span class="n">middleware</span><span class="p">):</span>
-</span><span data-line="348">            <span class="n">positions</span><span class="p">[</span><span class="n">middleware</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
-</span><span data-line="349">            <span class="n">middleware_type</span> <span class="o">=</span> <span class="n">middleware</span>
-</span><span data-line="350">        <span class="k">else</span><span class="p">:</span>
-</span><span data-line="351">            <span class="c1"># &#39;middleware&#39; might be a class or an instance of a class</span>
-</span><span data-line="352">            <span class="n">middleware_type</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">middleware</span><span class="p">)</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">inspect</span><span class="o">.</span><span class="n">isclass</span><span class="p">(</span><span class="n">middleware</span><span class="p">)</span> <span class="k">else</span> <span class="n">middleware</span>
-</span><span data-line="353">            <span class="k">for</span> <span class="n">base</span> <span class="ow">in</span> <span class="n">middleware_type</span><span class="o">.</span><span class="n">mro</span><span class="p">()[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>  <span class="c1"># pyright: ignore</span>
-</span><span data-line="354">                <span class="n">positions</span><span class="p">[</span><span class="n">base</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
-</span><span data-line="355">
-</span><span data-line="356">        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">middleware</span><span class="p">,</span> <span class="n">ASGIMiddleware</span><span class="p">)</span> <span class="ow">and</span> <span class="n">middleware</span><span class="o">.</span><span class="n">constraints</span><span class="p">):</span>
-</span><span data-line="357">            <span class="k">continue</span>
-</span><span data-line="358">
-</span><span data-line="359">        <span class="n">constraints</span> <span class="o">=</span> <span class="n">middleware</span><span class="o">.</span><span class="n">constraints</span><span class="o">.</span><span class="n">_resolve</span><span class="p">()</span>
-</span><span data-line="360">        <span class="k">if</span> <span class="n">constraints</span><span class="o">.</span><span class="n">is_empty</span><span class="p">:</span>
-</span><span data-line="361">            <span class="k">continue</span>
-</span><span data-line="362">
-</span><span data-line="363">        <span class="k">if</span> <span class="n">constraints</span><span class="o">.</span><span class="n">first</span><span class="p">:</span>
-</span><span data-line="364">            <span class="n">want_first</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">middleware_type</span><span class="p">)</span>
-</span><span data-line="365">        <span class="k">if</span> <span class="n">constraints</span><span class="o">.</span><span class="n">last</span><span class="p">:</span>
-</span><span data-line="366">            <span class="n">want_last</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">middleware_type</span><span class="p">)</span>
-</span><span data-line="367">
-</span><span data-line="368">        <span class="k">if</span> <span class="n">constraints</span><span class="o">.</span><span class="n">unique</span><span class="p">:</span>
-</span><span data-line="369">            <span class="n">unique</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">middleware_type</span><span class="p">)</span>
-</span><span data-line="370">
-</span><span data-line="371">        <span class="k">for</span> <span class="n">before</span> <span class="ow">in</span> <span class="n">constraints</span><span class="o">.</span><span class="n">before</span><span class="p">:</span>
-</span><span data-line="372">            <span class="n">directional_constraints</span><span class="p">[(</span><span class="n">middleware_type</span><span class="p">,</span> <span class="n">before</span><span class="p">)]</span> <span class="o">=</span> <span class="s2">&quot;before&quot;</span>
-</span><span data-line="373">            <span class="n">graph</span><span class="p">[</span><span class="n">middleware_type</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">before</span><span class="p">)</span>
-</span><span data-line="374">        <span class="k">for</span> <span class="n">after</span> <span class="ow">in</span> <span class="n">constraints</span><span class="o">.</span><span class="n">after</span><span class="p">:</span>
-</span><span data-line="375">            <span class="n">directional_constraints</span><span class="p">[(</span><span class="n">after</span><span class="p">,</span> <span class="n">middleware_type</span><span class="p">)]</span> <span class="o">=</span> <span class="s2">&quot;after&quot;</span>
-</span><span data-line="376">            <span class="n">graph</span><span class="p">[</span><span class="n">after</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">middleware_type</span><span class="p">)</span>
-</span><span data-line="377">
-</span><span data-line="378">    <span class="n">_check_unique_constraints</span><span class="p">(</span>
-</span><span data-line="379">        <span class="n">unique</span><span class="o">=</span><span class="n">unique</span><span class="p">,</span>
-</span><span data-line="380">        <span class="n">positions</span><span class="o">=</span><span class="n">positions</span><span class="p">,</span>
-</span><span data-line="381">    <span class="p">)</span>
-</span><span data-line="382">
-</span><span data-line="383">    <span class="n">_check_first_last_constraints</span><span class="p">(</span>
-</span><span data-line="384">        <span class="n">want_first</span><span class="o">=</span><span class="n">want_first</span><span class="p">,</span>
-</span><span data-line="385">        <span class="n">want_last</span><span class="o">=</span><span class="n">want_last</span><span class="p">,</span>
-</span><span data-line="386">        <span class="n">positions</span><span class="o">=</span><span class="n">positions</span><span class="p">,</span>
-</span><span data-line="387">        <span class="n">total_count</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">middlewares</span><span class="p">),</span>
-</span><span data-line="388">    <span class="p">)</span>
-</span><span data-line="389">
-</span><span data-line="390">    <span class="n">_check_positional_constraints</span><span class="p">(</span>
-</span><span data-line="391">        <span class="n">graph</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">graph</span><span class="p">),</span>  <span class="c1"># convert defaultdict to a regular dict to avoid accidental key creation</span>
-</span><span data-line="392">        <span class="n">positions</span><span class="o">=</span><span class="n">positions</span><span class="p">,</span>
-</span><span data-line="393">        <span class="n">directional_constraints</span><span class="o">=</span><span class="n">directional_constraints</span><span class="p">,</span>
-</span><span data-line="394">    <span class="p">)</span>
+</span><span data-line="200">
+</span><span data-line="201">
+</span><span data-line="202"><span class="k">def</span><span class="w"> </span><span class="nf">_fully_qualified_name</span><span class="p">(</span><span class="n">obj</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span data-line="203">    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="vm">__module__</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="vm">__qualname__</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span data-line="204">
+</span><span data-line="205">
+</span><span data-line="206"><span class="k">def</span><span class="w"> </span><span class="nf">_dfs</span><span class="p">(</span><span class="n">node</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span> <span class="n">graph</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">object</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">object</span><span class="p">]],</span> <span class="n">visiting</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">object</span><span class="p">],</span> <span class="n">visited</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">object</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+</span><span data-line="207">    <span class="k">if</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">visiting</span><span class="p">:</span>
+</span><span data-line="208">        <span class="k">return</span> <span class="kc">True</span>
+</span><span data-line="209">
+</span><span data-line="210">    <span class="k">if</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">visited</span><span class="p">:</span>
+</span><span data-line="211">        <span class="k">return</span> <span class="kc">False</span>
+</span><span data-line="212">
+</span><span data-line="213">    <span class="n">visiting</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+</span><span data-line="214">    <span class="k">if</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">graph</span><span class="p">:</span>
+</span><span data-line="215">        <span class="k">for</span> <span class="n">neighbor</span> <span class="ow">in</span> <span class="n">graph</span><span class="p">[</span><span class="n">node</span><span class="p">]:</span>
+</span><span data-line="216">            <span class="k">if</span> <span class="n">_dfs</span><span class="p">(</span><span class="n">neighbor</span><span class="p">,</span> <span class="n">graph</span><span class="o">=</span><span class="n">graph</span><span class="p">,</span> <span class="n">visiting</span><span class="o">=</span><span class="n">visiting</span><span class="p">,</span> <span class="n">visited</span><span class="o">=</span><span class="n">visited</span><span class="p">):</span>
+</span><span data-line="217">                <span class="k">return</span> <span class="kc">True</span>
+</span><span data-line="218">    <span class="n">visiting</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+</span><span data-line="219">    <span class="n">visited</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+</span><span data-line="220">    <span class="k">return</span> <span class="kc">False</span>
+</span><span data-line="221">
+</span><span data-line="222">
+</span><span data-line="223"><span class="k">def</span><span class="w"> </span><span class="nf">_detect_constraints_cycle</span><span class="p">(</span><span class="n">graph</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">object</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">object</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="224">    <span class="n">visited</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">object</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+</span><span data-line="225">    <span class="n">visiting</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">object</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+</span><span data-line="226">
+</span><span data-line="227">    <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">graph</span><span class="p">:</span>
+</span><span data-line="228">        <span class="k">if</span> <span class="n">_dfs</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">graph</span><span class="o">=</span><span class="n">graph</span><span class="p">,</span> <span class="n">visiting</span><span class="o">=</span><span class="n">visiting</span><span class="p">,</span> <span class="n">visited</span><span class="o">=</span><span class="n">visited</span><span class="p">):</span>
+</span><span data-line="229">            <span class="k">raise</span> <span class="n">CycleError</span><span class="p">()</span>
+</span><span data-line="230">
+</span><span data-line="231">
+</span><span data-line="232"><span class="k">def</span><span class="w"> </span><span class="nf">_check_positional_constraints</span><span class="p">(</span>
+</span><span data-line="233">    <span class="n">graph</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">object</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">object</span><span class="p">]],</span>
+</span><span data-line="234">    <span class="n">positions</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">object</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]],</span>
+</span><span data-line="235">    <span class="n">directional_constraints</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">object</span><span class="p">,</span> <span class="nb">object</span><span class="p">],</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;before&quot;</span><span class="p">,</span> <span class="s2">&quot;after&quot;</span><span class="p">]],</span>
+</span><span data-line="236"><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="237">    <span class="n">_detect_constraints_cycle</span><span class="p">(</span><span class="n">graph</span><span class="p">)</span>
+</span><span data-line="238">
+</span><span data-line="239">    <span class="k">for</span> <span class="n">node_u</span><span class="p">,</span> <span class="n">predecessors</span> <span class="ow">in</span> <span class="n">graph</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+</span><span data-line="240">        <span class="n">u_positions</span> <span class="o">=</span> <span class="n">positions</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">node_u</span><span class="p">)</span>
+</span><span data-line="241">        <span class="k">if</span> <span class="ow">not</span> <span class="n">u_positions</span><span class="p">:</span>
+</span><span data-line="242">            <span class="k">continue</span>
+</span><span data-line="243">        <span class="n">max_u_pos</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">u_positions</span><span class="p">)</span>
+</span><span data-line="244">
+</span><span data-line="245">        <span class="k">for</span> <span class="n">node_v</span> <span class="ow">in</span> <span class="n">predecessors</span><span class="p">:</span>
+</span><span data-line="246">            <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">v_positions</span> <span class="o">:=</span> <span class="n">positions</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">node_v</span><span class="p">)):</span>
+</span><span data-line="247">                <span class="k">continue</span>
+</span><span data-line="248">            <span class="n">min_v_pos</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">v_positions</span><span class="p">)</span>
+</span><span data-line="249">            <span class="k">if</span> <span class="n">max_u_pos</span> <span class="o">&gt;=</span> <span class="n">min_v_pos</span><span class="p">:</span>
+</span><span data-line="250">                <span class="n">constraint</span> <span class="o">=</span> <span class="n">directional_constraints</span><span class="p">[(</span><span class="n">node_u</span><span class="p">,</span> <span class="n">node_v</span><span class="p">)]</span>
+</span><span data-line="251">                <span class="n">first</span> <span class="o">=</span> <span class="n">node_u</span>
+</span><span data-line="252">                <span class="n">second</span> <span class="o">=</span> <span class="n">node_v</span>
+</span><span data-line="253">                <span class="n">first_idx</span> <span class="o">=</span> <span class="n">max_u_pos</span>
+</span><span data-line="254">                <span class="n">second_idx</span> <span class="o">=</span> <span class="n">min_v_pos</span>
+</span><span data-line="255">                <span class="c1"># since we&#39;ve converted all constraints to a &#39;before&#39; check while</span>
+</span><span data-line="256">                <span class="c1"># building the graph, retrieve the original constraint type</span>
+</span><span data-line="257">                <span class="c1"># (&#39;before&#39;, &#39;after&#39;) for this violation, and flip the nodes of &#39;after&#39;</span>
+</span><span data-line="258">                <span class="c1"># constraints again, so we can construct an error message</span>
+</span><span data-line="259">                <span class="k">if</span> <span class="n">constraint</span> <span class="o">==</span> <span class="s2">&quot;after&quot;</span><span class="p">:</span>
+</span><span data-line="260">                    <span class="n">first</span><span class="p">,</span> <span class="n">second</span> <span class="o">=</span> <span class="n">second</span><span class="p">,</span> <span class="n">first</span>
+</span><span data-line="261">                    <span class="n">first_idx</span><span class="p">,</span> <span class="n">second_idx</span> <span class="o">=</span> <span class="n">second_idx</span><span class="p">,</span> <span class="n">first_idx</span>
+</span><span data-line="262">                <span class="n">first_name</span> <span class="o">=</span> <span class="n">_fully_qualified_name</span><span class="p">(</span><span class="n">first</span><span class="p">)</span>
+</span><span data-line="263">                <span class="n">second_name</span> <span class="o">=</span> <span class="n">_fully_qualified_name</span><span class="p">(</span><span class="n">second</span><span class="p">)</span>
+</span><span data-line="264">
+</span><span data-line="265">                <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span>
+</span><span data-line="266">                    <span class="sa">f</span><span class="s2">&quot;All instances of </span><span class="si">{</span><span class="n">first_name</span><span class="si">!r}</span><span class="s2"> must come </span><span class="si">{</span><span class="n">constraint</span><span class="si">}</span><span class="s2"> any &quot;</span>
+</span><span data-line="267">                    <span class="sa">f</span><span class="s2">&quot;instance of </span><span class="si">{</span><span class="n">second_name</span><span class="si">!r}</span><span class="s2">. Found instance of </span><span class="si">{</span><span class="n">first_name</span><span class="si">!r}</span><span class="s2"> &quot;</span>
+</span><span data-line="268">                    <span class="sa">f</span><span class="s2">&quot;at index </span><span class="si">{</span><span class="n">first_idx</span><span class="si">}</span><span class="s2">, instance of </span><span class="si">{</span><span class="n">second_name</span><span class="si">!r}</span><span class="s2"> at index &quot;</span>
+</span><span data-line="269">                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">second_idx</span><span class="si">}</span><span class="s2">.&quot;</span>
+</span><span data-line="270">                <span class="p">)</span>
+</span><span data-line="271">                <span class="k">raise</span> <span class="n">ConstraintViolationError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+</span><span data-line="272">
+</span><span data-line="273">
+</span><span data-line="274"><span class="k">def</span><span class="w"> </span><span class="nf">_check_first_last_constraints</span><span class="p">(</span>
+</span><span data-line="275">    <span class="n">want_first</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">object</span><span class="p">],</span>
+</span><span data-line="276">    <span class="n">want_last</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">object</span><span class="p">],</span>
+</span><span data-line="277">    <span class="n">positions</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">object</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]],</span>
+</span><span data-line="278">    <span class="n">total_count</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+</span><span data-line="279"><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="280">    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">want_first</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+</span><span data-line="281">        <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Multiple middlewares define &#39;first=True&#39;: </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="n">_fully_qualified_name</span><span class="p">,</span><span class="w"> </span><span class="n">want_first</span><span class="p">))</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span data-line="282">        <span class="k">raise</span> <span class="n">MiddlewareConstraintError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+</span><span data-line="283">
+</span><span data-line="284">    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">want_last</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+</span><span data-line="285">        <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Multiple middlewares define &#39;last=True&#39;: </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="n">_fully_qualified_name</span><span class="p">,</span><span class="w"> </span><span class="n">want_last</span><span class="p">))</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span data-line="286">        <span class="k">raise</span> <span class="n">MiddlewareConstraintError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+</span><span data-line="287">
+</span><span data-line="288">    <span class="k">if</span> <span class="n">want_first</span><span class="p">:</span>
+</span><span data-line="289">        <span class="n">first</span> <span class="o">=</span> <span class="n">want_first</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+</span><span data-line="290">        <span class="n">first_positions</span> <span class="o">=</span> <span class="n">positions</span><span class="p">[</span><span class="n">first</span><span class="p">]</span>
+</span><span data-line="291">        <span class="n">max_pos_first</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">first_positions</span><span class="p">)</span>
+</span><span data-line="292">        <span class="k">if</span> <span class="n">max_pos_first</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+</span><span data-line="293">            <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span>
+</span><span data-line="294">                <span class="sa">f</span><span class="s2">&quot;Middleware </span><span class="si">{</span><span class="n">_fully_qualified_name</span><span class="p">(</span><span class="n">first</span><span class="p">)</span><span class="si">!r}</span><span class="s2"> is required to be in the &quot;</span>
+</span><span data-line="295">                <span class="sa">f</span><span class="s2">&quot;first position, but was found at index </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span><span class="w"> </span><span class="n">first_positions</span><span class="p">))</span><span class="si">}</span><span class="s2">. &quot;</span>
+</span><span data-line="296">                <span class="s2">&quot;(Violates constraint &#39;first=True&#39;)&quot;</span>
+</span><span data-line="297">            <span class="p">)</span>
+</span><span data-line="298">            <span class="k">raise</span> <span class="n">ConstraintViolationError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+</span><span data-line="299">
+</span><span data-line="300">    <span class="k">if</span> <span class="n">want_last</span><span class="p">:</span>
+</span><span data-line="301">        <span class="n">last</span> <span class="o">=</span> <span class="n">want_last</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+</span><span data-line="302">        <span class="n">last_positions</span> <span class="o">=</span> <span class="n">positions</span><span class="p">[</span><span class="n">last</span><span class="p">]</span>
+</span><span data-line="303">        <span class="n">max_pos_first</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">last_positions</span><span class="p">)</span>
+</span><span data-line="304">        <span class="n">expected_index</span> <span class="o">=</span> <span class="n">total_count</span> <span class="o">-</span> <span class="mi">1</span>
+</span><span data-line="305">        <span class="k">if</span> <span class="n">max_pos_first</span> <span class="o">!=</span> <span class="n">expected_index</span><span class="p">:</span>
+</span><span data-line="306">            <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span>
+</span><span data-line="307">                <span class="sa">f</span><span class="s2">&quot;Middleware </span><span class="si">{</span><span class="n">_fully_qualified_name</span><span class="p">(</span><span class="n">last</span><span class="p">)</span><span class="si">!r}</span><span class="s2"> is required to be in the &quot;</span>
+</span><span data-line="308">                <span class="sa">f</span><span class="s2">&quot;last position (index </span><span class="si">{</span><span class="n">expected_index</span><span class="si">}</span><span class="s2"> of </span><span class="si">{</span><span class="n">expected_index</span><span class="si">}</span><span class="s2">), but was &quot;</span>
+</span><span data-line="309">                <span class="sa">f</span><span class="s2">&quot;found at index </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span><span class="w"> </span><span class="n">last_positions</span><span class="p">))</span><span class="si">}</span><span class="s2">. &quot;</span>
+</span><span data-line="310">                <span class="s2">&quot;(Violates constraint &#39;last=True&#39;)&quot;</span>
+</span><span data-line="311">            <span class="p">)</span>
+</span><span data-line="312">            <span class="k">raise</span> <span class="n">ConstraintViolationError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+</span><span data-line="313">
+</span><span data-line="314">
+</span><span data-line="315"><span class="k">def</span><span class="w"> </span><span class="nf">_check_unique_constraints</span><span class="p">(</span><span class="n">unique</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">object</span><span class="p">],</span> <span class="n">positions</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">object</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="316">    <span class="k">for</span> <span class="n">middleware</span> <span class="ow">in</span> <span class="n">unique</span><span class="p">:</span>
+</span><span data-line="317">        <span class="n">found_positions</span> <span class="o">=</span> <span class="n">positions</span><span class="p">[</span><span class="n">middleware</span><span class="p">]</span>
+</span><span data-line="318">        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">found_positions</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+</span><span data-line="319">            <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span>
+</span><span data-line="320">                <span class="sa">f</span><span class="s2">&quot;Middleware </span><span class="si">{</span><span class="n">_fully_qualified_name</span><span class="p">(</span><span class="n">middleware</span><span class="p">)</span><span class="si">!r}</span><span class="s2"> must be unique. &quot;</span>
+</span><span data-line="321">                <span class="sa">f</span><span class="s2">&quot;Found </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">found_positions</span><span class="p">)</span><span class="si">}</span><span class="s2"> instances (indices &quot;</span>
+</span><span data-line="322">                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span><span class="w"> </span><span class="n">found_positions</span><span class="p">))</span><span class="si">}</span><span class="s2">). &quot;</span>
+</span><span data-line="323">                <span class="s2">&quot;(Violates constraints &#39;unique=True&#39;)&quot;</span>
+</span><span data-line="324">            <span class="p">)</span>
+</span><span data-line="325">            <span class="k">raise</span> <span class="n">ConstraintViolationError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+</span><span data-line="326">
+</span><span data-line="327">
+</span><span data-line="328"><span class="k">def</span><span class="w"> </span><span class="nf">check_middleware_constraints</span><span class="p">(</span><span class="n">middlewares</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">Middleware</span><span class="p">,</span> <span class="o">...</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="329">    <span class="n">want_first</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">object</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+</span><span data-line="330">    <span class="n">want_last</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">object</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+</span><span data-line="331">    <span class="n">unique</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">object</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+</span><span data-line="332">
+</span><span data-line="333">    <span class="c1"># simple &quot;graph&quot; that tracks a middleware and its neighbors, according to the spec</span>
+</span><span data-line="334">    <span class="c1"># we&#39;re given. to keep things simple, we&#39;re converting all requirements into a form</span>
+</span><span data-line="335">    <span class="c1"># of &#39;node -&gt; list[predecessor]&#39;, and remember the original constraint</span>
+</span><span data-line="336">    <span class="n">graph</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">object</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">object</span><span class="p">]]</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
+</span><span data-line="337">    <span class="n">directional_constraints</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">object</span><span class="p">,</span> <span class="nb">object</span><span class="p">],</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;before&quot;</span><span class="p">,</span> <span class="s2">&quot;after&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
+</span><span data-line="338">
+</span><span data-line="339">    <span class="c1"># keep track of the positions of *all* instances of a middleware; there may be more</span>
+</span><span data-line="340">    <span class="c1"># than one instance of a specific type</span>
+</span><span data-line="341">    <span class="n">positions</span><span class="p">:</span> <span class="n">collections</span><span class="o">.</span><span class="n">defaultdict</span><span class="p">[</span><span class="nb">object</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
+</span><span data-line="342">
+</span><span data-line="343">    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">middleware</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">middlewares</span><span class="p">):</span>
+</span><span data-line="344">        <span class="n">middleware_type</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">object</span><span class="p">,</span> <span class="nb">type</span><span class="p">]</span>
+</span><span data-line="345">        <span class="k">if</span> <span class="n">inspect</span><span class="o">.</span><span class="n">isfunction</span><span class="p">(</span><span class="n">middleware</span><span class="p">):</span>
+</span><span data-line="346">            <span class="n">positions</span><span class="p">[</span><span class="n">middleware</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+</span><span data-line="347">            <span class="n">middleware_type</span> <span class="o">=</span> <span class="n">middleware</span>
+</span><span data-line="348">        <span class="k">else</span><span class="p">:</span>
+</span><span data-line="349">            <span class="c1"># &#39;middleware&#39; might be a class or an instance of a class</span>
+</span><span data-line="350">            <span class="n">middleware_type</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">middleware</span><span class="p">)</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">inspect</span><span class="o">.</span><span class="n">isclass</span><span class="p">(</span><span class="n">middleware</span><span class="p">)</span> <span class="k">else</span> <span class="n">middleware</span>
+</span><span data-line="351">            <span class="k">for</span> <span class="n">base</span> <span class="ow">in</span> <span class="n">middleware_type</span><span class="o">.</span><span class="n">mro</span><span class="p">()[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>  <span class="c1"># pyright: ignore</span>
+</span><span data-line="352">                <span class="n">positions</span><span class="p">[</span><span class="n">base</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+</span><span data-line="353">
+</span><span data-line="354">        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">middleware</span><span class="p">,</span> <span class="n">ASGIMiddleware</span><span class="p">)</span> <span class="ow">and</span> <span class="n">middleware</span><span class="o">.</span><span class="n">constraints</span><span class="p">):</span>
+</span><span data-line="355">            <span class="k">continue</span>
+</span><span data-line="356">
+</span><span data-line="357">        <span class="n">constraints</span> <span class="o">=</span> <span class="n">middleware</span><span class="o">.</span><span class="n">constraints</span><span class="o">.</span><span class="n">_resolve</span><span class="p">()</span>
+</span><span data-line="358">        <span class="k">if</span> <span class="n">constraints</span><span class="o">.</span><span class="n">is_empty</span><span class="p">:</span>
+</span><span data-line="359">            <span class="k">continue</span>
+</span><span data-line="360">
+</span><span data-line="361">        <span class="k">if</span> <span class="n">constraints</span><span class="o">.</span><span class="n">first</span><span class="p">:</span>
+</span><span data-line="362">            <span class="n">want_first</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">middleware_type</span><span class="p">)</span>
+</span><span data-line="363">        <span class="k">if</span> <span class="n">constraints</span><span class="o">.</span><span class="n">last</span><span class="p">:</span>
+</span><span data-line="364">            <span class="n">want_last</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">middleware_type</span><span class="p">)</span>
+</span><span data-line="365">
+</span><span data-line="366">        <span class="k">if</span> <span class="n">constraints</span><span class="o">.</span><span class="n">unique</span><span class="p">:</span>
+</span><span data-line="367">            <span class="n">unique</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">middleware_type</span><span class="p">)</span>
+</span><span data-line="368">
+</span><span data-line="369">        <span class="k">for</span> <span class="n">before</span> <span class="ow">in</span> <span class="n">constraints</span><span class="o">.</span><span class="n">before</span><span class="p">:</span>
+</span><span data-line="370">            <span class="n">directional_constraints</span><span class="p">[(</span><span class="n">middleware_type</span><span class="p">,</span> <span class="n">before</span><span class="p">)]</span> <span class="o">=</span> <span class="s2">&quot;before&quot;</span>
+</span><span data-line="371">            <span class="n">graph</span><span class="p">[</span><span class="n">middleware_type</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">before</span><span class="p">)</span>
+</span><span data-line="372">        <span class="k">for</span> <span class="n">after</span> <span class="ow">in</span> <span class="n">constraints</span><span class="o">.</span><span class="n">after</span><span class="p">:</span>
+</span><span data-line="373">            <span class="n">directional_constraints</span><span class="p">[(</span><span class="n">after</span><span class="p">,</span> <span class="n">middleware_type</span><span class="p">)]</span> <span class="o">=</span> <span class="s2">&quot;after&quot;</span>
+</span><span data-line="374">            <span class="n">graph</span><span class="p">[</span><span class="n">after</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">middleware_type</span><span class="p">)</span>
+</span><span data-line="375">
+</span><span data-line="376">    <span class="n">_check_unique_constraints</span><span class="p">(</span>
+</span><span data-line="377">        <span class="n">unique</span><span class="o">=</span><span class="n">unique</span><span class="p">,</span>
+</span><span data-line="378">        <span class="n">positions</span><span class="o">=</span><span class="n">positions</span><span class="p">,</span>
+</span><span data-line="379">    <span class="p">)</span>
+</span><span data-line="380">
+</span><span data-line="381">    <span class="n">_check_first_last_constraints</span><span class="p">(</span>
+</span><span data-line="382">        <span class="n">want_first</span><span class="o">=</span><span class="n">want_first</span><span class="p">,</span>
+</span><span data-line="383">        <span class="n">want_last</span><span class="o">=</span><span class="n">want_last</span><span class="p">,</span>
+</span><span data-line="384">        <span class="n">positions</span><span class="o">=</span><span class="n">positions</span><span class="p">,</span>
+</span><span data-line="385">        <span class="n">total_count</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">middlewares</span><span class="p">),</span>
+</span><span data-line="386">    <span class="p">)</span>
+</span><span data-line="387">
+</span><span data-line="388">    <span class="n">_check_positional_constraints</span><span class="p">(</span>
+</span><span data-line="389">        <span class="n">graph</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">graph</span><span class="p">),</span>  <span class="c1"># convert defaultdict to a regular dict to avoid accidental key creation</span>
+</span><span data-line="390">        <span class="n">positions</span><span class="o">=</span><span class="n">positions</span><span class="p">,</span>
+</span><span data-line="391">        <span class="n">directional_constraints</span><span class="o">=</span><span class="n">directional_constraints</span><span class="p">,</span>
+</span><span data-line="392">    <span class="p">)</span>
 </span></pre></div>
         </article><button class="back-to-top" type="button">
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">

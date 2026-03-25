@@ -586,7 +586,11 @@ the last one to receive the request and the first one to see the response.</p>
     style M1 stroke:#333,stroke-width:2px
     style M2 stroke:#555,stroke-width:1.5px
     style H stroke:#777,stroke-width:1px
-    </pre><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
+    </pre><div class="sd-tab-set docutils">
+<input id="sd-tab-item-0" name="sd-tab-set-0" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="3.11" for="sd-tab-item-0">
+Python 3.11+</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
 </span><span data-line="2">
 </span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Controller</span><span class="p">,</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">Router</span><span class="p">,</span> <span class="n">get</span>
 </span><span data-line="4"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.datastructures</span><span class="w"> </span><span class="kn">import</span> <span class="n">State</span>
@@ -633,6 +637,60 @@ the last one to receive the request and the first one to see the response.</p>
 </span><span data-line="45">    <span class="n">middleware</span><span class="o">=</span><span class="p">[</span><span class="n">create_test_middleware</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="n">create_test_middleware</span><span class="p">(</span><span class="mi">1</span><span class="p">)],</span>
 </span><span data-line="46"><span class="p">)</span>
 </span></pre></div>
+</div>
+</div>
+<input checked="checked" id="sd-tab-item-1" name="sd-tab-set-0" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="3.14" for="sd-tab-item-1">
+Python 3.14+</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
+</span><span data-line="2">
+</span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Controller</span><span class="p">,</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">Router</span><span class="p">,</span> <span class="n">get</span>
+</span><span data-line="4"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.datastructures</span><span class="w"> </span><span class="kn">import</span> <span class="n">State</span>
+</span><span data-line="5"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.middleware</span><span class="w"> </span><span class="kn">import</span> <span class="n">MiddlewareProtocol</span>
+</span><span data-line="6">
+</span><span data-line="7"><span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+</span><span data-line="8">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">ASGIApp</span><span class="p">,</span> <span class="n">Receive</span><span class="p">,</span> <span class="n">Scope</span><span class="p">,</span> <span class="n">Send</span>
+</span><span data-line="9">
+</span><span data-line="10">
+</span><span data-line="11"><span class="k">def</span><span class="w"> </span><span class="nf">create_test_middleware</span><span class="p">(</span><span class="n">middleware_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">type</span><span class="p">[</span><span class="n">MiddlewareProtocol</span><span class="p">]:</span>
+</span><span data-line="12">    <span class="k">class</span><span class="w"> </span><span class="nc">TestMiddleware</span><span class="p">(</span><span class="n">MiddlewareProtocol</span><span class="p">):</span>
+</span><span data-line="13">        <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">app</span><span class="p">:</span> <span class="n">ASGIApp</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="14">            <span class="bp">self</span><span class="o">.</span><span class="n">app</span> <span class="o">=</span> <span class="n">app</span>
+</span><span data-line="15">
+</span><span data-line="16">        <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scope</span><span class="p">:</span> <span class="n">Scope</span><span class="p">,</span> <span class="n">receive</span><span class="p">:</span> <span class="n">Receive</span><span class="p">,</span> <span class="n">send</span><span class="p">:</span> <span class="n">Send</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="17">            <span class="n">litestar_app</span> <span class="o">=</span> <span class="n">scope</span><span class="p">[</span><span class="s2">&quot;app&quot;</span><span class="p">]</span>
+</span><span data-line="18">            <span class="n">litestar_app</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;middleware_calls&quot;</span><span class="p">,</span> <span class="p">[])</span>
+</span><span data-line="19">            <span class="n">litestar_app</span><span class="o">.</span><span class="n">state</span><span class="p">[</span><span class="s2">&quot;middleware_calls&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">middleware_id</span><span class="p">)</span>
+</span><span data-line="20">            <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="p">(</span><span class="n">scope</span><span class="p">,</span> <span class="n">receive</span><span class="p">,</span> <span class="n">send</span><span class="p">)</span>
+</span><span data-line="21">
+</span><span data-line="22">    <span class="k">return</span> <span class="n">TestMiddleware</span>
+</span><span data-line="23">
+</span><span data-line="24">
+</span><span data-line="25"><span class="k">class</span><span class="w"> </span><span class="nc">MyController</span><span class="p">(</span><span class="n">Controller</span><span class="p">):</span>
+</span><span data-line="26">    <span class="n">path</span> <span class="o">=</span> <span class="s2">&quot;/controller&quot;</span>
+</span><span data-line="27">    <span class="n">middleware</span> <span class="o">=</span> <span class="p">[</span><span class="n">create_test_middleware</span><span class="p">(</span><span class="mi">4</span><span class="p">),</span> <span class="n">create_test_middleware</span><span class="p">(</span><span class="mi">5</span><span class="p">)]</span>
+</span><span data-line="28">
+</span><span data-line="29">    <span class="nd">@get</span><span class="p">(</span>
+</span><span data-line="30">        <span class="s2">&quot;/handler&quot;</span><span class="p">,</span>
+</span><span data-line="31">        <span class="n">middleware</span><span class="o">=</span><span class="p">[</span><span class="n">create_test_middleware</span><span class="p">(</span><span class="mi">6</span><span class="p">),</span> <span class="n">create_test_middleware</span><span class="p">(</span><span class="mi">7</span><span class="p">)],</span>
+</span><span data-line="32">    <span class="p">)</span>
+</span><span data-line="33">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">my_handler</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">:</span> <span class="n">State</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+</span><span data-line="34">        <span class="k">return</span> <span class="n">state</span><span class="p">[</span><span class="s2">&quot;middleware_calls&quot;</span><span class="p">]</span>
+</span><span data-line="35">
+</span><span data-line="36">
+</span><span data-line="37"><span class="n">router</span> <span class="o">=</span> <span class="n">Router</span><span class="p">(</span>
+</span><span data-line="38">    <span class="n">path</span><span class="o">=</span><span class="s2">&quot;/router&quot;</span><span class="p">,</span>
+</span><span data-line="39">    <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">MyController</span><span class="p">],</span>
+</span><span data-line="40">    <span class="n">middleware</span><span class="o">=</span><span class="p">[</span><span class="n">create_test_middleware</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span> <span class="n">create_test_middleware</span><span class="p">(</span><span class="mi">3</span><span class="p">)],</span>
+</span><span data-line="41"><span class="p">)</span>
+</span><span data-line="42">
+</span><span data-line="43"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
+</span><span data-line="44">    <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">router</span><span class="p">],</span>
+</span><span data-line="45">    <span class="n">middleware</span><span class="o">=</span><span class="p">[</span><span class="n">create_test_middleware</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="n">create_test_middleware</span><span class="p">(</span><span class="mi">1</span><span class="p">)],</span>
+</span><span data-line="46"><span class="p">)</span>
+</span></pre></div>
+</div>
+</div>
 </div>
 <div class="admonition">
 <p class="admonition-title">Run it</p>

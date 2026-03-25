@@ -508,10 +508,10 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="2">
 </span><span data-line="3"><span class="kn">import</span><span class="w"> </span><span class="nn">dataclasses</span>
 </span><span data-line="4"><span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">replace</span>
-</span><span data-line="5"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Annotated</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Generic</span><span class="p">,</span> <span class="n">TypeVar</span>
+</span><span data-line="5"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Annotated</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Generic</span><span class="p">,</span> <span class="n">TypeAlias</span><span class="p">,</span> <span class="n">TypeVar</span>
 </span><span data-line="6"><span class="kn">from</span><span class="w"> </span><span class="nn">warnings</span><span class="w"> </span><span class="kn">import</span> <span class="n">warn</span>
 </span><span data-line="7">
-</span><span data-line="8"><span class="kn">from</span><span class="w"> </span><span class="nn">typing_extensions</span><span class="w"> </span><span class="kn">import</span> <span class="n">TypeAlias</span><span class="p">,</span> <span class="n">override</span>
+</span><span data-line="8"><span class="kn">from</span><span class="w"> </span><span class="nn">typing_extensions</span><span class="w"> </span><span class="kn">import</span> <span class="n">override</span>
 </span><span data-line="9">
 </span><span data-line="10"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.dto.base_dto</span><span class="w"> </span><span class="kn">import</span> <span class="n">AbstractDTO</span>
 </span><span data-line="11"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.dto.data_structures</span><span class="w"> </span><span class="kn">import</span> <span class="n">DTOFieldDefinition</span>
@@ -551,7 +551,7 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="45">    <span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">ValidationError</span> <span class="k">as</span> <span class="n">ValidationErrorV1</span>  <span class="c1"># type: ignore[assignment]</span>
 </span><span data-line="46">
 </span><span data-line="47">    <span class="n">ValidationErrorV2</span> <span class="o">=</span> <span class="n">ValidationErrorV1</span>  <span class="c1"># type: ignore[assignment, misc]</span>
-</span><span data-line="48">    <span class="n">ModelType</span> <span class="o">=</span> <span class="s2">&quot;pydantic_v1.BaseModel&quot;</span>  <span class="c1"># type: ignore[misc]</span>
+</span><span data-line="48">    <span class="n">ModelType</span> <span class="o">=</span> <span class="s2">&quot;pydantic_v1.BaseModel&quot;</span>  <span class="c1"># type: ignore[misc, assignment]</span>
 </span><span data-line="49">
 </span><span data-line="50">
 </span><span data-line="51"><span class="n">T</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;T&quot;</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="s2">&quot;ModelType | Collection[ModelType]&quot;</span><span class="p">)</span>

@@ -512,163 +512,162 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="10">
 </span><span data-line="11"><span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
 </span><span data-line="12">    <span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Generator</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">Mapping</span>
-</span><span data-line="13">
-</span><span data-line="14">    <span class="kn">from</span><span class="w"> </span><span class="nn">typing_extensions</span><span class="w"> </span><span class="kn">import</span> <span class="n">Self</span>
+</span><span data-line="13">    <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Self</span>
+</span><span data-line="14">
 </span><span data-line="15">
-</span><span data-line="16">
-</span><span data-line="17"><span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;FormMultiDict&quot;</span><span class="p">,</span> <span class="s2">&quot;ImmutableMultiDict&quot;</span><span class="p">,</span> <span class="s2">&quot;MultiDict&quot;</span><span class="p">,</span> <span class="s2">&quot;MultiMixin&quot;</span><span class="p">)</span>
+</span><span data-line="16"><span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;FormMultiDict&quot;</span><span class="p">,</span> <span class="s2">&quot;ImmutableMultiDict&quot;</span><span class="p">,</span> <span class="s2">&quot;MultiDict&quot;</span><span class="p">,</span> <span class="s2">&quot;MultiMixin&quot;</span><span class="p">)</span>
+</span><span data-line="17">
 </span><span data-line="18">
-</span><span data-line="19">
-</span><span data-line="20"><span class="n">T</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;T&quot;</span><span class="p">)</span>
+</span><span data-line="19"><span class="n">T</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;T&quot;</span><span class="p">)</span>
+</span><span data-line="20">
 </span><span data-line="21">
-</span><span data-line="22">
 <div class="viewcode-block" id="MultiMixin">
 <a class="viewcode-back" href="../../../reference/datastructures/index.html#litestar.datastructures.MultiMixin">[docs]</a>
-</span><span data-line="23"><span class="k">class</span><span class="w"> </span><span class="nc">MultiMixin</span><span class="p">(</span><span class="n">Generic</span><span class="p">[</span><span class="n">T</span><span class="p">],</span> <span class="n">MultiMapping</span><span class="p">[</span><span class="n">T</span><span class="p">],</span> <span class="n">ABC</span><span class="p">):</span>
-</span><span data-line="24"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Mixin providing common methods for multi dicts, used by :class:`ImmutableMultiDict` and :class:`MultiDict`&quot;&quot;&quot;</span>
-</span><span data-line="25">
+</span><span data-line="22"><span class="k">class</span><span class="w"> </span><span class="nc">MultiMixin</span><span class="p">(</span><span class="n">Generic</span><span class="p">[</span><span class="n">T</span><span class="p">],</span> <span class="n">MultiMapping</span><span class="p">[</span><span class="n">T</span><span class="p">],</span> <span class="n">ABC</span><span class="p">):</span>
+</span><span data-line="23"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Mixin providing common methods for multi dicts, used by :class:`ImmutableMultiDict` and :class:`MultiDict`&quot;&quot;&quot;</span>
+</span><span data-line="24">
 <div class="viewcode-block" id="MultiMixin.dict">
 <a class="viewcode-back" href="../../../reference/datastructures/index.html#litestar.datastructures.MultiMixin.dict">[docs]</a>
-</span><span data-line="26">    <span class="k">def</span><span class="w"> </span><span class="nf">dict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="n">Any</span><span class="p">]]:</span>
-</span><span data-line="27"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the multi-dict as a dict of lists.</span>
-</span><span data-line="28">
-</span><span data-line="29"><span class="sd">        Returns:</span>
-</span><span data-line="30"><span class="sd">            A dict of lists</span>
-</span><span data-line="31"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="32">        <span class="k">return</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">getall</span><span class="p">(</span><span class="n">k</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">())}</span></div>
+</span><span data-line="25">    <span class="k">def</span><span class="w"> </span><span class="nf">dict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="n">Any</span><span class="p">]]:</span>
+</span><span data-line="26"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the multi-dict as a dict of lists.</span>
+</span><span data-line="27">
+</span><span data-line="28"><span class="sd">        Returns:</span>
+</span><span data-line="29"><span class="sd">            A dict of lists</span>
+</span><span data-line="30"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="31">        <span class="k">return</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">getall</span><span class="p">(</span><span class="n">k</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">())}</span></div>
 
-</span><span data-line="33">
+</span><span data-line="32">
 <div class="viewcode-block" id="MultiMixin.multi_items">
 <a class="viewcode-back" href="../../../reference/datastructures/index.html#litestar.datastructures.MultiMixin.multi_items">[docs]</a>
-</span><span data-line="34">    <span class="k">def</span><span class="w"> </span><span class="nf">multi_items</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">T</span><span class="p">],</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
-</span><span data-line="35"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Get all keys and values, including duplicates.</span>
-</span><span data-line="36">
-</span><span data-line="37"><span class="sd">        Returns:</span>
-</span><span data-line="38"><span class="sd">            A list of tuples containing key-value pairs</span>
-</span><span data-line="39"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="40">        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-</span><span data-line="41">            <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">getall</span><span class="p">(</span><span class="n">key</span><span class="p">):</span>
-</span><span data-line="42">                <span class="k">yield</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span></div>
+</span><span data-line="33">    <span class="k">def</span><span class="w"> </span><span class="nf">multi_items</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">T</span><span class="p">],</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+</span><span data-line="34"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Get all keys and values, including duplicates.</span>
+</span><span data-line="35">
+</span><span data-line="36"><span class="sd">        Returns:</span>
+</span><span data-line="37"><span class="sd">            A list of tuples containing key-value pairs</span>
+</span><span data-line="38"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="39">        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span data-line="40">            <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">getall</span><span class="p">(</span><span class="n">key</span><span class="p">):</span>
+</span><span data-line="41">                <span class="k">yield</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span></div>
 </div>
 
+</span><span data-line="42">
 </span><span data-line="43">
-</span><span data-line="44">
 <div class="viewcode-block" id="MultiDict">
 <a class="viewcode-back" href="../../../reference/datastructures/index.html#litestar.datastructures.MultiDict">[docs]</a>
-</span><span data-line="45"><span class="k">class</span><span class="w"> </span><span class="nc">MultiDict</span><span class="p">(</span><span class="n">BaseMultiDict</span><span class="p">[</span><span class="n">T</span><span class="p">],</span> <span class="n">MultiMixin</span><span class="p">[</span><span class="n">T</span><span class="p">],</span> <span class="n">Generic</span><span class="p">[</span><span class="n">T</span><span class="p">]):</span>  <span class="c1"># pyright: ignore</span>
-</span><span data-line="46"><span class="w">    </span><span class="sd">&quot;&quot;&quot;MultiDict, using :class:`MultiDict &lt;multidict.MultiDictProxy&gt;`.&quot;&quot;&quot;</span>
-</span><span data-line="47">
+</span><span data-line="44"><span class="k">class</span><span class="w"> </span><span class="nc">MultiDict</span><span class="p">(</span><span class="n">BaseMultiDict</span><span class="p">[</span><span class="n">T</span><span class="p">],</span> <span class="n">MultiMixin</span><span class="p">[</span><span class="n">T</span><span class="p">],</span> <span class="n">Generic</span><span class="p">[</span><span class="n">T</span><span class="p">]):</span>  <span class="c1"># pyright: ignore</span>
+</span><span data-line="45"><span class="w">    </span><span class="sd">&quot;&quot;&quot;MultiDict, using :class:`MultiDict &lt;multidict.MultiDictProxy&gt;`.&quot;&quot;&quot;</span>
+</span><span data-line="46">
 <div class="viewcode-block" id="MultiDict.__init__">
 <a class="viewcode-back" href="../../../reference/datastructures/index.html#litestar.datastructures.MultiDict.__init__">[docs]</a>
-</span><span data-line="48">    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">:</span> <span class="n">MultiMapping</span> <span class="o">|</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">T</span><span class="p">]</span> <span class="o">|</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">T</span><span class="p">]]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># pyright: ignore</span>
-</span><span data-line="49"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize ``MultiDict`` from a`MultiMapping``,</span>
-</span><span data-line="50"><span class="sd">        :class:`Mapping &lt;typing.Mapping&gt;` or an iterable of tuples.</span>
-</span><span data-line="51">
-</span><span data-line="52"><span class="sd">        Args:</span>
-</span><span data-line="53"><span class="sd">            args: Mapping-like structure to create the ``MultiDict`` from</span>
-</span><span data-line="54"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="55">        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">args</span> <span class="ow">or</span> <span class="p">{})</span>  <span class="c1"># pyright: ignore</span></div>
+</span><span data-line="47">    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">:</span> <span class="n">MultiMapping</span> <span class="o">|</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">T</span><span class="p">]</span> <span class="o">|</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">T</span><span class="p">]]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># pyright: ignore</span>
+</span><span data-line="48"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize ``MultiDict`` from a`MultiMapping``,</span>
+</span><span data-line="49"><span class="sd">        :class:`Mapping &lt;typing.Mapping&gt;` or an iterable of tuples.</span>
+</span><span data-line="50">
+</span><span data-line="51"><span class="sd">        Args:</span>
+</span><span data-line="52"><span class="sd">            args: Mapping-like structure to create the ``MultiDict`` from</span>
+</span><span data-line="53"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="54">        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">args</span> <span class="ow">or</span> <span class="p">{})</span>  <span class="c1"># pyright: ignore</span></div>
 
-</span><span data-line="56">
+</span><span data-line="55">
 <div class="viewcode-block" id="MultiDict.immutable">
 <a class="viewcode-back" href="../../../reference/datastructures/index.html#litestar.datastructures.MultiDict.immutable">[docs]</a>
-</span><span data-line="57">    <span class="k">def</span><span class="w"> </span><span class="nf">immutable</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ImmutableMultiDict</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
-</span><span data-line="58"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Create an.</span>
-</span><span data-line="59">
-</span><span data-line="60"><span class="sd">        :class:`ImmutableMultiDict` view.</span>
-</span><span data-line="61">
-</span><span data-line="62"><span class="sd">        Returns:</span>
-</span><span data-line="63"><span class="sd">            An immutable multi dict</span>
-</span><span data-line="64"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="65">        <span class="k">return</span> <span class="n">ImmutableMultiDict</span><span class="p">[</span><span class="n">T</span><span class="p">](</span><span class="bp">self</span><span class="p">)</span>  <span class="c1"># pyright: ignore</span></div>
+</span><span data-line="56">    <span class="k">def</span><span class="w"> </span><span class="nf">immutable</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ImmutableMultiDict</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
+</span><span data-line="57"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Create an.</span>
+</span><span data-line="58">
+</span><span data-line="59"><span class="sd">        :class:`ImmutableMultiDict` view.</span>
+</span><span data-line="60">
+</span><span data-line="61"><span class="sd">        Returns:</span>
+</span><span data-line="62"><span class="sd">            An immutable multi dict</span>
+</span><span data-line="63"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="64">        <span class="k">return</span> <span class="n">ImmutableMultiDict</span><span class="p">[</span><span class="n">T</span><span class="p">](</span><span class="bp">self</span><span class="p">)</span>  <span class="c1"># pyright: ignore</span></div>
 
-</span><span data-line="66">
+</span><span data-line="65">
 <div class="viewcode-block" id="MultiDict.copy">
 <a class="viewcode-back" href="../../../reference/datastructures/index.html#litestar.datastructures.MultiDict.copy">[docs]</a>
-</span><span data-line="67">    <span class="k">def</span><span class="w"> </span><span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
-</span><span data-line="68"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a shallow copy&quot;&quot;&quot;</span>
-</span><span data-line="69">        <span class="k">return</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)(</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">multi_items</span><span class="p">()))</span></div>
+</span><span data-line="66">    <span class="k">def</span><span class="w"> </span><span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
+</span><span data-line="67"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a shallow copy&quot;&quot;&quot;</span>
+</span><span data-line="68">        <span class="k">return</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)(</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">multi_items</span><span class="p">()))</span></div>
 </div>
 
+</span><span data-line="69">
 </span><span data-line="70">
-</span><span data-line="71">
 <div class="viewcode-block" id="ImmutableMultiDict">
 <a class="viewcode-back" href="../../../reference/datastructures/index.html#litestar.datastructures.ImmutableMultiDict">[docs]</a>
-</span><span data-line="72"><span class="k">class</span><span class="w"> </span><span class="nc">ImmutableMultiDict</span><span class="p">(</span><span class="n">MultiDictProxy</span><span class="p">[</span><span class="n">T</span><span class="p">],</span> <span class="n">MultiMixin</span><span class="p">[</span><span class="n">T</span><span class="p">],</span> <span class="n">Generic</span><span class="p">[</span><span class="n">T</span><span class="p">]):</span>  <span class="c1"># pyright: ignore</span>
-</span><span data-line="73"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Immutable MultiDict, using class:`MultiDictProxy &lt;multidict.MultiDictProxy&gt;`.&quot;&quot;&quot;</span>
-</span><span data-line="74">
+</span><span data-line="71"><span class="k">class</span><span class="w"> </span><span class="nc">ImmutableMultiDict</span><span class="p">(</span><span class="n">MultiDictProxy</span><span class="p">[</span><span class="n">T</span><span class="p">],</span> <span class="n">MultiMixin</span><span class="p">[</span><span class="n">T</span><span class="p">],</span> <span class="n">Generic</span><span class="p">[</span><span class="n">T</span><span class="p">]):</span>  <span class="c1"># pyright: ignore</span>
+</span><span data-line="72"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Immutable MultiDict, using class:`MultiDictProxy &lt;multidict.MultiDictProxy&gt;`.&quot;&quot;&quot;</span>
+</span><span data-line="73">
 <div class="viewcode-block" id="ImmutableMultiDict.__init__">
 <a class="viewcode-back" href="../../../reference/datastructures/index.html#litestar.datastructures.ImmutableMultiDict.__init__">[docs]</a>
-</span><span data-line="75">    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">:</span> <span class="n">MultiMapping</span> <span class="o">|</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># pyright: ignore</span>
-</span><span data-line="76"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize ``ImmutableMultiDict`` from a `MultiMapping``,</span>
-</span><span data-line="77"><span class="sd">        :class:`Mapping &lt;typing.Mapping&gt;` or an iterable of tuples.</span>
-</span><span data-line="78">
-</span><span data-line="79"><span class="sd">        Args:</span>
-</span><span data-line="80"><span class="sd">            args: Mapping-like structure to create the ``ImmutableMultiDict`` from</span>
-</span><span data-line="81"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="82">        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">BaseMultiDict</span><span class="p">(</span><span class="n">args</span> <span class="ow">or</span> <span class="p">{}))</span>  <span class="c1"># pyright: ignore</span></div>
+</span><span data-line="74">    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">:</span> <span class="n">MultiMapping</span> <span class="o">|</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># pyright: ignore</span>
+</span><span data-line="75"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize ``ImmutableMultiDict`` from a `MultiMapping``,</span>
+</span><span data-line="76"><span class="sd">        :class:`Mapping &lt;typing.Mapping&gt;` or an iterable of tuples.</span>
+</span><span data-line="77">
+</span><span data-line="78"><span class="sd">        Args:</span>
+</span><span data-line="79"><span class="sd">            args: Mapping-like structure to create the ``ImmutableMultiDict`` from</span>
+</span><span data-line="80"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="81">        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">BaseMultiDict</span><span class="p">(</span><span class="n">args</span> <span class="ow">or</span> <span class="p">{}))</span>  <span class="c1"># pyright: ignore</span></div>
 
-</span><span data-line="83">
+</span><span data-line="82">
 <div class="viewcode-block" id="ImmutableMultiDict.mutable_copy">
 <a class="viewcode-back" href="../../../reference/datastructures/index.html#litestar.datastructures.ImmutableMultiDict.mutable_copy">[docs]</a>
-</span><span data-line="84">    <span class="k">def</span><span class="w"> </span><span class="nf">mutable_copy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MultiDict</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
-</span><span data-line="85"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a mutable copy as a :class:`MultiDict`</span>
-</span><span data-line="86">
-</span><span data-line="87"><span class="sd">        Returns:</span>
-</span><span data-line="88"><span class="sd">            A mutable multi dict</span>
-</span><span data-line="89"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="90">        <span class="k">return</span> <span class="n">MultiDict</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">multi_items</span><span class="p">()))</span></div>
+</span><span data-line="83">    <span class="k">def</span><span class="w"> </span><span class="nf">mutable_copy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MultiDict</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
+</span><span data-line="84"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a mutable copy as a :class:`MultiDict`</span>
+</span><span data-line="85">
+</span><span data-line="86"><span class="sd">        Returns:</span>
+</span><span data-line="87"><span class="sd">            A mutable multi dict</span>
+</span><span data-line="88"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="89">        <span class="k">return</span> <span class="n">MultiDict</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">multi_items</span><span class="p">()))</span></div>
 
-</span><span data-line="91">
+</span><span data-line="90">
 <div class="viewcode-block" id="ImmutableMultiDict.copy">
 <a class="viewcode-back" href="../../../reference/datastructures/index.html#litestar.datastructures.ImmutableMultiDict.copy">[docs]</a>
-</span><span data-line="92">    <span class="k">def</span><span class="w"> </span><span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>  <span class="c1"># type: ignore[override]</span>
-</span><span data-line="93"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a shallow copy&quot;&quot;&quot;</span>
-</span><span data-line="94">        <span class="k">return</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)(</span><span class="bp">self</span><span class="o">.</span><span class="n">items</span><span class="p">())</span></div>
+</span><span data-line="91">    <span class="k">def</span><span class="w"> </span><span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>  <span class="c1"># type: ignore[override]</span>
+</span><span data-line="92"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a shallow copy&quot;&quot;&quot;</span>
+</span><span data-line="93">        <span class="k">return</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)(</span><span class="bp">self</span><span class="o">.</span><span class="n">items</span><span class="p">())</span></div>
 </div>
 
+</span><span data-line="94">
 </span><span data-line="95">
-</span><span data-line="96">
 <div class="viewcode-block" id="FormMultiDict">
 <a class="viewcode-back" href="../../../reference/datastructures/index.html#litestar.datastructures.FormMultiDict">[docs]</a>
-</span><span data-line="97"><span class="k">class</span><span class="w"> </span><span class="nc">FormMultiDict</span><span class="p">(</span><span class="n">ImmutableMultiDict</span><span class="p">[</span><span class="n">Any</span><span class="p">]):</span>
-</span><span data-line="98"><span class="w">    </span><span class="sd">&quot;&quot;&quot;MultiDict for form data.&quot;&quot;&quot;</span>
-</span><span data-line="99">
+</span><span data-line="96"><span class="k">class</span><span class="w"> </span><span class="nc">FormMultiDict</span><span class="p">(</span><span class="n">ImmutableMultiDict</span><span class="p">[</span><span class="n">Any</span><span class="p">]):</span>
+</span><span data-line="97"><span class="w">    </span><span class="sd">&quot;&quot;&quot;MultiDict for form data.&quot;&quot;&quot;</span>
+</span><span data-line="98">
 <div class="viewcode-block" id="FormMultiDict.from_form_data">
 <a class="viewcode-back" href="../../../reference/datastructures/index.html#litestar.datastructures.FormMultiDict.from_form_data">[docs]</a>
-</span><span data-line="100">    <span class="nd">@classmethod</span>
-</span><span data-line="101">    <span class="k">def</span><span class="w"> </span><span class="nf">from_form_data</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">form_data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">UploadFile</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">FormMultiDict</span><span class="p">:</span>
-</span><span data-line="102"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a FormMultiDict from form data.</span>
-</span><span data-line="103">
-</span><span data-line="104"><span class="sd">        Args:</span>
-</span><span data-line="105"><span class="sd">            form_data: Form data to create the FormMultiDict from.</span>
-</span><span data-line="106">
-</span><span data-line="107"><span class="sd">        Returns:</span>
-</span><span data-line="108"><span class="sd">            A FormMultiDict instance</span>
-</span><span data-line="109"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="110">        <span class="c1"># Convert form_data to a list[tuple[str, str | UploadFile]] before passing it</span>
-</span><span data-line="111">        <span class="c1"># to FormMultiDict so multi-keys can be accessed properly</span>
-</span><span data-line="112">        <span class="n">items</span> <span class="o">=</span> <span class="p">[]</span>
-</span><span data-line="113">        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">form_data</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-</span><span data-line="114">            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
-</span><span data-line="115">                <span class="n">items</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">))</span>  <span class="c1"># pyright: ignore</span>
-</span><span data-line="116">            <span class="k">else</span><span class="p">:</span>
-</span><span data-line="117">                <span class="k">for</span> <span class="n">sv</span> <span class="ow">in</span> <span class="n">v</span><span class="p">:</span>
-</span><span data-line="118">                    <span class="n">items</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">k</span><span class="p">,</span> <span class="n">sv</span><span class="p">))</span>  <span class="c1"># pyright: ignore</span>
-</span><span data-line="119">        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">items</span><span class="p">)</span></div>
+</span><span data-line="99">    <span class="nd">@classmethod</span>
+</span><span data-line="100">    <span class="k">def</span><span class="w"> </span><span class="nf">from_form_data</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">form_data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">UploadFile</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">FormMultiDict</span><span class="p">:</span>
+</span><span data-line="101"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a FormMultiDict from form data.</span>
+</span><span data-line="102">
+</span><span data-line="103"><span class="sd">        Args:</span>
+</span><span data-line="104"><span class="sd">            form_data: Form data to create the FormMultiDict from.</span>
+</span><span data-line="105">
+</span><span data-line="106"><span class="sd">        Returns:</span>
+</span><span data-line="107"><span class="sd">            A FormMultiDict instance</span>
+</span><span data-line="108"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="109">        <span class="c1"># Convert form_data to a list[tuple[str, str | UploadFile]] before passing it</span>
+</span><span data-line="110">        <span class="c1"># to FormMultiDict so multi-keys can be accessed properly</span>
+</span><span data-line="111">        <span class="n">items</span> <span class="o">=</span> <span class="p">[]</span>
+</span><span data-line="112">        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">form_data</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+</span><span data-line="113">            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+</span><span data-line="114">                <span class="n">items</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">))</span>  <span class="c1"># pyright: ignore</span>
+</span><span data-line="115">            <span class="k">else</span><span class="p">:</span>
+</span><span data-line="116">                <span class="k">for</span> <span class="n">sv</span> <span class="ow">in</span> <span class="n">v</span><span class="p">:</span>
+</span><span data-line="117">                    <span class="n">items</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">k</span><span class="p">,</span> <span class="n">sv</span><span class="p">))</span>  <span class="c1"># pyright: ignore</span>
+</span><span data-line="118">        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">items</span><span class="p">)</span></div>
 
-</span><span data-line="120">
+</span><span data-line="119">
 <div class="viewcode-block" id="FormMultiDict.close">
 <a class="viewcode-back" href="../../../reference/datastructures/index.html#litestar.datastructures.FormMultiDict.close">[docs]</a>
-</span><span data-line="121">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="122"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Close all files in the multi-dict.</span>
-</span><span data-line="123">
-</span><span data-line="124"><span class="sd">        Returns:</span>
-</span><span data-line="125"><span class="sd">            None</span>
-</span><span data-line="126"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="127">        <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">multi_items</span><span class="p">():</span>
-</span><span data-line="128">            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">UploadFile</span><span class="p">):</span>
-</span><span data-line="129">                <span class="k">await</span> <span class="n">value</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+</span><span data-line="120">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="121"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Close all files in the multi-dict.</span>
+</span><span data-line="122">
+</span><span data-line="123"><span class="sd">        Returns:</span>
+</span><span data-line="124"><span class="sd">            None</span>
+</span><span data-line="125"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="126">        <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">multi_items</span><span class="p">():</span>
+</span><span data-line="127">            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">UploadFile</span><span class="p">):</span>
+</span><span data-line="128">                <span class="k">await</span> <span class="n">value</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
 </div>
 
 </span></pre></div>

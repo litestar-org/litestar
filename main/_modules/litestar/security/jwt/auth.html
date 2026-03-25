@@ -503,8 +503,8 @@ data-aria-dark="Switch to auto color mode">
 <span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 </span><span data-line="2">
 </span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">asdict</span><span class="p">,</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
-</span><span data-line="4"><span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timedelta</span><span class="p">,</span> <span class="n">timezone</span>
-</span><span data-line="5"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Generic</span><span class="p">,</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">cast</span>
+</span><span data-line="4"><span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">UTC</span><span class="p">,</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timedelta</span>
+</span><span data-line="5"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Generic</span><span class="p">,</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">cast</span>
 </span><span data-line="6">
 </span><span data-line="7"><span class="kn">from</span><span class="w"> </span><span class="nn">typing_extensions</span><span class="w"> </span><span class="kn">import</span> <span class="n">TypeVar</span>
 </span><span data-line="8">
@@ -522,7 +522,7 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="20">
 </span><span data-line="21">
 </span><span data-line="22"><span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
-</span><span data-line="23">    <span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">Sequence</span>
+</span><span data-line="23">    <span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">Sequence</span>
 </span><span data-line="24">
 </span><span data-line="25">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Response</span>
 </span><span data-line="26">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.connection</span><span class="w"> </span><span class="kn">import</span> <span class="n">ASGIConnection</span>
@@ -745,7 +745,7 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="236"><span class="sd">        &quot;&quot;&quot;</span>
 </span><span data-line="237">        <span class="n">token</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">token_cls</span><span class="p">(</span>
 </span><span data-line="238">            <span class="n">sub</span><span class="o">=</span><span class="n">identifier</span><span class="p">,</span>
-</span><span data-line="239">            <span class="n">exp</span><span class="o">=</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(</span><span class="n">timezone</span><span class="o">.</span><span class="n">utc</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">token_expiration</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_token_expiration</span><span class="p">)),</span>
+</span><span data-line="239">            <span class="n">exp</span><span class="o">=</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(</span><span class="n">UTC</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">token_expiration</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_token_expiration</span><span class="p">)),</span>
 </span><span data-line="240">            <span class="n">iss</span><span class="o">=</span><span class="n">token_issuer</span><span class="p">,</span>
 </span><span data-line="241">            <span class="n">aud</span><span class="o">=</span><span class="n">token_audience</span><span class="p">,</span>
 </span><span data-line="242">            <span class="n">jti</span><span class="o">=</span><span class="n">token_unique_jwt_id</span><span class="p">,</span>

@@ -505,7 +505,7 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="3"><span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
 </span><span data-line="4"><span class="kn">from</span><span class="w"> </span><span class="nn">contextlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">AsyncExitStack</span>
 </span><span data-line="5"><span class="kn">from</span><span class="w"> </span><span class="nn">functools</span><span class="w"> </span><span class="kn">import</span> <span class="n">partial</span>
-</span><span data-line="6"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">overload</span>
+</span><span data-line="6"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">overload</span>
 </span><span data-line="7">
 </span><span data-line="8"><span class="kn">import</span><span class="w"> </span><span class="nn">asyncpg</span>
 </span><span data-line="9">
@@ -513,7 +513,7 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="11"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">ImproperlyConfiguredException</span>
 </span><span data-line="12">
 </span><span data-line="13"><span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
-</span><span data-line="14">    <span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">AsyncGenerator</span><span class="p">,</span> <span class="n">Awaitable</span><span class="p">,</span> <span class="n">Iterable</span>
+</span><span data-line="14">    <span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">AsyncGenerator</span><span class="p">,</span> <span class="n">Awaitable</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Iterable</span>
 </span><span data-line="15">
 </span><span data-line="16">
 <div class="viewcode-block" id="AsyncPgChannelsBackend">

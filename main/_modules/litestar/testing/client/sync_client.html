@@ -523,15 +523,15 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="21"><span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
 </span><span data-line="22">    <span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Mapping</span><span class="p">,</span> <span class="n">Sequence</span>
 </span><span data-line="23">    <span class="kn">from</span><span class="w"> </span><span class="nn">types</span><span class="w"> </span><span class="kn">import</span> <span class="n">TracebackType</span>
-</span><span data-line="24">
-</span><span data-line="25">    <span class="kn">from</span><span class="w"> </span><span class="nn">httpx._client</span><span class="w"> </span><span class="kn">import</span> <span class="n">UseClientDefault</span>
-</span><span data-line="26">    <span class="kn">from</span><span class="w"> </span><span class="nn">httpx._types</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
-</span><span data-line="27">        <span class="n">AuthTypes</span><span class="p">,</span>
-</span><span data-line="28">        <span class="n">CookieTypes</span><span class="p">,</span>
-</span><span data-line="29">        <span class="n">HeaderTypes</span><span class="p">,</span>
-</span><span data-line="30">        <span class="n">QueryParamTypes</span><span class="p">,</span>
-</span><span data-line="31">    <span class="p">)</span>
-</span><span data-line="32">    <span class="kn">from</span><span class="w"> </span><span class="nn">typing_extensions</span><span class="w"> </span><span class="kn">import</span> <span class="n">Self</span>
+</span><span data-line="24">    <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Self</span>
+</span><span data-line="25">
+</span><span data-line="26">    <span class="kn">from</span><span class="w"> </span><span class="nn">httpx._client</span><span class="w"> </span><span class="kn">import</span> <span class="n">UseClientDefault</span>
+</span><span data-line="27">    <span class="kn">from</span><span class="w"> </span><span class="nn">httpx._types</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+</span><span data-line="28">        <span class="n">AuthTypes</span><span class="p">,</span>
+</span><span data-line="29">        <span class="n">CookieTypes</span><span class="p">,</span>
+</span><span data-line="30">        <span class="n">HeaderTypes</span><span class="p">,</span>
+</span><span data-line="31">        <span class="n">QueryParamTypes</span><span class="p">,</span>
+</span><span data-line="32">    <span class="p">)</span>
 </span><span data-line="33">
 </span><span data-line="34">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.middleware.session.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseBackendConfig</span><span class="p">,</span> <span class="n">BaseSessionBackend</span>
 </span><span data-line="35">

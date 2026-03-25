@@ -656,52 +656,6 @@ can not be used in conjunction with the <code class="docutils literal notranslat
 <p>If you wish to use another templating engine, you can easily do so by implementing
 <a class="reference internal" href="../reference/template.html#litestar.template.TemplateEngineProtocol" title="litestar.template.TemplateEngineProtocol"><code class="xref py py-class docutils literal notranslate"><span class="pre">TemplateEngineProtocol</span></code></a>. This class accepts a generic
 argument which should be the template class, and it specifies two methods:</p>
-<div class="sd-tab-set docutils">
-<input id="sd-tab-item-6" name="sd-tab-set-2" type="radio">
-<label class="sd-tab-label" data-sync-group="tab" data-sync-id="3.8" for="sd-tab-item-6">
-Python 3.8+</label><div class="sd-tab-content docutils">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Protocol</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">List</span>
-</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">DirectoryPath</span>
-</span><span data-line="3">
-</span><span data-line="4"><span class="c1"># the template class of the respective library</span>
-</span><span data-line="5"><span class="kn">from</span><span class="w"> </span><span class="nn">some_lib</span><span class="w"> </span><span class="kn">import</span> <span class="n">SomeTemplate</span>
-</span><span data-line="6">
-</span><span data-line="7">
-</span><span data-line="8"><span class="k">class</span><span class="w"> </span><span class="nc">TemplateEngineProtocol</span><span class="p">(</span><span class="n">Protocol</span><span class="p">[</span><span class="n">SomeTemplate</span><span class="p">]):</span>
-</span><span data-line="9">    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">directory</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">DirectoryPath</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">DirectoryPath</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="10"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Builds a template engine.&quot;&quot;&quot;</span>
-</span><span data-line="11">        <span class="o">...</span>
-</span><span data-line="12">
-</span><span data-line="13">    <span class="k">def</span><span class="w"> </span><span class="nf">get_template</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">template_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SomeTemplate</span><span class="p">:</span>
-</span><span data-line="14"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Loads the template with template_name and returns it.&quot;&quot;&quot;</span>
-</span><span data-line="15">        <span class="o">...</span>
-</span></pre></div>
-</div>
-</div>
-<input id="sd-tab-item-7" name="sd-tab-set-2" type="radio">
-<label class="sd-tab-label" data-sync-group="tab" data-sync-id="3.9" for="sd-tab-item-7">
-Python 3.9+</label><div class="sd-tab-content docutils">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Protocol</span><span class="p">,</span> <span class="n">Union</span>
-</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">DirectoryPath</span>
-</span><span data-line="3">
-</span><span data-line="4"><span class="c1"># the template class of the respective library</span>
-</span><span data-line="5"><span class="kn">from</span><span class="w"> </span><span class="nn">some_lib</span><span class="w"> </span><span class="kn">import</span> <span class="n">SomeTemplate</span>
-</span><span data-line="6">
-</span><span data-line="7">
-</span><span data-line="8"><span class="k">class</span><span class="w"> </span><span class="nc">TemplateEngineProtocol</span><span class="p">(</span><span class="n">Protocol</span><span class="p">[</span><span class="n">SomeTemplate</span><span class="p">]):</span>
-</span><span data-line="9">    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">directory</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">DirectoryPath</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="n">DirectoryPath</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="10"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Builds a template engine.&quot;&quot;&quot;</span>
-</span><span data-line="11">        <span class="o">...</span>
-</span><span data-line="12">
-</span><span data-line="13">    <span class="k">def</span><span class="w"> </span><span class="nf">get_template</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">template_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SomeTemplate</span><span class="p">:</span>
-</span><span data-line="14"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Loads the template with template_name and returns it.&quot;&quot;&quot;</span>
-</span><span data-line="15">        <span class="o">...</span>
-</span></pre></div>
-</div>
-</div>
-<input checked="checked" id="sd-tab-item-8" name="sd-tab-set-2" type="radio">
-<label class="sd-tab-label" data-sync-group="tab" data-sync-id="3.10" for="sd-tab-item-8">
-Python 3.10+</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Protocol</span>
 </span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">DirectoryPath</span>
 </span><span data-line="3">
@@ -719,8 +673,6 @@ Python 3.10+</label><div class="sd-tab-content docutils">
 </span><span data-line="15">        <span class="o">...</span>
 </span></pre></div>
 </div>
-</div>
-</div>
 <p>Once you have your custom engine you can register it as you would the built-in engines.</p>
 </section>
 <section id="accessing-the-template-engine-instance">
@@ -728,8 +680,8 @@ Python 3.10+</label><div class="sd-tab-content docutils">
 <p>If you need to access the template engine instance, you can do so via the
 <a class="reference internal" href="../reference/template.html#litestar.template.TemplateConfig" title="litestar.template.TemplateConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">TemplateConfig.engine</span></code></a> attribute:</p>
 <div class="sd-tab-set docutils">
-<input checked="checked" id="sd-tab-item-9" name="sd-tab-set-3" type="radio">
-<label class="sd-tab-label" data-sync-group="tab" data-sync-id="jinja" for="sd-tab-item-9">
+<input checked="checked" id="sd-tab-item-6" name="sd-tab-set-2" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="jinja" for="sd-tab-item-6">
 Jinja</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.contrib.jinja</span><span class="w"> </span><span class="kn">import</span> <span class="n">JinjaTemplateEngine</span>
 </span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.template.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">TemplateConfig</span>
@@ -738,8 +690,8 @@ Jinja</label><div class="sd-tab-content docutils">
 </span></pre></div>
 </div>
 </div>
-<input id="sd-tab-item-10" name="sd-tab-set-3" type="radio">
-<label class="sd-tab-label" data-sync-group="tab" data-sync-id="mako" for="sd-tab-item-10">
+<input id="sd-tab-item-7" name="sd-tab-set-2" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="mako" for="sd-tab-item-7">
 Mako</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.contrib.mako</span><span class="w"> </span><span class="kn">import</span> <span class="n">MakoTemplateEngine</span>
 </span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.template.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">TemplateConfig</span>
@@ -748,8 +700,8 @@ Mako</label><div class="sd-tab-content docutils">
 </span></pre></div>
 </div>
 </div>
-<input id="sd-tab-item-11" name="sd-tab-set-3" type="radio">
-<label class="sd-tab-label" data-sync-group="tab" data-sync-id="minijinja" for="sd-tab-item-11">
+<input id="sd-tab-item-8" name="sd-tab-set-2" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="minijinja" for="sd-tab-item-8">
 MiniJinja</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.contrib.minijinja</span><span class="w"> </span><span class="kn">import</span> <span class="n">MiniJinjaTemplateEngine</span>
 </span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.template.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">TemplateConfig</span>
@@ -766,8 +718,8 @@ MiniJinja</label><div class="sd-tab-content docutils">
 <p>Once you have a template engine registered you can return <a class="reference internal" href="../reference/response/index.html#litestar.response.Template" title="litestar.response.Template"><code class="xref py py-class docutils literal notranslate"><span class="pre">templates</span> <span class="pre">responses</span></code></a> from
 your route handlers:</p>
 <div class="sd-tab-set docutils">
-<input checked="checked" id="sd-tab-item-12" name="sd-tab-set-4" type="radio">
-<label class="sd-tab-label" data-sync-group="tab" data-sync-id="jinja" for="sd-tab-item-12">
+<input checked="checked" id="sd-tab-item-9" name="sd-tab-set-3" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="jinja" for="sd-tab-item-9">
 Jinja</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
 </span><span data-line="2">
@@ -795,8 +747,8 @@ Jinja</label><div class="sd-tab-content docutils">
 </span></pre></div>
 </div>
 </div>
-<input id="sd-tab-item-13" name="sd-tab-set-4" type="radio">
-<label class="sd-tab-label" data-sync-group="tab" data-sync-id="mako" for="sd-tab-item-13">
+<input id="sd-tab-item-10" name="sd-tab-set-3" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="mako" for="sd-tab-item-10">
 Mako</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 </span><span data-line="2">
@@ -826,8 +778,8 @@ Mako</label><div class="sd-tab-content docutils">
 </span></pre></div>
 </div>
 </div>
-<input id="sd-tab-item-14" name="sd-tab-set-4" type="radio">
-<label class="sd-tab-label" data-sync-group="tab" data-sync-id="minijinja" for="sd-tab-item-14">
+<input id="sd-tab-item-11" name="sd-tab-set-3" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="minijinja" for="sd-tab-item-11">
 MiniJinja</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 </span><span data-line="2">
@@ -872,8 +824,8 @@ engine’s <code class="docutils literal notranslate"><span class="pre">render</
 containing the template. The latter is useful if you want to define the template inline
 for small templates or <a class="reference internal" href="htmx.html"><span class="doc">HTMX</span></a> responses for example.</p>
 <div class="sd-tab-set docutils">
-<input checked="checked" id="sd-tab-item-15" name="sd-tab-set-5" type="radio">
-<label class="sd-tab-label" for="sd-tab-item-15">
+<input checked="checked" id="sd-tab-item-12" name="sd-tab-set-4" type="radio">
+<label class="sd-tab-label" for="sd-tab-item-12">
 File name</label><div class="sd-tab-content docutils">
 <div class="literal-block-wrapper docutils container" id="id6">
 <div class="code-block-caption"><span class="caption-text">Template via file</span><a class="headerlink" href="#id6" title="Link to this code">¶</a></div>
@@ -884,8 +836,8 @@ File name</label><div class="sd-tab-content docutils">
 </div>
 </div>
 </div>
-<input id="sd-tab-item-16" name="sd-tab-set-5" type="radio">
-<label class="sd-tab-label" for="sd-tab-item-16">
+<input id="sd-tab-item-13" name="sd-tab-set-4" type="radio">
+<label class="sd-tab-label" for="sd-tab-item-13">
 String</label><div class="sd-tab-content docutils">
 <div class="literal-block-wrapper docutils container" id="id7">
 <div class="code-block-caption"><span class="caption-text">Template via string</span><a class="headerlink" href="#id7" title="Link to this code">¶</a></div>
@@ -910,8 +862,8 @@ template context under <code class="docutils literal notranslate"><span class="p
 <p>Accessing <code class="docutils literal notranslate"><span class="pre">app.state.key</span></code> for example would look like this:
 &lt;strong&gt;check_context_key: &lt;/strong&gt;{{ check_context_key() }}</p>
 <div class="sd-tab-set docutils">
-<input checked="checked" id="sd-tab-item-17" name="sd-tab-set-6" type="radio">
-<label class="sd-tab-label" data-sync-group="tab" data-sync-id="jinja" for="sd-tab-item-17">
+<input checked="checked" id="sd-tab-item-14" name="sd-tab-set-5" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="jinja" for="sd-tab-item-14">
 Jinja</label><div class="sd-tab-content docutils">
 <div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="p">&lt;</span><span class="nt">html</span><span class="p">&gt;</span>
 </span><span data-line="2">    <span class="p">&lt;</span><span class="nt">body</span><span class="p">&gt;</span>
@@ -923,8 +875,8 @@ Jinja</label><div class="sd-tab-content docutils">
 </span></pre></div>
 </div>
 </div>
-<input id="sd-tab-item-18" name="sd-tab-set-6" type="radio">
-<label class="sd-tab-label" data-sync-group="tab" data-sync-id="mako" for="sd-tab-item-18">
+<input id="sd-tab-item-15" name="sd-tab-set-5" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="mako" for="sd-tab-item-15">
 Mako</label><div class="sd-tab-content docutils">
 <div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span data-line="1">html
 </span><span data-line="2"><span class="p">&lt;</span><span class="nt">html</span><span class="p">&gt;</span>
@@ -937,8 +889,8 @@ Mako</label><div class="sd-tab-content docutils">
 </span></pre></div>
 </div>
 </div>
-<input id="sd-tab-item-19" name="sd-tab-set-6" type="radio">
-<label class="sd-tab-label" data-sync-group="tab" data-sync-id="minijinja" for="sd-tab-item-19">
+<input id="sd-tab-item-16" name="sd-tab-set-5" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="minijinja" for="sd-tab-item-16">
 MiniJinja</label><div class="sd-tab-content docutils">
 <div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="p">&lt;</span><span class="nt">html</span><span class="p">&gt;</span>
 </span><span data-line="2">    <span class="p">&lt;</span><span class="nt">body</span><span class="p">&gt;</span>
@@ -959,8 +911,8 @@ MiniJinja</label><div class="sd-tab-content docutils">
 you first need to configure <a class="reference internal" href="middleware/builtin-middleware.html#csrf"><span class="std std-ref">CSRF protection</span></a>.
 With that in place, you can now insert the CSRF input field inside an HTML form:</p>
 <div class="sd-tab-set docutils">
-<input checked="checked" id="sd-tab-item-20" name="sd-tab-set-7" type="radio">
-<label class="sd-tab-label" data-sync-group="tab" data-sync-id="jinja" for="sd-tab-item-20">
+<input checked="checked" id="sd-tab-item-17" name="sd-tab-set-6" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="jinja" for="sd-tab-item-17">
 Jinja</label><div class="sd-tab-content docutils">
 <div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="p">&lt;</span><span class="nt">html</span><span class="p">&gt;</span>
 </span><span data-line="2">    <span class="p">&lt;</span><span class="nt">body</span><span class="p">&gt;</span>
@@ -978,8 +930,8 @@ Jinja</label><div class="sd-tab-content docutils">
 </span></pre></div>
 </div>
 </div>
-<input id="sd-tab-item-21" name="sd-tab-set-7" type="radio">
-<label class="sd-tab-label" data-sync-group="tab" data-sync-id="mako" for="sd-tab-item-21">
+<input id="sd-tab-item-18" name="sd-tab-set-6" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="mako" for="sd-tab-item-18">
 Mako</label><div class="sd-tab-content docutils">
 <div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="p">&lt;</span><span class="nt">html</span><span class="p">&gt;</span>
 </span><span data-line="2">    <span class="p">&lt;</span><span class="nt">body</span><span class="p">&gt;</span>
@@ -997,8 +949,8 @@ Mako</label><div class="sd-tab-content docutils">
 </span></pre></div>
 </div>
 </div>
-<input id="sd-tab-item-22" name="sd-tab-set-7" type="radio">
-<label class="sd-tab-label" data-sync-group="tab" data-sync-id="minijinja" for="sd-tab-item-22">
+<input id="sd-tab-item-19" name="sd-tab-set-6" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="minijinja" for="sd-tab-item-19">
 MiniJinja</label><div class="sd-tab-content docutils">
 <div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="p">&lt;</span><span class="nt">html</span><span class="p">&gt;</span>
 </span><span data-line="2">    <span class="p">&lt;</span><span class="nt">body</span><span class="p">&gt;</span>
@@ -1067,8 +1019,8 @@ for the two built in engines, and it can be used to register callables that will
 should expect one argument - the context dictionary. It can be any callable - a function, method, or class that defines
 the call method. For example:</p>
 <div class="sd-tab-set docutils">
-<input checked="checked" id="sd-tab-item-23" name="sd-tab-set-8" type="radio">
-<label class="sd-tab-label" data-sync-group="tab" data-sync-id="jinja" for="sd-tab-item-23">
+<input checked="checked" id="sd-tab-item-20" name="sd-tab-set-7" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="jinja" for="sd-tab-item-20">
 Jinja</label><div class="sd-tab-content docutils">
 <div class="literal-block-wrapper docutils container" id="id8">
 <div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">template_functions.py</span></code></span><a class="headerlink" href="#id8" title="Link to this code">¶</a></div>
@@ -1118,8 +1070,8 @@ Jinja</label><div class="sd-tab-content docutils">
 </div>
 </div>
 </div>
-<input id="sd-tab-item-24" name="sd-tab-set-8" type="radio">
-<label class="sd-tab-label" data-sync-group="tab" data-sync-id="mako" for="sd-tab-item-24">
+<input id="sd-tab-item-21" name="sd-tab-set-7" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="mako" for="sd-tab-item-21">
 Mako</label><div class="sd-tab-content docutils">
 <div class="literal-block-wrapper docutils container" id="id10">
 <div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">template_functions.py</span></code></span><a class="headerlink" href="#id10" title="Link to this code">¶</a></div>
@@ -1169,8 +1121,8 @@ Mako</label><div class="sd-tab-content docutils">
 </div>
 </div>
 </div>
-<input id="sd-tab-item-25" name="sd-tab-set-8" type="radio">
-<label class="sd-tab-label" data-sync-group="tab" data-sync-id="minijinja" for="sd-tab-item-25">
+<input id="sd-tab-item-22" name="sd-tab-set-7" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="minijinja" for="sd-tab-item-22">
 Minijinja</label><div class="sd-tab-content docutils">
 <div class="literal-block-wrapper docutils container" id="id12">
 <div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">template_functions.py</span></code></span><a class="headerlink" href="#id12" title="Link to this code">¶</a></div>
