@@ -20,7 +20,6 @@ from litestar.utils.typing import (
 )
 
 if TYPE_CHECKING:
-    from types import ModuleType
     from typing import TypeGuard
 
 
@@ -131,20 +130,6 @@ def create_field_definitions_for_computed_fields(
         )
         for k, dec in pydantic_decorators.computed_fields.items()
     }
-
-
-def is_pydantic_v2(module: ModuleType) -> bool:
-    """Determine if the given module is pydantic v2.
-
-    Given a module we expect to be a pydantic version, determine if it is pydantic v2.
-
-    Args:
-        module: A module.
-
-    Returns:
-        True if the module is pydantic v2, otherwise False.
-    """
-    return bool(module.__version__.startswith("2."))
 
 
 def is_pydantic_root_model(annotation: Any) -> bool:

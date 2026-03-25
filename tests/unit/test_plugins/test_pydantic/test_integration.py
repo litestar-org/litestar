@@ -128,28 +128,20 @@ def test_signature_model_invalid_input(base_model: BaseModelType, pydantic_versi
 
         data = response.json()
 
-        assert data
-        if pydantic_version == "v1":
-            assert data["extra"] == [
-                {"key": "child.val", "message": "value is not a valid integer"},
-                {"key": "child.other_val", "message": "value is not a valid integer"},
-                {"key": "other_child.val.1", "message": "value is not a valid integer"},
-            ]
-        else:
-            assert data["extra"] == [
-                {
-                    "message": "Input should be a valid integer, unable to parse string as an integer",
-                    "key": "child.val",
-                },
-                {
-                    "message": "Input should be a valid integer, unable to parse string as an integer",
-                    "key": "child.other_val",
-                },
-                {
-                    "message": "Input should be a valid integer, unable to parse string as an integer",
-                    "key": "other_child.val.1",
-                },
-            ]
+        assert data.get("extra") == [
+            {
+                "message": "Input should be a valid integer, unable to parse string as an integer",
+                "key": "child.val",
+            },
+            {
+                "message": "Input should be a valid integer, unable to parse string as an integer",
+                "key": "child.other_val",
+            },
+            {
+                "message": "Input should be a valid integer, unable to parse string as an integer",
+                "key": "other_child.val.1",
+            },
+        ]
 
 
 class V2ModelWithPrivateFields(pydantic_v2.BaseModel):

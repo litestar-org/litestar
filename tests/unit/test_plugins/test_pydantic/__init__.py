@@ -7,5 +7,5 @@ if TYPE_CHECKING:
 
     import pydantic
 
-PydanticVersion = Literal["v1", "v2"]
+PydanticVersion = Literal["v2"]
 BaseModelType: TypeAlias = "type[pydantic.BaseModel]"
