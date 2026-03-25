@@ -380,7 +380,10 @@ def test_decode_with_leeway_does_not_allow_long_expired_token() -> None:
 
 
 def test_decode_with_leeway_backward_compat_subclass() -> None:
-    """Test that a subclass overriding decode_payload without leeway still works."""
+    """Test that a subclass overriding decode_payload without the leeway parameter still works.
+
+    This verifies the backward-compatibility try/except TypeError path in Token.decode.
+    """
 
     @dataclasses.dataclass
     class LegacyToken(Token):
