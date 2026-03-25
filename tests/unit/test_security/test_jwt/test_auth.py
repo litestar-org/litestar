@@ -839,9 +839,7 @@ async def test_jwt_auth_require_claims(
     [
         pytest.param((datetime.now(tz=UTC) + timedelta(days=1)).timestamp(), True, 200, id="valid-verify"),
         pytest.param((datetime.now(tz=UTC) + timedelta(days=1)).timestamp(), False, 200, id="valid-no_verify"),
-        pytest.param(
-            (datetime.now(tz=UTC) - timedelta(days=1)).timestamp(), False, 200, id="invalid-no_verify"
-        ),
+        pytest.param((datetime.now(tz=UTC) - timedelta(days=1)).timestamp(), False, 200, id="invalid-no_verify"),
         pytest.param((datetime.now(tz=UTC) - timedelta(days=1)).timestamp(), True, 401, id="invalid-verify"),
     ],
 )
@@ -874,9 +872,7 @@ async def test_jwt_auth_verify_exp(
     [
         pytest.param((datetime.now(tz=UTC) - timedelta(days=1)).timestamp(), True, 200, id="valid-verify"),
         pytest.param((datetime.now(tz=UTC) - timedelta(days=1)).timestamp(), False, 200, id="valid-no_verify"),
-        pytest.param(
-            (datetime.now(tz=UTC) + timedelta(days=1)).timestamp(), False, 200, id="invalid-no_verify"
-        ),
+        pytest.param((datetime.now(tz=UTC) + timedelta(days=1)).timestamp(), False, 200, id="invalid-no_verify"),
         pytest.param((datetime.now(tz=UTC) + timedelta(days=1)).timestamp(), True, 401, id="invalid-verify"),
     ],
 )

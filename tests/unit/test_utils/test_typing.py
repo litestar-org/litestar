@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from sys import version_info
+from collections import deque  # noqa: F401
 from typing import Annotated, Any, Dict, Generic, List, Optional, TypeVar, Union  # noqa: UP035
 
 import pytest
@@ -15,8 +15,6 @@ from litestar.utils.typing import (
 )
 from tests.models import DataclassPerson, DataclassPet  # noqa: F401
 
-from collections import deque  # noqa: F401
-
 py_310_plus_annotation = [
     (eval(tp), exp)
     for tp, exp in [
@@ -28,7 +26,6 @@ py_310_plus_annotation = [
         ("deque[DataclassPet]", False),
     ]
 ]
-
 
 
 @pytest.mark.parametrize(

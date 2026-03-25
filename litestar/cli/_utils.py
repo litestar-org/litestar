@@ -25,6 +25,7 @@ try:
 except ImportError:
     from click import Command, Group, NoSuchOption  # type: ignore[assignment]
 
+from importlib.metadata import entry_points
 from typing import get_type_hints
 
 from click import ClickException, Context, pass_context
@@ -35,9 +36,6 @@ from typing_extensions import ParamSpec
 from litestar import Litestar, __version__
 from litestar.middleware import DefineMiddleware
 from litestar.utils import envflag, get_name
-
-from importlib.metadata import entry_points
-
 
 if TYPE_CHECKING:
     from collections.abc import Generator, Iterable, Sequence

@@ -19,7 +19,6 @@ if TYPE_CHECKING:
     from litestar.types import AnyCallable
 
 
-
 __all__ = (
     "ParsedSignature",
     "add_types_to_signature_namespace",
@@ -158,7 +157,6 @@ def get_fn_type_hints(fn: Any, namespace: dict[str, Any] | None = None) -> dict[
         **(namespace or {}),
     }
     hints = get_type_hints(fn_to_inspect, globalns=namespace, include_extras=True)
-
 
     return hints
 

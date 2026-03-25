@@ -1,16 +1,13 @@
 from __future__ import annotations
 
-import sys
 from collections.abc import Callable
 from contextlib import AbstractAsyncContextManager
 from inspect import isasyncgen
 from typing import TYPE_CHECKING, Any
 
-
 from anyio import create_task_group
 
 from litestar.utils import ensure_async_callable
-from litestar.utils.compat import async_next
 
 __all__ = ("DependencyCleanupGroup",)
 
@@ -58,7 +55,7 @@ class DependencyCleanupGroup(AbstractAsyncContextManager):
         if isasyncgen(generator):
 
             async def wrapped_async() -> None:
-                await async_next(generator, None)
+                await anext(generator, None)
 
             return wrapped_async
 

@@ -381,11 +381,13 @@ class MsgspecGeneric(Struct, Generic[T]):
 
 annotations: list[type] = [DataclassGeneric[int], MsgspecGeneric[int]]
 
+
 # Generic TypedDict was only supported from 3.11 onwards
 class TypedDictGeneric(TypedDict, Generic[T]):
     foo: T
     optional_foo: Optional[T]
     annotated_foo: Annotated[T, object()]
+
 
 annotations.append(TypedDictGeneric[int])
 
