@@ -21,7 +21,7 @@ T = TypeVar("T")
 
 __all__ = ("AnyIOBackend", "MaybePartial", "OptionalSequence", "SSEData", "StreamType", "SyncOrAsyncUnion")
 
-OptionalSequence: TypeAlias = Optional[Sequence[T]]
+OptionalSequence: TypeAlias = Sequence[T] | None
 """Types 'T' as union of Sequence[T] and None."""
 
 SyncOrAsyncUnion: TypeAlias = Union[T, Awaitable[T]]

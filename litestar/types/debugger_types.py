@@ -5,7 +5,7 @@ from typing import Any, Optional, Protocol, TypeAlias, Union
 class PDBProtocol(Protocol):
     @staticmethod
     def post_mortem(
-        traceback: Optional[TracebackType] = None,
+        traceback: TracebackType | None = None,
         *args: Any,
         **kwargs: Any,
     ) -> Any: ...

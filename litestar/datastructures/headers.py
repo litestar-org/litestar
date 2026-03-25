@@ -47,7 +47,7 @@ def _encode_headers(headers: Iterable[tuple[str, str]]) -> "RawHeadersList":
 class Headers(CIMultiDictProxy[str], MultiMixin[str]):  # pyright: ignore
     """An immutable, case-insensitive multi dict for HTTP headers."""
 
-    def __init__(self, headers: Optional[Union[Mapping[str, str], "RawHeaders", MultiDict[str]]] = None) -> None:  # pyright: ignore
+    def __init__(self, headers: Union[Mapping[str, str], "RawHeaders", MultiDict[str]] | None = None) -> None:  # pyright: ignore
         """Initialize ``Headers``.
 
         Args:
@@ -64,7 +64,7 @@ class Headers(CIMultiDictProxy[str], MultiMixin[str]):  # pyright: ignore
             super().__init__(CIMultiDict(headers_))
         else:
             super().__init__(headers)
-        self._header_list: Optional[RawHeadersList] = None
+        self._header_list: RawHeadersList | None = None
 
     @classmethod
     def from_scope(cls, scope: "Scope") -> "Headers":
@@ -149,7 +149,7 @@ class MutableScopeHeaders(MutableMapping):
         """
         self.headers.append((key.lower().encode("latin-1"), value.encode("latin-1")))
 
-    def getall(self, key: str, default: Optional[list[str]] = None) -> list[str]:
+    def getall(self, key: str, default: list[str] | None = None) -> list[str]:
         """Get all values of a header.
 
         Args:
@@ -271,29 +271,29 @@ class CacheControlHeader(Header):
 
     HEADER_NAME: ClassVar[str] = "cache-control"
 
-    max_age: Optional[int] = None
+    max_age: int | None = None
     """Accessor for the ``max-age`` directive."""
-    s_maxage: Optional[int] = None
+    s_maxage: int | None = None
     """Accessor for the ``s-maxage`` directive."""
-    no_cache: Optional[bool] = None
+    no_cache: bool | None = None
     """Accessor for the ``no-cache`` directive."""
-    no_store: Optional[bool] = None
+    no_store: bool | None = None
     """Accessor for the ``no-store`` directive."""
-    private: Optional[bool] = None
+    private: bool | None = None
     """Accessor for the ``private`` directive."""
-    public: Optional[bool] = None
+    public: bool | None = None
     """Accessor for the ``public`` directive."""
-    no_transform: Optional[bool] = None
+    no_transform: bool | None = None
     """Accessor for the ``no-transform`` directive."""
-    must_revalidate: Optional[bool] = None
+    must_revalidate: bool | None = None
     """Accessor for the ``must-revalidate`` directive."""
-    proxy_revalidate: Optional[bool] = None
+    proxy_revalidate: bool | None = None
     """Accessor for the ``proxy-revalidate`` directive."""
-    must_understand: Optional[bool] = None
+    must_understand: bool | None = None
     """Accessor for the ``must-understand`` directive."""
-    immutable: Optional[bool] = None
+    immutable: bool | None = None
     """Accessor for the ``immutable`` directive."""
-    stale_while_revalidate: Optional[int] = None
+    stale_while_revalidate: int | None = None
     """Accessor for the ``stale-while-revalidate`` directive."""
 
     def _get_header_value(self) -> str:
@@ -349,7 +349,7 @@ class ETag(Header):
     HEADER_NAME: ClassVar[str] = "etag"
 
     weak: bool = False
-    value: Optional[str] = None  # only ASCII characters
+    value: str | None = None  # only ASCII characters
 
     def _get_header_value(self) -> str:
         value = f'"{self.value}"'
@@ -442,12 +442,12 @@ class Accept:
         return map(str, self._accepted_types)
 
     @overload
-    def best_match(self, provided_types: list[str], default: None = None) -> Optional[str]: ...
+    def best_match(self, provided_types: list[str], default: None = None) -> str | None: ...
 
     @overload
     def best_match(self, provided_types: list[str], default: str) -> str: ...
 
-    def best_match(self, provided_types: list[str], default: Optional[str] = None) -> Optional[str]:
+    def best_match(self, provided_types: list[str], default: str | None = None) -> str | None:
         """Find the best matching media type for the request.
 
         Args:

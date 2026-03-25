@@ -13,9 +13,9 @@ class CustomToken(Token):
         encoded_token: str,
         secret: str,
         algorithms: list[str],
-        issuer: Optional[list[str]] = None,
+        issuer: list[str] | None = None,
         audience: Union[str, Sequence[str], None] = None,
-        options: Optional[JWTDecodeOptions] = None,
+        options: JWTDecodeOptions | None = None,
     ) -> Any:
         payload = super().decode_payload(
             encoded_token=encoded_token,

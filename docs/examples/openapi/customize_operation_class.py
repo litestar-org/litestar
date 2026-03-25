@@ -11,7 +11,7 @@ from litestar.status_codes import HTTP_400_BAD_REQUEST
 class CustomOperation(Operation):
     """Custom Operation class which includes a non-standard field which is part of an OpenAPI extension."""
 
-    x_code_samples: Optional[list[dict[str, str]]] = field(default=None, metadata={"alias": "x-codeSamples"})
+    x_code_samples: list[dict[str, str]] | None = field(default=None, metadata={"alias": "x-codeSamples"})
 
     def __post_init__(self) -> None:
         self.tags = ["ok"]

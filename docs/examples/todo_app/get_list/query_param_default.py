@@ -18,7 +18,7 @@ TODO_LIST: list[TodoItem] = [
 
 
 @get("/")
-async def get_list(done: Optional[bool] = None) -> list[TodoItem]:
+async def get_list(done: bool | None = None) -> list[TodoItem]:
     if done is None:
         return TODO_LIST
     return [item for item in TODO_LIST if item.done == done]

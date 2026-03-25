@@ -58,7 +58,7 @@ async def get_todo_by_title(todo_name: str, session: AsyncSession) -> TodoItem:
         raise NotFoundException(detail=f"TODO {todo_name!r} not found") from e
 
 
-async def get_todo_list(done: Optional[bool], session: AsyncSession) -> Sequence[TodoItem]:
+async def get_todo_list(done: bool | None, session: AsyncSession) -> Sequence[TodoItem]:
     query = select(TodoItem)
     if done is not None:
         query = query.where(TodoItem.done.is_(done))
@@ -68,7 +68,7 @@ async def get_todo_list(done: Optional[bool], session: AsyncSession) -> Sequence
 
 
 @get("/")
-async def get_list(state: State, done: Optional[bool] = None) -> TodoCollectionType:
+async def get_list(state: State, done: bool | None = None) -> TodoCollectionType:
     async with sessionmaker(bind=state.engine) as session:
         return [serialize_todo(todo) for todo in await get_todo_list(done, session)]
 

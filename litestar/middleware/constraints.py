@@ -106,7 +106,7 @@ class MiddlewareConstraints:
 
     Mutually exclusive with ``first=True``. Implicitly sets ``unique=True``
     """
-    unique: Optional[bool] = None
+    unique: bool | None = None
     """
     If ``True``, require the middleware to be the only one of its type
     """
