@@ -24,17 +24,7 @@ if TYPE_CHECKING:
     from msgspec import Raw, Struct
     from msgspec.msgpack import Ext
 
-    from litestar.types import DataclassProtocol, TypedDictClass
-
-    try:
-        from pydantic import BaseModel
-        from pydantic.main import IncEx
-        from pydantic.typing import AbstractSetIntStr, MappingIntStrAny
-    except ImportError:
-        BaseModel = Any  # type: ignore[assignment, misc]
-        IncEx = Any  # type: ignore[misc]
-        AbstractSetIntStr = Any
-        MappingIntStrAny = Any
+    from litestar.types import DataclassProtocol
 
     try:
         from attrs import AttrsInstance
@@ -60,7 +50,5 @@ EncodableStdLibIPType: TypeAlias = (
     "IPv4Address | IPv4Interface | IPv4Network | IPv6Address | IPv6Interface | IPv6Network"
 )
 EncodableMsgSpecType: TypeAlias = "Ext | Raw | Struct"
-LitestarEncodableType: TypeAlias = "EncodableBuiltinType | EncodableBuiltinCollectionType | EncodableStdLibType | EncodableStdLibIPType | EncodableMsgSpecType | BaseModel | AttrsInstance"  # pyright: ignore
-DataContainerType: TypeAlias = "Struct | BaseModel | AttrsInstance | TypedDictClass | DataclassProtocol"  # pyright: ignore
-PydanticV2FieldsListType: TypeAlias = "set[int] | set[str] | dict[int, Any] | dict[str, Any]"
-PydanticV1FieldsListType: TypeAlias = "IncEx | AbstractSetIntStr | MappingIntStrAny"  # pyright: ignore
+LitestarEncodableType: TypeAlias = "Any"  # pyright: ignore # TODO: Remove this
+DataContainerType: TypeAlias = "Any"  # pyright: ignore  # TODO: Remove this

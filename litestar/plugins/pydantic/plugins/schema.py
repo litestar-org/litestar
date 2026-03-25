@@ -7,7 +7,6 @@ from litestar.openapi.spec import OpenAPIFormat, OpenAPIType, Reference, Schema
 from litestar.plugins import OpenAPISchemaPlugin
 from litestar.plugins.pydantic.utils import (
     get_model_info,
-    is_pydantic_constrained_field,
     is_pydantic_model_class,
     is_pydantic_root_model,
     is_pydantic_undefined,
@@ -258,7 +257,7 @@ class PydanticSchemaPlugin(OpenAPISchemaPlugin):
 
     @staticmethod
     def is_constrained_field(field_definition: FieldDefinition) -> bool:
-        return is_pydantic_constrained_field(field_definition.annotation)
+        return False
 
     def to_openapi_schema(self, field_definition: FieldDefinition, schema_creator: SchemaCreator) -> Schema | Reference:
         """Given a type annotation, transform it into an OpenAPI schema class.

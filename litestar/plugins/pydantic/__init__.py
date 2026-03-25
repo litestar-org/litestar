@@ -13,7 +13,7 @@ if TYPE_CHECKING:
     from pydantic.v1 import BaseModel as BaseModelV1
 
     from litestar.config.app import AppConfig
-    from litestar.types.serialization import PydanticV1FieldsListType, PydanticV2FieldsListType
+    from litestar.plugins.pydantic.types import PydanticV2FieldsListType
 
 __all__ = (
     "PydanticDIPlugin",
@@ -65,11 +65,11 @@ class PydanticPlugin(InitPlugin):
 
     def __init__(
         self,
-        exclude: PydanticV1FieldsListType | PydanticV2FieldsListType | None = None,
+        exclude:PydanticV2FieldsListType | None = None,
         exclude_defaults: bool = False,
         exclude_none: bool = False,
         exclude_unset: bool = False,
-        include: PydanticV1FieldsListType | PydanticV2FieldsListType | None = None,
+        include: PydanticV2FieldsListType | None = None,
         prefer_alias: bool = False,
         validate_strict: bool = False,
         round_trip: bool = False,
