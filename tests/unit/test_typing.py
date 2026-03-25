@@ -260,13 +260,11 @@ def test_field_definition_is_typeddict_predicate() -> None:
     assert FieldDefinition.from_annotation(NormalClass).is_typeddict_type is False
     assert FieldDefinition.from_annotation(TypedDictClass).is_typeddict_type is True
 
-    if sys.version_info >= (3, 11):
+    class GenericTypedDictClass(TypedDict, Generic[T]): ...
 
-        class GenericTypedDictClass(TypedDict, Generic[T]): ...
-
-        assert FieldDefinition.from_annotation(GenericTypedDictClass).is_typeddict_type is True
-        assert FieldDefinition.from_annotation(GenericTypedDictClass[int]).is_typeddict_type is True
-        assert FieldDefinition.from_annotation(GenericTypedDictClass[T]).is_typeddict_type is True
+    assert FieldDefinition.from_annotation(GenericTypedDictClass).is_typeddict_type is True
+    assert FieldDefinition.from_annotation(GenericTypedDictClass[int]).is_typeddict_type is True
+    assert FieldDefinition.from_annotation(GenericTypedDictClass[T]).is_typeddict_type is True
 
 
 def test_field_definition_is_subclass_of() -> None:

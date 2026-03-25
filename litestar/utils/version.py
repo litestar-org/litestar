@@ -7,10 +7,7 @@ from typing import Literal, NamedTuple
 __all__ = ("Version", "get_version", "parse_version")
 
 
-if sys.version_info >= (3, 10):
-    import importlib.metadata as importlib_metadata
-else:
-    import importlib_metadata
+import importlib.metadata as importlib_metadata
 
 
 _ReleaseLevel = Literal["alpha", "beta", "rc", "final"]

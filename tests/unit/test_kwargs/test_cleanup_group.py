@@ -4,8 +4,6 @@ import sys
 from collections.abc import AsyncGenerator, Generator
 from unittest.mock import MagicMock
 
-if sys.version_info < (3, 11):
-    from exceptiongroup import ExceptionGroup  # pyright: ignore
 
 import pytest
 

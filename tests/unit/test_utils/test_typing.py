@@ -15,22 +15,20 @@ from litestar.utils.typing import (
 )
 from tests.models import DataclassPerson, DataclassPet  # noqa: F401
 
-if version_info >= (3, 10):
-    from collections import deque  # noqa: F401
+from collections import deque  # noqa: F401
 
-    py_310_plus_annotation = [
-        (eval(tp), exp)
-        for tp, exp in [
-            ("tuple[DataclassPerson, ...]", True),
-            ("list[DataclassPerson]", True),
-            ("deque[DataclassPerson]", True),
-            ("tuple[DataclassPet, ...]", False),
-            ("list[DataclassPet]", False),
-            ("deque[DataclassPet]", False),
-        ]
+py_310_plus_annotation = [
+    (eval(tp), exp)
+    for tp, exp in [
+        ("tuple[DataclassPerson, ...]", True),
+        ("list[DataclassPerson]", True),
+        ("deque[DataclassPerson]", True),
+        ("tuple[DataclassPet, ...]", False),
+        ("list[DataclassPet]", False),
+        ("deque[DataclassPet]", False),
     ]
-else:
-    py_310_plus_annotation = []
+]
+
 
 
 @pytest.mark.parametrize(

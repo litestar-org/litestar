@@ -18,11 +18,6 @@ if TYPE_CHECKING:
 
     from litestar.types import AnyCallable
 
-if sys.version_info < (3, 11):
-    from typing import _get_defaults  # type: ignore[attr-defined]
-else:
-
-    def _get_defaults(_: Any) -> Any: ...
 
 
 __all__ = (
@@ -164,10 +159,6 @@ def get_fn_type_hints(fn: Any, namespace: dict[str, Any] | None = None) -> dict[
     }
     hints = get_type_hints(fn_to_inspect, globalns=namespace, include_extras=True)
 
-    if sys.version_info < (3, 11):
-        # see https://github.com/litestar-org/litestar/pull/2516
-        defaults = _get_defaults(fn_to_inspect)
-        hints = _unwrap_implicit_optional_hints(defaults, hints)
 
     return hints
 

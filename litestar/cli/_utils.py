@@ -36,10 +36,7 @@ from litestar import Litestar, __version__
 from litestar.middleware import DefineMiddleware
 from litestar.utils import envflag, get_name
 
-if sys.version_info >= (3, 10):
-    from importlib.metadata import entry_points
-else:
-    from importlib_metadata import entry_points
+from importlib.metadata import entry_points
 
 
 if TYPE_CHECKING:

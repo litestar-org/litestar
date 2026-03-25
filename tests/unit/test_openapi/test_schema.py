@@ -382,14 +382,12 @@ class MsgspecGeneric(Struct, Generic[T]):
 annotations: list[type] = [DataclassGeneric[int], MsgspecGeneric[int]]
 
 # Generic TypedDict was only supported from 3.11 onwards
-if sys.version_info >= (3, 11):
+class TypedDictGeneric(TypedDict, Generic[T]):
+    foo: T
+    optional_foo: Optional[T]
+    annotated_foo: Annotated[T, object()]
 
-    class TypedDictGeneric(TypedDict, Generic[T]):
-        foo: T
-        optional_foo: Optional[T]
-        annotated_foo: Annotated[T, object()]
-
-    annotations.append(TypedDictGeneric[int])
+annotations.append(TypedDictGeneric[int])
 
 
 @pytest.mark.parametrize("cls", annotations)
