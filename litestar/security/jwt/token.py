@@ -2,12 +2,11 @@ from __future__ import annotations
 
 import dataclasses
 from collections.abc import Sequence  # noqa: TC003
-from dataclasses import asdict, dataclass, field
+from dataclasses import InitVar, asdict, dataclass, field
 from datetime import UTC, datetime, timedelta
 from typing import TYPE_CHECKING, Any, TypedDict
 
 import jwt
-import msgspec
 
 from litestar.exceptions import ImproperlyConfiguredException, NotAuthorizedException
 
@@ -65,16 +64,25 @@ class Token:
     extras: dict[str, Any] = field(default_factory=dict)
     """Extra fields that were found on the JWT token."""
 
-    def __post_init__(self) -> None:
+    leeway: InitVar[float] = 0
+    """Leeway in seconds for validating the ``exp`` claim during construction.
+
+    This is an :class:`~dataclasses.InitVar` -- it is used during ``__post_init__``
+    validation but is **not** stored as an instance attribute.
+    """
+
+    def __post_init__(self, leeway: float) -> None:
         if len(self.sub) < 1:
             raise ImproperlyConfiguredException("sub must be a string with a length greater than 0")
 
         if isinstance(self.exp, datetime) and (
-            (exp := _normalize_datetime(self.exp)).timestamp() >= _normalize_datetime(datetime.now(UTC)).timestamp()
-        ):
+            (exp := _normalize_datetime(self.exp)) + timedelta(seconds=leeway)
+        ).timestamp() >= _normalize_datetime(datetime.now(UTC)).timestamp():
             self.exp = exp
         else:
-            raise ImproperlyConfiguredException("exp value must be a datetime in the future")
+            raise ImproperlyConfiguredException(
+                f"exp value must be a datetime in the future (leeway={leeway}s)"
+            )
 
         if isinstance(self.iat, datetime) and (
             (iat := _normalize_datetime(self.iat)).timestamp() <= _normalize_datetime(datetime.now(UTC)).timestamp()
@@ -155,24 +163,6 @@ class Token:
         return options, audience
 
     @classmethod
-    def _construct_without_validation(cls, payload: dict[str, Any]) -> Self:
-        """Construct a Token instance without running ``__post_init__`` validation.
-
-        When decoding with leeway, the token's ``exp`` may be slightly in the past
-        (within the leeway window). PyJWT already validated the expiry with leeway,
-        so we bypass ``__post_init__`` validation which would reject it.
-        """
-        token = object.__new__(cls)
-        for f in dataclasses.fields(cls):
-            if f.name in payload:
-                object.__setattr__(token, f.name, payload[f.name])
-            elif f.default is not dataclasses.MISSING:
-                object.__setattr__(token, f.name, f.default)
-            elif f.default_factory is not dataclasses.MISSING:
-                object.__setattr__(token, f.name, f.default_factory())
-        return token
-
-    @classmethod
     def decode(
         cls,
         encoded_token: str,
@@ -227,30 +217,15 @@ class Token:
         )
 
         try:
-            try:
-                payload = cls.decode_payload(
-                    encoded_token=encoded_token,
-                    secret=secret,
-                    algorithms=[algorithm],
-                    audience=audience,
-                    issuer=issuer,
-                    options=options,
-                    leeway=leeway,
-                )
-            except TypeError:
-                # Backward compatibility: if a subclass overrides decode_payload
-                # without accepting the leeway parameter, call without it
-                payload = cls.decode_payload(
-                    encoded_token=encoded_token,
-                    secret=secret,
-                    algorithms=[algorithm],
-                    audience=audience,
-                    issuer=issuer,
-                    options=options,
-                )
-            # msgspec can do these conversions as well, but to keep backwards
-            # compatibility, we do it ourselves, since the datetime parsing works a
-            # little bit different there
+            payload = cls.decode_payload(
+                encoded_token=encoded_token,
+                secret=secret,
+                algorithms=[algorithm],
+                audience=audience,
+                issuer=issuer,
+                options=options,
+                leeway=leeway,
+            )
             payload["exp"] = cls._decode_datetime_claim(payload, "exp")
             payload["iat"] = cls._decode_datetime_claim(payload, "iat")
             cls._require_claim(payload, "sub")
@@ -258,14 +233,12 @@ class Token:
             extras = payload.setdefault("extras", {})
             for key in extra_fields:
                 extras[key] = payload.pop(key)
-            if leeway:
-                return cls._construct_without_validation(payload)
-            return msgspec.convert(payload, cls, strict=False)
+            leeway_seconds = leeway.total_seconds() if isinstance(leeway, timedelta) else float(leeway)
+            return cls(**payload, leeway=leeway_seconds)
         except (
             KeyError,
             jwt.exceptions.InvalidTokenError,
             ImproperlyConfiguredException,
-            msgspec.ValidationError,
         ) as e:
             raise NotAuthorizedException("Invalid token") from e
 
