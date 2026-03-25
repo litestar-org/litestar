@@ -102,7 +102,7 @@ class Token:
             algorithms: A list of algorithms used to decode the JWT.
             issuer: Verify the issuer when decoding the token.
             audience: Verify the audience when decoding the token.
-            options: Options for PyJWT's :func:`jwt.decode`.
+            options: Options for PyJWT's ``jwt.decode``.
             leeway: A time margin in seconds (or as a :class:`timedelta`) to account for
                 clock skew when verifying the ``exp`` and ``nbf`` claims. Defaults to ``0``.
 
