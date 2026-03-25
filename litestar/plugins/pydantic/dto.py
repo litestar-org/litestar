@@ -103,7 +103,7 @@ class PydanticDTO(AbstractDTO[T], Generic[T]):
                 except AttributeError:
                     extra = field_info.json_schema_extra  # type: ignore[union-attr]
 
-                if extra is not None and extra.pop(DTO_FIELD_META_KEY, None):
+                if extra is not None and extra.pop(DTO_FIELD_META_KEY, None):  # pyright: ignore
                     warn(
                         message="Declaring 'DTOField' via Pydantic's 'Field.extra' is deprecated. "
                         "Use 'Annotated', e.g., 'Annotated[str, DTOField(mark='read-only')]' instead. "
