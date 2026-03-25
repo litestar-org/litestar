@@ -6,6 +6,16 @@
 .. changelog:: 3.0.0
     :date: 2364-01-27
 
+    .. change:: Drop support for Pydantic 1
+        :type: feature
+        :breaking:
+
+        Drop support for Pydantic 1.
+
+        Pydantic 1 is no longer supported or tested against. No changes required for
+        applications already using Pydantic 2. Applications using Pydantic 1 or a mix
+        between 1 and 2 should upgrade to Pydantic 2.
+
     .. change:: Remove logging config and related constructs
         :type: feature
         :breaking:
