@@ -395,6 +395,7 @@ lint.ignore = [
   "SIM103",  # 'Return the condition directly': This is a bit overzealous
   "UP038",   # Use `X | Y` in `isinstance` call instead of `(X, Y)`
   "UP007",   # Use `X | Y` for type annotations
+  "RET504"   # Unnecessary assignment before `return` statement
 ]
 lint.select = [
   "A",   # flake8-builtins
@@ -493,6 +494,7 @@ known-first-party = ["litestar", "tests", "examples"]
   "TC",
   "TRY",
   "E721",
+  "UP045",
 ]
 "tests/unit/test_contrib/test_sqlalchemy/**/*.*" = ["UP006"]
 "tests/unit/test_openapi/test_typescript_converter/test_converter.py" = ["W293"]
