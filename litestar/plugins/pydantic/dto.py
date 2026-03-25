@@ -99,7 +99,7 @@ class PydanticDTO(AbstractDTO[T], Generic[T]):
                 # field_info might not exist, since FieldInfo isn't provided by pydantic
                 # for computed fields, but we still generate a FieldDefinition for them
                 try:
-                    extra = field_info.extra  # type: ignore[union-attr]
+                    extra = field_info.extra  # type: ignore[union-attr, attr-defined]
                 except AttributeError:
                     extra = field_info.json_schema_extra  # type: ignore[union-attr]
 

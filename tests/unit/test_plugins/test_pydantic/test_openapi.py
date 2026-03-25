@@ -369,7 +369,7 @@ def test_schema_generation_v2() -> None:
 
 
 def test_create_examples(pydantic_version: PydanticVersion) -> None:
-    class Model(pydantic_v2.BaseModel):  # type: ignore[name-defined, misc]
+    class Model(pydantic_v2.BaseModel):
         foo: str = pydantic_v2.Field(examples=["32"])
         bar: str
 

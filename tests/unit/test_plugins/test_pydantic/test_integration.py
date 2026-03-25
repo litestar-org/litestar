@@ -290,7 +290,7 @@ def test_v2_strict_validate(
 
 
 def test_model_defaults(pydantic_version: PydanticVersion) -> None:
-    class Model(pydantic_v2.BaseModel):  # type: ignore[misc, name-defined]
+    class Model(pydantic_v2.BaseModel):
         a: int
         b: int = pydantic_v2.Field(default=1)
         c: int = pydantic_v2.Field(default_factory=lambda: 3)

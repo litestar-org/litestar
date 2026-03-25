@@ -7,7 +7,7 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING, Annotated, Any, Literal, NotRequired, get_type_hints
 
 import pydantic
-from pydantic.fields import PydanticUndefined
+from pydantic_core import PydanticUndefined
 
 from litestar.openapi.spec import Example
 from litestar.params import KwargDefinition, ParameterKwarg
@@ -18,9 +18,6 @@ from litestar.utils.typing import (
     _substitute_typevars,
     normalize_type_annotation,
 )
-
-PYDANTIC_UNDEFINED_SENTINELS = {PydanticUndefined}
-
 
 if TYPE_CHECKING:
     from types import ModuleType
@@ -93,7 +90,7 @@ def is_pydantic_2_model(
 
 
 def is_pydantic_undefined(value: Any) -> bool:
-    return any(v is value for v in PYDANTIC_UNDEFINED_SENTINELS)
+    return value is PydanticUndefined
 
 
 def create_field_definitions_for_computed_fields(
