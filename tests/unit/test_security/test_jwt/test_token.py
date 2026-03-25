@@ -385,7 +385,7 @@ def test_decode_with_leeway_backward_compat_subclass() -> None:
     @dataclasses.dataclass
     class LegacyToken(Token):
         @classmethod
-        def decode_payload(
+        def decode_payload(  # type: ignore[override]  # pyright: ignore[reportIncompatibleMethodOverride]
             cls,
             encoded_token: str,
             secret: str | bytes,
