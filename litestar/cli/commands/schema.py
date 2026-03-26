@@ -46,7 +46,7 @@ def _generate_openapi_schema(app: Litestar, output: Path) -> None:
         raise LitestarCLIException(f"failed to write schema to path {output}") from e
 
 
-@schema_group.command("openapi")  # type: ignore[misc]
+@schema_group.command("openapi")  # type: ignore[untyped-decorator]
 @click.option(
     "--output",
     help="output file path",
@@ -59,7 +59,7 @@ def generate_openapi_schema(app: Litestar, output: Path) -> None:
     _generate_openapi_schema(app, output)
 
 
-@schema_group.command("typescript")  # type: ignore[misc]
+@schema_group.command("typescript")  # type: ignore[untyped-decorator]
 @click.option(
     "--output",
     help="output file path",

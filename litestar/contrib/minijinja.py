@@ -16,7 +16,7 @@ from litestar.template.base import (
 )
 
 try:
-    from minijinja import Environment  # type:ignore[import-untyped]
+    from minijinja import Environment
     from minijinja import TemplateError as MiniJinjaTemplateNotFound
 except ImportError as e:
     raise MissingDependencyException("minijinja") from e
@@ -186,7 +186,7 @@ class MiniJinjaTemplateEngine(TemplateEngineProtocol["MiniJinjaTemplate", StateP
         Returns:
             The rendered template as a string.
         """
-        return self.engine.render_str(template_string, **context)  # type: ignore[no-any-return]
+        return self.engine.render_str(template_string, **context)
 
     @classmethod
     def from_environment(cls, minijinja_environment: Environment) -> MiniJinjaTemplateEngine:
