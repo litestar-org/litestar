@@ -75,14 +75,14 @@ class Token:
         if len(self.sub) < 1:
             raise ImproperlyConfiguredException("sub must be a string with a length greater than 0")
 
-        if isinstance(self.exp, datetime) and (
-            (exp := _normalize_datetime(self.exp)) + timedelta(seconds=leeway)
-        ).timestamp() >= _normalize_datetime(datetime.now(UTC)).timestamp():
+        if (
+            isinstance(self.exp, datetime)
+            and ((exp := _normalize_datetime(self.exp)) + timedelta(seconds=leeway)).timestamp()
+            >= _normalize_datetime(datetime.now(UTC)).timestamp()
+        ):
             self.exp = exp
         else:
-            raise ImproperlyConfiguredException(
-                f"exp value must be a datetime in the future (leeway={leeway}s)"
-            )
+            raise ImproperlyConfiguredException(f"exp value must be a datetime in the future (leeway={leeway}s)")
 
         if isinstance(self.iat, datetime) and (
             (iat := _normalize_datetime(self.iat)).timestamp() <= _normalize_datetime(datetime.now(UTC)).timestamp()
