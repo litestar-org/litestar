@@ -51,7 +51,11 @@ def test_compression_disabled_for_unsupported_client(handler: HTTPRouteHandler) 
 def test_regular_compressed_response(
     backend: Literal["gzip", "brotli", "zstd"], compression_encoding: CompressionEncoding, handler: HTTPRouteHandler
 ) -> None:
-    with create_test_client(route_handlers=[handler], compression_config=CompressionConfig(backend=backend)) as client:
+    with create_test_client(
+        route_handlers=[handler],
+        compression_config=CompressionConfig(backend=backend),
+        raise_server_exceptions=True,
+    ) as client:
         response = client.get("/", headers={"Accept-Encoding": str(compression_encoding.value)})
         assert response.status_code == HTTP_200_OK
         assert response.text == "_litestar_" * 4000

@@ -43,7 +43,7 @@ dependencies = [
   "typing-extensions",
   "click",
   "rich>=13.0.0",
-  "rich-click",
+  "rich-click<1.9",
   "multipart>=1.3.1",
   "sniffio>=1.3.1",
 ]
@@ -53,8 +53,7 @@ annotated-types = ["annotated-types"]
 attrs = ["attrs"]
 brotli = ["brotli"]
 zstd = [
-    # Only needed for <3.14, since >=3.14 ships with stdlib support
-    "zstandard>=0.24.0; python_version < '3.14'",
+    "zstandard>=0.24.0",
 ]
 cli = ["jsbeautifier", "uvicorn[standard]"]
 cryptography = ["cryptography"]
@@ -147,7 +146,7 @@ dev = [
   "psutil>=5.9.8",
   "hypercorn>=0.16.0",
   "daphne>=4.0.0",
-  "opentelemetry-sdk",
+  "opentelemetry-sdk<1.40.0",
   "httpx-sse",
   "structlog",
 ]
