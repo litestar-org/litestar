@@ -191,8 +191,7 @@ async def test_jwt_auth_custom_token_cls(auth_cls: Any) -> None:
         jwt_auth.create_token(
             "foo",
             token_extras={"foo": "bar"},
-            # pass a string here as value to ensure things get converted properly
-            random_field="2",
+            random_field=2,
         ),
     )
 
@@ -851,7 +850,7 @@ async def test_jwt_auth_verify_exp(
 ) -> None:
     @dataclasses.dataclass
     class CustomToken(Token):
-        def __post_init__(self, leeway: float = 0) -> None:
+        def __post_init__(self, leeway: float) -> None:
             pass
 
     jwt_auth, client = create_jwt_app(verify_expiry=verify_expiry, token_cls=CustomToken)
