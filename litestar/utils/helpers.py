@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING, TypeVar, cast
 from urllib.parse import quote
 
 from litestar.exceptions import LitestarException
-from litestar.utils.typing import get_origin_or_inner_type
+from litestar.utils.typing import unwrap_and_get_origin
 
 if TYPE_CHECKING:
     from collections.abc import Container
@@ -41,7 +41,7 @@ def get_name(value: object) -> str:
         return cast("str", name)
 
     # On Python 3.9, Foo[int] does not have the __name__ attribute.
-    if origin := get_origin_or_inner_type(value):
+    if origin := unwrap_and_get_origin(value):
         return cast("str", origin.__name__)
 
     return type(value).__name__
