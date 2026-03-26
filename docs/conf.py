@@ -133,8 +133,8 @@ nitpick_ignore = [
     # investigate
     (PY_CLASS, "Environment"),
     (PY_CLASS, "P"),
-    (PY_CLASS, "pydantic_v1.BaseModel"),
     (PY_CLASS, "pydantic_v2.BaseModel"),
+    (PY_CLASS, "pydantic.BaseModel"),
     (PY_CLASS, "advanced_alchemy.config.types.Empty"),
     (PY_OBJ, "litestar.template.base.TemplateType_co"),
     (PY_OBJ, "litestar.template.base.ContextType_co"),

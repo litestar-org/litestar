@@ -1740,7 +1740,7 @@ requires-dist = [
     { name = "piccolo", marker = "extra == 'piccolo'" },
     { name = "polyfactory", marker = "extra == 'polyfactory'", specifier = ">=2.6.3" },
     { name = "prometheus-client", marker = "extra == 'prometheus'" },
-    { name = "pydantic", marker = "extra == 'pydantic'" },
+    { name = "pydantic", marker = "extra == 'pydantic'", specifier = ">=2" },
     { name = "pydantic-extra-types", marker = "extra == 'pydantic'" },
     { name = "pyjwt", marker = "extra == 'jwt'", specifier = ">=2.9.0" },
     { name = "pyyaml", marker = "extra == 'yaml'" },

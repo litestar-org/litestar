@@ -90,7 +90,7 @@ opentelemetry = ["opentelemetry-instrumentation-asgi"]
 piccolo = ["piccolo", "litestar-piccolo"]
 polyfactory = ["polyfactory>=2.6.3"]
 prometheus = ["prometheus-client"]
-pydantic = ["pydantic", "email-validator", "pydantic-extra-types"]
+pydantic = ["pydantic>=2", "email-validator", "pydantic-extra-types"]
 redis = ["redis[hiredis]>=4.4.4,<5.3"]  # 5.3.0 introduced some issues with the channels plugin; need to investigate
 sqlalchemy = ["advanced-alchemy>=1.1.0"]
 standard = [

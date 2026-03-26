@@ -69,7 +69,7 @@ async def test_request_factory_create_with_data(data_cls: DataContainerType) -> 
     request = RequestFactory()._create_request_with_data(
         HttpMethod.POST,
         "/",
-        data=data_cls(**person_data),  # type: ignore[operator]
+        data=data_cls(**person_data),
     )
     body = await request.body()
     assert json.loads(body) == person_data
@@ -82,7 +82,7 @@ async def test_request_factory_create_with_data_with_custom_encoder() -> None:
     request = RequestFactory(app=Litestar(type_encoders={Foo: lambda f: {"bar": f.bar}}))._create_request_with_data(
         HttpMethod.POST,
         "/",
-        data=Foo(),  # type: ignore[arg-type]
+        data=Foo(),
     )
 
     body = await request.body()

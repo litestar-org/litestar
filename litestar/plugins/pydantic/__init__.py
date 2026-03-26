@@ -10,10 +10,9 @@ from litestar.plugins.pydantic.plugins.schema import PydanticSchemaPlugin
 
 if TYPE_CHECKING:
     from pydantic import BaseModel
-    from pydantic.v1 import BaseModel as BaseModelV1
 
     from litestar.config.app import AppConfig
-    from litestar.types.serialization import PydanticV1FieldsListType, PydanticV2FieldsListType
+    from litestar.plugins.pydantic.types import PydanticV2FieldsListType
 
 __all__ = (
     "PydanticDIPlugin",
@@ -25,27 +24,23 @@ __all__ = (
 
 
 def _model_dump(
-    model: BaseModel | BaseModelV1,
+    model: BaseModel,
     *,
     by_alias: bool = False,
     round_trip: bool = False,
 ) -> dict[str, Any]:
     return (
         model.model_dump(mode="json", by_alias=by_alias, round_trip=round_trip)  # pyright: ignore
-        if hasattr(model, "model_dump")
-        else {k: v.decode() if isinstance(v, bytes) else v for k, v in model.dict(by_alias=by_alias).items()}
     )
 
 
 def _model_dump_json(
-    model: BaseModel | BaseModelV1,
+    model: BaseModel,
     by_alias: bool = False,
     round_trip: bool = False,
 ) -> str:
     return (
         model.model_dump_json(by_alias=by_alias, round_trip=round_trip)  # pyright: ignore
-        if hasattr(model, "model_dump_json")
-        else model.json(by_alias=by_alias)  # pyright: ignore
     )
 
 
@@ -65,11 +60,11 @@ class PydanticPlugin(InitPlugin):
 
     def __init__(
         self,
-        exclude: PydanticV1FieldsListType | PydanticV2FieldsListType | None = None,
+        exclude: PydanticV2FieldsListType | None = None,
         exclude_defaults: bool = False,
         exclude_none: bool = False,
         exclude_unset: bool = False,
-        include: PydanticV1FieldsListType | PydanticV2FieldsListType | None = None,
+        include: PydanticV2FieldsListType | None = None,
         prefer_alias: bool = False,
         validate_strict: bool = False,
         round_trip: bool = False,

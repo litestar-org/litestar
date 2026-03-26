@@ -2,12 +2,12 @@
 # pyright: reportGeneralTypeIssues=false
 from __future__ import annotations
 
-import datetime
-import re
 from collections.abc import Callable
 from dataclasses import dataclass
-from inspect import isclass
-from typing import TYPE_CHECKING, Annotated, Any, Literal, NotRequired, Optional, get_type_hints
+from typing import TYPE_CHECKING, Annotated, Any, Literal, NotRequired, get_type_hints
+
+import pydantic
+from pydantic_core import PydanticUndefined
 
 from litestar.openapi.spec import Example
 from litestar.params import KwargDefinition, ParameterKwarg
@@ -16,43 +16,16 @@ from litestar.typing import FieldDefinition
 from litestar.utils import is_class_and_subclass, is_generic, is_undefined_sentinel
 from litestar.utils.typing import (
     _substitute_typevars,
-    get_origin_or_inner_type,
-    get_safe_generic_origin,
-    get_type_hints_with_generics_resolved,
     normalize_type_annotation,
 )
 
-# isort: off
-try:
-    from pydantic import v1 as pydantic_v1
-    import pydantic as pydantic_v2
-    from pydantic.fields import PydanticUndefined as Pydantic2Undefined  # type: ignore[attr-defined]
-    from pydantic.v1.fields import Undefined as Pydantic1Undefined
-
-    PYDANTIC_UNDEFINED_SENTINELS = {Pydantic1Undefined, Pydantic2Undefined}
-except ImportError:
-    try:
-        import pydantic as pydantic_v1  # type: ignore[no-redef]
-        from pydantic.fields import Undefined as Pydantic1Undefined  # type: ignore[attr-defined, no-redef]
-
-        pydantic_v2 = Empty  # type: ignore[assignment]
-        PYDANTIC_UNDEFINED_SENTINELS = {Pydantic1Undefined}
-
-    except ImportError:  # pyright: ignore
-        pydantic_v1 = Empty  # type: ignore[assignment]
-        pydantic_v2 = Empty  # type: ignore[assignment]
-        PYDANTIC_UNDEFINED_SENTINELS = set()
-# isort: on
-
-
 if TYPE_CHECKING:
-    from types import ModuleType
     from typing import TypeGuard
 
 
 def is_pydantic_model_class(
     annotation: Any,
-) -> TypeGuard[type[pydantic_v1.BaseModel | pydantic_v2.BaseModel]]:  # pyright: ignore
+) -> TypeGuard[type[pydantic.BaseModel]]:  # pyright: ignore
     """Given a type annotation determine if the annotation is a subclass of pydantic's BaseModel.
 
     Args:
@@ -61,20 +34,12 @@ def is_pydantic_model_class(
     Returns:
         A typeguard determining whether the type is :data:`BaseModel pydantic.BaseModel>`.
     """
-    tests: list[bool] = []
-
-    if pydantic_v1 is not Empty:  # pragma: no cover
-        tests.append(is_class_and_subclass(annotation, pydantic_v1.BaseModel))
-
-    if pydantic_v2 is not Empty:  # pragma: no cover
-        tests.append(is_class_and_subclass(annotation, pydantic_v2.BaseModel))
-
-    return any(tests)
+    return is_class_and_subclass(annotation, pydantic.BaseModel)
 
 
 def is_pydantic_model_instance(
     annotation: Any,
-) -> TypeGuard[pydantic_v1.BaseModel | pydantic_v2.BaseModel]:  # pyright: ignore
+) -> TypeGuard[pydantic.BaseModel]:  # pyright: ignore
     """Given a type annotation determine if the annotation is an instance of pydantic's BaseModel.
 
     Args:
@@ -83,49 +48,10 @@ def is_pydantic_model_instance(
     Returns:
         A typeguard determining whether the type is :data:`BaseModel pydantic.BaseModel>`.
     """
-    tests: list[bool] = []
-
-    if pydantic_v1 is not Empty:  # pragma: no cover
-        tests.append(isinstance(annotation, pydantic_v1.BaseModel))
-
-    if pydantic_v2 is not Empty:  # pragma: no cover
-        tests.append(isinstance(annotation, pydantic_v2.BaseModel))
-
-    return any(tests)
-
-
-def is_pydantic_constrained_field(annotation: Any) -> bool:
-    """Check if the given annotation is a constrained pydantic type.
-
-    Args:
-        annotation: A type annotation
-
-    Returns:
-        True if pydantic is installed and the type is a constrained type, otherwise False.
-    """
-    if pydantic_v1 is Empty:  # pragma: no cover
-        return False  # type: ignore[unreachable]
-
-    return any(
-        is_class_and_subclass(annotation, constrained_type)  # pyright: ignore
-        for constrained_type in (
-            pydantic_v1.ConstrainedBytes,
-            pydantic_v1.ConstrainedDate,
-            pydantic_v1.ConstrainedDecimal,
-            pydantic_v1.ConstrainedFloat,
-            pydantic_v1.ConstrainedFrozenSet,
-            pydantic_v1.ConstrainedInt,
-            pydantic_v1.ConstrainedList,
-            pydantic_v1.ConstrainedSet,
-            pydantic_v1.ConstrainedStr,
-        )
-    )
+    return isinstance(annotation, pydantic.BaseModel)
 
 
 def pydantic_unwrap_and_get_origin(annotation: Any) -> Any | None:
-    if pydantic_v2 is Empty or (pydantic_v1 is not Empty and is_class_and_subclass(annotation, pydantic_v1.BaseModel)):
-        return get_origin_or_inner_type(annotation)
-
     origin = annotation.__pydantic_generic_metadata__["origin"]
     return normalize_type_annotation(origin)
 
@@ -137,9 +63,6 @@ def pydantic_get_type_hints_with_generics_resolved(
     include_extras: bool = False,
     model_annotations: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
-    if pydantic_v2 is Empty or (pydantic_v1 is not Empty and is_class_and_subclass(annotation, pydantic_v1.BaseModel)):
-        return get_type_hints_with_generics_resolved(annotation, type_hints=model_annotations)
-
     origin = pydantic_unwrap_and_get_origin(annotation)
     if origin is None:
         if model_annotations is None:  # pragma: no cover
@@ -160,17 +83,17 @@ def pydantic_get_type_hints_with_generics_resolved(
 
 
 def is_pydantic_2_model(
-    obj: type[pydantic_v1.BaseModel | pydantic_v2.BaseModel],  # pyright: ignore
-) -> TypeGuard[pydantic_v2.BaseModel]:  # pyright: ignore
-    return pydantic_v2 is not Empty and issubclass(obj, pydantic_v2.BaseModel)
+    obj: type[pydantic.BaseModel],  # pyright: ignore
+) -> TypeGuard[pydantic.BaseModel]:  # pyright: ignore
+    return issubclass(obj, pydantic.BaseModel)
 
 
 def is_pydantic_undefined(value: Any) -> bool:
-    return any(v is value for v in PYDANTIC_UNDEFINED_SENTINELS)
+    return value is PydanticUndefined
 
 
 def create_field_definitions_for_computed_fields(
-    model: type[pydantic_v1.BaseModel | pydantic_v2.BaseModel],  # pyright: ignore
+    model: type[pydantic.BaseModel],  # pyright: ignore
     prefer_alias: bool,
 ) -> dict[str, FieldDefinition]:
     """Create field definitions for computed fields.
@@ -209,20 +132,6 @@ def create_field_definitions_for_computed_fields(
     }
 
 
-def is_pydantic_v2(module: ModuleType) -> bool:
-    """Determine if the given module is pydantic v2.
-
-    Given a module we expect to be a pydantic version, determine if it is pydantic v2.
-
-    Args:
-        module: A module.
-
-    Returns:
-        True if the module is pydantic v2, otherwise False.
-    """
-    return bool(module.__version__.startswith("2."))
-
-
 def is_pydantic_root_model(annotation: Any) -> bool:
     """Check if the given annotation is a Pydantic RootModel.
 
@@ -239,7 +148,7 @@ def is_pydantic_root_model(annotation: Any) -> bool:
 class PydanticModelInfo:
     pydantic_version: Literal["1", "2"]
     field_definitions: dict[str, FieldDefinition]
-    model_fields: dict[str, pydantic_v1.fields.FieldInfo | pydantic_v2.fields.FieldInfo]  # pyright: ignore[reportInvalidTypeForm,reportGeneralTypeIssues]
+    model_fields: dict[str, pydantic.fields.FieldInfo]  # pyright: ignore[reportInvalidTypeForm,reportGeneralTypeIssues]
     title: str | None = None
     example: Any | None = None
     is_generic: bool = False
@@ -248,108 +157,10 @@ class PydanticModelInfo:
 _CreateFieldDefinition = Callable[..., FieldDefinition]
 
 
-def _create_field_definition_v1(  # noqa: C901
-    field_annotation: Any,
-    *,
-    field_info: pydantic_v1.fields.FieldInfo,  # pyright: ignore[reportInvalidTypeForm,reportGeneralTypeIssues]
-    **field_definition_kwargs: Any,
-) -> FieldDefinition:
-    kwargs: dict[str, Any] = {}
-    examples: list[Any] = []
-    if example := field_info.extra.get("example"):
-        examples.append(example)
-    if extra_examples := field_info.extra.get("examples"):
-        examples.extend(extra_examples)
-    if examples:
-        kwargs["examples"] = [Example(value=e) for e in examples]
-    if title := field_info.title:
-        kwargs["title"] = title
-    if description := field_info.description:
-        kwargs["description"] = description
-
-    kwarg_definition: KwargDefinition | None = None
-
-    if isclass(field_annotation):
-        if issubclass(field_annotation, pydantic_v1.ConstrainedBytes):  # pyright: ignore[reportArgumentType,reportAttributeAccessIssue]
-            kwarg_definition = ParameterKwarg(
-                min_length=field_annotation.min_length,
-                max_length=field_annotation.max_length,
-                lower_case=field_annotation.to_lower,
-                upper_case=field_annotation.to_upper,
-                **kwargs,
-            )
-            field_definition_kwargs["raw"] = field_annotation
-            field_annotation = bytes
-        elif issubclass(field_annotation, pydantic_v1.ConstrainedStr):  # pyright: ignore[reportArgumentType,reportAttributeAccessIssue]
-            kwarg_definition = ParameterKwarg(
-                min_length=field_annotation.min_length,
-                max_length=field_annotation.max_length,
-                lower_case=field_annotation.to_lower,
-                upper_case=field_annotation.to_upper,
-                pattern=field_annotation.regex.pattern
-                if isinstance(field_annotation.regex, re.Pattern)
-                else field_annotation.regex,
-                **kwargs,
-            )
-            field_definition_kwargs["raw"] = field_annotation
-            field_annotation = str
-        elif issubclass(field_annotation, pydantic_v1.ConstrainedDate):  # pyright: ignore[reportArgumentType,reportAttributeAccessIssue]
-            # TODO: The typings of ParameterKwarg need fixing. Specifically, the
-            # gt/ge/lt/le fields need to be typed with protocols, such that they may
-            # accept any type that implements the respective comparisons
-
-            kwarg_definition = ParameterKwarg(
-                gt=field_annotation.gt,  # type: ignore[arg-type]
-                ge=field_annotation.ge,  # type: ignore[arg-type]
-                lt=field_annotation.lt,  # type: ignore[arg-type]
-                le=field_annotation.le,  # type: ignore[arg-type]
-                **kwargs,
-            )
-            field_definition_kwargs["raw"] = field_annotation
-            field_annotation = datetime.date
-        elif issubclass(
-            field_annotation,
-            (pydantic_v1.ConstrainedInt, pydantic_v1.ConstrainedFloat, pydantic_v1.ConstrainedDecimal),  # pyright: ignore[reportArgumentType,reportAttributeAccessIssue]
-        ):
-            kwarg_definition = ParameterKwarg(
-                gt=field_annotation.gt,  # type: ignore[arg-type]
-                ge=field_annotation.ge,  # type: ignore[arg-type]
-                lt=field_annotation.lt,  # type: ignore[arg-type]
-                le=field_annotation.le,  # type: ignore[arg-type]
-                multiple_of=field_annotation.multiple_of,  # type: ignore[arg-type]
-                **kwargs,
-            )
-            field_definition_kwargs["raw"] = field_annotation
-            field_annotation = field_annotation.mro()[2]
-        elif issubclass(
-            field_annotation,
-            (pydantic_v1.ConstrainedList, pydantic_v1.ConstrainedSet, pydantic_v1.ConstrainedFrozenSet),  # pyright: ignore[reportArgumentType,reportAttributeAccessIssue]
-        ):
-            kwarg_definition = ParameterKwarg(
-                max_items=field_annotation.max_items, min_items=field_annotation.min_items, **kwargs
-            )
-            field_definition_kwargs["raw"] = field_annotation
-            # on < 3.9, these builtins are not generic
-            origin = get_safe_generic_origin(field_annotation.__origin__, field_annotation.__origin__)
-            field_annotation = origin[field_annotation.item_type]
-
-    if kwarg_definition is None and kwargs:
-        kwarg_definition = ParameterKwarg(**kwargs)
-
-    if kwarg_definition:
-        field_definition_kwargs["raw"] = field_annotation
-        field_annotation = Annotated[field_annotation, kwarg_definition]
-
-    return FieldDefinition.from_annotation(
-        annotation=field_annotation,
-        **field_definition_kwargs,
-    )
-
-
 def _create_field_definition_v2(  # noqa: C901
     field_annotation: Any,
     *,
-    field_info: pydantic_v2.fields.FieldInfo,  # pyright: ignore[reportInvalidTypeForm,reportGeneralTypeIssues]
+    field_info: pydantic.fields.FieldInfo,  # pyright: ignore[reportInvalidTypeForm,reportGeneralTypeIssues]
     **field_definition_kwargs: Any,
 ) -> FieldDefinition:
     kwargs: dict[str, Any] = {}
@@ -380,7 +191,7 @@ def _create_field_definition_v2(  # noqa: C901
         kwargs["title"] = title
 
     for meta in field_info.metadata:
-        if isinstance(meta, pydantic_v2.types.StringConstraints):  # pyright: ignore[reportAttributeAccessIssue]
+        if isinstance(meta, pydantic.types.StringConstraints):  # pyright: ignore[reportAttributeAccessIssue]
             kwargs["min_length"] = meta.min_length
             kwargs["max_length"] = meta.max_length
             kwargs["pattern"] = meta.pattern
@@ -414,7 +225,7 @@ def get_model_info(
     annotation: Any,
     prefer_alias: bool = False,
 ) -> PydanticModelInfo:
-    model: type[pydantic_v1.BaseModel | pydantic_v2.BaseModel]  # pyright: ignore[reportInvalidTypeForm,reportGeneralTypeIssues]
+    model: type[pydantic.BaseModel]  # pyright: ignore[reportInvalidTypeForm,reportGeneralTypeIssues]
 
     if is_generic(annotation):
         is_generic_model = True
@@ -423,41 +234,23 @@ def get_model_info(
         is_generic_model = False
         model = annotation
 
-    if is_pydantic_2_model(model):
-        model_config = model.model_config
-        model_field_info = model.model_fields
-        title = model_config.get("title")
-        example = model_config.get("example")
-        is_v2_model = True
-    else:
-        model_config = model.__config__  # type: ignore[assignment, union-attr]
-        model_field_info = model.__fields__  # type: ignore[assignment]
-        title = getattr(model_config, "title", None)
-        example = getattr(model_config, "example", None)
-        is_v2_model = False
+    model_config = model.model_config
+    model_field_info = model.model_fields
+    title = model_config.get("title")
+    example = model_config.get("example")
 
-    model_fields: dict[str, pydantic_v1.fields.FieldInfo | pydantic_v2.fields.FieldInfo] = {  # pyright: ignore[reportInvalidTypeForm,reportGeneralTypeIssues]
+    model_fields: dict[str, pydantic.fields.FieldInfo] = {  # pyright: ignore[reportInvalidTypeForm,reportGeneralTypeIssues]
         k: getattr(f, "field_info", f) for k, f in model_field_info.items()
     }
 
-    if is_v2_model:
-        # extract the annotations from the FieldInfo. This allows us to skip fields
-        # which have been marked as private
-        # if there's a default factory, we wrap the field in 'NotRequired', to signal
-        # that it is not required
-        model_annotations = {
-            k: NotRequired[field_info.annotation] if field_info.default_factory else field_info.annotation  # type: ignore[union-attr]
-            for k, field_info in model_fields.items()
-        }
-
-    else:
-        # pydantic v1 requires some workarounds here
-        model_annotations = {
-            k: f.outer_type_  # type: ignore[union-attr]
-            if f.required or f.default  # type: ignore[union-attr]
-            else (NotRequired[f.outer_type_] if f.default_factory else Optional[f.outer_type_])  # type: ignore[union-attr] # noqa: UP045
-            for k, f in model.__fields__.items()  # type: ignore[union-attr]
-        }
+    # extract the annotations from the FieldInfo. This allows us to skip fields
+    # which have been marked as private
+    # if there's a default factory, we wrap the field in 'NotRequired', to signal
+    # that it is not required
+    model_annotations = {
+        k: NotRequired[field_info.annotation] if field_info.default_factory else field_info.annotation  # type: ignore[union-attr]
+        for k, field_info in model_fields.items()
+    }
 
     if is_generic_model:
         # if the model is generic, resolve the type variables. We pass in the
@@ -467,12 +260,8 @@ def get_model_info(
             annotation, model_annotations=model_annotations, include_extras=True
         )
 
-    create_field_definition: _CreateFieldDefinition = (
-        _create_field_definition_v2 if is_v2_model else _create_field_definition_v1  # type: ignore[assignment]
-    )
-
     property_fields = {
-        field_info.alias if field_info.alias and prefer_alias else k: create_field_definition(
+        field_info.alias if field_info.alias and prefer_alias else k: _create_field_definition_v2(
             field_annotation=model_annotations[k],
             name=field_info.alias if field_info.alias and prefer_alias else k,
             default=Empty
@@ -490,7 +279,7 @@ def get_model_info(
     property_fields.update(computed_field_definitions)
 
     return PydanticModelInfo(
-        pydantic_version="2" if is_v2_model else "1",
+        pydantic_version="2",
         title=title,
         example=example,
         field_definitions=property_fields,
