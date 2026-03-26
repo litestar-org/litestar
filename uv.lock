@@ -1949,8 +1949,8 @@ dev = [
     { name = "litestar", extra = ["full"] },
     { name = "opentelemetry-sdk" },
     { name = "psutil" },
-    { name = "psycopg", version = "3.1.20", source = { registry = "https://pypi.org/simple" }, extra = ["binary", "pool"], marker = "python_full_version < '3.13'" },
-    { name = "psycopg", version = "3.2.3", source = { registry = "https://pypi.org/simple" }, extra = ["pool"], marker = "python_full_version >= '3.13'" },
+    { name = "psycopg", extra = ["binary"], marker = "python_full_version < '3.13'" },
+    { name = "psycopg", extra = ["pool"] },
     { name = "psycopg2-binary" },
     { name = "python-dotenv" },
     { name = "starlette" },
@@ -1961,8 +1961,8 @@ docs = [
     { name = "asyncpg" },
     { name = "auto-pytabs", extra = ["sphinx"] },
     { name = "litestar-sphinx-theme" },
-    { name = "psycopg", version = "3.1.20", source = { registry = "https://pypi.org/simple" }, extra = ["binary", "pool"], marker = "python_full_version < '3.13'" },
-    { name = "psycopg", version = "3.2.3", source = { registry = "https://pypi.org/simple" }, extra = ["pool"], marker = "python_full_version >= '3.13'" },
+    { name = "psycopg", extra = ["binary"], marker = "python_full_version < '3.13'" },
+    { name = "psycopg", extra = ["pool"] },
     { name = "sphinx" },
     { name = "sphinx-autobuild" },
     { name = "sphinx-click" },
@@ -2070,7 +2070,7 @@ docs = [
     { name = "asyncpg" },
     { name = "auto-pytabs", extras = ["sphinx"], specifier = ">=0.5.0" },
     { name = "litestar-sphinx-theme", git = "https://github.com/litestar-org/litestar-sphinx-theme.git?rev=v3" },
-    { name = "psycopg", extras = ["pool"], marker = "python_full_version >= '3.13'", specifier = "<3.2.4" },
+    { name = "psycopg", extras = ["pool"], marker = "python_full_version >= '3.13'", specifier = "<3.2" },
     { name = "psycopg", extras = ["pool", "binary"], marker = "python_full_version < '3.13'", specifier = ">=3.1.10,<3.2" },
     { name = "sphinx", specifier = ">=7.1.2,<9" },
     { name = "sphinx-autobuild", specifier = ">=2021.3.14" },
@@ -2895,13 +2895,9 @@ wheels = [
 name = "psycopg"
 version = "3.1.20"
 source = { registry = "https://pypi.org/simple" }
-resolution-markers = [
-    "python_full_version == '3.12.*'",
-    "python_full_version < '3.12'",
-]
 dependencies = [
-    { name = "typing-extensions", marker = "python_full_version < '3.13'" },
-    { name = "tzdata", marker = "python_full_version < '3.13' and sys_platform == 'win32'" },
+    { name = "typing-extensions" },
+    { name = "tzdata", marker = "sys_platform == 'win32'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/5c/6d/0939210f3ba089b360cf0d3741494719152567bc81303cca2c0f1e67c78a/psycopg-3.1.20.tar.gz", hash = "sha256:32f5862ab79f238496236f97fe374a7ab55b4b4bb839a74802026544735f9a07", size = 147567, upload-time = "2024-06-30T17:03:55.421Z" }
 wheels = [
@@ -2913,27 +2909,7 @@ binary = [
     { name = "psycopg-binary", marker = "python_full_version < '3.13' and implementation_name != 'pypy'" },
 ]
 pool = [
-    { name = "psycopg-pool", marker = "python_full_version < '3.13'" },
-]
-
-[[package]]
-name = "psycopg"
-version = "3.2.3"
-source = { registry = "https://pypi.org/simple" }
-resolution-markers = [
-    "python_full_version >= '3.13'",
-]
-dependencies = [
-    { name = "tzdata", marker = "python_full_version >= '3.13' and sys_platform == 'win32'" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/d1/ad/7ce016ae63e231575df0498d2395d15f005f05e32d3a2d439038e1bd0851/psycopg-3.2.3.tar.gz", hash = "sha256:a5764f67c27bec8bfac85764d23c534af2c27b893550377e37ce59c12aac47a2", size = 155550, upload-time = "2024-09-29T21:27:25.456Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/ce/21/534b8f5bd9734b7a2fcd3a16b1ee82ef6cad81a4796e95ebf4e0c6a24119/psycopg-3.2.3-py3-none-any.whl", hash = "sha256:644d3973fe26908c73d4be746074f6e5224b03c1101d302d9a53bf565ad64907", size = 197934, upload-time = "2024-09-29T21:21:19.623Z" },
-]
-
-[package.optional-dependencies]
-pool = [
-    { name = "psycopg-pool", marker = "python_full_version >= '3.13'" },
+    { name = "psycopg-pool" },
 ]
 
 [[package]]
