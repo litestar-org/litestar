@@ -92,7 +92,7 @@ jobs:
         python-version: ["3.11", "3.12", "3.13", "3.14"]
     uses: ./.github/workflows/test.yml
     with:
-      coverage: ${{ (matrix.python-version == '3.14' || matrix.python-version == '3.11') }}
+      coverage: true
       python-version: ${{ matrix.python-version }}
 
   # add an aggregate step here to check if any of the steps of the matrix 'test' job
