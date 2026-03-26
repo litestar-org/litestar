@@ -228,7 +228,7 @@ class AppConfig:
             self.allowed_hosts = AllowedHostsConfig(allowed_hosts=self.allowed_hosts)
 
 
-class ExperimentalFeatures(str, enum.Enum):
+class ExperimentalFeatures(enum.StrEnum):
     DTO_CODEGEN = "DTO_CODEGEN"
     """Enable DTO codegen."""
     FUTURE = "FUTURE"

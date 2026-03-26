@@ -1,7 +1,7 @@
 import sys
 from dataclasses import dataclass
 from datetime import UTC, date, datetime
-from enum import Enum, auto
+from enum import Enum, StrEnum, auto
 from typing import (
     TYPE_CHECKING,
     Annotated,
@@ -193,7 +193,7 @@ def test_dependency_schema_generation() -> None:
 
 
 def test_get_schema_for_annotation_enum() -> None:
-    class Opts(str, Enum):
+    class Opts(StrEnum):
         opt1 = "opt1"
         opt2 = "opt2"
 
@@ -520,7 +520,7 @@ def test_optional_enum() -> None:
 
 
 def test_optional_str_specified_enum() -> None:
-    class StringEnum(str, Enum):
+    class StringEnum(StrEnum):
         A = "a"
         B = "b"
 

@@ -1,4 +1,4 @@
-from enum import Enum
+from enum import StrEnum
 
 __all__ = (
     "CompressionEncoding",
@@ -11,7 +11,7 @@ __all__ = (
 )
 
 
-class HttpMethod(str, Enum):
+class HttpMethod(StrEnum):
     """An Enum for HTTP methods."""
 
     DELETE = "DELETE"
@@ -24,7 +24,7 @@ class HttpMethod(str, Enum):
     TRACE = "TRACE"
 
 
-class MediaType(str, Enum):
+class MediaType(StrEnum):
     """An Enum for ``Content-Type`` header values."""
 
     JSON = "application/json"
@@ -35,14 +35,14 @@ class MediaType(str, Enum):
     XML = "application/xml"
 
 
-class OpenAPIMediaType(str, Enum):
+class OpenAPIMediaType(StrEnum):
     """An Enum for OpenAPI specific response ``Content-Type`` header values."""
 
     OPENAPI_YAML = "application/vnd.oai.openapi"
     OPENAPI_JSON = "application/vnd.oai.openapi+json"
 
 
-class RequestEncodingType(str, Enum):
+class RequestEncodingType(StrEnum):
     """An Enum for request ``Content-Type`` header values designating encoding formats."""
 
     JSON = "application/json"
@@ -51,7 +51,7 @@ class RequestEncodingType(str, Enum):
     URL_ENCODED = "application/x-www-form-urlencoded"
 
 
-class ScopeType(str, Enum):
+class ScopeType(StrEnum):
     """An Enum for the 'http' key stored under Scope.
 
     Notes:
@@ -63,7 +63,7 @@ class ScopeType(str, Enum):
     ASGI = "asgi"
 
 
-class ParamType(str, Enum):
+class ParamType(StrEnum):
     """An Enum for the types of parameters a request can receive."""
 
     PATH = "path"
@@ -72,7 +72,7 @@ class ParamType(str, Enum):
     HEADER = "header"
 
 
-class CompressionEncoding(str, Enum):
+class CompressionEncoding(StrEnum):
     """An Enum for supported compression encodings."""
 
     GZIP = "gzip"
@@ -80,7 +80,7 @@ class CompressionEncoding(str, Enum):
     ZSTD = "zstd"
 
 
-class ASGIExtension(str, Enum):
+class ASGIExtension(StrEnum):
     """ASGI extension keys: https://asgi.readthedocs.io/en/latest/extensions.html"""
 
     WS_DENIAL = "websocket.http.response"

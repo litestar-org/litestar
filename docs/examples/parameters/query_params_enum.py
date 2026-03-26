@@ -1,11 +1,11 @@
-from enum import Enum
+from enum import StrEnum
 from typing import Annotated
 
 from litestar import Litestar, get
 from litestar.params import Parameter
 
 
-class MyEnum(str, Enum):
+class MyEnum(StrEnum):
     """My enum accepts two values"""
 
     A = "a"

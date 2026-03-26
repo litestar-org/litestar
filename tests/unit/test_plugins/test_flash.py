@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from enum import Enum
+from enum import Enum, StrEnum
 from pathlib import Path
 
 import pytest
@@ -25,13 +25,13 @@ text_html_mako = """<% messages = get_flashes() %>\\
 """
 
 
-class CustomCategory(str, Enum):
+class CustomCategory(StrEnum):
     custom1 = "1"
     custom2 = "2"
     custom3 = "3"
 
 
-class FlashCategory(str, Enum):
+class FlashCategory(StrEnum):
     info = "INFO"
     error = "ERROR"
     warning = "WARNING"

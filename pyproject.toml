@@ -494,6 +494,7 @@ known-first-party = ["litestar", "tests", "examples"]
   "TRY",
   "E721",
   "UP045",
+  "RUF043",
 ]
 "tests/unit/test_contrib/test_sqlalchemy/**/*.*" = ["UP006"]
 "tests/unit/test_openapi/test_typescript_converter/test_converter.py" = ["W293"]

@@ -512,7 +512,7 @@ def get_fsspec_mtime_equivalent(info: dict[str, Any]) -> float | None:
             return datetime.fromisoformat(mtime.replace("Z", "+00:00")).timestamp()
         except ValueError:
             try:
-                return datetime.strptime(mtime, "%a, %d %b %Y %H:%M:%S %Z").timestamp()
+                return datetime.strptime(mtime, "%a, %d %b %Y %H:%M:%S %Z").timestamp()  # noqa: DTZ007
             except ValueError:
                 pass
 
