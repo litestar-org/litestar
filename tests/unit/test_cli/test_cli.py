@@ -37,7 +37,7 @@ def test_info_command_with_app_dir(
     mocker: "MockerFixture", runner: "CliRunner", create_app_file: CreateAppFileFixture
 ) -> None:
     app_file = "main.py"
-    app_file_without_extension = app_file.split(".")[0]
+    app_file_without_extension = app_file.split(".", maxsplit=1)[0]
     create_app_file(
         file=app_file,
         directory="src",
@@ -58,7 +58,7 @@ def test_incorrect_app_argument(
     invalid_app: str, mocker: "MockerFixture", runner: "CliRunner", create_app_file: CreateAppFileFixture
 ) -> None:
     app_file = "main.py"
-    app_file_without_extension = app_file.split(".")[0]
+    app_file_without_extension = app_file.split(".", maxsplit=1)[0]
 
     create_app_file(
         file=app_file,
@@ -99,7 +99,7 @@ def test_help_option_with_app_dir(
     mocker: "MockerFixture", runner: "CliRunner", create_app_file: CreateAppFileFixture
 ) -> None:
     app_file = "main.py"
-    app_file_without_extension = app_file.split(".")[0]
+    app_file_without_extension = app_file.split(".", maxsplit=1)[0]
     create_app_file(
         file=app_file,
         directory="src",

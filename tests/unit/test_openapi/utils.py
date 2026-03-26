@@ -1,4 +1,4 @@
-from enum import Enum
+from enum import Enum, StrEnum
 
 from litestar.exceptions import HTTPException
 
@@ -7,7 +7,7 @@ class PetException(HTTPException):
     status_code = 406
 
 
-class Gender(str, Enum):
+class Gender(StrEnum):
     """Docstring description"""
 
     MALE = "M"

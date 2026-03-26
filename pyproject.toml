@@ -43,7 +43,7 @@ dependencies = [
   "typing-extensions",
   "click",
   "rich>=13.0.0",
-  "rich-click",
+  "rich-click<1.9",
   "multipart>=1.3.1",
   "sniffio>=1.3.1",
 ]
@@ -53,8 +53,7 @@ annotated-types = ["annotated-types"]
 attrs = ["attrs"]
 brotli = ["brotli"]
 zstd = [
-    # Only needed for <3.14, since >=3.14 ships with stdlib support
-    "zstandard>=0.24.0; python_version < '3.14'",
+    "zstandard>=0.24.0",
 ]
 cli = ["jsbeautifier", "uvicorn[standard]"]
 cryptography = ["cryptography"]
@@ -147,13 +146,13 @@ dev = [
   "psutil>=5.9.8",
   "hypercorn>=0.16.0",
   "daphne>=4.0.0",
-  "opentelemetry-sdk",
+  "opentelemetry-sdk<1.40.0",
   "httpx-sse",
   "structlog",
 ]
 
 docs = [
-  "sphinx>=7.1.2",
+  "sphinx>=7.1.2,<9",  # docs need some fixing for 9
   "sphinx-autobuild>=2021.3.14",
   "sphinx-copybutton>=0.5.2",
   "sphinx-toolbox>=3.5.0",
@@ -166,7 +165,7 @@ docs = [
   "litestar-sphinx-theme @ git+https://github.com/litestar-org/litestar-sphinx-theme.git@v3",
   "asyncpg",
   "psycopg[pool,binary]>=3.1.10,<3.2; python_version < \"3.13\"",
-  "psycopg[pool]<3.2.4; python_version >= \"3.13\"",  # Bug in 3.2.4: https://github.com/psycopg/psycopg/issues/1128
+  "psycopg[pool]<3.2; python_version >= \"3.13\"",  # Bug in 3.2.4: https://github.com/psycopg/psycopg/issues/1128
 ]
 linting = [
   "ruff>=0.11.5",
@@ -226,7 +225,6 @@ filterwarnings = [
   "ignore::DeprecationWarning:google",
   "ignore::DeprecationWarning:sphinxcontrib",
   "ignore::DeprecationWarning:litestar.*",
-  "ignore::pydantic.PydanticDeprecatedSince20::",
   "ignore:`general_plain_validator_function`:DeprecationWarning::",
   # this is coming from rich_click itself, nothing we can do about that for now:
   "ignore: 'RichMultiCommand':DeprecationWarning::",
@@ -393,7 +391,6 @@ lint.ignore = [
   "PLC0415", # `import` should be at the top-level of a file
   "PLW1641", # Object does not implement `__hash__` method
   "SIM103",  # 'Return the condition directly': This is a bit overzealous
-  "UP038",   # Use `X | Y` in `isinstance` call instead of `(X, Y)`
   "UP007",   # Use `X | Y` for type annotations
   "RET504"   # Unnecessary assignment before `return` statement
 ]
@@ -495,6 +492,7 @@ known-first-party = ["litestar", "tests", "examples"]
   "TRY",
   "E721",
   "UP045",
+  "RUF043",
 ]
 "tests/unit/test_contrib/test_sqlalchemy/**/*.*" = ["UP006"]
 "tests/unit/test_openapi/test_typescript_converter/test_converter.py" = ["W293"]

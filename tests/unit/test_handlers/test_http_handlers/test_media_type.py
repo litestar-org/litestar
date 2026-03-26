@@ -1,4 +1,4 @@
-from enum import Enum
+from enum import Enum, StrEnum
 from typing import Any, AnyStr
 
 import pytest
@@ -14,7 +14,7 @@ class MyEnum(Enum):
 class MyBytes(bytes): ...
 
 
-class CustomStrEnum(str, Enum):
+class CustomStrEnum(StrEnum):
     foo = "FOO"
 
 

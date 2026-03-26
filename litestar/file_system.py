@@ -508,6 +508,12 @@ def get_fsspec_mtime_equivalent(info: dict[str, Any]) -> float | None:
     if isinstance(mtime, datetime):
         return mtime.timestamp()
     if isinstance(mtime, str):
-        return datetime.fromisoformat(mtime.replace("Z", "+00:00")).timestamp()
+        try:
+            return datetime.fromisoformat(mtime.replace("Z", "+00:00")).timestamp()
+        except ValueError:
+            try:
+                return datetime.strptime(mtime, "%a, %d %b %Y %H:%M:%S %Z").timestamp()  # noqa: DTZ007
+            except ValueError:
+                pass
 
-    raise ValueError(f"Unsupported mtime-type value type {type(mtime)!r}")
+    raise ValueError(f"Unsupported mtime-type value type or value {mtime!r}")

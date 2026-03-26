@@ -1,4 +1,4 @@
-from enum import Enum
+from enum import StrEnum
 from os import environ
 
 from pydantic import UUID4, BaseModel
@@ -9,7 +9,7 @@ from litestar.exceptions import NotAuthorizedException
 from litestar.handlers.base import BaseRouteHandler
 
 
-class UserRole(str, Enum):
+class UserRole(StrEnum):
     CONSUMER = "consumer"
     ADMIN = "admin"
 

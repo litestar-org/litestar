@@ -10,6 +10,7 @@ from typing import Any
 import pydantic as pydantic_v2
 import pytest
 from pydantic_extra_types.color import Color as ColorV2
+from pydantic_extra_types.payment import PaymentCardNumber
 
 from litestar.exceptions import SerializationException
 from litestar.plugins.pydantic import PydanticInitPlugin, _model_dump, _model_dump_json
@@ -75,7 +76,7 @@ class ModelV2(pydantic_v2.BaseModel):
     bytesize: pydantic_v2.ByteSize
     secret_str: pydantic_v2.SecretStr
     secret_bytes: pydantic_v2.SecretBytes
-    payment_card_number: pydantic_v2.PaymentCardNumber
+    payment_card_number: PaymentCardNumber
 
     constr: pydantic_v2.constr(min_length=1)  # type: ignore[valid-type]
     conbytes: pydantic_v2.conbytes(min_length=1)  # type: ignore[valid-type]
@@ -108,13 +109,13 @@ def model_type(pydantic_version: PydanticVersion) -> type[ModelV2]:
 def model(pydantic_version: PydanticVersion) -> ModelV2:
     return ModelV2(
         path=Path("example"),
-        email_str=pydantic_v2.parse_obj_as(pydantic_v2.EmailStr, "info@example.org"),  # pyright: ignore[reportArgumentType]
+        email_str=pydantic_v2.TypeAdapter(pydantic_v2.EmailStr).validate_python("info@example.org"),
         name_email=pydantic_v2.NameEmail("info", "info@example.org"),
         color=ColorV2("rgb(255, 255, 255)"),
         bytesize=pydantic_v2.ByteSize(100),
         secret_str=pydantic_v2.SecretStr("hello"),
         secret_bytes=pydantic_v2.SecretBytes(b"hello"),
-        payment_card_number=pydantic_v2.PaymentCardNumber("4000000000000002"),
+        payment_card_number=PaymentCardNumber("4000000000000002"),
         constr="hello",
         conbytes=b"hello",
         condate=TODAY,
@@ -210,6 +211,6 @@ def test_decode_msgpack_typed(model: ModelV2, model_type: type[ModelV2], prefer_
             encode_msgpack(model, serializer=get_serializer(PydanticInitPlugin.encoders(prefer_alias=prefer_alias))),
             model_type,
             type_decoders=PydanticInitPlugin.decoders(),
-        ).json()
+        ).model_dump_json()
         == model_json
     )

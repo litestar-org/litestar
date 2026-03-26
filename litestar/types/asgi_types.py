@@ -36,6 +36,7 @@ from typing import (
     TYPE_CHECKING,
     Any,
     Literal,
+    NotRequired,
     TypedDict,
     Union,
 )
@@ -161,6 +162,8 @@ class LifeSpanScope(TypedDict):
     app: Litestar
     asgi: ASGIVersion
     type: Literal["lifespan"]
+    litestar_app: NotRequired[Litestar]
+    state: NotRequired[dict[str, Any]]
 
 
 class HTTPRequestEvent(TypedDict):

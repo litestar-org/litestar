@@ -1,5 +1,5 @@
 import dataclasses
-from enum import Enum
+from enum import StrEnum
 from typing import NotRequired, Optional, Required
 from uuid import UUID
 
@@ -8,7 +8,7 @@ from polyfactory.factories import DataclassFactory
 from typing_extensions import ReadOnly, TypedDict
 
 
-class Species(str, Enum):
+class Species(StrEnum):
     DOG = "Dog"
     CAT = "Cat"
     MONKEY = "Monkey"
