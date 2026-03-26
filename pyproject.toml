@@ -152,7 +152,7 @@ dev = [
 ]
 
 docs = [
-  "sphinx>=7.1.2",
+  "sphinx>=7.1.2,<9",  # docs need some fixing for 9
   "sphinx-autobuild>=2021.3.14",
   "sphinx-copybutton>=0.5.2",
   "sphinx-toolbox>=3.5.0",
