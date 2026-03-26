@@ -511,6 +511,14 @@ data-aria-dark="Switch to auto color mode">
 <strong>Released: </strong>2364-01-27<section id="3.0.0-feature">
 <h3>Features<a class="headerlink" href="#3.0.0-feature" title="Link to this heading">¶</a></h3>
 <dl>
+<dt>Drop support for Pydantic 1<a class="headerlink reference internal" href="#3.0.0-drop support for pydantic 1" id="3.0.0-drop support for pydantic 1">#</a><span class="breaking-change">breaking</span></dt><dd><div class="changelog-change docutils container">
+<p>Drop support for Pydantic 1.</p>
+<p>Pydantic 1 is no longer supported or tested against. No changes required for
+applications already using Pydantic 2. Applications using Pydantic 1 or a mix
+between 1 and 2 should upgrade to Pydantic 2.</p>
+<p>References: </p>
+</div>
+</dd>
 <dt>Remove logging config and related constructs<a class="headerlink reference internal" href="#3.0.0-remove logging config and related constructs" id="3.0.0-remove logging config and related constructs">#</a><span class="breaking-change">breaking</span></dt><dd><div class="changelog-change docutils container">
 <p>Remove Litestar’s logging configuration, and related modules. In particular,
 the following have been removed:</p>

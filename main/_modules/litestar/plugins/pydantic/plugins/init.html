@@ -509,309 +509,174 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">contextlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">suppress</span>
 </span><span data-line="4"><span class="kn">from</span><span class="w"> </span><span class="nn">functools</span><span class="w"> </span><span class="kn">import</span> <span class="n">partial</span>
 </span><span data-line="5"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">TypeGuard</span><span class="p">,</span> <span class="n">TypeVar</span><span class="p">,</span> <span class="n">cast</span>
-</span><span data-line="6"><span class="kn">from</span><span class="w"> </span><span class="nn">uuid</span><span class="w"> </span><span class="kn">import</span> <span class="n">UUID</span>
-</span><span data-line="7">
-</span><span data-line="8"><span class="kn">from</span><span class="w"> </span><span class="nn">msgspec</span><span class="w"> </span><span class="kn">import</span> <span class="n">ValidationError</span>
-</span><span data-line="9"><span class="kn">from</span><span class="w"> </span><span class="nn">typing_extensions</span><span class="w"> </span><span class="kn">import</span> <span class="n">Buffer</span>
-</span><span data-line="10">
-</span><span data-line="11"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar._signature.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">ExtendedMsgSpecValidationError</span>
-</span><span data-line="12"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">MissingDependencyException</span>
-</span><span data-line="13"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.plugins</span><span class="w"> </span><span class="kn">import</span> <span class="n">InitPlugin</span>
-</span><span data-line="14"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.plugins.pydantic.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">is_pydantic_v2</span>
-</span><span data-line="15"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">is_class_and_subclass</span>
-</span><span data-line="16">
-</span><span data-line="17"><span class="k">try</span><span class="p">:</span>
-</span><span data-line="18">    <span class="kn">import</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">_</span>  <span class="c1"># noqa: F401</span>
-</span><span data-line="19"><span class="k">except</span> <span class="ne">ImportError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-</span><span data-line="20">    <span class="k">raise</span> <span class="n">MissingDependencyException</span><span class="p">(</span><span class="s2">&quot;pydantic&quot;</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
+</span><span data-line="6">
+</span><span data-line="7"><span class="kn">import</span><span class="w"> </span><span class="nn">pydantic</span>
+</span><span data-line="8">
+</span><span data-line="9"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar._signature.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">ExtendedMsgSpecValidationError</span>
+</span><span data-line="10"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.plugins</span><span class="w"> </span><span class="kn">import</span> <span class="n">InitPlugin</span>
+</span><span data-line="11"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">is_class_and_subclass</span>
+</span><span data-line="12">
+</span><span data-line="13"><span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+</span><span data-line="14">    <span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Callable</span>
+</span><span data-line="15">
+</span><span data-line="16">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.config.app</span><span class="w"> </span><span class="kn">import</span> <span class="n">AppConfig</span>
+</span><span data-line="17">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.plugins.pydantic.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">PydanticV2FieldsListType</span>
+</span><span data-line="18">
+</span><span data-line="19"><span class="n">T</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;T&quot;</span><span class="p">)</span>
+</span><span data-line="20">
 </span><span data-line="21">
-</span><span data-line="22"><span class="k">try</span><span class="p">:</span>
-</span><span data-line="23">    <span class="kn">import</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pydantic_v2</span>
-</span><span data-line="24">
-</span><span data-line="25">    <span class="k">if</span> <span class="ow">not</span> <span class="n">is_pydantic_v2</span><span class="p">(</span><span class="n">pydantic_v2</span><span class="p">):</span>
-</span><span data-line="26">        <span class="k">raise</span> <span class="ne">ImportError</span>
-</span><span data-line="27">
-</span><span data-line="28">    <span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">v1</span> <span class="k">as</span> <span class="n">pydantic_v1</span>
-</span><span data-line="29"><span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
-</span><span data-line="30">    <span class="kn">import</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pydantic_v1</span>  <span class="c1"># type: ignore[no-redef]</span>
+</span><span data-line="22"><span class="k">def</span><span class="w"> </span><span class="nf">_dec_pydantic_v2</span><span class="p">(</span><span class="n">model_type</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">pydantic</span><span class="o">.</span><span class="n">BaseModel</span><span class="p">],</span> <span class="n">value</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">strict</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">BaseModel</span><span class="p">:</span>
+</span><span data-line="23">    <span class="k">try</span><span class="p">:</span>
+</span><span data-line="24">        <span class="k">return</span> <span class="n">model_type</span><span class="o">.</span><span class="n">model_validate</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="n">strict</span><span class="p">)</span>
+</span><span data-line="25">    <span class="k">except</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">ValidationError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+</span><span data-line="26">        <span class="n">hide_input</span> <span class="o">=</span> <span class="n">model_type</span><span class="o">.</span><span class="n">model_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;hide_input_in_errors&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+</span><span data-line="27">        <span class="k">raise</span> <span class="n">ExtendedMsgSpecValidationError</span><span class="p">(</span>
+</span><span data-line="28">            <span class="n">errors</span><span class="o">=</span><span class="n">cast</span><span class="p">(</span><span class="s2">&quot;list[dict[str, Any]]&quot;</span><span class="p">,</span> <span class="n">e</span><span class="o">.</span><span class="n">errors</span><span class="p">(</span><span class="n">include_input</span><span class="o">=</span><span class="ow">not</span> <span class="n">hide_input</span><span class="p">))</span>
+</span><span data-line="29">        <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
+</span><span data-line="30">
 </span><span data-line="31">
-</span><span data-line="32">    <span class="n">pydantic_v2</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># type: ignore[assignment]</span>
-</span><span data-line="33">
-</span><span data-line="34">
-</span><span data-line="35"><span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
-</span><span data-line="36">    <span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Callable</span>
+</span><span data-line="32"><span class="n">_base_encoders</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Any</span><span class="p">],</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{</span>
+</span><span data-line="33">    <span class="n">pydantic</span><span class="o">.</span><span class="n">EmailStr</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+</span><span data-line="34">    <span class="n">pydantic</span><span class="o">.</span><span class="n">NameEmail</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+</span><span data-line="35">    <span class="n">pydantic</span><span class="o">.</span><span class="n">ByteSize</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">val</span><span class="p">:</span> <span class="n">val</span><span class="o">.</span><span class="n">real</span><span class="p">,</span>
+</span><span data-line="36"><span class="p">}</span>
 </span><span data-line="37">
-</span><span data-line="38">    <span class="kn">import</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pydantic_v2_mandatory</span>
-</span><span data-line="39">
-</span><span data-line="40">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.config.app</span><span class="w"> </span><span class="kn">import</span> <span class="n">AppConfig</span>
-</span><span data-line="41">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.types.serialization</span><span class="w"> </span><span class="kn">import</span> <span class="n">PydanticV1FieldsListType</span><span class="p">,</span> <span class="n">PydanticV2FieldsListType</span>
-</span><span data-line="42"><span class="k">else</span><span class="p">:</span>
-</span><span data-line="43">    <span class="n">pydantic_v2_mandatory</span> <span class="o">=</span> <span class="n">pydantic_v2</span>
-</span><span data-line="44">
-</span><span data-line="45">
-</span><span data-line="46"><span class="n">T</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;T&quot;</span><span class="p">)</span>
-</span><span data-line="47">
-</span><span data-line="48">
-</span><span data-line="49"><span class="k">def</span><span class="w"> </span><span class="nf">_dec_pydantic_v1</span><span class="p">(</span><span class="n">model_type</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">pydantic_v1</span><span class="o">.</span><span class="n">BaseModel</span><span class="p">],</span> <span class="n">value</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pydantic_v1</span><span class="o">.</span><span class="n">BaseModel</span><span class="p">:</span>
-</span><span data-line="50">    <span class="k">try</span><span class="p">:</span>
-</span><span data-line="51">        <span class="k">return</span> <span class="n">model_type</span><span class="o">.</span><span class="n">parse_obj</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
-</span><span data-line="52">    <span class="k">except</span> <span class="n">pydantic_v1</span><span class="o">.</span><span class="n">ValidationError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-</span><span data-line="53">        <span class="k">raise</span> <span class="n">ExtendedMsgSpecValidationError</span><span class="p">(</span><span class="n">errors</span><span class="o">=</span><span class="n">cast</span><span class="p">(</span><span class="s2">&quot;list[dict[str, Any]]&quot;</span><span class="p">,</span> <span class="n">e</span><span class="o">.</span><span class="n">errors</span><span class="p">()))</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
-</span><span data-line="54">
-</span><span data-line="55">
-</span><span data-line="56"><span class="k">def</span><span class="w"> </span><span class="nf">_dec_pydantic_v2</span><span class="p">(</span>
-</span><span data-line="57">    <span class="n">model_type</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">pydantic_v2_mandatory</span><span class="o">.</span><span class="n">BaseModel</span><span class="p">],</span> <span class="n">value</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">strict</span><span class="p">:</span> <span class="nb">bool</span>
-</span><span data-line="58"><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pydantic_v2_mandatory</span><span class="o">.</span><span class="n">BaseModel</span><span class="p">:</span>
-</span><span data-line="59">    <span class="k">try</span><span class="p">:</span>
-</span><span data-line="60">        <span class="k">return</span> <span class="n">model_type</span><span class="o">.</span><span class="n">model_validate</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="n">strict</span><span class="p">)</span>
-</span><span data-line="61">    <span class="k">except</span> <span class="n">pydantic_v2_mandatory</span><span class="o">.</span><span class="n">ValidationError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-</span><span data-line="62">        <span class="n">hide_input</span> <span class="o">=</span> <span class="n">model_type</span><span class="o">.</span><span class="n">model_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;hide_input_in_errors&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
-</span><span data-line="63">        <span class="k">raise</span> <span class="n">ExtendedMsgSpecValidationError</span><span class="p">(</span>
-</span><span data-line="64">            <span class="n">errors</span><span class="o">=</span><span class="n">cast</span><span class="p">(</span><span class="s2">&quot;list[dict[str, Any]]&quot;</span><span class="p">,</span> <span class="n">e</span><span class="o">.</span><span class="n">errors</span><span class="p">(</span><span class="n">include_input</span><span class="o">=</span><span class="ow">not</span> <span class="n">hide_input</span><span class="p">))</span>
-</span><span data-line="65">        <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
-</span><span data-line="66">
-</span><span data-line="67">
-</span><span data-line="68"><span class="k">def</span><span class="w"> </span><span class="nf">_dec_pydantic_uuid</span><span class="p">(</span>
-</span><span data-line="69">    <span class="n">uuid_type</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">pydantic_v1</span><span class="o">.</span><span class="n">UUID1</span><span class="p">]</span> <span class="o">|</span> <span class="nb">type</span><span class="p">[</span><span class="n">pydantic_v1</span><span class="o">.</span><span class="n">UUID3</span><span class="p">]</span> <span class="o">|</span> <span class="nb">type</span><span class="p">[</span><span class="n">pydantic_v1</span><span class="o">.</span><span class="n">UUID4</span><span class="p">]</span> <span class="o">|</span> <span class="nb">type</span><span class="p">[</span><span class="n">pydantic_v1</span><span class="o">.</span><span class="n">UUID5</span><span class="p">],</span>
-</span><span data-line="70">    <span class="n">value</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
-</span><span data-line="71"><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pydantic_v1</span><span class="o">.</span><span class="n">UUID1</span> <span class="o">|</span> <span class="n">pydantic_v1</span><span class="o">.</span><span class="n">UUID3</span> <span class="o">|</span> <span class="n">pydantic_v1</span><span class="o">.</span><span class="n">UUID4</span> <span class="o">|</span> <span class="n">pydantic_v1</span><span class="o">.</span><span class="n">UUID5</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
-</span><span data-line="72">    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-</span><span data-line="73">        <span class="n">value</span> <span class="o">=</span> <span class="n">uuid_type</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
-</span><span data-line="74">
-</span><span data-line="75">    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">Buffer</span><span class="p">):</span>
-</span><span data-line="76">        <span class="n">value</span> <span class="o">=</span> <span class="nb">bytes</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
-</span><span data-line="77">        <span class="k">try</span><span class="p">:</span>
-</span><span data-line="78">            <span class="n">value</span> <span class="o">=</span> <span class="n">uuid_type</span><span class="p">(</span><span class="n">value</span><span class="o">.</span><span class="n">decode</span><span class="p">())</span>
-</span><span data-line="79">        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
-</span><span data-line="80">            <span class="c1"># 16 bytes in big-endian order as the bytes argument fail</span>
-</span><span data-line="81">            <span class="c1"># the above check</span>
-</span><span data-line="82">            <span class="n">value</span> <span class="o">=</span> <span class="n">uuid_type</span><span class="p">(</span><span class="nb">bytes</span><span class="o">=</span><span class="n">value</span><span class="p">)</span>
-</span><span data-line="83">    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">UUID</span><span class="p">):</span>
-</span><span data-line="84">        <span class="n">value</span> <span class="o">=</span> <span class="n">uuid_type</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
-</span><span data-line="85">
-</span><span data-line="86">    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">uuid_type</span><span class="p">):</span>
-</span><span data-line="87">        <span class="k">raise</span> <span class="n">ValidationError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid UUID: </span><span class="si">{</span><span class="n">value</span><span class="si">!r}</span><span class="s2">&quot;</span><span class="p">)</span>
-</span><span data-line="88">
-</span><span data-line="89">    <span class="k">if</span> <span class="n">value</span><span class="o">.</span><span class="n">_required_version</span> <span class="o">!=</span> <span class="n">value</span><span class="o">.</span><span class="n">version</span><span class="p">:</span>  <span class="c1"># pyright: ignore[reportAttributeAccessIssue]</span>
-</span><span data-line="90">        <span class="k">raise</span> <span class="n">ValidationError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid UUID version: </span><span class="si">{</span><span class="n">value</span><span class="si">!r}</span><span class="s2">&quot;</span><span class="p">)</span>
-</span><span data-line="91">
-</span><span data-line="92">    <span class="k">return</span> <span class="n">cast</span><span class="p">(</span><span class="s2">&quot;pydantic_v1.UUID1 | pydantic_v1.UUID3 | pydantic_v1.UUID4 | pydantic_v1.UUID5&quot;</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
-</span><span data-line="93">
-</span><span data-line="94">
-</span><span data-line="95"><span class="k">def</span><span class="w"> </span><span class="nf">_is_pydantic_v1_uuid</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
-</span><span data-line="96">    <span class="k">return</span> <span class="n">is_class_and_subclass</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="p">(</span><span class="n">pydantic_v1</span><span class="o">.</span><span class="n">UUID1</span><span class="p">,</span> <span class="n">pydantic_v1</span><span class="o">.</span><span class="n">UUID3</span><span class="p">,</span> <span class="n">pydantic_v1</span><span class="o">.</span><span class="n">UUID4</span><span class="p">,</span> <span class="n">pydantic_v1</span><span class="o">.</span><span class="n">UUID5</span><span class="p">))</span>
-</span><span data-line="97">
-</span><span data-line="98">
-</span><span data-line="99"><span class="n">_base_encoders</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Any</span><span class="p">],</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{</span>
-</span><span data-line="100">    <span class="n">pydantic_v1</span><span class="o">.</span><span class="n">EmailStr</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-</span><span data-line="101">    <span class="n">pydantic_v1</span><span class="o">.</span><span class="n">NameEmail</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-</span><span data-line="102">    <span class="n">pydantic_v1</span><span class="o">.</span><span class="n">ByteSize</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">val</span><span class="p">:</span> <span class="n">val</span><span class="o">.</span><span class="n">real</span><span class="p">,</span>
-</span><span data-line="103"><span class="p">}</span>
-</span><span data-line="104">
-</span><span data-line="105"><span class="k">if</span> <span class="n">pydantic_v2</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
-</span><span data-line="106">    <span class="n">_base_encoders</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
-</span><span data-line="107">        <span class="p">{</span>
-</span><span data-line="108">            <span class="n">pydantic_v2</span><span class="o">.</span><span class="n">EmailStr</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-</span><span data-line="109">            <span class="n">pydantic_v2</span><span class="o">.</span><span class="n">NameEmail</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-</span><span data-line="110">            <span class="n">pydantic_v2</span><span class="o">.</span><span class="n">ByteSize</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">val</span><span class="p">:</span> <span class="n">val</span><span class="o">.</span><span class="n">real</span><span class="p">,</span>
-</span><span data-line="111">        <span class="p">}</span>
-</span><span data-line="112">    <span class="p">)</span>
-</span><span data-line="113">
-</span><span data-line="114">
-</span><span data-line="115"><span class="k">def</span><span class="w"> </span><span class="nf">is_pydantic_v1_model_class</span><span class="p">(</span><span class="n">annotation</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TypeGuard</span><span class="p">[</span><span class="nb">type</span><span class="p">[</span><span class="n">pydantic_v1</span><span class="o">.</span><span class="n">BaseModel</span><span class="p">]]:</span>
-</span><span data-line="116">    <span class="k">return</span> <span class="n">is_class_and_subclass</span><span class="p">(</span><span class="n">annotation</span><span class="p">,</span> <span class="n">pydantic_v1</span><span class="o">.</span><span class="n">BaseModel</span><span class="p">)</span>
-</span><span data-line="117">
-</span><span data-line="118">
-</span><span data-line="119"><span class="k">def</span><span class="w"> </span><span class="nf">is_pydantic_v2_model_class</span><span class="p">(</span><span class="n">annotation</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TypeGuard</span><span class="p">[</span><span class="nb">type</span><span class="p">[</span><span class="n">pydantic_v2</span><span class="o">.</span><span class="n">BaseModel</span><span class="p">]]:</span>  <span class="c1"># pyright: ignore[reportInvalidTypeForm]</span>
-</span><span data-line="120">    <span class="k">return</span> <span class="n">is_class_and_subclass</span><span class="p">(</span><span class="n">annotation</span><span class="p">,</span> <span class="n">pydantic_v2</span><span class="o">.</span><span class="n">BaseModel</span><span class="p">)</span>  <span class="c1"># pyright: ignore[reportOptionalMemberAccess]</span>
-</span><span data-line="121">
-</span><span data-line="122">
+</span><span data-line="38">
+</span><span data-line="39"><span class="k">def</span><span class="w"> </span><span class="nf">is_pydantic_v2_model_class</span><span class="p">(</span><span class="n">annotation</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TypeGuard</span><span class="p">[</span><span class="nb">type</span><span class="p">[</span><span class="n">pydantic</span><span class="o">.</span><span class="n">BaseModel</span><span class="p">]]:</span>  <span class="c1"># pyright: ignore[reportInvalidTypeForm]</span>
+</span><span data-line="40">    <span class="k">return</span> <span class="n">is_class_and_subclass</span><span class="p">(</span><span class="n">annotation</span><span class="p">,</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">BaseModel</span><span class="p">)</span>  <span class="c1"># pyright: ignore[reportOptionalMemberAccess]</span>
+</span><span data-line="41">
+</span><span data-line="42">
 <div class="viewcode-block" id="PydanticInitPlugin">
 <a class="viewcode-back" href="../../../../../reference/plugins/pydantic.html#litestar.plugins.pydantic.PydanticInitPlugin">[docs]</a>
-</span><span data-line="123"><span class="k">class</span><span class="w"> </span><span class="nc">PydanticInitPlugin</span><span class="p">(</span><span class="n">InitPlugin</span><span class="p">):</span>
-</span><span data-line="124">    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span>
-</span><span data-line="125">        <span class="s2">&quot;exclude&quot;</span><span class="p">,</span>
-</span><span data-line="126">        <span class="s2">&quot;exclude_defaults&quot;</span><span class="p">,</span>
-</span><span data-line="127">        <span class="s2">&quot;exclude_none&quot;</span><span class="p">,</span>
-</span><span data-line="128">        <span class="s2">&quot;exclude_unset&quot;</span><span class="p">,</span>
-</span><span data-line="129">        <span class="s2">&quot;include&quot;</span><span class="p">,</span>
-</span><span data-line="130">        <span class="s2">&quot;prefer_alias&quot;</span><span class="p">,</span>
-</span><span data-line="131">        <span class="s2">&quot;round_trip&quot;</span><span class="p">,</span>
-</span><span data-line="132">        <span class="s2">&quot;validate_strict&quot;</span><span class="p">,</span>
-</span><span data-line="133">    <span class="p">)</span>
-</span><span data-line="134">
+</span><span data-line="43"><span class="k">class</span><span class="w"> </span><span class="nc">PydanticInitPlugin</span><span class="p">(</span><span class="n">InitPlugin</span><span class="p">):</span>
+</span><span data-line="44">    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span>
+</span><span data-line="45">        <span class="s2">&quot;exclude&quot;</span><span class="p">,</span>
+</span><span data-line="46">        <span class="s2">&quot;exclude_defaults&quot;</span><span class="p">,</span>
+</span><span data-line="47">        <span class="s2">&quot;exclude_none&quot;</span><span class="p">,</span>
+</span><span data-line="48">        <span class="s2">&quot;exclude_unset&quot;</span><span class="p">,</span>
+</span><span data-line="49">        <span class="s2">&quot;include&quot;</span><span class="p">,</span>
+</span><span data-line="50">        <span class="s2">&quot;prefer_alias&quot;</span><span class="p">,</span>
+</span><span data-line="51">        <span class="s2">&quot;round_trip&quot;</span><span class="p">,</span>
+</span><span data-line="52">        <span class="s2">&quot;validate_strict&quot;</span><span class="p">,</span>
+</span><span data-line="53">    <span class="p">)</span>
+</span><span data-line="54">
 <div class="viewcode-block" id="PydanticInitPlugin.__init__">
 <a class="viewcode-back" href="../../../../../reference/plugins/pydantic.html#litestar.plugins.pydantic.PydanticInitPlugin.__init__">[docs]</a>
-</span><span data-line="135">    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
-</span><span data-line="136">        <span class="bp">self</span><span class="p">,</span>
-</span><span data-line="137">        <span class="n">exclude</span><span class="p">:</span> <span class="n">PydanticV1FieldsListType</span> <span class="o">|</span> <span class="n">PydanticV2FieldsListType</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="138">        <span class="n">exclude_defaults</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-</span><span data-line="139">        <span class="n">exclude_none</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-</span><span data-line="140">        <span class="n">exclude_unset</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-</span><span data-line="141">        <span class="n">include</span><span class="p">:</span> <span class="n">PydanticV1FieldsListType</span> <span class="o">|</span> <span class="n">PydanticV2FieldsListType</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="142">        <span class="n">prefer_alias</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-</span><span data-line="143">        <span class="n">validate_strict</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-</span><span data-line="144">        <span class="n">round_trip</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-</span><span data-line="145">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="146"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Pydantic Plugin to support serialization / validation of Pydantic types / models</span>
-</span><span data-line="147">
-</span><span data-line="148"><span class="sd">        :param exclude: Fields to exclude during serialization</span>
-</span><span data-line="149"><span class="sd">        :param exclude_defaults: Fields to exclude during serialization when they are set to their default value</span>
-</span><span data-line="150"><span class="sd">        :param exclude_none: Fields to exclude during serialization when they are set to ``None``</span>
-</span><span data-line="151"><span class="sd">        :param exclude_unset: Fields to exclude during serialization when they arenot set</span>
-</span><span data-line="152"><span class="sd">        :param include: Fields to exclude during serialization</span>
-</span><span data-line="153"><span class="sd">        :param prefer_alias: Use the ``by_alias=True`` flag when dumping models</span>
-</span><span data-line="154"><span class="sd">        :param validate_strict: Use ``strict=True`` when calling ``.model_validate`` on Pydantic 2.x models</span>
-</span><span data-line="155"><span class="sd">        :param round_trip: use ``round_trip=True`` when calling ``.model_dump``</span>
-</span><span data-line="156"><span class="sd">          and ``.model_dump_json`` on Pydantic 2.x models</span>
-</span><span data-line="157"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="158">        <span class="bp">self</span><span class="o">.</span><span class="n">exclude</span> <span class="o">=</span> <span class="n">exclude</span>
-</span><span data-line="159">        <span class="bp">self</span><span class="o">.</span><span class="n">exclude_defaults</span> <span class="o">=</span> <span class="n">exclude_defaults</span>
-</span><span data-line="160">        <span class="bp">self</span><span class="o">.</span><span class="n">exclude_none</span> <span class="o">=</span> <span class="n">exclude_none</span>
-</span><span data-line="161">        <span class="bp">self</span><span class="o">.</span><span class="n">exclude_unset</span> <span class="o">=</span> <span class="n">exclude_unset</span>
-</span><span data-line="162">        <span class="bp">self</span><span class="o">.</span><span class="n">include</span> <span class="o">=</span> <span class="n">include</span>
-</span><span data-line="163">        <span class="bp">self</span><span class="o">.</span><span class="n">prefer_alias</span> <span class="o">=</span> <span class="n">prefer_alias</span>
-</span><span data-line="164">        <span class="bp">self</span><span class="o">.</span><span class="n">validate_strict</span> <span class="o">=</span> <span class="n">validate_strict</span>
-</span><span data-line="165">        <span class="bp">self</span><span class="o">.</span><span class="n">round_trip</span> <span class="o">=</span> <span class="n">round_trip</span></div>
+</span><span data-line="55">    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+</span><span data-line="56">        <span class="bp">self</span><span class="p">,</span>
+</span><span data-line="57">        <span class="n">exclude</span><span class="p">:</span> <span class="n">PydanticV2FieldsListType</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="58">        <span class="n">exclude_defaults</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+</span><span data-line="59">        <span class="n">exclude_none</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+</span><span data-line="60">        <span class="n">exclude_unset</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+</span><span data-line="61">        <span class="n">include</span><span class="p">:</span> <span class="n">PydanticV2FieldsListType</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="62">        <span class="n">prefer_alias</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+</span><span data-line="63">        <span class="n">validate_strict</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+</span><span data-line="64">        <span class="n">round_trip</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+</span><span data-line="65">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="66"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Pydantic Plugin to support serialization / validation of Pydantic types / models</span>
+</span><span data-line="67">
+</span><span data-line="68"><span class="sd">        :param exclude: Fields to exclude during serialization</span>
+</span><span data-line="69"><span class="sd">        :param exclude_defaults: Fields to exclude during serialization when they are set to their default value</span>
+</span><span data-line="70"><span class="sd">        :param exclude_none: Fields to exclude during serialization when they are set to ``None``</span>
+</span><span data-line="71"><span class="sd">        :param exclude_unset: Fields to exclude during serialization when they arenot set</span>
+</span><span data-line="72"><span class="sd">        :param include: Fields to exclude during serialization</span>
+</span><span data-line="73"><span class="sd">        :param prefer_alias: Use the ``by_alias=True`` flag when dumping models</span>
+</span><span data-line="74"><span class="sd">        :param validate_strict: Use ``strict=True`` when calling ``.model_validate`` on Pydantic 2.x models</span>
+</span><span data-line="75"><span class="sd">        :param round_trip: use ``round_trip=True`` when calling ``.model_dump``</span>
+</span><span data-line="76"><span class="sd">          and ``.model_dump_json`` on Pydantic 2.x models</span>
+</span><span data-line="77"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="78">        <span class="bp">self</span><span class="o">.</span><span class="n">exclude</span> <span class="o">=</span> <span class="n">exclude</span>
+</span><span data-line="79">        <span class="bp">self</span><span class="o">.</span><span class="n">exclude_defaults</span> <span class="o">=</span> <span class="n">exclude_defaults</span>
+</span><span data-line="80">        <span class="bp">self</span><span class="o">.</span><span class="n">exclude_none</span> <span class="o">=</span> <span class="n">exclude_none</span>
+</span><span data-line="81">        <span class="bp">self</span><span class="o">.</span><span class="n">exclude_unset</span> <span class="o">=</span> <span class="n">exclude_unset</span>
+</span><span data-line="82">        <span class="bp">self</span><span class="o">.</span><span class="n">include</span> <span class="o">=</span> <span class="n">include</span>
+</span><span data-line="83">        <span class="bp">self</span><span class="o">.</span><span class="n">prefer_alias</span> <span class="o">=</span> <span class="n">prefer_alias</span>
+</span><span data-line="84">        <span class="bp">self</span><span class="o">.</span><span class="n">validate_strict</span> <span class="o">=</span> <span class="n">validate_strict</span>
+</span><span data-line="85">        <span class="bp">self</span><span class="o">.</span><span class="n">round_trip</span> <span class="o">=</span> <span class="n">round_trip</span></div>
 
-</span><span data-line="166">
-</span><span data-line="167">    <span class="nd">@classmethod</span>
-</span><span data-line="168">    <span class="k">def</span><span class="w"> </span><span class="nf">encoders</span><span class="p">(</span>
-</span><span data-line="169">        <span class="bp">cls</span><span class="p">,</span>
-</span><span data-line="170">        <span class="n">exclude</span><span class="p">:</span> <span class="n">PydanticV1FieldsListType</span> <span class="o">|</span> <span class="n">PydanticV2FieldsListType</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="171">        <span class="n">exclude_defaults</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-</span><span data-line="172">        <span class="n">exclude_none</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-</span><span data-line="173">        <span class="n">exclude_unset</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-</span><span data-line="174">        <span class="n">include</span><span class="p">:</span> <span class="n">PydanticV1FieldsListType</span> <span class="o">|</span> <span class="n">PydanticV2FieldsListType</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="175">        <span class="n">prefer_alias</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-</span><span data-line="176">        <span class="n">round_trip</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-</span><span data-line="177">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Any</span><span class="p">],</span> <span class="n">Any</span><span class="p">]]:</span>
-</span><span data-line="178">        <span class="n">encoders</span> <span class="o">=</span> <span class="p">{</span>
-</span><span data-line="179">            <span class="o">**</span><span class="n">_base_encoders</span><span class="p">,</span>
-</span><span data-line="180">            <span class="o">**</span><span class="bp">cls</span><span class="o">.</span><span class="n">_create_pydantic_v1_encoders</span><span class="p">(</span>
-</span><span data-line="181">                <span class="n">prefer_alias</span><span class="o">=</span><span class="n">prefer_alias</span><span class="p">,</span>
-</span><span data-line="182">                <span class="n">exclude</span><span class="o">=</span><span class="n">exclude</span><span class="p">,</span>
-</span><span data-line="183">                <span class="n">exclude_defaults</span><span class="o">=</span><span class="n">exclude_defaults</span><span class="p">,</span>
-</span><span data-line="184">                <span class="n">exclude_none</span><span class="o">=</span><span class="n">exclude_none</span><span class="p">,</span>
-</span><span data-line="185">                <span class="n">exclude_unset</span><span class="o">=</span><span class="n">exclude_unset</span><span class="p">,</span>
-</span><span data-line="186">                <span class="n">include</span><span class="o">=</span><span class="n">include</span><span class="p">,</span>
-</span><span data-line="187">            <span class="p">),</span>
-</span><span data-line="188">        <span class="p">}</span>
-</span><span data-line="189">        <span class="k">if</span> <span class="n">pydantic_v2</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
-</span><span data-line="190">            <span class="n">encoders</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
-</span><span data-line="191">                <span class="bp">cls</span><span class="o">.</span><span class="n">_create_pydantic_v2_encoders</span><span class="p">(</span>
-</span><span data-line="192">                    <span class="n">prefer_alias</span><span class="o">=</span><span class="n">prefer_alias</span><span class="p">,</span>
-</span><span data-line="193">                    <span class="n">exclude</span><span class="o">=</span><span class="n">exclude</span><span class="p">,</span>  <span class="c1"># type: ignore[arg-type]</span>
-</span><span data-line="194">                    <span class="n">exclude_defaults</span><span class="o">=</span><span class="n">exclude_defaults</span><span class="p">,</span>
-</span><span data-line="195">                    <span class="n">exclude_none</span><span class="o">=</span><span class="n">exclude_none</span><span class="p">,</span>
-</span><span data-line="196">                    <span class="n">exclude_unset</span><span class="o">=</span><span class="n">exclude_unset</span><span class="p">,</span>
-</span><span data-line="197">                    <span class="n">include</span><span class="o">=</span><span class="n">include</span><span class="p">,</span>  <span class="c1"># type: ignore[arg-type]</span>
-</span><span data-line="198">                    <span class="n">round_trip</span><span class="o">=</span><span class="n">round_trip</span><span class="p">,</span>
-</span><span data-line="199">                <span class="p">)</span>
-</span><span data-line="200">            <span class="p">)</span>
-</span><span data-line="201">        <span class="k">return</span> <span class="n">encoders</span>
-</span><span data-line="202">
-</span><span data-line="203">    <span class="nd">@classmethod</span>
-</span><span data-line="204">    <span class="k">def</span><span class="w"> </span><span class="nf">decoders</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">validate_strict</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="n">Callable</span><span class="p">[[</span><span class="n">Any</span><span class="p">],</span> <span class="nb">bool</span><span class="p">],</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">Any</span><span class="p">]]]:</span>
-</span><span data-line="205">        <span class="n">decoders</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="n">Callable</span><span class="p">[[</span><span class="n">Any</span><span class="p">],</span> <span class="nb">bool</span><span class="p">],</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">Any</span><span class="p">]]]</span> <span class="o">=</span> <span class="p">[</span>
-</span><span data-line="206">            <span class="p">(</span><span class="n">is_pydantic_v1_model_class</span><span class="p">,</span> <span class="n">_dec_pydantic_v1</span><span class="p">)</span>
-</span><span data-line="207">        <span class="p">]</span>
-</span><span data-line="208">
-</span><span data-line="209">        <span class="k">if</span> <span class="n">pydantic_v2</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
-</span><span data-line="210">            <span class="n">decoders</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-</span><span data-line="211">                <span class="p">(</span>
-</span><span data-line="212">                    <span class="n">is_pydantic_v2_model_class</span><span class="p">,</span>
-</span><span data-line="213">                    <span class="n">partial</span><span class="p">(</span><span class="n">_dec_pydantic_v2</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="n">validate_strict</span><span class="p">),</span>
-</span><span data-line="214">                <span class="p">)</span>
-</span><span data-line="215">            <span class="p">)</span>
-</span><span data-line="216">
-</span><span data-line="217">        <span class="n">decoders</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">_is_pydantic_v1_uuid</span><span class="p">,</span> <span class="n">_dec_pydantic_uuid</span><span class="p">))</span>
-</span><span data-line="218">
-</span><span data-line="219">        <span class="k">return</span> <span class="n">decoders</span>
-</span><span data-line="220">
-</span><span data-line="221">    <span class="nd">@staticmethod</span>
-</span><span data-line="222">    <span class="k">def</span><span class="w"> </span><span class="nf">_create_pydantic_v1_encoders</span><span class="p">(</span>
-</span><span data-line="223">        <span class="n">exclude</span><span class="p">:</span> <span class="n">PydanticV1FieldsListType</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="224">        <span class="n">exclude_defaults</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-</span><span data-line="225">        <span class="n">exclude_none</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-</span><span data-line="226">        <span class="n">exclude_unset</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-</span><span data-line="227">        <span class="n">include</span><span class="p">:</span> <span class="n">PydanticV1FieldsListType</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="228">        <span class="n">prefer_alias</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-</span><span data-line="229">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Any</span><span class="p">],</span> <span class="n">Any</span><span class="p">]]:</span>  <span class="c1"># pragma: no cover</span>
-</span><span data-line="230">        <span class="k">return</span> <span class="p">{</span>
-</span><span data-line="231">            <span class="n">pydantic_v1</span><span class="o">.</span><span class="n">BaseModel</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">model</span><span class="p">:</span> <span class="p">{</span>
-</span><span data-line="232">                <span class="n">k</span><span class="p">:</span> <span class="n">v</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">)</span> <span class="k">else</span> <span class="n">v</span>
-</span><span data-line="233">                <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">model</span><span class="o">.</span><span class="n">dict</span><span class="p">(</span>
-</span><span data-line="234">                    <span class="n">by_alias</span><span class="o">=</span><span class="n">prefer_alias</span><span class="p">,</span>
-</span><span data-line="235">                    <span class="n">exclude</span><span class="o">=</span><span class="n">exclude</span><span class="p">,</span>
-</span><span data-line="236">                    <span class="n">exclude_defaults</span><span class="o">=</span><span class="n">exclude_defaults</span><span class="p">,</span>
-</span><span data-line="237">                    <span class="n">exclude_none</span><span class="o">=</span><span class="n">exclude_none</span><span class="p">,</span>
-</span><span data-line="238">                    <span class="n">exclude_unset</span><span class="o">=</span><span class="n">exclude_unset</span><span class="p">,</span>
-</span><span data-line="239">                    <span class="n">include</span><span class="o">=</span><span class="n">include</span><span class="p">,</span>
-</span><span data-line="240">                <span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
-</span><span data-line="241">            <span class="p">},</span>
-</span><span data-line="242">            <span class="n">pydantic_v1</span><span class="o">.</span><span class="n">SecretField</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-</span><span data-line="243">            <span class="n">pydantic_v1</span><span class="o">.</span><span class="n">StrictBool</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
-</span><span data-line="244">            <span class="n">pydantic_v1</span><span class="o">.</span><span class="n">color</span><span class="o">.</span><span class="n">Color</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>  <span class="c1"># pyright: ignore[reportAttributeAccessIssue]</span>
-</span><span data-line="245">            <span class="n">pydantic_v1</span><span class="o">.</span><span class="n">ConstrainedBytes</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">val</span><span class="p">:</span> <span class="n">val</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">),</span>
-</span><span data-line="246">            <span class="n">pydantic_v1</span><span class="o">.</span><span class="n">ConstrainedDate</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">val</span><span class="p">:</span> <span class="n">val</span><span class="o">.</span><span class="n">isoformat</span><span class="p">(),</span>
-</span><span data-line="247">            <span class="n">pydantic_v1</span><span class="o">.</span><span class="n">AnyUrl</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-</span><span data-line="248">        <span class="p">}</span>
-</span><span data-line="249">
-</span><span data-line="250">    <span class="nd">@staticmethod</span>
-</span><span data-line="251">    <span class="k">def</span><span class="w"> </span><span class="nf">_create_pydantic_v2_encoders</span><span class="p">(</span>
-</span><span data-line="252">        <span class="n">exclude</span><span class="p">:</span> <span class="n">PydanticV2FieldsListType</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="253">        <span class="n">exclude_defaults</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-</span><span data-line="254">        <span class="n">exclude_none</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-</span><span data-line="255">        <span class="n">exclude_unset</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-</span><span data-line="256">        <span class="n">include</span><span class="p">:</span> <span class="n">PydanticV2FieldsListType</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="257">        <span class="n">prefer_alias</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-</span><span data-line="258">        <span class="n">round_trip</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-</span><span data-line="259">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Any</span><span class="p">],</span> <span class="n">Any</span><span class="p">]]:</span>
-</span><span data-line="260">        <span class="n">encoders</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Any</span><span class="p">],</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{</span>
-</span><span data-line="261">            <span class="n">pydantic_v2</span><span class="o">.</span><span class="n">BaseModel</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">model</span><span class="p">:</span> <span class="n">model</span><span class="o">.</span><span class="n">model_dump</span><span class="p">(</span>  <span class="c1"># pyright: ignore[reportOptionalMemberAccess]</span>
-</span><span data-line="262">                <span class="n">by_alias</span><span class="o">=</span><span class="n">prefer_alias</span><span class="p">,</span>
-</span><span data-line="263">                <span class="n">exclude</span><span class="o">=</span><span class="n">exclude</span><span class="p">,</span>
-</span><span data-line="264">                <span class="n">exclude_defaults</span><span class="o">=</span><span class="n">exclude_defaults</span><span class="p">,</span>
-</span><span data-line="265">                <span class="n">exclude_none</span><span class="o">=</span><span class="n">exclude_none</span><span class="p">,</span>
-</span><span data-line="266">                <span class="n">exclude_unset</span><span class="o">=</span><span class="n">exclude_unset</span><span class="p">,</span>
-</span><span data-line="267">                <span class="n">include</span><span class="o">=</span><span class="n">include</span><span class="p">,</span>
-</span><span data-line="268">                <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;json&quot;</span><span class="p">,</span>
-</span><span data-line="269">                <span class="n">round_trip</span><span class="o">=</span><span class="n">round_trip</span><span class="p">,</span>
-</span><span data-line="270">            <span class="p">),</span>
-</span><span data-line="271">            <span class="n">pydantic_v2</span><span class="o">.</span><span class="n">types</span><span class="o">.</span><span class="n">SecretStr</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">val</span><span class="p">:</span> <span class="s2">&quot;**********&quot;</span> <span class="k">if</span> <span class="n">val</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>  <span class="c1"># pyright: ignore[reportOptionalMemberAccess]</span>
-</span><span data-line="272">            <span class="n">pydantic_v2</span><span class="o">.</span><span class="n">types</span><span class="o">.</span><span class="n">SecretBytes</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">val</span><span class="p">:</span> <span class="s2">&quot;**********&quot;</span> <span class="k">if</span> <span class="n">val</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>  <span class="c1"># pyright: ignore[reportOptionalMemberAccess]</span>
-</span><span data-line="273">            <span class="n">pydantic_v2</span><span class="o">.</span><span class="n">AnyUrl</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>  <span class="c1"># pyright: ignore[reportOptionalMemberAccess]</span>
-</span><span data-line="274">        <span class="p">}</span>
-</span><span data-line="275">
-</span><span data-line="276">        <span class="k">with</span> <span class="n">suppress</span><span class="p">(</span><span class="ne">ImportError</span><span class="p">):</span>
-</span><span data-line="277">            <span class="kn">from</span><span class="w"> </span><span class="nn">pydantic_extra_types</span><span class="w"> </span><span class="kn">import</span> <span class="n">color</span>
-</span><span data-line="278">
-</span><span data-line="279">            <span class="n">encoders</span><span class="p">[</span><span class="n">color</span><span class="o">.</span><span class="n">Color</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span>
-</span><span data-line="280">
-</span><span data-line="281">        <span class="k">return</span> <span class="n">encoders</span>
-</span><span data-line="282">
+</span><span data-line="86">
+</span><span data-line="87">    <span class="nd">@classmethod</span>
+</span><span data-line="88">    <span class="k">def</span><span class="w"> </span><span class="nf">encoders</span><span class="p">(</span>
+</span><span data-line="89">        <span class="bp">cls</span><span class="p">,</span>
+</span><span data-line="90">        <span class="n">exclude</span><span class="p">:</span> <span class="n">PydanticV2FieldsListType</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="91">        <span class="n">exclude_defaults</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+</span><span data-line="92">        <span class="n">exclude_none</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+</span><span data-line="93">        <span class="n">exclude_unset</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+</span><span data-line="94">        <span class="n">include</span><span class="p">:</span> <span class="n">PydanticV2FieldsListType</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="95">        <span class="n">prefer_alias</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+</span><span data-line="96">        <span class="n">round_trip</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+</span><span data-line="97">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Any</span><span class="p">],</span> <span class="n">Any</span><span class="p">]]:</span>
+</span><span data-line="98">        <span class="k">return</span> <span class="p">{</span>
+</span><span data-line="99">            <span class="o">**</span><span class="n">_base_encoders</span><span class="p">,</span>
+</span><span data-line="100">            <span class="o">**</span><span class="bp">cls</span><span class="o">.</span><span class="n">_create_pydantic_v2_encoders</span><span class="p">(</span>
+</span><span data-line="101">                <span class="n">prefer_alias</span><span class="o">=</span><span class="n">prefer_alias</span><span class="p">,</span>
+</span><span data-line="102">                <span class="n">exclude</span><span class="o">=</span><span class="n">exclude</span><span class="p">,</span>  <span class="c1"># type: ignore[arg-type]</span>
+</span><span data-line="103">                <span class="n">exclude_defaults</span><span class="o">=</span><span class="n">exclude_defaults</span><span class="p">,</span>
+</span><span data-line="104">                <span class="n">exclude_none</span><span class="o">=</span><span class="n">exclude_none</span><span class="p">,</span>
+</span><span data-line="105">                <span class="n">exclude_unset</span><span class="o">=</span><span class="n">exclude_unset</span><span class="p">,</span>
+</span><span data-line="106">                <span class="n">include</span><span class="o">=</span><span class="n">include</span><span class="p">,</span>  <span class="c1"># type: ignore[arg-type]</span>
+</span><span data-line="107">                <span class="n">round_trip</span><span class="o">=</span><span class="n">round_trip</span><span class="p">,</span>
+</span><span data-line="108">            <span class="p">),</span>
+</span><span data-line="109">        <span class="p">}</span>
+</span><span data-line="110">
+</span><span data-line="111">    <span class="nd">@classmethod</span>
+</span><span data-line="112">    <span class="k">def</span><span class="w"> </span><span class="nf">decoders</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">validate_strict</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="n">Callable</span><span class="p">[[</span><span class="n">Any</span><span class="p">],</span> <span class="nb">bool</span><span class="p">],</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">Any</span><span class="p">]]]:</span>
+</span><span data-line="113">        <span class="k">return</span> <span class="p">[(</span><span class="n">is_pydantic_v2_model_class</span><span class="p">,</span> <span class="n">partial</span><span class="p">(</span><span class="n">_dec_pydantic_v2</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="n">validate_strict</span><span class="p">))]</span>
+</span><span data-line="114">
+</span><span data-line="115">    <span class="nd">@staticmethod</span>
+</span><span data-line="116">    <span class="k">def</span><span class="w"> </span><span class="nf">_create_pydantic_v2_encoders</span><span class="p">(</span>
+</span><span data-line="117">        <span class="n">exclude</span><span class="p">:</span> <span class="n">PydanticV2FieldsListType</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="118">        <span class="n">exclude_defaults</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+</span><span data-line="119">        <span class="n">exclude_none</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+</span><span data-line="120">        <span class="n">exclude_unset</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+</span><span data-line="121">        <span class="n">include</span><span class="p">:</span> <span class="n">PydanticV2FieldsListType</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="122">        <span class="n">prefer_alias</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+</span><span data-line="123">        <span class="n">round_trip</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+</span><span data-line="124">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Any</span><span class="p">],</span> <span class="n">Any</span><span class="p">]]:</span>
+</span><span data-line="125">        <span class="n">encoders</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Any</span><span class="p">],</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{</span>
+</span><span data-line="126">            <span class="n">pydantic</span><span class="o">.</span><span class="n">BaseModel</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">model</span><span class="p">:</span> <span class="n">model</span><span class="o">.</span><span class="n">model_dump</span><span class="p">(</span>  <span class="c1"># pyright: ignore[reportOptionalMemberAccess]</span>
+</span><span data-line="127">                <span class="n">by_alias</span><span class="o">=</span><span class="n">prefer_alias</span><span class="p">,</span>
+</span><span data-line="128">                <span class="n">exclude</span><span class="o">=</span><span class="n">exclude</span><span class="p">,</span>
+</span><span data-line="129">                <span class="n">exclude_defaults</span><span class="o">=</span><span class="n">exclude_defaults</span><span class="p">,</span>
+</span><span data-line="130">                <span class="n">exclude_none</span><span class="o">=</span><span class="n">exclude_none</span><span class="p">,</span>
+</span><span data-line="131">                <span class="n">exclude_unset</span><span class="o">=</span><span class="n">exclude_unset</span><span class="p">,</span>
+</span><span data-line="132">                <span class="n">include</span><span class="o">=</span><span class="n">include</span><span class="p">,</span>
+</span><span data-line="133">                <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;json&quot;</span><span class="p">,</span>
+</span><span data-line="134">                <span class="n">round_trip</span><span class="o">=</span><span class="n">round_trip</span><span class="p">,</span>
+</span><span data-line="135">            <span class="p">),</span>
+</span><span data-line="136">            <span class="n">pydantic</span><span class="o">.</span><span class="n">types</span><span class="o">.</span><span class="n">SecretStr</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">val</span><span class="p">:</span> <span class="s2">&quot;**********&quot;</span> <span class="k">if</span> <span class="n">val</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>  <span class="c1"># pyright: ignore[reportOptionalMemberAccess]</span>
+</span><span data-line="137">            <span class="n">pydantic</span><span class="o">.</span><span class="n">types</span><span class="o">.</span><span class="n">SecretBytes</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">val</span><span class="p">:</span> <span class="s2">&quot;**********&quot;</span> <span class="k">if</span> <span class="n">val</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>  <span class="c1"># pyright: ignore[reportOptionalMemberAccess]</span>
+</span><span data-line="138">            <span class="n">pydantic</span><span class="o">.</span><span class="n">AnyUrl</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>  <span class="c1"># pyright: ignore[reportOptionalMemberAccess]</span>
+</span><span data-line="139">        <span class="p">}</span>
+</span><span data-line="140">
+</span><span data-line="141">        <span class="k">with</span> <span class="n">suppress</span><span class="p">(</span><span class="ne">ImportError</span><span class="p">):</span>
+</span><span data-line="142">            <span class="kn">from</span><span class="w"> </span><span class="nn">pydantic_extra_types</span><span class="w"> </span><span class="kn">import</span> <span class="n">color</span>
+</span><span data-line="143">
+</span><span data-line="144">            <span class="n">encoders</span><span class="p">[</span><span class="n">color</span><span class="o">.</span><span class="n">Color</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span>
+</span><span data-line="145">
+</span><span data-line="146">        <span class="k">return</span> <span class="n">encoders</span>
+</span><span data-line="147">
 <div class="viewcode-block" id="PydanticInitPlugin.on_app_init">
 <a class="viewcode-back" href="../../../../../reference/plugins/pydantic.html#litestar.plugins.pydantic.PydanticInitPlugin.on_app_init">[docs]</a>
-</span><span data-line="283">    <span class="k">def</span><span class="w"> </span><span class="nf">on_app_init</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">app_config</span><span class="p">:</span> <span class="n">AppConfig</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AppConfig</span><span class="p">:</span>
-</span><span data-line="284">        <span class="n">app_config</span><span class="o">.</span><span class="n">type_encoders</span> <span class="o">=</span> <span class="p">{</span>
-</span><span data-line="285">            <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">encoders</span><span class="p">(</span>
-</span><span data-line="286">                <span class="n">prefer_alias</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">prefer_alias</span><span class="p">,</span>
-</span><span data-line="287">                <span class="n">exclude</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">exclude</span><span class="p">,</span>
-</span><span data-line="288">                <span class="n">exclude_defaults</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">exclude_defaults</span><span class="p">,</span>
-</span><span data-line="289">                <span class="n">exclude_none</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">exclude_none</span><span class="p">,</span>
-</span><span data-line="290">                <span class="n">exclude_unset</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">exclude_unset</span><span class="p">,</span>
-</span><span data-line="291">                <span class="n">include</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">include</span><span class="p">,</span>
-</span><span data-line="292">                <span class="n">round_trip</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">round_trip</span><span class="p">,</span>
-</span><span data-line="293">            <span class="p">),</span>
-</span><span data-line="294">            <span class="o">**</span><span class="p">(</span><span class="n">app_config</span><span class="o">.</span><span class="n">type_encoders</span> <span class="ow">or</span> <span class="p">{}),</span>
-</span><span data-line="295">        <span class="p">}</span>
-</span><span data-line="296">        <span class="n">app_config</span><span class="o">.</span><span class="n">type_decoders</span> <span class="o">=</span> <span class="p">[</span>
-</span><span data-line="297">            <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">decoders</span><span class="p">(</span><span class="n">validate_strict</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">validate_strict</span><span class="p">),</span>
-</span><span data-line="298">            <span class="o">*</span><span class="p">(</span><span class="n">app_config</span><span class="o">.</span><span class="n">type_decoders</span> <span class="ow">or</span> <span class="p">[]),</span>
-</span><span data-line="299">        <span class="p">]</span>
-</span><span data-line="300">
-</span><span data-line="301">        <span class="k">return</span> <span class="n">app_config</span></div>
+</span><span data-line="148">    <span class="k">def</span><span class="w"> </span><span class="nf">on_app_init</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">app_config</span><span class="p">:</span> <span class="n">AppConfig</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AppConfig</span><span class="p">:</span>
+</span><span data-line="149">        <span class="n">app_config</span><span class="o">.</span><span class="n">type_encoders</span> <span class="o">=</span> <span class="p">{</span>
+</span><span data-line="150">            <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">encoders</span><span class="p">(</span>
+</span><span data-line="151">                <span class="n">prefer_alias</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">prefer_alias</span><span class="p">,</span>
+</span><span data-line="152">                <span class="n">exclude</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">exclude</span><span class="p">,</span>
+</span><span data-line="153">                <span class="n">exclude_defaults</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">exclude_defaults</span><span class="p">,</span>
+</span><span data-line="154">                <span class="n">exclude_none</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">exclude_none</span><span class="p">,</span>
+</span><span data-line="155">                <span class="n">exclude_unset</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">exclude_unset</span><span class="p">,</span>
+</span><span data-line="156">                <span class="n">include</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">include</span><span class="p">,</span>
+</span><span data-line="157">                <span class="n">round_trip</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">round_trip</span><span class="p">,</span>
+</span><span data-line="158">            <span class="p">),</span>
+</span><span data-line="159">            <span class="o">**</span><span class="p">(</span><span class="n">app_config</span><span class="o">.</span><span class="n">type_encoders</span> <span class="ow">or</span> <span class="p">{}),</span>
+</span><span data-line="160">        <span class="p">}</span>
+</span><span data-line="161">        <span class="n">app_config</span><span class="o">.</span><span class="n">type_decoders</span> <span class="o">=</span> <span class="p">[</span>
+</span><span data-line="162">            <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">decoders</span><span class="p">(</span><span class="n">validate_strict</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">validate_strict</span><span class="p">),</span>
+</span><span data-line="163">            <span class="o">*</span><span class="p">(</span><span class="n">app_config</span><span class="o">.</span><span class="n">type_decoders</span> <span class="ow">or</span> <span class="p">[]),</span>
+</span><span data-line="164">        <span class="p">]</span>
+</span><span data-line="165">
+</span><span data-line="166">        <span class="k">return</span> <span class="n">app_config</span></div>
 </div>
 
 </span></pre></div>
