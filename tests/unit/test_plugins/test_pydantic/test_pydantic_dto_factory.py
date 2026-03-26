@@ -140,8 +140,10 @@ def test_pydantic_dto_annotated_dto_field(base_model: type[pydantic_v2.BaseModel
 
 
 def test_dto_field_via_pydantic_field_extra_deprecation() -> None:
-    class Model(pydantic_v2.BaseModel):
-        a: int = pydantic_v2.Field(**dto_field("read-only"))  # type: ignore[call-overload]
+    with pytest.warns(pydantic_v2.PydanticDeprecatedSince20):
+
+        class Model(pydantic_v2.BaseModel):
+            a: int = pydantic_v2.Field(**dto_field("read-only"))  # type: ignore[call-overload]
 
     with pytest.warns(DeprecationWarning):
         next(PydanticDTO.generate_field_definitions(Model))

@@ -145,9 +145,6 @@ def test_signature_model_invalid_input(base_model: BaseModelType, pydantic_versi
 
 
 class V2ModelWithPrivateFields(pydantic_v2.BaseModel):
-    class Config:
-        underscore_fields_are_private = True
-
     _field: str = pydantic_v2.PrivateAttr()
     bar: str
 
