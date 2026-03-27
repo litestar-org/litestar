@@ -41,10 +41,10 @@ def kwarg_definition_from_field(field: msgspec.inspect.Field) -> tuple[Parameter
     if isinstance(field.type, msgspec.inspect.Metadata):
         meta = field.type
     elif isinstance(field.type, msgspec.inspect.UnionType):
-        for member in field.type.types:
-            if isinstance(member, msgspec.inspect.Metadata):
-                meta = member
-                break
+        meta = next(
+            (member for member in field.type.types if isinstance(member, msgspec.inspect.Metadata)),
+            None,
+        )
 
     if meta is not None:
         field_type = meta.type
