@@ -200,6 +200,7 @@ def test_before_send() -> None:
             headers.add("My-Header", Litestar.from_scope(scope).state.message)
 
     def on_startup(app: Litestar) -> None:
+        assert isinstance(app.state, State)
         app.state.message = "value injected during send"
 
     with create_test_client(handler, on_startup=[on_startup], before_send=[before_send_hook_handler]) as client:

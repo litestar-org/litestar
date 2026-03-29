@@ -38,11 +38,10 @@ class CustomState(State):
 def test_application_immutable_state_injection() -> None:
     @get("/", media_type=MediaType.TEXT)
     def route_handler(state: ImmutableState) -> str:
-        assert state
+        assert isinstance(state, ImmutableState)
         return cast("str", state.msg)
 
-    with create_test_client(route_handler, state=State({"called": False})) as client:
-        client.app.state.msg = "hello"
+    with create_test_client(route_handler, state=ImmutableState({"called": False, "msg": "hello"})) as client:
         assert not client.app.state.called
         response = client.get("/")
         assert response.status_code == HTTP_200_OK
@@ -57,6 +56,7 @@ def test_application_state_injection(state_typing: type[State]) -> None:
         return cast("str", state.msg)  # type: ignore[attr-defined]
 
     with create_test_client(route_handler, state=State({"called": False})) as client:
+        assert isinstance(client.app.state, State)
         client.app.state.msg = "hello"
         assert not client.app.state.called
         response = client.get("/")

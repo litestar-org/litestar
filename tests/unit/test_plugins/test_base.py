@@ -8,6 +8,7 @@ from click import Group
 
 from litestar import Litestar, MediaType, get
 from litestar.constants import UNDEFINED_SENTINELS
+from litestar.datastructures import State
 from litestar.file_system import FileSystemRegistry
 from litestar.plugins import CLIPlugin, InitPlugin, OpenAPISchemaPlugin, PluginRegistry
 from litestar.plugins.attrs import AttrsSchemaPlugin
@@ -28,6 +29,7 @@ def test_plugin_on_app_init() -> None:
     tag = "on_app_init_called"
 
     def on_startup(app: Litestar) -> None:
+        assert isinstance(app.state, State)
         app.state.called = True
 
     class PluginWithInitOnly(InitPlugin):
