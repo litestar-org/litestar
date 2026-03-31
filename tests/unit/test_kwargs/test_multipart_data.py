@@ -652,3 +652,39 @@ def test_empty_strings_consistency_between_encodings() -> None:
 
         # Results should be identical
         assert response_url.text == response_multipart.text
+
+
+# https://github.com/litestar-org/litestar/issues/4647
+def test_optional_upload_file_without_file_submitted() -> None:
+    """Optional[UploadFile] in a dataclass should be None when no file is submitted via multipart."""
+
+    @dataclass
+    class UploadForm:
+        file: Optional[UploadFile] = None
+
+    @post("/", signature_namespace={"UploadForm": UploadForm, "UploadFile": UploadFile})
+    async def handler(
+        data: Annotated[UploadForm, Body(media_type=RequestEncodingType.MULTI_PART)],
+    ) -> str:
+        return "none" if data.file is None else "file"
+
+    with create_test_client([handler]) as client:
+        # Simulate browser submitting form without selecting a file (sends filename="" with empty body)
+        response = client.post(
+            "/",
+            content=(
+                b"--testboundary\r\n"
+                b'Content-Disposition: form-data; name="file"; filename=""\r\n'
+                b"Content-Type: application/octet-stream\r\n\r\n"
+                b"\r\n"
+                b"--testboundary--\r\n"
+            ),
+            headers={"Content-Type": "multipart/form-data; boundary=testboundary"},
+        )
+        assert response.status_code == HTTP_201_CREATED
+        assert response.text == "none"
+
+        # Submitting with an actual file should still work
+        response = client.post("/", files={"file": ("test.txt", b"hello", "text/plain")})
+        assert response.status_code == HTTP_201_CREATED
+        assert response.text == "file"
