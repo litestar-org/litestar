@@ -81,8 +81,10 @@ def should_bypass_middleware(
     if scope["type"] not in scopes:
         return True
 
-    if exclude_opt_key and scope["route_handler"].opt.get(exclude_opt_key):
-        return True
+    if exclude_opt_key:
+        route_handler = scope.get("route_handler")
+        if route_handler is not None and route_handler.opt.get(exclude_opt_key):
+            return True
 
     if exclude_http_methods and scope.get("method") in exclude_http_methods:
         return True
