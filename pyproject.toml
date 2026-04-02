@@ -146,7 +146,7 @@ dev = [
   "psutil>=5.9.8",
   "hypercorn>=0.16.0",
   "daphne>=4.0.0",
-  "opentelemetry-sdk<1.40.0",
+  "opentelemetry-sdk",
   "httpx-sse",
   "structlog",
 ]

@@ -31,7 +31,7 @@ def resource() -> Resource:
 
 @pytest.fixture(scope="session")
 def reader() -> InMemoryMetricReader:
-    aggregation_last_value = {Counter: ExplicitBucketHistogramAggregation()}
+    aggregation_last_value = {Counter: ExplicitBucketHistogramAggregation(boundaries=[])}
     return InMemoryMetricReader(preferred_aggregation=aggregation_last_value)  # type: ignore[arg-type]
 
 
@@ -104,7 +104,7 @@ def test_open_telemetry_middleware_with_http_route(
         resource_metrics = metric_data.resource_metrics[0]
         assert resource_metrics.scope_metrics
 
-        scope_metrics = resource_metrics.scope_metrics[0]
+        scope_metrics = next(sm for sm in resource_metrics.scope_metrics if sm.scope.name != "opentelemetry-sdk")
         assert scope_metrics.metrics
 
         request_metric = scope_metrics.metrics[0]
