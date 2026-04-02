@@ -371,6 +371,11 @@ async def _extract_multipart(
 
     for name, tp in field_definition.get_type_hints().items():
         value = form_values.get(name)
+        if value == "" and is_optional_union(tp):
+            inner: Any = make_non_optional_union(tp)
+            if isinstance(inner, type) and issubclass(inner, UploadFile):
+                form_values[name] = None  # pyright: ignore
+                continue
         if (
             value is not None
             and not isinstance(value, list)
