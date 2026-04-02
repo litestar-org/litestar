@@ -2056,7 +2056,7 @@ dev = [
     { name = "hypercorn", specifier = ">=0.16.0" },
     { name = "hypothesis" },
     { name = "litestar", extras = ["full"] },
-    { name = "opentelemetry-sdk", specifier = "<1.40.0" },
+    { name = "opentelemetry-sdk" },
     { name = "psutil", specifier = ">=5.9.8" },
     { name = "psycopg", extras = ["pool"], marker = "python_full_version >= '3.13'", specifier = "<3.2.4" },
     { name = "psycopg", extras = ["pool", "binary"], marker = "python_full_version < '3.13'", specifier = ">=3.1.10,<3.2" },
