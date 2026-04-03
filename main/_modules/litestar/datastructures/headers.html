@@ -972,105 +972,106 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="398">        <span class="c1"># Use fixed point values with two decimals to avoid problems</span>
 </span><span data-line="399">        <span class="c1"># when comparing float values</span>
 </span><span data-line="400">        <span class="n">quality</span> <span class="o">=</span> <span class="mi">100</span>
-</span><span data-line="401">        <span class="k">if</span> <span class="s2">&quot;q&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">:</span>
-</span><span data-line="402">            <span class="k">with</span> <span class="n">suppress</span><span class="p">(</span><span class="ne">ValueError</span><span class="p">):</span>
-</span><span data-line="403">                <span class="n">quality</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="mi">100</span> <span class="o">*</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;q&quot;</span><span class="p">]))</span>
-</span><span data-line="404">
-</span><span data-line="405">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">maintype</span> <span class="o">==</span> <span class="s2">&quot;*&quot;</span><span class="p">:</span>
-</span><span data-line="406">            <span class="n">specificity</span> <span class="o">=</span> <span class="mi">0</span>
-</span><span data-line="407">        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">subtype</span> <span class="o">==</span> <span class="s2">&quot;*&quot;</span><span class="p">:</span>
-</span><span data-line="408">            <span class="n">specificity</span> <span class="o">=</span> <span class="mi">1</span>
-</span><span data-line="409">        <span class="k">elif</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span> <span class="ow">or</span> <span class="p">(</span><span class="s2">&quot;q&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">):</span>
-</span><span data-line="410">            <span class="c1"># no params or &#39;q&#39; is the only one which we ignore</span>
-</span><span data-line="411">            <span class="n">specificity</span> <span class="o">=</span> <span class="mi">2</span>
-</span><span data-line="412">        <span class="k">else</span><span class="p">:</span>
-</span><span data-line="413">            <span class="n">specificity</span> <span class="o">=</span> <span class="mi">3</span>
-</span><span data-line="414">
-</span><span data-line="415">        <span class="k">return</span> <span class="n">quality</span><span class="p">,</span> <span class="n">specificity</span>
-</span><span data-line="416">
-</span><span data-line="417">    <span class="k">def</span><span class="w"> </span><span class="nf">match</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="s2">&quot;MediaTypeHeader&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-</span><span data-line="418">        <span class="k">return</span> <span class="nb">next</span><span class="p">(</span>
-</span><span data-line="419">            <span class="p">(</span><span class="kc">False</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">key</span> <span class="o">!=</span> <span class="s2">&quot;q&quot;</span> <span class="ow">and</span> <span class="n">value</span> <span class="o">!=</span> <span class="n">other</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">)),</span>
-</span><span data-line="420">            <span class="kc">False</span>
-</span><span data-line="421">            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">subtype</span> <span class="o">!=</span> <span class="s2">&quot;*&quot;</span> <span class="ow">and</span> <span class="n">other</span><span class="o">.</span><span class="n">subtype</span> <span class="o">!=</span> <span class="s2">&quot;*&quot;</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">subtype</span> <span class="o">!=</span> <span class="n">other</span><span class="o">.</span><span class="n">subtype</span>
-</span><span data-line="422">            <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">maintype</span> <span class="o">==</span> <span class="s2">&quot;*&quot;</span> <span class="ow">or</span> <span class="n">other</span><span class="o">.</span><span class="n">maintype</span> <span class="o">==</span> <span class="s2">&quot;*&quot;</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">maintype</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">maintype</span><span class="p">,</span>
-</span><span data-line="423">        <span class="p">)</span>
-</span><span data-line="424">
+</span><span data-line="401">        <span class="n">qparam</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;q&quot;</span><span class="p">)</span>
+</span><span data-line="402">        <span class="k">if</span> <span class="n">qparam</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="403">            <span class="k">with</span> <span class="n">suppress</span><span class="p">(</span><span class="ne">ValueError</span><span class="p">):</span>
+</span><span data-line="404">                <span class="n">quality</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="mi">100</span> <span class="o">*</span> <span class="nb">float</span><span class="p">(</span><span class="n">qparam</span><span class="p">))</span>
+</span><span data-line="405">
+</span><span data-line="406">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">maintype</span> <span class="o">==</span> <span class="s2">&quot;*&quot;</span><span class="p">:</span>
+</span><span data-line="407">            <span class="n">specificity</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span data-line="408">        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">subtype</span> <span class="o">==</span> <span class="s2">&quot;*&quot;</span><span class="p">:</span>
+</span><span data-line="409">            <span class="n">specificity</span> <span class="o">=</span> <span class="mi">1</span>
+</span><span data-line="410">        <span class="k">elif</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span> <span class="ow">or</span> <span class="p">(</span><span class="n">qparam</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">):</span>
+</span><span data-line="411">            <span class="c1"># no params or &#39;q&#39; is the only one which we ignore</span>
+</span><span data-line="412">            <span class="n">specificity</span> <span class="o">=</span> <span class="mi">2</span>
+</span><span data-line="413">        <span class="k">else</span><span class="p">:</span>
+</span><span data-line="414">            <span class="n">specificity</span> <span class="o">=</span> <span class="mi">3</span>
+</span><span data-line="415">
+</span><span data-line="416">        <span class="k">return</span> <span class="n">quality</span><span class="p">,</span> <span class="n">specificity</span>
+</span><span data-line="417">
+</span><span data-line="418">    <span class="k">def</span><span class="w"> </span><span class="nf">match</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="s2">&quot;MediaTypeHeader&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+</span><span data-line="419">        <span class="k">return</span> <span class="nb">next</span><span class="p">(</span>
+</span><span data-line="420">            <span class="p">(</span><span class="kc">False</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">key</span> <span class="o">!=</span> <span class="s2">&quot;q&quot;</span> <span class="ow">and</span> <span class="n">value</span> <span class="o">!=</span> <span class="n">other</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">)),</span>
+</span><span data-line="421">            <span class="kc">False</span>
+</span><span data-line="422">            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">subtype</span> <span class="o">!=</span> <span class="s2">&quot;*&quot;</span> <span class="ow">and</span> <span class="n">other</span><span class="o">.</span><span class="n">subtype</span> <span class="o">!=</span> <span class="s2">&quot;*&quot;</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">subtype</span> <span class="o">!=</span> <span class="n">other</span><span class="o">.</span><span class="n">subtype</span>
+</span><span data-line="423">            <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">maintype</span> <span class="o">==</span> <span class="s2">&quot;*&quot;</span> <span class="ow">or</span> <span class="n">other</span><span class="o">.</span><span class="n">maintype</span> <span class="o">==</span> <span class="s2">&quot;*&quot;</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">maintype</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">maintype</span><span class="p">,</span>
+</span><span data-line="424">        <span class="p">)</span>
 </span><span data-line="425">
+</span><span data-line="426">
 <div class="viewcode-block" id="Accept">
 <a class="viewcode-back" href="../../../reference/datastructures/index.html#litestar.datastructures.Accept">[docs]</a>
-</span><span data-line="426"><span class="k">class</span><span class="w"> </span><span class="nc">Accept</span><span class="p">:</span>
-</span><span data-line="427"><span class="w">    </span><span class="sd">&quot;&quot;&quot;An ``Accept`` header.&quot;&quot;&quot;</span>
-</span><span data-line="428">
-</span><span data-line="429">    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;_accepted_types&quot;</span><span class="p">,)</span>
-</span><span data-line="430">
+</span><span data-line="427"><span class="k">class</span><span class="w"> </span><span class="nc">Accept</span><span class="p">:</span>
+</span><span data-line="428"><span class="w">    </span><span class="sd">&quot;&quot;&quot;An ``Accept`` header.&quot;&quot;&quot;</span>
+</span><span data-line="429">
+</span><span data-line="430">    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;_accepted_types&quot;</span><span class="p">,)</span>
+</span><span data-line="431">
 <div class="viewcode-block" id="Accept.__init__">
 <a class="viewcode-back" href="../../../reference/datastructures/index.html#litestar.datastructures.Accept.__init__">[docs]</a>
-</span><span data-line="431">    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">accept_value</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="432">        <span class="bp">self</span><span class="o">.</span><span class="n">_accepted_types</span> <span class="o">=</span> <span class="p">[</span><span class="n">MediaTypeHeader</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">accept_value</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)]</span>
-</span><span data-line="433">        <span class="bp">self</span><span class="o">.</span><span class="n">_accepted_types</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">t</span><span class="p">:</span> <span class="n">t</span><span class="o">.</span><span class="n">priority</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+</span><span data-line="432">    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">accept_value</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="433">        <span class="bp">self</span><span class="o">.</span><span class="n">_accepted_types</span> <span class="o">=</span> <span class="p">[</span><span class="n">MediaTypeHeader</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">accept_value</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)]</span>
+</span><span data-line="434">        <span class="bp">self</span><span class="o">.</span><span class="n">_accepted_types</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">t</span><span class="p">:</span> <span class="n">t</span><span class="o">.</span><span class="n">priority</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
-</span><span data-line="434">
-</span><span data-line="435">    <span class="k">def</span><span class="w"> </span><span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-</span><span data-line="436">        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_accepted_types</span><span class="p">)</span>
-</span><span data-line="437">
-</span><span data-line="438">    <span class="k">def</span><span class="w"> </span><span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-</span><span data-line="439">        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_accepted_types</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
-</span><span data-line="440">
-</span><span data-line="441">    <span class="k">def</span><span class="w"> </span><span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-</span><span data-line="442">        <span class="k">return</span> <span class="nb">map</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_accepted_types</span><span class="p">)</span>
-</span><span data-line="443">
-</span><span data-line="444">    <span class="nd">@overload</span>
-</span><span data-line="445">    <span class="k">def</span><span class="w"> </span><span class="nf">best_match</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">provided_types</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">default</span><span class="p">:</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
-</span><span data-line="446">
-</span><span data-line="447">    <span class="nd">@overload</span>
-</span><span data-line="448">    <span class="k">def</span><span class="w"> </span><span class="nf">best_match</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">provided_types</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">default</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span> <span class="o">...</span>
-</span><span data-line="449">
+</span><span data-line="435">
+</span><span data-line="436">    <span class="k">def</span><span class="w"> </span><span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+</span><span data-line="437">        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_accepted_types</span><span class="p">)</span>
+</span><span data-line="438">
+</span><span data-line="439">    <span class="k">def</span><span class="w"> </span><span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span data-line="440">        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_accepted_types</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
+</span><span data-line="441">
+</span><span data-line="442">    <span class="k">def</span><span class="w"> </span><span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+</span><span data-line="443">        <span class="k">return</span> <span class="nb">map</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_accepted_types</span><span class="p">)</span>
+</span><span data-line="444">
+</span><span data-line="445">    <span class="nd">@overload</span>
+</span><span data-line="446">    <span class="k">def</span><span class="w"> </span><span class="nf">best_match</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">provided_types</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">default</span><span class="p">:</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
+</span><span data-line="447">
+</span><span data-line="448">    <span class="nd">@overload</span>
+</span><span data-line="449">    <span class="k">def</span><span class="w"> </span><span class="nf">best_match</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">provided_types</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">default</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span> <span class="o">...</span>
+</span><span data-line="450">
 <div class="viewcode-block" id="Accept.best_match">
 <a class="viewcode-back" href="../../../reference/datastructures/index.html#litestar.datastructures.Accept.best_match">[docs]</a>
-</span><span data-line="450">    <span class="k">def</span><span class="w"> </span><span class="nf">best_match</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">provided_types</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">default</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="451"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Find the best matching media type for the request.</span>
-</span><span data-line="452">
-</span><span data-line="453"><span class="sd">        Args:</span>
-</span><span data-line="454"><span class="sd">            provided_types: A list of media types that can be provided as a response. These types</span>
-</span><span data-line="455"><span class="sd">                            can contain a wildcard ``*`` character in the main- or subtype part.</span>
-</span><span data-line="456"><span class="sd">            default: The media type that is returned if none of the provided types match.</span>
-</span><span data-line="457">
-</span><span data-line="458"><span class="sd">        Returns:</span>
-</span><span data-line="459"><span class="sd">            The best matching media type. If the matching provided type contains wildcard characters,</span>
-</span><span data-line="460"><span class="sd">            they are replaced with the corresponding part of the accepted type. Otherwise the</span>
-</span><span data-line="461"><span class="sd">            provided type is returned as-is.</span>
-</span><span data-line="462"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="463">        <span class="n">types</span> <span class="o">=</span> <span class="p">[</span><span class="n">MediaTypeHeader</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">provided_types</span><span class="p">]</span>
-</span><span data-line="464">
-</span><span data-line="465">        <span class="k">for</span> <span class="n">accepted</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_accepted_types</span><span class="p">:</span>
-</span><span data-line="466">            <span class="k">for</span> <span class="n">provided</span> <span class="ow">in</span> <span class="n">types</span><span class="p">:</span>
-</span><span data-line="467">                <span class="k">if</span> <span class="n">provided</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">accepted</span><span class="p">):</span>
-</span><span data-line="468">                    <span class="c1"># Return the accepted type with wildcards replaced</span>
-</span><span data-line="469">                    <span class="c1"># by concrete parts from the provided type</span>
-</span><span data-line="470">                    <span class="n">result</span> <span class="o">=</span> <span class="n">copy</span><span class="p">(</span><span class="n">provided</span><span class="p">)</span>
-</span><span data-line="471">                    <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">subtype</span> <span class="o">==</span> <span class="s2">&quot;*&quot;</span><span class="p">:</span>
-</span><span data-line="472">                        <span class="n">result</span><span class="o">.</span><span class="n">subtype</span> <span class="o">=</span> <span class="n">accepted</span><span class="o">.</span><span class="n">subtype</span>
-</span><span data-line="473">                    <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">maintype</span> <span class="o">==</span> <span class="s2">&quot;*&quot;</span><span class="p">:</span>
-</span><span data-line="474">                        <span class="n">result</span><span class="o">.</span><span class="n">maintype</span> <span class="o">=</span> <span class="n">accepted</span><span class="o">.</span><span class="n">maintype</span>
-</span><span data-line="475">                    <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
-</span><span data-line="476">        <span class="k">return</span> <span class="n">default</span></div>
+</span><span data-line="451">    <span class="k">def</span><span class="w"> </span><span class="nf">best_match</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">provided_types</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">default</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="452"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Find the best matching media type for the request.</span>
+</span><span data-line="453">
+</span><span data-line="454"><span class="sd">        Args:</span>
+</span><span data-line="455"><span class="sd">            provided_types: A list of media types that can be provided as a response. These types</span>
+</span><span data-line="456"><span class="sd">                            can contain a wildcard ``*`` character in the main- or subtype part.</span>
+</span><span data-line="457"><span class="sd">            default: The media type that is returned if none of the provided types match.</span>
+</span><span data-line="458">
+</span><span data-line="459"><span class="sd">        Returns:</span>
+</span><span data-line="460"><span class="sd">            The best matching media type. If the matching provided type contains wildcard characters,</span>
+</span><span data-line="461"><span class="sd">            they are replaced with the corresponding part of the accepted type. Otherwise the</span>
+</span><span data-line="462"><span class="sd">            provided type is returned as-is.</span>
+</span><span data-line="463"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="464">        <span class="n">types</span> <span class="o">=</span> <span class="p">[</span><span class="n">MediaTypeHeader</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">provided_types</span><span class="p">]</span>
+</span><span data-line="465">
+</span><span data-line="466">        <span class="k">for</span> <span class="n">accepted</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_accepted_types</span><span class="p">:</span>
+</span><span data-line="467">            <span class="k">for</span> <span class="n">provided</span> <span class="ow">in</span> <span class="n">types</span><span class="p">:</span>
+</span><span data-line="468">                <span class="k">if</span> <span class="n">provided</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">accepted</span><span class="p">):</span>
+</span><span data-line="469">                    <span class="c1"># Return the accepted type with wildcards replaced</span>
+</span><span data-line="470">                    <span class="c1"># by concrete parts from the provided type</span>
+</span><span data-line="471">                    <span class="n">result</span> <span class="o">=</span> <span class="n">copy</span><span class="p">(</span><span class="n">provided</span><span class="p">)</span>
+</span><span data-line="472">                    <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">subtype</span> <span class="o">==</span> <span class="s2">&quot;*&quot;</span><span class="p">:</span>
+</span><span data-line="473">                        <span class="n">result</span><span class="o">.</span><span class="n">subtype</span> <span class="o">=</span> <span class="n">accepted</span><span class="o">.</span><span class="n">subtype</span>
+</span><span data-line="474">                    <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">maintype</span> <span class="o">==</span> <span class="s2">&quot;*&quot;</span><span class="p">:</span>
+</span><span data-line="475">                        <span class="n">result</span><span class="o">.</span><span class="n">maintype</span> <span class="o">=</span> <span class="n">accepted</span><span class="o">.</span><span class="n">maintype</span>
+</span><span data-line="476">                    <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+</span><span data-line="477">        <span class="k">return</span> <span class="n">default</span></div>
 
-</span><span data-line="477">
+</span><span data-line="478">
 <div class="viewcode-block" id="Accept.accepts">
 <a class="viewcode-back" href="../../../reference/datastructures/index.html#litestar.datastructures.Accept.accepts">[docs]</a>
-</span><span data-line="478">    <span class="k">def</span><span class="w"> </span><span class="nf">accepts</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">media_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-</span><span data-line="479"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Check if the request accepts the specified media type.</span>
-</span><span data-line="480">
-</span><span data-line="481"><span class="sd">        If multiple media types can be provided, it is better to use :func:`best_match`.</span>
-</span><span data-line="482">
-</span><span data-line="483"><span class="sd">        Args:</span>
-</span><span data-line="484"><span class="sd">            media_type: The media type to check for.</span>
-</span><span data-line="485">
-</span><span data-line="486"><span class="sd">        Returns:</span>
-</span><span data-line="487"><span class="sd">            True if the request accepts ``media_type``.</span>
-</span><span data-line="488"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="489">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">best_match</span><span class="p">([</span><span class="n">media_type</span><span class="p">])</span> <span class="o">==</span> <span class="n">media_type</span></div>
+</span><span data-line="479">    <span class="k">def</span><span class="w"> </span><span class="nf">accepts</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">media_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+</span><span data-line="480"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Check if the request accepts the specified media type.</span>
+</span><span data-line="481">
+</span><span data-line="482"><span class="sd">        If multiple media types can be provided, it is better to use :func:`best_match`.</span>
+</span><span data-line="483">
+</span><span data-line="484"><span class="sd">        Args:</span>
+</span><span data-line="485"><span class="sd">            media_type: The media type to check for.</span>
+</span><span data-line="486">
+</span><span data-line="487"><span class="sd">        Returns:</span>
+</span><span data-line="488"><span class="sd">            True if the request accepts ``media_type``.</span>
+</span><span data-line="489"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="490">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">best_match</span><span class="p">([</span><span class="n">media_type</span><span class="p">])</span> <span class="o">==</span> <span class="n">media_type</span></div>
 </div>
 
 </span></pre></div>
