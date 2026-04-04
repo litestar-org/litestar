@@ -94,6 +94,11 @@ class BaseJWTAuth(Generic[UserType, TokenT], AbstractSecurityConfig[UserType, To
     not a list of values, and matches ``audience`` exactly. Requires that
     ``accepted_audiences`` is a sequence of length 1
     """
+    leeway: float | timedelta = 0
+    """A time margin in seconds (or as a :class:`~datetime.timedelta`) to account for
+    clock skew when verifying the ``exp`` (*expiration*) and ``nbf`` (*not before*)
+    claims. Defaults to ``0``.
+    """
 
     @property
     def openapi_components(self) -> Components:
@@ -153,6 +158,7 @@ class BaseJWTAuth(Generic[UserType, TokenT], AbstractSecurityConfig[UserType, To
             verify_expiry=self.verify_expiry,
             verify_not_before=self.verify_not_before,
             strict_audience=self.strict_audience,
+            leeway=self.leeway,
         )
 
     def login(
@@ -347,6 +353,11 @@ class JWTAuth(Generic[UserType, TokenT], BaseJWTAuth[UserType, TokenT]):
     not a list of values, and matches ``audience`` exactly. Requires that
     ``accepted_audiences`` is a sequence of length 1
     """
+    leeway: float | timedelta = 0
+    """A time margin in seconds (or as a :class:`~datetime.timedelta`) to account for
+    clock skew when verifying the ``exp`` (*expiration*) and ``nbf`` (*not before*)
+    claims. Defaults to ``0``.
+    """
 
 
 @dataclass
@@ -451,6 +462,11 @@ class JWTCookieAuth(Generic[UserType, TokenT], BaseJWTAuth[UserType, TokenT]):
     not a list of values, and matches ``audience`` exactly. Requires that
     ``accepted_audiences`` is a sequence of length 1
     """
+    leeway: float | timedelta = 0
+    """A time margin in seconds (or as a :class:`~datetime.timedelta`) to account for
+    clock skew when verifying the ``exp`` (*expiration*) and ``nbf`` (*not before*)
+    claims. Defaults to ``0``.
+    """
 
     @property
     def openapi_components(self) -> Components:
@@ -499,6 +515,7 @@ class JWTCookieAuth(Generic[UserType, TokenT], BaseJWTAuth[UserType, TokenT]):
             verify_expiry=self.verify_expiry,
             verify_not_before=self.verify_not_before,
             strict_audience=self.strict_audience,
+            leeway=self.leeway,
         )
 
     def login(
@@ -691,6 +708,11 @@ class OAuth2PasswordBearerAuth(Generic[UserType, TokenT], BaseJWTAuth[UserType, 
     not a list of values, and matches ``audience`` exactly. Requires that
     ``accepted_audiences`` is a sequence of length 1
     """
+    leeway: float | timedelta = 0
+    """A time margin in seconds (or as a :class:`~datetime.timedelta`) to account for
+    clock skew when verifying the ``exp`` (*expiration*) and ``nbf`` (*not before*)
+    claims. Defaults to ``0``.
+    """
 
     @property
     def middleware(self) -> DefineMiddleware:
@@ -719,6 +741,7 @@ class OAuth2PasswordBearerAuth(Generic[UserType, TokenT], BaseJWTAuth[UserType, 
             verify_expiry=self.verify_expiry,
             verify_not_before=self.verify_not_before,
             strict_audience=self.strict_audience,
+            leeway=self.leeway,
         )
 
     @property
