@@ -358,7 +358,6 @@ def test_etag_to_header_weak() -> None:
     (
         ("text/plain", ["text/plain"], "text/plain"),
         ("text/plain", [MediaType.TEXT], MediaType.TEXT),
-        ("text/plain", ["text/plain"], "text/plain"),
         ("text/plain", ["text/html"], None),
         ("text/*", ["text/html"], "text/html"),
         ("*/*", ["text/html"], "text/html"),
