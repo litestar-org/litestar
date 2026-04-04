@@ -745,3 +745,32 @@ def test_type_alias_type_keyword() -> None:
     assert param.schema.type is OpenAPIType.INTEGER  # type: ignore[union-attr]
     # ensure other attributes than the plain type are carried over correctly
     assert param.description == "foo"
+
+
+def test_optional_field_preserves_meta_constraints() -> None:
+    """Regression test for https://github.com/litestar-org/litestar/issues/4650.
+
+    ``kwarg_definition_from_field`` must extract ``Meta()`` constraints from
+    optional fields (where the inspected type is a ``UnionType`` wrapping
+    ``Metadata``), so that constraints like ``ge``, ``le``, and ``examples``
+    are not silently dropped from the generated OpenAPI schema.
+    """
+
+    class Model(Struct, kw_only=True):
+        required_field: Annotated[int, msgspec.Meta(ge=1, examples=[42])]
+        optional_field: Annotated[int, msgspec.Meta(ge=1, examples=[42])] | None = None
+
+    properties = get_schema_for_field_definition(
+        FieldDefinition.from_kwarg(name="Model", annotation=Model)
+    ).properties
+
+    assert properties is not None
+
+    # required_field should have constraints
+    assert properties["required_field"].minimum == 1.0
+    assert properties["required_field"].examples == [42]
+
+    # optional_field should be oneOf with constraints preserved on the schema
+    assert properties["optional_field"].one_of is not None
+    assert properties["optional_field"].minimum == 1
+    assert properties["optional_field"].examples == [42]
