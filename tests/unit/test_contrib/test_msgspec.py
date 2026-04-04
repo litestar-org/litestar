@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import itertools
 from dataclasses import replace
-from typing import TYPE_CHECKING, Annotated
+from typing import TYPE_CHECKING, Annotated, ClassVar
 from unittest.mock import ANY
 
 import pytest
@@ -216,3 +216,15 @@ def test_tag_field_included_in_schema() -> None:
         "required": ["foo", "regular_field"],
         "title": "Model3",
     }
+
+
+def test_msgspec_dto_with_classvar() -> None:
+    class ModelWithClassVar(Struct):
+        regular_field: str
+        class_field: ClassVar[str] = "a string in the class"
+
+    field_defs = list(MsgspecDTO.generate_field_definitions(ModelWithClassVar))
+
+    # Only the regular field should be included, not the ClassVar
+    assert len(field_defs) == 1
+    assert field_defs[0].name == "regular_field"
