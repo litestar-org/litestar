@@ -7,14 +7,34 @@ from unittest.mock import MagicMock
 import msgspec
 import pytest
 
-from litestar import get
+from litestar import Litestar, get
 from litestar._signature import SignatureModel
+from litestar.di import Provide
 from litestar.dto import DataclassDTO
 from litestar.params import Body, Parameter
 from litestar.status_codes import HTTP_200_OK, HTTP_204_NO_CONTENT
 from litestar.testing import TestClient, create_test_client
 from litestar.types import Empty
 from litestar.utils.signature import ParsedSignature
+
+
+def _make_prefixed_decoder(
+    target_type: type[Any], prefix: str
+) -> tuple[Callable[[Any], bool], Callable[[Any, Any], Any]]:
+    def predicate(annotation: Any) -> bool:
+        return annotation is target_type
+
+    def decoder(annotation: type[Any], value: Any) -> Any:
+        return annotation(f"{prefix}:{value}")
+
+    return predicate, decoder
+
+
+def _assert_unsupported_query_type(response: Any, key: str = "user_id") -> None:
+    assert response.status_code == 400
+    payload = response.json()
+    assert payload["detail"].startswith("Validation failed for GET")
+    assert payload["extra"] == [{"message": "Unsupported type: <class 'str'>", "key": key, "source": "query"}]
 
 
 def test_create_function_signature_model_parameter_parsing() -> None:
@@ -212,3 +232,114 @@ def test_dto_data_typed_as_any() -> None:
     (field,) = msgspec.structs.fields(model)
     assert field.name == "data"
     assert field.type is Any
+
+
+def test_same_app_type_decoder_does_not_leak_to_handler_without_decoder() -> None:
+    class UserId:
+        def __init__(self, value: str) -> None:
+            self.value = value
+
+    @get("/decoded", type_decoders=[_make_prefixed_decoder(UserId, "decoded")], sync_to_thread=False)
+    def decoded(user_id: UserId) -> str:
+        return user_id.value
+
+    @get("/plain", sync_to_thread=False)
+    def plain(user_id: UserId) -> str:
+        return user_id.value
+
+    with create_test_client(route_handlers=[decoded, plain]) as client:
+        assert client.get("/decoded?user_id=1").text == "decoded:1"
+        _assert_unsupported_query_type(client.get("/plain?user_id=1"))
+
+
+def test_conflicting_type_decoders_do_not_overwrite_each_other() -> None:
+    class UserId:
+        def __init__(self, value: str) -> None:
+            self.value = value
+
+    @get("/a", type_decoders=[_make_prefixed_decoder(UserId, "handler-a")], sync_to_thread=False)
+    def handler_a(user_id: UserId) -> str:
+        return user_id.value
+
+    @get("/b", type_decoders=[_make_prefixed_decoder(UserId, "handler-b")], sync_to_thread=False)
+    def handler_b(user_id: UserId) -> str:
+        return user_id.value
+
+    with create_test_client(route_handlers=[handler_a, handler_b]) as client:
+        assert client.get("/a?user_id=1").text == "handler-a:1"
+        assert client.get("/b?user_id=1").text == "handler-b:1"
+
+    with create_test_client(route_handlers=[handler_b, handler_a]) as client:
+        assert client.get("/a?user_id=1").text == "handler-a:1"
+        assert client.get("/b?user_id=1").text == "handler-b:1"
+
+
+def test_type_decoder_does_not_leak_across_apps() -> None:
+    class UserId:
+        def __init__(self, value: str) -> None:
+            self.value = value
+
+    @get("/", type_decoders=[_make_prefixed_decoder(UserId, "app-a")], sync_to_thread=False)
+    def app_a_handler(user_id: UserId) -> str:
+        return user_id.value
+
+    @get("/", sync_to_thread=False)
+    def app_b_handler(user_id: UserId) -> str:
+        return user_id.value
+
+    app_a = Litestar([app_a_handler], openapi_config=None)
+    app_b = Litestar([app_b_handler], openapi_config=None)
+
+    with TestClient(app_a) as client:
+        assert client.get("/?user_id=1").text == "app-a:1"
+
+    with TestClient(app_b) as client:
+        _assert_unsupported_query_type(client.get("/?user_id=1"))
+
+    with TestClient(app_a) as client:
+        assert client.get("/?user_id=2").text == "app-a:2"
+
+
+def test_provider_signature_model_decoder_does_not_leak() -> None:
+    class UserId:
+        def __init__(self, value: str) -> None:
+            self.value = value
+
+    async def provide_token(user_id: UserId) -> str:
+        return user_id.value
+
+    @get(
+        "/provided",
+        dependencies={"token": Provide(provide_token)},
+        type_decoders=[_make_prefixed_decoder(UserId, "provider")],
+        sync_to_thread=False,
+    )
+    def provided(token: str) -> str:
+        return token
+
+    @get("/plain", sync_to_thread=False)
+    def plain(user_id: UserId) -> str:
+        return user_id.value
+
+    with create_test_client(route_handlers=[provided, plain]) as client:
+        assert client.get("/provided?user_id=1").text == "provider:1"
+        _assert_unsupported_query_type(client.get("/plain?user_id=1"))
+
+
+def test_signature_model_creation_does_not_mutate_user_type() -> None:
+    class UserId:
+        def __init__(self, value: str) -> None:
+            self.value = value
+
+    def fn(user_id: UserId) -> None:
+        pass
+
+    SignatureModel.create(
+        dependency_name_set=set(),
+        fn=fn,
+        data_dto=None,
+        parsed_signature=ParsedSignature.from_fn(fn, {}),
+        type_decoders=[_make_prefixed_decoder(UserId, "model")],
+    )
+
+    assert not hasattr(UserId, "_decoder")
