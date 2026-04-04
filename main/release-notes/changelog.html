@@ -848,6 +848,11 @@ Previously, this fields was nullable and not required.</p>
 <p>References: <span><a class="reference external" href="https://github.com/litestar-org/litestar/issues/4294">https://github.com/litestar-org/litestar/issues/4294</a></span>, <span><a class="reference external" href="https://github.com/litestar-org/litestar/pull/4347">https://github.com/litestar-org/litestar/pull/4347</a></span></p>
 </div>
 </dd>
+<dt>Fix KeyError when ClassVar exists on msgspec Struct<a class="headerlink reference internal" href="#3.0.0-fix keyerror when classvar exists on msgspec struct" id="3.0.0-fix keyerror when classvar exists on msgspec struct">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Fix a bug in <a class="reference internal" href="../reference/dto/msgspec_dto.html#litestar.dto.msgspec_dto.MsgspecDTO" title="litestar.dto.msgspec_dto.MsgspecDTO"><code class="xref py py-class docutils literal notranslate"><span class="pre">MsgspecDTO</span></code></a> where a KeyError was raised if a <a class="reference external" href="https://jcristharif.com/msgspec/api.html#msgspec.Struct" title="(in msgspec)"><code class="xref py py-class docutils literal notranslate"><span class="pre">msgspec.Struct</span></code></a> contained a <code class="xref py py-class docutils literal notranslate"><span class="pre">ClassVar</span></code>. ClassVars are now correctly skipped when generating field definitions.</p>
+<p>References: <span><a class="reference external" href="https://github.com/litestar-org/litestar/pull/4665">https://github.com/litestar-org/litestar/pull/4665</a></span></p>
+</div>
+</dd>
 </dl>
 </section>
 </section>
