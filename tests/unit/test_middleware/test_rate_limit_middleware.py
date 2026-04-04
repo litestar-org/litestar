@@ -81,7 +81,7 @@ async def test_non_default_store(memory_store: Store) -> None:
         return None
 
     app = Litestar(
-        [handler], middleware=[RateLimitConfig(("second", 10)).middleware], stores={"rate_limit": memory_store}
+        [handler], middleware=[RateLimitConfig(rate_limit=("second", 10)).middleware], stores={"rate_limit": memory_store}
     )
 
     with TestClient(app) as client:
@@ -98,7 +98,7 @@ async def test_set_store_name(memory_store: Store) -> None:
 
     app = Litestar(
         [handler],
-        middleware=[RateLimitConfig(("second", 10), store="some_store").middleware],
+        middleware=[RateLimitConfig(rate_limit=("second", 10), store="some_store").middleware],
         stores={"some_store": memory_store},
     )
 
@@ -303,3 +303,90 @@ def test_custom_identity_function() -> None:
 
         response = client.get("/", headers={"x-private-header": "value"})
         assert response.status_code == HTTP_429_TOO_MANY_REQUESTS
+
+
+# ---------------------------------------------------------------------------
+# Tests for multi-condition rate limiting (rate_limits=)
+# ---------------------------------------------------------------------------
+
+
+def test_rate_limit_config_requires_at_least_one_limit() -> None:
+    """RateLimitConfig should raise when neither rate_limit nor rate_limits is given."""
+    import pytest
+
+    with pytest.raises(ValueError, match="Either 'rate_limit' or 'rate_limits'"):
+        RateLimitConfig()
+
+
+def test_rate_limit_config_rejects_both_fields() -> None:
+    """RateLimitConfig should raise when both rate_limit and rate_limits are given."""
+    import pytest
+
+    with pytest.raises(ValueError, match="not both"):
+        RateLimitConfig(rate_limit=("second", 5), rate_limits=[("minute", 100)])
+
+
+@travel(datetime.utcnow, tick=False)
+def test_multiple_rate_limits_passes_when_all_satisfied() -> None:
+    """Requests within all limits should succeed."""
+
+    @get("/")
+    def handler() -> None:
+        return None
+
+    config = RateLimitConfig(rate_limits=[("second", 3), ("minute", 5)])
+
+    with create_test_client(route_handlers=[handler], middleware=[config.middleware]) as client:
+        # First 3 requests are within both windows — all must succeed
+        for _ in range(3):
+            assert client.get("/").status_code == HTTP_200_OK
+
+
+@travel(datetime.utcnow, tick=False)
+def test_multiple_rate_limits_blocked_by_tighter_window() -> None:
+    """The per-second limit should trigger even though the per-minute limit is not yet reached."""
+
+    @get("/")
+    def handler() -> None:
+        return None
+
+    # Allow 2/second but 100/minute — the second window is the bottleneck
+    config = RateLimitConfig(rate_limits=[("second", 2), ("minute", 100)])
+
+    with create_test_client(route_handlers=[handler], middleware=[config.middleware]) as client:
+        assert client.get("/").status_code == HTTP_200_OK
+        assert client.get("/").status_code == HTTP_200_OK
+        # Third request in the same second exceeds the per-second limit
+        assert client.get("/").status_code == HTTP_429_TOO_MANY_REQUESTS
+
+
+@travel(datetime.utcnow, tick=False)
+def test_multiple_rate_limits_blocked_by_wider_window() -> None:
+    """The per-minute limit should trigger once it is exhausted, even though the per-second limit still has quota."""
+
+    @get("/")
+    def handler() -> None:
+        return None
+
+    # 5/second but only 3/minute — the minute window will be exhausted first
+    config = RateLimitConfig(rate_limits=[("second", 5), ("minute", 3)])
+
+    with create_test_client(route_handlers=[handler], middleware=[config.middleware]) as client:
+        assert client.get("/").status_code == HTTP_200_OK
+        assert client.get("/").status_code == HTTP_200_OK
+        assert client.get("/").status_code == HTTP_200_OK
+        # 4th request is still within the second window but exhausts the minute quota
+        assert client.get("/").status_code == HTTP_429_TOO_MANY_REQUESTS
+
+
+def test_rate_limits_all_rate_limits_property_single() -> None:
+    """_all_rate_limits returns a one-element list when only rate_limit is given."""
+    config = RateLimitConfig(rate_limit=("hour", 50))
+    assert config._all_rate_limits == [("hour", 50)]
+
+
+def test_rate_limits_all_rate_limits_property_multi() -> None:
+    """_all_rate_limits returns the full list when rate_limits is given."""
+    limits = [("second", 10), ("minute", 200), ("hour", 5000)]
+    config = RateLimitConfig(rate_limits=limits)
+    assert config._all_rate_limits == limits
