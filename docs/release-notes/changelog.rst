@@ -349,6 +349,7 @@
 
           from typing import ReadOnly, TypedDict
 
+
           class User(TypedDict):
               id: ReadOnly[int]
 
