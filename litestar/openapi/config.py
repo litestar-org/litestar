@@ -83,6 +83,16 @@ class OpenAPIConfig:
     """URL to page that contains terms of service."""
     use_handler_docstrings: bool = field(default=False)
     """Draw operation description from route handler docstring if not otherwise provided."""
+    auto_detect_exceptions: bool = field(default=False)
+    """Automatically detect ``HTTPException`` subclasses raised in handler bodies and include
+    them in the OpenAPI error responses.
+
+    When enabled, handler source code is scanned at startup to discover ``raise`` statements
+    and document the corresponding error status codes.  Only exceptions raised directly inside
+    the handler function are detected; guards and dependencies are **not** scanned.
+
+    .. versionadded:: 3.0.0
+    """
     webhooks: dict[str, PathItem | Reference] | None = field(default=None)
     """A mapping of key to either :class:`PathItem <litestar.openapi.spec.path_item.PathItem>` or.
 
