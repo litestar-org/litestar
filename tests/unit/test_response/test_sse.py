@@ -288,3 +288,75 @@ async def test_sse_ping_with_str_chunks() -> None:
     body = b"".join(received).decode()
     assert "hello" in body
     assert "world" in body
+
+
+async def test_sse_send_raises_without_ping_interval() -> None:
+    """_send requires a lock (and therefore ping_interval); RuntimeError if missing."""
+
+    async def empty() -> AsyncIterator[str]:
+        return
+        yield
+
+    response = ASGIStreamingSSEResponse(
+        iterator=empty(),
+        media_type="text/event-stream",
+        status_code=200,
+    )
+
+    async def mock_send(message: Message) -> None:
+        pass
+
+    with pytest.raises(RuntimeError, match="_send called without a send lock"):
+        await response._send(mock_send, b"data")
+
+
+async def test_sse_ping_raises_without_ping_interval() -> None:
+    """_ping requires ping_interval; RuntimeError if called without one."""
+
+    async def empty() -> AsyncIterator[str]:
+        return
+        yield
+
+    response = ASGIStreamingSSEResponse(
+        iterator=empty(),
+        media_type="text/event-stream",
+        status_code=200,
+    )
+
+    async def mock_send(message: Message) -> None:
+        pass
+
+    with pytest.raises(RuntimeError, match="_ping called without a ping interval"):
+        await response._ping(mock_send, anyio.Event())
+
+
+async def test_sse_send_body_delegates_to_parent_without_ping() -> None:
+    """Without ping_interval, send_body falls through to the parent (no lock, no task group)."""
+
+    async def gen() -> AsyncIterator[str]:
+        yield "chunk1"
+        yield "chunk2"
+
+    response = ASGIStreamingSSEResponse(
+        iterator=gen(),
+        media_type="text/event-stream",
+        status_code=200,
+    )
+
+    received: list[bytes] = []
+
+    async def mock_send(message: Message) -> None:
+        if message.get("type") == "http.response.body":
+            body = message.get("body", b"")
+            received.append(body if isinstance(body, bytes) else b"")
+
+    async def mock_receive() -> HTTPDisconnectEvent:
+        await anyio.sleep(10)
+        return {"type": "http.disconnect"}
+
+    await response.send_body(mock_send, mock_receive)
+
+    body = b"".join(received).decode()
+    assert "chunk1" in body
+    assert "chunk2" in body
+    assert ": ping" not in body
