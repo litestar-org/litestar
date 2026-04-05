@@ -371,3 +371,9 @@
         Add a new attribute :attr:`~litestar.middleware.ASGIMiddleware.should_bypass_for_scope`;
         A callable which takes in a :class:`~litestar.types.Scope` and returns a boolean
         to indicate whether to bypass the middleware for the current request.
+
+    .. change:: Fix KeyError when ClassVar exists on msgspec Struct
+        :type: bugfix
+        :pr: 4665
+
+        Fix a bug in :class:`MsgspecDTO` where a KeyError was raised if a :class:`msgspec.Struct` contained a :class:`~typing.ClassVar`. ClassVars are now correctly skipped when generating field definitions.

@@ -398,15 +398,16 @@ class MediaTypeHeader:
         # Use fixed point values with two decimals to avoid problems
         # when comparing float values
         quality = 100
-        if "q" in self.params:
+        qparam = self.params.get("q")
+        if qparam is not None:
             with suppress(ValueError):
-                quality = int(100 * float(self.params["q"]))
+                quality = int(100 * float(qparam))
 
         if self.maintype == "*":
             specificity = 0
         elif self.subtype == "*":
             specificity = 1
-        elif not self.params or ("q" in self.params and len(self.params) == 1):
+        elif not self.params or (qparam is not None and len(self.params) == 1):
             # no params or 'q' is the only one which we ignore
             specificity = 2
         else:
