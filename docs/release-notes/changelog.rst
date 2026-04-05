@@ -18,6 +18,7 @@
 
     .. change:: Add ``ping_interval`` to ``ServerSentEvent`` for keepalive pings
         :type: feature
+        :pr: 4623
         :issue: 4082
 
         Added optional ``ping_interval`` parameter to :class:`ServerSentEvent <litestar.response.ServerSentEvent>` that
