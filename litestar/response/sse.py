@@ -152,13 +152,15 @@ class ASGIStreamingSSEResponse(ASGIStreamingResponse):
 
     async def _send(self, send: Send, payload: bytes) -> None:
         """Send a body chunk with lock for concurrent ping/stream safety."""
-        assert self._send_lock is not None  # noqa: S101
+        if self._send_lock is None:
+            raise RuntimeError("_send called without a send lock; ping_interval must be set")
         async with self._send_lock:
             await send({"type": "http.response.body", "body": payload, "more_body": True})
 
     async def _ping(self, send: Send, stop_event: anyio.Event) -> None:
         """Send SSE comment keepalive pings at the configured interval."""
-        assert self._ping_interval is not None  # noqa: S101
+        if self._ping_interval is None:
+            raise RuntimeError("_ping called without a ping interval configured")
         while not stop_event.is_set():
             with anyio.move_on_after(self._ping_interval):
                 await stop_event.wait()
@@ -264,12 +266,12 @@ class ServerSentEvent(Stream):
         sends periodic SSE comment pings. Otherwise delegates to the parent implementation.
 
         Args:
+            request: The :class:`Request <.connection.Request>` instance.
             background: Background task(s) to be executed after the response is sent.
             cookies: A list of cookies to be set on the response.
             headers: Additional headers to be merged with the response headers. Response headers take precedence.
             is_head_response: Whether the response is a HEAD response.
             media_type: Media type for the response. If ``media_type`` is already set on the response, this is ignored.
-            request: The :class:`Request <.connection.Request>` instance.
             status_code: Status code for the response. If ``status_code`` is already set on the response, this is
                 ignored.
             type_encoders: A dictionary of type encoders to use for encoding the response content.
