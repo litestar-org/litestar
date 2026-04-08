@@ -523,6 +523,7 @@ class SwaggerRenderPlugin(OpenAPIRenderPlugin):
         css_url: str | None = None,
         standalone_preset_js_url: str | None = None,
         init_oauth: dict[str, Any] | bytes | None = None,
+        oauth2_redirect_url: str | None = None,
         path: str | Sequence[str] = "/swagger",
         **kwargs: Any,
     ) -> None:
@@ -539,6 +540,10 @@ class SwaggerRenderPlugin(OpenAPIRenderPlugin):
             init_oauth: JSON to initialize Swagger UI OAuth2 by calling the ``initOAuth`` method.
                 Refer to the following URL for details:
                 `Swagger-UI <https://swagger.io/docs/open-source-tools/swagger-ui/usage/oauth2/>`_.
+            oauth2_redirect_url: Absolute URL of the ``oauth2-redirect.html`` page served by Swagger UI.
+                When set, this value is passed as ``oauth2RedirectUrl`` in the ``SwaggerUIBundle`` configuration,
+                overriding Swagger UI's default behaviour of computing the URL from the current page location.
+                This is useful when the API is mounted under a sub-path where the auto-computed URL would be wrong.
             path: Path to serve the OpenAPI UI at.
             **kwargs: Additional arguments to pass to the base class.
         """
@@ -549,6 +554,7 @@ class SwaggerRenderPlugin(OpenAPIRenderPlugin):
             or f"https://cdn.jsdelivr.net/npm/swagger-ui-dist@{version}/swagger-ui-standalone-preset.js"
         )
         self.init_oauth = init_oauth or {}
+        self.oauth2_redirect_url = oauth2_redirect_url
         super().__init__(path=path, **kwargs)
 
     def render(self, request: Request, openapi_schema: dict[str, Any]) -> bytes:
@@ -603,7 +609,11 @@ class SwaggerRenderPlugin(OpenAPIRenderPlugin):
                   spec: """,
                 self.render_json(request, openapi_schema),
                 b""",
-                  dom_id: '#swagger-container',
+                  dom_id: '#swagger-container',""",
+                f"\n                  oauth2RedirectUrl: '{self.oauth2_redirect_url}',".encode()
+                if self.oauth2_redirect_url
+                else b"",
+                b"""
                   deepLinking: true,
                   showExtensions: true,
                   showCommonExtensions: true,
