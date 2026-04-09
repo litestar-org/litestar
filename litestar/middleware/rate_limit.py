@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from time import time
+from time import monotonic
 from typing import TYPE_CHECKING, Any, Literal, cast
 
 from litestar.datastructures import MutableScopeHeaders
@@ -148,7 +148,7 @@ class RateLimitMiddleware(AbstractMiddleware):
             An :class:`CacheObject`.
         """
         duration = DURATION_VALUES[self.unit]
-        now = int(time())
+        now = int(monotonic())
         cached_string = await store.get(key)
         if cached_string:
             cache_object = CacheObject(**decode_json(value=cached_string))
@@ -172,7 +172,7 @@ class RateLimitMiddleware(AbstractMiddleware):
         Returns:
             None
         """
-        cache_object.history = [int(time()), *cache_object.history]
+        cache_object.history = [int(monotonic()), *cache_object.history]
         await store.set(key, encode_json(cache_object), expires_in=DURATION_VALUES[self.unit])
 
     async def should_check_request(self, request: Request[Any, Any, Any]) -> bool:
@@ -208,7 +208,7 @@ class RateLimitMiddleware(AbstractMiddleware):
             self.config.rate_limit_policy_header_key: f"{self.max_requests}; w={DURATION_VALUES[self.unit]}",
             self.config.rate_limit_limit_header_key: str(self.max_requests),
             self.config.rate_limit_remaining_header_key: remaining_requests,
-            self.config.rate_limit_reset_header_key: str(cache_object.reset - int(time())),
+            self.config.rate_limit_reset_header_key: str(cache_object.reset - int(monotonic())),
         }
 
 
