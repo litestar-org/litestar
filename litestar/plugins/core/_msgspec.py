@@ -37,8 +37,16 @@ class MsgspecDIPlugin(DIPlugin):
 def kwarg_definition_from_field(field: msgspec.inspect.Field) -> tuple[ParameterKwarg | None, dict[str, Any]]:
     extra: dict[str, Any] = {}
     kwargs: dict[str, Any] = {}
+    meta: msgspec.inspect.Metadata | None = None
     if isinstance(field.type, msgspec.inspect.Metadata):
         meta = field.type
+    elif isinstance(field.type, msgspec.inspect.UnionType):
+        meta = next(
+            (member for member in field.type.types if isinstance(member, msgspec.inspect.Metadata)),
+            None,
+        )
+
+    if meta is not None:
         field_type = meta.type
         if extra_json_schema := meta.extra_json_schema:
             kwargs["title"] = extra_json_schema.get("title")
