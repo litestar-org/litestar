@@ -98,7 +98,7 @@ class RateLimitMiddleware(AbstractMiddleware):
             if getattr(route_handler, "is_mount", False):
                 key += "::mount"
 
-            async with self._lock():    
+            async with self._lock:    
                 cache_object = await self.retrieve_cached_history(key, store)
                 if len(cache_object.history) >= self.max_requests:
                     raise TooManyRequestsException(
