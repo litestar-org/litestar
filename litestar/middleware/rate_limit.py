@@ -4,6 +4,8 @@ from dataclasses import dataclass, field
 from time import time
 from typing import TYPE_CHECKING, Any, Literal, cast
 
+import anyio
+
 from litestar.datastructures import MutableScopeHeaders
 from litestar.enums import ScopeType
 from litestar.exceptions import TooManyRequestsException
@@ -73,6 +75,7 @@ class RateLimitMiddleware(AbstractMiddleware):
         self.max_requests: int = config.rate_limit[1]
         self.unit: DurationUnit = config.rate_limit[0]
         self.get_identifier_for_request = config.identifier_for_request
+        self._lock = anyio.Lock()
 
     async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
         """ASGI callable.
@@ -95,14 +98,15 @@ class RateLimitMiddleware(AbstractMiddleware):
             if getattr(route_handler, "is_mount", False):
                 key += "::mount"
 
-            cache_object = await self.retrieve_cached_history(key, store)
-            if len(cache_object.history) >= self.max_requests:
-                raise TooManyRequestsException(
-                    headers=self.create_response_headers(cache_object=cache_object)
-                    if self.config.set_rate_limit_headers
-                    else None
-                )
-            await self.set_cached_history(key=key, cache_object=cache_object, store=store)
+            async with self._lock:
+                cache_object = await self.retrieve_cached_history(key, store)
+                if len(cache_object.history) >= self.max_requests:
+                    raise TooManyRequestsException(
+                        headers=self.create_response_headers(cache_object=cache_object)
+                        if self.config.set_rate_limit_headers
+                        else None
+                    )
+                await self.set_cached_history(key=key, cache_object=cache_object, store=store)
             if self.config.set_rate_limit_headers:
                 send = self.create_send_wrapper(send=send, cache_object=cache_object)
 
