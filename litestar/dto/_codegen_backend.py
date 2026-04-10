@@ -434,7 +434,12 @@ class TransferFunctionFactory:
                 else:
                     level_1, level_2, *_ = self._re_index_access.split(source_instance_name, maxsplit=1)
 
-                new_source_instance_name = self._create_local_name(f"{level_1}_{level_2}")
+                # Sanitize to a valid identifier: bracket accesses like ['key'] or dots
+                # can appear in components when source_instance_name is itself an
+                # expression (e.g. "source_instance_0['wrapper'].inner") rather than a
+                # plain variable name.
+                combined = re.sub(r"[^a-zA-Z0-9_]", "_", f"{level_1}_{level_2}")
+                new_source_instance_name = self._create_local_name(combined)
                 self._add_stmt(f"{new_source_instance_name} = {source_instance_name}")
                 source_instance_name = new_source_instance_name
 

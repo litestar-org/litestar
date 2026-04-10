@@ -676,3 +676,55 @@ class Outer:
             wrapper_attribute_name=None,
             is_data_field=True,
         )
+
+
+def test_codegen_invalid_identifier_from_nested_mapping_then_attribute_access(
+    asgi_connection: Request[Any, Any, Any],
+    create_module: Callable[[str], ModuleType],
+) -> None:
+    """Regression test: codegen backend generated an invalid Python identifier when
+    source_instance_name was a mapping-access expression (e.g. ``source_instance_0['metadata']``)
+    and the accessed field was itself a nested struct with multiple sub-fields.
+
+    The combination produced ``source_instance_0['metadata']_pagination_0`` as a
+    variable name, which is a SyntaxError.  The pattern that triggers this is:
+
+        Container                      (2+ fields, so mapping-access optimisation runs)
+          └── wrapper: Wrapper         (exactly 1 field, so optimisation is SKIPPED here,
+                                        leaving source_instance_name as the raw expression)
+                └── inner: Inner       (2+ fields, so optimisation runs again — and tries
+                                        to build a name from the raw expression)
+    """
+    module = create_module("""
+import msgspec
+
+class Inner(msgspec.Struct):
+    a: int
+    b: str
+
+class Wrapper(msgspec.Struct):
+    # Exactly one field so the "assign to local variable" optimisation is skipped
+    # at this level, leaving the mapping-access expression as source_instance_name.
+    inner: Inner
+
+class Container(msgspec.Struct):
+    data: str
+    wrapper: Wrapper
+""")
+
+    class ContainerDTO(MsgspecDTO[module.Container]):  # type: ignore[name-defined]
+        config = DTOConfig(max_nested_depth=3, experimental_codegen_backend=True)
+
+    # This must not raise SyntaxError / compile error during backend instantiation
+    backend = DTOCodegenBackend(
+        handler_id="test",
+        dto_factory=ContainerDTO,
+        field_definition=TransferDTOFieldDefinition.from_annotation(module.Container),
+        model_type=module.Container,
+        wrapper_attribute_name=None,
+        is_data_field=False,
+    )
+
+    instance = module.Container(data="hello", wrapper=module.Wrapper(inner=module.Inner(a=1, b="two")))  # type: ignore[name-defined]
+    result = backend.encode_data(instance)
+    assert msgspec.to_builtins(result) == {"data": "hello", "wrapper": {"inner": {"a": 1, "b": "two"}}}
