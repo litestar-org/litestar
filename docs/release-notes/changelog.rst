@@ -363,7 +363,6 @@
         A callable which takes in a :class:`~litestar.types.Scope` and returns a boolean
         to indicate whether to bypass the middleware for the current request.
 
-
     .. change:: Fix KeyError when ClassVar exists on msgspec Struct
         :type: bugfix
         :pr: 4665
