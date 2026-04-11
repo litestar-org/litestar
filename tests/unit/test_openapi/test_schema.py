@@ -1,6 +1,7 @@
 import sys
 from dataclasses import dataclass
 from datetime import UTC, date, datetime
+from decimal import Decimal
 from enum import Enum, StrEnum, auto
 from typing import (
     TYPE_CHECKING,
@@ -745,3 +746,10 @@ def test_type_alias_type_keyword() -> None:
     assert param.schema.type is OpenAPIType.INTEGER  # type: ignore[union-attr]
     # ensure other attributes than the plain type are carried over correctly
     assert param.description == "foo"
+
+
+def test_decimal_schema_type() -> None:
+    from litestar._openapi.schema_generation.schema import create_schema_for_annotation
+
+    schema = create_schema_for_annotation(Decimal)
+    assert schema.type == OpenAPIType.STRING

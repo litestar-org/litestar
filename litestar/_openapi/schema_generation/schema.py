@@ -77,7 +77,7 @@ KWARG_DEFINITION_ATTRIBUTE_TO_OPENAPI_PROPERTY_MAP: dict[str, str] = {
 }
 
 TYPE_MAP: dict[type[Any] | None | Any, Schema] = {
-    Decimal: Schema(type=OpenAPIType.NUMBER),
+    Decimal: Schema(type=OpenAPIType.STRING),
     defaultdict: Schema(type=OpenAPIType.OBJECT),
     deque: Schema(type=OpenAPIType.ARRAY),
     dict: Schema(type=OpenAPIType.OBJECT),

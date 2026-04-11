@@ -362,3 +362,11 @@
         Add a new attribute :attr:`~litestar.middleware.ASGIMiddleware.should_bypass_for_scope`;
         A callable which takes in a :class:`~litestar.types.Scope` and returns a boolean
         to indicate whether to bypass the middleware for the current request.
+
+
+    .. change:: Fix OpenAPI schema type for Decimal to match serialization
+        :type: bugfix
+        :pr: 4682
+
+        The OpenAPI schema generation now correctly assigns ``string`` type to ``decimal.Decimal``
+        fields instead of ``number``, matching the default string serialization used by msgspec.
