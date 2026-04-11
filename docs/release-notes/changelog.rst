@@ -370,3 +370,8 @@
 
         The OpenAPI schema generation now correctly assigns ``string`` type to ``decimal.Decimal``
         fields instead of ``number``, matching the default string serialization used by msgspec.
+    .. change:: Fix KeyError when ClassVar exists on msgspec Struct
+        :type: bugfix
+        :pr: 4665
+
+        Fix a bug in :class:`MsgspecDTO` where a KeyError was raised if a :class:`msgspec.Struct` contained a :class:`~typing.ClassVar`. ClassVars are now correctly skipped when generating field definitions.
