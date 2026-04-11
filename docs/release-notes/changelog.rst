@@ -364,14 +364,6 @@
         to indicate whether to bypass the middleware for the current request.
 
 
-    .. change:: Fix OpenAPI schema type for Decimal to match serialization
-        :type: bugfix
-        :pr: 4682
-
-        The OpenAPI schema generation now correctly assigns ``string`` type to ``decimal.Decimal``
-        fields instead of ``number``, matching the default string serialization used by msgspec.
-
-
     .. change:: Fix KeyError when ClassVar exists on msgspec Struct
         :type: bugfix
         :pr: 4665
