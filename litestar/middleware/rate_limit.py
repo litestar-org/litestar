@@ -158,9 +158,6 @@ class RateLimitMiddleware(AbstractMiddleware):
             cache_object = CacheObject(**decode_json(value=cached_string))
             if cache_object.reset <= now:
                 return CacheObject(history=[], reset=now + duration)
-
-            while cache_object.history and cache_object.history[-1] <= now - duration:
-                cache_object.history.pop()
             return cache_object
 
         return CacheObject(history=[], reset=now + duration)
