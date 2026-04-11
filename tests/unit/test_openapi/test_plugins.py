@@ -64,6 +64,38 @@ def test_plugins_csrf_httponly() -> None:
         assert swagger_fragment not in resp.text
 
 
+def test_swagger_ui_oauth2_redirect_url() -> None:
+    redirect_url = "https://example.com/api/v1/schema/oauth2-redirect.html"
+    app = Litestar(
+        openapi_config=OpenAPIConfig(
+            title="Litestar Example",
+            version="0.0.1",
+            render_plugins=[SwaggerRenderPlugin(oauth2_redirect_url=redirect_url)],
+        ),
+    )
+
+    with TestClient(app=app) as client:
+        resp = client.get("/schema/swagger")
+        assert resp.status_code == 200
+        assert f"oauth2RedirectUrl: '{redirect_url}'" in resp.text
+
+
+def test_swagger_ui_oauth2_redirect_url_unset() -> None:
+    """When oauth2_redirect_url is not set, Swagger UI computes it from the page URL (default behaviour)."""
+    app = Litestar(
+        openapi_config=OpenAPIConfig(
+            title="Litestar Example",
+            version="0.0.1",
+            render_plugins=[SwaggerRenderPlugin()],
+        ),
+    )
+
+    with TestClient(app=app) as client:
+        resp = client.get("/schema/swagger")
+        assert resp.status_code == 200
+        assert "oauth2RedirectUrl" not in resp.text
+
+
 @pytest.mark.parametrize(
     "scalar_config",
     [
