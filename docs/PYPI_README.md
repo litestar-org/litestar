@@ -68,10 +68,12 @@ pip install 'litestar[standard]'
 ```python title="app.py"
 from litestar import Litestar, get
 
+
 @get("/")
 async def hello_world() -> dict[str, str]:
     """Keeping the tradition alive with hello world."""
     return {"hello": "world"}
+
 
 app = Litestar(route_handlers=[hello_world])
 ```
@@ -282,7 +284,9 @@ from litestar.handlers.base import BaseRouteHandler
 from litestar.exceptions import NotAuthorizedException
 
 
-async def is_authorized(connection: ASGIConnection, handler: BaseRouteHandler) -> None:
+async def is_authorized(
+    connection: ASGIConnection, handler: BaseRouteHandler
+) -> None:
     # validate authorization
     # if not authorized, raise NotAuthorizedException
     raise NotAuthorizedException()
