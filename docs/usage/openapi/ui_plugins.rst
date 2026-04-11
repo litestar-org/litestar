@@ -137,6 +137,34 @@ Here's some example plugin configurations:
         .. literalinclude:: /examples/openapi/plugins/swagger_ui_config.py
             :language: python
 
+Default OpenAPI Schema Files
+----------------------------
+
+By default, Litestar always serves the OpenAPI schema as a JSON file, even if you don't explicitly configure it. The
+following endpoints are available under the OpenAPI root path (``/schema`` by default):
+
+- ``/schema/openapi.json`` — The OpenAPI schema as JSON. This is always available, as it is required by the UI plugins.
+- ``/schema/openapi.yaml`` and ``/schema/openapi.yml`` — The OpenAPI schema as YAML. Available when
+  :class:`YamlRenderPlugin <litestar.openapi.plugins.YamlRenderPlugin>` is included in ``render_plugins``.
+
+.. note::
+
+    The YAML endpoints require the `PyYAML <https://pyyaml.org/wiki/PyYAMLDocumentation>`_ library, which can be
+    installed via the ``litestar[yaml]`` package extra.
+
+These files can be used to import your API schema into external tools such as `Scalar API Client
+<https://docs.scalar.com/api-client/rest-api-client>`_, `Postman <https://www.postman.com/>`_, or any other tool that
+supports OpenAPI specifications.
+
+For example, if your app is running at ``http://localhost:8000``, you can access:
+
+- ``http://localhost:8000/schema/openapi.json``
+- ``http://localhost:8000/schema/openapi.yaml``
+
+If you change the root path (see below), the schema files will be served under the new root path instead, e.g.,
+``/docs/openapi.json``.
+
+
 Configuring the OpenAPI Root Path
 ---------------------------------
 
