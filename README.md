@@ -602,6 +602,9 @@ see [the contribution guide](CONTRIBUTING.rst).
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/s-aleshin"><img src="https://avatars.githubusercontent.com/u/66841202?v=4?s=100" width="100px;" alt="Sergei Aleshin"/><br /><sub><b>Sergei Aleshin</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=s-aleshin" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/IDrokin117"><img src="https://avatars.githubusercontent.com/u/41319097?v=4?s=100" width="100px;" alt="Igor Drokin"/><br /><sub><b>Igor Drokin</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=IDrokin117" title="Code">💻</a> <a href="https://github.com/litestar-org/litestar/commits?author=IDrokin117" title="Tests">⚠️</a> <a href="https://github.com/litestar-org/litestar/commits?author=IDrokin117" title="Documentation">📖</a></td>
     </tr>
+    <tr>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/TanayK07"><img src="https://avatars.githubusercontent.com/u/95276223?v=4?s=100" width="100px;" alt="Tanay Kedia"/><br /><sub><b>Tanay Kedia</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=TanayK07" title="Code">💻</a> <a href="https://github.com/litestar-org/litestar/commits?author=TanayK07" title="Tests">⚠️</a> <a href="https://github.com/litestar-org/litestar/commits?author=TanayK07" title="Documentation">📖</a></td>
+    </tr>
   </tbody>
 </table>
 
