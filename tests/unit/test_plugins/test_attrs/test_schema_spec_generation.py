@@ -48,6 +48,6 @@ def test_spec_generation() -> None:
                 },
             },
             "type": "object",
-            "required": ["complex", "first_name", "id", "last_name"],
+            "required": ["complex", "first_name", "id", "last_name", "optional", "pets"],
             "title": "Person",
         }

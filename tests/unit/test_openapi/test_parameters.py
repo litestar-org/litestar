@@ -82,7 +82,7 @@ def test_create_parameters(person_controller: type[Controller]) -> None:
     assert is_schema_value(name.schema)
     assert name.schema.one_of
     assert len(name.schema.one_of) == 3
-    assert not name.required
+    assert name.required
     assert name.schema.examples
 
     assert from_date.param_in == ParamType.QUERY
