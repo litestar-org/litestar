@@ -55,7 +55,7 @@ class StructSchemaPlugin(OpenAPISchemaPlugin):
         # manually
         if struct_info.tag_field:
             # using a Literal here will set these as a const in the schema
-            property_fields[struct_info.tag_field] = FieldDefinition.from_annotation(Literal[struct_info.tag])  # pyright: ignore
+            property_fields[struct_info.tag_field] = FieldDefinition.from_annotation(Literal[struct_info.tag])
             required.append(struct_info.tag_field)
 
         return schema_creator.create_component_schema(

@@ -1,3 +1,5 @@
+# pyright: reportUnnecessaryTypeIgnoreComment=false
+
 from __future__ import annotations
 
 import contextlib
@@ -297,7 +299,7 @@ class HTTPRouteHandler(BaseRouteHandler):
         self.after_request: AsyncAfterRequestHookHandler | None = (
             ensure_async_callable(after_request) if after_request else None  # type: ignore[assignment]
         )
-        self.after_response: AsyncAfterResponseHookHandler | None = (  # pyright: ignore
+        self.after_response: AsyncAfterResponseHookHandler | None = (  # pyright: ignore[reportAttributeAccessIssue]
             ensure_async_callable(after_response) if after_response else None
         )
         self.background = background
@@ -529,7 +531,7 @@ class HTTPRouteHandler(BaseRouteHandler):
 
     @property
     def request_max_body_size(self) -> int | None:
-        return value_or_default(self._request_max_body_size, None)  # pyright: ignore
+        return value_or_default(self._request_max_body_size, None)  # pyright: ignore[reportReturnType]
 
     def on_registration(self, route: BaseRoute, app: Litestar) -> None:
         super().on_registration(route=route, app=app)
@@ -708,7 +710,7 @@ class HTTPRouteHandler(BaseRouteHandler):
     async def _call_handler_function(
         self,
         request: Request,
-    ) -> ASGIApp:  # pyright: ignore[reportGeneralTypeIssues]
+    ) -> ASGIApp:
         """Call the before request handlers, retrieve any data required for the route handler, and call the route
         handler's ``to_response`` method.
 

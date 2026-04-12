@@ -1,3 +1,5 @@
+# pyright: reportUnnecessaryTypeIgnoreComment=false
+
 import zlib
 from collections.abc import AsyncIterator, Callable
 from io import BytesIO

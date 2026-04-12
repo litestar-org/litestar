@@ -1,3 +1,5 @@
+# pyright: reportUnnecessaryTypeIgnoreComment=false
+
 import pydantic as pydantic_v2
 import pytest
 

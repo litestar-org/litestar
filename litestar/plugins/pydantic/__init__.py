@@ -29,9 +29,7 @@ def _model_dump(
     by_alias: bool = False,
     round_trip: bool = False,
 ) -> dict[str, Any]:
-    return (
-        model.model_dump(mode="json", by_alias=by_alias, round_trip=round_trip)  # pyright: ignore
-    )
+    return model.model_dump(mode="json", by_alias=by_alias, round_trip=round_trip)
 
 
 def _model_dump_json(
@@ -39,9 +37,7 @@ def _model_dump_json(
     by_alias: bool = False,
     round_trip: bool = False,
 ) -> str:
-    return (
-        model.model_dump_json(by_alias=by_alias, round_trip=round_trip)  # pyright: ignore
-    )
+    return model.model_dump_json(by_alias=by_alias, round_trip=round_trip)
 
 
 class PydanticPlugin(InitPlugin):

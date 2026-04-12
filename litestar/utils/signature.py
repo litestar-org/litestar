@@ -31,7 +31,7 @@ _GLOBAL_NAMES = {
     for namespace, export in chain(
         tuple(getmembers(types)), tuple(getmembers(connection)), tuple(getmembers(datastructures))
     )
-    if namespace[0].isupper() and namespace in chain(types.__all__, connection.__all__, datastructures.__all__)  # pyright: ignore
+    if namespace[0].isupper() and namespace in chain(types.__all__, connection.__all__, datastructures.__all__)
 }
 """A mapping of names used for handler signature forward-ref resolution.
 
@@ -146,8 +146,7 @@ def get_fn_type_hints(fn: Any, namespace: dict[str, Any] | None = None) -> dict[
 
     # inspect the underlying function for methods
     if hasattr(fn_to_inspect, "__func__"):
-        fn_to_inspect = fn_to_inspect.__func__  # pyright: ignore
-
+        fn_to_inspect = fn_to_inspect.__func__  # pyright: ignore[reportFunctionMemberAccess]
     # Order important. If a litestar name has been overridden in the function module, we want
     # to use that instead of the litestar one.
     namespace = {

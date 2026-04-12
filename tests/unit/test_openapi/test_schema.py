@@ -1,3 +1,5 @@
+# pyright: reportUnnecessaryTypeIgnoreComment=false
+
 import sys
 from dataclasses import dataclass
 from datetime import UTC, date, datetime
@@ -595,6 +597,7 @@ def test_not_generating_examples_property() -> None:
 
 def test_process_schema_result_with_unregistered_object_schema() -> None:
     """This test ensures that if a schema is created for an object and not registered in the schema registry, the
+
     schema is returned as-is, and not referenced.
     """
     schema = Schema(title="has title", type=OpenAPIType.OBJECT)
@@ -607,11 +610,11 @@ def test_type_union(base_type: type) -> None:
     if base_type is dataclass:
 
         @dataclass
-        class ModelA:  # pyright: ignore
+        class ModelA:  # pyright: ignore[reportRedeclaration]
             pass
 
         @dataclass
-        class ModelB:  # pyright: ignore
+        class ModelB:  # pyright: ignore[reportRedeclaration]
             pass
 
     else:
@@ -637,11 +640,11 @@ def test_type_union_with_none(base_type: type) -> None:
     if base_type is dataclass:
 
         @dataclass
-        class ModelA:  # pyright: ignore
+        class ModelA:  # pyright: ignore[reportRedeclaration]
             pass
 
         @dataclass
-        class ModelB:  # pyright: ignore
+        class ModelB:  # pyright: ignore[reportRedeclaration]
             pass
 
     else:
@@ -712,7 +715,7 @@ def test_unconsumed_path_parameters_are_documented() -> None:
     params = app.openapi_schema.paths["/{param1}/{param2}/{param3}"].get.parameters  # type: ignore[index, union-attr]
     assert params
     assert len(params) == 3
-    for i, param in enumerate(sorted(params, key=lambda p: p.name), 1):  # pyright: ignore
+    for i, param in enumerate(sorted(params, key=lambda p: p.name), 1):  # pyright: ignore[reportAttributeAccessIssue]
         assert isinstance(param, OpenAPIParameter)
         assert param.name == f"param{i}"
         assert param.required is True

@@ -14,7 +14,7 @@ if TYPE_CHECKING:
     from litestar.types import Receive, Scope, Send
 
 
-class DummyApp(MiddlewareProtocol):  # pyright: ignore
+class DummyApp(MiddlewareProtocol):
     async def __call__(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
         return
 
@@ -28,7 +28,7 @@ def test_allowed_hosts_middleware() -> None:
     cur = client.app.asgi_router.root_route_map_node.children["/"].asgi_handlers["GET"][0]
     while hasattr(cur, "app"):
         unpacked_middleware.append(cur)
-        cur = cast("Any", cur.app)  # pyright: ignore
+        cur = cast("Any", cur.app)  # pyright: ignore[reportFunctionMemberAccess]
     unpacked_middleware.append(cur)
 
     allowed_hosts_middleware, *_ = unpacked_middleware

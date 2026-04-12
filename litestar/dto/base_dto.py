@@ -1,3 +1,5 @@
+# pyright: reportUnnecessaryTypeIgnoreComment=false
+
 from __future__ import annotations
 
 import dataclasses
@@ -88,7 +90,7 @@ class AbstractDTO(Generic[T]):
         if not field_definition.is_type_var:
             cls_dict.update(model_type=field_definition.annotation)
 
-        return type(f"{cls.__name__}[{annotation}]", (cls,), cls_dict)  # pyright: ignore
+        return type(f"{cls.__name__}[{annotation}]", (cls,), cls_dict)  # pyright: ignore[reportReturnType]
 
     def __init_subclass__(cls, **kwargs: Any) -> None:
         if (config := getattr(cls, "config", None)) and (model_type := getattr(cls, "model_type", None)):
@@ -111,17 +113,17 @@ class AbstractDTO(Generic[T]):
     def decode_builtins(self, value: dict[str, Any]) -> Any:
         """Decode a dictionary of Python values into an the DTO's datatype."""
 
-        backend = self._dto_backends[self.asgi_connection.route_handler.handler_id]["data_backend"]  # pyright: ignore
+        backend = self._dto_backends[self.asgi_connection.route_handler.handler_id]["data_backend"]  # pyright: ignore[reportTypedDictNotRequiredAccess]
         return backend.populate_data_from_builtins(value, self.asgi_connection)
 
     def decode_bytes(self, value: bytes) -> Any:
         """Decode a byte string into an the DTO's datatype."""
 
-        backend = self._dto_backends[self.asgi_connection.route_handler.handler_id]["data_backend"]  # pyright: ignore
+        backend = self._dto_backends[self.asgi_connection.route_handler.handler_id]["data_backend"]  # pyright: ignore[reportTypedDictNotRequiredAccess]
         return backend.populate_data_from_raw(value, self.asgi_connection)
 
     def data_to_encodable_type(self, data: T | Collection[T]) -> LitestarEncodableType:
-        backend = self._dto_backends[self.asgi_connection.route_handler.handler_id]["return_backend"]  # pyright: ignore
+        backend = self._dto_backends[self.asgi_connection.route_handler.handler_id]["return_backend"]  # pyright: ignore[reportTypedDictNotRequiredAccess]
         return backend.encode_data(data)
 
     @classmethod
@@ -328,7 +330,7 @@ class AbstractDTO(Generic[T]):
 
         return {
             k: FieldDefinition.from_kwarg(annotation=v, name=k)
-            for k, v in get_type_hints(model_type, localns=namespace, include_extras=True).items()  # pyright: ignore
+            for k, v in get_type_hints(model_type, localns=namespace, include_extras=True).items()
         }
 
     @staticmethod

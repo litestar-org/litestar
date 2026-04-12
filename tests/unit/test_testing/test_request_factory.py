@@ -1,3 +1,5 @@
+# pyright: reportUnnecessaryTypeIgnoreComment=false
+
 import json
 from collections.abc import Callable
 from dataclasses import dataclass

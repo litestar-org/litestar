@@ -1,3 +1,5 @@
+# pyright: reportUnnecessaryTypeIgnoreComment=false
+
 from __future__ import annotations
 
 import functools
@@ -138,7 +140,7 @@ class BaseRouteHandler:
         self._dto = dto
         self._return_dto = return_dto
         self.exception_handlers = exception_handlers or {}
-        self.guards: tuple[AsyncGuard, ...] = tuple(ensure_async_callable(guard) for guard in guards) if guards else ()  # pyright: ignore
+        self.guards: tuple[AsyncGuard, ...] = tuple(ensure_async_callable(guard) for guard in guards) if guards else ()  # pyright: ignore[reportAttributeAccessIssue]
         self.middleware = tuple(middleware) if middleware else ()
         self.name = name
         self.opt = dict(opt or {})
@@ -527,7 +529,7 @@ class BaseRouteHandler:
         Returns:
             A string
         """
-        target: type[AsyncAnyCallable] | AsyncAnyCallable  # pyright: ignore
+        target: type[AsyncAnyCallable] | AsyncAnyCallable  # pyright: ignore[reportInvalidTypeForm]
         target = unwrap_partial(self.fn)
         if not hasattr(target, "__qualname__"):
             target = type(target)

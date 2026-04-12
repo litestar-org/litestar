@@ -1,3 +1,5 @@
+# pyright: reportUnnecessaryTypeIgnoreComment=false
+
 # mypy: strict-equality=False
 # pyright: reportGeneralTypeIssues=false
 from __future__ import annotations
@@ -25,7 +27,7 @@ if TYPE_CHECKING:
 
 def is_pydantic_model_class(
     annotation: Any,
-) -> TypeGuard[type[pydantic.BaseModel]]:  # pyright: ignore
+) -> TypeGuard[type[pydantic.BaseModel]]:
     """Given a type annotation determine if the annotation is a subclass of pydantic's BaseModel.
 
     Args:
@@ -39,7 +41,7 @@ def is_pydantic_model_class(
 
 def is_pydantic_model_instance(
     annotation: Any,
-) -> TypeGuard[pydantic.BaseModel]:  # pyright: ignore
+) -> TypeGuard[pydantic.BaseModel]:
     """Given a type annotation determine if the annotation is an instance of pydantic's BaseModel.
 
     Args:
@@ -83,8 +85,8 @@ def pydantic_get_type_hints_with_generics_resolved(
 
 
 def is_pydantic_2_model(
-    obj: type[pydantic.BaseModel],  # pyright: ignore
-) -> TypeGuard[pydantic.BaseModel]:  # pyright: ignore
+    obj: type[pydantic.BaseModel],
+) -> TypeGuard[pydantic.BaseModel]:
     return issubclass(obj, pydantic.BaseModel)
 
 
@@ -93,7 +95,7 @@ def is_pydantic_undefined(value: Any) -> bool:
 
 
 def create_field_definitions_for_computed_fields(
-    model: type[pydantic.BaseModel],  # pyright: ignore
+    model: type[pydantic.BaseModel],
     prefer_alias: bool,
 ) -> dict[str, FieldDefinition]:
     """Create field definitions for computed fields.
@@ -148,7 +150,7 @@ def is_pydantic_root_model(annotation: Any) -> bool:
 class PydanticModelInfo:
     pydantic_version: Literal["1", "2"]
     field_definitions: dict[str, FieldDefinition]
-    model_fields: dict[str, pydantic.fields.FieldInfo]  # pyright: ignore[reportInvalidTypeForm,reportGeneralTypeIssues]
+    model_fields: dict[str, pydantic.fields.FieldInfo]
     title: str | None = None
     example: Any | None = None
     is_generic: bool = False
@@ -160,7 +162,7 @@ _CreateFieldDefinition = Callable[..., FieldDefinition]
 def _create_field_definition_v2(  # noqa: C901
     field_annotation: Any,
     *,
-    field_info: pydantic.fields.FieldInfo,  # pyright: ignore[reportInvalidTypeForm,reportGeneralTypeIssues]
+    field_info: pydantic.fields.FieldInfo,
     **field_definition_kwargs: Any,
 ) -> FieldDefinition:
     kwargs: dict[str, Any] = {}
@@ -191,7 +193,7 @@ def _create_field_definition_v2(  # noqa: C901
         kwargs["title"] = title
 
     for meta in field_info.metadata:
-        if isinstance(meta, pydantic.types.StringConstraints):  # pyright: ignore[reportAttributeAccessIssue]
+        if isinstance(meta, pydantic.types.StringConstraints):
             kwargs["min_length"] = meta.min_length
             kwargs["max_length"] = meta.max_length
             kwargs["pattern"] = meta.pattern
@@ -225,7 +227,7 @@ def get_model_info(
     annotation: Any,
     prefer_alias: bool = False,
 ) -> PydanticModelInfo:
-    model: type[pydantic.BaseModel]  # pyright: ignore[reportInvalidTypeForm,reportGeneralTypeIssues]
+    model: type[pydantic.BaseModel]
 
     if is_generic(annotation):
         is_generic_model = True
@@ -239,7 +241,7 @@ def get_model_info(
     title = model_config.get("title")
     example = model_config.get("example")
 
-    model_fields: dict[str, pydantic.fields.FieldInfo] = {  # pyright: ignore[reportInvalidTypeForm,reportGeneralTypeIssues]
+    model_fields: dict[str, pydantic.fields.FieldInfo] = {
         k: getattr(f, "field_info", f) for k, f in model_field_info.items()
     }
 

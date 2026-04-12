@@ -1,3 +1,5 @@
+# pyright: reportUnnecessaryTypeIgnoreComment=false
+
 from itertools import islice
 from typing import Any, Optional
 

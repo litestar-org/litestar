@@ -66,7 +66,7 @@ class BaseJWTAuth(Generic[UserType, TokenT], AbstractSecurityConfig[UserType, To
     """The value to use for the OpenAPI security scheme and security requirements."""
     description: str
     """Description for the OpenAPI security scheme."""
-    authentication_middleware_class: type[JWTAuthenticationMiddleware]  # pyright: ignore
+    authentication_middleware_class: type[JWTAuthenticationMiddleware]  # pyright: ignore[reportIncompatibleVariableOverride]
     """The authentication middleware class to use.
 
     Must inherit from :class:`JWTAuthenticationMiddleware`
@@ -423,7 +423,7 @@ class JWTCookieAuth(Generic[UserType, TokenT], BaseJWTAuth[UserType, TokenT]):
     """Controls whether or not a cookie is sent with cross-site requests. Defaults to ``lax``. """
     description: str = field(default="JWT cookie-based authentication and authorization.")
     """Description for the OpenAPI security scheme."""
-    authentication_middleware_class: type[JWTCookieAuthenticationMiddleware] = field(  # pyright: ignore
+    authentication_middleware_class: type[JWTCookieAuthenticationMiddleware] = field(  # pyright: ignore[reportIncompatibleVariableOverride]
         default=JWTCookieAuthenticationMiddleware
     )
     """The authentication middleware class to use. Must inherit from :class:`JWTCookieAuthenticationMiddleware`
@@ -661,7 +661,7 @@ class OAuth2PasswordBearerAuth(Generic[UserType, TokenT], BaseJWTAuth[UserType, 
     """Controls whether or not a cookie is sent with cross-site requests. Defaults to ``lax``. """
     description: str = field(default="OAUTH2 password bearer authentication and authorization.")
     """Description for the OpenAPI security scheme."""
-    authentication_middleware_class: type[JWTCookieAuthenticationMiddleware] = field(  # pyright: ignore
+    authentication_middleware_class: type[JWTCookieAuthenticationMiddleware] = field(  # pyright: ignore[reportIncompatibleVariableOverride]
         default=JWTCookieAuthenticationMiddleware
     )
     """The authentication middleware class to use.
@@ -747,7 +747,7 @@ class OAuth2PasswordBearerAuth(Generic[UserType, TokenT], BaseJWTAuth[UserType, 
                     scheme="Bearer",
                     name=self.auth_header,
                     security_scheme_in="header",
-                    flows=OAuthFlows(password=self.oauth_flow),  # pyright: ignore[reportGeneralTypeIssues]
+                    flows=OAuthFlows(password=self.oauth_flow),
                     bearer_format="JWT",
                     description=self.description,
                 )

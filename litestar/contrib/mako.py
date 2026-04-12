@@ -1,3 +1,5 @@
+# pyright: reportUnnecessaryTypeIgnoreComment=false
+
 from __future__ import annotations
 
 from collections.abc import Mapping
@@ -118,7 +120,7 @@ class MakoTemplateEngine(TemplateEngineProtocol[MakoTemplate, Mapping[str, Any]]
         """
         self._template_callables.append((key, template_callable))
 
-    def render_string(self, template_string: str, context: Mapping[str, Any]) -> str:  # pyright: ignore
+    def render_string(self, template_string: str, context: Mapping[str, Any]) -> str:
         """Render a template from a string with the given context.
 
         Args:

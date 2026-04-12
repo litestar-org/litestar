@@ -44,7 +44,7 @@ class WebSocket(Generic[UserT, AuthT, StateT], ASGIConnection["WebsocketRouteHan
 
     __slots__ = ("connection_state",)
 
-    scope: WebSocketScope  # pyright: ignore
+    scope: WebSocketScope  # pyright: ignore[reportIncompatibleVariableOverride]
     """The ASGI scope attached to the connection."""
     receive: Receive
     """The ASGI receive function."""

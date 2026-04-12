@@ -1,3 +1,5 @@
+# pyright: reportUnnecessaryTypeIgnoreComment=false
+
 from datetime import date, datetime, time, timedelta
 from pathlib import Path
 from uuid import UUID

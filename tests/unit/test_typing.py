@@ -212,7 +212,7 @@ def test_field_definition_is_type_var_predicate() -> None:
     """Test FieldDefinition.is_type_var."""
     assert FieldDefinition.from_annotation(int).is_type_var is False
     assert FieldDefinition.from_annotation(T).is_type_var is True
-    assert FieldDefinition.from_annotation(Union[int, T]).is_type_var is False  # pyright: ignore
+    assert FieldDefinition.from_annotation(Union[int, T]).is_type_var is False  # pyright: ignore[reportGeneralTypeIssues]
 
 
 def test_field_definition_is_union_predicate() -> None:
@@ -477,8 +477,8 @@ def test_warn_default_inside_kwarg_definition_and_default_empty() -> None:
 @pytest.mark.parametrize(
     "annotation",
     [
-        pytest.param(TypeAliasType("IntAlias", int), id="typing.TypeAliasType"),  # pyright: ignore
-        pytest.param(TeTypeAliasType("IntAlias", int), id="typing_extensions.TypeAliasType"),  # pyright: ignore
+        pytest.param(TypeAliasType("IntAlias", int), id="typing.TypeAliasType"),  # pyright: ignore[reportGeneralTypeIssues]
+        pytest.param(TeTypeAliasType("IntAlias", int), id="typing_extensions.TypeAliasType"),  # pyright: ignore[reportGeneralTypeIssues]
     ],
 )
 def test_is_type_alias_type(annotation: Any) -> None:

@@ -1,3 +1,5 @@
+# pyright: reportUnnecessaryTypeIgnoreComment=false
+
 from collections.abc import Callable, Iterable, Sequence
 from dataclasses import dataclass
 from types import ModuleType
@@ -177,7 +179,7 @@ def test_collection_union_struct_fields(with_optional: bool) -> None:
         annotation = Optional[annotation]  # type: ignore[misc]
 
     @get("/", signature_namespace={"annotation": annotation})
-    def handler(param: annotation) -> None:  # pyright: ignore
+    def handler(param: annotation) -> None:  # pyright: ignore[reportInvalidTypeForm]
         return None
 
     with create_test_client([handler], debug=True) as client:

@@ -1,3 +1,5 @@
+# pyright: reportUnnecessaryTypeIgnoreComment=false
+
 from dataclasses import dataclass
 from typing import Annotated, Generic, Optional, TypeVar
 

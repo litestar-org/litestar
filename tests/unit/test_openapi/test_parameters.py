@@ -426,7 +426,7 @@ def test_unwrap_new_type() -> None:
 
 def test_unwrap_nested_new_type() -> None:
     FancyString = NewType("FancyString", str)
-    FancierString = NewType("FancierString", FancyString)  # pyright: ignore
+    FancierString = NewType("FancierString", FancyString)
 
     @get("/")
     async def handler(

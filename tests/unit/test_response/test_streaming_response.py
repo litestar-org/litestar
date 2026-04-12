@@ -1,3 +1,5 @@
+# pyright: reportUnnecessaryTypeIgnoreComment=false
+
 """A large part of the tests in this file were adapted from:
 
 https://github.com/encode/starlette/blob/master/tests/test_responses.py And are meant to ensure our compatibility with

@@ -61,8 +61,7 @@ __all__ = (
 
 
 T = TypeVar("T")
-UnionT = TypeVar("UnionT", bound="Union")  # pyright: ignore
-
+UnionT = TypeVar("UnionT", bound="Union")  # pyright: ignore[reportInvalidTypeForm]
 instantiable_type_mapping = {
     AbstractSet: set,
     DefaultDict: defaultdict,
@@ -150,7 +149,7 @@ def make_non_optional_union(annotation: UnionT | None) -> UnionT:
         The union with all original members, except ``NoneType``.
     """
     args = tuple(tp for tp in get_args(annotation) if tp is not NoneType)
-    return cast("UnionT", Union[args])  # pyright: ignore
+    return cast("UnionT", Union[args])
 
 
 def unwrap_annotation(annotation: Any) -> tuple[Any, tuple[Any, ...], set[Any]]:
@@ -307,6 +306,5 @@ def _substitute_typevars(obj: Any, typevar_map: Mapping[Any, Any]) -> Any:
             return obj.__bound__
 
         if obj.__constraints__:
-            return Union[obj.__constraints__]  # pyright: ignore
-
+            return Union[obj.__constraints__]
     return obj

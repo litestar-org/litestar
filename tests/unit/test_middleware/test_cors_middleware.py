@@ -12,7 +12,7 @@ from litestar.types.asgi_types import Method
 
 
 def test_setting_cors_middleware() -> None:
-    cors_config = CORSConfig()  # pyright: ignore
+    cors_config = CORSConfig()
     assert cors_config.allow_credentials is False
     assert cors_config.allow_headers == ["*"]
     assert cors_config.allow_methods == ["*"]
@@ -26,7 +26,7 @@ def test_setting_cors_middleware() -> None:
         cur = client.app.asgi_handler
         while hasattr(cur, "app"):
             unpacked_middleware.append(cur)
-            cur = cast("Any", cur.app)  # pyright: ignore
+            cur = cast("Any", cur.app)  # pyright: ignore[reportFunctionMemberAccess]
         unpacked_middleware.append(cur)
         assert len(unpacked_middleware) == 4
         cors_middleware = cast("Any", unpacked_middleware[0])

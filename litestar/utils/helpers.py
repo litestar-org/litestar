@@ -1,3 +1,5 @@
+# pyright: reportUnnecessaryTypeIgnoreComment=false
+
 from __future__ import annotations
 
 import os
@@ -101,7 +103,7 @@ def get_exception_group() -> type[BaseException]:
     try:
         return cast("type[BaseException]", ExceptionGroup)  # type:ignore[name-defined]
     except NameError:
-        from exceptiongroup import ExceptionGroup as _ExceptionGroup  # pyright: ignore
+        from exceptiongroup import ExceptionGroup as _ExceptionGroup  # pyright: ignore[reportMissingImports]
 
         return cast("type[BaseException]", _ExceptionGroup)
 

@@ -20,7 +20,7 @@ except ImportError as e:
     raise MissingDependencyException("opentelemetry") from e
 
 
-from opentelemetry.trace import Span, TracerProvider  # pyright: ignore
+from opentelemetry.trace import Span, TracerProvider
 
 if TYPE_CHECKING:
     from opentelemetry.metrics import Meter, MeterProvider

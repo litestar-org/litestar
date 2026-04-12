@@ -1,3 +1,5 @@
+# pyright: reportUnnecessaryTypeIgnoreComment=false
+
 from typing import Annotated, Any
 from unittest.mock import ANY
 
@@ -27,7 +29,7 @@ def test_pydantic_v2_validation_error_raises_400(meta: Any) -> None:
     annotation = Annotated[Model, meta] if meta is not None else Model
 
     @post(dto=ModelDTO, signature_namespace={"annotation": annotation})
-    def handler(data: annotation) -> Any:  # pyright: ignore
+    def handler(data: annotation) -> Any:  # pyright: ignore[reportInvalidTypeForm]
         return data
 
     model_json = {"foo": "too long"}
@@ -197,7 +199,7 @@ def test_private_fields(model_type: BaseModelType) -> None:
 )
 def test_dto_with_non_instantiable_types(base_model: BaseModelType, type_: Any, in_: Any) -> None:
     class Model(base_model):  # type: ignore[misc, valid-type]
-        foo: type_  # pyright: ignore
+        foo: type_  # pyright: ignore[reportInvalidTypeForm]
 
     @post("/", dto=PydanticDTO[Model])
     async def handler(data: Model) -> Model:
@@ -341,7 +343,7 @@ def test_pydantic_v2_round_trip() -> None:
 
     @get("/")
     async def handler() -> Model:
-        return Model(foo=resp)  # type: ignore[arg-type] # pyright: ignore[reportArgumentType]
+        return Model(foo=resp)  # type: ignore[arg-type]
 
     with create_test_client([handler], plugins=[PydanticPlugin(round_trip=True)]) as client:
         assert client.get("/").json() == {"foo": resp}

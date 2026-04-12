@@ -337,10 +337,14 @@ exclude = [
   "tests/unit/test_contrib/test_sqlalchemy.py",
   "tests/unit/test_plugins/test_pydantic/test_openapi.py",
   "tests/unit/test_repository/test_generic_mock_repository.py",
+  "**/node_modules/**",
+  "**/__pycache__/**",
+  "**/.venv/**",
+  "**/.*"
 ]
 include = ["litestar", "tests"]
 pythonVersion = "3.11"
-reportUnnecessaryTypeIgnoreComments = true
+reportUnnecessaryTypeIgnoreComment = true
 
 [tool.slotscheck]
 exclude-classes = """

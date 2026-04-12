@@ -1,3 +1,5 @@
+# pyright: reportUnnecessaryTypeIgnoreComment=false
+
 import dataclasses
 import secrets
 import string
@@ -769,7 +771,7 @@ def create_jwt_app(auth_cls: Any, request: pytest.FixtureRequest) -> CreateJWTAp
         client = create_test_client(route_handlers=[handler]).__enter__()
         request.addfinalizer(client.__exit__)
 
-        return jwt_auth, client  # pyright: ignore
+        return jwt_auth, client  # pyright: ignore[reportReturnType]
 
     return create
 

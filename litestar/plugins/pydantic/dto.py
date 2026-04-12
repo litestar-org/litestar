@@ -1,3 +1,5 @@
+# pyright: reportUnnecessaryTypeIgnoreComment=false
+
 from __future__ import annotations
 
 import dataclasses
@@ -47,7 +49,7 @@ _down_types: dict[Any, Any] = {
 }
 
 
-def convert_validation_error(validation_error: ValidationError) -> list[dict[str, Any]]:  # pyright: ignore[reportInvalidTypeForm,reportGeneralTypeIssues]
+def convert_validation_error(validation_error: ValidationError) -> list[dict[str, Any]]:
     error_list = validation_error.errors()
     for error in error_list:
         if isinstance(exception := error.get("ctx", {}).get("error"), Exception):
@@ -83,7 +85,7 @@ class PydanticDTO(AbstractDTO[T], Generic[T]):
     @classmethod
     def generate_field_definitions(
         cls,
-        model_type: type[pydantic.BaseModel],  # pyright: ignore[reportInvalidTypeForm,reportGeneralTypeIssues]
+        model_type: type[pydantic.BaseModel],
     ) -> Generator[DTOFieldDefinition, None, None]:
         model_info = get_model_info(model_type)
         model_fields = model_info.model_fields
@@ -103,7 +105,7 @@ class PydanticDTO(AbstractDTO[T], Generic[T]):
                 except AttributeError:
                     extra = field_info.json_schema_extra  # type: ignore[union-attr]
 
-                if extra is not None and extra.pop(DTO_FIELD_META_KEY, None):  # pyright: ignore
+                if extra is not None and extra.pop(DTO_FIELD_META_KEY, None):  # pyright: ignore[reportFunctionMemberAccess]
                     warn(
                         message="Declaring 'DTOField' via Pydantic's 'Field.extra' is deprecated. "
                         "Use 'Annotated', e.g., 'Annotated[str, DTOField(mark='read-only')]' instead. "

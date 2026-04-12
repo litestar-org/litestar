@@ -124,7 +124,7 @@ class MiniJinjaTemplateEngine(TemplateEngineProtocol["MiniJinjaTemplate", StateP
                 directories = directory if isinstance(directory, list) else [directory]
 
                 for d in directories:
-                    template_path = Path(d) / name  # pyright: ignore[reportGeneralTypeIssues]
+                    template_path = Path(d) / name
                     if template_path.exists():
                         return template_path.read_text()
                 raise TemplateNotFoundException(template_name=name)

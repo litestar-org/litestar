@@ -122,7 +122,7 @@ def test_root_model_schema_generation() -> None:
         scales: bool
 
     class Pet(pydantic_v2.RootModel[BasePet]):
-        root: Annotated[  # pyright: ignore
+        root: Annotated[  # pyright: ignore[reportIncompatibleVariableOverride]
             Union[
                 Annotated[Cat, pydantic_v2.Tag("cat")],
                 Annotated[Dog, pydantic_v2.Tag("dog")],

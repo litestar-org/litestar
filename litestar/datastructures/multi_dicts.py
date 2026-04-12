@@ -41,17 +41,17 @@ class MultiMixin(Generic[T], MultiMapping[T], ABC):
                 yield key, value
 
 
-class MultiDict(BaseMultiDict[T], MultiMixin[T], Generic[T]):  # pyright: ignore
+class MultiDict(BaseMultiDict[T], MultiMixin[T], Generic[T]):  # pyright: ignore[reportIncompatibleMethodOverride]
     """MultiDict, using :class:`MultiDict <multidict.MultiDictProxy>`."""
 
-    def __init__(self, args: MultiMapping | Mapping[str, T] | Iterable[tuple[str, T]] | None = None) -> None:  # pyright: ignore
+    def __init__(self, args: MultiMapping | Mapping[str, T] | Iterable[tuple[str, T]] | None = None) -> None:
         """Initialize ``MultiDict`` from a`MultiMapping``,
         :class:`Mapping <typing.Mapping>` or an iterable of tuples.
 
         Args:
             args: Mapping-like structure to create the ``MultiDict`` from
         """
-        super().__init__(args or {})  # pyright: ignore
+        super().__init__(args or {})
 
     def immutable(self) -> ImmutableMultiDict[T]:
         """Create an.
@@ -61,24 +61,24 @@ class MultiDict(BaseMultiDict[T], MultiMixin[T], Generic[T]):  # pyright: ignore
         Returns:
             An immutable multi dict
         """
-        return ImmutableMultiDict[T](self)  # pyright: ignore
+        return ImmutableMultiDict[T](self)
 
     def copy(self) -> Self:
         """Return a shallow copy"""
         return type(self)(list(self.multi_items()))
 
 
-class ImmutableMultiDict(MultiDictProxy[T], MultiMixin[T], Generic[T]):  # pyright: ignore
+class ImmutableMultiDict(MultiDictProxy[T], MultiMixin[T], Generic[T]):  # pyright: ignore[reportIncompatibleMethodOverride]
     """Immutable MultiDict, using class:`MultiDictProxy <multidict.MultiDictProxy>`."""
 
-    def __init__(self, args: MultiMapping | Mapping[str, Any] | Iterable[tuple[str, Any]] | None = None) -> None:  # pyright: ignore
+    def __init__(self, args: MultiMapping | Mapping[str, Any] | Iterable[tuple[str, Any]] | None = None) -> None:
         """Initialize ``ImmutableMultiDict`` from a `MultiMapping``,
         :class:`Mapping <typing.Mapping>` or an iterable of tuples.
 
         Args:
             args: Mapping-like structure to create the ``ImmutableMultiDict`` from
         """
-        super().__init__(BaseMultiDict(args or {}))  # pyright: ignore
+        super().__init__(BaseMultiDict(args or {}))
 
     def mutable_copy(self) -> MultiDict[T]:
         """Create a mutable copy as a :class:`MultiDict`
@@ -111,10 +111,10 @@ class FormMultiDict(ImmutableMultiDict[Any]):
         items = []
         for k, v in form_data.items():
             if not isinstance(v, list):
-                items.append((k, v))  # pyright: ignore
+                items.append((k, v))
             else:
                 for sv in v:
-                    items.append((k, sv))  # pyright: ignore
+                    items.append((k, sv))
         return cls(items)
 
     async def close(self) -> None:

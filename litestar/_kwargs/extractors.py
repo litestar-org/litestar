@@ -1,3 +1,5 @@
+# pyright: reportUnnecessaryTypeIgnoreComment=false
+
 from __future__ import annotations
 
 from collections import defaultdict
@@ -374,7 +376,7 @@ async def _extract_multipart(
         if value == "" and is_optional_union(tp):
             inner: Any = make_non_optional_union(tp)
             if isinstance(inner, type) and issubclass(inner, UploadFile):
-                form_values[name] = None  # pyright: ignore
+                form_values[name] = None  # pyright: ignore[reportArgumentType]
                 continue
         if (
             value is not None
@@ -384,8 +386,7 @@ async def _extract_multipart(
                 or (is_optional_union(tp) and is_non_string_sequence(make_non_optional_union(tp)))
             )
         ):
-            form_values[name] = [value]  # pyright: ignore
-
+            form_values[name] = [value]  # pyright: ignore[reportArgumentType]
     return form_values
 
 

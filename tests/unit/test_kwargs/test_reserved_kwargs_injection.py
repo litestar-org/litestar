@@ -1,3 +1,5 @@
+# pyright: reportUnnecessaryTypeIgnoreComment=false
+
 from typing import Annotated, Any, Optional, cast
 
 import msgspec.json

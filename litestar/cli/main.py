@@ -1,3 +1,5 @@
+# pyright: reportUnnecessaryTypeIgnoreComment=false
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -45,9 +47,9 @@ def litestar_group(ctx: click.Context, app_path: str | None, app_dir: Path | Non
 
 # add sub commands here
 
-litestar_group.add_command(core.info_command)  # pyright: ignore
-litestar_group.add_command(core.run_command)  # pyright: ignore
-litestar_group.add_command(core.routes_command)  # pyright: ignore
-litestar_group.add_command(core.version_command)  # pyright: ignore
-litestar_group.add_command(sessions.sessions_group)  # pyright: ignore
-litestar_group.add_command(schema.schema_group)  # pyright: ignore
+litestar_group.add_command(core.info_command)  # pyright: ignore[reportArgumentType]
+litestar_group.add_command(core.run_command)  # pyright: ignore[reportArgumentType]
+litestar_group.add_command(core.routes_command)  # pyright: ignore[reportArgumentType]
+litestar_group.add_command(core.version_command)  # pyright: ignore[reportArgumentType]
+litestar_group.add_command(sessions.sessions_group)
+litestar_group.add_command(schema.schema_group)

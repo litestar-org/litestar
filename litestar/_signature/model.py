@@ -1,3 +1,5 @@
+# pyright: reportUnnecessaryTypeIgnoreComment=false
+
 from __future__ import annotations
 
 import re
@@ -116,7 +118,7 @@ class SignatureModel(Struct):
         Returns:
             An Exception
         """
-        method = connection.method if hasattr(connection, "method") else ScopeType.WEBSOCKET  # pyright: ignore
+        method = connection.method if hasattr(connection, "method") else ScopeType.WEBSOCKET  # pyright: ignore[reportAttributeAccessIssue]
         if client_errors := [
             err_message
             for err_message in messages
@@ -317,6 +319,5 @@ class SignatureModel(Struct):
             setattr(annotation, "_decoder", decoder)
 
         if meta_data:
-            annotation = Annotated[annotation, meta_data]  # pyright: ignore
-
+            annotation = Annotated[annotation, meta_data]
         return annotation

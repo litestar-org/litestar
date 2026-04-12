@@ -1,3 +1,5 @@
+# pyright: reportUnnecessaryTypeIgnoreComment=false
+
 import sys
 from pathlib import Path
 from typing import Optional, Protocol, cast

@@ -1,3 +1,5 @@
+# pyright: reportUnnecessaryTypeIgnoreComment=false
+
 from __future__ import annotations
 
 import inspect
@@ -315,7 +317,7 @@ def run_command(
             # A guard statement at the beginning of this function prevents uvicorn from being unbound
             # See "reportUnboundVariable in:
             # https://microsoft.github.io/pyright/#/configuration?id=type-check-diagnostics-settings
-            uvicorn.run(  # pyright: ignore
+            uvicorn.run(
                 app=env.app_path,
                 host=host,
                 port=port,

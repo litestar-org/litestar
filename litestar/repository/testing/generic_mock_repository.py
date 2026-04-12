@@ -56,7 +56,7 @@ class GenericAsyncMockRepository(AbstractAsyncRepository[ModelT], Generic[ModelT
         Args:
             item: The type that the class has been parametrized with.
         """
-        return type(  # pyright:ignore
+        return type(  # pyright: ignore[reportReturnType]
             f"{cls.__name__}[{item.__name__}]",
             (cls,),
             {
@@ -217,7 +217,7 @@ class GenericAsyncMockRepository(AbstractAsyncRepository[ModelT], Generic[ModelT
                     setattr(existing, field_name, new_field_value)
 
             return existing, False
-        return await self.add(self.model_type(**kwargs)), True  # pyright: ignore[reportGeneralTypeIssues]
+        return await self.add(self.model_type(**kwargs)), True
 
     async def get_one(self, **kwargs: Any) -> ModelT:
         """Get instance identified by query filters.
@@ -436,7 +436,7 @@ class GenericSyncMockRepository(AbstractSyncRepository[ModelT], Generic[ModelT])
         Args:
             item: The type that the class has been parametrized with.
         """
-        return type(  # pyright:ignore
+        return type(  # pyright: ignore[reportReturnType]
             f"{cls.__name__}[{item.__name__}]",
             (cls,),
             {
@@ -595,7 +595,7 @@ class GenericSyncMockRepository(AbstractSyncRepository[ModelT], Generic[ModelT])
                     setattr(existing, field_name, new_field_value)
 
             return existing, False
-        return self.add(self.model_type(**kwargs)), True  # pyright: ignore[reportGeneralTypeIssues]
+        return self.add(self.model_type(**kwargs)), True
 
     def get_one(self, **kwargs: Any) -> ModelT:
         """Get instance identified by query filters.

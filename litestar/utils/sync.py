@@ -27,14 +27,14 @@ def ensure_async_callable(fn: Callable[P, Awaitable[T]]) -> Callable[P, Awaitabl
 def ensure_async_callable(fn: Callable[P, T]) -> Callable[P, Awaitable[T]]: ...
 
 
-def ensure_async_callable(fn: Callable[P, T]) -> Callable[P, Awaitable[T]]:  # pyright: ignore
+def ensure_async_callable(fn: Callable[P, T]) -> Callable[P, Awaitable[T]]:  # pyright: ignore[reportInconsistentOverload]
     """Ensure that ``fn`` is an asynchronous callable.
     If it is an asynchronous, return the original object, else wrap it in an
     ``AsyncCallable``
     """
     if is_async_callable(fn):
         return fn
-    return AsyncCallable(fn)  # pyright: ignore
+    return AsyncCallable(fn)  # pyright: ignore[reportReturnType]
 
 
 class AsyncCallable:
@@ -43,7 +43,7 @@ class AsyncCallable:
     :attr:`func`
     """
 
-    def __init__(self, fn: Callable[P, T]) -> None:  # pyright: ignore
+    def __init__(self, fn: Callable[P, T]) -> None:
         self.func = fn
 
     def __call__(self, *args: P.args, **kwargs: P.kwargs) -> Awaitable[T]:  # type: ignore[valid-type]

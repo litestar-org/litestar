@@ -24,7 +24,7 @@ from litestar.types.asgi_types import WebSocketMode
 @pytest.fixture
 def listener_class(mock: MagicMock) -> type[WebsocketListener]:
     class Listener(WebsocketListener):
-        def on_receive(self, data: str) -> str:  # pyright: ignore
+        def on_receive(self, data: str) -> str:
             mock(data)
             return data
 
@@ -401,13 +401,13 @@ def test_websocket_listener_class_hook_dependencies() -> None:
     class Listener(WebsocketListener):
         path = "/{name: str}"
 
-        def on_accept(self, name: str, state: State, query: dict, some: str) -> None:  # pyright: ignore
+        def on_accept(self, name: str, state: State, query: dict, some: str) -> None:
             on_accept_mock(name=name, state=state, query=query, some=some)
 
-        def on_disconnect(self, name: str, state: State, query: dict, some: str) -> None:  # pyright: ignore
+        def on_disconnect(self, name: str, state: State, query: dict, some: str) -> None:
             on_disconnect_mock(name=name, state=state, query=query, some=some)
 
-        def on_receive(self, data: bytes) -> None:  # pyright: ignore
+        def on_receive(self, data: bytes) -> None:
             pass
 
     with (
@@ -439,7 +439,7 @@ def test_listeners_lifespan_hooks_and_manager_raises(hook_name: str) -> None:
 
     with pytest.raises(ImproperlyConfiguredException):
 
-        @websocket_listener("/", **{hook_name: hook_callback}, connection_lifespan=lifespan)  # pyright: ignore
+        @websocket_listener("/", **{hook_name: hook_callback}, connection_lifespan=lifespan)  # pyright: ignore[reportArgumentType, reportCallIssue]
         def handler(data: bytes) -> None:
             pass
 

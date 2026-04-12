@@ -1,3 +1,5 @@
+# pyright: reportUnnecessaryTypeIgnoreComment=false
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, TypeGuard
@@ -52,7 +54,7 @@ class AttrsSchemaPlugin(OpenAPISchemaPlugin):
         )
 
 
-def is_attrs_class(annotation: Any) -> TypeGuard[type[attrs.AttrsInstance]]:  # pyright: ignore
+def is_attrs_class(annotation: Any) -> TypeGuard[type[attrs.AttrsInstance]]:
     """Given a type annotation determine if the annotation is a class that includes an attrs attribute.
 
     Args:

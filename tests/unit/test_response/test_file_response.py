@@ -295,7 +295,7 @@ def test_file_with_passed_in_file_info(tmpdir: Path) -> None:
 
     @get("/", media_type="application/octet-stream")
     def handler() -> File:
-        return File(filename="text.txt", path=path, file_system=fs, file_info=fs_info)  # pyright: ignore
+        return File(filename="text.txt", path=path, file_system=fs, file_info=fs_info)  # pyright: ignore[reportArgumentType]
 
     with create_test_client(handler) as client:
         response = client.get("/")

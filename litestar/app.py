@@ -180,7 +180,7 @@ class Litestar(Router):
         compression_config: CompressionConfig | None = None,
         cors_config: CORSConfig | None = None,
         csrf_config: CSRFConfig | None = None,
-        dto: type[AbstractDTO] | None | EmptyType = Empty,
+        dto: type[AbstractDTO] | EmptyType | None = Empty,
         debug: bool | None = None,
         dependencies: Dependencies | None = None,
         etag: ETag | None = None,
@@ -205,7 +205,7 @@ class Litestar(Router):
         response_class: type[Response] | None = None,
         response_cookies: ResponseCookies | None = None,
         response_headers: ResponseHeaders | None = None,
-        return_dto: type[AbstractDTO] | None | EmptyType = Empty,
+        return_dto: type[AbstractDTO] | EmptyType | None = Empty,
         security: Sequence[SecurityRequirement] | None = None,
         signature_namespace: Mapping[str, Any] | None = None,
         signature_types: Sequence[Any] | None = None,
@@ -386,7 +386,7 @@ class Litestar(Router):
             (p.on_app_init for p in config.plugins if isinstance(p, InitPluginProtocol)),
             [self._patch_opentelemetry_middleware],
         ):
-            config = handler(config)  # pyright: ignore
+            config = handler(config)
 
         self.plugins = PluginRegistry(config.plugins)
 
@@ -583,7 +583,7 @@ class Litestar(Router):
     async def _call_lifespan_hook(self, hook: LifespanHook) -> None:
         ret = hook(self) if inspect.signature(hook).parameters else hook()  # type: ignore[call-arg]
 
-        if is_async_callable(hook):  # pyright: ignore
+        if is_async_callable(hook):  # pyright: ignore[reportArgumentType]
             await ret
 
     @asynccontextmanager
@@ -778,8 +778,7 @@ class Litestar(Router):
 
         # this narrows down to an ABC, but we assume a non-abstract subclass of the ABC superclass
         if is_class_and_subclass(value, WebsocketListener):
-            return value().to_handler()  # pyright: ignore
-
+            return value().to_handler()  # pyright: ignore[reportAbstractUsage]
         if isinstance(value, Router):
             if value is self:
                 raise ImproperlyConfiguredException("Cannot register a router on itself")
@@ -997,7 +996,7 @@ def _maybe_add_options_handler(
 ) -> list[HTTPRouteHandler]:
     handler_methods = {method for handler in http_handlers for method in handler.http_methods}
     if "OPTIONS" not in handler_methods:
-        options_handler = create_options_handler(path=path, allow_methods={*handler_methods, "OPTIONS"})  # pyright: ignore
+        options_handler = create_options_handler(path=path, allow_methods={*handler_methods, "OPTIONS"})  # pyright: ignore[reportArgumentType]
         options_handler = options_handler.merge(root)
         return [*http_handlers, options_handler]
     return http_handlers

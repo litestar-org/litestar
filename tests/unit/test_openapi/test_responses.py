@@ -553,7 +553,7 @@ def test_response_generation_with_dto(create_factory: CreateFactoryFixture) -> N
     mock_dto = MagicMock(spec=AbstractDTO)
     mock_dto.create_openapi_schema.return_value = Schema()
 
-    @post(path="/form-upload", return_dto=mock_dto)  # pyright: ignore
+    @post(path="/form-upload", return_dto=mock_dto)
     async def handler(data: dict[str, Any]) -> dict[str, Any]:
         return data
 
