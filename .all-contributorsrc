@@ -2011,6 +2011,17 @@
         "test",
         "doc"
       ]
+    },
+    {
+      "login": "TanayK07",
+      "name": "Tanay Kedia",
+      "avatar_url": "https://avatars.githubusercontent.com/u/95276223?v=4",
+      "profile": "https://github.com/TanayK07",
+      "contributions": [
+        "code",
+        "test",
+        "doc"
+      ]
     }
   ],
   "contributorsPerLine": 7,
