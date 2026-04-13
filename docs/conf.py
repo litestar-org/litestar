@@ -109,6 +109,9 @@ nitpick_ignore = [
     (PY_METH, "litestar.typing.ParsedType.is_subclass_of"),
     (PY_METH, "type_engine"),
     # type vars and aliases / intentionally undocumented
+    (PY_CLASS, "ClientRequestHookHandler"),
+    (PY_CLASS, "ClientResponseHookHandler"),
+    (PY_CLASS, "ServerRequestHookHandler"),
     (PY_CLASS, "AnyIOBackend"),
     (PY_CLASS, "BaseSessionBackendT"),
     (PY_CLASS, "C"),
