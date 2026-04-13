@@ -6,4 +6,3 @@ contrib
 
     jinja
     mako
-    opentelemetry
