@@ -4,8 +4,8 @@ Guards
 Guards are :term:`callables <python:callable>` that receive two arguments - ``connection``, which is the :class:`Request <.connection.Request>` or :class:`WebSocket <.connection.WebSocket>` instance (both sub-classes of :class:`~.connection.ASGIConnection`), and ``route_handler``, which is a copy of the
 :class:`~.handlers.BaseRouteHandler`. Their role is to *authorize* the request by verifying that
 the connection is allowed to reach the endpoint handler in question. If verification fails, the guard should raise an
-:exc:`HTTPException`, usually a :class:`~.exceptions.NotAuthorizedException` with a
-``status_code`` of ``401``.
+:exc:`HTTPException`, usually a :class:`~.exceptions.PermissionDeniedException` with a
+``status_code`` of ``403``.
 
 To illustrate this we will implement a rudimentary role based authorization system in our Litestar app. As we have done
 for ``authentication``, we will assume that we added some sort of persistence layer without actually specifying it in
