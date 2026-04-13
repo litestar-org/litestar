@@ -538,15 +538,34 @@ def test_state() -> None:
         assert response.json() == {"state": 2}
 
 
-def test_request_body_exceeds_content_length() -> None:
-    @post("/")
-    def handler(body: bytes) -> None:
-        pass
+def test_request_body_exceeding_content_length_is_allowed() -> None:
+    """Body larger than Content-Length but within request_max_body_size succeeds.
+
+    Decompression middleware can legitimately produce a body larger than the
+    wire-format Content-Length. Content-length enforcement is delegated to the
+    ASGI server (e.g. uvicorn).
+    """
+
+    @post("/", request_max_body_size=10)
+    def handler(body: bytes) -> bytes:
+        return body
 
     with create_test_client([handler]) as client:
         response = client.post("/", headers={"content-length": "1"}, content=b"ab")
-        assert response.status_code == HTTP_400_BAD_REQUEST
-        assert response.json() == {"status_code": 400, "detail": "Malformed request"}
+        assert response.status_code == 201
+        assert response.content == b"ab"
+
+
+def test_request_body_exceeding_content_length_still_enforces_max_body_size() -> None:
+    """Content-length mismatch is allowed, but request_max_body_size is still enforced."""
+
+    @post("/", request_max_body_size=1)
+    def handler(body: bytes) -> bytes:
+        return body
+
+    with create_test_client([handler]) as client:
+        response = client.post("/", headers={"content-length": "1"}, content=b"ab")
+        assert response.status_code == HTTP_413_REQUEST_ENTITY_TOO_LARGE
 
 
 def test_request_body_exceeds_max_request_body_size() -> None:
