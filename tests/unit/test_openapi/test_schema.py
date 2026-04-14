@@ -792,3 +792,42 @@ def test_optional_field_preserves_meta_constraints() -> None:
     assert properties["optional_field"].one_of is not None
     assert properties["optional_field"].minimum == 1
     assert properties["optional_field"].examples == [42]
+
+
+def test_union_preserves_all_metadata() -> None:
+    """kwarg_definition_from_field must collect Metadata from all union members.
+
+    When a UnionType contains multiple Metadata members (e.g. from
+    ``Annotated[int, Meta()] | Annotated[str, Meta()] | None``), all their
+    ``extra_json_schema`` and type constraints should be preserved.
+    """
+    import msgspec.inspect as mi
+
+    from litestar.plugins.core._msgspec import kwarg_definition_from_field
+
+    union_type = mi.UnionType(
+        types=(
+            mi.Metadata(
+                type=mi.IntType(gt=None, ge=1, lt=None, le=None, multiple_of=None),
+                extra_json_schema={"examples": [10]},
+                extra=None,
+            ),
+            mi.Metadata(
+                type=mi.StrType(min_length=2, max_length=None, pattern=None),
+                extra_json_schema={"examples": ["ab"]},
+                extra=None,
+            ),
+            mi.NoneType(),
+        )
+    )
+    field = mi.Field(name="test", type=union_type, required=False, default=None, encode_name="test")
+
+    param_kwarg, _ = kwarg_definition_from_field(field)
+
+    assert param_kwarg is not None
+    # examples from both Metadata should be accumulated
+    assert len(param_kwarg.examples) == 2  # type: ignore[arg-type]
+    # numeric constraints from IntType
+    assert param_kwarg.ge == 1
+    # string constraints from StrType
+    assert param_kwarg.min_length == 2
