@@ -34,8 +34,9 @@ class MsgspecDIPlugin(DIPlugin):
         return inspect.Signature(parameters), type_hints
 
 
-def _extract_type_constraints(kwargs: dict[str, Any], field_type: msgspec.inspect.Type) -> None:
-    """Extract type-specific constraints into kwargs dict."""
+def _extract_type_constraints(field_type: msgspec.inspect.Type) -> dict[str, Any]:
+    """Extract type-specific constraints from a field type."""
+    constraints: dict[str, Any] = {}
     if isinstance(
         field_type,
         (
@@ -43,11 +44,11 @@ def _extract_type_constraints(kwargs: dict[str, Any], field_type: msgspec.inspec
             msgspec.inspect.FloatType,
         ),
     ):
-        kwargs["gt"] = field_type.gt
-        kwargs["ge"] = field_type.ge
-        kwargs["lt"] = field_type.lt
-        kwargs["le"] = field_type.le
-        kwargs["multiple_of"] = field_type.multiple_of
+        constraints["gt"] = field_type.gt
+        constraints["ge"] = field_type.ge
+        constraints["lt"] = field_type.lt
+        constraints["le"] = field_type.le
+        constraints["multiple_of"] = field_type.multiple_of
     elif isinstance(
         field_type,
         (
@@ -57,10 +58,10 @@ def _extract_type_constraints(kwargs: dict[str, Any], field_type: msgspec.inspec
             msgspec.inspect.MemoryViewType,
         ),
     ):
-        kwargs["min_length"] = field_type.min_length
-        kwargs["max_length"] = field_type.max_length
+        constraints["min_length"] = field_type.min_length
+        constraints["max_length"] = field_type.max_length
         if isinstance(field_type, msgspec.inspect.StrType):
-            kwargs["pattern"] = field_type.pattern
+            constraints["pattern"] = field_type.pattern
     elif isinstance(
         field_type,
         (
@@ -70,8 +71,9 @@ def _extract_type_constraints(kwargs: dict[str, Any], field_type: msgspec.inspec
             msgspec.inspect.VarTupleType,
         ),
     ):
-        kwargs["min_items"] = field_type.min_length
-        kwargs["max_items"] = field_type.max_length
+        constraints["min_items"] = field_type.min_length
+        constraints["max_items"] = field_type.max_length
+    return constraints
 
 
 def kwarg_definition_from_field(field: msgspec.inspect.Field) -> tuple[ParameterKwarg | None, dict[str, Any]]:
@@ -97,9 +99,9 @@ def kwarg_definition_from_field(field: msgspec.inspect.Field) -> tuple[Parameter
                 kwargs.setdefault("schema_extra", extra_json_schema.get("extra"))
             if meta.extra:
                 extra.update(meta.extra)
-            _extract_type_constraints(kwargs, meta.type)
+            kwargs.update(_extract_type_constraints(meta.type))
     else:
-        _extract_type_constraints(kwargs, field.type)
+        kwargs.update(_extract_type_constraints(field.type))
 
     parameter_defaults = {
         f.name: default for f in dataclasses.fields(ParameterKwarg) if (default := f.default) is not dataclasses.MISSING
