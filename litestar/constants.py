@@ -21,6 +21,7 @@ OPENAPI_NOT_INITIALIZED: Final = "Litestar has not been instantiated with OpenAP
 REDIRECT_STATUS_CODES: Final = {301, 302, 303, 307, 308}
 REDIRECT_ALLOWED_MEDIA_TYPES: Final = {MediaType.TEXT, MediaType.HTML, MediaType.JSON}
 RESERVED_KWARGS: Final = {"state", "headers", "cookies", "request", "socket", "data", "query", "scope", "body"}
+DOCUMENTABLE_RESERVED_KWARGS: Final = {"query", "headers", "cookies"}
 SKIP_VALIDATION_NAMES: Final = {"request", "socket", "scope", "receive", "send"}
 UNDEFINED_SENTINELS: Final = {Signature.empty, Empty, Ellipsis, MISSING, UnsetType}
 WEBSOCKET_CLOSE: Final = "websocket.close"

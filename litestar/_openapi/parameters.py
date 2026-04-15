@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, get_type_hints
 
 from litestar._openapi.schema_generation import SchemaCreator
 from litestar._openapi.schema_generation.utils import get_formatted_examples
-from litestar.constants import RESERVED_KWARGS
+from litestar.constants import DOCUMENTABLE_RESERVED_KWARGS, RESERVED_KWARGS
 from litestar.enums import ParamType
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.openapi.spec.parameter import Parameter
@@ -214,6 +214,45 @@ class ParameterFactory:
         for field_name, field_definition in intersection_fields:
             self.parameters.add(self.get_layered_parameter(field_name=field_name, field_definition=field_definition))
 
+    def _create_parameters_from_reserved_kwargs(
+        self, fields: dict[str, FieldDefinition]
+    ) -> None:
+        """Generate OpenAPI parameters from typed reserved kwargs (``query``, ``headers``, ``cookies``).
+
+        When a handler annotates a reserved kwarg with a ``TypedDict``, each field of the
+        ``TypedDict`` is added as an individual OpenAPI parameter of the corresponding type
+        (query, header, or cookie).
+
+        Args:
+            fields: The handler's field definitions.
+        """
+        param_type_map: dict[str, ParamType] = {
+            "query": ParamType.QUERY,
+            "headers": ParamType.HEADER,
+            "cookies": ParamType.COOKIE,
+        }
+        for kwarg_name in DOCUMENTABLE_RESERVED_KWARGS:
+            field_def = fields.get(kwarg_name)
+            if field_def is None:
+                continue
+
+            param_type = param_type_map[kwarg_name]
+
+            if field_def.is_typeddict_type:
+                annotation = field_def.annotation
+                hints = get_type_hints(annotation, include_extras=True)
+                required_keys = getattr(annotation, "__required_keys__", set())
+                for key, type_ in hints.items():
+                    sub_field = FieldDefinition.from_kwarg(name=key, annotation=type_)
+                    schema = self.schema_creator.for_field_definition(sub_field)
+                    param = Parameter(
+                        name=key,
+                        param_in=param_type,
+                        required=key in required_keys,
+                        schema=schema,
+                    )
+                    self.parameters.add(param)
+
     def create_parameters_for_handler(self) -> list[Parameter]:
         """Create a list of path/query/header Parameter models for the given PathHandler."""
         handler_fields = self.route_handler.parsed_fn_signature.parameters
@@ -233,6 +272,7 @@ class ParameterFactory:
         )
 
         self.create_parameters_for_field_definitions(handler_fields)
+        self._create_parameters_from_reserved_kwargs(handler_fields)
         return self.parameters.list()
 
 
