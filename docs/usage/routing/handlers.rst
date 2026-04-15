@@ -14,7 +14,7 @@ For example:
 
     @get("/")
     def greet() -> str:
-       return "hello world"
+        return "hello world"
 
 In the above example, the :term:`decorator` includes all the information required to define the endpoint operation for
 the combination of the path ``"/"`` and the HTTP verb ``GET``. In this case it will be a HTTP response with a
@@ -71,7 +71,7 @@ This is particularly useful when you want to have optional
 
 
     @get(
-       ["/some-path", "/some-path/{some_id:int}"],
+        ["/some-path", "/some-path/{some_id:int}"],
     )
     async def my_route_handler(some_id: int = 1) -> None: ...
 
@@ -117,11 +117,11 @@ For example:
 
     @get(path="/")
     async def my_request_handler(
-       state: State,
-       request: Request,
-       headers: Dict[str, str],
-       query: Dict[str, Any],
-       cookies: Dict[str, Any],
+        state: State,
+        request: Request,
+        headers: Dict[str, str],
+        query: Dict[str, Any],
+        cookies: Dict[str, Any],
     ) -> None: ...
 
 .. tip:: You can define a custom typing for your application state and then use it as a type instead of just using the
@@ -171,10 +171,11 @@ The same can be achieved without a decorator, by using ``HTTPRouteHandler`` dire
 
     async def my_endpoint() -> None: ...
 
+
     handler = HTTPRouteHandler(
         path="/some-path",
         http_method=[HttpMethod.GET, HttpMethod.POST],
-        fn=my_endpoint
+        fn=my_endpoint,
     )
 
 
@@ -211,7 +212,7 @@ the :paramref:`~.handlers.HTTPRouteHandler.http_method` :term:`kwarg <argument>`
 
 
         class PartialResourceDTO(PydanticDTO[Resource]):
-           config = DTOConfig(partial=True)
+            config = DTOConfig(partial=True)
 
 
         @get(path="/resources")
@@ -236,7 +237,7 @@ the :paramref:`~.handlers.HTTPRouteHandler.http_method` :term:`kwarg <argument>`
 
         @patch(path="/resources/{pk:int}", dto=PartialResourceDTO)
         async def partially_update_resource(
-           data: DTOData[PartialResourceDTO], pk: int
+            data: DTOData[PartialResourceDTO], pk: int
         ) -> Resource: ...
 
 
@@ -271,9 +272,9 @@ A WebSocket connection can be handled with a :func:`@websocket() <.handlers.Webs
 
     @websocket(path="/socket")
     async def my_websocket_handler(socket: WebSocket) -> None:
-       await socket.accept()
-       await socket.send_json({...})
-       await socket.close()
+        await socket.accept()
+        await socket.send_json({...})
+        await socket.close()
 
 The :func:`@websocket() <.handlers.WebsocketRouteHandler>` :term:`decorator` can be used to create an instance of
 :class:`~.handlers.WebsocketRouteHandler`. Therefore, the below code is equivalent to the one above:
@@ -284,10 +285,12 @@ The :func:`@websocket() <.handlers.WebsocketRouteHandler>` :term:`decorator` can
     from litestar import WebSocket
     from litestar.handlers.websocket_handlers import WebsocketRouteHandler
 
+
     async def my_websocket_handler(socket: WebSocket) -> None:
-       await socket.accept()
-       await socket.send_json({...})
-       await socket.close()
+        await socket.accept()
+        await socket.send_json({...})
+        await socket.close()
+
 
     my_websocket_handler = WebsocketRouteHandler(
         path="/socket",
@@ -323,15 +326,15 @@ If you need to write your own ASGI application, you can do so using the :func:`@
 
     @asgi(path="/my-asgi-app")
     async def my_asgi_app(scope: Scope, receive: Receive, send: Send) -> None:
-       if scope["type"] == "http":
-           if scope["method"] == "GET":
-               response = Response({"hello": "world"})
-               await response(scope=scope, receive=receive, send=send)
-           return
-       response = Response(
-           {"detail": "unsupported request"}, status_code=HTTP_400_BAD_REQUEST
-       )
-       await response(scope=scope, receive=receive, send=send)
+        if scope["type"] == "http":
+            if scope["method"] == "GET":
+                response = Response({"hello": "world"})
+                await response(scope=scope, receive=receive, send=send)
+            return
+        response = Response(
+            {"detail": "unsupported request"}, status_code=HTTP_400_BAD_REQUEST
+        )
+        await response(scope=scope, receive=receive, send=send)
 
 :func:`@asgi() <.handlers.asgi>` :term:`decorator` can be used to create an instance of
 :class:`~.handlers.ASGIRouteHandler`. Therefore, the code below is equivalent to the one above:
@@ -344,16 +347,18 @@ If you need to write your own ASGI application, you can do so using the :func:`@
     from litestar.status_codes import HTTP_400_BAD_REQUEST
     from litestar.types import Scope, Receive, Send
 
+
     async def my_asgi_app(scope: Scope, receive: Receive, send: Send) -> None:
-       if scope["type"] == "http":
-           if scope["method"] == "GET":
-               response = Response({"hello": "world"})
-               await response(scope=scope, receive=receive, send=send)
-           return
-       response = Response(
-           {"detail": "unsupported request"}, status_code=HTTP_400_BAD_REQUEST
-       )
-       await response(scope=scope, receive=receive, send=send)
+        if scope["type"] == "http":
+            if scope["method"] == "GET":
+                response = Response({"hello": "world"})
+                await response(scope=scope, receive=receive, send=send)
+            return
+        response = Response(
+            {"detail": "unsupported request"}, status_code=HTTP_400_BAD_REQUEST
+        )
+        await response(scope=scope, receive=receive, send=send)
+
 
     my_asgi_app = ASGIRouteHandler(path="/my-asgi-app", fn=my_asgi_app)
 
@@ -393,8 +398,7 @@ The default value for :paramref:`~.handlers.base.BaseRouteHandler.name` is the v
 containing the route handler instance and paths. It can also be used to build a URL path for that handler:
 
 .. code-block:: python
-    :caption: Using the :paramref:`~.handlers.base.BaseRouteHandler.name` :term:`kwarg <argument>` to retrieve a route
-      handler instance and paths
+    :caption: Using the :paramref:`~.handlers.base.BaseRouteHandler.name` :term:`kwarg <argument>` to retrieve a route handler instance and paths
 
     from litestar import Litestar, Request, get
     from litestar.exceptions import NotFoundException
@@ -420,7 +424,9 @@ containing the route handler instance and paths. It can also be used to build a 
     def handler_four(request: Request, name: str) -> Redirect:
         handler_index = request.app.get_handler_index_by_name(name)
         if not handler_index:
-            raise NotFoundException(f"no handler matching the name {name} was found")
+            raise NotFoundException(
+                f"no handler matching the name {name} was found"
+            )
 
         # handler_index == { "paths": ["/"], "handler": ..., "qualname": ... }
         # do something with the handler index below, e.g. send a redirect response to the handler, or access
@@ -449,6 +455,7 @@ As a convenience, you can also pass the route handler directly to :meth:`~.app.L
     def handler_one() -> None:
         pass
 
+
     app = Litestar(route_handlers=[handler])
 
     app.route_reverse(handler_one)  # Returns "/abc"
@@ -471,24 +478,24 @@ the highest number of the :term:`keyword arguments <argument>` passed to the fun
 
 
     @get(
-       ["/some-path", "/some-path/{id:int}", "/some-path/{id:int}/{val:str}"],
-       name="handler_name",
+        ["/some-path", "/some-path/{id:int}", "/some-path/{id:int}/{val:str}"],
+        name="handler_name",
     )
     def handler(id: int = 1, val: str = "default") -> None: ...
 
 
     @get("/path-info")
     def path_info(request: Request) -> str:
-       path_optional = request.app.route_reverse("handler_name")
-       # /some-path`
+        path_optional = request.app.route_reverse("handler_name")
+        # /some-path`
 
-       path_partial = request.app.route_reverse("handler_name", id=100)
-       # /some-path/100
+        path_partial = request.app.route_reverse("handler_name", id=100)
+        # /some-path/100
 
-       path_full = request.app.route_reverse("handler_name", id=100, val="value")
-       # /some-path/100/value`
+        path_full = request.app.route_reverse("handler_name", id=100, val="value")
+        # /some-path/100/value`
 
-       return f"{path_optional} {path_partial} {path_full}"
+        return f"{path_optional} {path_partial} {path_full}"
 
 When a handler is associated with multiple routes having identical path :term:`parameters <parameter>`
 (e.g., an indexed handler registered across multiple routers), the output of :meth:`~.app.Litestar.route_reverse` is

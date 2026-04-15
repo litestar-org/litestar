@@ -96,11 +96,11 @@ entries should point to a :class:`click.Command` or :class:`click.Group`:
             from setuptools import setup
 
             setup(
-               name="my-litestar-plugin",
-               ...,
-               entry_points={
-                   "litestar.commands": ["my_command=my_litestar_plugin.cli:main"],
-               },
+                name="my-litestar-plugin",
+                ...,
+                entry_points={
+                    "litestar.commands": ["my_command=my_litestar_plugin.cli:main"],
+                },
             )
 
     .. tab-item:: pdm
@@ -200,6 +200,7 @@ This makes them suitable for tasks that should happen exactly once, like initial
                 yield
             finally:
                 print("i_run_after_shutdown_plugin")  # noqa: T201
+
 
     def create_app() -> Litestar:
         return Litestar(route_handlers=[], plugins=[StartupPrintPlugin()])

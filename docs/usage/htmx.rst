@@ -62,7 +62,9 @@ HTMX client.  You can configure this globally by using the ``HTMXPlugin`` or by 
         if request.htmx:  # if request has "HX-Request" header, then
             print(request.htmx)  # HTMXDetails instance
             print(request.htmx.current_url)
-        return HTMXTemplate(template_name="partial.html", context=context, push_url="/form")
+        return HTMXTemplate(
+            template_name="partial.html", context=context, push_url="/form"
+        )
 
 
     app = Litestar(
@@ -108,7 +110,9 @@ an :class:`~litestar.plugins.htmx.HTMXTemplate` response:
             re_swap="outerHTML",  # change swapping method
             re_target="#new-target",  # change target element
             trigger_event="showMessage",  # trigger event name
-            params={"alert": "Confirm your Choice."},  # parameter to pass to the event
+            params={
+                "alert": "Confirm your Choice."
+            },  # parameter to pass to the event
             after="receive",  #  when to trigger event,
             # possible values 'receive', 'settle', and 'swap'
         )

@@ -11,7 +11,8 @@ OpenAPI schema generation is enabled by default. To configure it you can pass an
    from litestar.openapi import OpenAPIConfig
 
    app = Litestar(
-       route_handlers=[...], openapi_config=OpenAPIConfig(title="My API", version="1.0.0")
+       route_handlers=[...],
+       openapi_config=OpenAPIConfig(title="My API", version="1.0.0"),
    )
 
 
@@ -117,7 +118,8 @@ You can also modify the generated schema for the route handler using the followi
        path="/items/{pk:int}",
        responses={
            404: ResponseSpec(
-               data_container=ItemNotFound, description="Item was removed or not found"
+               data_container=ItemNotFound,
+               description="Item was removed or not found",
            )
        },
    )
@@ -152,8 +154,13 @@ app instance itself. For example:
            title="my api",
            version="1.0.0",
            tags=[
-               Tag(name="public", description="This endpoint is for external users"),
-               Tag(name="internal", description="This endpoint is for internal users"),
+               Tag(
+                   name="public", description="This endpoint is for external users"
+               ),
+               Tag(
+                   name="internal",
+                   description="This endpoint is for internal users",
+               ),
            ],
            security=[{"BearerToken": []}],
            components=Components(

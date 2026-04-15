@@ -259,7 +259,9 @@ Litestar also supports returning ASGI applications directly, as you would respon
 
    @get("/")
    def handler() -> ASGIApp:
-       async def my_asgi_app(scope: Scope, receive: Receive, send: Send) -> None: ...
+       async def my_asgi_app(
+           scope: Scope, receive: Receive, send: Send
+       ) -> None: ...
 
        return my_asgi_app
 
@@ -280,7 +282,9 @@ Function ASGI Application
    from litestar.types import Receive, Scope, Send
 
 
-   async def my_asgi_app_function(scope: Scope, receive: Receive, send: Send) -> None:
+   async def my_asgi_app_function(
+       scope: Scope, receive: Receive, send: Send
+   ) -> None:
        # do something here
        ...
 
@@ -308,7 +312,9 @@ Class ASGI Application
 
 
    class ASGIApp:
-       async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
+       async def __call__(
+           self, scope: Scope, receive: Receive, send: Send
+       ) -> None:
            # do something here
            ...
 
@@ -616,7 +622,9 @@ File responses send a file:
    @get(path="/file-download")
    def handle_file_download() -> File:
        return File(
-           path=Path(Path(__file__).resolve().parent, "report").with_suffix(".pdf"),
+           path=Path(Path(__file__).resolve().parent, "report").with_suffix(
+               ".pdf"
+           ),
            filename="report.pdf",
        )
 
@@ -644,7 +652,9 @@ For example:
    @get(path="/file-download", media_type="application/pdf")
    def handle_file_download() -> File:
        return File(
-           path=Path(Path(__file__).resolve().parent, "report").with_suffix(".pdf"),
+           path=Path(Path(__file__).resolve().parent, "report").with_suffix(
+               ".pdf"
+           ),
            filename="report.pdf",
        )
 

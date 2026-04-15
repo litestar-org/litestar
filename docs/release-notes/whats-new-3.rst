@@ -49,8 +49,7 @@ handler for the ``param`` parameter:
 .. code-block:: python
 
     @get("/")
-    def my_handler(param: int | None) -> ...:
-        ...
+    def my_handler(param: int | None) -> ...: ...
 
 This legacy behavior originates from our history of using Pydantic v1 models to represent handler signatures. In v3, we
 no longer make this implicit conversion. If you want to have a default value of ``None`` for an optional parameter, you
@@ -59,8 +58,7 @@ must explicitly set it:
 .. code-block:: python
 
     @get("/")
-    def my_handler(param: int | None = None) -> ...:
-        ...
+    def my_handler(param: int | None = None) -> ...: ...
 
 
 OpenAPI Controller Replaced by Plugins
@@ -140,6 +138,7 @@ If you were relying on this utility, you can define it yourself as follows:
 
     from inspect import isasyncgenfunction, isgeneratorfunction
 
+
     def is_sync_or_async_generator(obj: Any) -> bool:
         return isgeneratorfunction(obj) or isasyncgenfunction(obj)
 
@@ -160,24 +159,21 @@ Before:
 
 .. code-block:: python
 
-    class my_get_handler(get):
-        ... # custom handler
+    class my_get_handler(get): ...  # custom handler
+
 
     @my_get_handler()
-    async def handler() -> Any:
-        ...
+    async def handler() -> Any: ...
 
 After:
 
 .. code-block:: python
 
-    class MyHTTPRouteHandler(HTTPRouteHandler):
-        ... # custom handler
+    class MyHTTPRouteHandler(HTTPRouteHandler): ...  # custom handler
 
 
     @get(handler_class=MyHTTPRouteHandler)
-    async def handler() -> Any:
-        ...
+    async def handler() -> Any: ...
 
 
 Deprecated ``app`` parameter for ``Response.to_asgi_response`` has been removed
@@ -256,8 +252,7 @@ callable as its only argument and returns another ASGI callable:
 
 .. code-block:: python
 
-    def middleware(app: ASGIApp) -> ASGIApp:
-        ...
+    def middleware(app: ASGIApp) -> ASGIApp: ...
 
 
 .. seealso::

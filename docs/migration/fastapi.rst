@@ -17,7 +17,6 @@ controller methods. The handler can then be registered on an application or rout
 
             from fastapi import FastAPI
 
-
             app = FastAPI()
 
 
@@ -188,9 +187,7 @@ Litestar uses the same async context manager style as FastAPI, so the code does 
         .. code-block:: python
 
             @asynccontextmanager
-            async def lifespan(
-                app: FastAPI
-            ):
+            async def lifespan(app: FastAPI):
                 # Setup code here
                 yield
                 # Teardown code here
@@ -201,9 +198,7 @@ Litestar uses the same async context manager style as FastAPI, so the code does 
         .. code-block:: python
 
             @asynccontextmanager
-            async def lifespan(
-                app: Litestar
-            ):
+            async def lifespan(app: Litestar):
                 # Setup code here
                 yield
                 # Teardown code here
@@ -232,8 +227,7 @@ While with FastAPI you usually set cookies on the response ``Response`` object, 
         .. code-block:: python
 
             @get(response_cookies={"my-cookie": "cookie-value"})
-            async def handler() -> str:
-                ...
+            async def handler() -> str: ...
 
 
 Dependencies parameters
@@ -250,6 +244,7 @@ You can get the state either with the state kwarg in the handler or ``request.st
 
             from fastapi import Request
 
+
             async def get_arqredis(request: Request) -> ArqRedis:
                 return request.state.arqredis
 
@@ -259,6 +254,7 @@ You can get the state either with the state kwarg in the handler or ``request.st
         .. code-block:: python
 
             from litestar import State
+
 
             async def get_arqredis(state: State) -> ArqRedis:
                 return state.arqredis
@@ -279,6 +275,7 @@ In FastAPI, you pass the JSON object directly as a parameter to the endpoint, wh
             class ObjectType(BaseModel):
                 name: str
 
+
             @app.post("/items/")
             async def create_item(object_name: ObjectType) -> dict[str, str]:
                 return {"name": object_name.name}
@@ -291,8 +288,10 @@ In FastAPI, you pass the JSON object directly as a parameter to the endpoint, wh
             from litestar import Litestar, post
             from pydantic import BaseModel
 
+
             class ObjectType(BaseModel):
                 name: str
+
 
             @post("/items/")
             async def create_item(data: ObjectType) -> dict[str, str]:
@@ -330,9 +329,7 @@ Also FastAPI let you pass a dictionary while in Litestar you need to explicitly 
 
             @get("/uploads")
             async def get_uploads(app_settings) -> Template:
-                return Template(
-                    name="uploads.html", context={"debug": app_settings.debug}
-                )
+                return Template(name="uploads.html", context={"debug": app_settings.debug})
 
 Uploads
 ~~~~~~~
@@ -357,8 +354,13 @@ While this is more verbose, it's also more explicit and communicates the intent 
         .. code-block:: python
 
             @post("/upload/")
-            async def upload_file(data: Annotated[list[UploadFile], Body(media_type=RequestEncodingType.MULTI_PART)]) -> dict[str, str]:
+            async def upload_file(
+                data: Annotated[
+                    list[UploadFile], Body(media_type=RequestEncodingType.MULTI_PART)
+                ],
+            ) -> dict[str, str]:
                 return {"file_names": [file.filename for file in data]}
+
 
             app = Litestar([upload_file])
 
@@ -380,6 +382,7 @@ If migrating you just change your HTTPException import this will break.
 
             app = FastAPI()
 
+
             @app.get("/")
             async def index() -> None:
                 response_fields = {"array": "value"}
@@ -395,12 +398,15 @@ If migrating you just change your HTTPException import this will break.
             from litestar import Litestar, get
             from litestar.exceptions import HTTPException
 
+
             @get("/")
             async def index() -> None:
                 response_fields = {"array": "value"}
                 raise HTTPException(
-                    status_code=400, detail=f"can't get that field: {response_fields.get('array')}"
+                    status_code=400,
+                    detail=f"can't get that field: {response_fields.get('array')}",
                 )
+
 
             app = Litestar([index])
 

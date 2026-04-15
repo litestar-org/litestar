@@ -12,18 +12,18 @@ To add authentication to your app using this class as a basis, subclass it and i
       :class:`~.middleware.authentication.AbstractAuthenticationMiddleware`
 
     from litestar.middleware import (
-       AbstractAuthenticationMiddleware,
-       AuthenticationResult,
+        AbstractAuthenticationMiddleware,
+        AuthenticationResult,
     )
     from litestar.connection import ASGIConnection
 
 
     class MyAuthenticationMiddleware(AbstractAuthenticationMiddleware):
-       async def authenticate_request(
-           self, connection: ASGIConnection
-       ) -> AuthenticationResult:
-           # do something here.
-           ...
+        async def authenticate_request(
+            self, connection: ASGIConnection
+        ) -> AuthenticationResult:
+            # do something here.
+            ...
 
 As you can see, ``authenticate_request`` is an async function that receives a connection instance and is supposed to return
 an :class:`~.middleware.authentication.AuthenticationResult` instance, which is a

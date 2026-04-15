@@ -298,6 +298,7 @@ in isolation.
 
     from my_app.main import health_check
 
+
     def test_health_check():
         with create_test_client([health_check]) as client:
             response = client.get("/health-check")
@@ -336,7 +337,9 @@ By default, the subprocess client will capture all output from the litestar inst
 
     @pytest.fixture(name="async_client")
     async def fx_async_client() -> AsyncIterator[httpx.AsyncClient]:
-        async with subprocess_async_client(workdir=ROOT, app="subprocess_sse_app:app", capture_output=False) as client:
+        async with subprocess_async_client(
+            workdir=ROOT, app="subprocess_sse_app:app", capture_output=False
+        ) as client:
             yield client
 
 
@@ -359,10 +362,13 @@ from the :doc:`route guards </usage/security/guards>` documentation:
     from litestar.handlers.base import BaseRouteHandler
 
 
-    def secret_token_guard(request: Request, route_handler: BaseRouteHandler) -> None:
+    def secret_token_guard(
+        request: Request, route_handler: BaseRouteHandler
+    ) -> None:
         if (
             route_handler.opt.get("secret")
-            and not request.headers.get("Secret-Header", "") == route_handler.opt["secret"]
+            and not request.headers.get("Secret-Header", "")
+            == route_handler.opt["secret"]
         ):
             raise NotAuthorizedException()
 
@@ -378,7 +384,11 @@ We already have our route handler in place:
     from my_app.guards import secret_token_guard
 
 
-    @get(path="/secret", guards=[secret_token_guard], opt={"secret": environ.get("SECRET")})
+    @get(
+        path="/secret",
+        guards=[secret_token_guard],
+        opt={"secret": environ.get("SECRET")},
+    )
     def secret_endpoint() -> None: ...
 
 We could thus test the guard function like so:
@@ -401,7 +411,9 @@ We could thus test the guard function like so:
         copied_endpoint_handler = secret_endpoint.copy()
         copied_endpoint_handler.opt["secret"] = None
         with pytest.raises(NotAuthorizedException):
-            secret_token_guard(request=request, route_handler=copied_endpoint_handler)
+            secret_token_guard(
+                request=request, route_handler=copied_endpoint_handler
+            )
 
 
     def test_secret_token_guard_success_scenario():

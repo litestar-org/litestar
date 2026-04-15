@@ -85,10 +85,10 @@ injected dependencies. For example:
 
     @get("/some-path")
     def route_handler(request: Request[Any, Any]) -> None:
-       @get("/sub-path")
-       def sub_path_handler() -> None: ...
+        @get("/sub-path")
+        def sub_path_handler() -> None: ...
 
-       request.app.register(sub_path_handler)
+        request.app.register(sub_path_handler)
 
 
     app = Litestar(route_handlers=[route_handler])
@@ -145,30 +145,30 @@ Their purpose is to allow users to utilize Python OOP for better code organizati
 
 
         class UserOrder(BaseModel):
-           user_id: int
-           order: str
+            user_id: int
+            order: str
 
 
         class PartialUserOrderDTO(PydanticDTO[UserOrder]):
-           config = DTOConfig(partial=True)
+            config = DTOConfig(partial=True)
 
 
         class UserOrderController(Controller):
-           path = "/user-order"
+            path = "/user-order"
 
-           @post()
-           async def create_user_order(self, data: UserOrder) -> UserOrder: ...
+            @post()
+            async def create_user_order(self, data: UserOrder) -> UserOrder: ...
 
-           @get(path="/{order_id:uuid}")
-           async def retrieve_user_order(self, order_id: UUID4) -> UserOrder: ...
+            @get(path="/{order_id:uuid}")
+            async def retrieve_user_order(self, order_id: UUID4) -> UserOrder: ...
 
-           @patch(path="/{order_id:uuid}", dto=PartialUserOrderDTO)
-           async def update_user_order(
-               self, order_id: UUID4, data: DTOData[PartialUserOrderDTO]
-           ) -> UserOrder: ...
+            @patch(path="/{order_id:uuid}", dto=PartialUserOrderDTO)
+            async def update_user_order(
+                self, order_id: UUID4, data: DTOData[PartialUserOrderDTO]
+            ) -> UserOrder: ...
 
-           @delete(path="/{order_id:uuid}")
-           async def delete_user_order(self, order_id: UUID4) -> None: ...
+            @delete(path="/{order_id:uuid}")
+            async def delete_user_order(self, order_id: UUID4) -> None: ...
 
 The above is a simple example of a "CRUD" controller for a model called ``UserOrder``. You can place as
 many :doc:`route handler methods </usage/routing/handlers>` on a controller,
@@ -196,10 +196,10 @@ Controllers
 
 
     class MyController(Controller):
-       path = "/controller"
+        path = "/controller"
 
-       @get()
-       def handler(self) -> None: ...
+        @get()
+        def handler(self) -> None: ...
 
 
     internal_router = Router(path="/internal", route_handlers=[MyController])

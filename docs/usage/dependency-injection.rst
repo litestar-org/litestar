@@ -47,7 +47,8 @@ the application:
 
    # on the app
    app = Litestar(
-       route_handlers=[my_router], dependencies={"app_dependency": Provide(bool_fn)}
+       route_handlers=[my_router],
+       dependencies={"app_dependency": Provide(bool_fn)},
    )
 
 The above example illustrates how dependencies are declared on the different layers of the application.
