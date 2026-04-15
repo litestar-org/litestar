@@ -13,9 +13,11 @@ Excluding routes
 --------------------
 
 The ``exclude`` argument takes a :class:`string <str>` or :class:`list` of :class:`strings <str>` that are interpreted
-as regex patterns. For example, the configuration below would apply authentication to all endpoints except those where
-the route starts with ``/login``, ``/signup``, or ``/schema``. Thus, one does not have to exclude ``/schema/swagger``
-as well - it is included in the ``/schema`` pattern.
+as regex patterns matched against the full path. Because the patterns are not implicitly anchored, a pattern like
+``/schema`` would match *any* path containing ``/schema``, not just paths that start with it. To match only paths that
+start with a given prefix, anchor the pattern with ``^``. For example, the configuration below would apply
+authentication to all endpoints except those where the route starts with ``/login``, ``/signup``, or ``/schema``.
+Thus, one does not have to exclude ``/schema/swagger`` as well — it is covered by the ``^/schema`` pattern.
 
 .. danger::
 
@@ -31,7 +33,7 @@ as well - it is included in the ``/schema`` pattern.
     session_backend_config=ServerSideSessionConfig(),
     # exclude any URLs that should not have authentication.
     # We exclude the documentation URLs, signup and login.
-    exclude=["/login", "/signup", "/schema"],
+    exclude=[r"^/login", r"^/signup", r"^/schema"],
     )
     ...
 
@@ -94,7 +96,7 @@ You can set an alternative option key in the security configuration, e.g., you c
     session_backend_config=ServerSideSessionConfig(),
     # exclude any URLs that should not have authentication.
     # We exclude the documentation URLs, signup and login.
-    exclude=["/login", "/signup", "/schema"],
+    exclude=[r"^/login", r"^/signup", r"^/schema"],
     exclude_opt_key="no_auth"  # default value is `exclude_from_auth`
     )
     ...
