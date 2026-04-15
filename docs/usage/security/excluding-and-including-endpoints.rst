@@ -27,13 +27,13 @@ Thus, one does not have to exclude ``/schema/swagger`` as well — it is covered
 .. code-block:: python
 
     session_auth = SessionAuth[User, ServerSideSessionBackend](
-    retrieve_user_handler=retrieve_user_handler,
-    # we must pass a config for a session backend.
-    # all session backends are supported
-    session_backend_config=ServerSideSessionConfig(),
-    # exclude any URLs that should not have authentication.
-    # We exclude the documentation URLs, signup and login.
-    exclude=[r"^/login", r"^/signup", r"^/schema"],
+        retrieve_user_handler=retrieve_user_handler,
+        # we must pass a config for a session backend.
+        # all session backends are supported
+        session_backend_config=ServerSideSessionConfig(),
+        # exclude any URLs that should not have authentication.
+        # We exclude the documentation URLs, signup and login.
+        exclude=[r"^/login", r"^/signup", r"^/schema"],
     )
     ...
 
@@ -48,13 +48,13 @@ under the ``/secured`` route will require authentication - all other routes do n
 
     ...
     session_auth = SessionAuth[User, ServerSideSessionBackend](
-    retrieve_user_handler=retrieve_user_handler,
-    # we must pass a config for a session backend.
-    # all session backends are supported
-    session_backend_config=ServerSideSessionConfig(),
-    # exclude any URLs that should not have authentication.
-    # We exclude the documentation URLs, signup and login.
-    exclude=[r"^(?!.*\/secured$).*$"],
+        retrieve_user_handler=retrieve_user_handler,
+        # we must pass a config for a session backend.
+        # all session backends are supported
+        session_backend_config=ServerSideSessionConfig(),
+        # exclude any URLs that should not have authentication.
+        # We exclude the documentation URLs, signup and login.
+        exclude=[r"^(?!.*\/secured$).*$"],
     )
     ...
 
@@ -90,13 +90,13 @@ You can set an alternative option key in the security configuration, e.g., you c
         ...
 
     session_auth = SessionAuth[User, ServerSideSessionBackend](
-    retrieve_user_handler=retrieve_user_handler,
-    # we must pass a config for a session backend.
-    # all session backends are supported
-    session_backend_config=ServerSideSessionConfig(),
-    # exclude any URLs that should not have authentication.
-    # We exclude the documentation URLs, signup and login.
-    exclude=[r"^/login", r"^/signup", r"^/schema"],
-    exclude_opt_key="no_auth"  # default value is `exclude_from_auth`
+        retrieve_user_handler=retrieve_user_handler,
+        # we must pass a config for a session backend.
+        # all session backends are supported
+        session_backend_config=ServerSideSessionConfig(),
+        # exclude any URLs that should not have authentication.
+        # We exclude the documentation URLs, signup and login.
+        exclude=[r"^/login", r"^/signup", r"^/schema"],
+        exclude_opt_key="no_auth"  # default value is `exclude_from_auth`
     )
     ...
