@@ -5,15 +5,13 @@ See: https://github.com/litestar-org/litestar/issues/2015
 
 from __future__ import annotations
 
-from typing import Optional, TypedDict, cast
-
-import pytest
+from typing import TypedDict
 
 from litestar import Litestar, get
 from litestar.enums import ParamType
 from litestar.openapi import OpenAPIConfig
-from litestar.openapi.spec import OpenAPI
 from litestar.openapi.spec.enums import OpenAPIType
+from litestar.openapi.spec.parameter import Parameter
 from litestar.testing import create_test_client
 
 
@@ -47,10 +45,10 @@ class TestTypedDictQueryParameters:
             return {}
 
         app = Litestar(route_handlers=[handler])
-        schema = cast("OpenAPI", app.openapi_schema)
-        params = schema.paths["/items"].get.parameters  # type: ignore[union-attr, index]
-        assert params is not None
+        parameters = app.openapi_schema.paths["/items"].get.parameters  # type: ignore[index, union-attr]
+        assert parameters is not None
 
+        params = [p for p in parameters if isinstance(p, Parameter)]
         param_names = {p.name for p in params}
         assert "page" in param_names
         assert "search" in param_names
@@ -61,13 +59,15 @@ class TestTypedDictQueryParameters:
             return {}
 
         app = Litestar(route_handlers=[handler])
-        schema = cast("OpenAPI", app.openapi_schema)
-        params = {p.name: p for p in schema.paths["/items"].get.parameters}  # type: ignore[union-attr, index]
+        parameters = app.openapi_schema.paths["/items"].get.parameters  # type: ignore[index, union-attr]
+        assert parameters is not None
+
+        params = {p.name: p for p in parameters if isinstance(p, Parameter)}
 
         assert params["page"].param_in == ParamType.QUERY
-        assert params["page"].schema.type == OpenAPIType.INTEGER  # type: ignore[union-attr]
+        assert params["page"].schema and params["page"].schema.type == OpenAPIType.INTEGER  # type: ignore[union-attr]
         assert params["search"].param_in == ParamType.QUERY
-        assert params["search"].schema.type == OpenAPIType.STRING  # type: ignore[union-attr]
+        assert params["search"].schema and params["search"].schema.type == OpenAPIType.STRING  # type: ignore[union-attr]
 
     def test_typeddict_query_required_keys(self) -> None:
         @get("/items")
@@ -75,8 +75,10 @@ class TestTypedDictQueryParameters:
             return {}
 
         app = Litestar(route_handlers=[handler])
-        schema = cast("OpenAPI", app.openapi_schema)
-        params = {p.name: p for p in schema.paths["/items"].get.parameters}  # type: ignore[union-attr, index]
+        parameters = app.openapi_schema.paths["/items"].get.parameters  # type: ignore[index, union-attr]
+        assert parameters is not None
+
+        params = {p.name: p for p in parameters if isinstance(p, Parameter)}
 
         assert params["page"].required is True
         assert params["search"].required is True
@@ -87,8 +89,10 @@ class TestTypedDictQueryParameters:
             return {}
 
         app = Litestar(route_handlers=[handler])
-        schema = cast("OpenAPI", app.openapi_schema)
-        params = {p.name: p for p in schema.paths["/items"].get.parameters}  # type: ignore[union-attr, index]
+        parameters = app.openapi_schema.paths["/items"].get.parameters  # type: ignore[index, union-attr]
+        assert parameters is not None
+
+        params = {p.name: p for p in parameters if isinstance(p, Parameter)}
 
         # QueryParams uses total=False, so all keys are optional
         assert params["page"].required is False
@@ -105,10 +109,10 @@ class TestTypedDictHeaderParameters:
             return {}
 
         app = Litestar(route_handlers=[handler])
-        schema = cast("OpenAPI", app.openapi_schema)
-        params = schema.paths["/items"].get.parameters  # type: ignore[union-attr, index]
-        assert params is not None
+        parameters = app.openapi_schema.paths["/items"].get.parameters  # type: ignore[index, union-attr]
+        assert parameters is not None
 
+        params = [p for p in parameters if isinstance(p, Parameter)]
         param_names = {p.name for p in params}
         assert "x_api_key" in param_names
         assert "x_request_id" in param_names
@@ -119,8 +123,10 @@ class TestTypedDictHeaderParameters:
             return {}
 
         app = Litestar(route_handlers=[handler])
-        schema = cast("OpenAPI", app.openapi_schema)
-        params = {p.name: p for p in schema.paths["/items"].get.parameters}  # type: ignore[union-attr, index]
+        parameters = app.openapi_schema.paths["/items"].get.parameters  # type: ignore[index, union-attr]
+        assert parameters is not None
+
+        params = {p.name: p for p in parameters if isinstance(p, Parameter)}
 
         assert params["x_api_key"].param_in == ParamType.HEADER
         assert params["x_request_id"].param_in == ParamType.HEADER
@@ -136,10 +142,10 @@ class TestTypedDictCookieParameters:
             return {}
 
         app = Litestar(route_handlers=[handler])
-        schema = cast("OpenAPI", app.openapi_schema)
-        params = schema.paths["/items"].get.parameters  # type: ignore[union-attr, index]
-        assert params is not None
+        parameters = app.openapi_schema.paths["/items"].get.parameters  # type: ignore[index, union-attr]
+        assert parameters is not None
 
+        params = [p for p in parameters if isinstance(p, Parameter)]
         param_names = {p.name for p in params}
         assert "session_id" in param_names
         assert "tracking_id" in param_names
@@ -150,8 +156,10 @@ class TestTypedDictCookieParameters:
             return {}
 
         app = Litestar(route_handlers=[handler])
-        schema = cast("OpenAPI", app.openapi_schema)
-        params = {p.name: p for p in schema.paths["/items"].get.parameters}  # type: ignore[union-attr, index]
+        parameters = app.openapi_schema.paths["/items"].get.parameters  # type: ignore[index, union-attr]
+        assert parameters is not None
+
+        params = {p.name: p for p in parameters if isinstance(p, Parameter)}
 
         assert params["session_id"].param_in == ParamType.COOKIE
         assert params["tracking_id"].param_in == ParamType.COOKIE
@@ -163,12 +171,11 @@ class TestUntypedReservedKwargsUnchanged:
 
     def test_dict_query_no_parameters(self) -> None:
         @get("/items")
-        async def handler(query: dict) -> dict:  # type: ignore[type-arg]
+        async def handler(query: dict) -> dict:
             return {}
 
         app = Litestar(route_handlers=[handler])
-        schema = cast("OpenAPI", app.openapi_schema)
-        params = schema.paths["/items"].get.parameters  # type: ignore[union-attr, index]
+        params = app.openapi_schema.paths["/items"].get.parameters  # type: ignore[index, union-attr]
         assert params is None
 
     def test_plain_dict_str_str_no_parameters(self) -> None:
@@ -177,8 +184,7 @@ class TestUntypedReservedKwargsUnchanged:
             return {}
 
         app = Litestar(route_handlers=[handler])
-        schema = cast("OpenAPI", app.openapi_schema)
-        params = schema.paths["/items"].get.parameters  # type: ignore[union-attr, index]
+        params = app.openapi_schema.paths["/items"].get.parameters  # type: ignore[index, union-attr]
         assert params is None
 
 
@@ -199,11 +205,11 @@ class TestOpenAPIJSONOutput:
             assert response.status_code == 200
             data = response.json()
 
-            params = data["paths"]["/items"]["get"]["parameters"]
-            param_names = {p["name"] for p in params}
+            parameters = data["paths"]["/items"]["get"]["parameters"]
+            param_names = {p["name"] for p in parameters}
             assert "page" in param_names
             assert "search" in param_names
 
-            page_param = next(p for p in params if p["name"] == "page")
+            page_param = next(p for p in parameters if p["name"] == "page")
             assert page_param["in"] == "query"
             assert page_param["schema"]["type"] == "integer"

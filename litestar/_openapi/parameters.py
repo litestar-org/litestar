@@ -214,9 +214,7 @@ class ParameterFactory:
         for field_name, field_definition in intersection_fields:
             self.parameters.add(self.get_layered_parameter(field_name=field_name, field_definition=field_definition))
 
-    def _create_parameters_from_reserved_kwargs(
-        self, fields: dict[str, FieldDefinition]
-    ) -> None:
+    def _create_parameters_from_reserved_kwargs(self, fields: dict[str, FieldDefinition]) -> None:
         """Generate OpenAPI parameters from typed reserved kwargs (``query``, ``headers``, ``cookies``).
 
         When a handler annotates a reserved kwarg with a ``TypedDict``, each field of the
@@ -241,7 +239,7 @@ class ParameterFactory:
             if field_def.is_typeddict_type:
                 annotation = field_def.annotation
                 hints = get_type_hints(annotation, include_extras=True)
-                required_keys = getattr(annotation, "__required_keys__", set())
+                required_keys: frozenset[str] = getattr(annotation, "__required_keys__", frozenset())
                 for key, type_ in hints.items():
                     sub_field = FieldDefinition.from_kwarg(name=key, annotation=type_)
                     schema = self.schema_creator.for_field_definition(sub_field)
