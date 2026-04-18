@@ -1960,7 +1960,6 @@ full = [
     { name = "redis", extra = ["hiredis"] },
     { name = "uvicorn", extra = ["standard"] },
     { name = "valkey", extra = ["libvalkey"] },
-    { name = "zstandard" },
 ]
 htmx = [
     { name = "litestar-htmx" },
@@ -2015,7 +2014,6 @@ yaml = [
 ]
 zstd = [
     { name = "backports-zstd", marker = "python_full_version < '3.14'" },
-    { name = "zstandard" },
 ]
 
 [package.dev-dependencies]
@@ -2081,6 +2079,7 @@ test = [
     { name = "pytest-timeout" },
     { name = "pytest-xdist" },
     { name = "time-machine" },
+    { name = "zstandard" },
 ]
 
 [package.metadata]
@@ -2124,7 +2123,6 @@ requires-dist = [
     { name = "uvicorn", extras = ["standard"], marker = "extra == 'cli'" },
     { name = "uvicorn", extras = ["standard"], marker = "extra == 'standard'" },
     { name = "valkey", extras = ["libvalkey"], marker = "extra == 'valkey'", specifier = ">=6.0.2" },
-    { name = "zstandard", marker = "extra == 'zstd'", specifier = ">=0.24.0" },
 ]
 provides-extras = ["annotated-types", "attrs", "brotli", "zstd", "cli", "cryptography", "full", "htmx", "jinja", "jwt", "mako", "minijinja", "opentelemetry", "piccolo", "polyfactory", "prometheus", "pydantic", "redis", "sqlalchemy", "standard", "valkey", "yaml"]
 
@@ -2191,6 +2189,7 @@ test = [
     { name = "pytest-timeout" },
     { name = "pytest-xdist" },
     { name = "time-machine" },
+    { name = "zstandard" },
 ]
 
 [[package]]

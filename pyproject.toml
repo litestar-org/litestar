@@ -54,7 +54,6 @@ attrs = ["attrs"]
 brotli = ["brotli"]
 zstd = [
     "backports-zstd==1.3.0; python_version < '3.14'",
-    "zstandard>=0.24.0",
 ]
 cli = ["jsbeautifier", "uvicorn[standard]"]
 cryptography = ["cryptography"]
@@ -193,6 +192,7 @@ test = [
   "pytest-timeout",
   "pytest-xdist",
   "time-machine",
+  "zstandard",
 ]
 
 [build-system]
