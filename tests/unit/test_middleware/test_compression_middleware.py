@@ -1,5 +1,6 @@
 # pyright: reportUnnecessaryTypeIgnoreComment=false
 
+import sys
 import zlib
 from collections.abc import AsyncIterator, Callable
 from contextlib import nullcontext
@@ -20,6 +21,12 @@ from litestar.response.streaming import Stream
 from litestar.status_codes import HTTP_200_OK
 from litestar.testing import create_test_client
 from litestar.types.asgi_types import ASGIApp, HTTPResponseBodyEvent, HTTPResponseStartEvent, Message, Scope
+
+if sys.version_info >= (3, 14):
+    from compression import zstd
+else:
+    from backports import zstd
+zstd_compression_level_upper_bound = zstd.CompressionParameter.compression_level.bounds()[1]
 
 BrotliMode = Literal["text", "generic", "font"]
 
@@ -165,7 +172,16 @@ def test_config_gzip_compress_level_validation(gzip_compress_level: int, should_
         CompressionConfig(backend="gzip", brotli_gzip_fallback=False, gzip_compress_level=gzip_compress_level)
 
 
-@pytest.mark.parametrize("zstd_compress_level, should_raise", ((0, False), (1, False), (-1, True)))
+@pytest.mark.parametrize(
+    "zstd_compress_level, should_raise",
+    (
+        (-1, True),
+        (0, False),
+        (1, False),
+        (zstd_compression_level_upper_bound, False),
+        (zstd_compression_level_upper_bound + 1, True),
+    ),
+)
 def test_config_zstd_compress_level_validation(zstd_compress_level: int, should_raise: bool) -> None:
     with pytest.raises(ImproperlyConfiguredException) if should_raise else nullcontext():
         CompressionConfig(backend="zstd", zstd_compress_level=zstd_compress_level)
