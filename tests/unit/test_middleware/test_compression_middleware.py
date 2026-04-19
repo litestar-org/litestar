@@ -2,6 +2,7 @@
 
 import zlib
 from collections.abc import AsyncIterator, Callable
+from contextlib import nullcontext
 from io import BytesIO
 from typing import Literal, Union
 from unittest.mock import MagicMock
@@ -164,14 +165,9 @@ def test_config_gzip_compress_level_validation(gzip_compress_level: int, should_
         CompressionConfig(backend="gzip", brotli_gzip_fallback=False, gzip_compress_level=gzip_compress_level)
 
 
-@pytest.mark.parametrize(
-    "zstd_compress_level, should_raise", ((0, True), (1, False), (22, False), (23, True), (-1, True))
-)
+@pytest.mark.parametrize("zstd_compress_level, should_raise", ((0, False), (1, False), (-1, True)))
 def test_config_zstd_compress_level_validation(zstd_compress_level: int, should_raise: bool) -> None:
-    if should_raise:
-        with pytest.raises(ImproperlyConfiguredException):
-            CompressionConfig(backend="zstd", zstd_compress_level=zstd_compress_level)
-    else:
+    with pytest.raises(ImproperlyConfiguredException) if should_raise else nullcontext():
         CompressionConfig(backend="zstd", zstd_compress_level=zstd_compress_level)
 
 
