@@ -25,6 +25,7 @@ class ZstdCompression(CompressionFacade):
     __slots__ = ("buffer", "compression_encoding", "compressor")
 
     encoding = CompressionEncoding("zstd")
+    upper_bound = zstd.CompressionParameter.compression_level.bounds()[1]
 
     def __init__(
         self,
@@ -47,5 +48,5 @@ class ZstdCompression(CompressionFacade):
             self.buffer.write(self.compressor.compress(body, mode=zstd.ZstdCompressor.FLUSH_FRAME))
 
     def close(self) -> None:
-        if self.compressor.last_mode is not zstd.ZstdCompressor.FLUSH_FRAME:
+        if self.compressor.last_mode != zstd.ZstdCompressor.FLUSH_FRAME:
             self.buffer.write(self.compressor.flush())

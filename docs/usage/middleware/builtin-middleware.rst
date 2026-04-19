@@ -232,7 +232,7 @@ You can configure the following additional brotli-specific values:
 Zstd
 ^^^^^^
 
-The `zstandard <https://pypi.org/project/zstandard>`_ package is required to run this middleware. It is available as an extra for Litestar via the ``zstd`` extra: (``pip install 'litestar[zstd]'``).
+The `backports.zstd <https://pypi.org/project/backports.zstd/>`_ package is required to run this middleware. It is available as an extra for Litestar via the ``zstd`` extra: (``pip install 'litestar[zstd]'``).
 
 You can enable zstd compression of responses by passing an instance of
 :class:`~litestar.config.compression.CompressionConfig` with the ``backend`` parameter set to ``"zstd"``.
@@ -240,7 +240,7 @@ You can enable zstd compression of responses by passing an instance of
 You can configure the following additional zstd-specific values:
 
 * ``minimum_size``: the minimum threshold for response size to enable compression. Smaller responses will not be compressed. Default is 500, i.e. half a kilobyte.
-* ``zstd_compress_level``: Range [0-22], Controls the compression level. Higher values increase compression ratio but are slower. Default is 3.
+* ``zstd_compress_level``: Integer >= 0. Controls the compression level. Higher values increase compression ratio but are slower. A value of 0 indicates use of the library default, which is typically level 3. Default is 0.
 * ``zstd_gzip_fallback``: Boolean indicating whether to fall back to gzip if Zstd is not supported. Default is True.
 
 .. code-block:: python
