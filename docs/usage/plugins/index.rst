@@ -85,7 +85,7 @@ handler returning either ``Company`` or a collection of ``Company`` instances is
 ``CompanySerializationPlugin.create_dto_for_type()`` receives the same :class:`FieldDefinition <litestar.typing.FieldDefinition>`
 and must return an :class:`AbstractDTO <litestar.dto.base_dto.AbstractDTO>` subclass. It first unwraps any collection
 wrapper to recover the concrete model type, checks the ``_type_dto_map`` cache, and if no DTO has been built yet,
-parametrises :class:`~litestar.dto.DataclassDTO` with the annotation, caches it, and returns it. Caching keeps a single
+parametrises :class:`DataclassDTO <litestar.dto.dataclass_dto.DataclassDTO>` with the annotation, caches it, and returns it. Caching keeps a single
 DTO class per model so handlers that reference the same model type reuse the same serializer.
 
 For a production-grade implementation using SQLAlchemy models instead of dataclasses, refer to the
