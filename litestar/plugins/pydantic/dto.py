@@ -1,6 +1,9 @@
 # pyright: reportUnnecessaryTypeIgnoreComment=false
 
 from __future__ import annotations
+import msgspec
+import msgspec
+import msgspec
 
 import dataclasses
 from dataclasses import replace
@@ -71,15 +74,33 @@ class PydanticDTO(AbstractDTO[T], Generic[T]):
     @override
     def decode_builtins(self, value: dict[str, Any]) -> Any:
         try:
+<<<<<<< HEAD
             return super().decode_builtins(value)
         except ValidationError as ex:
+=======
+            backend = self._dto_backends[self.asgi_connection.route_handler.handler_id]["data_backend"]
+            data = backend.parse_builtins(value, self.asgi_connection)
+            if isinstance(data, (msgspec.Struct, list, tuple)):
+                data = msgspec.to_builtins(data)
+            return self.model_type.model_validate(data)
+        except (ValidationErrorV2, ValidationErrorV1) as ex:
+>>>>>>> c5da5232b (fix: solve PydanticDTO nested list validation issue #4530)
             raise ValidationException(extra=convert_validation_error(ex)) from ex
 
     @override
     def decode_bytes(self, value: bytes) -> Any:
         try:
+<<<<<<< HEAD
             return super().decode_bytes(value)
         except ValidationError as ex:
+=======
+            backend = self._dto_backends[self.asgi_connection.route_handler.handler_id]["data_backend"]
+            data = backend.parse_raw(value, self.asgi_connection)
+            if isinstance(data, (msgspec.Struct, list, tuple)):
+                data = msgspec.to_builtins(data)
+            return self.model_type.model_validate(data)
+        except (ValidationErrorV2, ValidationErrorV1) as ex:
+>>>>>>> c5da5232b (fix: solve PydanticDTO nested list validation issue #4530)
             raise ValidationException(extra=convert_validation_error(ex)) from ex
 
     @classmethod

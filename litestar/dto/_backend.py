@@ -761,6 +761,22 @@ def _transfer_nested_union_type_data(
     attribute_accessor: Callable[[object, str], Any],
 ) -> Any:
     for inner_type in transfer_type.inner_types:
+        if isinstance(inner_type, CollectionType):
+            if isinstance(source_value, inner_type.field_definition.instantiable_origin):
+                return _transfer_type_data(
+                    source_value=source_value,
+                    transfer_type=inner_type,
+                    nested_as_dict=False,
+                    is_data_field=is_data_field,
+                )
+        if isinstance(inner_type, CollectionType):
+            if isinstance(source_value, inner_type.field_definition.instantiable_origin):
+                return _transfer_type_data(
+                    source_value=source_value,
+                    transfer_type=inner_type,
+                    nested_as_dict=False,
+                    is_data_field=is_data_field,
+                )
         if isinstance(inner_type, CompositeType):
             raise RuntimeError("Composite inner types not (yet) supported for nested unions.")
 
