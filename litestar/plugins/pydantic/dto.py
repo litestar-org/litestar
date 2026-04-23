@@ -1,6 +1,7 @@
 # pyright: reportUnnecessaryTypeIgnoreComment=false
 
 from __future__ import annotations
+import datetime
 import msgspec
 import msgspec
 import msgspec
@@ -43,6 +44,9 @@ T = TypeVar("T", bound="ModelType | Collection[ModelType]")
 __all__ = ("PydanticDTO",)
 
 _down_types: dict[Any, Any] = {
+    datetime.datetime: str,
+    datetime.date: str,
+    datetime.time: str,
     pydantic.EmailStr: str,
     pydantic.IPvAnyAddress: str,
     pydantic.IPvAnyInterface: str,
