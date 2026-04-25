@@ -638,23 +638,70 @@ the plugin, and doesn’t otherwise have a <code class="docutils literal notrans
 that annotation.</p>
 <section id="id2">
 <h3>Example<a class="headerlink" href="#id2" title="Link to this heading">¶</a></h3>
-<p>The following example shows the implementation pattern of a <code class="docutils literal notranslate"><span class="pre">SerializationPlugin</span></code> for
-<a class="reference external" href="https://www.sqlalchemy.org/">SQLAlchemy</a> models. For the actual implementation, see the
-<code class="docutils literal notranslate"><span class="pre">advanced_alchemy</span></code> library documentation.</p>
-<p><a class="reference external" href="https://advanced-alchemy.litestar.dev/latest/reference/extensions/litestar/index.html#advanced_alchemy.extensions.litestar.SQLAlchemySerializationPlugin.supports_type" title="(in advanced_alchemy)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">supports_type(self,</span> <span class="pre">field_definition:</span> <span class="pre">FieldDefinition)</span> <span class="pre">-&gt;</span> <span class="pre">bool:</span></code></a>
-returns a <a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a> indicating whether the plugin supports serialization for the given type. Specifically, we return
-<code class="docutils literal notranslate"><span class="pre">True</span></code> if the parsed type is either a collection of SQLAlchemy models or a single SQLAlchemy model.</p>
-<p><a class="reference external" href="https://advanced-alchemy.litestar.dev/latest/reference/extensions/litestar/index.html#advanced_alchemy.extensions.litestar.SQLAlchemySerializationPlugin.create_dto_for_type" title="(in advanced_alchemy)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">create_dto_for_type(self,</span> <span class="pre">field_definition:</span> <span class="pre">FieldDefinition)</span> <span class="pre">-&gt;</span> <span class="pre">type[AbstractDTO]:</span></code></a>
-takes a <a class="reference internal" href="../../reference/typing.html#litestar.typing.FieldDefinition" title="litestar.typing.FieldDefinition"><code class="xref py py-class docutils literal notranslate"><span class="pre">FieldDefinition</span></code></a> instance as an argument and returns a
-<a class="reference external" href="https://advanced-alchemy.litestar.dev/latest/reference/extensions/litestar/dto.html#advanced_alchemy.extensions.litestar.dto.SQLAlchemyDTO" title="(in advanced_alchemy)"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyDTO</span></code></a> subclass and includes some logic that may be
-interesting to potential serialization plugin authors.</p>
-<p>The first thing the method does is check if the parsed type is a collection of SQLAlchemy models or a single SQLAlchemy
-model, retrieves the model type in either case and assigns it to the <code class="docutils literal notranslate"><span class="pre">annotation</span></code> variable.</p>
-<p>The method then checks if <code class="docutils literal notranslate"><span class="pre">annotation</span></code> is already in the <code class="docutils literal notranslate"><span class="pre">_type_dto_map</span></code> dictionary. If it is, it returns the
-corresponding DTO type. This is done to ensure that multiple <a class="reference external" href="https://advanced-alchemy.litestar.dev/latest/reference/extensions/litestar/dto.html#advanced_alchemy.extensions.litestar.dto.SQLAlchemyDTO" title="(in advanced_alchemy)"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyDTO</span></code></a>
-subtypes are not created for the same model.</p>
-<p>If the annotation is not in the <code class="docutils literal notranslate"><span class="pre">_type_dto_map</span></code> dictionary, the method creates a new DTO type for the annotation,
-adds it to the <code class="docutils literal notranslate"><span class="pre">_type_dto_map</span></code> dictionary, and returns it.</p>
+<p>The following example shows a minimal <code class="docutils literal notranslate"><span class="pre">SerializationPlugin</span></code> implementation that mirrors the pattern used by
+<code class="docutils literal notranslate"><span class="pre">advanced-alchemy</span></code>’s <a class="reference external" href="https://advanced-alchemy.litestar.dev/latest/reference/extensions/litestar/index.html#advanced_alchemy.extensions.litestar.SQLAlchemySerializationPlugin" title="(in advanced_alchemy)"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemySerializationPlugin</span></code></a>:</p>
+<div class="literal-block-wrapper docutils container" id="id5">
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">SerializationPlugin</span></code> implementation example</span><a class="headerlink" href="#id5" title="Link to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+</span><span data-line="2">
+</span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
+</span><span data-line="4"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_args</span><span class="p">,</span> <span class="n">get_origin</span>
+</span><span data-line="5">
+</span><span data-line="6"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
+</span><span data-line="7"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.dto</span><span class="w"> </span><span class="kn">import</span> <span class="n">AbstractDTO</span><span class="p">,</span> <span class="n">DataclassDTO</span>
+</span><span data-line="8"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.plugins</span><span class="w"> </span><span class="kn">import</span> <span class="n">SerializationPlugin</span>
+</span><span data-line="9"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">FieldDefinition</span>
+</span><span data-line="10">
+</span><span data-line="11">
+</span><span data-line="12"><span class="nd">@dataclass</span>
+</span><span data-line="13"><span class="k">class</span><span class="w"> </span><span class="nc">Company</span><span class="p">:</span>
+</span><span data-line="14">    <span class="nb">id</span><span class="p">:</span> <span class="nb">int</span>
+</span><span data-line="15">    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+</span><span data-line="16">
+</span><span data-line="17">
+</span><span data-line="18"><span class="k">class</span><span class="w"> </span><span class="nc">CompanySerializationPlugin</span><span class="p">(</span><span class="n">SerializationPlugin</span><span class="p">):</span>
+</span><span data-line="19">    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="20">        <span class="bp">self</span><span class="o">.</span><span class="n">_type_dto_map</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">type</span><span class="p">,</span> <span class="nb">type</span><span class="p">[</span><span class="n">AbstractDTO</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
+</span><span data-line="21">
+</span><span data-line="22">    <span class="nd">@staticmethod</span>
+</span><span data-line="23">    <span class="k">def</span><span class="w"> </span><span class="nf">_unwrap_collection</span><span class="p">(</span><span class="n">annotation</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">object</span><span class="p">:</span>
+</span><span data-line="24">        <span class="k">if</span> <span class="n">get_origin</span><span class="p">(</span><span class="n">annotation</span><span class="p">)</span> <span class="ow">in</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">,</span> <span class="nb">set</span><span class="p">):</span>
+</span><span data-line="25">            <span class="k">return</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">get_args</span><span class="p">(</span><span class="n">annotation</span><span class="p">)),</span> <span class="n">annotation</span><span class="p">)</span>
+</span><span data-line="26">        <span class="k">return</span> <span class="n">annotation</span>
+</span><span data-line="27">
+</span><span data-line="28">    <span class="k">def</span><span class="w"> </span><span class="nf">supports_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">field_definition</span><span class="p">:</span> <span class="n">FieldDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+</span><span data-line="29">        <span class="n">annotation</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_unwrap_collection</span><span class="p">(</span><span class="n">field_definition</span><span class="o">.</span><span class="n">annotation</span><span class="p">)</span>
+</span><span data-line="30">        <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">annotation</span><span class="p">,</span> <span class="nb">type</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">annotation</span><span class="p">,</span> <span class="n">Company</span><span class="p">)</span>
+</span><span data-line="31">
+</span><span data-line="32">    <span class="k">def</span><span class="w"> </span><span class="nf">create_dto_for_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">field_definition</span><span class="p">:</span> <span class="n">FieldDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">type</span><span class="p">[</span><span class="n">AbstractDTO</span><span class="p">]:</span>
+</span><span data-line="33">        <span class="n">annotation</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_unwrap_collection</span><span class="p">(</span><span class="n">field_definition</span><span class="o">.</span><span class="n">annotation</span><span class="p">)</span>
+</span><span data-line="34">        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">annotation</span><span class="p">,</span> <span class="nb">type</span><span class="p">)</span>
+</span><span data-line="35">        <span class="k">if</span> <span class="p">(</span><span class="n">cached</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_type_dto_map</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">annotation</span><span class="p">))</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="36">            <span class="k">return</span> <span class="n">cached</span>
+</span><span data-line="37">        <span class="n">dto_type</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">AbstractDTO</span><span class="p">]</span> <span class="o">=</span> <span class="n">DataclassDTO</span><span class="p">[</span><span class="n">annotation</span><span class="p">]</span>
+</span><span data-line="38">        <span class="bp">self</span><span class="o">.</span><span class="n">_type_dto_map</span><span class="p">[</span><span class="n">annotation</span><span class="p">]</span> <span class="o">=</span> <span class="n">dto_type</span>
+</span><span data-line="39">        <span class="k">return</span> <span class="n">dto_type</span>
+</span><span data-line="40">
+</span><span data-line="41">
+</span><span data-line="42"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</span><span data-line="43"><span class="k">def</span><span class="w"> </span><span class="nf">get_company</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Company</span><span class="p">:</span>
+</span><span data-line="44">    <span class="k">return</span> <span class="n">Company</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;ACME&quot;</span><span class="p">)</span>
+</span><span data-line="45">
+</span><span data-line="46">
+</span><span data-line="47"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">get_company</span><span class="p">],</span> <span class="n">plugins</span><span class="o">=</span><span class="p">[</span><span class="n">CompanySerializationPlugin</span><span class="p">()])</span>
+</span></pre></div>
+</div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">CompanySerializationPlugin.supports_type()</span></code> returns a <a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a> indicating whether the plugin should be used for
+a given type. The example unwraps collection annotations (<code class="docutils literal notranslate"><span class="pre">list[Company]</span></code>, <code class="docutils literal notranslate"><span class="pre">tuple[Company,</span> <span class="pre">...]</span></code>, etc.) so that a
+handler returning either <code class="docutils literal notranslate"><span class="pre">Company</span></code> or a collection of <code class="docutils literal notranslate"><span class="pre">Company</span></code> instances is recognised as the same underlying model.</p>
+<p><code class="docutils literal notranslate"><span class="pre">CompanySerializationPlugin.create_dto_for_type()</span></code> receives the same <a class="reference internal" href="../../reference/typing.html#litestar.typing.FieldDefinition" title="litestar.typing.FieldDefinition"><code class="xref py py-class docutils literal notranslate"><span class="pre">FieldDefinition</span></code></a>
+and must return an <a class="reference internal" href="../../reference/dto/base_dto.html#litestar.dto.base_dto.AbstractDTO" title="litestar.dto.base_dto.AbstractDTO"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractDTO</span></code></a> subclass. It first unwraps any collection
+wrapper to recover the concrete model type, checks the <code class="docutils literal notranslate"><span class="pre">_type_dto_map</span></code> cache, and if no DTO has been built yet,
+parametrises <a class="reference internal" href="../../reference/dto/dataclass_dto.html#litestar.dto.dataclass_dto.DataclassDTO" title="litestar.dto.dataclass_dto.DataclassDTO"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataclassDTO</span></code></a> with the annotation, caches it, and returns it. Caching keeps a single
+DTO class per model so handlers that reference the same model type reuse the same serializer.</p>
+<p>For a production-grade implementation using SQLAlchemy models instead of dataclasses, refer to the
+<code class="docutils literal notranslate"><span class="pre">advanced-alchemy</span></code> library documentation.</p>
 </section>
 </section>
 <section id="diplugin">
@@ -665,8 +712,8 @@ injection by providing information about injectable types.</p>
 for example Pydantic’s <code class="docutils literal notranslate"><span class="pre">BaseModel</span></code> classes; These are not supported natively since,
 while they are callables, their type information is not contained within their callable
 signature (their <a class="reference internal" href="../../reference/app.html#litestar.app.Litestar.__init__" title="litestar.app.Litestar.__init__"><code class="xref py py-func docutils literal notranslate"><span class="pre">__init__()</span></code></a> method).</p>
-<div class="literal-block-wrapper docutils container" id="id5">
-<div class="code-block-caption"><span class="caption-text">Dynamically generating signature information for a custom type</span><a class="headerlink" href="#id5" title="Link to this code">¶</a></div>
+<div class="literal-block-wrapper docutils container" id="id6">
+<div class="code-block-caption"><span class="caption-text">Dynamically generating signature information for a custom type</span><a class="headerlink" href="#id6" title="Link to this code">¶</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">inspect</span><span class="w"> </span><span class="kn">import</span> <span class="n">Parameter</span><span class="p">,</span> <span class="n">Signature</span>
 </span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
 </span><span data-line="3">
