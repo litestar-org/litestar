@@ -1,4 +1,4 @@
-# ruff: noqa: TC004, F401
+# ruff: noqa: F401
 import importlib
 import sys
 from importlib.util import cache_from_source
@@ -71,7 +71,11 @@ def test_contrib_imports_resolve_to_plugin_objects() -> None:
     with pytest.warns(DeprecationWarning):
         from litestar.contrib.opentelemetry import (
             OpenTelemetryConfig as ContribConfig,
+        )
+        from litestar.contrib.opentelemetry import (
             OpenTelemetryInstrumentationMiddleware as ContribMiddleware,
+        )
+        from litestar.contrib.opentelemetry import (
             OpenTelemetryPlugin as ContribPlugin,
         )
 

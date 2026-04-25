@@ -1,4 +1,4 @@
-# ruff: noqa: TC004, F401
+# ruff: noqa: F401
 from typing import TYPE_CHECKING
 
 from litestar.utils import warn_deprecation
