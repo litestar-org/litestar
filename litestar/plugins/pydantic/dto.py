@@ -2,6 +2,9 @@
 
 from __future__ import annotations
 
+import datetime
+import msgspec
+
 import dataclasses
 from dataclasses import replace
 from typing import TYPE_CHECKING, Annotated, Any, Generic, TypeAlias, TypeVar
@@ -40,6 +43,9 @@ T = TypeVar("T", bound="ModelType | Collection[ModelType]")
 __all__ = ("PydanticDTO",)
 
 _down_types: dict[Any, Any] = {
+    datetime.datetime: str,
+    datetime.date: str,
+    datetime.time: str,
     pydantic.EmailStr: str,
     pydantic.IPvAnyAddress: str,
     pydantic.IPvAnyInterface: str,
@@ -71,14 +77,18 @@ class PydanticDTO(AbstractDTO[T], Generic[T]):
     @override
     def decode_builtins(self, value: dict[str, Any]) -> Any:
         try:
-            return super().decode_builtins(value)
+            backend = self._dto_backends[self.asgi_connection.route_handler.handler_id]["data_backend"]
+            data = backend.parse_builtins(value, self.asgi_connection)
+            return self.model_type.model_validate(msgspec.to_builtins(data))
         except ValidationError as ex:
             raise ValidationException(extra=convert_validation_error(ex)) from ex
 
     @override
     def decode_bytes(self, value: bytes) -> Any:
         try:
-            return super().decode_bytes(value)
+            backend = self._dto_backends[self.asgi_connection.route_handler.handler_id]["data_backend"]
+            data = backend.parse_raw(value, self.asgi_connection)
+            return self.model_type.model_validate(msgspec.to_builtins(data))
         except ValidationError as ex:
             raise ValidationException(extra=convert_validation_error(ex)) from ex
 
