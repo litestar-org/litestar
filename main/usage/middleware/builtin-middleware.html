@@ -784,13 +784,13 @@ extra (<code class="docutils literal notranslate"><span class="pre">pip</span> <
 </section>
 <section id="zstd">
 <h3>Zstd<a class="headerlink" href="#zstd" title="Link to this heading">¶</a></h3>
-<p>The <a class="reference external" href="https://pypi.org/project/zstandard">zstandard</a> package is required to run this middleware. It is available as an extra for Litestar via the <code class="docutils literal notranslate"><span class="pre">zstd</span></code> extra: (<code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">'litestar[zstd]'</span></code>).</p>
+<p>The <a class="reference external" href="https://pypi.org/project/backports.zstd/">backports.zstd</a> package is required to run this middleware. It is available as an extra for Litestar via the <code class="docutils literal notranslate"><span class="pre">zstd</span></code> extra: (<code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">'litestar[zstd]'</span></code>).</p>
 <p>You can enable zstd compression of responses by passing an instance of
 <a class="reference internal" href="../../reference/config.html#litestar.config.compression.CompressionConfig" title="litestar.config.compression.CompressionConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">CompressionConfig</span></code></a> with the <code class="docutils literal notranslate"><span class="pre">backend</span></code> parameter set to <code class="docutils literal notranslate"><span class="pre">&quot;zstd&quot;</span></code>.</p>
 <p>You can configure the following additional zstd-specific values:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">minimum_size</span></code>: the minimum threshold for response size to enable compression. Smaller responses will not be compressed. Default is 500, i.e. half a kilobyte.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">zstd_compress_level</span></code>: Range [0-22], Controls the compression level. Higher values increase compression ratio but are slower. Default is 3.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">zstd_compress_level</span></code>: Integer &gt;= 0. Controls the compression level. Higher values increase compression ratio but are slower. A value of 0 indicates use of the library default, which is typically level 3. Default is 0.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">zstd_gzip_fallback</span></code>: Boolean indicating whether to fall back to gzip if Zstd is not supported. Default is True.</p></li>
 </ul>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span>
