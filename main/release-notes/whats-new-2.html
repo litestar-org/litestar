@@ -1087,7 +1087,7 @@ and can be used to define DTOs:</p>
 <li><p><a class="reference internal" href="../reference/dto/dataclass_dto.html#litestar.dto.dataclass_dto.DataclassDTO" title="litestar.dto.dataclass_dto.DataclassDTO"><code class="xref py py-class docutils literal notranslate"><span class="pre">litestar.dto.dataclass_dto.DataclassDTO</span></code></a></p></li>
 <li><p><a class="reference internal" href="../reference/dto/msgspec_dto.html#litestar.dto.msgspec_dto.MsgspecDTO" title="litestar.dto.msgspec_dto.MsgspecDTO"><code class="xref py py-class docutils literal notranslate"><span class="pre">litestar.dto.msgspec_dto.MsgspecDTO</span></code></a></p></li>
 <li><p><a class="reference external" href="https://advanced-alchemy.litestar.dev/latest/reference/extensions/litestar/dto.html#advanced_alchemy.extensions.litestar.dto.SQLAlchemyDTO" title="(in advanced_alchemy)"><code class="xref py py-class docutils literal notranslate"><span class="pre">advanced_alchemy.extensions.litestar.dto.SQLAlchemyDTO</span></code></a></p></li>
-<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">litestar.contrib.pydantic.PydanticDTO</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">litestar.contrib.pydantic.PydanticDTO</span></code></p></li>
 <li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">litestar.contrib.piccolo.PiccoloDTO</span></code></p></li>
 </ul>
 <p>For example, to define a DTO from a dataclass:</p>
@@ -1160,7 +1160,7 @@ and can be used to define DTOs:</p>
 <div class="admonition">
 <p class="admonition-title">Run it</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span data-line="1">&gt;<span class="w"> </span>curl<span class="w"> </span>http://127.0.0.1:8000/users<span class="w"> </span>-H<span class="w"> </span><span class="s1">&#39;Content-Type: application/json&#39;</span><span class="w"> </span>-d<span class="w"> </span><span class="s1">&#39;{&quot;userName&quot;:&quot;Litestar User&quot;,&quot;password&quot;:&quot;xyz&quot;,&quot;created_at&quot;:&quot;2023-04-24T00:00:00Z&quot;}&#39;</span>
-</span><span data-line="2"><span class="o">{</span><span class="s2">&quot;created_at&quot;</span>:<span class="s2">&quot;0001-01-01T00:00:00&quot;</span>,<span class="s2">&quot;id&quot;</span>:<span class="s2">&quot;3a024b57-9b71-48f9-bcc8-d82c2e62bc85&quot;</span>,<span class="s2">&quot;userName&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span><span class="o">}</span>
+</span><span data-line="2"><span class="o">{</span><span class="s2">&quot;created_at&quot;</span>:<span class="s2">&quot;0001-01-01T00:00:00&quot;</span>,<span class="s2">&quot;id&quot;</span>:<span class="s2">&quot;02afa979-4d72-4f5c-b6d3-7b07a214781b&quot;</span>,<span class="s2">&quot;userName&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span><span class="o">}</span>
 </span></pre></div>
 </div>
 </div>
@@ -1277,7 +1277,7 @@ and can be used to define DTOs:</p>
 <div class="admonition">
 <p class="admonition-title">Run it</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span data-line="1">&gt;<span class="w"> </span>curl<span class="w"> </span>http://127.0.0.1:8000/users<span class="w"> </span>-H<span class="w"> </span><span class="s1">&#39;Content-Type: application/json&#39;</span><span class="w"> </span>-d<span class="w"> </span><span class="s1">&#39;{&quot;name&quot;:&quot;Litestar User&quot;,&quot;password&quot;:&quot;xyz&quot;,&quot;created_at&quot;:&quot;2023-04-24T00:00:00Z&quot;}&#39;</span>
-</span><span data-line="2"><span class="o">{</span><span class="s2">&quot;created_at&quot;</span>:<span class="s2">&quot;0001-01-01T00:00:00&quot;</span>,<span class="s2">&quot;id&quot;</span>:<span class="s2">&quot;dcec22e5-1778-4aab-bccd-407cfd9c0118&quot;</span>,<span class="s2">&quot;name&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span><span class="o">}</span>
+</span><span data-line="2"><span class="o">{</span><span class="s2">&quot;created_at&quot;</span>:<span class="s2">&quot;0001-01-01T00:00:00&quot;</span>,<span class="s2">&quot;id&quot;</span>:<span class="s2">&quot;629fb536-cf92-473e-9e9f-103b45e4076a&quot;</span>,<span class="s2">&quot;name&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span><span class="o">}</span>
 </span></pre></div>
 </div>
 </div>
