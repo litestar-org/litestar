@@ -657,7 +657,7 @@ class Litestar(Router):
 
         return route_map
 
-    def _build_routes(self, route_handlers: Iterable[BaseRouteHandler]) -> list[HTTPRoute | ASGIRoute | WebSocketRoute]:
+    def _build_routes(self, route_handlers: Iterable[BaseRouteHandler]) -> list[HTTPRoute | ASGIRoute | WebSocketRoute]:  # noqa: C901
         """Create routes for all the handlers"""
         routes: list[HTTPRoute | ASGIRoute | WebSocketRoute] = []
 
@@ -683,11 +683,19 @@ class Litestar(Router):
                 HTTPRoute(path=path, route_handlers=_maybe_add_options_handler(path, http_handlers, root=self))
             )
 
+        registered_route_handlers = set()
+
         for finalized_route in routes:
             route_handlers = get_route_handlers(finalized_route)
 
             for route_handler in route_handlers:
-                route_handler.on_registration(route=finalized_route, app=self)
+                # handlers can be registered multiple times, if they define multiple
+                # paths. in these cases, we don't want to call 'on_registration' more
+                # than once, so we keep track of the handlers we've already called this
+                # hook
+                if route_handler not in registered_route_handlers:
+                    route_handler.on_registration(route=finalized_route, app=self)
+                    registered_route_handlers.add(route_handler)
 
             for plugin in self.plugins.receive_route:
                 plugin.receive_route(finalized_route)

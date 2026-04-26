@@ -10,6 +10,7 @@ from unittest.mock import MagicMock, Mock, PropertyMock
 import pytest
 from click import Group
 from pytest import MonkeyPatch
+from pytest_mock import MockerFixture
 
 from litestar import Litestar, MediaType, Request, Response, get
 from litestar.config.app import AppConfig, ExperimentalFeatures
@@ -22,6 +23,7 @@ from litestar.exceptions import (
     LitestarWarning,
     NotFoundException,
 )
+from litestar.handlers import BaseRouteHandler
 from litestar.plugins import CLIPlugin
 from litestar.status_codes import HTTP_200_OK, HTTP_400_BAD_REQUEST, HTTP_500_INTERNAL_SERVER_ERROR
 from litestar.testing import TestClient, create_test_client
@@ -424,3 +426,24 @@ def test_from_scope() -> None:
         client.get("/")
 
     mock.assert_called_once_with(app)
+
+
+def test_handler_registration_on_registration_called_only_once(mocker: MockerFixture) -> None:
+    mock_on_registration = mocker.spy(BaseRouteHandler, "on_registration")
+
+    @get(["/a", "/b"], name="hello_this_is_a_test")
+    async def handler() -> None:
+        pass
+
+    Litestar([handler], openapi_config=None)
+
+    assert (
+        len(
+            [
+                c
+                for c in mock_on_registration.call_args_list
+                if isinstance(c.args[0], BaseRouteHandler) and c.args[0].name == "hello_this_is_a_test"
+            ]
+        )
+        == 1
+    )
