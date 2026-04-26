@@ -139,6 +139,7 @@ dev = [
   "starlette",
   "trio",
   "aiosqlite",
+  "duckdb-engine",
   "asyncpg>=0.29.0",
   "psycopg[pool,binary]>=3.1.10,<3.2; python_version < \"3.13\"",
   "psycopg[pool]<3.2.4; python_version >= \"3.13\"",  # Bug in 3.2.4: https://github.com/psycopg/psycopg/issues/1128
@@ -200,7 +201,7 @@ requires = ["hatchling"]
 
 [tool.coverage.run]
 concurrency = ["multiprocessing", "thread"]
-omit = ["*/tests/*", "*/litestar/plugins/sqlalchemy.py", "*/litestar/_kwargs/types.py"]
+omit = ["*/tests/*", "*/litestar/_kwargs/types.py"]
 parallel = true
 plugins = ["covdefaults"]
 source = ["litestar"]
@@ -299,8 +300,8 @@ module = [
 
 [[tool.mypy.overrides]]
 module = [
-  "litestar.contrib.sqlalchemy.*",
   "litestar.plugins.pydantic.*",
+  "tests.unit.test_contrib.test_pydantic.*",
   "tests.unit.test_contrib.test_sqlalchemy",
   "tests.unit.test_logging.test_logging_config",
   "litestar.openapi.spec.base",
@@ -333,7 +334,6 @@ exclude = [
   "litestar/plugins/pydantic/plugins/init.py",
   "litestar/plugins/pydantic/plugins/schema.py",
   "litestar/plugins/pydantic/dto_factory.py",
-  "tests/unit/test_contrib/test_sqlalchemy.py",
   "tests/unit/test_plugins/test_pydantic/test_openapi.py",
   "tests/unit/test_repository/test_generic_mock_repository.py",
   "**/node_modules/**",
@@ -497,7 +497,6 @@ known-first-party = ["litestar", "tests", "examples"]
   "UP045",
   "RUF043",
 ]
-"tests/unit/test_contrib/test_sqlalchemy/**/*.*" = ["UP006"]
 "tests/unit/test_openapi/test_typescript_converter/test_converter.py" = ["W293"]
 "tests/unit/test_typing.py" = ["UP006", "UP035"]
 "tools/**/*.*" = ["D", "ARG", "EM", "TRY", "G", "FBT"]
