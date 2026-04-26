@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING, Any
 
 from litestar.config.allowed_hosts import AllowedHostsConfig
 from litestar.config.response_cache import ResponseCacheConfig
-from litestar.datastructures import State
+from litestar.datastructures import ImmutableState, State
 from litestar.events.emitter import SimpleEventEmitter
 from litestar.types.empty import Empty
 
@@ -196,8 +196,8 @@ class AppConfig:
 
     These types will be added to the signature namespace using their ``__name__`` attribute.
     """
-    state: State = field(default_factory=State)
-    """A :class:`State` <.datastructures.State>` instance holding application state."""
+    state: State | ImmutableState = field(default_factory=State)
+    """A :class:`State <.datastructures.State>` or :class:`ImmutableState <.datastructures.ImmutableState>` instance holding application state."""
     stores: StoreRegistry | dict[str, Store] | None = None
     """Central registry of :class:`Store <.stores.base.Store>` to be made available and be used throughout the
     application. Can be either a dictionary mapping strings to :class:`Store <.stores.base.Store>` instances, or an

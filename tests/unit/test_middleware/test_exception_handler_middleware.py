@@ -9,6 +9,7 @@ from pytest_mock import MockerFixture
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from litestar import Litestar, MediaType, Request, Response, WebSocket, get, websocket
+from litestar.datastructures import State
 from litestar.exceptions import HTTPException, InternalServerException, LitestarException, ValidationException
 from litestar.exceptions.responses._debug_response import get_symbol_name
 from litestar.middleware._internal.exceptions.middleware import (
@@ -211,6 +212,7 @@ def test_exception_handler_middleware_calls_app_level_after_exception_hook() -> 
         app = scope.get("app")
         assert isinstance(exc, RuntimeError)
         assert app
+        assert isinstance(app.state, State)
         assert not app.state.called
         app.state.called = True
 

@@ -7,6 +7,7 @@ import anyio
 from _pytest.fixtures import FixtureRequest
 
 from litestar import Controller, Request, WebSocket, delete, head, patch, put, websocket
+from litestar.datastructures import State
 from litestar.middleware.session.base import BaseBackendConfig
 from litestar.status_codes import HTTP_200_OK, HTTP_201_CREATED, HTTP_204_NO_CONTENT
 from litestar.stores.base import Store
@@ -569,6 +570,7 @@ async def test_client_uses_native_loop() -> None:
 async def test_lifespan_uses_native_loop() -> None:
     @contextlib.asynccontextmanager
     async def lifespan(app: Litestar) -> AsyncGenerator[None, None]:
+        assert isinstance(app.state, State)
         app.state["loop"] = asyncio.get_running_loop()
         yield
 

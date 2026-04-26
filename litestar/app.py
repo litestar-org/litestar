@@ -63,7 +63,7 @@ if TYPE_CHECKING:
     from litestar.config.cors import CORSConfig
     from litestar.config.csrf import CSRFConfig
     from litestar.contrib.opentelemetry import OpenTelemetryPlugin
-    from litestar.datastructures import CacheControlHeader, ETag
+    from litestar.datastructures import CacheControlHeader, ETag, ImmutableState
     from litestar.dto import AbstractDTO
     from litestar.events.listener import EventListener
     from litestar.openapi.spec import SecurityRequirement
@@ -209,7 +209,7 @@ class Litestar(Router):
         security: Sequence[SecurityRequirement] | None = None,
         signature_namespace: Mapping[str, Any] | None = None,
         signature_types: Sequence[Any] | None = None,
-        state: State | None = None,
+        state: State | ImmutableState | None = None,
         stores: StoreRegistry | dict[str, Store] | None = None,
         tags: Sequence[str] | None = None,
         template_config: TemplateConfigType | None = None,
@@ -304,7 +304,7 @@ class Litestar(Router):
             signature_namespace: A mapping of names to types for use in forward reference resolution during signature modelling.
             signature_types: A sequence of types for use in forward reference resolution during signature modelling.
                 These types will be added to the signature namespace using their ``__name__`` attribute.
-            state: An optional :class:`State <.datastructures.State>` for application state.
+            state: An optional :class:`State <.datastructures.State>` or :class:`ImmutableState <.datastructures.ImmutableState>` for application state.
             stores: Central registry of :class:`Store <.stores.base.Store>` that will be available throughout the
                 application. If this is a dictionary to it will be passed to a
                 :class:`StoreRegistry <.stores.registry.StoreRegistry>`. If it is a

@@ -20,7 +20,7 @@ if TYPE_CHECKING:
     from litestar.config.cors import CORSConfig
     from litestar.config.csrf import CSRFConfig
     from litestar.config.response_cache import ResponseCacheConfig
-    from litestar.datastructures import CacheControlHeader, ETag, State
+    from litestar.datastructures import CacheControlHeader, ETag, ImmutableState, State
     from litestar.dto import AbstractDTO
     from litestar.events import BaseEventEmitterBackend, EventListener
     from litestar.middleware.session.base import BaseBackendConfig
@@ -100,7 +100,7 @@ def create_test_client(
     session_config: BaseBackendConfig | None = None,
     signature_namespace: Mapping[str, Any] | None = None,
     signature_types: Sequence[Any] | None = None,
-    state: State | None = None,
+    state: State | ImmutableState | None = None,
     stores: StoreRegistry | dict[str, Store] | None = None,
     tags: Sequence[str] | None = None,
     template_config: TemplateConfig | None = None,
@@ -221,7 +221,7 @@ def create_test_client(
         signature_namespace: A mapping of names to types for use in forward reference resolution during signature modelling.
         signature_types: A sequence of types for use in forward reference resolution during signature modelling.
             These types will be added to the signature namespace using their ``__name__`` attribute.
-        state: An optional :class:`State <.datastructures.State>` for application state.
+        state: An optional :class:`State <.datastructures.State>` or :class:`ImmutableState <.datastructures.ImmutableState>` for application state.
         stores: Central registry of :class:`Store <.stores.base.Store>` that will be available throughout the
             application. If this is a dictionary to it will be passed to a
             :class:`StoreRegistry <.stores.registry.StoreRegistry>`. If it is a
@@ -353,7 +353,7 @@ def create_async_test_client(
     session_config: BaseBackendConfig | None = None,
     signature_namespace: Mapping[str, Any] | None = None,
     signature_types: Sequence[Any] | None = None,
-    state: State | None = None,
+    state: State | ImmutableState | None = None,
     stores: StoreRegistry | dict[str, Store] | None = None,
     tags: Sequence[str] | None = None,
     template_config: TemplateConfig | None = None,
@@ -472,7 +472,7 @@ def create_async_test_client(
         signature_namespace: A mapping of names to types for use in forward reference resolution during signature modelling.
         signature_types: A sequence of types for use in forward reference resolution during signature modelling.
             These types will be added to the signature namespace using their ``__name__`` attribute.
-        state: An optional :class:`State <.datastructures.State>` for application state.
+        state: An optional :class:`State <.datastructures.State>` or :class:`ImmutableState <.datastructures.ImmutableState>` for application state.
         stores: Central registry of :class:`Store <.stores.base.Store>` that will be available throughout the
             application. If this is a dictionary to it will be passed to a
             :class:`StoreRegistry <.stores.registry.StoreRegistry>`. If it is a
