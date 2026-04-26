@@ -726,127 +726,116 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="208">                    <span class="k">if</span> <span class="n">body</span><span class="p">:</span>
 </span><span data-line="209">                        <span class="n">total_bytes_streamed</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">body</span><span class="p">)</span>
 </span><span data-line="210">
-</span><span data-line="211">                        <span class="c1"># if a &#39;content-length&#39; header was set, check if we have</span>
-</span><span data-line="212">                        <span class="c1"># received more bytes than specified. in most cases this should</span>
-</span><span data-line="213">                        <span class="c1"># be caught before it hits the application layer and an ASGI</span>
-</span><span data-line="214">                        <span class="c1"># server (e.g. uvicorn) will not allow this, but since it&#39;s not</span>
-</span><span data-line="215">                        <span class="c1"># forbidden according to the HTTP or ASGI spec, we err on the</span>
-</span><span data-line="216">                        <span class="c1"># side of caution and still perform this check.</span>
-</span><span data-line="217">                        <span class="c1">#</span>
-</span><span data-line="218">                        <span class="c1"># uvicorn documented behaviour for this case:</span>
-</span><span data-line="219">                        <span class="c1"># https://github.com/encode/uvicorn/blob/fe3910083e3990695bc19c2ef671dd447262ae18/docs/server-behavior.md?plain=1#L11</span>
-</span><span data-line="220">                        <span class="k">if</span> <span class="n">announced_content_length</span><span class="p">:</span>
-</span><span data-line="221">                            <span class="k">if</span> <span class="n">total_bytes_streamed</span> <span class="o">&gt;</span> <span class="n">announced_content_length</span><span class="p">:</span>
-</span><span data-line="222">                                <span class="k">raise</span> <span class="n">ClientException</span><span class="p">(</span><span class="s2">&quot;Malformed request&quot;</span><span class="p">)</span>
+</span><span data-line="211">                        <span class="c1"># enforce the request body size limit on actual bytes</span>
+</span><span data-line="212">                        <span class="c1"># received. content-length validation is intentionally left to</span>
+</span><span data-line="213">                        <span class="c1"># the ASGI server (e.g. uvicorn) since middleware such as</span>
+</span><span data-line="214">                        <span class="c1"># request decompression can legitimately cause the streamed</span>
+</span><span data-line="215">                        <span class="c1"># body to exceed the wire-format content-length.</span>
+</span><span data-line="216">                        <span class="k">if</span> <span class="n">total_bytes_streamed</span> <span class="o">&gt;</span> <span class="n">max_content_length</span><span class="p">:</span>
+</span><span data-line="217">                            <span class="k">raise</span> <span class="n">RequestEntityTooLarge</span>
+</span><span data-line="218">
+</span><span data-line="219">                        <span class="k">yield</span> <span class="n">body</span>
+</span><span data-line="220">
+</span><span data-line="221">                    <span class="k">if</span> <span class="ow">not</span> <span class="n">event</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;more_body&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
+</span><span data-line="222">                        <span class="k">break</span>
 </span><span data-line="223">
-</span><span data-line="224">                        <span class="c1"># we don&#39;t have a &#39;content-length&#39; header, likely a chunked</span>
-</span><span data-line="225">                        <span class="c1"># transfer. we don&#39;t really care and simply check if we have</span>
-</span><span data-line="226">                        <span class="c1"># received more bytes than allowed</span>
-</span><span data-line="227">                        <span class="k">elif</span> <span class="n">total_bytes_streamed</span> <span class="o">&gt;</span> <span class="n">max_content_length</span><span class="p">:</span>
-</span><span data-line="228">                            <span class="k">raise</span> <span class="n">RequestEntityTooLarge</span>
+</span><span data-line="224">                <span class="k">if</span> <span class="n">event</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;http.disconnect&quot;</span><span class="p">:</span>
+</span><span data-line="225">                    <span class="k">raise</span> <span class="n">InternalServerException</span><span class="p">(</span><span class="s2">&quot;client disconnected prematurely&quot;</span><span class="p">)</span>
+</span><span data-line="226">
+</span><span data-line="227">            <span class="bp">self</span><span class="o">.</span><span class="n">is_connected</span> <span class="o">=</span> <span class="kc">False</span>
+</span><span data-line="228">            <span class="k">yield</span> <span class="sa">b</span><span class="s2">&quot;&quot;</span>
 </span><span data-line="229">
-</span><span data-line="230">                        <span class="k">yield</span> <span class="n">body</span>
-</span><span data-line="231">
-</span><span data-line="232">                    <span class="k">if</span> <span class="ow">not</span> <span class="n">event</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;more_body&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
-</span><span data-line="233">                        <span class="k">break</span>
-</span><span data-line="234">
-</span><span data-line="235">                <span class="k">if</span> <span class="n">event</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;http.disconnect&quot;</span><span class="p">:</span>
-</span><span data-line="236">                    <span class="k">raise</span> <span class="n">InternalServerException</span><span class="p">(</span><span class="s2">&quot;client disconnected prematurely&quot;</span><span class="p">)</span>
-</span><span data-line="237">
-</span><span data-line="238">            <span class="bp">self</span><span class="o">.</span><span class="n">is_connected</span> <span class="o">=</span> <span class="kc">False</span>
-</span><span data-line="239">            <span class="k">yield</span> <span class="sa">b</span><span class="s2">&quot;&quot;</span>
-</span><span data-line="240">
-</span><span data-line="241">        <span class="k">else</span><span class="p">:</span>
-</span><span data-line="242">            <span class="k">yield</span> <span class="bp">self</span><span class="o">.</span><span class="n">_body</span>
-</span><span data-line="243">            <span class="k">yield</span> <span class="sa">b</span><span class="s2">&quot;&quot;</span>
-</span><span data-line="244">            <span class="k">return</span></div>
+</span><span data-line="230">        <span class="k">else</span><span class="p">:</span>
+</span><span data-line="231">            <span class="k">yield</span> <span class="bp">self</span><span class="o">.</span><span class="n">_body</span>
+</span><span data-line="232">            <span class="k">yield</span> <span class="sa">b</span><span class="s2">&quot;&quot;</span>
+</span><span data-line="233">            <span class="k">return</span></div>
 
-</span><span data-line="245">
+</span><span data-line="234">
 <div class="viewcode-block" id="Request.body">
 <a class="viewcode-back" href="../../../reference/connection.html#litestar.connection.Request.body">[docs]</a>
-</span><span data-line="246">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">body</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
-</span><span data-line="247"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the body of the request.</span>
-</span><span data-line="248">
-</span><span data-line="249"><span class="sd">        Returns:</span>
-</span><span data-line="250"><span class="sd">            A byte-string representing the body of the request.</span>
-</span><span data-line="251"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="252">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_body</span> <span class="ow">is</span> <span class="n">Empty</span><span class="p">:</span>
-</span><span data-line="253">            <span class="k">if</span> <span class="p">(</span><span class="n">body</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connection_state</span><span class="o">.</span><span class="n">body</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">Empty</span><span class="p">:</span>
-</span><span data-line="254">                <span class="bp">self</span><span class="o">.</span><span class="n">_body</span> <span class="o">=</span> <span class="n">body</span>
-</span><span data-line="255">            <span class="k">else</span><span class="p">:</span>
-</span><span data-line="256">                <span class="bp">self</span><span class="o">.</span><span class="n">_body</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connection_state</span><span class="o">.</span><span class="n">body</span> <span class="o">=</span> <span class="sa">b</span><span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">c</span> <span class="k">async</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">stream</span><span class="p">()])</span>
-</span><span data-line="257">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_body</span></div>
+</span><span data-line="235">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">body</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
+</span><span data-line="236"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the body of the request.</span>
+</span><span data-line="237">
+</span><span data-line="238"><span class="sd">        Returns:</span>
+</span><span data-line="239"><span class="sd">            A byte-string representing the body of the request.</span>
+</span><span data-line="240"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="241">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_body</span> <span class="ow">is</span> <span class="n">Empty</span><span class="p">:</span>
+</span><span data-line="242">            <span class="k">if</span> <span class="p">(</span><span class="n">body</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connection_state</span><span class="o">.</span><span class="n">body</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">Empty</span><span class="p">:</span>
+</span><span data-line="243">                <span class="bp">self</span><span class="o">.</span><span class="n">_body</span> <span class="o">=</span> <span class="n">body</span>
+</span><span data-line="244">            <span class="k">else</span><span class="p">:</span>
+</span><span data-line="245">                <span class="bp">self</span><span class="o">.</span><span class="n">_body</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connection_state</span><span class="o">.</span><span class="n">body</span> <span class="o">=</span> <span class="sa">b</span><span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">c</span> <span class="k">async</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">stream</span><span class="p">()])</span>
+</span><span data-line="246">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_body</span></div>
 
-</span><span data-line="258">
+</span><span data-line="247">
 <div class="viewcode-block" id="Request.form">
 <a class="viewcode-back" href="../../../reference/connection.html#litestar.connection.Request.form">[docs]</a>
-</span><span data-line="259">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">form</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FormMultiDict</span><span class="p">:</span>
-</span><span data-line="260"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Retrieve form data from the request. If the request is either a &#39;multipart/form-data&#39; or an</span>
-</span><span data-line="261"><span class="sd">        &#39;application/x-www-form- urlencoded&#39;, return a FormMultiDict instance populated with the values sent in the</span>
-</span><span data-line="262"><span class="sd">        request, otherwise, an empty instance.</span>
-</span><span data-line="263">
-</span><span data-line="264"><span class="sd">        Returns:</span>
-</span><span data-line="265"><span class="sd">            A FormMultiDict instance</span>
-</span><span data-line="266"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="267">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_form</span> <span class="ow">is</span> <span class="n">Empty</span><span class="p">:</span>
-</span><span data-line="268">            <span class="k">if</span> <span class="p">(</span><span class="n">form_data</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connection_state</span><span class="o">.</span><span class="n">form</span><span class="p">)</span> <span class="ow">is</span> <span class="n">Empty</span><span class="p">:</span>
-</span><span data-line="269">                <span class="n">content_type</span><span class="p">,</span> <span class="n">options</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">content_type</span>
-</span><span data-line="270">                <span class="k">if</span> <span class="n">content_type</span> <span class="o">==</span> <span class="n">RequestEncodingType</span><span class="o">.</span><span class="n">MULTI_PART</span><span class="p">:</span>
-</span><span data-line="271">                    <span class="n">form_data</span> <span class="o">=</span> <span class="k">await</span> <span class="n">parse_multipart_form</span><span class="p">(</span>
-</span><span data-line="272">                        <span class="n">stream</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">stream</span><span class="p">(),</span>
-</span><span data-line="273">                        <span class="n">boundary</span><span class="o">=</span><span class="n">options</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;boundary&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">(),</span>
-</span><span data-line="274">                        <span class="n">multipart_form_part_limit</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">multipart_form_part_limit</span><span class="p">,</span>
-</span><span data-line="275">                    <span class="p">)</span>
-</span><span data-line="276">                <span class="k">elif</span> <span class="n">content_type</span> <span class="o">==</span> <span class="n">RequestEncodingType</span><span class="o">.</span><span class="n">URL_ENCODED</span><span class="p">:</span>
-</span><span data-line="277">                    <span class="n">form_data</span> <span class="o">=</span> <span class="n">parse_url_encoded_form_data</span><span class="p">(</span>  <span class="c1"># type: ignore[assignment]</span>
-</span><span data-line="278">                        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">body</span><span class="p">(),</span>
-</span><span data-line="279">                    <span class="p">)</span>
-</span><span data-line="280">                <span class="k">else</span><span class="p">:</span>
-</span><span data-line="281">                    <span class="n">form_data</span> <span class="o">=</span> <span class="p">{}</span>
-</span><span data-line="282">
-</span><span data-line="283">                <span class="bp">self</span><span class="o">.</span><span class="n">_connection_state</span><span class="o">.</span><span class="n">form</span> <span class="o">=</span> <span class="n">form_data</span>  <span class="c1"># pyright: ignore[reportAttributeAccessIssue]</span>
-</span><span data-line="284">            <span class="bp">self</span><span class="o">.</span><span class="n">_form</span> <span class="o">=</span> <span class="n">FormMultiDict</span><span class="o">.</span><span class="n">from_form_data</span><span class="p">(</span><span class="n">cast</span><span class="p">(</span><span class="s2">&quot;dict[str, Any]&quot;</span><span class="p">,</span> <span class="n">form_data</span><span class="p">))</span>
-</span><span data-line="285">
-</span><span data-line="286">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_form</span></div>
+</span><span data-line="248">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">form</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FormMultiDict</span><span class="p">:</span>
+</span><span data-line="249"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Retrieve form data from the request. If the request is either a &#39;multipart/form-data&#39; or an</span>
+</span><span data-line="250"><span class="sd">        &#39;application/x-www-form- urlencoded&#39;, return a FormMultiDict instance populated with the values sent in the</span>
+</span><span data-line="251"><span class="sd">        request, otherwise, an empty instance.</span>
+</span><span data-line="252">
+</span><span data-line="253"><span class="sd">        Returns:</span>
+</span><span data-line="254"><span class="sd">            A FormMultiDict instance</span>
+</span><span data-line="255"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="256">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_form</span> <span class="ow">is</span> <span class="n">Empty</span><span class="p">:</span>
+</span><span data-line="257">            <span class="k">if</span> <span class="p">(</span><span class="n">form_data</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connection_state</span><span class="o">.</span><span class="n">form</span><span class="p">)</span> <span class="ow">is</span> <span class="n">Empty</span><span class="p">:</span>
+</span><span data-line="258">                <span class="n">content_type</span><span class="p">,</span> <span class="n">options</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">content_type</span>
+</span><span data-line="259">                <span class="k">if</span> <span class="n">content_type</span> <span class="o">==</span> <span class="n">RequestEncodingType</span><span class="o">.</span><span class="n">MULTI_PART</span><span class="p">:</span>
+</span><span data-line="260">                    <span class="n">form_data</span> <span class="o">=</span> <span class="k">await</span> <span class="n">parse_multipart_form</span><span class="p">(</span>
+</span><span data-line="261">                        <span class="n">stream</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">stream</span><span class="p">(),</span>
+</span><span data-line="262">                        <span class="n">boundary</span><span class="o">=</span><span class="n">options</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;boundary&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">(),</span>
+</span><span data-line="263">                        <span class="n">multipart_form_part_limit</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">multipart_form_part_limit</span><span class="p">,</span>
+</span><span data-line="264">                    <span class="p">)</span>
+</span><span data-line="265">                <span class="k">elif</span> <span class="n">content_type</span> <span class="o">==</span> <span class="n">RequestEncodingType</span><span class="o">.</span><span class="n">URL_ENCODED</span><span class="p">:</span>
+</span><span data-line="266">                    <span class="n">form_data</span> <span class="o">=</span> <span class="n">parse_url_encoded_form_data</span><span class="p">(</span>  <span class="c1"># type: ignore[assignment]</span>
+</span><span data-line="267">                        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">body</span><span class="p">(),</span>
+</span><span data-line="268">                    <span class="p">)</span>
+</span><span data-line="269">                <span class="k">else</span><span class="p">:</span>
+</span><span data-line="270">                    <span class="n">form_data</span> <span class="o">=</span> <span class="p">{}</span>
+</span><span data-line="271">
+</span><span data-line="272">                <span class="bp">self</span><span class="o">.</span><span class="n">_connection_state</span><span class="o">.</span><span class="n">form</span> <span class="o">=</span> <span class="n">form_data</span>  <span class="c1"># pyright: ignore[reportAttributeAccessIssue]</span>
+</span><span data-line="273">            <span class="bp">self</span><span class="o">.</span><span class="n">_form</span> <span class="o">=</span> <span class="n">FormMultiDict</span><span class="o">.</span><span class="n">from_form_data</span><span class="p">(</span><span class="n">cast</span><span class="p">(</span><span class="s2">&quot;dict[str, Any]&quot;</span><span class="p">,</span> <span class="n">form_data</span><span class="p">))</span>
+</span><span data-line="274">
+</span><span data-line="275">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_form</span></div>
 
-</span><span data-line="287">
+</span><span data-line="276">
 <div class="viewcode-block" id="Request.send_push_promise">
 <a class="viewcode-back" href="../../../reference/connection.html#litestar.connection.Request.send_push_promise">[docs]</a>
-</span><span data-line="288">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">send_push_promise</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">raise_if_unavailable</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="289"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Send a push promise.</span>
-</span><span data-line="290">
-</span><span data-line="291"><span class="sd">        This method requires the `http.response.push` extension to be sent from the ASGI server.</span>
-</span><span data-line="292">
-</span><span data-line="293"><span class="sd">        Args:</span>
-</span><span data-line="294"><span class="sd">            path: Path to send the promise to.</span>
-</span><span data-line="295"><span class="sd">            raise_if_unavailable: Raise an exception if server push is not supported by</span>
-</span><span data-line="296"><span class="sd">                the server</span>
-</span><span data-line="297">
-</span><span data-line="298"><span class="sd">        Returns:</span>
-</span><span data-line="299"><span class="sd">            None</span>
-</span><span data-line="300"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="301">        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">supports_push_promise</span><span class="p">:</span>
-</span><span data-line="302">            <span class="k">if</span> <span class="n">raise_if_unavailable</span><span class="p">:</span>
-</span><span data-line="303">                <span class="k">raise</span> <span class="n">LitestarException</span><span class="p">(</span><span class="s2">&quot;Attempted to send a push promise but the server does not support it&quot;</span><span class="p">)</span>
-</span><span data-line="304">
-</span><span data-line="305">            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-</span><span data-line="306">                <span class="s2">&quot;Attempted to send a push promise but the server does not support it. In a future version, this will &quot;</span>
-</span><span data-line="307">                <span class="s2">&quot;raise an exception. To enable this behaviour in the current version, set raise_if_unavailable=True. &quot;</span>
-</span><span data-line="308">                <span class="s2">&quot;To prevent this behaviour, make sure that the server you are using supports the &#39;http.response.push&#39; &quot;</span>
-</span><span data-line="309">                <span class="s2">&quot;ASGI extension, or check this dynamically via &quot;</span>
-</span><span data-line="310">                <span class="s2">&quot;:attr:`~litestar.connection.Request.supports_push_promise`&quot;</span><span class="p">,</span>
-</span><span data-line="311">                <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
-</span><span data-line="312">                <span class="n">category</span><span class="o">=</span><span class="n">LitestarWarning</span><span class="p">,</span>
-</span><span data-line="313">            <span class="p">)</span>
-</span><span data-line="314">
-</span><span data-line="315">            <span class="k">return</span>
-</span><span data-line="316">
-</span><span data-line="317">        <span class="n">raw_headers</span> <span class="o">=</span> <span class="p">[</span>
-</span><span data-line="318">            <span class="p">(</span><span class="n">header_name</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;latin-1&quot;</span><span class="p">),</span> <span class="n">value</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;latin-1&quot;</span><span class="p">))</span>
-</span><span data-line="319">            <span class="k">for</span> <span class="n">header_name</span> <span class="ow">in</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="o">&amp;</span> <span class="n">SERVER_PUSH_HEADERS</span><span class="p">)</span>
-</span><span data-line="320">            <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">getall</span><span class="p">(</span><span class="n">header_name</span><span class="p">,</span> <span class="p">[])</span>
-</span><span data-line="321">        <span class="p">]</span>
-</span><span data-line="322">        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">send</span><span class="p">({</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;http.response.push&quot;</span><span class="p">,</span> <span class="s2">&quot;path&quot;</span><span class="p">:</span> <span class="n">path</span><span class="p">,</span> <span class="s2">&quot;headers&quot;</span><span class="p">:</span> <span class="n">raw_headers</span><span class="p">})</span></div>
+</span><span data-line="277">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">send_push_promise</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">raise_if_unavailable</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="278"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Send a push promise.</span>
+</span><span data-line="279">
+</span><span data-line="280"><span class="sd">        This method requires the `http.response.push` extension to be sent from the ASGI server.</span>
+</span><span data-line="281">
+</span><span data-line="282"><span class="sd">        Args:</span>
+</span><span data-line="283"><span class="sd">            path: Path to send the promise to.</span>
+</span><span data-line="284"><span class="sd">            raise_if_unavailable: Raise an exception if server push is not supported by</span>
+</span><span data-line="285"><span class="sd">                the server</span>
+</span><span data-line="286">
+</span><span data-line="287"><span class="sd">        Returns:</span>
+</span><span data-line="288"><span class="sd">            None</span>
+</span><span data-line="289"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="290">        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">supports_push_promise</span><span class="p">:</span>
+</span><span data-line="291">            <span class="k">if</span> <span class="n">raise_if_unavailable</span><span class="p">:</span>
+</span><span data-line="292">                <span class="k">raise</span> <span class="n">LitestarException</span><span class="p">(</span><span class="s2">&quot;Attempted to send a push promise but the server does not support it&quot;</span><span class="p">)</span>
+</span><span data-line="293">
+</span><span data-line="294">            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+</span><span data-line="295">                <span class="s2">&quot;Attempted to send a push promise but the server does not support it. In a future version, this will &quot;</span>
+</span><span data-line="296">                <span class="s2">&quot;raise an exception. To enable this behaviour in the current version, set raise_if_unavailable=True. &quot;</span>
+</span><span data-line="297">                <span class="s2">&quot;To prevent this behaviour, make sure that the server you are using supports the &#39;http.response.push&#39; &quot;</span>
+</span><span data-line="298">                <span class="s2">&quot;ASGI extension, or check this dynamically via &quot;</span>
+</span><span data-line="299">                <span class="s2">&quot;:attr:`~litestar.connection.Request.supports_push_promise`&quot;</span><span class="p">,</span>
+</span><span data-line="300">                <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+</span><span data-line="301">                <span class="n">category</span><span class="o">=</span><span class="n">LitestarWarning</span><span class="p">,</span>
+</span><span data-line="302">            <span class="p">)</span>
+</span><span data-line="303">
+</span><span data-line="304">            <span class="k">return</span>
+</span><span data-line="305">
+</span><span data-line="306">        <span class="n">raw_headers</span> <span class="o">=</span> <span class="p">[</span>
+</span><span data-line="307">            <span class="p">(</span><span class="n">header_name</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;latin-1&quot;</span><span class="p">),</span> <span class="n">value</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;latin-1&quot;</span><span class="p">))</span>
+</span><span data-line="308">            <span class="k">for</span> <span class="n">header_name</span> <span class="ow">in</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="o">&amp;</span> <span class="n">SERVER_PUSH_HEADERS</span><span class="p">)</span>
+</span><span data-line="309">            <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">getall</span><span class="p">(</span><span class="n">header_name</span><span class="p">,</span> <span class="p">[])</span>
+</span><span data-line="310">        <span class="p">]</span>
+</span><span data-line="311">        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">send</span><span class="p">({</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;http.response.push&quot;</span><span class="p">,</span> <span class="s2">&quot;path&quot;</span><span class="p">:</span> <span class="n">path</span><span class="p">,</span> <span class="s2">&quot;headers&quot;</span><span class="p">:</span> <span class="n">raw_headers</span><span class="p">})</span></div>
 </div>
 
 </span></pre></div>

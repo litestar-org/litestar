@@ -1193,10 +1193,10 @@ the request body in a safe manner.</p>
 <p class="admonition-title">Tip</p>
 <p>For requests that define a <code class="docutils literal notranslate"><span class="pre">Content-Length</span></code> header, Litestar will not attempt to
 read the request body should the header value exceed the <code class="docutils literal notranslate"><span class="pre">request_max_body_size</span></code>.</p>
-<p>If the header value is within the allowed bounds, Litestar will verify during the
-streaming of the request body that it does not exceed the size specified in the
-header. Should the request exceed this size, it will abort the request with a
-<code class="docutils literal notranslate"><span class="pre">400</span> <span class="pre">-</span> <span class="pre">Bad</span> <span class="pre">Request</span></code>.</p>
+<p>Validation that the actual request body matches the <code class="docutils literal notranslate"><span class="pre">Content-Length</span></code> header is
+delegated to the ASGI server (e.g. uvicorn). This ensures compatibility with
+request decompression middleware, where the decompressed body may legitimately
+exceed the wire-format <code class="docutils literal notranslate"><span class="pre">Content-Length</span></code>.</p>
 </div>
 </section>
 </section>
