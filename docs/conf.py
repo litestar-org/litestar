@@ -64,7 +64,6 @@ intersphinx_mapping = {
     "redis": ("https://redis.readthedocs.io/en/stable/", None),
     "structlog": ("https://www.structlog.org/en/stable/", None),
     "tortoise": ("https://tortoise.github.io/", None),
-    "piccolo": ("https://piccolo-orm.readthedocs.io/en/latest/", None),
     "opentelemetry": ("https://opentelemetry-python.readthedocs.io/en/latest/", None),
     "advanced-alchemy": ("https://advanced-alchemy.litestar.dev/latest/", None),
     "jinja2": ("https://jinja.palletsprojects.com/en/latest/", None),
