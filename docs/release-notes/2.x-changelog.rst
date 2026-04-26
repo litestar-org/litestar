@@ -1600,7 +1600,7 @@
         :pr: 2404
         :issue: 2373
 
-        A new :class:`~litestar.contrib.pydantic.PydanticPlugin` has been added, which
+        A new ``PydanticPlugin`` has been added, which
         can be used to configure Pydantic behaviour. Currently it supports setting a
         ``prefer_alias`` option, which will pass the ``by_alias=True`` flag to Pydantic
         when exporting models, as well as generate schemas accordingly.
@@ -2704,7 +2704,7 @@
         `Pydantic <https://docs.pydantic.dev/latest/>`_ have been added:
 
         - :class:`~litestar.contrib.msgspec.MsgspecDTO`
-        - :class:`~litestar.contrib.pydantic.PydanticDTO`
+        - ``PydanticDTO``
 
     .. change:: DTOs: Arbitrary generic wrappers
         :pr: 1801
