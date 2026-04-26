@@ -584,10 +584,10 @@ Async</label><div class="sd-tab-content docutils">
 </span><span data-line="2"><span class="linenos"> 2</span>
 </span><span data-line="3"><span class="linenos"> 3</span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
 </span><span data-line="4"><span class="linenos"> 4</span>
-</span><span data-line="5"><span class="linenos"> 5</span><span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy</span><span class="w"> </span><span class="kn">import</span> <span class="n">select</span>
-</span><span data-line="6"><span class="linenos"> 6</span>
-</span><span data-line="7"><span class="linenos"> 7</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">post</span>
-</span><span data-line="8"><span class="linenos"> 8</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.plugins.sqlalchemy</span><span class="w"> </span><span class="kn">import</span> <span class="n">SQLAlchemyAsyncConfig</span><span class="p">,</span> <span class="n">SQLAlchemyInitPlugin</span>
+</span><span data-line="5"><span class="linenos"> 5</span><span class="kn">from</span><span class="w"> </span><span class="nn">advanced_alchemy.extensions.litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">SQLAlchemyAsyncConfig</span><span class="p">,</span> <span class="n">SQLAlchemyInitPlugin</span>
+</span><span data-line="6"><span class="linenos"> 6</span><span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy</span><span class="w"> </span><span class="kn">import</span> <span class="n">select</span>
+</span><span data-line="7"><span class="linenos"> 7</span>
+</span><span data-line="8"><span class="linenos"> 8</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">post</span>
 </span><span data-line="9"><span class="linenos"> 9</span>
 </span><span data-line="10"><span class="linenos">10</span><span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
 </span><span data-line="11"><span class="linenos">11</span>    <span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy.ext.asyncio</span><span class="w"> </span><span class="kn">import</span> <span class="n">AsyncEngine</span><span class="p">,</span> <span class="n">AsyncSession</span>
@@ -619,10 +619,10 @@ Sync</label><div class="sd-tab-content docutils">
 </span><span data-line="2"><span class="linenos"> 2</span>
 </span><span data-line="3"><span class="linenos"> 3</span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
 </span><span data-line="4"><span class="linenos"> 4</span>
-</span><span data-line="5"><span class="linenos"> 5</span><span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy</span><span class="w"> </span><span class="kn">import</span> <span class="n">select</span>
-</span><span data-line="6"><span class="linenos"> 6</span>
-</span><span data-line="7"><span class="linenos"> 7</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">post</span>
-</span><span data-line="8"><span class="linenos"> 8</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.plugins.sqlalchemy</span><span class="w"> </span><span class="kn">import</span> <span class="n">SQLAlchemyInitPlugin</span><span class="p">,</span> <span class="n">SQLAlchemySyncConfig</span>
+</span><span data-line="5"><span class="linenos"> 5</span><span class="kn">from</span><span class="w"> </span><span class="nn">advanced_alchemy.extensions.litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">SQLAlchemyInitPlugin</span><span class="p">,</span> <span class="n">SQLAlchemySyncConfig</span>
+</span><span data-line="6"><span class="linenos"> 6</span><span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy</span><span class="w"> </span><span class="kn">import</span> <span class="n">select</span>
+</span><span data-line="7"><span class="linenos"> 7</span>
+</span><span data-line="8"><span class="linenos"> 8</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">post</span>
 </span><span data-line="9"><span class="linenos"> 9</span>
 </span><span data-line="10"><span class="linenos">10</span><span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
 </span><span data-line="11"><span class="linenos">11</span>    <span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy</span><span class="w"> </span><span class="kn">import</span> <span class="n">Engine</span>
@@ -672,19 +672,20 @@ Async</label><div class="sd-tab-content docutils">
 <div class="code-block-caption"><span class="caption-text">SQLAlchemy Async Before Send Handler</span><a class="headerlink" href="#id3" title="Link to this code">¶</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="linenos"> 1</span><span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 </span><span data-line="2"><span class="linenos"> 2</span>
-</span><span data-line="3"><span class="linenos"> 3</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span>
-</span><span data-line="4"><span class="linenos"> 4</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.plugins.sqlalchemy</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
-</span><span data-line="5"><span class="linenos"> 5</span>    <span class="n">SQLAlchemyAsyncConfig</span><span class="p">,</span>
-</span><span data-line="6"><span class="linenos"> 6</span>    <span class="n">SQLAlchemyInitPlugin</span><span class="p">,</span>
-</span><span data-line="7"><span class="linenos"> 7</span>    <span class="n">async_autocommit_before_send_handler</span><span class="p">,</span>
-</span><span data-line="8"><span class="linenos"> 8</span><span class="p">)</span>
-</span><span data-line="9"><span class="linenos"> 9</span>
-</span><span data-line="10"><span class="linenos">10</span><span class="n">config</span> <span class="o">=</span> <span class="n">SQLAlchemyAsyncConfig</span><span class="p">(</span>
-</span><span data-line="11"><span class="linenos">11</span>    <span class="n">connection_string</span><span class="o">=</span><span class="s2">&quot;sqlite+aiosqlite:///:memory:&quot;</span><span class="p">,</span> <span class="n">before_send_handler</span><span class="o">=</span><span class="n">async_autocommit_before_send_handler</span>
-</span><span data-line="12"><span class="linenos">12</span><span class="p">)</span>
-</span><span data-line="13"><span class="linenos">13</span><span class="n">plugin</span> <span class="o">=</span> <span class="n">SQLAlchemyInitPlugin</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">)</span>
-</span><span data-line="14"><span class="linenos">14</span>
-</span><span data-line="15"><span class="linenos">15</span><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[],</span> <span class="n">plugins</span><span class="o">=</span><span class="p">[</span><span class="n">plugin</span><span class="p">])</span>
+</span><span data-line="3"><span class="linenos"> 3</span><span class="kn">from</span><span class="w"> </span><span class="nn">advanced_alchemy.extensions.litestar</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+</span><span data-line="4"><span class="linenos"> 4</span>    <span class="n">SQLAlchemyAsyncConfig</span><span class="p">,</span>
+</span><span data-line="5"><span class="linenos"> 5</span>    <span class="n">SQLAlchemyInitPlugin</span><span class="p">,</span>
+</span><span data-line="6"><span class="linenos"> 6</span>    <span class="n">async_autocommit_before_send_handler</span><span class="p">,</span>
+</span><span data-line="7"><span class="linenos"> 7</span><span class="p">)</span>
+</span><span data-line="8"><span class="linenos"> 8</span>
+</span><span data-line="9"><span class="linenos"> 9</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span>
+</span><span data-line="10"><span class="linenos">10</span>
+</span><span data-line="11"><span class="linenos">11</span><span class="n">config</span> <span class="o">=</span> <span class="n">SQLAlchemyAsyncConfig</span><span class="p">(</span>
+</span><span data-line="12"><span class="linenos">12</span>    <span class="n">connection_string</span><span class="o">=</span><span class="s2">&quot;sqlite+aiosqlite:///:memory:&quot;</span><span class="p">,</span> <span class="n">before_send_handler</span><span class="o">=</span><span class="n">async_autocommit_before_send_handler</span>
+</span><span data-line="13"><span class="linenos">13</span><span class="p">)</span>
+</span><span data-line="14"><span class="linenos">14</span><span class="n">plugin</span> <span class="o">=</span> <span class="n">SQLAlchemyInitPlugin</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">)</span>
+</span><span data-line="15"><span class="linenos">15</span>
+</span><span data-line="16"><span class="linenos">16</span><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[],</span> <span class="n">plugins</span><span class="o">=</span><span class="p">[</span><span class="n">plugin</span><span class="p">])</span>
 </span></pre></div>
 </div>
 </div>
@@ -696,16 +697,21 @@ Sync</label><div class="sd-tab-content docutils">
 <div class="code-block-caption"><span class="caption-text">SQLAlchemy Sync Before Send Handler</span><a class="headerlink" href="#id4" title="Link to this code">¶</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="linenos"> 1</span><span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 </span><span data-line="2"><span class="linenos"> 2</span>
-</span><span data-line="3"><span class="linenos"> 3</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span>
-</span><span data-line="4"><span class="linenos"> 4</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.plugins.sqlalchemy</span><span class="w"> </span><span class="kn">import</span> <span class="n">SQLAlchemyInitPlugin</span><span class="p">,</span> <span class="n">SQLAlchemySyncConfig</span><span class="p">,</span> <span class="n">sync_autocommit_before_send_handler</span>
-</span><span data-line="5"><span class="linenos"> 5</span>
-</span><span data-line="6"><span class="linenos"> 6</span><span class="n">config</span> <span class="o">=</span> <span class="n">SQLAlchemySyncConfig</span><span class="p">(</span>
-</span><span data-line="7"><span class="linenos"> 7</span>    <span class="n">connection_string</span><span class="o">=</span><span class="s2">&quot;sqlite:///:memory:&quot;</span><span class="p">,</span>
-</span><span data-line="8"><span class="linenos"> 8</span>    <span class="n">before_send_handler</span><span class="o">=</span><span class="n">sync_autocommit_before_send_handler</span><span class="p">,</span>
-</span><span data-line="9"><span class="linenos"> 9</span><span class="p">)</span>
-</span><span data-line="10"><span class="linenos">10</span><span class="n">plugin</span> <span class="o">=</span> <span class="n">SQLAlchemyInitPlugin</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">)</span>
-</span><span data-line="11"><span class="linenos">11</span>
-</span><span data-line="12"><span class="linenos">12</span><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[],</span> <span class="n">plugins</span><span class="o">=</span><span class="p">[</span><span class="n">plugin</span><span class="p">])</span>
+</span><span data-line="3"><span class="linenos"> 3</span><span class="kn">from</span><span class="w"> </span><span class="nn">advanced_alchemy.extensions.litestar</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+</span><span data-line="4"><span class="linenos"> 4</span>    <span class="n">SQLAlchemyInitPlugin</span><span class="p">,</span>
+</span><span data-line="5"><span class="linenos"> 5</span>    <span class="n">SQLAlchemySyncConfig</span><span class="p">,</span>
+</span><span data-line="6"><span class="linenos"> 6</span>    <span class="n">sync_autocommit_before_send_handler</span><span class="p">,</span>
+</span><span data-line="7"><span class="linenos"> 7</span><span class="p">)</span>
+</span><span data-line="8"><span class="linenos"> 8</span>
+</span><span data-line="9"><span class="linenos"> 9</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span>
+</span><span data-line="10"><span class="linenos">10</span>
+</span><span data-line="11"><span class="linenos">11</span><span class="n">config</span> <span class="o">=</span> <span class="n">SQLAlchemySyncConfig</span><span class="p">(</span>
+</span><span data-line="12"><span class="linenos">12</span>    <span class="n">connection_string</span><span class="o">=</span><span class="s2">&quot;sqlite:///:memory:&quot;</span><span class="p">,</span>
+</span><span data-line="13"><span class="linenos">13</span>    <span class="n">before_send_handler</span><span class="o">=</span><span class="n">sync_autocommit_before_send_handler</span><span class="p">,</span>
+</span><span data-line="14"><span class="linenos">14</span><span class="p">)</span>
+</span><span data-line="15"><span class="linenos">15</span><span class="n">plugin</span> <span class="o">=</span> <span class="n">SQLAlchemyInitPlugin</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">)</span>
+</span><span data-line="16"><span class="linenos">16</span>
+</span><span data-line="17"><span class="linenos">17</span><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[],</span> <span class="n">plugins</span><span class="o">=</span><span class="p">[</span><span class="n">plugin</span><span class="p">])</span>
 </span></pre></div>
 </div>
 </div>
@@ -747,11 +753,11 @@ Async</label><div class="sd-tab-content docutils">
 </span><span data-line="2"><span class="linenos"> 2</span>
 </span><span data-line="3"><span class="linenos"> 3</span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
 </span><span data-line="4"><span class="linenos"> 4</span>
-</span><span data-line="5"><span class="linenos"> 5</span><span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy</span><span class="w"> </span><span class="kn">import</span> <span class="n">select</span>
-</span><span data-line="6"><span class="linenos"> 6</span><span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy.orm</span><span class="w"> </span><span class="kn">import</span> <span class="n">DeclarativeBase</span><span class="p">,</span> <span class="n">Mapped</span><span class="p">,</span> <span class="n">mapped_column</span>
-</span><span data-line="7"><span class="linenos"> 7</span>
-</span><span data-line="8"><span class="linenos"> 8</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">post</span>
-</span><span data-line="9"><span class="linenos"> 9</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.plugins.sqlalchemy</span><span class="w"> </span><span class="kn">import</span> <span class="n">SQLAlchemyAsyncConfig</span><span class="p">,</span> <span class="n">SQLAlchemyInitPlugin</span>
+</span><span data-line="5"><span class="linenos"> 5</span><span class="kn">from</span><span class="w"> </span><span class="nn">advanced_alchemy.extensions.litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">SQLAlchemyAsyncConfig</span><span class="p">,</span> <span class="n">SQLAlchemyInitPlugin</span>
+</span><span data-line="6"><span class="linenos"> 6</span><span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy</span><span class="w"> </span><span class="kn">import</span> <span class="n">select</span>
+</span><span data-line="7"><span class="linenos"> 7</span><span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy.orm</span><span class="w"> </span><span class="kn">import</span> <span class="n">DeclarativeBase</span><span class="p">,</span> <span class="n">Mapped</span><span class="p">,</span> <span class="n">mapped_column</span>
+</span><span data-line="8"><span class="linenos"> 8</span>
+</span><span data-line="9"><span class="linenos"> 9</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">post</span>
 </span><span data-line="10"><span class="linenos">10</span>
 </span><span data-line="11"><span class="linenos">11</span><span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
 </span><span data-line="12"><span class="linenos">12</span>    <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
@@ -803,11 +809,11 @@ Sync</label><div class="sd-tab-content docutils">
 </span><span data-line="2"><span class="linenos"> 2</span>
 </span><span data-line="3"><span class="linenos"> 3</span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
 </span><span data-line="4"><span class="linenos"> 4</span>
-</span><span data-line="5"><span class="linenos"> 5</span><span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy</span><span class="w"> </span><span class="kn">import</span> <span class="n">select</span>
-</span><span data-line="6"><span class="linenos"> 6</span><span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy.orm</span><span class="w"> </span><span class="kn">import</span> <span class="n">DeclarativeBase</span><span class="p">,</span> <span class="n">Mapped</span><span class="p">,</span> <span class="n">mapped_column</span>
-</span><span data-line="7"><span class="linenos"> 7</span>
-</span><span data-line="8"><span class="linenos"> 8</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">post</span>
-</span><span data-line="9"><span class="linenos"> 9</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.plugins.sqlalchemy</span><span class="w"> </span><span class="kn">import</span> <span class="n">SQLAlchemyInitPlugin</span><span class="p">,</span> <span class="n">SQLAlchemySyncConfig</span>
+</span><span data-line="5"><span class="linenos"> 5</span><span class="kn">from</span><span class="w"> </span><span class="nn">advanced_alchemy.extensions.litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">SQLAlchemyInitPlugin</span><span class="p">,</span> <span class="n">SQLAlchemySyncConfig</span>
+</span><span data-line="6"><span class="linenos"> 6</span><span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy</span><span class="w"> </span><span class="kn">import</span> <span class="n">select</span>
+</span><span data-line="7"><span class="linenos"> 7</span><span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy.orm</span><span class="w"> </span><span class="kn">import</span> <span class="n">DeclarativeBase</span><span class="p">,</span> <span class="n">Mapped</span><span class="p">,</span> <span class="n">mapped_column</span>
+</span><span data-line="8"><span class="linenos"> 8</span>
+</span><span data-line="9"><span class="linenos"> 9</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">post</span>
 </span><span data-line="10"><span class="linenos">10</span>
 </span><span data-line="11"><span class="linenos">11</span><span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
 </span><span data-line="12"><span class="linenos">12</span>    <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
