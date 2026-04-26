@@ -289,7 +289,7 @@
         :issue: 4349
 
         New ``round_trip: bool`` parameter
-        to :class:`~litestar.contrib.pydantic.PydanticPlugin` allows
+        to ``PydanticPlugin`` allows
         serializing types like ``pydanctic.Json`` correctly.
 
     .. change:: Remove deprecated ``litestar.contrib.minijinja.minijinja_from_state`` function

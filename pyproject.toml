@@ -302,7 +302,6 @@ module = [
   "litestar.contrib.sqlalchemy.*",
   "litestar.plugins.pydantic.*",
   "tests.unit.test_contrib.test_sqlalchemy",
-  "tests.unit.test_contrib.test_pydantic.*",
   "tests.unit.test_logging.test_logging_config",
   "litestar.openapi.spec.base",
   "litestar.utils.helpers",
