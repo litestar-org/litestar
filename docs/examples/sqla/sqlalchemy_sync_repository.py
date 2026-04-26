@@ -10,6 +10,7 @@ from advanced_alchemy.extensions.litestar import (
     base,
     repository,
 )
+from advanced_alchemy.filters import LimitOffset
 from pydantic import BaseModel as _BaseModel
 from pydantic import TypeAdapter
 from sqlalchemy import ForeignKey, select
@@ -21,7 +22,6 @@ from litestar.di import Provide
 from litestar.handlers.http_handlers.decorators import delete, patch, post
 from litestar.pagination import OffsetPagination
 from litestar.params import Parameter
-from litestar.repository.filters import LimitOffset
 
 if TYPE_CHECKING:
     from sqlalchemy.orm import Session
