@@ -784,26 +784,25 @@ conditions. This pattern can be extended and adjusted to meet your needs.</p>
 </span><span data-line="2"><span class="linenos"> 2</span><span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
 </span><span data-line="3"><span class="linenos"> 3</span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
 </span><span data-line="4"><span class="linenos"> 4</span>
-</span><span data-line="5"><span class="linenos"> 5</span>
-</span><span data-line="6"><span class="linenos"> 6</span><span class="k">def</span><span class="w"> </span><span class="nf">open_fixture</span><span class="p">(</span><span class="n">fixtures_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">fixture_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
-</span><span data-line="7"><span class="linenos"> 7</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;Loads JSON file with the specified fixture name</span>
-</span><span data-line="8"><span class="linenos"> 8</span>
-</span><span data-line="9"><span class="linenos"> 9</span><span class="sd">    Args:</span>
-</span><span data-line="10"><span class="linenos">10</span><span class="sd">        fixtures_path (Path): The path to look for fixtures</span>
-</span><span data-line="11"><span class="linenos">11</span><span class="sd">        fixture_name (str): The fixture name to load.</span>
-</span><span data-line="12"><span class="linenos">12</span>
-</span><span data-line="13"><span class="linenos">13</span><span class="sd">    Raises:</span>
-</span><span data-line="14"><span class="linenos">14</span><span class="sd">        FileNotFoundError: Fixtures not found.</span>
-</span><span data-line="15"><span class="linenos">15</span>
-</span><span data-line="16"><span class="linenos">16</span><span class="sd">    Returns:</span>
-</span><span data-line="17"><span class="linenos">17</span><span class="sd">        Any: The parsed JSON data</span>
-</span><span data-line="18"><span class="linenos">18</span><span class="sd">    &quot;&quot;&quot;</span>
-</span><span data-line="19"><span class="linenos">19</span>    <span class="n">fixture</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">fixtures_path</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">fixture_name</span><span class="si">}</span><span class="s2">.json&quot;</span><span class="p">)</span>
-</span><span data-line="20"><span class="linenos">20</span>    <span class="k">if</span> <span class="n">fixture</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
-</span><span data-line="21"><span class="linenos">21</span>        <span class="k">with</span> <span class="n">fixture</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-</span><span data-line="22"><span class="linenos">22</span>            <span class="n">f_data</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
-</span><span data-line="23"><span class="linenos">23</span>        <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">f_data</span><span class="p">)</span>
-</span><span data-line="24"><span class="linenos">24</span>    <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not find the </span><span class="si">{</span><span class="n">fixture_name</span><span class="si">}</span><span class="s2"> fixture&quot;</span><span class="p">)</span>
+</span><span data-line="5"><span class="linenos"> 5</span><span class="k">def</span><span class="w"> </span><span class="nf">open_fixture</span><span class="p">(</span><span class="n">fixtures_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">fixture_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+</span><span data-line="6"><span class="linenos"> 6</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;Loads JSON file with the specified fixture name</span>
+</span><span data-line="7"><span class="linenos"> 7</span>
+</span><span data-line="8"><span class="linenos"> 8</span><span class="sd">    Args:</span>
+</span><span data-line="9"><span class="linenos"> 9</span><span class="sd">        fixtures_path (Path): The path to look for fixtures</span>
+</span><span data-line="10"><span class="linenos">10</span><span class="sd">        fixture_name (str): The fixture name to load.</span>
+</span><span data-line="11"><span class="linenos">11</span>
+</span><span data-line="12"><span class="linenos">12</span><span class="sd">    Raises:</span>
+</span><span data-line="13"><span class="linenos">13</span><span class="sd">        FileNotFoundError: Fixtures not found.</span>
+</span><span data-line="14"><span class="linenos">14</span>
+</span><span data-line="15"><span class="linenos">15</span><span class="sd">    Returns:</span>
+</span><span data-line="16"><span class="linenos">16</span><span class="sd">        Any: The parsed JSON data</span>
+</span><span data-line="17"><span class="linenos">17</span><span class="sd">    &quot;&quot;&quot;</span>
+</span><span data-line="18"><span class="linenos">18</span>    <span class="n">fixture</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">fixtures_path</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">fixture_name</span><span class="si">}</span><span class="s2">.json&quot;</span><span class="p">)</span>
+</span><span data-line="19"><span class="linenos">19</span>    <span class="k">if</span> <span class="n">fixture</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+</span><span data-line="20"><span class="linenos">20</span>        <span class="k">with</span> <span class="n">fixture</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+</span><span data-line="21"><span class="linenos">21</span>            <span class="n">f_data</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+</span><span data-line="22"><span class="linenos">22</span>        <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">f_data</span><span class="p">)</span>
+</span><span data-line="23"><span class="linenos">23</span>    <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not find the </span><span class="si">{</span><span class="n">fixture_name</span><span class="si">}</span><span class="s2"> fixture&quot;</span><span class="p">)</span>
 </span></pre></div>
 </div>
 </div>
@@ -1046,47 +1045,45 @@ performance when working with larger data sets.</p>
 <div class="literal-block-wrapper docutils container" id="id8">
 <div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">app.py</span></code></span><a class="headerlink" href="#id8" title="Link to this code">¶</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="linenos"> 1</span><span class="kn">from</span><span class="w"> </span><span class="nn">advanced_alchemy.extensions.litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">base</span><span class="p">,</span> <span class="n">repository</span>
-</span><span data-line="2"><span class="linenos"> 2</span><span class="kn">from</span><span class="w"> </span><span class="nn">rich</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_console</span>
-</span><span data-line="3"><span class="linenos"> 3</span><span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_engine</span>
-</span><span data-line="4"><span class="linenos"> 4</span><span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy.orm</span><span class="w"> </span><span class="kn">import</span> <span class="n">Mapped</span><span class="p">,</span> <span class="n">Session</span><span class="p">,</span> <span class="n">sessionmaker</span>
-</span><span data-line="5"><span class="linenos"> 5</span>
+</span><span data-line="2"><span class="linenos"> 2</span><span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_engine</span>
+</span><span data-line="3"><span class="linenos"> 3</span><span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy.orm</span><span class="w"> </span><span class="kn">import</span> <span class="n">Mapped</span><span class="p">,</span> <span class="n">Session</span><span class="p">,</span> <span class="n">sessionmaker</span>
+</span><span data-line="4"><span class="linenos"> 4</span>
+</span><span data-line="5"><span class="linenos"> 5</span><span class="n">here</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span>
 </span><span data-line="6"><span class="linenos"> 6</span>
-</span><span data-line="7"><span class="linenos"> 7</span><span class="n">console</span> <span class="o">=</span> <span class="n">get_console</span><span class="p">()</span>
-</span><span data-line="8"><span class="linenos"> 8</span>
-</span><span data-line="9"><span class="linenos"> 9</span>
-</span><span data-line="10"><span class="linenos">10</span><span class="k">class</span><span class="w"> </span><span class="nc">USState</span><span class="p">(</span><span class="n">base</span><span class="o">.</span><span class="n">UUIDBase</span><span class="p">):</span>
-</span><span data-line="11"><span class="linenos">11</span>    <span class="n">__tablename__</span> <span class="o">=</span> <span class="s2">&quot;us_state_lookup&quot;</span>  <span class="c1"># type: ignore[assignment]</span>
-</span><span data-line="12"><span class="linenos">12</span>    <span class="n">abbreviation</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
-</span><span data-line="13"><span class="linenos">13</span>    <span class="n">name</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
-</span><span data-line="14"><span class="linenos">14</span>
-</span><span data-line="15"><span class="linenos">15</span>
-</span><span data-line="16"><span class="linenos">16</span><span class="k">class</span><span class="w"> </span><span class="nc">USStateRepository</span><span class="p">(</span><span class="n">repository</span><span class="o">.</span><span class="n">SQLAlchemySyncRepository</span><span class="p">[</span><span class="n">USState</span><span class="p">]):</span>
-</span><span data-line="17"><span class="linenos">17</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;US State repository.&quot;&quot;&quot;</span>
+</span><span data-line="7"><span class="linenos"> 7</span>
+</span><span data-line="8"><span class="linenos"> 8</span><span class="k">class</span><span class="w"> </span><span class="nc">USState</span><span class="p">(</span><span class="n">base</span><span class="o">.</span><span class="n">UUIDBase</span><span class="p">):</span>
+</span><span data-line="9"><span class="linenos"> 9</span>    <span class="c1"># you can optionally override the generated table name by manually setting it.</span>
+</span><span data-line="10"><span class="linenos">10</span>    <span class="n">abbreviation</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
+</span><span data-line="11"><span class="linenos">11</span>    <span class="n">name</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
+</span><span data-line="12"><span class="linenos">12</span>
+</span><span data-line="13"><span class="linenos">13</span>
+</span><span data-line="14"><span class="linenos">14</span><span class="k">class</span><span class="w"> </span><span class="nc">USStateRepository</span><span class="p">(</span><span class="n">repository</span><span class="o">.</span><span class="n">SQLAlchemySyncRepository</span><span class="p">[</span><span class="n">USState</span><span class="p">]):</span>
+</span><span data-line="15"><span class="linenos">15</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;US State repository.&quot;&quot;&quot;</span>
+</span><span data-line="16"><span class="linenos">16</span>
+</span><span data-line="17"><span class="linenos">17</span>    <span class="n">model_type</span> <span class="o">=</span> <span class="n">USState</span>
 </span><span data-line="18"><span class="linenos">18</span>
-</span><span data-line="19"><span class="linenos">19</span>    <span class="n">model_type</span> <span class="o">=</span> <span class="n">USState</span>
-</span><span data-line="20"><span class="linenos">20</span>
-</span><span data-line="21"><span class="linenos">21</span>
-</span><span data-line="22"><span class="linenos">22</span><span class="n">engine</span> <span class="o">=</span> <span class="n">create_engine</span><span class="p">(</span>
-</span><span data-line="23"><span class="linenos">23</span>    <span class="s2">&quot;duckdb:///:memory:&quot;</span><span class="p">,</span>
-</span><span data-line="24"><span class="linenos">24</span>    <span class="n">future</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-</span><span data-line="25"><span class="linenos">25</span><span class="p">)</span>
-</span><span data-line="26"><span class="linenos">26</span><span class="n">session_factory</span><span class="p">:</span> <span class="n">sessionmaker</span><span class="p">[</span><span class="n">Session</span><span class="p">]</span> <span class="o">=</span> <span class="n">sessionmaker</span><span class="p">(</span><span class="n">engine</span><span class="p">,</span> <span class="n">expire_on_commit</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-</span><span data-line="27"><span class="linenos">27</span>
-</span><span data-line="28"><span class="linenos">28</span>
-</span><span data-line="29"><span class="linenos">29</span><span class="k">def</span><span class="w"> </span><span class="nf">run_script</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="30"><span class="linenos">30</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;Load data from a fixture.&quot;&quot;&quot;</span>
-</span><span data-line="31"><span class="linenos">31</span>
-</span><span data-line="32"><span class="linenos">32</span>    <span class="c1"># Initializes the database.</span>
-</span><span data-line="33"><span class="linenos">33</span>    <span class="k">with</span> <span class="n">engine</span><span class="o">.</span><span class="n">begin</span><span class="p">()</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
-</span><span data-line="34"><span class="linenos">34</span>        <span class="n">USState</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">create_all</span><span class="p">(</span><span class="n">conn</span><span class="p">)</span>
-</span><span data-line="35"><span class="linenos">35</span>
-</span><span data-line="36"><span class="linenos">36</span>    <span class="k">with</span> <span class="n">session_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">db_session</span><span class="p">:</span>
-</span><span data-line="37"><span class="linenos">37</span>        <span class="c1"># 1) Load the JSON data into the US States table.</span>
-</span><span data-line="38"><span class="linenos">38</span>        <span class="n">repo</span> <span class="o">=</span> <span class="n">USStateRepository</span><span class="p">(</span><span class="n">session</span><span class="o">=</span><span class="n">db_session</span><span class="p">)</span>
-</span><span data-line="39"><span class="linenos">39</span>        <span class="n">fixture</span> <span class="o">=</span> <span class="n">open_fixture</span><span class="p">(</span><span class="n">here</span><span class="p">,</span> <span class="n">USStateRepository</span><span class="o">.</span><span class="n">model_type</span><span class="o">.</span><span class="n">__tablename__</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
-</span><span data-line="40"><span class="linenos">40</span>        <span class="n">objs</span> <span class="o">=</span> <span class="n">repo</span><span class="o">.</span><span class="n">add_many</span><span class="p">([</span><span class="n">USStateRepository</span><span class="o">.</span><span class="n">model_type</span><span class="p">(</span><span class="o">**</span><span class="n">raw_obj</span><span class="p">)</span> <span class="k">for</span> <span class="n">raw_obj</span> <span class="ow">in</span> <span class="n">fixture</span><span class="p">])</span>
-</span><span data-line="41"><span class="linenos">41</span>        <span class="n">db_session</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
-</span><span data-line="42"><span class="linenos">42</span>        <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Created </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">objs</span><span class="p">)</span><span class="si">}</span><span class="s2"> new objects.&quot;</span><span class="p">)</span>
+</span><span data-line="19"><span class="linenos">19</span>
+</span><span data-line="20"><span class="linenos">20</span><span class="n">engine</span> <span class="o">=</span> <span class="n">create_engine</span><span class="p">(</span>
+</span><span data-line="21"><span class="linenos">21</span>    <span class="s2">&quot;duckdb:///:memory:&quot;</span><span class="p">,</span>
+</span><span data-line="22"><span class="linenos">22</span>    <span class="n">future</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+</span><span data-line="23"><span class="linenos">23</span><span class="p">)</span>
+</span><span data-line="24"><span class="linenos">24</span><span class="n">session_factory</span><span class="p">:</span> <span class="n">sessionmaker</span><span class="p">[</span><span class="n">Session</span><span class="p">]</span> <span class="o">=</span> <span class="n">sessionmaker</span><span class="p">(</span><span class="n">engine</span><span class="p">,</span> <span class="n">expire_on_commit</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</span><span data-line="25"><span class="linenos">25</span>
+</span><span data-line="26"><span class="linenos">26</span>
+</span><span data-line="27"><span class="linenos">27</span><span class="k">def</span><span class="w"> </span><span class="nf">run_script</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="28"><span class="linenos">28</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;Load data from a fixture.&quot;&quot;&quot;</span>
+</span><span data-line="29"><span class="linenos">29</span>
+</span><span data-line="30"><span class="linenos">30</span>    <span class="c1"># Initializes the database.</span>
+</span><span data-line="31"><span class="linenos">31</span>    <span class="k">with</span> <span class="n">engine</span><span class="o">.</span><span class="n">begin</span><span class="p">()</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
+</span><span data-line="32"><span class="linenos">32</span>        <span class="n">USState</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">create_all</span><span class="p">(</span><span class="n">conn</span><span class="p">)</span>
+</span><span data-line="33"><span class="linenos">33</span>
+</span><span data-line="34"><span class="linenos">34</span>    <span class="k">with</span> <span class="n">session_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">db_session</span><span class="p">:</span>
+</span><span data-line="35"><span class="linenos">35</span>        <span class="c1"># 1) Load the JSON data into the US States table.</span>
+</span><span data-line="36"><span class="linenos">36</span>        <span class="n">repo</span> <span class="o">=</span> <span class="n">USStateRepository</span><span class="p">(</span><span class="n">session</span><span class="o">=</span><span class="n">db_session</span><span class="p">)</span>
+</span><span data-line="37"><span class="linenos">37</span>        <span class="n">fixture</span> <span class="o">=</span> <span class="n">open_fixture</span><span class="p">(</span><span class="n">here</span><span class="p">,</span> <span class="n">USStateRepository</span><span class="o">.</span><span class="n">model_type</span><span class="o">.</span><span class="n">__tablename__</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
+</span><span data-line="38"><span class="linenos">38</span>        <span class="n">objs</span> <span class="o">=</span> <span class="n">repo</span><span class="o">.</span><span class="n">add_many</span><span class="p">([</span><span class="n">USStateRepository</span><span class="o">.</span><span class="n">model_type</span><span class="p">(</span><span class="o">**</span><span class="n">raw_obj</span><span class="p">)</span> <span class="k">for</span> <span class="n">raw_obj</span> <span class="ow">in</span> <span class="n">fixture</span><span class="p">])</span>
+</span><span data-line="39"><span class="linenos">39</span>        <span class="n">db_session</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+</span><span data-line="40"><span class="linenos">40</span>        <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Created </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">objs</span><span class="p">)</span><span class="si">}</span><span class="s2"> new objects.&quot;</span><span class="p">)</span>
 </span></pre></div>
 </div>
 </div>
@@ -1099,12 +1096,9 @@ is useful for handling large amounts of data by breaking the data into manageabl
 repository.</p>
 <div class="literal-block-wrapper docutils container" id="id9">
 <div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">app.py</span></code></span><a class="headerlink" href="#id9" title="Link to this code">¶</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="linenos">1</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.repository.filters</span><span class="w"> </span><span class="kn">import</span> <span class="n">LimitOffset</span>
-</span><span data-line="2"><span class="linenos">2</span>
-</span><span data-line="3"><span class="linenos">3</span>
-</span><span data-line="4"><span class="linenos">4</span>        <span class="c1"># 2) Select paginated data and total row count.</span>
-</span><span data-line="5"><span class="linenos">5</span>        <span class="n">created_objs</span><span class="p">,</span> <span class="n">total_objs</span> <span class="o">=</span> <span class="n">repo</span><span class="o">.</span><span class="n">list_and_count</span><span class="p">(</span><span class="n">LimitOffset</span><span class="p">(</span><span class="n">limit</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span>
-</span><span data-line="6"><span class="linenos">6</span>        <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Selected </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">created_objs</span><span class="p">)</span><span class="si">}</span><span class="s2"> records out of a total of </span><span class="si">{</span><span class="n">total_objs</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="linenos">1</span><span class="k">def</span><span class="w"> </span><span class="nf">run_script</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="2"><span class="linenos">2</span>        <span class="n">created_objs</span><span class="p">,</span> <span class="n">total_objs</span> <span class="o">=</span> <span class="n">repo</span><span class="o">.</span><span class="n">list_and_count</span><span class="p">(</span><span class="n">LimitOffset</span><span class="p">(</span><span class="n">limit</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span>
+</span><span data-line="3"><span class="linenos">3</span>        <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Selected </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">created_objs</span><span class="p">)</span><span class="si">}</span><span class="s2"> records out of a total of </span><span class="si">{</span><span class="n">total_objs</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
 </span></pre></div>
 </div>
 </div>
@@ -1116,9 +1110,8 @@ insert, deleting multiple records with the batch record methods is more efficien
 executing row-by-row.</p>
 <div class="literal-block-wrapper docutils container" id="id10">
 <div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">app.py</span></code></span><a class="headerlink" href="#id10" title="Link to this code">¶</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="linenos">1</span>        <span class="c1"># 3) Let&#39;s remove the batch of records selected.</span>
-</span><span data-line="2"><span class="linenos">2</span>        <span class="n">deleted_objs</span> <span class="o">=</span> <span class="n">repo</span><span class="o">.</span><span class="n">delete_many</span><span class="p">([</span><span class="n">new_obj</span><span class="o">.</span><span class="n">id</span> <span class="k">for</span> <span class="n">new_obj</span> <span class="ow">in</span> <span class="n">created_objs</span><span class="p">])</span>
-</span><span data-line="3"><span class="linenos">3</span>        <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Removed </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">deleted_objs</span><span class="p">)</span><span class="si">}</span><span class="s2"> records out of a total of </span><span class="si">{</span><span class="n">total_objs</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="linenos">1</span>        <span class="n">deleted_objs</span> <span class="o">=</span> <span class="n">repo</span><span class="o">.</span><span class="n">delete_many</span><span class="p">([</span><span class="n">new_obj</span><span class="o">.</span><span class="n">id</span> <span class="k">for</span> <span class="n">new_obj</span> <span class="ow">in</span> <span class="n">created_objs</span><span class="p">])</span>
+</span><span data-line="2"><span class="linenos">2</span>        <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Removed </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">deleted_objs</span><span class="p">)</span><span class="si">}</span><span class="s2"> records out of a total of </span><span class="si">{</span><span class="n">total_objs</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
 </span></pre></div>
 </div>
 </div>
@@ -1128,9 +1121,8 @@ executing row-by-row.</p>
 <p>Finally, we’ll demonstrate how to count the number of records remaining in the database.</p>
 <div class="literal-block-wrapper docutils container" id="id11">
 <div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">app.py</span></code></span><a class="headerlink" href="#id11" title="Link to this code">¶</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="linenos">1</span>        <span class="c1"># 4) Let&#39;s count the remaining rows</span>
-</span><span data-line="2"><span class="linenos">2</span>        <span class="n">remaining_count</span> <span class="o">=</span> <span class="n">repo</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
-</span><span data-line="3"><span class="linenos">3</span>        <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Found </span><span class="si">{</span><span class="n">remaining_count</span><span class="si">}</span><span class="s2"> remaining records after delete.&quot;</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="linenos">1</span>        <span class="n">remaining_count</span> <span class="o">=</span> <span class="n">repo</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
+</span><span data-line="2"><span class="linenos">2</span>        <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Found </span><span class="si">{</span><span class="n">remaining_count</span><span class="si">}</span><span class="s2"> remaining records after delete.&quot;</span><span class="p">)</span>
 </span></pre></div>
 </div>
 </div>
