@@ -540,7 +540,7 @@ def test_nullable_query_param_required(annotation: Any, default: Any, expected_r
             pass
 
     with create_test_client(handler) as client:
-        path_item = client.app.openapi_schema.paths["/test"]  # type: ignore[index, union-attr]
+        path_item = client.app.openapi_schema.paths["/test"]  # type: ignore[index]
         params = {p.name: p for p in (path_item.get.parameters or [])}  # type: ignore[union-attr]
         param = params["param"]
         assert not isinstance(param, Reference)
