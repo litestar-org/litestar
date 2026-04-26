@@ -304,7 +304,7 @@ To disable this limit for a specific handler / router / controller, it can be se
     For requests that define a ``Content-Length`` header, Litestar will not attempt to
     read the request body should the header value exceed the ``request_max_body_size``.
 
-    If the header value is within the allowed bounds, Litestar will verify during the
-    streaming of the request body that it does not exceed the size specified in the
-    header. Should the request exceed this size, it will abort the request with a
-    ``400 - Bad Request``.
+    Validation that the actual request body matches the ``Content-Length`` header is
+    delegated to the ASGI server (e.g. uvicorn). This ensures compatibility with
+    request decompression middleware, where the decompressed body may legitimately
+    exceed the wire-format ``Content-Length``.
