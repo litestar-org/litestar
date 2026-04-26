@@ -14,7 +14,7 @@ from sqlalchemy.types import String
 
 from litestar import Litestar, get, post
 from litestar.di import Provide
-from litestar.plugins.sqlalchemy import (
+from advanced_alchemy.extensions.litestar import (
     AsyncSessionConfig,
     SQLAlchemyAsyncConfig,
     SQLAlchemyInitPlugin,

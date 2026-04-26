@@ -9,7 +9,7 @@ from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 from litestar import Litestar, get, post, put
 from litestar.datastructures import State
 from litestar.exceptions import ClientException, NotFoundException
-from litestar.plugins.sqlalchemy import SQLAlchemySerializationPlugin
+from advanced_alchemy.extensions.litestar import SQLAlchemySerializationPlugin
 from litestar.status_codes import HTTP_409_CONFLICT
 
 

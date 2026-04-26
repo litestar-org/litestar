@@ -3,7 +3,7 @@ from __future__ import annotations
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 from litestar import Litestar, post
-from litestar.plugins.sqlalchemy import SQLAlchemyDTO
+from advanced_alchemy.extensions.litestar import SQLAlchemyDTO
 
 
 class Base(DeclarativeBase): ...

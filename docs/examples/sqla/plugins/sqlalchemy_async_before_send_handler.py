@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from litestar import Litestar
-from litestar.plugins.sqlalchemy import (
+from advanced_alchemy.extensions.litestar import (
     SQLAlchemyAsyncConfig,
     SQLAlchemyInitPlugin,
     async_autocommit_before_send_handler,

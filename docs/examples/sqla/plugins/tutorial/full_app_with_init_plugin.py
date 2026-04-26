@@ -7,7 +7,7 @@ from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 from litestar import Litestar, get, post, put
 from litestar.exceptions import ClientException, NotFoundException
-from litestar.plugins.sqlalchemy import (
+from advanced_alchemy.extensions.litestar import (
     SQLAlchemyAsyncConfig,
     SQLAlchemyInitPlugin,
     SQLAlchemySerializationPlugin,

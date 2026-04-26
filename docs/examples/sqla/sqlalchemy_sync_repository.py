@@ -15,7 +15,7 @@ from litestar.di import Provide
 from litestar.handlers.http_handlers.decorators import delete, patch, post
 from litestar.pagination import OffsetPagination
 from litestar.params import Parameter
-from litestar.plugins.sqlalchemy import (
+from advanced_alchemy.extensions.litestar import (
     SQLAlchemyInitPlugin,
     SQLAlchemySyncConfig,
     base,
