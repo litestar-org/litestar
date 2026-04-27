@@ -442,6 +442,9 @@ class Litestar(Router):
             config.exception_handlers.setdefault(StarletteHTTPException, _starlette_exception_handler)
         except ImportError:
             pass
+
+        self._validate_exception_handlers(config.exception_handlers)
+
         super().__init__(
             after_request=config.after_request,
             after_response=config.after_response,
@@ -504,6 +507,36 @@ class Litestar(Router):
         except ImportError:
             pass
         return config
+
+    @staticmethod
+    def _validate_exception_handlers(exception_handlers: ExceptionHandlersMap) -> None:
+        """Warn if a non-Litestar HTTPException class is registered as an exception handler key.
+
+        A common mistake is to accidentally import ``HTTPException`` from ``http.client``
+        (Python stdlib) instead of ``litestar.exceptions``. When the stdlib class is used
+        as a key, the handler will silently fail to match any Litestar HTTP exceptions.
+
+        See: https://github.com/litestar-org/litestar/issues/4434
+        """
+        from litestar.exceptions import HTTPException as LitestarHTTPException
+
+        for key in exception_handlers:
+            if isinstance(key, int):
+                continue
+            if (
+                key.__name__ == "HTTPException"
+                and key is not LitestarHTTPException
+                and not key.__module__.startswith("starlette.")
+            ):
+                warnings.warn(
+                    f"An 'HTTPException' class from '{key.__module__}' was registered as an exception "
+                    f"handler key. This is likely an incorrect import. Did you mean "
+                    f"'litestar.exceptions.HTTPException'? Handlers keyed to non-Litestar HTTPException "
+                    f"classes will not catch Litestar HTTP exceptions. "
+                    f"See: https://github.com/litestar-org/litestar/issues/4434",
+                    category=LitestarWarning,
+                    stacklevel=2,
+                )
 
     @staticmethod
     def _get_default_plugins(plugins: list[PluginProtocol]) -> list[PluginProtocol]:
