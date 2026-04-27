@@ -55,4 +55,3 @@ OperationIDCreator: TypeAlias = "Callable[[HTTPRouteHandler, Method, list[str | 
 Serializer: TypeAlias = Callable[[Any], Any]
 HTTPHandlerDecorator: TypeAlias = "Callable[..., Callable[[AnyCallable], HTTPRouteHandler]]"
 ErrorResponsesCreator: TypeAlias = "Callable[[list[type[HTTPException]]], Iterator[tuple[str, OpenAPIResponse]]]"
-

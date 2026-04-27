@@ -734,7 +734,6 @@ def test_custom_error_response_creator_problem_details_style() -> None:
     responses = factory.create_responses(raises_validation_error=False)
     assert responses is not None
 
-
     pet_response = responses[str(PetException.status_code)]
     assert not isinstance(pet_response, Reference)
     assert pet_response.content is not None
@@ -744,7 +743,6 @@ def test_custom_error_response_creator_problem_details_style() -> None:
     assert schema.required == ["title", "status"]
     assert "status" in schema.properties  # type: ignore[operator]
     assert "title" in schema.properties  # type: ignore[operator]
-
 
     validation_response = responses[str(ValidationException.status_code)]
     assert not isinstance(validation_response, Reference)
