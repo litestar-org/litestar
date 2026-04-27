@@ -98,7 +98,7 @@ class ResponseFactory:
             exceptions.append(ValidationException)
 
         error_response_creator = self.context.openapi_config.error_response_creator or create_error_responses
-        for status_code, response in error_response_creator(exceptions=exceptions):
+        for status_code, response in error_response_creator(exceptions):
             responses[status_code] = response
 
         for status_code, response in self.create_additional_responses():

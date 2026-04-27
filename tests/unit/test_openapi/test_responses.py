@@ -605,8 +605,7 @@ def test_create_responses_with_custom_error_response_creator() -> None:
     def handler() -> dict:
         return {}
 
-    app = Litestar(route_handlers=[handler])
-    route_handler = app.asgi_router.route_handler_index["test"]
+    route_handler = get_registered_route_handler(handler, "test")
 
     factory = ResponseFactory(
         context=OpenAPIContext(
@@ -625,6 +624,7 @@ def test_create_responses_with_custom_error_response_creator() -> None:
     assert str(PetException.status_code) in responses
 
     error_response = responses[str(PetException.status_code)]
+    assert not isinstance(error_response, Reference)
     assert error_response.description == "Custom error"
     assert error_response.content is not None
     schema = error_response.content[MediaType.JSON].schema
@@ -639,8 +639,7 @@ def test_create_responses_with_default_error_response_creator() -> None:
     def handler() -> dict:
         return {}
 
-    app = Litestar(route_handlers=[handler])
-    route_handler = app.asgi_router.route_handler_index["test"]
+    route_handler = get_registered_route_handler(handler, "test")
 
     factory = ResponseFactory(
         context=OpenAPIContext(
@@ -655,6 +654,7 @@ def test_create_responses_with_default_error_response_creator() -> None:
     assert str(PetException.status_code) in responses
 
     error_response = responses[str(PetException.status_code)]
+    assert not isinstance(error_response, Reference)
     assert error_response.content is not None
     schema = error_response.content[MediaType.JSON].schema
     assert isinstance(schema, Schema)
@@ -717,8 +717,7 @@ def test_custom_error_response_creator_problem_details_style() -> None:
     def handler() -> dict:
         return {}
 
-    app = Litestar(route_handlers=[handler])
-    route_handler = app.asgi_router.route_handler_index["test"]
+    route_handler = get_registered_route_handler(handler, "test")
 
     factory = ResponseFactory(
         context=OpenAPIContext(
@@ -737,6 +736,7 @@ def test_custom_error_response_creator_problem_details_style() -> None:
 
 
     pet_response = responses[str(PetException.status_code)]
+    assert not isinstance(pet_response, Reference)
     assert pet_response.content is not None
     assert "application/problem+json" in pet_response.content
     schema = pet_response.content["application/problem+json"].schema
@@ -747,6 +747,6 @@ def test_custom_error_response_creator_problem_details_style() -> None:
 
 
     validation_response = responses[str(ValidationException.status_code)]
+    assert not isinstance(validation_response, Reference)
     assert validation_response.content is not None
     assert "application/problem+json" in validation_response.content
-
