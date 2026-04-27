@@ -124,10 +124,11 @@ def test_open_telemetry_middleware_with_websocket_route(
         await socket.send_json({"hello": "world"})
         await socket.close()
 
-    with create_test_client(handler, middleware=app_config.middleware, plugins=app_config.plugins).websocket_connect(
-        "/"
-    ) as client:
-        data = client.receive_json()
+    with (
+        create_test_client(handler, middleware=app_config.middleware, plugins=app_config.plugins) as client,
+        client.websocket_connect("/") as ws_client,
+    ):
+        data = ws_client.receive_json()
         assert data == {"hello": "world"}
 
         first_span, second_span, third_span, fourth_span, fifth_span = cast(
