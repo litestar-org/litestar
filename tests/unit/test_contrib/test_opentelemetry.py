@@ -344,3 +344,109 @@ def test_after_exception_hook_handler_not_called_on_success(
 
         # Verify the hook was NOT called
         assert len(hook_calls) == 0
+
+
+def test_after_exception_list_called_on_exception(
+    resource: Resource, exporter: InMemorySpanExporter, meter_provider: MeterProvider, request: FixtureRequest
+) -> None:
+    """Test that after_exception list handlers are called when an exception occurs."""
+    hook_calls_1: list[tuple[Exception, Scope]] = []
+    hook_calls_2: list[tuple[Exception, Scope]] = []
+
+    def hook_one(exc: Exception, scope: Scope) -> None:
+        hook_calls_1.append((exc, scope))
+
+    def hook_two(exc: Exception, scope: Scope) -> None:
+        hook_calls_2.append((exc, scope))
+
+    tracer_provider = TracerProvider(resource=resource)
+    tracer_provider.add_span_processor(SimpleSpanProcessor(exporter))
+    meter = get_meter_provider().get_meter(f"litestar-test-{request.node.nodeid}")
+    config = OpenTelemetryConfig(tracer_provider=tracer_provider, meter=meter, after_exception=[hook_one, hook_two])
+
+    test_exception = ValueError("test error")
+
+    @get("/")
+    def handler() -> dict:
+        raise test_exception
+
+    with create_test_client(handler, plugins=[OpenTelemetryPlugin(config)]) as client:
+        response = client.get("/")
+        assert response.status_code == 500
+
+        # Both hooks should have been called
+        assert len(hook_calls_1) == 1
+        assert len(hook_calls_2) == 1
+
+        # Verify the exception is the one we raised
+        assert hook_calls_1[0][0] is test_exception
+        assert hook_calls_2[0][0] is test_exception
+
+        # Verify scope details
+        assert hook_calls_1[0][1]["type"] == ScopeType.HTTP
+        assert hook_calls_2[0][1]["type"] == ScopeType.HTTP
+
+
+def test_after_exception_list_not_called_on_success(
+    resource: Resource, exporter: InMemorySpanExporter, meter_provider: MeterProvider, request: FixtureRequest
+) -> None:
+    """Test that after_exception list handlers are not called when no exception occurs."""
+    hook_calls: list[tuple[Exception, Scope]] = []
+
+    def hook(exc: Exception, scope: Scope) -> None:
+        hook_calls.append((exc, scope))
+
+    tracer_provider = TracerProvider(resource=resource)
+    tracer_provider.add_span_processor(SimpleSpanProcessor(exporter))
+    meter = get_meter_provider().get_meter(f"litestar-test-{request.node.nodeid}")
+    config = OpenTelemetryConfig(tracer_provider=tracer_provider, meter=meter, after_exception=[hook])
+
+    @get("/")
+    def handler() -> dict:
+        return {"success": True}
+
+    with create_test_client(handler, plugins=[OpenTelemetryPlugin(config)]) as client:
+        response = client.get("/")
+        assert response.status_code == 200
+        assert len(hook_calls) == 0
+
+
+def test_after_exception_list_combined_with_hook_handler(
+    resource: Resource, exporter: InMemorySpanExporter, meter_provider: MeterProvider, request: FixtureRequest
+) -> None:
+    """Test that both after_exception list and deprecated after_exception_hook_handler work together."""
+    list_hook_calls: list[tuple[Exception, Scope]] = []
+    singular_hook_calls: list[tuple[Exception, Scope]] = []
+
+    def list_hook(exc: Exception, scope: Scope) -> None:
+        list_hook_calls.append((exc, scope))
+
+    def singular_hook(exc: Exception, scope: Scope) -> None:
+        singular_hook_calls.append((exc, scope))
+
+    tracer_provider = TracerProvider(resource=resource)
+    tracer_provider.add_span_processor(SimpleSpanProcessor(exporter))
+    meter = get_meter_provider().get_meter(f"litestar-test-{request.node.nodeid}")
+    config = OpenTelemetryConfig(
+        tracer_provider=tracer_provider,
+        meter=meter,
+        after_exception=[list_hook],
+        after_exception_hook_handler=singular_hook,
+    )
+
+    test_exception = ValueError("combined test")
+
+    @get("/")
+    def handler() -> dict:
+        raise test_exception
+
+    with create_test_client(handler, plugins=[OpenTelemetryPlugin(config)]) as client:
+        response = client.get("/")
+        assert response.status_code == 500
+
+        # Both the list hook and the singular hook should have been called
+        assert len(list_hook_calls) == 1
+        assert len(singular_hook_calls) == 1
+
+        assert list_hook_calls[0][0] is test_exception
+        assert singular_hook_calls[0][0] is test_exception
