@@ -18,6 +18,11 @@ if TYPE_CHECKING:
 
 
 @pytest.fixture
+def int_factory() -> Callable[[], int]:
+    return lambda: 2
+
+
+@pytest.fixture
 def expected_field_defs(int_factory: Callable[[], int]) -> list[DTOFieldDefinition]:
     return [
         DTOFieldDefinition.from_field_definition(

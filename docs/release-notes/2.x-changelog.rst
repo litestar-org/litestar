@@ -2703,7 +2703,7 @@
         DTO factories for `msgspec <https://jcristharif.com/msgspec/>`_ and
         `Pydantic <https://docs.pydantic.dev/latest/>`_ have been added:
 
-        - :class:`~litestar.contrib.msgspec.MsgspecDTO`
+        - :class:`~litestar.dto.MsgspecDTO`
         - ``PydanticDTO``
 
     .. change:: DTOs: Arbitrary generic wrappers

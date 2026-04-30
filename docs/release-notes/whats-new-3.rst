@@ -344,3 +344,9 @@ startup.
 .. seealso::
 
     :ref:`usage/middleware/creating-middleware:Configuration constraints`
+
+
+Removal of ``litestar.contrib.msgspec``
+---------------------------------------
+
+The deprecated ``litestar.contrib.msgspec`` namespace has been removed. ``MsgspecDTO`` can now be imported directly from its new canonical location at ``litestar.dto``.
