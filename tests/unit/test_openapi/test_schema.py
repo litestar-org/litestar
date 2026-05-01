@@ -778,20 +778,21 @@ def test_optional_field_preserves_meta_constraints() -> None:
         required_field: Annotated[int, msgspec.Meta(ge=1, examples=[42])]
         optional_field: Annotated[int, msgspec.Meta(ge=1, examples=[42])] | None = None
 
-    properties = get_schema_for_field_definition(
-        FieldDefinition.from_kwarg(name="Model", annotation=Model)
-    ).properties
-
+    properties = get_schema_for_field_definition(FieldDefinition.from_kwarg(name="Model", annotation=Model)).properties
     assert properties is not None
 
     # required_field should have constraints
-    assert properties["required_field"].minimum == 1.0
-    assert properties["required_field"].examples == [42]
+    required_field = properties["required_field"]
+    assert isinstance(required_field, Schema)
+    assert required_field.minimum == 1.0
+    assert required_field.examples == [42]
 
     # optional_field should be oneOf with constraints preserved on the schema
-    assert properties["optional_field"].one_of is not None
-    assert properties["optional_field"].minimum == 1
-    assert properties["optional_field"].examples == [42]
+    optional_field = properties["optional_field"]
+    assert isinstance(optional_field, Schema)
+    assert optional_field.one_of is not None
+    assert optional_field.minimum == 1
+    assert optional_field.examples == [42]
 
 
 def test_union_preserves_all_metadata() -> None:
