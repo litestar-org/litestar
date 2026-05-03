@@ -3,11 +3,10 @@ from pathlib import Path
 from typing import Any
 
 from advanced_alchemy.extensions.litestar import base, repository
+from advanced_alchemy.filters import LimitOffset
 from rich import get_console
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Mapped, Session, sessionmaker
-
-from litestar.repository.filters import LimitOffset
 
 here = Path(__file__).parent
 console = get_console()

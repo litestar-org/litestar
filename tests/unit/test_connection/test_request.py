@@ -8,11 +8,11 @@ from __future__ import annotations
 
 from collections.abc import Callable, Generator
 from typing import TYPE_CHECKING, Any
-from unittest.mock import patch
+from unittest.mock import MagicMock, call, patch
 
 import pytest
 
-from litestar import MediaType, Request, get, post
+from litestar import Request, asgi, get, post
 from litestar.connection.base import AuthT, StateT, UserT, empty_send
 from litestar.datastructures import Address, Cookie, State
 from litestar.exceptions import (
@@ -25,7 +25,7 @@ from litestar.middleware import MiddlewareProtocol
 from litestar.response.base import ASGIResponse
 from litestar.serialization import encode_json, encode_msgpack
 from litestar.status_codes import HTTP_400_BAD_REQUEST, HTTP_413_REQUEST_ENTITY_TOO_LARGE
-from litestar.testing import TestClient, create_test_client
+from litestar.testing import create_test_client
 
 if TYPE_CHECKING:
     from litestar.types import ASGIApp, Receive, Scope, Send
@@ -146,61 +146,69 @@ def test_custom_request_class() -> None:
 
 
 def test_request_url() -> None:
-    async def app(scope: Scope, receive: Receive, send: Send) -> None:
-        request = Request[Any, Any, State](scope, receive)
-        data = {"method": request.method, "url": str(request.url)}
-        response = ASGIResponse(body=encode_json(data))
-        await response(scope, receive, send)
+    mock = MagicMock()
 
-    client = TestClient(app)
-    response = client.get("/123?a=abc")
-    assert response.json() == {"method": "GET", "url": "http://testserver.local/123?a=abc"}
+    @get(["/", "123"])
+    def handler(request: Request) -> None:
+        mock({"method": request.method, "url": str(request.url)})
 
-    response = client.get("https://example.org:123/")
-    assert response.json() == {"method": "GET", "url": "https://example.org:123/"}
+    with create_test_client(handler, raise_server_exceptions=True) as client:
+        assert client.get("/").status_code == 200
+        assert client.get("/123?a=abc").status_code == 200
+
+    mock.assert_has_calls(
+        [
+            call({"method": "GET", "url": "http://testserver.local/"}),
+            call({"method": "GET", "url": "http://testserver.local/123?a=abc"}),
+        ]
+    )
 
 
 def test_request_query_params() -> None:
-    async def app(scope: Scope, receive: Receive, send: Send) -> None:
-        request = Request[Any, Any, State](scope, receive)
-        params = dict(request.query_params)
-        response = ASGIResponse(body=encode_json({"params": params}))
-        await response(scope, receive, send)
+    mock = MagicMock()
 
-    client = TestClient(app)
-    response = client.get("/?a=123&b=456")
-    assert response.json() == {"params": {"a": "123", "b": "456"}}
+    @get("/")
+    def handler(request: Request) -> None:
+        mock(dict(request.query_params))
+
+    with create_test_client(handler) as client:
+        client.get("/?a=123&b=456")
+
+    mock.assert_called_once_with({"a": "123", "b": "456"})
 
 
 def test_request_headers() -> None:
-    async def app(scope: Scope, receive: Receive, send: Send) -> None:
-        request = Request[Any, Any, State](scope, receive)
-        headers = dict(request.headers)
-        response = ASGIResponse(body=encode_json({"headers": headers}))
-        await response(scope, receive, send)
+    mock = MagicMock()
 
-    client = TestClient(app)
-    response = client.get("/", headers={"host": "example.org"})
-    assert response.json() == {
-        "headers": {
+    @get("/")
+    def handler(request: Request) -> None:
+        mock(dict(request.headers))
+
+    with create_test_client(handler) as client:
+        client.get("/", headers={"host": "example.org"})
+
+    mock.assert_called_once_with(
+        {
             "host": "example.org",
             "user-agent": "testclient",
             "accept-encoding": "gzip, deflate, br, zstd",
             "accept": "*/*",
             "connection": "keep-alive",
         }
-    }
+    )
 
 
 def test_request_accept_header() -> None:
-    async def app(scope: Scope, receive: Receive, send: Send) -> None:
-        request = Request[Any, Any, State](scope, receive)
-        response = ASGIResponse(body=encode_json({"accepted_types": list(request.accept)}))
-        await response(scope, receive, send)
+    mock = MagicMock()
 
-    client = TestClient(app)
-    response = client.get("/", headers={"Accept": "text/plain, application/xml;q=0.7, text/html;p=test"})
-    assert response.json() == {"accepted_types": ["text/html;p=test", "text/plain", "application/xml;q=0.7"]}
+    @get("/")
+    def handler(request: Request) -> None:
+        mock(list(request.accept))
+
+    with create_test_client(handler) as client:
+        client.get("/", headers={"Accept": "text/plain, application/xml;q=0.7, text/html;p=test"})
+
+    mock.assert_called_once_with(["text/html;p=test", "text/plain", "application/xml;q=0.7"])
 
 
 @pytest.mark.parametrize(
@@ -297,18 +305,6 @@ def test_request_body_then_stream() -> None:
 
 
 def test_request_stream_then_body() -> None:
-    async def app(scope: Scope, receive: Receive, send: Send) -> None:
-        request = Request[Any, Any, State](scope, receive)
-        chunks = b""
-        async for chunk in request.stream():
-            chunks += chunk
-        try:
-            body = await request.body()
-        except InternalServerException:
-            body = b"<stream consumed>"
-        response = ASGIResponse(body=encode_json({"body": body.decode(), "stream": chunks.decode()}))
-        await response(scope, receive, send)
-
     @post("/")
     async def handler(request: Request) -> bytes:
         chunks = b""
@@ -337,34 +333,18 @@ def test_request_json() -> None:
 
 
 def test_request_raw_path() -> None:
-    async def app(scope: Scope, receive: Receive, send: Send) -> None:
-        request = Request[Any, Any, State](scope, receive)
+    mock = MagicMock()
+
+    @get("/he/llo")
+    def handler(request: Request) -> None:
         path = str(request.scope["path"])
         raw_path = str(request.scope["raw_path"])
-        response = ASGIResponse(body=f"{path}, {raw_path}".encode(), media_type=MediaType.TEXT)
-        await response(scope, receive, send)
+        mock(f"{path}, {raw_path}")
 
-    client = TestClient(app)
-    response = client.get("/he%2Fllo")
-    assert response.text == "/he/llo, b'/he%2Fllo'"
+    with create_test_client(handler) as client:
+        client.get("/he%2Fllo")
 
-
-def test_request_without_setting_receive(create_scope: Callable[..., Scope]) -> None:
-    """If Request is instantiated without the 'receive' channel, then .body() is not available."""
-
-    async def app(scope: Scope, receive: Receive, send: Send) -> None:
-        scope.update(create_scope(route_handler=_route_handler))  # type: ignore[typeddict-item]
-        request = Request[Any, Any, State](scope)
-        try:
-            data = await request.json()
-        except RuntimeError:
-            data = "Receive channel not available"
-        response = ASGIResponse(body=encode_json({"json": data}))
-        await response(scope, receive, send)
-
-    client = TestClient(app)
-    response = client.post("/", json={"a": "123"})
-    assert response.json() == {"json": "Receive channel not available"}
+    mock.assert_called_once_with("/he/llo, b'/he%2Fllo'")
 
 
 async def test_request_disconnect(create_scope: Callable[..., Scope]) -> None:
@@ -398,25 +378,22 @@ def test_request_state() -> None:
 
 
 def test_request_cookies() -> None:
-    async def app(scope: Scope, receive: Receive, send: Send) -> None:
-        request = Request[Any, Any, State](scope, receive)
+    @get("/")
+    def handler(request: Request) -> ASGIResponse:
         mycookie = request.cookies.get("mycookie")
         if mycookie:
-            asgi_response = ASGIResponse(body=mycookie.encode("utf-8"), media_type="text/plain")
-        else:
-            asgi_response = ASGIResponse(
-                body=b"Hello, world!",
-                media_type="text/plain",
-                cookies=[Cookie(key="mycookie", value="Hello, cookies!")],
-            )
+            return ASGIResponse(body=mycookie.encode("utf-8"), media_type="text/plain")
+        return ASGIResponse(
+            body=b"Hello, world!",
+            media_type="text/plain",
+            cookies=[Cookie(key="mycookie", value="Hello, cookies!")],
+        )
 
-        await asgi_response(scope, receive, send)
-
-    client = TestClient(app)
-    response = client.get("/")
-    assert response.text == "Hello, world!"
-    response = client.get("/")
-    assert response.text == "Hello, cookies!"
+    with create_test_client(handler) as client:
+        response = client.get("/")
+        assert response.text == "Hello, world!"
+        response = client.get("/")
+        assert response.text == "Hello, cookies!"
 
 
 def test_chunked_encoding() -> None:
@@ -436,7 +413,8 @@ def test_chunked_encoding() -> None:
 
 
 def test_request_send_push_promise() -> None:
-    async def app(scope: Scope, receive: Receive, send: Send) -> None:
+    @asgi("/")
+    async def handler(scope: Scope, receive: Receive, send: Send) -> None:
         # the server is push-enabled
         scope["extensions"]["http.response.push"] = {}  # type: ignore[index]
 
@@ -446,9 +424,9 @@ def test_request_send_push_promise() -> None:
         response = ASGIResponse(body=encode_json({"json": "OK"}))
         await response(scope, receive, send)
 
-    client = TestClient(app)
-    response = client.get("/")
-    assert response.json() == {"json": "OK"}
+    with create_test_client([handler]) as client:
+        response = client.get("/")
+        assert response.json() == {"json": "OK"}
 
 
 def test_request_send_push_promise_without_push_extension() -> None:
@@ -457,18 +435,15 @@ def test_request_send_push_promise_without_push_extension() -> None:
     .send_push_promise() does nothing.
     """
 
-    async def app(scope: Scope, receive: Receive, send: Send) -> None:
-        request = Request[Any, Any, State](scope)
-
+    @get("/")
+    async def handler(request: Request) -> str:
         with pytest.warns(LitestarWarning, match="Attempted to send a push promise"):
             await request.send_push_promise("/style.css")
+        return "Ok"
 
-        response = ASGIResponse(body=encode_json({"json": "OK"}))
-        await response(scope, receive, send)
-
-    client = TestClient(app)
-    response = client.get("/")
-    assert response.json() == {"json": "OK"}
+    with create_test_client([handler]) as client:
+        response = client.get("/")
+        assert response.text == "Ok"
 
 
 def test_request_send_push_promise_without_push_extension_raises() -> None:
@@ -477,40 +452,14 @@ def test_request_send_push_promise_without_push_extension_raises() -> None:
     .send_push_promise() does nothing.
     """
 
-    async def app(scope: Scope, receive: Receive, send: Send) -> None:
-        request = Request[Any, Any, State](scope)
+    @get("/")
+    async def handler(request: Request) -> str:
+        await request.send_push_promise("/style.css", raise_if_unavailable=True)
+        return "Ok"
 
+    with create_test_client([handler], raise_server_exceptions=True) as client:
         with pytest.raises(LitestarException, match="Attempted to send a push promise"):
-            await request.send_push_promise("/style.css", raise_if_unavailable=True)
-
-        response = ASGIResponse(body=encode_json({"json": "OK"}))
-        await response(scope, receive, send)
-
-    TestClient(app).get("/")
-
-
-def test_request_send_push_promise_without_setting_send() -> None:
-    """If Request is instantiated without the send channel, then.
-
-    .send_push_promise() is not available.
-    """
-
-    async def app(scope: Scope, receive: Receive, send: Send) -> None:
-        # the server is push-enabled
-        scope["extensions"]["http.response.push"] = {}  # type: ignore[index]
-
-        data = "OK"
-        request = Request[Any, Any, State](scope)
-        try:
-            await request.send_push_promise("/style.css")
-        except RuntimeError:
-            data = "Send channel not available"
-        response = ASGIResponse(body=encode_json({"json": data}))
-        await response(scope, receive, send)
-
-    client = TestClient(app)
-    response = client.get("/")
-    assert response.json() == {"json": "Send channel not available"}
+            client.get("/")
 
 
 class BeforeRequestMiddleWare(MiddlewareProtocol):

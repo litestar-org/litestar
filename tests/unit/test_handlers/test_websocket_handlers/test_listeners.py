@@ -60,8 +60,7 @@ def async_listener_callable(mock: MagicMock) -> WebsocketListenerRouteHandler:
 def test_basic_listener(
     mock: MagicMock, listener: Union[WebsocketListenerRouteHandler, type[WebsocketListener]]
 ) -> None:
-    client = create_test_client([listener])
-    with client.websocket_connect("/") as ws:
+    with create_test_client([listener]) as client, client.websocket_connect("/") as ws:
         ws.send_text("foo")
         assert ws.receive_text() == "foo"
         ws.send_text("bar")
@@ -124,8 +123,7 @@ def test_listener_receive_with_dto(receive_mode: WebSocketMode) -> None:
         nonlocal value
         value = data
 
-    client = create_test_client([handler], openapi_config=None)
-    with client.websocket_connect("/") as ws:
+    with create_test_client([handler], openapi_config=None) as client, client.websocket_connect("/") as ws:
         ws.send_json({"name": "litestar user", "hidden": "whoops"}, mode=receive_mode)
 
     assert isinstance(value, User)
@@ -287,8 +285,7 @@ def test_connection_callbacks() -> None:
     def handler(data: bytes) -> None:
         pass
 
-    client = create_test_client([handler])
-    with client.websocket_connect("/"):
+    with create_test_client([handler]) as client, client.websocket_connect("/"):
         pass
 
     on_accept_mock.assert_called_once()
@@ -311,8 +308,7 @@ def test_connection_lifespan() -> None:
     def handler(data: bytes) -> None:
         pass
 
-    client = create_test_client([handler])
-    with client.websocket_connect("/", timeout=1):
+    with create_test_client([handler]) as client, client.websocket_connect("/", timeout=1):
         pass
 
     on_accept.assert_called_once()

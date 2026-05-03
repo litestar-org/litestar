@@ -71,14 +71,16 @@ class FirstController(Controller):
 
 
 def test_controller_dependency_injection() -> None:
-    client = create_test_client(
-        FirstController,
-        dependencies={
-            "second": Provide(router_first_dependency, sync_to_thread=False),
-            "third": Provide(router_second_dependency),
-        },
-    )
-    with client.websocket_connect(f"{test_path}/abcdef?query_param=12345") as ws:
+    with (
+        create_test_client(
+            FirstController,
+            dependencies={
+                "second": Provide(router_first_dependency, sync_to_thread=False),
+                "third": Provide(router_second_dependency),
+            },
+        ) as client,
+        client.websocket_connect(f"{test_path}/abcdef?query_param=12345") as ws,
+    ):
         ws.send_json({"data": "123"})
 
 
@@ -100,14 +102,16 @@ def test_function_dependency_injection() -> None:
         assert isinstance(third, str)
         await socket.close()
 
-    client = create_test_client(
-        test_function,
-        dependencies={
-            "first": Provide(router_first_dependency, sync_to_thread=False),
-            "second": Provide(router_second_dependency),
-        },
-    )
-    with client.websocket_connect(f"{test_path}/abcdef?query_param=12345") as ws:
+    with (
+        create_test_client(
+            test_function,
+            dependencies={
+                "first": Provide(router_first_dependency, sync_to_thread=False),
+                "second": Provide(router_second_dependency),
+            },
+        ) as client,
+        client.websocket_connect(f"{test_path}/abcdef?query_param=12345") as ws,
+    ):
         ws.send_json({"data": "123"})
 
 

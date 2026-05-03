@@ -144,10 +144,13 @@ async def test_skips_for_websocket() -> None:
         await socket.send_json(data)
         await socket.close()
 
-    with create_test_client(
-        route_handlers=[websocket_handler],
-        compression_config=CompressionConfig(backend="brotli", brotli_gzip_fallback=False),
-    ).websocket_connect("/") as ws:
+    with (
+        create_test_client(
+            route_handlers=[websocket_handler],
+            compression_config=CompressionConfig(backend="brotli", brotli_gzip_fallback=False),
+        ) as client,
+        client.websocket_connect("/") as ws,
+    ):
         assert b"content-encoding" not in dict(ws.scope["headers"])
 
 

@@ -16,9 +16,7 @@ def test_handle_websocket() -> None:
         await socket.send_json({"data": "123"})
         await socket.close()
 
-    client = create_test_client(route_handlers=simple_websocket_handler)
-
-    with client.websocket_connect("/") as ws:
+    with create_test_client(route_handlers=simple_websocket_handler) as client, client.websocket_connect("/") as ws:
         ws.send_json({"data": "123"})
         data = ws.receive_json()
         assert data
@@ -46,9 +44,10 @@ def test_websocket_signature_namespace() -> None:
 
     router = Router("/", route_handlers=[MyController], signature_namespace={"b": str})
 
-    client = create_test_client(route_handlers=[router], signature_namespace={"a": int})
-
-    with client.websocket_connect("/ws?a=1&b=two&c=3.0&d=d") as ws:
+    with (
+        create_test_client(route_handlers=[router], signature_namespace={"a": int}) as client,
+        client.websocket_connect("/ws?a=1&b=two&c=3.0&d=d") as ws,
+    ):
         ws.send_json({"data": "123"})
         data = ws.receive_json()
         assert data == {"a": 1, "b": "two", "c": 3.0, "d": ["d"]}
