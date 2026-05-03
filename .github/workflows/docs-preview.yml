@@ -40,7 +40,7 @@ jobs:
         id: generate-token
         uses: actions/create-github-app-token@v3
         with:
-          client-id: ${{ secrets.APP_ID }}
+          app-id: ${{ secrets.APP_ID }}
           private-key: ${{ secrets.APP_PRIVATE_KEY }}
           owner: litestar-org
           repositories: litestar-docs-preview
