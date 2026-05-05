@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING
 from litestar.contrib.opentelemetry.config import OpenTelemetryConfig
 from litestar.contrib.opentelemetry.middleware import OpenTelemetryInstrumentationMiddleware
 from litestar.middleware.base import DefineMiddleware
+from litestar.middleware.correlation import CorrelationMiddleware
 from litestar.plugins import InitPlugin
 
 if TYPE_CHECKING:
@@ -30,6 +31,15 @@ class OpenTelemetryPlugin(InitPlugin):
 
     def on_app_init(self, app_config: AppConfig) -> AppConfig:
         app_config.middleware, _middleware = self._pop_otel_middleware(app_config.middleware)
+        if self.config.enable_correlation_middleware:
+            app_config.middleware.insert(
+                0,
+                CorrelationMiddleware(
+                    header=self.config.correlation_header,
+                    fallback_headers=self.config.correlation_headers,
+                    auto_trace_headers=self.config.auto_trace_headers,
+                ),
+            )
         if self.config.after_exception_hook_handler:
             app_config.after_exception.append(self.config.after_exception_hook_handler)
         return app_config

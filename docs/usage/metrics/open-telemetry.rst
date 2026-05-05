@@ -34,3 +34,18 @@ exporter to use these (see the
 
 You can also pass con figuration to the ``OpenTelemetryConfig`` telling it which providers to use. Consult
 :class:`reference docs <litestar.contrib.opentelemetry.OpenTelemetryConfig>` regarding the configuration options you can use.
+
+Trace context correlation
+-------------------------
+
+Set
+:attr:`OpenTelemetryConfig.enable_correlation_middleware <litestar.contrib.opentelemetry.OpenTelemetryConfig.enable_correlation_middleware>`
+to ``True`` and the plugin will inject
+:class:`~litestar.middleware.correlation.CorrelationMiddleware` ahead of its
+instrumentation. The middleware reads a W3C ``traceparent`` (or one of a
+configurable list of cloud-vendor / generic fallback headers) and exposes
+the value to handlers and loggers via
+:class:`~litestar.middleware.correlation.CorrelationContext`. It works
+standalone as well — see
+:doc:`/usage/middleware/correlation` for usage patterns, the logging-filter
+recipe, and the full configuration surface.

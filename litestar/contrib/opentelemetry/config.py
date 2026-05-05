@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from collections.abc import Callable
+from collections.abc import Callable, Sequence
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Any, Literal
 
@@ -10,6 +10,7 @@ from litestar.contrib.opentelemetry.middleware import (
 )
 from litestar.exceptions import MissingDependencyException
 from litestar.middleware.base import DefineMiddleware
+from litestar.middleware.correlation import TRACE_CONTEXT_FALLBACK_HEADERS
 
 __all__ = ("OpenTelemetryConfig",)
 
@@ -92,6 +93,24 @@ class OpenTelemetryConfig:
 
     Should be a subclass of OpenTelemetry
     InstrumentationMiddleware][litestar.contrib.opentelemetry.OpenTelemetryInstrumentationMiddleware].
+    """
+    enable_correlation_middleware: bool = False
+    """If true, the :class:`OpenTelemetryPlugin` injects
+    :class:`~litestar.middleware.correlation.CorrelationMiddleware` ahead of the
+    OpenTelemetry instrumentation middleware so that the W3C trace context is
+    captured into a context variable for handlers and loggers.
+    """
+    correlation_header: str = "traceparent"
+    """Primary header read by the correlation middleware when it is enabled."""
+    correlation_headers: Sequence[str] = TRACE_CONTEXT_FALLBACK_HEADERS
+    """Fallback header list, in priority order, scanned by the correlation
+    middleware after :attr:`correlation_header` when :attr:`auto_trace_headers`
+    is true.
+    """
+    auto_trace_headers: bool = True
+    """If true, the correlation middleware scans :attr:`correlation_headers`
+    after :attr:`correlation_header`. If false, only :attr:`correlation_header`
+    is consulted.
     """
 
     @property

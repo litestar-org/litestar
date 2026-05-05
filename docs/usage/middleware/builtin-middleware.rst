@@ -162,6 +162,21 @@ list of domains to :class:`~litestar.app.Litestar`:
     domain name, not in the middle or end. Doing so will result in a validation exception being raised.
 
 
+Correlation IDs
+---------------
+
+:class:`~litestar.middleware.correlation.CorrelationMiddleware` reads a
+distributed-trace correlation ID from W3C ``traceparent`` (or one of a
+configurable list of cloud-vendor / generic fallback headers) and propagates
+the value through a :class:`~contextvars.ContextVar` so handlers, dependencies,
+and loggers can access it for the duration of a request. When no header
+matches, a fresh W3C-compliant ``traceparent`` is generated.
+
+See :doc:`/usage/middleware/correlation` for usage patterns including
+standalone wiring, the logging-filter recipe, and integration with the
+:class:`~litestar.contrib.opentelemetry.OpenTelemetryPlugin`.
+
+
 Compression
 -----------
 

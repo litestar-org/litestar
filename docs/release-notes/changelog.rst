@@ -25,6 +25,20 @@
         sends SSE comment keepalive pings at the specified interval to prevent connection timeouts from reverse proxies
         or clients.
 
+    .. change:: Add W3C Trace Context correlation middleware
+        :type: feature
+        :issue: 4719
+
+        Added :class:`~litestar.middleware.correlation.CorrelationMiddleware`, an ASGI middleware that reads a
+        distributed-trace correlation ID from a configurable list of request headers (W3C ``traceparent`` plus
+        cloud-vendor and generic fallbacks) and propagates it via :class:`~contextvars.ContextVar` so handlers and
+        loggers can access it through :class:`~litestar.middleware.correlation.CorrelationContext`. A fresh UUID4 is
+        generated when no header matches; malformed ``traceparent`` values are stored as-is rather than raising.
+
+        The :class:`~litestar.contrib.opentelemetry.OpenTelemetryPlugin` can auto-inject the middleware ahead of its
+        instrumentation when :attr:`~litestar.contrib.opentelemetry.OpenTelemetryConfig.enable_correlation_middleware`
+        is true. The middleware itself has no OpenTelemetry dependency and works standalone.
+
     .. change:: Remove logging config and related constructs
         :type: feature
         :breaking:
