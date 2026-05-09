@@ -6,8 +6,8 @@ Litestar 2 Changelog
 .. changelog:: 2.22.0
 
     .. change:: Move OpenTelemetry integration to ``litestar.plugins.opentelemetry``; deprecate ``litestar.contrib.opentelemetry``
-        :type: deprecation
-        :pr: TBD
+        :type: misc
+        :pr: 4759
 
         The OpenTelemetry integration has moved from ``litestar.contrib.opentelemetry``
         to ``litestar.plugins.opentelemetry``. The contrib location is preserved as a
