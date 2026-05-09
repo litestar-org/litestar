@@ -188,3 +188,49 @@ def test_abstract_security_config_setting_openapi_security_requirements(
             assert client.app.openapi_config.security == expected
         else:
             assert not client.app.openapi_config
+
+
+@pytest.mark.filterwarnings("ignore:Middleware 'SessionAuthMiddleware' exclude pattern")
+def test_excluded_route_has_no_security_in_openapi(
+    session_backend_config_memory: ServerSideSessionConfig,
+) -> None:
+    """Routes excluded from auth via exclude_opt_key should not show security
+    in OpenAPI spec. The handler opts out with opt={"exclude_from_auth": True},
+    and the OpenAPI generation should set security=[] on that operation.
+
+    Regression test for https://github.com/litestar-org/litestar/issues/3013.
+    """
+
+    @get("/protected")
+    def protected_handler() -> dict:
+        return {"hello": "world"}
+
+    @get("/health", opt={"exclude_from_auth": True})
+    def health_handler() -> dict:
+        return {"status": "ok"}
+
+    security_config = SessionAuth[Any, ServerSideSessionBackend](
+        retrieve_user_handler=retrieve_user_handler,
+        exclude=["/health"],
+        session_backend_config=session_backend_config_memory,
+    )
+
+    with create_test_client(
+        [protected_handler, health_handler],
+        on_app_init=[security_config.on_app_init],
+        openapi_config=OpenAPIConfig(title="Test", version="1.0.0"),
+    ) as client:
+        schema = client.app.openapi_schema
+        assert schema
+        assert schema.paths
+
+        # Protected route should NOT have per-operation security
+        # (it inherits from root-level security)
+        protected_op = schema.paths["/protected"].get
+        assert protected_op
+        assert protected_op.security is None
+
+        # Excluded route should have empty security, overriding root-level
+        health_op = schema.paths["/health"].get
+        assert health_op
+        assert health_op.security == []

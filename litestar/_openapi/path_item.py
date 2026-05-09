@@ -16,6 +16,7 @@ from litestar.utils.helpers import unwrap_partial
 if TYPE_CHECKING:
     from litestar._openapi.datastructures import OpenAPIContext
     from litestar.handlers.http_handlers import HTTPRouteHandler
+    from litestar.openapi.spec import SecurityRequirement
     from litestar.routes import HTTPRoute
 
 __all__ = ("create_path_item_for_route", "merge_path_item_operations")
@@ -72,6 +73,18 @@ class PathItemFactory:
             self.context, route_handler, raises_validation_error=raises_validation_error
         )
 
+        security: list[SecurityRequirement] | None
+        if route_handler.opt.get("exclude_from_auth"):
+            # If the handler is excluded from auth, explicitly set security
+            # to an empty list. Per OpenAPI 3.1, this overrides root-level
+            # security and marks the operation as unsecured.
+            # See: https://github.com/litestar-org/litestar/issues/3013
+            security = []
+        elif route_handler.security:
+            security = list(route_handler.security)
+        else:
+            security = None
+
         return route_handler.operation_class(
             operation_id=operation_id,
             tags=sorted(route_handler.tags) if route_handler.tags else None,
@@ -81,7 +94,7 @@ class PathItemFactory:
             responses=responses,
             request_body=request_body,
             parameters=parameters or None,  # type: ignore[arg-type]
-            security=list(route_handler.security) if route_handler.security else None,
+            security=security,
         )
 
     def create_operation_id(self, route_handler: HTTPRouteHandler, http_method: HttpMethod) -> str:
