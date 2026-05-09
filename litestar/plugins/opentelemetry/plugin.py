@@ -1,11 +1,9 @@
-from __future__ import annotations
-
 from typing import TYPE_CHECKING
 
-from litestar.contrib.opentelemetry.config import OpenTelemetryConfig
-from litestar.contrib.opentelemetry.middleware import OpenTelemetryInstrumentationMiddleware
 from litestar.middleware.base import DefineMiddleware
 from litestar.plugins import InitPlugin
+from litestar.plugins.opentelemetry.config import OpenTelemetryConfig
+from litestar.plugins.opentelemetry.middleware import OpenTelemetryInstrumentationMiddleware
 
 if TYPE_CHECKING:
     from litestar.config.app import AppConfig
@@ -17,7 +15,7 @@ class OpenTelemetryPlugin(InitPlugin):
 
     __slots__ = ("_middleware", "config")
 
-    def __init__(self, config: OpenTelemetryConfig | None = None) -> None:
+    def __init__(self, config: "OpenTelemetryConfig | None" = None) -> None:
         self.config = config or OpenTelemetryConfig()
         self._middleware: DefineMiddleware | None = None
         super().__init__()
@@ -28,14 +26,14 @@ class OpenTelemetryPlugin(InitPlugin):
             return self._middleware
         return DefineMiddleware(OpenTelemetryInstrumentationMiddleware, config=self.config)
 
-    def on_app_init(self, app_config: AppConfig) -> AppConfig:
+    def on_app_init(self, app_config: "AppConfig") -> "AppConfig":
         app_config.middleware, _middleware = self._pop_otel_middleware(app_config.middleware)
         if self.config.after_exception_hook_handler:
             app_config.after_exception.append(self.config.after_exception_hook_handler)
         return app_config
 
     @staticmethod
-    def _pop_otel_middleware(middlewares: list[Middleware]) -> tuple[list[Middleware], DefineMiddleware | None]:
+    def _pop_otel_middleware(middlewares: "list[Middleware]") -> "tuple[list[Middleware], DefineMiddleware | None]":
         """Get the OpenTelemetry middleware if it is enabled in the application.
         Remove the middleware from the list of middlewares if it is found.
         """
