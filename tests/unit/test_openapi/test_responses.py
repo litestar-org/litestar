@@ -15,12 +15,14 @@ from litestar._openapi.datastructures import OpenAPIContext
 from litestar._openapi.responses import (
     ResponseFactory,
     create_error_responses,
+    create_responses_for_handler,
 )
 from litestar._openapi.schema_generation.plugins import openapi_schema_plugins
 from litestar.datastructures import Cookie, ResponseHeader
 from litestar.dto import AbstractDTO
 from litestar.exceptions import (
     HTTPException,
+    NotFoundException,
     PermissionDeniedException,
     ValidationException,
 )
@@ -160,6 +162,111 @@ def test_create_error_responses_with_non_http_status_code() -> None:
 
     assert house_not_found_exc_response[0] == str(HouseNotFoundError.status_code)
     assert house_not_found_exc_response[1].description == HouseNotFoundError.detail
+
+
+# ---------------------------------------------------------------------------
+# T5b — plugin_owned_status_codes pre-pass parameter
+# ---------------------------------------------------------------------------
+
+
+def _first_http_handler(handler: Any) -> HTTPRouteHandler:
+    """Register a handler on a throwaway app and return its concrete HTTPRouteHandler."""
+    app = Litestar(route_handlers=[handler])
+    for route in app.routes:
+        if isinstance(route, HTTPRoute):
+            return next(iter(route.route_handler_map.values()))
+    raise RuntimeError("no HTTPRoute registered for handler")
+
+
+def test_plugin_owned_status_codes_skips_default_emission(create_factory: CreateFactoryFixture) -> None:
+    """``plugin_owned_status_codes`` skips matching exceptions from default emission."""
+
+    @get("/items", sync_to_thread=False, raises=[NotFoundException])
+    def list_items() -> list[str]:
+        return []
+
+    handler = _first_http_handler(list_items)
+    responses = create_factory(handler).create_responses(
+        raises_validation_error=False, plugin_owned_status_codes={"404"}
+    )
+
+    assert responses is not None
+    assert "404" not in responses
+    assert str(handler.status_code) in responses
+
+
+def test_plugin_owned_status_codes_default_none_unchanged_behavior(
+    create_factory: CreateFactoryFixture,
+) -> None:
+    """Omitting the parameter preserves today's default emission behavior."""
+
+    @get("/items", sync_to_thread=False, raises=[NotFoundException])
+    def list_items() -> list[str]:
+        return []
+
+    handler = _first_http_handler(list_items)
+    responses = create_factory(handler).create_responses(raises_validation_error=False)
+
+    assert responses is not None
+    assert "404" in responses
+
+
+def test_plugin_owned_status_codes_partial_skip(create_factory: CreateFactoryFixture) -> None:
+    """Owned codes are skipped; unowned codes still get default emission."""
+
+    @get("/items", sync_to_thread=False, raises=[NotFoundException, PermissionDeniedException])
+    def list_items() -> list[str]:
+        return []
+
+    handler = _first_http_handler(list_items)
+    responses = create_factory(handler).create_responses(
+        raises_validation_error=False, plugin_owned_status_codes={"404"}
+    )
+
+    assert responses is not None
+    assert "404" not in responses
+    assert "403" in responses
+
+
+def test_plugin_owned_status_codes_skips_validation_error_when_owned(
+    create_factory: CreateFactoryFixture,
+) -> None:
+    """The synthesized ``ValidationException`` is also subject to the owned-codes filter."""
+
+    @post("/items", sync_to_thread=False)
+    def add_item(data: dict) -> dict:
+        return data
+
+    handler = _first_http_handler(add_item)
+    responses = create_factory(handler).create_responses(
+        raises_validation_error=True, plugin_owned_status_codes={str(ValidationException.status_code)}
+    )
+
+    assert responses is not None
+    assert str(ValidationException.status_code) not in responses
+
+
+def test_create_responses_for_handler_threads_plugin_owned_status_codes() -> None:
+    """The module-level ``create_responses_for_handler`` plumbs the parameter through to the factory."""
+
+    @get("/items", sync_to_thread=False, raises=[NotFoundException])
+    def list_items() -> list[str]:
+        return []
+
+    handler = _first_http_handler(list_items)
+    context = OpenAPIContext(
+        openapi_config=OpenAPIConfig(title="t", version="0.0.1"),
+        plugins=openapi_schema_plugins,
+    )
+
+    with_filter = create_responses_for_handler(
+        context, handler, raises_validation_error=False, plugin_owned_status_codes={"404"}
+    )
+    without_filter = create_responses_for_handler(context, handler, raises_validation_error=False)
+
+    assert with_filter is not None and without_filter is not None
+    assert "404" not in with_filter
+    assert "404" in without_filter
 
 
 def test_create_success_response_with_headers(create_factory: CreateFactoryFixture) -> None:

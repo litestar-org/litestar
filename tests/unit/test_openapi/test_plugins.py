@@ -3,6 +3,7 @@ import pytest
 from litestar import Litestar
 from litestar._openapi.plugin import merge_openapi_components
 from litestar.config.csrf import CSRFConfig
+from litestar.exceptions import ImproperlyConfiguredException
 from litestar.openapi.config import OpenAPIConfig
 from litestar.openapi.plugins import RapidocRenderPlugin, ScalarRenderPlugin, SwaggerRenderPlugin
 from litestar.openapi.spec import Components, OAuthFlow, OAuthFlows, OpenAPIType, Reference, Schema, SecurityScheme
@@ -149,7 +150,7 @@ def test_merge_openapi_components_empty_target_copies_source_dict() -> None:
     target = Components()
     source = Components(security_schemes={"bearer": _bearer_scheme()})
 
-    merge_openapi_components(target, source)
+    merge_openapi_components(target, source, source_label="BearerPlugin")
 
     assert source.security_schemes is not None
     assert target.security_schemes == {"bearer": source.security_schemes["bearer"]}
@@ -159,19 +160,34 @@ def test_merge_openapi_components_empty_target_copies_source_dict() -> None:
     assert "other" not in source.security_schemes
 
 
-def test_merge_openapi_components_populated_target_last_wins() -> None:
-    """Existing keys on the target are overwritten by the source on collision; non-colliding keys merge."""
+def test_merge_openapi_components_populated_target_disjoint_keys_merge() -> None:
+    """Non-colliding keys merge into the existing target dict."""
     target_bearer = _bearer_scheme()
-    source_bearer = SecurityScheme(type="http", scheme="bearer", bearer_format="OPAQUE")
     target = Components(security_schemes={"bearer": target_bearer, "session": _oauth_scheme()})
-    source = Components(security_schemes={"bearer": source_bearer, "api_key": _bearer_scheme()})
+    source = Components(security_schemes={"api_key": _bearer_scheme()})
 
-    merge_openapi_components(target, source)
+    merge_openapi_components(target, source, source_label="ApiKeyPlugin")
 
     assert target.security_schemes is not None
-    assert target.security_schemes["bearer"] is source_bearer  # last-wins on collision
-    assert "session" in target.security_schemes  # untouched key from target
-    assert "api_key" in target.security_schemes  # new key added from source
+    assert target.security_schemes["bearer"] is target_bearer
+    assert "session" in target.security_schemes
+    assert "api_key" in target.security_schemes
+
+
+def test_merge_openapi_components_collision_raises() -> None:
+    """A dict-key collision on a known field raises :class:`ImproperlyConfiguredException`."""
+    target = Components(security_schemes={"bearer": _bearer_scheme()})
+    source = Components(
+        security_schemes={"bearer": SecurityScheme(type="http", scheme="bearer", bearer_format="OPAQUE")},
+    )
+
+    with pytest.raises(ImproperlyConfiguredException) as exc_info:
+        merge_openapi_components(target, source, source_label="OverridePlugin")
+
+    message = str(exc_info.value)
+    assert "security_schemes" in message
+    assert "'bearer'" in message
+    assert "OverridePlugin" in message
 
 
 def test_merge_openapi_components_none_source_field_skipped() -> None:
@@ -180,7 +196,7 @@ def test_merge_openapi_components_none_source_field_skipped() -> None:
     target = Components(security_schemes={"bearer": bearer})
     source = Components()  # all dict fields default to None / empty
 
-    merge_openapi_components(target, source)
+    merge_openapi_components(target, source, source_label="EmptyPlugin")
 
     assert target.security_schemes == {"bearer": bearer}
     # Nothing else got initialized as a side effect.
@@ -194,14 +210,21 @@ def test_merge_openapi_components_none_source_field_skipped() -> None:
         ("schemas", {"Foo": Schema(title="Foo")}),
         ("security_schemes", {"bearer": _bearer_scheme()}),
         ("parameters", {"X": Reference(ref="#/x")}),
+        ("responses", {"NotFound": Reference(ref="#/components/responses/NotFound")}),
+        ("examples", {"sample": Reference(ref="#/components/examples/sample")}),
+        ("request_bodies", {"Body": Reference(ref="#/components/requestBodies/Body")}),
+        ("headers", {"X-Trace": Reference(ref="#/components/headers/X-Trace")}),
+        ("links", {"link": Reference(ref="#/components/links/link")}),
+        ("callbacks", {"cb": Reference(ref="#/components/callbacks/cb")}),
+        ("path_items", {"shared": Reference(ref="#/components/pathItems/shared")}),
     ],
 )
 def test_merge_openapi_components_per_field(field_name: str, value: dict) -> None:
-    """Every dict-valued :class:`Components` field is mergeable through the helper."""
+    """Every dict-valued :class:`Components` field in the explicit allowlist is mergeable."""
     target = Components()
     source = Components(**{field_name: value})
 
-    merge_openapi_components(target, source)
+    merge_openapi_components(target, source, source_label="Plugin")
 
     assert getattr(target, field_name) == value
 
@@ -226,8 +249,8 @@ def test_openapi_spec_plugin_contributed_components_appear_in_document() -> None
         assert components["securitySchemes"]["BearerJWT"]["type"] == "http"
 
 
-def test_openapi_spec_plugin_multiple_contributors_last_wins_on_collision() -> None:
-    """When two plugins contribute the same component key, the later registration wins."""
+def test_openapi_spec_plugin_collision_raises_at_build_time() -> None:
+    """Two plugins contributing the same component key raise at app build time."""
 
     class First(OpenAPISpecPlugin):
         def get_openapi_components(self) -> Components:
@@ -242,19 +265,17 @@ def test_openapi_spec_plugin_multiple_contributors_last_wins_on_collision() -> N
         openapi_config=OpenAPIConfig(title="t", version="0.0.1"),
     )
 
-    with TestClient(app=app) as client:
-        resp = client.get("/schema/openapi.json")
-        assert resp.status_code == 200
-        assert resp.json()["components"]["securitySchemes"]["shared"]["type"] == "oauth2"
+    with pytest.raises(ImproperlyConfiguredException) as exc_info:
+        app.openapi_schema
+
+    message = str(exc_info.value)
+    assert "security_schemes" in message
+    assert "'shared'" in message
+    assert "Second" in message
 
 
-def test_openapi_spec_plugin_components_layered_non_auth_contributions() -> None:
-    """Components layering with non-auth fragments: shared schemas + reusable parameters.
-
-    Two plugins contribute different :class:`Components` fields (``schemas`` from one,
-    ``parameters`` from another). Both end up merged into the served document. A third
-    contributor collides on a key already present and wins last.
-    """
+def test_openapi_spec_plugin_components_layered_disjoint_contributions() -> None:
+    """Components layering with non-auth fragments: shared schemas + reusable parameters merge cleanly."""
 
     class ProblemDetailsPlugin(OpenAPISpecPlugin):
         def get_openapi_components(self) -> Components:
@@ -266,12 +287,8 @@ def test_openapi_spec_plugin_components_layered_non_auth_contributions() -> None
                 parameters={"X-Request-Id": Reference(ref="#/components/parameters/X-Request-Id")},
             )
 
-    class ProblemDetailsOverridePlugin(OpenAPISpecPlugin):
-        def get_openapi_components(self) -> Components:
-            return Components(schemas={"ProblemDetails": Schema(title="ProblemDetails", description="overridden")})
-
     app = Litestar(
-        plugins=[ProblemDetailsPlugin(), TracingHeaderPlugin(), ProblemDetailsOverridePlugin()],
+        plugins=[ProblemDetailsPlugin(), TracingHeaderPlugin()],
         openapi_config=OpenAPIConfig(title="t", version="0.0.1"),
     )
 
@@ -280,10 +297,8 @@ def test_openapi_spec_plugin_components_layered_non_auth_contributions() -> None
         assert resp.status_code == 200
         components = resp.json()["components"]
 
-    # First plugin's schema is present, but the third plugin's collision overrode the value.
     assert components["schemas"]["ProblemDetails"] == {
         "title": "ProblemDetails",
-        "description": "overridden",
+        "type": "object",
     }
-    # Independent contributions from different plugins coexist.
     assert components["parameters"]["X-Request-Id"] == {"$ref": "#/components/parameters/X-Request-Id"}

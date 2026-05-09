@@ -126,9 +126,9 @@ def test_openapi_spec_plugin_in_public_namespaces() -> None:
 
 
 def test_openapi_spec_plugin_slots_are_minimal() -> None:
-    """``__slots__`` only declares the include/exclude filter attributes — no instance dict."""
-    assert OpenAPISpecPlugin.__slots__ == ("exclude", "include")
-    # Subclasses without __dict__ cannot grow ad-hoc attributes.
+    """``__slots__`` is empty — the base class is a marker; subclasses define their own state."""
+    assert OpenAPISpecPlugin.__slots__ == ()
+    # Subclasses without __dict__ or own __slots__ cannot grow ad-hoc attributes.
     plugin = OpenAPISpecPlugin()
     with pytest.raises(AttributeError):
         plugin.foo = 1  # type: ignore[attr-defined]
@@ -142,8 +142,8 @@ def test_openapi_spec_plugin_default_methods_return_none() -> None:
 
     plugin = Bare()
     assert plugin.get_openapi_components() is None
-    # The default ``get_openapi_security_requirements`` ignores its argument; pass ``None``.
-    assert plugin.get_openapi_security_requirements(None) is None  # type: ignore[arg-type]
+    # The default ``get_openapi_operation`` ignores its argument; pass ``None``.
+    assert plugin.get_openapi_operation(None) is None  # type: ignore[arg-type]
 
 
 def test_openapi_spec_plugin_subclass_isinstance() -> None:

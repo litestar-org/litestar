@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from dataclasses import fields
 from typing import TYPE_CHECKING, Any
 
 from litestar._openapi.datastructures import OpenAPIContext
@@ -28,15 +27,48 @@ if TYPE_CHECKING:
     from litestar.routes import BaseRoute
 
 
-def merge_openapi_components(target: Components, source: Components) -> None:
-    """Merge contributed OpenAPI components into a generated components object."""
-    for field in fields(source):
-        if source_value := getattr(source, field.name, None):
-            target_value = getattr(target, field.name, None)
-            if target_value is None:
-                setattr(target, field.name, dict(source_value))
-            else:
-                target_value.update(source_value)
+_COMPONENTS_DICT_FIELDS = (
+    "schemas",
+    "responses",
+    "parameters",
+    "examples",
+    "request_bodies",
+    "headers",
+    "security_schemes",
+    "links",
+    "callbacks",
+    "path_items",
+)
+
+
+def merge_openapi_components(target: Components, source: Components, *, source_label: str) -> None:
+    """Merge ``source`` into ``target`` over the known :class:`Components` dict fields.
+
+    Args:
+        target: The Components instance under construction (the generated document).
+        source: The Components fragment contributed by an
+            :class:`~litestar.plugins.OpenAPISpecPlugin`.
+        source_label: Identifier for the contributing plugin, used in collision messages.
+
+    Raises:
+        ImproperlyConfiguredException: A dict-key collision on any merged field. The
+            message names the field, the colliding key, and ``source_label``.
+    """
+    for field_name in _COMPONENTS_DICT_FIELDS:
+        source_value = getattr(source, field_name, None)
+        if not source_value:
+            continue
+        target_value = getattr(target, field_name, None)
+        if target_value is None:
+            setattr(target, field_name, dict(source_value))
+            continue
+        for key, value in source_value.items():
+            if key in target_value:
+                raise ImproperlyConfiguredException(
+                    f"OpenAPI components.{field_name}[{key!r}] is already defined; "
+                    f"plugin {source_label!r} cannot redefine it."
+                )
+            target_value[key] = value
 
 
 def handle_schema_path_not_found(path: str = "/") -> Response:
@@ -105,7 +137,11 @@ class OpenAPIPlugin(InitPlugin, ReceiveRoutePlugin):
         openapi.components.schemas = context.schema_registry.generate_components_schemas()
         for contributor in context.openapi_spec:
             if components := contributor.get_openapi_components():
-                merge_openapi_components(openapi.components, components)
+                merge_openapi_components(
+                    openapi.components,
+                    components,
+                    source_label=type(contributor).__name__,
+                )
         return openapi
 
     def provide_openapi(self) -> OpenAPI:

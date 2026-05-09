@@ -3,14 +3,12 @@
 from __future__ import annotations
 
 import abc
-import re
 from contextlib import contextmanager
 from typing import TYPE_CHECKING, Any, Protocol, TypeVar, Union, cast, runtime_checkable
 
 if TYPE_CHECKING:
-    from collections.abc import Iterable, Iterator, Sequence
+    from collections.abc import Iterator
     from inspect import Signature
-    from re import Pattern
 
     from click import Group
 
@@ -19,7 +17,7 @@ if TYPE_CHECKING:
     from litestar.config.app import AppConfig
     from litestar.dto import AbstractDTO
     from litestar.handlers.http_handlers import HTTPRouteHandler
-    from litestar.openapi.spec import Components, Reference, Schema, SecurityRequirement
+    from litestar.openapi.spec import Components, Operation, Reference, Schema
     from litestar.routes import BaseRoute
     from litestar.typing import FieldDefinition
 
@@ -281,75 +279,51 @@ class OpenAPISchemaPlugin(abc.ABC):
 
 
 class OpenAPISpecPlugin:
-    """Plugin hook for contributing OpenAPI document metadata after routes are resolved.
+    """Plugin hook for contributing OpenAPI document and operation fragments.
 
-    Subclasses override one or both of :meth:`get_openapi_components` (document-level) and
-    :meth:`get_openapi_security_requirements` (per-operation) to contribute fragments. Both
-    default to ``None`` so plugins are not forced to implement extension points they do not need.
+    Subclasses override one or both of :meth:`get_openapi_components` (document-level)
+    and :meth:`get_openapi_operation` (per-operation) to contribute fragments. Both
+    default to ``None`` so plugins are not forced to implement extension points they
+    do not need.
 
-    The optional ``include`` / ``exclude`` arguments offer a path-pattern filter for the
-    per-route hook: when set, :meth:`applies_to` rejects route handlers whose paths do not
-    match. Subclasses can also override :meth:`applies_to` for custom filtering (by tag,
-    ``opt`` key, HTTP method, etc.).
-
-    Args:
-        include: A regex pattern or sequence of patterns. When set, :meth:`applies_to`
-            returns ``True`` only for route handlers with at least one path matching the
-            pattern.
-        exclude: A regex pattern or sequence of patterns. When set, :meth:`applies_to`
-            returns ``False`` for route handlers with any path matching the pattern.
-            ``exclude`` takes precedence over ``include``.
+    Plugins are global. Per-route decisions are made by inspecting the ``route_handler``
+    argument passed to :meth:`get_openapi_operation` (e.g. ``route_handler.tags``,
+    ``route_handler.opt``, ``route_handler.paths``).
     """
 
-    __slots__ = ("exclude", "include")
-
-    def __init__(
-        self,
-        *,
-        include: str | Iterable[str] | None = None,
-        exclude: str | Iterable[str] | None = None,
-    ) -> None:
-        self.include = include
-        self.exclude = exclude
-
-    def applies_to(self, route_handler: HTTPRouteHandler) -> bool:
-        """Return ``True`` if this plugin should contribute for ``route_handler``.
-
-        The default implementation honors :attr:`include` and :attr:`exclude` path patterns.
-        Subclasses can override this method for custom filtering logic.
-        """
-        paths = route_handler.paths
-        if self.exclude and self._match_any(self.exclude, paths):
-            return False
-        if self.include and not self._match_any(self.include, paths):
-            return False
-        return True
-
-    @staticmethod
-    def _match_any(patterns: str | Iterable[str], paths: Iterable[str]) -> bool:
-        """Compile ``patterns`` and return ``True`` if any of ``paths`` matches."""
-        joined = patterns if isinstance(patterns, str) else "|".join(patterns)
-        compiled: Pattern[str] = re.compile(joined)
-        return any(compiled.search(path) for path in paths)
+    __slots__ = ()
 
     def get_openapi_components(self) -> Components | None:
         """Return OpenAPI components contributed by this plugin.
 
+        Called once per OpenAPI build. Populated fields are merged into the generated
+        document's :class:`~litestar.openapi.spec.Components` via
+        :func:`~litestar._openapi.plugin.merge_openapi_components`. Collisions on any
+        component dict key raise :class:`~litestar.exceptions.ImproperlyConfiguredException`.
+
         Returns:
-            Components to merge into the generated OpenAPI document, or ``None``.
+            A partial Components instance, or ``None``.
         """
         return None
 
-    def get_openapi_security_requirements(
-        self, route_handler: HTTPRouteHandler
-    ) -> Sequence[SecurityRequirement] | None:
-        """Return OpenAPI security requirements contributed for a route handler.
+    def get_openapi_operation(self, route_handler: HTTPRouteHandler) -> Operation | None:
+        """Return an OpenAPI Operation fragment to merge into ``route_handler``'s operation.
+
+        Called once per route handler per OpenAPI build. Populated fields on the returned
+        :class:`~litestar.openapi.spec.Operation` are merged into the operation Litestar
+        builds for ``route_handler`` via
+        :func:`~litestar._openapi.path_item.merge_openapi_operation`.
+
+        Plugins MUST only populate fields the helper merges. Fields owned by the route
+        handler (``operation_id``, ``summary``, ``description``, ``request_body``,
+        ``deprecated``, ``external_docs``) raise
+        :class:`~litestar.exceptions.ImproperlyConfiguredException` at merge time if set.
 
         Args:
-            route_handler: The resolved HTTP route handler being rendered into an OpenAPI operation.
+            route_handler: The resolved HTTP route handler being rendered.
 
         Returns:
-            Security requirements to append to the operation, or ``None``.
+            A partial Operation instance, or ``None``.
         """
         return None
 
