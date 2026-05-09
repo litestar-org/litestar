@@ -5,8 +5,8 @@ from typing import TYPE_CHECKING
 import pytest
 from minijinja import Environment
 
-from litestar.contrib.minijinja import MiniJinjaTemplateEngine
 from litestar.exceptions import ImproperlyConfiguredException, TemplateNotFoundException
+from litestar.plugins.minijinja import MiniJinjaTemplateEngine
 
 if TYPE_CHECKING:
     from pathlib import Path

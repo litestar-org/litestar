@@ -6,6 +6,24 @@
 .. changelog:: 3.0.0
     :date: 2364-01-27
 
+    .. change:: Deprecate ``litestar.contrib.minijinja`` in favor of ``litestar.plugins.minijinja``
+        :type: feature
+        :issue: 4718
+
+        Moved :class:`~litestar.plugins.minijinja.MiniJinjaTemplateEngine`
+        and the related ``StateProtocol`` /  ``MiniJinjaTemplate`` types
+        to their new canonical location ``litestar.plugins.minijinja``.
+        ``litestar.plugins.flash`` was updated to import its lazy
+        ``_transform_state`` dependency from the new location.
+
+        The old import path ``litestar.contrib.minijinja`` continues to
+        work via a runtime-compatible deprecation shim that emits a
+        :class:`DeprecationWarning` on attribute access. The shim
+        intentionally also forwards the private ``_transform_state``
+        helper, since external callers historically imported it from the
+        contrib path. The shim will be removed before 3.0.0 GA. Update
+        imports to ``from litestar.plugins.minijinja import …``.
+
     .. change:: Drop support for Pydantic 1
         :type: feature
         :breaking:

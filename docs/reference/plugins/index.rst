@@ -12,6 +12,7 @@ plugins
     attrs
     flash_messages
     htmx
+    minijinja
     problem_details
     prometheus
     pydantic
