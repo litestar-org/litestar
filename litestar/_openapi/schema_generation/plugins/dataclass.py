@@ -29,7 +29,6 @@ class DataclassSchemaPlugin(OpenAPISchemaPlugin):
                 if (
                     field.default is MISSING
                     and field.default_factory is MISSING
-                    and not is_optional_union(type_hints[field.name])
                 )
             ),
             property_fields={

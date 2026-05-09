@@ -45,7 +45,7 @@ class StructSchemaPlugin(OpenAPISchemaPlugin):
         required = [
             field.encode_name
             for field in struct_fields
-            if self._is_field_required(field=field) and not is_optional_union(type_hints[field.name])
+            if self._is_field_required(field=field)
         ]
 
         # Support tagged unions: https://jcristharif.com/msgspec/structs.html#tagged-unions
