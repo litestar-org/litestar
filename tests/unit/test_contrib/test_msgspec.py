@@ -8,9 +8,10 @@ from unittest.mock import ANY
 import pytest
 from msgspec import Meta, Struct, field
 
-from litestar import Litestar, post
-from litestar.dto import DTOField, Mark, MsgspecDTO, dto_field
+from litestar import Litestar, get, post
+from litestar.dto import DTOConfig, DTOField, Mark, MsgspecDTO, dto_field
 from litestar.dto.data_structures import DTOFieldDefinition
+from litestar.testing import create_test_client
 from litestar.typing import FieldDefinition
 
 if TYPE_CHECKING:
@@ -228,3 +229,56 @@ def test_msgspec_dto_with_classvar() -> None:
     # Only the regular field should be included, not the ClassVar
     assert len(field_defs) == 1
     assert field_defs[0].name == "regular_field"
+
+
+@pytest.mark.parametrize("use_experimental_dto_backend", [False, True])
+def test_msgspec_dto_tagged_union_tag_field_serialized(use_experimental_dto_backend: bool) -> None:
+    """Tag field must be present in DTO-serialized output for tagged Struct types.
+
+    Regression: MsgspecDTO.generate_field_definitions iterates over
+    msgspec.inspect.type_info(model).fields which does NOT include the synthetic
+    tag field, so the tag is silently dropped when the DTO builds its transfer model.
+    """
+
+    class Cat(Struct, tag=True):
+        name: str
+
+    class Dog(Struct, tag=True):
+        name: str
+
+    class CatDTO(MsgspecDTO[Cat]):
+        config = DTOConfig(experimental_codegen_backend=use_experimental_dto_backend)
+
+    @get("/cat", return_dto=CatDTO, signature_types=[Cat])
+    def handler() -> Cat:
+        return Cat(name="Whiskers")
+
+    with create_test_client([handler]) as client:
+        response = client.get("/cat")
+        assert response.status_code == 200
+        data = response.json()
+        # The tag field ("type") must be present and equal to the class name
+        assert data.get("type") == "Cat", f"Expected tag field 'type' = 'Cat' in response, got: {data!r}"
+        assert data.get("name") == "Whiskers"
+
+
+@pytest.mark.parametrize("use_experimental_dto_backend", [False, True])
+def test_msgspec_dto_tagged_union_custom_tag_field_serialized(use_experimental_dto_backend: bool) -> None:
+    """Custom tag_field and tag value must be present in DTO-serialized output."""
+
+    class Widget(Struct, tag_field="kind", tag="widget"):
+        value: int
+
+    class WidgetDTO(MsgspecDTO[Widget]):
+        config = DTOConfig(experimental_codegen_backend=use_experimental_dto_backend)
+
+    @get("/widget", return_dto=WidgetDTO, signature_types=[Widget])
+    def handler() -> Widget:
+        return Widget(value=42)
+
+    with create_test_client([handler]) as client:
+        response = client.get("/widget")
+        assert response.status_code == 200
+        data = response.json()
+        assert data.get("kind") == "widget", f"Expected tag field 'kind' = 'widget' in response, got: {data!r}"
+        assert data.get("value") == 42
