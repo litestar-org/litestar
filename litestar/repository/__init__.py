@@ -11,7 +11,7 @@ __all__ = (
     "RepositoryError",
 )
 
-_ALTERNATIVES = {  # noqa: RUF067
+_ALTERNATIVES = {
     "AbstractAsyncRepository": "advanced_alchemy.repository.SQLAlchemyAsyncRepository",
     "AbstractSyncRepository": "advanced_alchemy.repository.SQLAlchemySyncRepository",
     "ConflictError": "advanced_alchemy.exceptions.IntegrityError",
@@ -49,7 +49,7 @@ def __getattr__(attr_name: str) -> object:
             try:
                 from advanced_alchemy.filters import FilterTypes
             except ImportError:  # pragma: no cover
-                from litestar.repository._filters import FilterTypes  # type: ignore[assignment]
+                from litestar.repository._filters import FilterTypes
 
             value = FilterTypes
         else:  # pragma: no cover
