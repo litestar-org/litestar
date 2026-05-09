@@ -201,11 +201,9 @@ class WebsocketListenerRouteHandler(WebsocketRouteHandler):
             connection_lifespan or self.default_connection_lifespan
         )
 
-        if self.on_accept:
-            listener_dependencies["on_accept_dependencies"] = create_stub_dependency(self.on_accept)
+        listener_dependencies["on_accept_dependencies"] = create_stub_dependency(self.on_accept)
 
-        if self.on_disconnect:
-            listener_dependencies["on_disconnect_dependencies"] = create_stub_dependency(self.on_disconnect)
+        listener_dependencies["on_disconnect_dependencies"] = create_stub_dependency(self.on_disconnect)
 
         super().__init__(
             fn=fn,
@@ -362,8 +360,8 @@ class WebsocketListener(ABC):
     """
 
     def to_handler(self) -> WebsocketListenerRouteHandler:
-        on_accept = self.on_accept if self.on_accept != WebsocketListener.on_accept else None
-        on_disconnect = self.on_disconnect if self.on_disconnect != WebsocketListener.on_disconnect else None
+        on_accept = self.on_accept if type(self).on_accept != WebsocketListener.on_accept else None
+        on_disconnect = self.on_disconnect if type(self).on_disconnect != WebsocketListener.on_disconnect else None
 
         return WebsocketListenerRouteHandler(
             dependencies=self.dependencies,

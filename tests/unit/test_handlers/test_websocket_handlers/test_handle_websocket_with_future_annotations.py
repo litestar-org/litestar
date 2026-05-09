@@ -13,9 +13,7 @@ def test_handle_websocket() -> None:
         await socket.send_json({"data": "123"})
         await socket.close()
 
-    client = create_test_client(route_handlers=simple_websocket_handler)
-
-    with client.websocket_connect("/") as ws:
+    with create_test_client(route_handlers=simple_websocket_handler) as client, client.websocket_connect("/") as ws:
         ws.send_json({"data": "123"})
         data = ws.receive_json()
         assert data

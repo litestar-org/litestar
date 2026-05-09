@@ -85,6 +85,7 @@ class AsyncTestClient(AsyncClient, Generic[T]):
             self._session_backend = session_config._backend_class(config=session_config)
 
         self.exit_stack = contextlib.AsyncExitStack()
+        self._initialized = False
 
         super().__init__(
             base_url=base_url,
@@ -98,7 +99,6 @@ class AsyncTestClient(AsyncClient, Generic[T]):
             ),
             timeout=timeout,
         )
-        # warn on usafe if client not initialized
 
     async def __aenter__(self) -> Self:
         self._tg = await self.exit_stack.enter_async_context(anyio.create_task_group())
@@ -106,6 +106,7 @@ class AsyncTestClient(AsyncClient, Generic[T]):
         await self.exit_stack.enter_async_context(lifespan_handler)
         await super().__aenter__()
         self.exit_stack.push_async_exit(super().__aexit__)
+        self._initialized = True
 
         return self
 
@@ -117,6 +118,7 @@ class AsyncTestClient(AsyncClient, Generic[T]):
     ) -> None:
         try:
             await self.exit_stack.__aexit__(exc_type, exc_value, traceback)
+            self._initialized = False
         except Exception as exc:
             exc = _collapse_exception_groups(exc)
             raise exc
