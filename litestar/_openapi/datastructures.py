@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import re
 from collections import defaultdict
-from typing import TYPE_CHECKING, _GenericAlias  # type: ignore[attr-defined]
+from typing import TYPE_CHECKING, Any, _GenericAlias  # type: ignore[attr-defined]
 
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.openapi.spec import Reference, Schema
@@ -229,11 +229,13 @@ class OpenAPIContext:
         self,
         openapi_config: OpenAPIConfig,
         plugins: Sequence[OpenAPISchemaPlugin],
+        middleware: Sequence[Any] | None = None,
     ) -> None:
         self.openapi_config = openapi_config
         self.plugins = plugins
         self.operation_ids: set[str] = set()
         self.schema_registry = SchemaRegistry()
+        self.middleware = middleware or []
 
     def add_operation_id(self, operation_id: str) -> None:
         """Add an operation ID to the context.

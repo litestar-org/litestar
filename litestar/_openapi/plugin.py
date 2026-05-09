@@ -76,7 +76,9 @@ class OpenAPIPlugin(InitPlugin, ReceiveRoutePlugin):
             ExampleFactory.seed_random(openapi_config.random_seed)
 
         openapi = openapi_config.to_openapi_schema()
-        context = OpenAPIContext(openapi_config=openapi_config, plugins=self.app.plugins.openapi)
+        context = OpenAPIContext(
+            openapi_config=openapi_config, plugins=self.app.plugins.openapi, middleware=self.app.middleware
+        )
         path_items: dict[str, PathItem] = {}
         for route in self.included_routes.values():
             path = route.path_format or "/"

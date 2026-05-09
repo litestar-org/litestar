@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import dataclasses
 from inspect import cleandoc
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from litestar._openapi.parameters import create_parameters_for_handler
 from litestar._openapi.request_body import create_request_body
@@ -20,6 +20,28 @@ if TYPE_CHECKING:
     from litestar.routes import HTTPRoute
 
 __all__ = ("create_path_item_for_route", "merge_path_item_operations")
+
+
+def _get_security_exclude_opt_keys(middleware: list[Any]) -> set[str]:
+    """Extract all exclude_opt_key values from security middleware configs.
+
+    Args:
+        middleware: List of middleware configurations.
+
+    Returns:
+        A set of exclude_opt_key strings.
+    """
+    exclude_keys: set[str] = set()
+
+    for mw in middleware:
+        # DefineMiddleware stores kwargs including the config
+        if hasattr(mw, "kwargs") and "config" in mw.kwargs:
+            config = mw.kwargs["config"]
+            # Check if this is a security config with exclude_opt_key
+            if hasattr(config, "exclude_opt_key") and config.exclude_opt_key:
+                exclude_keys.add(config.exclude_opt_key)
+
+    return exclude_keys
 
 
 class PathItemFactory:
@@ -73,8 +95,13 @@ class PathItemFactory:
             self.context, route_handler, raises_validation_error=raises_validation_error
         )
 
+        # Check if the handler is excluded from security via any configured exclude_opt_key.
+        # Security middlewares can configure custom opt keys, so we need to check all of them.
+        exclude_opt_keys = _get_security_exclude_opt_keys(self.context.middleware)
+        is_excluded_from_auth = any(route_handler.opt.get(key) for key in exclude_opt_keys)
+
         security: list[SecurityRequirement] | None
-        if route_handler.opt.get("exclude_from_auth"):
+        if is_excluded_from_auth:
             # If the handler is excluded from auth, explicitly set security
             # to an empty list. Per OpenAPI 3.1, this overrides root-level
             # security and marks the operation as unsecured.
