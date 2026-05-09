@@ -93,7 +93,7 @@ def test_unknown_attribute_raises_attribute_error() -> None:
     with warnings.catch_warnings():
         warnings.simplefilter("ignore", DeprecationWarning)
         try:
-            _ = shim.NonexistentSymbol  # type: ignore[attr-defined]
+            _ = shim.NonexistentSymbol
         except AttributeError as exc:
             assert "NonexistentSymbol" in str(exc)
         else:
