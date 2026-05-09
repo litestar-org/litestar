@@ -194,7 +194,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2"><a class="reference internal" href="../../usage/lifecycle-hooks.html">Life Cycle Hooks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../usage/logging.html">Request logging</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../usage/metrics/index.html">Metrics</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../usage/metrics/open-telemetry.html">OpenTelemetry</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../usage/metrics/opentelemetry.html">OpenTelemetry</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../usage/metrics/prometheus.html">Prometheus</a></li>
 </ul>
 </li>
@@ -266,7 +266,6 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2"><a class="reference internal" href="../../reference/contrib/index.html">contrib</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/contrib/jinja.html">jinja</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/contrib/mako.html">mako</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../reference/contrib/opentelemetry.html">opentelemetry</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/controller.html">controller</a></li>
@@ -320,6 +319,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/attrs.html">attrs</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/flash_messages.html">flash</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/htmx.html">htmx</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/opentelemetry.html">opentelemetry</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/problem_details.html">problem details</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/prometheus.html">prometheus</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/pydantic.html">pydantic</a></li>
@@ -567,12 +567,12 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="62">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.config.compression</span><span class="w"> </span><span class="kn">import</span> <span class="n">CompressionConfig</span>
 </span><span data-line="63">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.config.cors</span><span class="w"> </span><span class="kn">import</span> <span class="n">CORSConfig</span>
 </span><span data-line="64">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.config.csrf</span><span class="w"> </span><span class="kn">import</span> <span class="n">CSRFConfig</span>
-</span><span data-line="65">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.contrib.opentelemetry</span><span class="w"> </span><span class="kn">import</span> <span class="n">OpenTelemetryPlugin</span>
-</span><span data-line="66">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.datastructures</span><span class="w"> </span><span class="kn">import</span> <span class="n">CacheControlHeader</span><span class="p">,</span> <span class="n">ETag</span>
-</span><span data-line="67">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.dto</span><span class="w"> </span><span class="kn">import</span> <span class="n">AbstractDTO</span>
-</span><span data-line="68">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.events.listener</span><span class="w"> </span><span class="kn">import</span> <span class="n">EventListener</span>
-</span><span data-line="69">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.openapi.spec</span><span class="w"> </span><span class="kn">import</span> <span class="n">SecurityRequirement</span>
-</span><span data-line="70">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.openapi.spec.open_api</span><span class="w"> </span><span class="kn">import</span> <span class="n">OpenAPI</span>
+</span><span data-line="65">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.datastructures</span><span class="w"> </span><span class="kn">import</span> <span class="n">CacheControlHeader</span><span class="p">,</span> <span class="n">ETag</span>
+</span><span data-line="66">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.dto</span><span class="w"> </span><span class="kn">import</span> <span class="n">AbstractDTO</span>
+</span><span data-line="67">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.events.listener</span><span class="w"> </span><span class="kn">import</span> <span class="n">EventListener</span>
+</span><span data-line="68">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.openapi.spec</span><span class="w"> </span><span class="kn">import</span> <span class="n">SecurityRequirement</span>
+</span><span data-line="69">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.openapi.spec.open_api</span><span class="w"> </span><span class="kn">import</span> <span class="n">OpenAPI</span>
+</span><span data-line="70">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.plugins.opentelemetry</span><span class="w"> </span><span class="kn">import</span> <span class="n">OpenTelemetryPlugin</span>
 </span><span data-line="71">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.response</span><span class="w"> </span><span class="kn">import</span> <span class="n">Response</span>
 </span><span data-line="72">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.stores.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">Store</span>
 </span><span data-line="73">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.types</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
@@ -1006,7 +1006,7 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="493">        <span class="c1"># workaround to support otel middleware priority. Should be replaced by regular</span>
 </span><span data-line="494">        <span class="c1"># middleware priorities once available</span>
 </span><span data-line="495">        <span class="k">try</span><span class="p">:</span>
-</span><span data-line="496">            <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.contrib.opentelemetry</span><span class="w"> </span><span class="kn">import</span> <span class="n">OpenTelemetryPlugin</span>
+</span><span data-line="496">            <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.plugins.opentelemetry</span><span class="w"> </span><span class="kn">import</span> <span class="n">OpenTelemetryPlugin</span>
 </span><span data-line="497">
 </span><span data-line="498">            <span class="k">if</span> <span class="ow">not</span> <span class="nb">any</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">OpenTelemetryPlugin</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">config</span><span class="o">.</span><span class="n">plugins</span><span class="p">):</span>
 </span><span data-line="499">                <span class="n">config</span><span class="o">.</span><span class="n">middleware</span><span class="p">,</span> <span class="n">otel_middleware</span> <span class="o">=</span> <span class="n">OpenTelemetryPlugin</span><span class="o">.</span><span class="n">_pop_otel_middleware</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">middleware</span><span class="p">)</span>

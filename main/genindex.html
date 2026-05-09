@@ -772,12 +772,6 @@ data-aria-dark="Switch to auto color mode">
 </li>
         <li><a href="reference/contrib/mako.html#litestar.contrib.mako.MakoTemplateEngine.__init__">(litestar.contrib.mako.MakoTemplateEngine method)</a>
 </li>
-        <li><a href="reference/contrib/opentelemetry.html#litestar.contrib.opentelemetry.OpenTelemetryConfig.__init__">(litestar.contrib.opentelemetry.OpenTelemetryConfig method)</a>
-</li>
-        <li><a href="reference/contrib/opentelemetry.html#litestar.contrib.opentelemetry.OpenTelemetryInstrumentationMiddleware.__init__">(litestar.contrib.opentelemetry.OpenTelemetryInstrumentationMiddleware method)</a>
-</li>
-        <li><a href="reference/contrib/opentelemetry.html#litestar.contrib.opentelemetry.OpenTelemetryPlugin.__init__">(litestar.contrib.opentelemetry.OpenTelemetryPlugin method)</a>
-</li>
         <li><a href="reference/controller.html#litestar.controller.Controller.__init__">(litestar.controller.Controller method)</a>
 </li>
         <li><a href="reference/data_extractors.html#litestar.data_extractors.ConnectionDataExtractor.__init__">(litestar.data_extractors.ConnectionDataExtractor method)</a>
@@ -1025,6 +1019,14 @@ data-aria-dark="Switch to auto color mode">
         <li><a href="reference/plugins/htmx.html#litestar.plugins.htmx.TriggerEvent.__init__">(litestar.plugins.htmx.TriggerEvent method)</a>
 </li>
         <li><a href="reference/plugins/index.html#litestar.plugins.InitPluginProtocol.__init__">(litestar.plugins.InitPluginProtocol method)</a>
+</li>
+        <li><a href="reference/plugins/opentelemetry.html#litestar.plugins.opentelemetry.config.OpenTelemetryConfig.__init__">(litestar.plugins.opentelemetry.config.OpenTelemetryConfig method)</a>
+</li>
+        <li><a href="reference/plugins/opentelemetry.html#litestar.plugins.opentelemetry.OpenTelemetryConfig.__init__">(litestar.plugins.opentelemetry.OpenTelemetryConfig method)</a>
+</li>
+        <li><a href="reference/plugins/opentelemetry.html#litestar.plugins.opentelemetry.OpenTelemetryInstrumentationMiddleware.__init__">(litestar.plugins.opentelemetry.OpenTelemetryInstrumentationMiddleware method)</a>
+</li>
+        <li><a href="reference/plugins/opentelemetry.html#litestar.plugins.opentelemetry.OpenTelemetryPlugin.__init__">(litestar.plugins.opentelemetry.OpenTelemetryPlugin method)</a>
 </li>
         <li><a href="reference/plugins/problem_details.html#litestar.plugins.problem_details.ProblemDetailsConfig.__init__">(litestar.plugins.problem_details.ProblemDetailsConfig method)</a>
 </li>
@@ -1315,8 +1317,12 @@ data-aria-dark="Switch to auto color mode">
         <li><a href="reference/testing.html#litestar.testing.create_test_client.params.after_exception">(litestar.testing.create_test_client parameter)</a>
 </li>
       </ul></li>
-      <li><a href="reference/contrib/opentelemetry.html#litestar.contrib.opentelemetry.OpenTelemetryConfig.after_exception_hook_handler">after_exception_hook_handler (litestar.contrib.opentelemetry.OpenTelemetryConfig attribute)</a>
+      <li><a href="reference/plugins/opentelemetry.html#litestar.plugins.opentelemetry.config.OpenTelemetryConfig.after_exception_hook_handler">after_exception_hook_handler (litestar.plugins.opentelemetry.config.OpenTelemetryConfig attribute)</a>
+
+      <ul>
+        <li><a href="reference/plugins/opentelemetry.html#litestar.plugins.opentelemetry.OpenTelemetryConfig.after_exception_hook_handler">(litestar.plugins.opentelemetry.OpenTelemetryConfig attribute)</a>
 </li>
+      </ul></li>
       <li><a href="reference/app.html#litestar.app.Litestar.params.after_request">after_request (litestar.app.Litestar parameter)</a>
 
       <ul>
@@ -1478,8 +1484,6 @@ data-aria-dark="Switch to auto color mode">
       <li><a href="reference/connection.html#litestar.connection.ASGIConnection.app">app (litestar.connection.ASGIConnection property)</a>
 
       <ul>
-        <li><a href="reference/contrib/opentelemetry.html#litestar.contrib.opentelemetry.OpenTelemetryInstrumentationMiddleware.params.app">(litestar.contrib.opentelemetry.OpenTelemetryInstrumentationMiddleware parameter)</a>
-</li>
         <li><a href="reference/handlers.html#litestar.handlers.ASGIRouteHandler.on_registration.params.app">(litestar.handlers.ASGIRouteHandler.on_registration parameter)</a>
 </li>
         <li><a href="reference/handlers.html#litestar.handlers.BaseRouteHandler.on_registration.params.app">(litestar.handlers.BaseRouteHandler.on_registration parameter)</a>
@@ -1508,6 +1512,8 @@ data-aria-dark="Switch to auto color mode">
 </li>
         <li><a href="reference/middleware/session/base.html#litestar.middleware.session.base.SessionMiddleware.params.app">(litestar.middleware.session.base.SessionMiddleware parameter)</a>
 </li>
+        <li><a href="reference/plugins/opentelemetry.html#litestar.plugins.opentelemetry.OpenTelemetryInstrumentationMiddleware.params.app">(litestar.plugins.opentelemetry.OpenTelemetryInstrumentationMiddleware parameter)</a>
+</li>
         <li><a href="reference/plugins/prometheus.html#litestar.plugins.prometheus.PrometheusMiddleware.params.app">(litestar.plugins.prometheus.PrometheusMiddleware parameter)</a>
 </li>
         <li><a href="reference/security/jwt.html#litestar.security.jwt.JWTAuthenticationMiddleware.params.app">(litestar.security.jwt.JWTAuthenticationMiddleware parameter)</a>
@@ -1529,16 +1535,16 @@ data-aria-dark="Switch to auto color mode">
         <li><a href="reference/testing.html#litestar.testing.TestClient.params.app">(litestar.testing.TestClient parameter)</a>
 </li>
       </ul></li>
-      <li><a href="reference/contrib/opentelemetry.html#litestar.contrib.opentelemetry.OpenTelemetryPlugin.on_app_init.params.app_config">app_config (litestar.contrib.opentelemetry.OpenTelemetryPlugin.on_app_init parameter)</a>
+      <li><a href="reference/plugins/flash_messages.html#litestar.plugins.flash.FlashPlugin.on_app_init.params.app_config">app_config (litestar.plugins.flash.FlashPlugin.on_app_init parameter)</a>
 
       <ul>
-        <li><a href="reference/plugins/flash_messages.html#litestar.plugins.flash.FlashPlugin.on_app_init.params.app_config">(litestar.plugins.flash.FlashPlugin.on_app_init parameter)</a>
-</li>
         <li><a href="reference/plugins/htmx.html#litestar.plugins.htmx.HTMXPlugin.on_app_init.params.app_config">(litestar.plugins.htmx.HTMXPlugin.on_app_init parameter)</a>
 </li>
         <li><a href="reference/plugins/index.html#litestar.plugins.InitPlugin.on_app_init.params.app_config">(litestar.plugins.InitPlugin.on_app_init parameter)</a>
 </li>
         <li><a href="reference/plugins/index.html#litestar.plugins.InitPluginProtocol.on_app_init.params.app_config">(litestar.plugins.InitPluginProtocol.on_app_init parameter)</a>
+</li>
+        <li><a href="reference/plugins/opentelemetry.html#litestar.plugins.opentelemetry.OpenTelemetryPlugin.on_app_init.params.app_config">(litestar.plugins.opentelemetry.OpenTelemetryPlugin.on_app_init parameter)</a>
 </li>
         <li><a href="reference/plugins/problem_details.html#litestar.plugins.problem_details.ProblemDetailsPlugin.on_app_init.params.app_config">(litestar.plugins.problem_details.ProblemDetailsPlugin.on_app_init parameter)</a>
 </li>
@@ -2123,10 +2129,18 @@ data-aria-dark="Switch to auto color mode">
 </li>
       <li><a href="reference/openapi/spec.html#litestar.openapi.spec.OAuthFlows.client_credentials">client_credentials (litestar.openapi.spec.OAuthFlows attribute)</a>
 </li>
-      <li><a href="reference/contrib/opentelemetry.html#litestar.contrib.opentelemetry.OpenTelemetryConfig.client_request_hook_handler">client_request_hook_handler (litestar.contrib.opentelemetry.OpenTelemetryConfig attribute)</a>
+      <li><a href="reference/plugins/opentelemetry.html#litestar.plugins.opentelemetry.config.OpenTelemetryConfig.client_request_hook_handler">client_request_hook_handler (litestar.plugins.opentelemetry.config.OpenTelemetryConfig attribute)</a>
+
+      <ul>
+        <li><a href="reference/plugins/opentelemetry.html#litestar.plugins.opentelemetry.OpenTelemetryConfig.client_request_hook_handler">(litestar.plugins.opentelemetry.OpenTelemetryConfig attribute)</a>
 </li>
-      <li><a href="reference/contrib/opentelemetry.html#litestar.contrib.opentelemetry.OpenTelemetryConfig.client_response_hook_handler">client_response_hook_handler (litestar.contrib.opentelemetry.OpenTelemetryConfig attribute)</a>
+      </ul></li>
+      <li><a href="reference/plugins/opentelemetry.html#litestar.plugins.opentelemetry.config.OpenTelemetryConfig.client_response_hook_handler">client_response_hook_handler (litestar.plugins.opentelemetry.config.OpenTelemetryConfig attribute)</a>
+
+      <ul>
+        <li><a href="reference/plugins/opentelemetry.html#litestar.plugins.opentelemetry.OpenTelemetryConfig.client_response_hook_handler">(litestar.plugins.opentelemetry.OpenTelemetryConfig attribute)</a>
 </li>
+      </ul></li>
       <li><a href="reference/exceptions.html#litestar.exceptions.ClientException">ClientException</a>
 </li>
       <li><a href="reference/plugins/htmx.html#litestar.plugins.htmx.ClientRedirect">ClientRedirect (class in litestar.plugins.htmx)</a>
@@ -2216,8 +2230,6 @@ data-aria-dark="Switch to auto color mode">
       <li><a href="reference/app.html#litestar.app.Litestar.from_config.params.config">config (litestar.app.Litestar.from_config parameter)</a>
 
       <ul>
-        <li><a href="reference/contrib/opentelemetry.html#litestar.contrib.opentelemetry.OpenTelemetryInstrumentationMiddleware.params.config">(litestar.contrib.opentelemetry.OpenTelemetryInstrumentationMiddleware parameter)</a>
-</li>
         <li><a href="reference/dto/base_dto.html#litestar.dto.base_dto.AbstractDTO.config">(litestar.dto.base_dto.AbstractDTO attribute)</a>
 </li>
         <li><a href="reference/middleware/allowed_hosts.html#litestar.middleware.allowed_hosts.AllowedHostsMiddleware.params.config">(litestar.middleware.allowed_hosts.AllowedHostsMiddleware parameter)</a>
@@ -2239,6 +2251,8 @@ data-aria-dark="Switch to auto color mode">
         <li><a href="reference/plugins/flash_messages.html#litestar.plugins.flash.FlashPlugin.params.config">(litestar.plugins.flash.FlashPlugin parameter)</a>
 </li>
         <li><a href="reference/plugins/htmx.html#litestar.plugins.htmx.HTMXPlugin.params.config">(litestar.plugins.htmx.HTMXPlugin parameter)</a>
+</li>
+        <li><a href="reference/plugins/opentelemetry.html#litestar.plugins.opentelemetry.OpenTelemetryInstrumentationMiddleware.params.config">(litestar.plugins.opentelemetry.OpenTelemetryInstrumentationMiddleware parameter)</a>
 </li>
         <li><a href="reference/plugins/prometheus.html#litestar.plugins.prometheus.PrometheusMiddleware.params.config">(litestar.plugins.prometheus.PrometheusMiddleware parameter)</a>
 </li>
@@ -2331,10 +2345,10 @@ data-aria-dark="Switch to auto color mode">
       </ul></li>
       <li><a href="reference/middleware/constraints.html#litestar.middleware.constraints.ConstraintViolationError">ConstraintViolationError</a>
 </li>
-      <li><a href="reference/openapi/spec.html#litestar.openapi.spec.Contact">Contact (class in litestar.openapi.spec)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="reference/openapi/spec.html#litestar.openapi.spec.Contact">Contact (class in litestar.openapi.spec)</a>
+</li>
       <li><a href="reference/openapi/openapi.html#litestar.openapi.OpenAPIConfig.contact">contact (litestar.openapi.OpenAPIConfig attribute)</a>
 
       <ul>
@@ -3625,20 +3639,18 @@ data-aria-dark="Switch to auto color mode">
 </li>
       <li><a href="reference/types.html#litestar.types.ExceptionHandler">ExceptionHandler (in module litestar.types)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/types.html#litestar.types.ExceptionHandlersMap">ExceptionHandlersMap (in module litestar.types)</a>
 </li>
       <li><a href="reference/exceptions.html#litestar.exceptions.responses.ExceptionResponseContent">ExceptionResponseContent (class in litestar.exceptions.responses)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/config.html#litestar.config.allowed_hosts.AllowedHostsConfig.exclude">exclude (litestar.config.allowed_hosts.AllowedHostsConfig attribute)</a>
 
       <ul>
         <li><a href="reference/config.html#litestar.config.compression.CompressionConfig.exclude">(litestar.config.compression.CompressionConfig attribute)</a>
 </li>
         <li><a href="reference/config.html#litestar.config.csrf.CSRFConfig.exclude">(litestar.config.csrf.CSRFConfig attribute)</a>
-</li>
-        <li><a href="reference/contrib/opentelemetry.html#litestar.contrib.opentelemetry.OpenTelemetryConfig.exclude">(litestar.contrib.opentelemetry.OpenTelemetryConfig attribute)</a>
 </li>
         <li><a href="reference/dto/config.html#litestar.dto.config.DTOConfig.exclude">(litestar.dto.config.DTOConfig attribute)</a>
 </li>
@@ -3655,6 +3667,10 @@ data-aria-dark="Switch to auto color mode">
         <li><a href="reference/middleware/session/client_side.html#litestar.middleware.session.client_side.CookieBackendConfig.exclude">(litestar.middleware.session.client_side.CookieBackendConfig attribute)</a>
 </li>
         <li><a href="reference/middleware/session/server_side.html#litestar.middleware.session.server_side.ServerSideSessionConfig.exclude">(litestar.middleware.session.server_side.ServerSideSessionConfig attribute)</a>
+</li>
+        <li><a href="reference/plugins/opentelemetry.html#litestar.plugins.opentelemetry.config.OpenTelemetryConfig.exclude">(litestar.plugins.opentelemetry.config.OpenTelemetryConfig attribute)</a>
+</li>
+        <li><a href="reference/plugins/opentelemetry.html#litestar.plugins.opentelemetry.OpenTelemetryConfig.exclude">(litestar.plugins.opentelemetry.OpenTelemetryConfig attribute)</a>
 </li>
         <li><a href="reference/plugins/prometheus.html#litestar.plugins.prometheus.PrometheusConfig.exclude">(litestar.plugins.prometheus.PrometheusConfig attribute)</a>
 </li>
@@ -3718,8 +3734,6 @@ data-aria-dark="Switch to auto color mode">
       <ul>
         <li><a href="reference/config.html#litestar.config.compression.CompressionConfig.exclude_opt_key">(litestar.config.compression.CompressionConfig attribute)</a>
 </li>
-        <li><a href="reference/contrib/opentelemetry.html#litestar.contrib.opentelemetry.OpenTelemetryConfig.exclude_opt_key">(litestar.contrib.opentelemetry.OpenTelemetryConfig attribute)</a>
-</li>
         <li><a href="reference/middleware/index.html#litestar.middleware.AbstractMiddleware.params.exclude_opt_key">(litestar.middleware.AbstractMiddleware parameter)</a>
 </li>
         <li><a href="reference/middleware/index.html#litestar.middleware.ASGIMiddleware.exclude_opt_key">(litestar.middleware.ASGIMiddleware attribute)</a>
@@ -3731,6 +3745,10 @@ data-aria-dark="Switch to auto color mode">
         <li><a href="reference/middleware/session/client_side.html#litestar.middleware.session.client_side.CookieBackendConfig.exclude_opt_key">(litestar.middleware.session.client_side.CookieBackendConfig attribute)</a>
 </li>
         <li><a href="reference/middleware/session/server_side.html#litestar.middleware.session.server_side.ServerSideSessionConfig.exclude_opt_key">(litestar.middleware.session.server_side.ServerSideSessionConfig attribute)</a>
+</li>
+        <li><a href="reference/plugins/opentelemetry.html#litestar.plugins.opentelemetry.config.OpenTelemetryConfig.exclude_opt_key">(litestar.plugins.opentelemetry.config.OpenTelemetryConfig attribute)</a>
+</li>
+        <li><a href="reference/plugins/opentelemetry.html#litestar.plugins.opentelemetry.OpenTelemetryConfig.exclude_opt_key">(litestar.plugins.opentelemetry.OpenTelemetryConfig attribute)</a>
 </li>
         <li><a href="reference/plugins/prometheus.html#litestar.plugins.prometheus.PrometheusConfig.exclude_opt_key">(litestar.plugins.prometheus.PrometheusConfig attribute)</a>
 </li>
@@ -3753,8 +3771,12 @@ data-aria-dark="Switch to auto color mode">
       </ul></li>
       <li><a href="reference/middleware/index.html#litestar.middleware.ASGIMiddleware.exclude_path_pattern">exclude_path_pattern (litestar.middleware.ASGIMiddleware attribute)</a>
 </li>
-      <li><a href="reference/contrib/opentelemetry.html#litestar.contrib.opentelemetry.OpenTelemetryConfig.exclude_spans">exclude_spans (litestar.contrib.opentelemetry.OpenTelemetryConfig attribute)</a>
+      <li><a href="reference/plugins/opentelemetry.html#litestar.plugins.opentelemetry.config.OpenTelemetryConfig.exclude_spans">exclude_spans (litestar.plugins.opentelemetry.config.OpenTelemetryConfig attribute)</a>
+
+      <ul>
+        <li><a href="reference/plugins/opentelemetry.html#litestar.plugins.opentelemetry.OpenTelemetryConfig.exclude_spans">(litestar.plugins.opentelemetry.OpenTelemetryConfig attribute)</a>
 </li>
+      </ul></li>
       <li><a href="reference/plugins/prometheus.html#litestar.plugins.prometheus.PrometheusConfig.exclude_unhandled_paths">exclude_unhandled_paths (litestar.plugins.prometheus.PrometheusConfig attribute)</a>
 </li>
       <li><a href="reference/plugins/pydantic.html#litestar.plugins.pydantic.PydanticInitPlugin.params.exclude_unset">exclude_unset (litestar.plugins.pydantic.PydanticInitPlugin parameter)</a>
@@ -3763,8 +3785,12 @@ data-aria-dark="Switch to auto color mode">
         <li><a href="reference/plugins/pydantic.html#litestar.plugins.pydantic.PydanticPlugin.params.exclude_unset">(litestar.plugins.pydantic.PydanticPlugin parameter)</a>
 </li>
       </ul></li>
-      <li><a href="reference/contrib/opentelemetry.html#litestar.contrib.opentelemetry.OpenTelemetryConfig.exclude_urls_env_key">exclude_urls_env_key (litestar.contrib.opentelemetry.OpenTelemetryConfig attribute)</a>
+      <li><a href="reference/plugins/opentelemetry.html#litestar.plugins.opentelemetry.config.OpenTelemetryConfig.exclude_urls_env_key">exclude_urls_env_key (litestar.plugins.opentelemetry.config.OpenTelemetryConfig attribute)</a>
+
+      <ul>
+        <li><a href="reference/plugins/opentelemetry.html#litestar.plugins.opentelemetry.OpenTelemetryConfig.exclude_urls_env_key">(litestar.plugins.opentelemetry.OpenTelemetryConfig attribute)</a>
 </li>
+      </ul></li>
       <li><a href="reference/plugins/prometheus.html#litestar.plugins.prometheus.PrometheusConfig.excluded_http_methods">excluded_http_methods (litestar.plugins.prometheus.PrometheusConfig attribute)</a>
 </li>
       <li><a href="reference/openapi/spec.html#litestar.openapi.spec.Schema.exclusive_maximum">exclusive_maximum (litestar.openapi.spec.Schema attribute)</a>
@@ -4707,14 +4733,14 @@ data-aria-dark="Switch to auto color mode">
 </li>
       <li><a href="reference/static_files.html#litestar.static_files.create_static_files_router.params.html_mode">html_mode (litestar.static_files.create_static_files_router parameter)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/plugins/htmx.html#litestar.plugins.htmx.HTMXConfig">HTMXConfig (class in litestar.plugins.htmx)</a>
 </li>
       <li><a href="reference/plugins/htmx.html#litestar.plugins.htmx.HTMXDetails">HTMXDetails (class in litestar.plugins.htmx)</a>
 </li>
       <li><a href="reference/plugins/htmx.html#litestar.plugins.htmx.HTMXHeaders">HTMXHeaders (class in litestar.plugins.htmx)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/plugins/htmx.html#litestar.plugins.htmx.HtmxHeaderType">HtmxHeaderType (class in litestar.plugins.htmx)</a>
 </li>
       <li><a href="reference/plugins/htmx.html#litestar.plugins.htmx.HTMXPlugin">HTMXPlugin (class in litestar.plugins.htmx)</a>
@@ -4849,6 +4875,24 @@ data-aria-dark="Switch to auto color mode">
 </li>
       <li><a href="reference/status_codes.html#litestar.status_codes.HTTP_511_NETWORK_AUTHENTICATION_REQUIRED">HTTP_511_NETWORK_AUTHENTICATION_REQUIRED (in module litestar.status_codes)</a>
 </li>
+      <li><a href="reference/plugins/opentelemetry.html#litestar.plugins.opentelemetry.config.OpenTelemetryConfig.http_capture_headers_sanitize_fields">http_capture_headers_sanitize_fields (litestar.plugins.opentelemetry.config.OpenTelemetryConfig attribute)</a>
+
+      <ul>
+        <li><a href="reference/plugins/opentelemetry.html#litestar.plugins.opentelemetry.OpenTelemetryConfig.http_capture_headers_sanitize_fields">(litestar.plugins.opentelemetry.OpenTelemetryConfig attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="reference/plugins/opentelemetry.html#litestar.plugins.opentelemetry.config.OpenTelemetryConfig.http_capture_headers_server_request">http_capture_headers_server_request (litestar.plugins.opentelemetry.config.OpenTelemetryConfig attribute)</a>
+
+      <ul>
+        <li><a href="reference/plugins/opentelemetry.html#litestar.plugins.opentelemetry.OpenTelemetryConfig.http_capture_headers_server_request">(litestar.plugins.opentelemetry.OpenTelemetryConfig attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="reference/plugins/opentelemetry.html#litestar.plugins.opentelemetry.config.OpenTelemetryConfig.http_capture_headers_server_response">http_capture_headers_server_response (litestar.plugins.opentelemetry.config.OpenTelemetryConfig attribute)</a>
+
+      <ul>
+        <li><a href="reference/plugins/opentelemetry.html#litestar.plugins.opentelemetry.OpenTelemetryConfig.http_capture_headers_server_response">(litestar.plugins.opentelemetry.OpenTelemetryConfig attribute)</a>
+</li>
+      </ul></li>
       <li><a href="reference/handlers.html#litestar.handlers.HTTPRouteHandler.params.http_method">http_method (litestar.handlers.HTTPRouteHandler parameter)</a>
 
       <ul>
@@ -5795,13 +5839,6 @@ data-aria-dark="Switch to auto color mode">
 </li>
       </ul></li>
       <li>
-    litestar.contrib.opentelemetry
-
-      <ul>
-        <li><a href="reference/contrib/opentelemetry.html#module-litestar.contrib.opentelemetry">module</a>
-</li>
-      </ul></li>
-      <li>
     litestar.controller
 
       <ul>
@@ -5836,8 +5873,6 @@ data-aria-dark="Switch to auto color mode">
         <li><a href="reference/di.html#module-litestar.di">module</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     litestar.dto.base_dto
 
@@ -5845,6 +5880,8 @@ data-aria-dark="Switch to auto color mode">
         <li><a href="reference/dto/base_dto.html#module-litestar.dto.base_dto">module</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     litestar.dto.config
 
@@ -6067,6 +6104,20 @@ data-aria-dark="Switch to auto color mode">
 
       <ul>
         <li><a href="reference/plugins/htmx.html#module-litestar.plugins.htmx">module</a>
+</li>
+      </ul></li>
+      <li>
+    litestar.plugins.opentelemetry
+
+      <ul>
+        <li><a href="reference/plugins/opentelemetry.html#module-litestar.plugins.opentelemetry">module</a>
+</li>
+      </ul></li>
+      <li>
+    litestar.plugins.opentelemetry.config
+
+      <ul>
+        <li><a href="reference/plugins/opentelemetry.html#module-litestar.plugins.opentelemetry.config">module</a>
 </li>
       </ul></li>
       <li>
@@ -6515,10 +6566,18 @@ data-aria-dark="Switch to auto color mode">
       </ul></li>
       <li><a href="reference/typing.html#litestar.typing.FieldDefinition.metadata">metadata (litestar.typing.FieldDefinition attribute)</a>
 </li>
-      <li><a href="reference/contrib/opentelemetry.html#litestar.contrib.opentelemetry.OpenTelemetryConfig.meter">meter (litestar.contrib.opentelemetry.OpenTelemetryConfig attribute)</a>
+      <li><a href="reference/plugins/opentelemetry.html#litestar.plugins.opentelemetry.config.OpenTelemetryConfig.meter">meter (litestar.plugins.opentelemetry.config.OpenTelemetryConfig attribute)</a>
+
+      <ul>
+        <li><a href="reference/plugins/opentelemetry.html#litestar.plugins.opentelemetry.OpenTelemetryConfig.meter">(litestar.plugins.opentelemetry.OpenTelemetryConfig attribute)</a>
 </li>
-      <li><a href="reference/contrib/opentelemetry.html#litestar.contrib.opentelemetry.OpenTelemetryConfig.meter_provider">meter_provider (litestar.contrib.opentelemetry.OpenTelemetryConfig attribute)</a>
+      </ul></li>
+      <li><a href="reference/plugins/opentelemetry.html#litestar.plugins.opentelemetry.config.OpenTelemetryConfig.meter_provider">meter_provider (litestar.plugins.opentelemetry.config.OpenTelemetryConfig attribute)</a>
+
+      <ul>
+        <li><a href="reference/plugins/opentelemetry.html#litestar.plugins.opentelemetry.OpenTelemetryConfig.meter_provider">(litestar.plugins.opentelemetry.OpenTelemetryConfig attribute)</a>
 </li>
+      </ul></li>
       <li><a href="reference/types.html#litestar.types.Method">Method (in module litestar.types)</a>
 </li>
       <li><a href="reference/connection.html#litestar.connection.Request.method">method (litestar.connection.Request property)</a>
@@ -6531,8 +6590,6 @@ data-aria-dark="Switch to auto color mode">
 
       <ul>
         <li><a href="reference/config.html#litestar.config.app.AppConfig.middleware">(litestar.config.app.AppConfig attribute)</a>
-</li>
-        <li><a href="reference/contrib/opentelemetry.html#litestar.contrib.opentelemetry.OpenTelemetryConfig.middleware">(litestar.contrib.opentelemetry.OpenTelemetryConfig property)</a>
 </li>
         <li><a href="reference/controller.html#litestar.controller.Controller.middleware">(litestar.controller.Controller attribute)</a>
 </li>
@@ -6572,6 +6629,10 @@ data-aria-dark="Switch to auto color mode">
 </li>
         <li><a href="reference/middleware/session/base.html#litestar.middleware.session.base.BaseBackendConfig.middleware">(litestar.middleware.session.base.BaseBackendConfig property)</a>
 </li>
+        <li><a href="reference/plugins/opentelemetry.html#litestar.plugins.opentelemetry.config.OpenTelemetryConfig.middleware">(litestar.plugins.opentelemetry.config.OpenTelemetryConfig property)</a>
+</li>
+        <li><a href="reference/plugins/opentelemetry.html#litestar.plugins.opentelemetry.OpenTelemetryConfig.middleware">(litestar.plugins.opentelemetry.OpenTelemetryConfig property)</a>
+</li>
         <li><a href="reference/plugins/prometheus.html#litestar.plugins.prometheus.PrometheusConfig.middleware">(litestar.plugins.prometheus.PrometheusConfig property)</a>
 </li>
         <li><a href="reference/plugins/prometheus.html#litestar.plugins.prometheus.PrometheusController.middleware">(litestar.plugins.prometheus.PrometheusController attribute)</a>
@@ -6598,9 +6659,11 @@ data-aria-dark="Switch to auto color mode">
       <li><a href="reference/config.html#litestar.config.compression.CompressionConfig.middleware_class">middleware_class (litestar.config.compression.CompressionConfig attribute)</a>
 
       <ul>
-        <li><a href="reference/contrib/opentelemetry.html#litestar.contrib.opentelemetry.OpenTelemetryConfig.middleware_class">(litestar.contrib.opentelemetry.OpenTelemetryConfig attribute)</a>
-</li>
         <li><a href="reference/middleware/rate_limit.html#litestar.middleware.rate_limit.RateLimitConfig.middleware_class">(litestar.middleware.rate_limit.RateLimitConfig attribute)</a>
+</li>
+        <li><a href="reference/plugins/opentelemetry.html#litestar.plugins.opentelemetry.config.OpenTelemetryConfig.middleware_class">(litestar.plugins.opentelemetry.config.OpenTelemetryConfig attribute)</a>
+</li>
+        <li><a href="reference/plugins/opentelemetry.html#litestar.plugins.opentelemetry.OpenTelemetryConfig.middleware_class">(litestar.plugins.opentelemetry.OpenTelemetryConfig attribute)</a>
 </li>
         <li><a href="reference/plugins/prometheus.html#litestar.plugins.prometheus.PrometheusConfig.middleware_class">(litestar.plugins.prometheus.PrometheusConfig attribute)</a>
 </li>
@@ -6731,8 +6794,6 @@ data-aria-dark="Switch to auto color mode">
 </li>
         <li><a href="reference/contrib/mako.html#module-litestar.contrib.mako">litestar.contrib.mako</a>
 </li>
-        <li><a href="reference/contrib/opentelemetry.html#module-litestar.contrib.opentelemetry">litestar.contrib.opentelemetry</a>
-</li>
         <li><a href="reference/controller.html#module-litestar.controller">litestar.controller</a>
 </li>
         <li><a href="reference/data_extractors.html#module-litestar.data_extractors">litestar.data_extractors</a>
@@ -6808,6 +6869,10 @@ data-aria-dark="Switch to auto color mode">
         <li><a href="reference/plugins/flash_messages.html#module-litestar.plugins.flash">litestar.plugins.flash</a>
 </li>
         <li><a href="reference/plugins/htmx.html#module-litestar.plugins.htmx">litestar.plugins.htmx</a>
+</li>
+        <li><a href="reference/plugins/opentelemetry.html#module-litestar.plugins.opentelemetry">litestar.plugins.opentelemetry</a>
+</li>
+        <li><a href="reference/plugins/opentelemetry.html#module-litestar.plugins.opentelemetry.config">litestar.plugins.opentelemetry.config</a>
 </li>
         <li><a href="reference/plugins/problem_details.html#module-litestar.plugins.problem_details">litestar.plugins.problem_details</a>
 </li>
@@ -7113,8 +7178,6 @@ data-aria-dark="Switch to auto color mode">
       <ul>
         <li><a href="reference/channels/plugin.html#litestar.channels.plugin.ChannelsPlugin.on_app_init">(litestar.channels.plugin.ChannelsPlugin method)</a>
 </li>
-        <li><a href="reference/contrib/opentelemetry.html#litestar.contrib.opentelemetry.OpenTelemetryPlugin.on_app_init">(litestar.contrib.opentelemetry.OpenTelemetryPlugin method)</a>
-</li>
         <li><a href="reference/plugins/flash_messages.html#litestar.plugins.flash.FlashPlugin.on_app_init">(litestar.plugins.flash.FlashPlugin method)</a>
 </li>
         <li><a href="reference/plugins/htmx.html#litestar.plugins.htmx.HTMXPlugin.on_app_init">(litestar.plugins.htmx.HTMXPlugin method)</a>
@@ -7122,6 +7185,8 @@ data-aria-dark="Switch to auto color mode">
         <li><a href="reference/plugins/index.html#litestar.plugins.InitPlugin.on_app_init">(litestar.plugins.InitPlugin method)</a>
 </li>
         <li><a href="reference/plugins/index.html#litestar.plugins.InitPluginProtocol.on_app_init">(litestar.plugins.InitPluginProtocol method)</a>
+</li>
+        <li><a href="reference/plugins/opentelemetry.html#litestar.plugins.opentelemetry.OpenTelemetryPlugin.on_app_init">(litestar.plugins.opentelemetry.OpenTelemetryPlugin method)</a>
 </li>
         <li><a href="reference/plugins/problem_details.html#litestar.plugins.problem_details.ProblemDetailsPlugin.on_app_init">(litestar.plugins.problem_details.ProblemDetailsPlugin method)</a>
 </li>
@@ -7298,13 +7363,15 @@ data-aria-dark="Switch to auto color mode">
 </li>
       <li><a href="reference/plugins/prometheus.html#litestar.plugins.prometheus.PrometheusController.openmetrics_format">openmetrics_format (litestar.plugins.prometheus.PrometheusController attribute)</a>
 </li>
-      <li><a href="reference/contrib/opentelemetry.html#litestar.contrib.opentelemetry.OpenTelemetryConfig">OpenTelemetryConfig (class in litestar.contrib.opentelemetry)</a>
+      <li><a href="reference/plugins/opentelemetry.html#litestar.plugins.opentelemetry.OpenTelemetryConfig">OpenTelemetryConfig (class in litestar.plugins.opentelemetry)</a>
+
+      <ul>
+        <li><a href="reference/plugins/opentelemetry.html#litestar.plugins.opentelemetry.config.OpenTelemetryConfig">(class in litestar.plugins.opentelemetry.config)</a>
 </li>
-      <li><a href="reference/contrib/opentelemetry.html#litestar.contrib.opentelemetry.config.OpenTelemetryHookHandler">OpenTelemetryHookHandler (in module litestar.contrib.opentelemetry.config)</a>
+      </ul></li>
+      <li><a href="reference/plugins/opentelemetry.html#litestar.plugins.opentelemetry.OpenTelemetryInstrumentationMiddleware">OpenTelemetryInstrumentationMiddleware (class in litestar.plugins.opentelemetry)</a>
 </li>
-      <li><a href="reference/contrib/opentelemetry.html#litestar.contrib.opentelemetry.OpenTelemetryInstrumentationMiddleware">OpenTelemetryInstrumentationMiddleware (class in litestar.contrib.opentelemetry)</a>
-</li>
-      <li><a href="reference/contrib/opentelemetry.html#litestar.contrib.opentelemetry.OpenTelemetryPlugin">OpenTelemetryPlugin (class in litestar.contrib.opentelemetry)</a>
+      <li><a href="reference/plugins/opentelemetry.html#litestar.plugins.opentelemetry.OpenTelemetryPlugin">OpenTelemetryPlugin (class in litestar.plugins.opentelemetry)</a>
 </li>
       <li><a href="reference/openapi/spec.html#litestar.openapi.spec.Operation">Operation (class in litestar.openapi.spec)</a>
 </li>
@@ -8966,8 +9033,6 @@ data-aria-dark="Switch to auto color mode">
 </li>
         <li><a href="reference/connection.html#litestar.connection.WebSocket.params.scope">(litestar.connection.WebSocket parameter)</a>
 </li>
-        <li><a href="reference/contrib/opentelemetry.html#litestar.contrib.opentelemetry.OpenTelemetryConfig.scope_span_details_extractor.params.scope">(litestar.contrib.opentelemetry.OpenTelemetryConfig.scope_span_details_extractor parameter)</a>
-</li>
         <li><a href="reference/datastructures/index.html#litestar.datastructures.Headers.from_scope.params.scope">(litestar.datastructures.Headers.from_scope parameter)</a>
 </li>
         <li><a href="reference/datastructures/index.html#litestar.datastructures.MutableScopeHeaders.params.scope">(litestar.datastructures.MutableScopeHeaders parameter)</a>
@@ -9002,6 +9067,8 @@ data-aria-dark="Switch to auto color mode">
 </li>
         <li><a href="reference/middleware/session/client_side.html#litestar.middleware.session.client_side.ClientSideSessionBackend.dump_data.params.scope">(litestar.middleware.session.client_side.ClientSideSessionBackend.dump_data parameter)</a>
 </li>
+        <li><a href="reference/plugins/opentelemetry.html#litestar.plugins.opentelemetry.OpenTelemetryConfig.scope_span_details_extractor.params.scope">(litestar.plugins.opentelemetry.OpenTelemetryConfig.scope_span_details_extractor parameter)</a>
+</li>
         <li><a href="reference/response/base.html#litestar.response.base.ASGIResponse.__call__.params.scope">(litestar.response.base.ASGIResponse.__call__ parameter)</a>
 </li>
         <li><a href="reference/routes.html#litestar.routes.ASGIRoute.handle.params.scope">(litestar.routes.ASGIRoute.handle parameter)</a>
@@ -9023,15 +9090,17 @@ data-aria-dark="Switch to auto color mode">
         <li><a href="reference/middleware/session/server_side.html#litestar.middleware.session.server_side.ServerSideSessionBackend.store_in_message.params.scope_session">(litestar.middleware.session.server_side.ServerSideSessionBackend.store_in_message parameter)</a>
 </li>
       </ul></li>
-      <li><a href="reference/contrib/opentelemetry.html#litestar.contrib.opentelemetry.OpenTelemetryConfig.scope_span_details_extractor">scope_span_details_extractor() (litestar.contrib.opentelemetry.OpenTelemetryConfig method)</a>
+      <li><a href="reference/plugins/opentelemetry.html#litestar.plugins.opentelemetry.config.OpenTelemetryConfig.scope_span_details_extractor">scope_span_details_extractor() (litestar.plugins.opentelemetry.config.OpenTelemetryConfig method)</a>
+
+      <ul>
+        <li><a href="reference/plugins/opentelemetry.html#litestar.plugins.opentelemetry.OpenTelemetryConfig.scope_span_details_extractor">(litestar.plugins.opentelemetry.OpenTelemetryConfig method)</a>
 </li>
+      </ul></li>
       <li><a href="reference/types.html#litestar.types.Scopes">Scopes (in module litestar.types)</a>
 </li>
       <li><a href="reference/config.html#litestar.config.allowed_hosts.AllowedHostsConfig.scopes">scopes (litestar.config.allowed_hosts.AllowedHostsConfig attribute)</a>
 
       <ul>
-        <li><a href="reference/contrib/opentelemetry.html#litestar.contrib.opentelemetry.OpenTelemetryConfig.scopes">(litestar.contrib.opentelemetry.OpenTelemetryConfig attribute)</a>
-</li>
         <li><a href="reference/middleware/index.html#litestar.middleware.AbstractAuthenticationMiddleware.params.scopes">(litestar.middleware.AbstractAuthenticationMiddleware parameter)</a>
 </li>
         <li><a href="reference/middleware/index.html#litestar.middleware.AbstractMiddleware.params.scopes">(litestar.middleware.AbstractMiddleware parameter)</a>
@@ -9045,6 +9114,10 @@ data-aria-dark="Switch to auto color mode">
         <li><a href="reference/middleware/session/base.html#litestar.middleware.session.base.BaseBackendConfig.scopes">(litestar.middleware.session.base.BaseBackendConfig attribute)</a>
 </li>
         <li><a href="reference/openapi/spec.html#litestar.openapi.spec.OAuthFlow.scopes">(litestar.openapi.spec.OAuthFlow attribute)</a>
+</li>
+        <li><a href="reference/plugins/opentelemetry.html#litestar.plugins.opentelemetry.config.OpenTelemetryConfig.scopes">(litestar.plugins.opentelemetry.config.OpenTelemetryConfig attribute)</a>
+</li>
+        <li><a href="reference/plugins/opentelemetry.html#litestar.plugins.opentelemetry.OpenTelemetryConfig.scopes">(litestar.plugins.opentelemetry.OpenTelemetryConfig attribute)</a>
 </li>
         <li><a href="reference/plugins/prometheus.html#litestar.plugins.prometheus.PrometheusConfig.scopes">(litestar.plugins.prometheus.PrometheusConfig attribute)</a>
 </li>
@@ -9335,8 +9408,12 @@ data-aria-dark="Switch to auto color mode">
         <li><a href="reference/testing.html#litestar.testing.RequestFactory.params.server">(litestar.testing.RequestFactory parameter)</a>
 </li>
       </ul></li>
-      <li><a href="reference/contrib/opentelemetry.html#litestar.contrib.opentelemetry.OpenTelemetryConfig.server_request_hook_handler">server_request_hook_handler (litestar.contrib.opentelemetry.OpenTelemetryConfig attribute)</a>
+      <li><a href="reference/plugins/opentelemetry.html#litestar.plugins.opentelemetry.config.OpenTelemetryConfig.server_request_hook_handler">server_request_hook_handler (litestar.plugins.opentelemetry.config.OpenTelemetryConfig attribute)</a>
+
+      <ul>
+        <li><a href="reference/plugins/opentelemetry.html#litestar.plugins.opentelemetry.OpenTelemetryConfig.server_request_hook_handler">(litestar.plugins.opentelemetry.OpenTelemetryConfig attribute)</a>
 </li>
+      </ul></li>
       <li><a href="reference/openapi/openapi.html#litestar.openapi.OpenAPIConfig.servers">servers (litestar.openapi.OpenAPIConfig attribute)</a>
 
       <ul>
@@ -9414,12 +9491,12 @@ data-aria-dark="Switch to auto color mode">
 </li>
       <li><a href="reference/security/session_auth.html#litestar.security.session_auth.SessionAuth">SessionAuth (class in litestar.security.session_auth)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/security/session_auth.html#litestar.security.session_auth.middleware.SessionAuthMiddleware">SessionAuthMiddleware (class in litestar.security.session_auth.middleware)</a>
 </li>
       <li><a href="reference/middleware/session/base.html#litestar.middleware.session.base.SessionMiddleware">SessionMiddleware (class in litestar.middleware.session.base)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/middleware/session/server_side.html#litestar.middleware.session.server_side.ServerSideSessionBackend.set">set() (litestar.middleware.session.server_side.ServerSideSessionBackend method)</a>
 
       <ul>
@@ -10314,8 +10391,18 @@ data-aria-dark="Switch to auto color mode">
 </li>
       <li><a href="reference/openapi/spec.html#litestar.openapi.spec.PathItem.trace">trace (litestar.openapi.spec.PathItem attribute)</a>
 </li>
-      <li><a href="reference/contrib/opentelemetry.html#litestar.contrib.opentelemetry.OpenTelemetryConfig.tracer_provider">tracer_provider (litestar.contrib.opentelemetry.OpenTelemetryConfig attribute)</a>
+      <li><a href="reference/plugins/opentelemetry.html#litestar.plugins.opentelemetry.config.OpenTelemetryConfig.tracer">tracer (litestar.plugins.opentelemetry.config.OpenTelemetryConfig attribute)</a>
+
+      <ul>
+        <li><a href="reference/plugins/opentelemetry.html#litestar.plugins.opentelemetry.OpenTelemetryConfig.tracer">(litestar.plugins.opentelemetry.OpenTelemetryConfig attribute)</a>
 </li>
+      </ul></li>
+      <li><a href="reference/plugins/opentelemetry.html#litestar.plugins.opentelemetry.config.OpenTelemetryConfig.tracer_provider">tracer_provider (litestar.plugins.opentelemetry.config.OpenTelemetryConfig attribute)</a>
+
+      <ul>
+        <li><a href="reference/plugins/opentelemetry.html#litestar.plugins.opentelemetry.OpenTelemetryConfig.tracer_provider">(litestar.plugins.opentelemetry.OpenTelemetryConfig attribute)</a>
+</li>
+      </ul></li>
       <li><a href="reference/plugins/htmx.html#litestar.plugins.htmx.HTMXDetails.trigger">trigger (litestar.plugins.htmx.HTMXDetails property)</a>
 </li>
       <li><a href="reference/plugins/htmx.html#litestar.plugins.htmx.HTMXTemplate.params.trigger_event">trigger_event (litestar.plugins.htmx.HTMXTemplate parameter)</a>

@@ -266,7 +266,6 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2"><a class="reference internal" href="../../reference/contrib/index.html">contrib</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/contrib/jinja.html">jinja</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/contrib/mako.html">mako</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../reference/contrib/opentelemetry.html">opentelemetry</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/controller.html">controller</a></li>
@@ -320,6 +319,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/attrs.html">attrs</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/flash_messages.html">flash</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/htmx.html">htmx</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/opentelemetry.html">opentelemetry</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/problem_details.html">problem details</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/prometheus.html">prometheus</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/pydantic.html">pydantic</a></li>
@@ -470,7 +470,7 @@ data-aria-dark="Switch to auto color mode">
     </span>
   </span>
 </a><div class="edit-this-page">
-  <a href="https://github.com/litestar-org/litestar/blob/main/docs/usage/metrics/open-telemetry.rst">Edit this page</a>
+  <a href="https://github.com/litestar-org/litestar/blob/main/docs/usage/metrics/opentelemetry.rst">Edit this page</a>
 </div><div id="ethical-ad-placement" data-ea-publisher="readthedocs"></div></div>
   </aside>
   <div class="rside-overlay js-menu" role="button" aria-label="Close Table of Contents" aria-controls="rside" aria-expanded="false"></div>
@@ -512,7 +512,7 @@ data-aria-dark="Switch to auto color mode">
     <button
       type="button"
       class="js-copy px-3 py-1 inline-flex items-center gap-1"
-      data-url="https://raw.githubusercontent.com/litestar-org/litestar/refs/heads/main/docs/usage/metrics/open-telemetry.rst.txt"
+      data-url="https://raw.githubusercontent.com/litestar-org/litestar/refs/heads/main/docs/usage/metrics/opentelemetry.rst.txt"
     >
       <i class="i-lucide" data-icon="copy"></i>
       <span>Copy page</span>
@@ -526,17 +526,17 @@ data-aria-dark="Switch to auto color mode">
     <div role="presentation">
       <div class="flex flex-col" role="group">
         <button class="js-copy" type="button" role="menuitem"
-          data-url="https://raw.githubusercontent.com/litestar-org/litestar/refs/heads/main/docs/usage/metrics/open-telemetry.rst.txt">
+          data-url="https://raw.githubusercontent.com/litestar-org/litestar/refs/heads/main/docs/usage/metrics/opentelemetry.rst.txt">
           <span class="iconify-icon">
             <i class="i-lucide" data-icon="copy"></i>
           </span>
           <span>Copy page</span>
         </button>
-        <a role="menuitem" href="https://raw.githubusercontent.com/litestar-org/litestar/refs/heads/main/docs/usage/metrics/open-telemetry.rst.txt" target="_blank" rel="nofollow"><iconify-icon icon="bi:code-slash"></iconify-icon>
-            <span>View Source</span></a><a role="menuitem" href="https://chatgpt.com/?hints=search&q=Read%20https%3A//raw.githubusercontent.com/litestar-org/litestar/refs/heads/main/docs/usage/metrics/open-telemetry.rst.txt%20so%20I%20can%20ask%20questions%20about%20it." target="_blank" rel="nofollow">
+        <a role="menuitem" href="https://raw.githubusercontent.com/litestar-org/litestar/refs/heads/main/docs/usage/metrics/opentelemetry.rst.txt" target="_blank" rel="nofollow"><iconify-icon icon="bi:code-slash"></iconify-icon>
+            <span>View Source</span></a><a role="menuitem" href="https://chatgpt.com/?hints=search&q=Read%20https%3A//raw.githubusercontent.com/litestar-org/litestar/refs/heads/main/docs/usage/metrics/opentelemetry.rst.txt%20so%20I%20can%20ask%20questions%20about%20it." target="_blank" rel="nofollow">
           <iconify-icon icon="bi:openai"></iconify-icon>
           <span>Open in ChatGPT</span>
-        </a><a role="menuitem" href="https://claude.ai/new?q=Read%20https%3A//raw.githubusercontent.com/litestar-org/litestar/refs/heads/main/docs/usage/metrics/open-telemetry.rst.txt%20so%20I%20can%20ask%20questions%20about%20it." target="_blank" rel="nofollow">
+        </a><a role="menuitem" href="https://claude.ai/new?q=Read%20https%3A//raw.githubusercontent.com/litestar-org/litestar/refs/heads/main/docs/usage/metrics/opentelemetry.rst.txt%20so%20I%20can%20ask%20questions%20about%20it." target="_blank" rel="nofollow">
           <iconify-icon icon="bi:claude"></iconify-icon>
           <span>Open in Claude</span>
         </a></div>
@@ -545,7 +545,7 @@ data-aria-dark="Switch to auto color mode">
 </div><article class="yue" role="main">
           <section id="opentelemetry">
 <h1>OpenTelemetry<a class="headerlink" href="#opentelemetry" title="Link to this heading">¶</a></h1>
-<p>Litestar includes optional OpenTelemetry instrumentation that is exported from <code class="docutils literal notranslate"><span class="pre">litestar.contrib.opentelemetry</span></code>. To use
+<p>Litestar includes optional OpenTelemetry instrumentation that is exported from <code class="docutils literal notranslate"><span class="pre">litestar.plugins.opentelemetry</span></code>. To use
 this package, you should first install the required dependencies:</p>
 <div class="literal-block-wrapper docutils container" id="id1">
 <div class="code-block-caption"><span class="caption-text">as separate package</span><a class="headerlink" href="#id1" title="Link to this code">¶</a></div>
@@ -560,10 +560,10 @@ this package, you should first install the required dependencies:</p>
 </div>
 </div>
 <p>Once these requirements are satisfied, you can instrument your Litestar application by creating an instance
-of <a class="reference internal" href="../../reference/contrib/opentelemetry.html#litestar.contrib.opentelemetry.OpenTelemetryConfig" title="litestar.contrib.opentelemetry.OpenTelemetryConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">OpenTelemetryConfig</span></code></a> and passing the middleware it creates to
+of <a class="reference internal" href="../../reference/plugins/opentelemetry.html#litestar.plugins.opentelemetry.OpenTelemetryConfig" title="litestar.plugins.opentelemetry.OpenTelemetryConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">OpenTelemetryConfig</span></code></a> and passing the middleware it creates to
 the Litestar constructor:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span>
-</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.contrib.opentelemetry</span><span class="w"> </span><span class="kn">import</span> <span class="n">OpenTelemetryConfig</span><span class="p">,</span> <span class="n">OpenTelemetryPlugin</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.plugins.opentelemetry</span><span class="w"> </span><span class="kn">import</span> <span class="n">OpenTelemetryConfig</span><span class="p">,</span> <span class="n">OpenTelemetryPlugin</span>
 </span><span data-line="3">
 </span><span data-line="4"><span class="n">open_telemetry_config</span> <span class="o">=</span> <span class="n">OpenTelemetryConfig</span><span class="p">()</span>
 </span><span data-line="5">
@@ -574,7 +574,7 @@ the Litestar constructor:</p>
 exporter to use these (see the
 <a class="reference external" href="https://opentelemetry.io/docs/instrumentation/python/exporters/">OpenTelemetry Exporter docs</a> for further details).</p>
 <p>You can also pass con figuration to the <code class="docutils literal notranslate"><span class="pre">OpenTelemetryConfig</span></code> telling it which providers to use. Consult
-<a class="reference internal" href="../../reference/contrib/opentelemetry.html#litestar.contrib.opentelemetry.OpenTelemetryConfig" title="litestar.contrib.opentelemetry.OpenTelemetryConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">reference</span> <span class="pre">docs</span></code></a> regarding the configuration options you can use.</p>
+<a class="reference internal" href="../../reference/plugins/opentelemetry.html#litestar.plugins.opentelemetry.OpenTelemetryConfig" title="litestar.plugins.opentelemetry.OpenTelemetryConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">reference</span> <span class="pre">docs</span></code></a> regarding the configuration options you can use.</p>
 </section>
 
         </article><button class="back-to-top" type="button">

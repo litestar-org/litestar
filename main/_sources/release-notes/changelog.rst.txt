@@ -311,6 +311,30 @@
         and ``litestar_piccolo`` plugin instead:
         https://github.com/litestar-org/litestar-piccolo
 
+    .. change:: Move ``litestar.contrib.opentelemetry`` to ``litestar.plugins.opentelemetry`` and add upstream parity
+        :type: feature
+        :breaking:
+        :pr: 4691
+        :issue: 4466, 4468
+
+        Move the OpenTelemetry integration from ``litestar.contrib.opentelemetry`` to
+        ``litestar.plugins.opentelemetry``. Code still using imports from the old
+        module should switch to the new path.
+
+        :class:`~litestar.plugins.opentelemetry.OpenTelemetryConfig` has been brought
+        in line with the upstream
+        ``opentelemetry.instrumentation.asgi.OpenTelemetryMiddleware`` configuration,
+        adding ``client_request_hook_handler``, ``client_response_hook_handler``,
+        ``tracer``, ``exclude``, ``exclude_opt_key``, ``exclude_urls_env_key``,
+        ``exclude_spans``, ``http_capture_headers_server_request``,
+        ``http_capture_headers_server_response``, and
+        ``http_capture_headers_sanitize_fields``.
+
+        Also fixes a ``KeyError: 'route_handler'`` raised on every request when
+        ``exclude_opt_key`` was set, and corrects the ``OpenTelemetryHookHandler``
+        signature to accept the span, ASGI scope, and ASGI message as documented by
+        upstream.
+
     .. change:: Change ``Optional`` to ``NotRequired`` for pydantic fields with ``default_factory``
         :type: bugfix
         :pr: 4347

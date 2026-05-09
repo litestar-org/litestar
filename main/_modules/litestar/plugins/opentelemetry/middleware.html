@@ -2,7 +2,7 @@
 <html lang="en" data-accent-color="amber" data-content_root="../../../../">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>litestar.contrib.opentelemetry.plugin - Litestar Framework</title><link rel="shortcut icon" href="../../../../_static/favicon.svg"/><link rel="index" title="Index" href="../../../../genindex.html" /><link rel="search" title="Search" href="../../../../search.html" /><script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>litestar.plugins.opentelemetry.middleware - Litestar Framework</title><link rel="shortcut icon" href="../../../../_static/favicon.svg"/><link rel="index" title="Index" href="../../../../genindex.html" /><link rel="search" title="Search" href="../../../../search.html" /><script>
     function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
     setColorMode(localStorage._theme||"auto");
   </script><link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=15352968" />
@@ -23,7 +23,7 @@
   --sy-f-heading: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
 }
 </style>
-    <meta property="og:type" content="website"/><meta property="og:title" content="litestar.contrib.opentelemetry.plugin"/>
+    <meta property="og:type" content="website"/><meta property="og:title" content="litestar.plugins.opentelemetry.middleware"/>
   <meta property="og:image" content="_static/logo-light.png"/>
     <meta name="twitter:card" content="summary"/>
   </head>
@@ -194,7 +194,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2"><a class="reference internal" href="../../../../usage/lifecycle-hooks.html">Life Cycle Hooks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../usage/logging.html">Request logging</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../usage/metrics/index.html">Metrics</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../../../usage/metrics/open-telemetry.html">OpenTelemetry</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../usage/metrics/opentelemetry.html">OpenTelemetry</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../usage/metrics/prometheus.html">Prometheus</a></li>
 </ul>
 </li>
@@ -266,7 +266,6 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2"><a class="reference internal" href="../../../../reference/contrib/index.html">contrib</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../../reference/contrib/jinja.html">jinja</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../reference/contrib/mako.html">mako</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../../reference/contrib/opentelemetry.html">opentelemetry</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../reference/controller.html">controller</a></li>
@@ -320,6 +319,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l3"><a class="reference internal" href="../../../../reference/plugins/attrs.html">attrs</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../reference/plugins/flash_messages.html">flash</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../reference/plugins/htmx.html">htmx</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../reference/plugins/opentelemetry.html">opentelemetry</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../reference/plugins/problem_details.html">problem details</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../reference/plugins/prometheus.html">prometheus</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../reference/plugins/pydantic.html">pydantic</a></li>
@@ -489,7 +489,7 @@ data-aria-dark="Switch to auto color mode">
         <span>/</span>
         <meta itemprop="position" content="2" />
       </li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
-        <strong itemprop="name">litestar.contrib.opentelemetry.plugin</strong>
+        <strong itemprop="name">litestar.plugins.opentelemetry.middleware</strong>
         <meta itemprop="position" content="3" />
       </li></ol>
     <div class="xl:hidden ml-1">
@@ -502,68 +502,74 @@ data-aria-dark="Switch to auto color mode">
 </div><div class="flex flex-col break-words justify-between">
       <div class="relative min-w-0 max-w-6xl px-6 pb-6 pt-8 xl:px-12">
   <article class="yue" role="main">
-          <h1>Source code for litestar.contrib.opentelemetry.plugin</h1><div class="highlight"><pre>
-<span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+          <h1>Source code for litestar.plugins.opentelemetry.middleware</h1><div class="highlight"><pre>
+<span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
 </span><span data-line="2">
-</span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
-</span><span data-line="4">
-</span><span data-line="5"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.contrib.opentelemetry.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">OpenTelemetryConfig</span>
-</span><span data-line="6"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.contrib.opentelemetry.middleware</span><span class="w"> </span><span class="kn">import</span> <span class="n">OpenTelemetryInstrumentationMiddleware</span>
-</span><span data-line="7"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.middleware.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">DefineMiddleware</span>
-</span><span data-line="8"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.plugins</span><span class="w"> </span><span class="kn">import</span> <span class="n">InitPlugin</span>
-</span><span data-line="9">
-</span><span data-line="10"><span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
-</span><span data-line="11">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.config.app</span><span class="w"> </span><span class="kn">import</span> <span class="n">AppConfig</span>
-</span><span data-line="12">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.types.composite_types</span><span class="w"> </span><span class="kn">import</span> <span class="n">Middleware</span>
+</span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">MissingDependencyException</span>
+</span><span data-line="4"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.middleware.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">AbstractMiddleware</span>
+</span><span data-line="5">
+</span><span data-line="6"><span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;OpenTelemetryInstrumentationMiddleware&quot;</span><span class="p">,)</span>
+</span><span data-line="7">
+</span><span data-line="8">
+</span><span data-line="9"><span class="k">try</span><span class="p">:</span>
+</span><span data-line="10">    <span class="kn">import</span><span class="w"> </span><span class="nn">opentelemetry</span>  <span class="c1"># noqa: F401</span>
+</span><span data-line="11"><span class="k">except</span> <span class="ne">ImportError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+</span><span data-line="12">    <span class="k">raise</span> <span class="n">MissingDependencyException</span><span class="p">(</span><span class="s2">&quot;opentelemetry&quot;</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
 </span><span data-line="13">
-</span><span data-line="14">
-<div class="viewcode-block" id="OpenTelemetryPlugin">
-<a class="viewcode-back" href="../../../../reference/contrib/opentelemetry.html#litestar.contrib.opentelemetry.OpenTelemetryPlugin">[docs]</a>
-</span><span data-line="15"><span class="k">class</span><span class="w"> </span><span class="nc">OpenTelemetryPlugin</span><span class="p">(</span><span class="n">InitPlugin</span><span class="p">):</span>
-</span><span data-line="16"><span class="w">    </span><span class="sd">&quot;&quot;&quot;OpenTelemetry Plugin.&quot;&quot;&quot;</span>
-</span><span data-line="17">
-</span><span data-line="18">    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;_middleware&quot;</span><span class="p">,</span> <span class="s2">&quot;config&quot;</span><span class="p">)</span>
-</span><span data-line="19">
-<div class="viewcode-block" id="OpenTelemetryPlugin.__init__">
-<a class="viewcode-back" href="../../../../reference/contrib/opentelemetry.html#litestar.contrib.opentelemetry.OpenTelemetryPlugin.__init__">[docs]</a>
-</span><span data-line="20">    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">OpenTelemetryConfig</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="21">        <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">config</span> <span class="ow">or</span> <span class="n">OpenTelemetryConfig</span><span class="p">()</span>
-</span><span data-line="22">        <span class="bp">self</span><span class="o">.</span><span class="n">_middleware</span><span class="p">:</span> <span class="n">DefineMiddleware</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
-</span><span data-line="23">        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span></div>
-
+</span><span data-line="14"><span class="kn">from</span><span class="w"> </span><span class="nn">opentelemetry.instrumentation.asgi</span><span class="w"> </span><span class="kn">import</span> <span class="n">OpenTelemetryMiddleware</span>
+</span><span data-line="15"><span class="kn">from</span><span class="w"> </span><span class="nn">opentelemetry.util.http</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_excluded_urls</span>
+</span><span data-line="16">
+</span><span data-line="17"><span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+</span><span data-line="18">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.plugins.opentelemetry.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">OpenTelemetryConfig</span>
+</span><span data-line="19">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">ASGIApp</span><span class="p">,</span> <span class="n">Receive</span><span class="p">,</span> <span class="n">Scope</span><span class="p">,</span> <span class="n">Send</span>
+</span><span data-line="20">
+</span><span data-line="21">
+<div class="viewcode-block" id="OpenTelemetryInstrumentationMiddleware">
+<a class="viewcode-back" href="../../../../reference/plugins/opentelemetry.html#litestar.plugins.opentelemetry.OpenTelemetryInstrumentationMiddleware">[docs]</a>
+</span><span data-line="22"><span class="k">class</span><span class="w"> </span><span class="nc">OpenTelemetryInstrumentationMiddleware</span><span class="p">(</span><span class="n">AbstractMiddleware</span><span class="p">):</span>
+</span><span data-line="23"><span class="w">    </span><span class="sd">&quot;&quot;&quot;OpenTelemetry Middleware.&quot;&quot;&quot;</span>
 </span><span data-line="24">
-</span><span data-line="25">    <span class="nd">@property</span>
-</span><span data-line="26">    <span class="k">def</span><span class="w"> </span><span class="nf">middleware</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DefineMiddleware</span><span class="p">:</span>
-</span><span data-line="27">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_middleware</span><span class="p">:</span>
-</span><span data-line="28">            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_middleware</span>
-</span><span data-line="29">        <span class="k">return</span> <span class="n">DefineMiddleware</span><span class="p">(</span><span class="n">OpenTelemetryInstrumentationMiddleware</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">)</span>
-</span><span data-line="30">
-<div class="viewcode-block" id="OpenTelemetryPlugin.on_app_init">
-<a class="viewcode-back" href="../../../../reference/contrib/opentelemetry.html#litestar.contrib.opentelemetry.OpenTelemetryPlugin.on_app_init">[docs]</a>
-</span><span data-line="31">    <span class="k">def</span><span class="w"> </span><span class="nf">on_app_init</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">app_config</span><span class="p">:</span> <span class="n">AppConfig</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AppConfig</span><span class="p">:</span>
-</span><span data-line="32">        <span class="n">app_config</span><span class="o">.</span><span class="n">middleware</span><span class="p">,</span> <span class="n">_middleware</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pop_otel_middleware</span><span class="p">(</span><span class="n">app_config</span><span class="o">.</span><span class="n">middleware</span><span class="p">)</span>
-</span><span data-line="33">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">after_exception_hook_handler</span><span class="p">:</span>
-</span><span data-line="34">            <span class="n">app_config</span><span class="o">.</span><span class="n">after_exception</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">after_exception_hook_handler</span><span class="p">)</span>
-</span><span data-line="35">        <span class="k">return</span> <span class="n">app_config</span></div>
+<div class="viewcode-block" id="OpenTelemetryInstrumentationMiddleware.__init__">
+<a class="viewcode-back" href="../../../../reference/plugins/opentelemetry.html#litestar.plugins.opentelemetry.OpenTelemetryInstrumentationMiddleware.__init__">[docs]</a>
+</span><span data-line="25">    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">app</span><span class="p">:</span> <span class="s2">&quot;ASGIApp&quot;</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="s2">&quot;OpenTelemetryConfig&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="26"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Middleware that adds OpenTelemetry instrumentation to the application.</span>
+</span><span data-line="27">
+</span><span data-line="28"><span class="sd">        Args:</span>
+</span><span data-line="29"><span class="sd">            app: The ``next`` ASGI app to call.</span>
+</span><span data-line="30"><span class="sd">            config: An instance of</span>
+</span><span data-line="31"><span class="sd">                :class:`OpenTelemetryConfig &lt;litestar.plugins.opentelemetry.OpenTelemetryConfig&gt;`.</span>
+</span><span data-line="32"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="33">        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">app</span><span class="o">=</span><span class="n">app</span><span class="p">,</span> <span class="n">scopes</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">scopes</span><span class="p">,</span> <span class="n">exclude</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">exclude</span><span class="p">,</span> <span class="n">exclude_opt_key</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">exclude_opt_key</span><span class="p">)</span>
+</span><span data-line="34">        <span class="bp">self</span><span class="o">.</span><span class="n">open_telemetry_middleware</span> <span class="o">=</span> <span class="n">OpenTelemetryMiddleware</span><span class="p">(</span>
+</span><span data-line="35">            <span class="n">app</span><span class="o">=</span><span class="n">app</span><span class="p">,</span>
+</span><span data-line="36">            <span class="n">client_request_hook</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">client_request_hook_handler</span><span class="p">,</span>
+</span><span data-line="37">            <span class="n">client_response_hook</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">client_response_hook_handler</span><span class="p">,</span>
+</span><span data-line="38">            <span class="n">default_span_details</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">scope_span_details_extractor</span><span class="p">,</span>
+</span><span data-line="39">            <span class="n">excluded_urls</span><span class="o">=</span><span class="n">get_excluded_urls</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">exclude_urls_env_key</span><span class="p">),</span>
+</span><span data-line="40">            <span class="n">exclude_spans</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">exclude_spans</span><span class="p">,</span>
+</span><span data-line="41">            <span class="n">meter</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">meter</span><span class="p">,</span>
+</span><span data-line="42">            <span class="n">meter_provider</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">meter_provider</span><span class="p">,</span>
+</span><span data-line="43">            <span class="n">server_request_hook</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">server_request_hook_handler</span><span class="p">,</span>
+</span><span data-line="44">            <span class="n">tracer_provider</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">tracer_provider</span><span class="p">,</span>
+</span><span data-line="45">            <span class="n">tracer</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">tracer</span><span class="p">,</span>
+</span><span data-line="46">            <span class="n">http_capture_headers_server_request</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">http_capture_headers_server_request</span><span class="p">,</span>
+</span><span data-line="47">            <span class="n">http_capture_headers_server_response</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">http_capture_headers_server_response</span><span class="p">,</span>
+</span><span data-line="48">            <span class="n">http_capture_headers_sanitize_fields</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">http_capture_headers_sanitize_fields</span><span class="p">,</span>
+</span><span data-line="49">        <span class="p">)</span></div>
 
-</span><span data-line="36">
-</span><span data-line="37">    <span class="nd">@staticmethod</span>
-</span><span data-line="38">    <span class="k">def</span><span class="w"> </span><span class="nf">_pop_otel_middleware</span><span class="p">(</span><span class="n">middlewares</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Middleware</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">Middleware</span><span class="p">],</span> <span class="n">DefineMiddleware</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]:</span>
-</span><span data-line="39"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the OpenTelemetry middleware if it is enabled in the application.</span>
-</span><span data-line="40"><span class="sd">        Remove the middleware from the list of middlewares if it is found.</span>
-</span><span data-line="41"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="42">        <span class="n">otel_middleware</span><span class="p">:</span> <span class="n">DefineMiddleware</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
-</span><span data-line="43">        <span class="n">other_middlewares</span> <span class="o">=</span> <span class="p">[]</span>
-</span><span data-line="44">        <span class="k">for</span> <span class="n">middleware</span> <span class="ow">in</span> <span class="n">middlewares</span><span class="p">:</span>
-</span><span data-line="45">            <span class="k">if</span> <span class="p">(</span>
-</span><span data-line="46">                <span class="nb">isinstance</span><span class="p">(</span><span class="n">middleware</span><span class="p">,</span> <span class="n">DefineMiddleware</span><span class="p">)</span>
-</span><span data-line="47">                <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">middleware</span><span class="o">.</span><span class="n">middleware</span><span class="p">,</span> <span class="nb">type</span><span class="p">)</span>
-</span><span data-line="48">                <span class="ow">and</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">middleware</span><span class="o">.</span><span class="n">middleware</span><span class="p">,</span> <span class="n">OpenTelemetryInstrumentationMiddleware</span><span class="p">)</span>
-</span><span data-line="49">            <span class="p">):</span>
-</span><span data-line="50">                <span class="n">otel_middleware</span> <span class="o">=</span> <span class="n">middleware</span>
-</span><span data-line="51">            <span class="k">else</span><span class="p">:</span>
-</span><span data-line="52">                <span class="n">other_middlewares</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">middleware</span><span class="p">)</span>
-</span><span data-line="53">        <span class="k">return</span> <span class="n">other_middlewares</span><span class="p">,</span> <span class="n">otel_middleware</span></div>
+</span><span data-line="50">
+</span><span data-line="51">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scope</span><span class="p">:</span> <span class="s2">&quot;Scope&quot;</span><span class="p">,</span> <span class="n">receive</span><span class="p">:</span> <span class="s2">&quot;Receive&quot;</span><span class="p">,</span> <span class="n">send</span><span class="p">:</span> <span class="s2">&quot;Send&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="52"><span class="w">        </span><span class="sd">&quot;&quot;&quot;ASGI callable.</span>
+</span><span data-line="53">
+</span><span data-line="54"><span class="sd">        Args:</span>
+</span><span data-line="55"><span class="sd">            scope: The ASGI connection scope.</span>
+</span><span data-line="56"><span class="sd">            receive: The ASGI receive function.</span>
+</span><span data-line="57"><span class="sd">            send: The ASGI send function.</span>
+</span><span data-line="58">
+</span><span data-line="59"><span class="sd">        Returns:</span>
+</span><span data-line="60"><span class="sd">            None</span>
+</span><span data-line="61"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="62">        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">open_telemetry_middleware</span><span class="p">(</span><span class="n">scope</span><span class="p">,</span> <span class="n">receive</span><span class="p">,</span> <span class="n">send</span><span class="p">)</span>  <span class="c1"># type: ignore[arg-type]</span></div>
 
 </span></pre></div>
         </article><button class="back-to-top" type="button">
