@@ -12,7 +12,7 @@ def __getattr__(attr_name: str) -> object:
 
         warn_deprecation(
             deprecated_name=f"litestar.contrib.opentelemetry.middleware.{attr_name}",
-            version="3.0.0b0",
+            version="2.22.0",
             kind="import",
             removal_in="3.0.0",
             info=f"importing {attr_name} from 'litestar.contrib.opentelemetry.middleware' is deprecated, please "
