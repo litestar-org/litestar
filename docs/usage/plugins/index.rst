@@ -141,33 +141,3 @@ The following example shows a simple plugin that logs information about each rou
     class RouteLoggerPlugin(ReceiveRoutePlugin):
         def receive_route(self, route: BaseRoute) -> None:
             print(f"Route registered: {route.path} [{', '.join(route.methods)}]")
-
-
-OpenAPISpecPlugin
------------------
-
-:class:`~litestar.plugins.OpenAPISpecPlugin` is a small extension point for contributing fragments
-to the generated OpenAPI document after routes have been resolved. It is distinct from
-:class:`~litestar.plugins.OpenAPISchemaPlugin`, which is used to extend OpenAPI schema generation
-for non-library Python types — this plugin contributes finished document pieces.
-
-Implementations may override either or both default methods:
-
-- :meth:`get_openapi_components(self) -> Components | None <litestar.plugins.OpenAPISpecPlugin.get_openapi_components>`
-  returns components that are merged into ``components`` on the document. Keys collide with
-  last-wins semantics.
-- :meth:`get_openapi_security_requirements(self, route_handler) -> Sequence[SecurityRequirement] | None <litestar.plugins.OpenAPISpecPlugin.get_openapi_security_requirements>`
-  returns a sequence of security requirements appended to the operation. Returning ``None`` contributes
-  nothing for that operation.
-
-Plugins are invoked in registration order.
-
-Example
-+++++++
-
-The following example shows a plugin that contributes a ``BearerJWT`` security scheme and applies
-it to every operation:
-
-.. literalinclude:: /examples/plugins/openapi_spec_plugin.py
-   :language: python
-   :caption: ``OpenAPISpecPlugin`` implementation example

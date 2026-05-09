@@ -5,12 +5,10 @@ from typing import Generic, TypeVar
 import msgspec
 import pytest
 
-from litestar._openapi.datastructures import OpenAPIContext, SchemaRegistry, _get_normalized_schema_key
+from litestar._openapi.datastructures import SchemaRegistry, _get_normalized_schema_key
 from litestar.exceptions import ImproperlyConfiguredException
-from litestar.openapi.config import OpenAPIConfig
 from litestar.openapi.spec import Reference, Schema
 from litestar.params import KwargDefinition
-from litestar.plugins import OpenAPISpecPlugin
 from litestar.typing import FieldDefinition
 from tests.models import DataclassPerson
 
@@ -116,31 +114,6 @@ def test_get_normalized_schema_key() -> None:
     assert _get_normalized_schema_key(FieldDefinition.from_annotation(generic_int)) != _get_normalized_schema_key(
         FieldDefinition.from_annotation(generic_str)
     )
-
-
-@pytest.fixture()
-def openapi_config() -> OpenAPIConfig:
-    return OpenAPIConfig(title="Test", version="1.0.0")
-
-
-def test_openapi_context_openapi_spec_defaults_to_empty(openapi_config: OpenAPIConfig) -> None:
-    """``openapi_spec`` defaults to an empty tuple when omitted, preserving the existing call signature."""
-    context = OpenAPIContext(openapi_config=openapi_config, plugins=[])
-    assert context.openapi_spec == ()
-
-
-def test_openapi_context_openapi_spec_round_trip(openapi_config: OpenAPIConfig) -> None:
-    """Plugins passed at construction are surfaced verbatim on the context attribute."""
-
-    class A(OpenAPISpecPlugin):
-        pass
-
-    class B(OpenAPISpecPlugin):
-        pass
-
-    a, b = A(), B()
-    context = OpenAPIContext(openapi_config=openapi_config, plugins=[], openapi_spec=(a, b))
-    assert context.openapi_spec == (a, b)
 
 
 def test_raise_on_override_for_same_field_definition() -> None:
