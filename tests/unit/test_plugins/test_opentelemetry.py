@@ -313,9 +313,9 @@ def test_after_exception_hook_handler_called_on_exception(
 
         # Verify the scope is provided
         assert scope is not None
-        assert scope["type"] == ScopeType.HTTP
-        assert scope["path"] == "/"
-        assert scope["method"] == "GET"
+        assert scope["type"] == ScopeType.HTTP  # pyright: ignore[reportGeneralTypeIssues]
+        assert scope["path"] == "/"  # pyright: ignore[reportGeneralTypeIssues]
+        assert scope["method"] == "GET"  # pyright: ignore[reportGeneralTypeIssues]
 
 
 def test_after_exception_hook_handler_not_called_on_success(
