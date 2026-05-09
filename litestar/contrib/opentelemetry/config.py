@@ -37,8 +37,19 @@ class OpenTelemetryConfig:
     Consult the [OpenTelemetry ASGI documentation](https://opentelemetry-python-contrib.readthedocs.io/en/latest/instrumentation/asgi/asgi.html) for more info about the configuration options.
     """
 
+    after_exception: list[AfterExceptionHookHandler] = field(default_factory=list)
+    """A list of callbacks that are called with the exception and the scope for every exception raised.
+
+    These handlers are added to the application-level ``after_exception`` hooks.
+
+    .. versionadded:: 2.16.0
+    """
     after_exception_hook_handler: AfterExceptionHookHandler | None = field(default=None)
-    """Callback which is called with the exception and the scope object for every exception raised."""
+    """Callback which is called with the exception and the scope object for every exception raised.
+
+    .. deprecated:: 2.16.0
+        Use :attr:`after_exception` instead.
+    """
 
     scope_span_details_extractor: Callable[[Scope], tuple[str, dict[str, Any]]] = field(
         default=get_route_details_from_scope
