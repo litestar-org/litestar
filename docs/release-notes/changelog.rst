@@ -61,7 +61,7 @@ Litestar 2 Changelog
         :issue: 4594
 
         Add an ``after_exception`` option to
-        :class:`~litestar.contrib.opentelemetry.OpenTelemetryConfig`, which will
+        ``litestar.contrib.opentelemetry.OpenTelemetryConfig``, which will
         add that hook to the applications ``after_exception`` hooks, allowing the
         middleware to react to exception, without handling them.
 
