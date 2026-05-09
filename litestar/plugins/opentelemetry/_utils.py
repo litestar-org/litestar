@@ -18,7 +18,7 @@ if TYPE_CHECKING:
     from litestar.types import Scope
 
 
-def get_route_details_from_scope(scope: "Scope") -> "tuple[str, dict[Any, str]]":
+def get_route_details_from_scope(scope: Scope) -> tuple[str, dict[Any, str]]:
     """Retrieve the span name and attributes from the ASGI scope.
 
     Args:

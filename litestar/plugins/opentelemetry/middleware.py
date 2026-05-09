@@ -24,7 +24,7 @@ if TYPE_CHECKING:
 class OpenTelemetryInstrumentationMiddleware(AbstractMiddleware):
     """OpenTelemetry Middleware."""
 
-    def __init__(self, app: "ASGIApp", config: "OpenTelemetryConfig") -> None:
+    def __init__(self, app: ASGIApp, config: OpenTelemetryConfig) -> None:
         """Middleware that adds OpenTelemetry instrumentation to the application.
 
         Args:
@@ -50,7 +50,7 @@ class OpenTelemetryInstrumentationMiddleware(AbstractMiddleware):
             http_capture_headers_sanitize_fields=config.http_capture_headers_sanitize_fields,
         )
 
-    async def __call__(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
+    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
         """ASGI callable.
 
         Args:
