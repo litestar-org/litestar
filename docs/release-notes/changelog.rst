@@ -11,7 +11,7 @@ Litestar 2 Changelog
 
         The ``litestar.repository`` module — including ``filters``, ``exceptions``,
         ``handlers``, ``abc``, and ``testing`` submodules — is deprecated and will
-        be removed in Litestar 3.0.0. Migrate to ``advanced_alchemy``: use
+        be removed before 3.0.0. Migrate to ``advanced_alchemy``: use
         ``advanced_alchemy.filters`` for filter types, ``advanced_alchemy.exceptions``
         for repository exceptions, and ``advanced_alchemy.repository.SQLAlchemyAsyncRepository``
         / ``SQLAlchemySyncRepository`` for the abstract base. The generic mock
