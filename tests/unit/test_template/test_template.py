@@ -10,9 +10,9 @@ import pytest
 
 from litestar import Litestar, MediaType, get
 from litestar.contrib.jinja import JinjaTemplateEngine
-from litestar.plugins.mako import MakoTemplateEngine
 from litestar.contrib.minijinja import MiniJinjaTemplateEngine
 from litestar.exceptions import ImproperlyConfiguredException
+from litestar.plugins.mako import MakoTemplateEngine
 from litestar.response.template import Template
 from litestar.template import TemplateEngineProtocol
 from litestar.template.config import TemplateConfig
