@@ -4,9 +4,9 @@ from typing import Any
 import pytest
 
 from litestar import MediaType, get
-from litestar.plugins.jinja import JinjaTemplateEngine
 from litestar.contrib.mako import MakoTemplateEngine
 from litestar.contrib.minijinja import MiniJinjaTemplateEngine
+from litestar.plugins.jinja import JinjaTemplateEngine
 from litestar.response.template import Template
 from litestar.template.config import TemplateConfig
 from litestar.testing import create_test_client
