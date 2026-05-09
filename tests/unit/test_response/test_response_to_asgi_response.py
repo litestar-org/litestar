@@ -11,7 +11,7 @@ from starlette.responses import Response as StarletteResponse
 
 from litestar import Litestar, MediaType, Request, Response, get
 from litestar.background_tasks import BackgroundTask
-from litestar.contrib.jinja import JinjaTemplateEngine
+from litestar.plugins.jinja import JinjaTemplateEngine
 from litestar.datastructures import Cookie, ResponseHeader
 from litestar.response import ServerSentEvent
 from litestar.response.base import ASGIResponse
