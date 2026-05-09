@@ -165,7 +165,7 @@ def test_create_error_responses_with_non_http_status_code() -> None:
 
 
 # ---------------------------------------------------------------------------
-# T5b — plugin_owned_status_codes pre-pass parameter
+# plugin_owned_status_codes pre-pass parameter
 # ---------------------------------------------------------------------------
 
 
