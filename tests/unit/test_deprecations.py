@@ -160,7 +160,7 @@ def test_litestar_repository_unknown_attribute_raises(import_path: str) -> None:
     """Unknown attributes on the deprecated shim modules raise AttributeError."""
     module = importlib.import_module(import_path)
     with pytest.raises(AttributeError, match="DoesNotExist"):
-        module.DoesNotExist  # noqa: B018
+        module.DoesNotExist
 
 
 def test_litestar_type_deprecation() -> None:
