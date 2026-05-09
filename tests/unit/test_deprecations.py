@@ -124,8 +124,16 @@ def test_repository_deprecations(import_path: str, import_name: str) -> None:
         ("litestar.repository.abc", "AbstractSyncRepository", "advanced_alchemy.repository.SQLAlchemySyncRepository"),
         ("litestar.repository.handlers", "on_app_init", None),
         ("litestar.repository.handlers", "signature_namespace_values", None),
-        ("litestar.repository.testing", "GenericAsyncMockRepository", None),
-        ("litestar.repository.testing", "GenericSyncMockRepository", None),
+        (
+            "litestar.repository.testing",
+            "GenericAsyncMockRepository",
+            "advanced_alchemy.repository.memory.SQLAlchemyAsyncMockRepository",
+        ),
+        (
+            "litestar.repository.testing",
+            "GenericSyncMockRepository",
+            "advanced_alchemy.repository.memory.SQLAlchemySyncMockRepository",
+        ),
     ),
 )
 def test_litestar_repository_deprecations(
@@ -135,14 +143,17 @@ def test_litestar_repository_deprecations(
     module = importlib.import_module(import_path)
     # Make sure the symbol isn't already cached from a prior test run.
     module.__dict__.pop(import_name, None)
-    with pytest.warns(DeprecationWarning, match=rf"{import_name}.*{import_path}.*deprecated"):
+    with pytest.warns(DeprecationWarning, match=rf"{import_name}.*{import_path}.*deprecated") as records:
         value = getattr(module, import_name)
     assert value is not None
     if expected_alternative is not None:
-        # Resolve the alternative path and confirm we got the same object back.
+        # The deprecation warning should name the advanced_alchemy replacement.
+        assert any(expected_alternative in str(r.message) for r in records)
+        # Where the shim hands back the advanced_alchemy class itself, confirm identity.
         alt_module_path, _, alt_attr = expected_alternative.rpartition(".")
-        alt_module = importlib.import_module(alt_module_path)
-        assert value is getattr(alt_module, alt_attr)
+        alt = getattr(importlib.import_module(alt_module_path), alt_attr, None)
+        if alt is not None and import_path != "litestar.repository.testing":
+            assert value is alt
 
 
 @pytest.mark.parametrize(

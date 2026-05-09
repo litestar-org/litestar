@@ -4,6 +4,11 @@ from litestar.utils import warn_deprecation
 
 __all__ = ("GenericAsyncMockRepository", "GenericSyncMockRepository")
 
+_ALTERNATIVES = {
+    "GenericAsyncMockRepository": "advanced_alchemy.repository.memory.SQLAlchemyAsyncMockRepository",
+    "GenericSyncMockRepository": "advanced_alchemy.repository.memory.SQLAlchemySyncMockRepository",
+}
+
 
 def __getattr__(attr_name: str) -> object:
     if attr_name in __all__:
@@ -22,9 +27,9 @@ def __getattr__(attr_name: str) -> object:
             version="2.22.0",
             kind="import",
             removal_in="3.0.0",
-            info=f"importing {attr_name} from 'litestar.repository.testing' is deprecated. There is "
-            f"no direct replacement; rewrite tests against a real repository or use the testing "
-            f"utilities provided by 'advanced_alchemy'.",
+            alternative=_ALTERNATIVES[attr_name],
+            info=f"importing {attr_name} from 'litestar.repository.testing' is deprecated, please "
+            f"import it from '{_ALTERNATIVES[attr_name]}' instead",
         )
 
         value = globals()[attr_name] = mapping[attr_name]

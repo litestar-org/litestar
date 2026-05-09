@@ -2,9 +2,9 @@ testing
 =======
 
 .. deprecated:: 2.22.0
-    No replacement. The generic mock repository is removed before 3.0.0.
-    Rewrite tests against a real repository or use the testing utilities provided by
-    ``advanced_alchemy``.
+    Use :class:`advanced_alchemy.repository.memory.SQLAlchemyAsyncMockRepository` /
+    :class:`advanced_alchemy.repository.memory.SQLAlchemySyncMockRepository` instead.
+    This module is removed before 3.0.0.
 
 .. automodule:: litestar.repository.testing
     :members: generic_mock_repository
