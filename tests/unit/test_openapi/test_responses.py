@@ -578,3 +578,173 @@ def test_file_response_media_type(content_media_type: Any, expected: Any, create
 
     response = create_factory(handler).create_success_response()
     assert next(iter(response.content.values())).schema.content_media_type == expected  # type: ignore[union-attr]
+
+
+def test_create_responses_with_custom_error_response_creator() -> None:
+    from collections.abc import Iterator
+
+    def custom_error_responses(exceptions: list[type[HTTPException]]) -> Iterator[tuple[str, OpenAPIResponse]]:
+        for exc in exceptions:
+            yield (
+                str(exc.status_code),
+                OpenAPIResponse(
+                    description="Custom error",
+                    content={
+                        MediaType.JSON: OpenAPIMediaType(
+                            schema=Schema(
+                                type=OpenAPIType.OBJECT,
+                                required=["custom_field"],
+                                properties={"custom_field": Schema(type=OpenAPIType.STRING)},
+                            )
+                        )
+                    },
+                ),
+            )
+
+    @get("/test", name="test", raises=[PetException])
+    def handler() -> dict:
+        return {}
+
+    route_handler = get_registered_route_handler(handler, "test")
+
+    factory = ResponseFactory(
+        context=OpenAPIContext(
+            openapi_config=OpenAPIConfig(
+                title="test",
+                version="1.0.0",
+                error_response_creator=custom_error_responses,
+            ),
+            plugins=openapi_schema_plugins,
+        ),
+        route_handler=route_handler,
+    )
+
+    responses = factory.create_responses(raises_validation_error=False)
+    assert responses is not None
+    assert str(PetException.status_code) in responses
+
+    error_response = responses[str(PetException.status_code)]
+    assert not isinstance(error_response, Reference)
+    assert error_response.description == "Custom error"
+    assert error_response.content is not None
+    schema = error_response.content[MediaType.JSON].schema
+    assert isinstance(schema, Schema)
+    assert schema.required == ["custom_field"]
+    assert "custom_field" in schema.properties  # type: ignore[operator]
+
+
+def test_create_responses_with_default_error_response_creator() -> None:
+
+    @get("/test", name="test", raises=[PetException])
+    def handler() -> dict:
+        return {}
+
+    route_handler = get_registered_route_handler(handler, "test")
+
+    factory = ResponseFactory(
+        context=OpenAPIContext(
+            openapi_config=OpenAPIConfig(title="test", version="1.0.0"),
+            plugins=openapi_schema_plugins,
+        ),
+        route_handler=route_handler,
+    )
+
+    responses = factory.create_responses(raises_validation_error=False)
+    assert responses is not None
+    assert str(PetException.status_code) in responses
+
+    error_response = responses[str(PetException.status_code)]
+    assert not isinstance(error_response, Reference)
+    assert error_response.content is not None
+    schema = error_response.content[MediaType.JSON].schema
+    assert isinstance(schema, Schema)
+
+    assert schema.required == ["detail", "status_code"]
+    assert "status_code" in schema.properties  # type: ignore[operator]
+    assert "detail" in schema.properties  # type: ignore[operator]
+
+
+def test_custom_error_response_creator_problem_details_style() -> None:
+    import contextlib
+    from collections.abc import Iterator
+
+    def problem_details_error_responses(
+        exceptions: list[type[HTTPException]],
+    ) -> Iterator[tuple[str, OpenAPIResponse]]:
+
+        grouped: dict[int, list[type[HTTPException]]] = {}
+        for exc in exceptions:
+            grouped.setdefault(exc.status_code, []).append(exc)
+
+        for status_code, group in grouped.items():
+            schemas = []
+            description = ""
+            for exc in group:
+                example_title = ""
+                example_detail = ""
+                if hasattr(exc, "detail") and exc.detail:
+                    description = exc.detail
+                    example_detail = exc.detail
+                if not example_title:
+                    with contextlib.suppress(Exception):
+                        example_title = HTTPStatus(status_code).phrase
+                schemas.append(
+                    Schema(
+                        type=OpenAPIType.OBJECT,
+                        required=["title", "status"],
+                        properties={
+                            "status": Schema(type=OpenAPIType.INTEGER),
+                            "title": Schema(type=OpenAPIType.STRING),
+                            "detail": Schema(type=OpenAPIType.STRING),
+                        },
+                        examples=[{"status": status_code, "title": example_title, "detail": example_detail}],
+                    )
+                )
+            schema = Schema(one_of=schemas) if len(schemas) > 1 else schemas[0]
+            if not description:
+                with contextlib.suppress(Exception):
+                    description = HTTPStatus(status_code).description
+
+            yield (
+                str(status_code),
+                OpenAPIResponse(
+                    description=description,
+                    content={"application/problem+json": OpenAPIMediaType(schema=schema)},
+                ),
+            )
+
+    @get("/test", name="test", raises=[PetException, ValidationException])
+    def handler() -> dict:
+        return {}
+
+    route_handler = get_registered_route_handler(handler, "test")
+
+    factory = ResponseFactory(
+        context=OpenAPIContext(
+            openapi_config=OpenAPIConfig(
+                title="test",
+                version="1.0.0",
+                error_response_creator=problem_details_error_responses,
+            ),
+            plugins=openapi_schema_plugins,
+        ),
+        route_handler=route_handler,
+    )
+
+    responses = factory.create_responses(raises_validation_error=False)
+    assert responses is not None
+
+    pet_response = responses[str(PetException.status_code)]
+    assert not isinstance(pet_response, Reference)
+    assert pet_response.content is not None
+    assert "application/problem+json" in pet_response.content
+    schema = pet_response.content["application/problem+json"].schema
+    assert isinstance(schema, Schema)
+    assert schema.required == ["title", "status"]
+    assert "status" in schema.properties  # type: ignore[operator]
+    assert "title" in schema.properties  # type: ignore[operator]
+
+    validation_response = responses[str(ValidationException.status_code)]
+    assert not isinstance(validation_response, Reference)
+    assert validation_response.content is not None
+    assert "application/problem+json" in validation_response.content

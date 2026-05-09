@@ -26,7 +26,7 @@ if TYPE_CHECKING:
 
     from litestar.openapi.plugins import OpenAPIRenderPlugin
     from litestar.router import Router
-    from litestar.types.callable_types import OperationIDCreator
+    from litestar.types.callable_types import ErrorResponsesCreator, OperationIDCreator
 
 __all__ = ("OpenAPIConfig",)
 
@@ -90,6 +90,12 @@ class OpenAPIConfig:
     """
     operation_id_creator: OperationIDCreator = default_operation_id_creator
     """A callable that generates unique operation ids"""
+    error_response_creator: ErrorResponsesCreator | None = field(default=None)
+    """A callable that generates OpenAPI schemas for error responses.
+
+    When ``None``, the default schema matching ``HTTPException`` is used.
+    Useful when error responses are customized via exception handlers or plugins (e.g. ``ProblemDetailsPlugin``).
+    """
     path: str = "/schema"
     """Base path for the OpenAPI documentation endpoints.
 

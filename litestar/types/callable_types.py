@@ -4,14 +4,17 @@ from collections.abc import AsyncGenerator, Awaitable, Callable, Generator
 from typing import TYPE_CHECKING, Any, TypeVar
 
 if TYPE_CHECKING:
+    from collections.abc import Iterator
     from typing import TypeAlias
 
     from litestar.app import Litestar
     from litestar.config.app import AppConfig
     from litestar.connection.base import ASGIConnection
     from litestar.connection.request import Request
+    from litestar.exceptions.http_exceptions import HTTPException
     from litestar.handlers.base import BaseRouteHandler
     from litestar.handlers.http_handlers import HTTPRouteHandler
+    from litestar.openapi.spec import OpenAPIResponse
     from litestar.response.base import Response
     from litestar.types.asgi_types import ASGIApp, Message, Method, Scope
     from litestar.types.helper_types import SyncOrAsyncUnion
@@ -51,3 +54,4 @@ OnAppInitHandler: TypeAlias = "Callable[[AppConfig], AppConfig]"
 OperationIDCreator: TypeAlias = "Callable[[HTTPRouteHandler, Method, list[str | PathParameterDefinition]], str]"
 Serializer: TypeAlias = Callable[[Any], Any]
 HTTPHandlerDecorator: TypeAlias = "Callable[..., Callable[[AnyCallable], HTTPRouteHandler]]"
+ErrorResponsesCreator: TypeAlias = "Callable[[list[type[HTTPException]]], Iterator[tuple[str, OpenAPIResponse]]]"

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import inspect
+import warnings
 from collections.abc import AsyncGenerator, Callable
 from contextlib import asynccontextmanager
 from dataclasses import fields
@@ -447,3 +448,38 @@ def test_handler_registration_on_registration_called_only_once(mocker: MockerFix
         )
         == 1
     )
+
+
+def test_warn_on_stdlib_http_exception_in_exception_handlers() -> None:
+    """Test that a warning is emitted when http.client.HTTPException is used as an exception handler key."""
+    from http.client import HTTPException as StdlibHTTPException
+
+    def handler(_: Request, exc: Exception) -> Response:
+        return Response(content="error", status_code=500)
+
+    with pytest.warns(LitestarWarning, match="http.client"):
+        Litestar(exception_handlers={StdlibHTTPException: handler})
+
+
+def test_no_warn_on_litestar_http_exception_in_exception_handlers() -> None:
+    """Test that no warning is emitted when litestar.exceptions.HTTPException is used."""
+    from litestar.exceptions import HTTPException
+
+    def handler(_: Request, exc: Exception) -> Response:
+        return Response(content="error", status_code=500)
+
+    with warnings.catch_warnings():
+        warnings.simplefilter("error", LitestarWarning)
+        # Should not raise any LitestarWarning
+        Litestar(exception_handlers={HTTPException: handler})
+
+
+def test_no_warn_on_int_key_in_exception_handlers() -> None:
+    """Test that no warning is emitted for integer status code keys."""
+
+    def handler(_: Request, exc: Exception) -> Response:
+        return Response(content="error", status_code=500)
+
+    with warnings.catch_warnings():
+        warnings.simplefilter("error", LitestarWarning)
+        Litestar(exception_handlers={500: handler})
