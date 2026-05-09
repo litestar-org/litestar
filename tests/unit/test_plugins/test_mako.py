@@ -1,9 +1,11 @@
+# pyright: reportUnnecessaryTypeIgnoreComment=false
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
 import pytest
-from mako.lookup import TemplateLookup
+from mako.lookup import TemplateLookup  # type: ignore[import-untyped]
 
 from litestar.exceptions import ImproperlyConfiguredException, TemplateNotFoundException
 from litestar.plugins.mako import MakoTemplate, MakoTemplateEngine
