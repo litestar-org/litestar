@@ -12,6 +12,7 @@ plugins
     attrs
     flash_messages
     htmx
+    minijinja
     opentelemetry
     problem_details
     prometheus
