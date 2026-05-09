@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from dataclasses import fields
 from typing import TYPE_CHECKING, Any
 
 from litestar._openapi.datastructures import OpenAPIContext
@@ -23,8 +24,19 @@ if TYPE_CHECKING:
     from litestar.handlers import HTTPRouteHandler
     from litestar.openapi.config import OpenAPIConfig
     from litestar.openapi.plugins import OpenAPIRenderPlugin
-    from litestar.openapi.spec import OpenAPI, PathItem
+    from litestar.openapi.spec import Components, OpenAPI, PathItem
     from litestar.routes import BaseRoute
+
+
+def merge_openapi_components(target: Components, source: Components) -> None:
+    """Merge contributed OpenAPI components into a generated components object."""
+    for field in fields(source):
+        if source_value := getattr(source, field.name, None):
+            target_value = getattr(target, field.name, None)
+            if target_value is None:
+                setattr(target, field.name, dict(source_value))
+            else:
+                target_value.update(source_value)
 
 
 def handle_schema_path_not_found(path: str = "/") -> Response:
@@ -76,7 +88,11 @@ class OpenAPIPlugin(InitPlugin, ReceiveRoutePlugin):
             ExampleFactory.seed_random(openapi_config.random_seed)
 
         openapi = openapi_config.to_openapi_schema()
-        context = OpenAPIContext(openapi_config=openapi_config, plugins=self.app.plugins.openapi)
+        context = OpenAPIContext(
+            openapi_config=openapi_config,
+            plugins=self.app.plugins.openapi,
+            openapi_spec=self.app.plugins.openapi_spec,
+        )
         path_items: dict[str, PathItem] = {}
         for route in self.included_routes.values():
             path = route.path_format or "/"
@@ -87,6 +103,9 @@ class OpenAPIPlugin(InitPlugin, ReceiveRoutePlugin):
 
         openapi.paths = path_items
         openapi.components.schemas = context.schema_registry.generate_components_schemas()
+        for contributor in context.openapi_spec:
+            if components := contributor.get_openapi_components():
+                merge_openapi_components(openapi.components, components)
         return openapi
 
     def provide_openapi(self) -> OpenAPI:
