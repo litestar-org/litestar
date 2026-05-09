@@ -508,497 +508,401 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 </span><span data-line="4">
 </span><span data-line="5"><span class="kn">import</span><span class="w"> </span><span class="nn">abc</span>
-</span><span data-line="6"><span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
-</span><span data-line="7"><span class="kn">from</span><span class="w"> </span><span class="nn">contextlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">contextmanager</span>
-</span><span data-line="8"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Protocol</span><span class="p">,</span> <span class="n">TypeVar</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">cast</span><span class="p">,</span> <span class="n">runtime_checkable</span>
-</span><span data-line="9">
-</span><span data-line="10"><span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
-</span><span data-line="11">    <span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">Iterator</span><span class="p">,</span> <span class="n">Sequence</span>
-</span><span data-line="12">    <span class="kn">from</span><span class="w"> </span><span class="nn">inspect</span><span class="w"> </span><span class="kn">import</span> <span class="n">Signature</span>
-</span><span data-line="13">    <span class="kn">from</span><span class="w"> </span><span class="nn">re</span><span class="w"> </span><span class="kn">import</span> <span class="n">Pattern</span>
+</span><span data-line="6"><span class="kn">from</span><span class="w"> </span><span class="nn">contextlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">contextmanager</span>
+</span><span data-line="7"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Protocol</span><span class="p">,</span> <span class="n">TypeVar</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">cast</span><span class="p">,</span> <span class="n">runtime_checkable</span>
+</span><span data-line="8">
+</span><span data-line="9"><span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+</span><span data-line="10">    <span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Iterator</span>
+</span><span data-line="11">    <span class="kn">from</span><span class="w"> </span><span class="nn">inspect</span><span class="w"> </span><span class="kn">import</span> <span class="n">Signature</span>
+</span><span data-line="12">
+</span><span data-line="13">    <span class="kn">from</span><span class="w"> </span><span class="nn">click</span><span class="w"> </span><span class="kn">import</span> <span class="n">Group</span>
 </span><span data-line="14">
-</span><span data-line="15">    <span class="kn">from</span><span class="w"> </span><span class="nn">click</span><span class="w"> </span><span class="kn">import</span> <span class="n">Group</span>
-</span><span data-line="16">
-</span><span data-line="17">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar._openapi.schema_generation</span><span class="w"> </span><span class="kn">import</span> <span class="n">SchemaCreator</span>
-</span><span data-line="18">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.app</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span>
-</span><span data-line="19">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.config.app</span><span class="w"> </span><span class="kn">import</span> <span class="n">AppConfig</span>
-</span><span data-line="20">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.dto</span><span class="w"> </span><span class="kn">import</span> <span class="n">AbstractDTO</span>
-</span><span data-line="21">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.handlers.http_handlers</span><span class="w"> </span><span class="kn">import</span> <span class="n">HTTPRouteHandler</span>
-</span><span data-line="22">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.openapi.spec</span><span class="w"> </span><span class="kn">import</span> <span class="n">Components</span><span class="p">,</span> <span class="n">Reference</span><span class="p">,</span> <span class="n">Schema</span><span class="p">,</span> <span class="n">SecurityRequirement</span>
-</span><span data-line="23">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.routes</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseRoute</span>
-</span><span data-line="24">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">FieldDefinition</span>
-</span><span data-line="25">
-</span><span data-line="26"><span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span>
-</span><span data-line="27">    <span class="s2">&quot;CLIPlugin&quot;</span><span class="p">,</span>
-</span><span data-line="28">    <span class="s2">&quot;DIPlugin&quot;</span><span class="p">,</span>
-</span><span data-line="29">    <span class="s2">&quot;InitPlugin&quot;</span><span class="p">,</span>
-</span><span data-line="30">    <span class="s2">&quot;InitPluginProtocol&quot;</span><span class="p">,</span>
-</span><span data-line="31">    <span class="s2">&quot;OpenAPISchemaPlugin&quot;</span><span class="p">,</span>
-</span><span data-line="32">    <span class="s2">&quot;OpenAPISpecPlugin&quot;</span><span class="p">,</span>
-</span><span data-line="33">    <span class="s2">&quot;PluginProtocol&quot;</span><span class="p">,</span>
-</span><span data-line="34">    <span class="s2">&quot;PluginRegistry&quot;</span><span class="p">,</span>
-</span><span data-line="35">    <span class="s2">&quot;ReceiveRoutePlugin&quot;</span><span class="p">,</span>
-</span><span data-line="36">    <span class="s2">&quot;SerializationPlugin&quot;</span><span class="p">,</span>
-</span><span data-line="37"><span class="p">)</span>
-</span><span data-line="38">
-</span><span data-line="39">
+</span><span data-line="15">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar._openapi.schema_generation</span><span class="w"> </span><span class="kn">import</span> <span class="n">SchemaCreator</span>
+</span><span data-line="16">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.app</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span>
+</span><span data-line="17">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.config.app</span><span class="w"> </span><span class="kn">import</span> <span class="n">AppConfig</span>
+</span><span data-line="18">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.dto</span><span class="w"> </span><span class="kn">import</span> <span class="n">AbstractDTO</span>
+</span><span data-line="19">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.openapi.spec</span><span class="w"> </span><span class="kn">import</span> <span class="n">Reference</span><span class="p">,</span> <span class="n">Schema</span>
+</span><span data-line="20">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.routes</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseRoute</span>
+</span><span data-line="21">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">FieldDefinition</span>
+</span><span data-line="22">
+</span><span data-line="23"><span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span>
+</span><span data-line="24">    <span class="s2">&quot;CLIPlugin&quot;</span><span class="p">,</span>
+</span><span data-line="25">    <span class="s2">&quot;DIPlugin&quot;</span><span class="p">,</span>
+</span><span data-line="26">    <span class="s2">&quot;InitPlugin&quot;</span><span class="p">,</span>
+</span><span data-line="27">    <span class="s2">&quot;InitPluginProtocol&quot;</span><span class="p">,</span>
+</span><span data-line="28">    <span class="s2">&quot;OpenAPISchemaPlugin&quot;</span><span class="p">,</span>
+</span><span data-line="29">    <span class="s2">&quot;PluginProtocol&quot;</span><span class="p">,</span>
+</span><span data-line="30">    <span class="s2">&quot;PluginRegistry&quot;</span><span class="p">,</span>
+</span><span data-line="31">    <span class="s2">&quot;ReceiveRoutePlugin&quot;</span><span class="p">,</span>
+</span><span data-line="32">    <span class="s2">&quot;SerializationPlugin&quot;</span><span class="p">,</span>
+</span><span data-line="33"><span class="p">)</span>
+</span><span data-line="34">
+</span><span data-line="35">
 <div class="viewcode-block" id="InitPluginProtocol">
 <a class="viewcode-back" href="../../../reference/plugins/index.html#litestar.plugins.InitPluginProtocol">[docs]</a>
-</span><span data-line="40"><span class="nd">@runtime_checkable</span>
-</span><span data-line="41"><span class="k">class</span><span class="w"> </span><span class="nc">InitPluginProtocol</span><span class="p">(</span><span class="n">Protocol</span><span class="p">):</span>
-</span><span data-line="42"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Protocol used to define plugins that affect the application&#39;s init process.</span>
+</span><span data-line="36"><span class="nd">@runtime_checkable</span>
+</span><span data-line="37"><span class="k">class</span><span class="w"> </span><span class="nc">InitPluginProtocol</span><span class="p">(</span><span class="n">Protocol</span><span class="p">):</span>
+</span><span data-line="38"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Protocol used to define plugins that affect the application&#39;s init process.</span>
+</span><span data-line="39">
+</span><span data-line="40"><span class="sd">    .. deprecated:: 2.15</span>
+</span><span data-line="41"><span class="sd">        Use &#39;InitPlugin&#39; instead</span>
+</span><span data-line="42"><span class="sd">    &quot;&quot;&quot;</span>
 </span><span data-line="43">
-</span><span data-line="44"><span class="sd">    .. deprecated:: 2.15</span>
-</span><span data-line="45"><span class="sd">        Use &#39;InitPlugin&#39; instead</span>
-</span><span data-line="46"><span class="sd">    &quot;&quot;&quot;</span>
-</span><span data-line="47">
-</span><span data-line="48">    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">()</span>
-</span><span data-line="49">
+</span><span data-line="44">    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">()</span>
+</span><span data-line="45">
 <div class="viewcode-block" id="InitPluginProtocol.on_app_init">
 <a class="viewcode-back" href="../../../reference/plugins/index.html#litestar.plugins.InitPluginProtocol.on_app_init">[docs]</a>
-</span><span data-line="50">    <span class="k">def</span><span class="w"> </span><span class="nf">on_app_init</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">app_config</span><span class="p">:</span> <span class="n">AppConfig</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AppConfig</span><span class="p">:</span>
-</span><span data-line="51"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Receive the :class:`AppConfig&lt;.config.app.AppConfig&gt;` instance after `on_app_init` hooks have been called.</span>
-</span><span data-line="52">
-</span><span data-line="53"><span class="sd">        Examples:</span>
-</span><span data-line="54"><span class="sd">            .. code-block:: python</span>
+</span><span data-line="46">    <span class="k">def</span><span class="w"> </span><span class="nf">on_app_init</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">app_config</span><span class="p">:</span> <span class="n">AppConfig</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AppConfig</span><span class="p">:</span>
+</span><span data-line="47"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Receive the :class:`AppConfig&lt;.config.app.AppConfig&gt;` instance after `on_app_init` hooks have been called.</span>
+</span><span data-line="48">
+</span><span data-line="49"><span class="sd">        Examples:</span>
+</span><span data-line="50"><span class="sd">            .. code-block:: python</span>
+</span><span data-line="51">
+</span><span data-line="52"><span class="sd">                from litestar import Litestar, get</span>
+</span><span data-line="53"><span class="sd">                from litestar.di import Provide</span>
+</span><span data-line="54"><span class="sd">                from litestar.plugins import InitPluginProtocol</span>
 </span><span data-line="55">
-</span><span data-line="56"><span class="sd">                from litestar import Litestar, get</span>
-</span><span data-line="57"><span class="sd">                from litestar.di import Provide</span>
-</span><span data-line="58"><span class="sd">                from litestar.plugins import InitPluginProtocol</span>
+</span><span data-line="56">
+</span><span data-line="57"><span class="sd">                def get_name() -&gt; str:</span>
+</span><span data-line="58"><span class="sd">                    return &quot;world&quot;</span>
 </span><span data-line="59">
 </span><span data-line="60">
-</span><span data-line="61"><span class="sd">                def get_name() -&gt; str:</span>
-</span><span data-line="62"><span class="sd">                    return &quot;world&quot;</span>
-</span><span data-line="63">
+</span><span data-line="61"><span class="sd">                @get(&quot;/my-path&quot;)</span>
+</span><span data-line="62"><span class="sd">                def my_route_handler(name: str) -&gt; dict[str, str]:</span>
+</span><span data-line="63"><span class="sd">                    return {&quot;hello&quot;: name}</span>
 </span><span data-line="64">
-</span><span data-line="65"><span class="sd">                @get(&quot;/my-path&quot;)</span>
-</span><span data-line="66"><span class="sd">                def my_route_handler(name: str) -&gt; dict[str, str]:</span>
-</span><span data-line="67"><span class="sd">                    return {&quot;hello&quot;: name}</span>
-</span><span data-line="68">
-</span><span data-line="69">
-</span><span data-line="70"><span class="sd">                class MyPlugin(InitPluginProtocol):</span>
-</span><span data-line="71"><span class="sd">                    def on_app_init(self, app_config: AppConfig) -&gt; AppConfig:</span>
-</span><span data-line="72"><span class="sd">                        app_config.dependencies[&quot;name&quot;] = Provide(get_name)</span>
-</span><span data-line="73"><span class="sd">                        app_config.route_handlers.append(my_route_handler)</span>
-</span><span data-line="74"><span class="sd">                        return app_config</span>
-</span><span data-line="75">
-</span><span data-line="76">
-</span><span data-line="77"><span class="sd">                app = Litestar(plugins=[MyPlugin()])</span>
-</span><span data-line="78">
-</span><span data-line="79"><span class="sd">        Args:</span>
-</span><span data-line="80"><span class="sd">            app_config: The :class:`AppConfig &lt;litestar.config.app.AppConfig&gt;` instance.</span>
-</span><span data-line="81">
-</span><span data-line="82"><span class="sd">        Returns:</span>
-</span><span data-line="83"><span class="sd">            The app config object.</span>
-</span><span data-line="84"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="85">        <span class="k">return</span> <span class="n">app_config</span>  <span class="c1"># pragma: no cover</span></div>
+</span><span data-line="65">
+</span><span data-line="66"><span class="sd">                class MyPlugin(InitPluginProtocol):</span>
+</span><span data-line="67"><span class="sd">                    def on_app_init(self, app_config: AppConfig) -&gt; AppConfig:</span>
+</span><span data-line="68"><span class="sd">                        app_config.dependencies[&quot;name&quot;] = Provide(get_name)</span>
+</span><span data-line="69"><span class="sd">                        app_config.route_handlers.append(my_route_handler)</span>
+</span><span data-line="70"><span class="sd">                        return app_config</span>
+</span><span data-line="71">
+</span><span data-line="72">
+</span><span data-line="73"><span class="sd">                app = Litestar(plugins=[MyPlugin()])</span>
+</span><span data-line="74">
+</span><span data-line="75"><span class="sd">        Args:</span>
+</span><span data-line="76"><span class="sd">            app_config: The :class:`AppConfig &lt;litestar.config.app.AppConfig&gt;` instance.</span>
+</span><span data-line="77">
+</span><span data-line="78"><span class="sd">        Returns:</span>
+</span><span data-line="79"><span class="sd">            The app config object.</span>
+</span><span data-line="80"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="81">        <span class="k">return</span> <span class="n">app_config</span>  <span class="c1"># pragma: no cover</span></div>
 </div>
 
-</span><span data-line="86">
-</span><span data-line="87">
+</span><span data-line="82">
+</span><span data-line="83">
 <div class="viewcode-block" id="InitPlugin">
 <a class="viewcode-back" href="../../../reference/plugins/index.html#litestar.plugins.InitPlugin">[docs]</a>
-</span><span data-line="88"><span class="k">class</span><span class="w"> </span><span class="nc">InitPlugin</span><span class="p">(</span><span class="n">InitPluginProtocol</span><span class="p">):</span>
-</span><span data-line="89"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Protocol used to define plugins that affect the application&#39;s init process.&quot;&quot;&quot;</span>
-</span><span data-line="90">
-</span><span data-line="91">    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">()</span>
-</span><span data-line="92">
+</span><span data-line="84"><span class="k">class</span><span class="w"> </span><span class="nc">InitPlugin</span><span class="p">(</span><span class="n">InitPluginProtocol</span><span class="p">):</span>
+</span><span data-line="85"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Protocol used to define plugins that affect the application&#39;s init process.&quot;&quot;&quot;</span>
+</span><span data-line="86">
+</span><span data-line="87">    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">()</span>
+</span><span data-line="88">
 <div class="viewcode-block" id="InitPlugin.on_app_init">
 <a class="viewcode-back" href="../../../reference/plugins/index.html#litestar.plugins.InitPlugin.on_app_init">[docs]</a>
-</span><span data-line="93">    <span class="k">def</span><span class="w"> </span><span class="nf">on_app_init</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">app_config</span><span class="p">:</span> <span class="n">AppConfig</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AppConfig</span><span class="p">:</span>
-</span><span data-line="94"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Receive the :class:`AppConfig&lt;.config.app.AppConfig&gt;` instance after `on_app_init` hooks have been called.</span>
-</span><span data-line="95">
-</span><span data-line="96"><span class="sd">        Examples:</span>
-</span><span data-line="97"><span class="sd">            .. code-block:: python</span>
+</span><span data-line="89">    <span class="k">def</span><span class="w"> </span><span class="nf">on_app_init</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">app_config</span><span class="p">:</span> <span class="n">AppConfig</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AppConfig</span><span class="p">:</span>
+</span><span data-line="90"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Receive the :class:`AppConfig&lt;.config.app.AppConfig&gt;` instance after `on_app_init` hooks have been called.</span>
+</span><span data-line="91">
+</span><span data-line="92"><span class="sd">        Examples:</span>
+</span><span data-line="93"><span class="sd">            .. code-block:: python</span>
+</span><span data-line="94">
+</span><span data-line="95"><span class="sd">                from litestar import Litestar, get</span>
+</span><span data-line="96"><span class="sd">                from litestar.di import Provide</span>
+</span><span data-line="97"><span class="sd">                from litestar.plugins import InitPluginProtocol</span>
 </span><span data-line="98">
-</span><span data-line="99"><span class="sd">                from litestar import Litestar, get</span>
-</span><span data-line="100"><span class="sd">                from litestar.di import Provide</span>
-</span><span data-line="101"><span class="sd">                from litestar.plugins import InitPluginProtocol</span>
+</span><span data-line="99">
+</span><span data-line="100"><span class="sd">                def get_name() -&gt; str:</span>
+</span><span data-line="101"><span class="sd">                    return &quot;world&quot;</span>
 </span><span data-line="102">
 </span><span data-line="103">
-</span><span data-line="104"><span class="sd">                def get_name() -&gt; str:</span>
-</span><span data-line="105"><span class="sd">                    return &quot;world&quot;</span>
-</span><span data-line="106">
+</span><span data-line="104"><span class="sd">                @get(&quot;/my-path&quot;)</span>
+</span><span data-line="105"><span class="sd">                def my_route_handler(name: str) -&gt; dict[str, str]:</span>
+</span><span data-line="106"><span class="sd">                    return {&quot;hello&quot;: name}</span>
 </span><span data-line="107">
-</span><span data-line="108"><span class="sd">                @get(&quot;/my-path&quot;)</span>
-</span><span data-line="109"><span class="sd">                def my_route_handler(name: str) -&gt; dict[str, str]:</span>
-</span><span data-line="110"><span class="sd">                    return {&quot;hello&quot;: name}</span>
-</span><span data-line="111">
-</span><span data-line="112">
-</span><span data-line="113"><span class="sd">                class MyPlugin(InitPluginProtocol):</span>
-</span><span data-line="114"><span class="sd">                    def on_app_init(self, app_config: AppConfig) -&gt; AppConfig:</span>
-</span><span data-line="115"><span class="sd">                        app_config.dependencies[&quot;name&quot;] = Provide(get_name)</span>
-</span><span data-line="116"><span class="sd">                        app_config.route_handlers.append(my_route_handler)</span>
-</span><span data-line="117"><span class="sd">                        return app_config</span>
-</span><span data-line="118">
-</span><span data-line="119">
-</span><span data-line="120"><span class="sd">                app = Litestar(plugins=[MyPlugin()])</span>
-</span><span data-line="121">
-</span><span data-line="122"><span class="sd">        Args:</span>
-</span><span data-line="123"><span class="sd">            app_config: The :class:`AppConfig &lt;litestar.config.app.AppConfig&gt;` instance.</span>
-</span><span data-line="124">
-</span><span data-line="125"><span class="sd">        Returns:</span>
-</span><span data-line="126"><span class="sd">            The app config object.</span>
-</span><span data-line="127"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="128">        <span class="k">return</span> <span class="n">app_config</span>  <span class="c1"># pragma: no cover</span></div>
+</span><span data-line="108">
+</span><span data-line="109"><span class="sd">                class MyPlugin(InitPluginProtocol):</span>
+</span><span data-line="110"><span class="sd">                    def on_app_init(self, app_config: AppConfig) -&gt; AppConfig:</span>
+</span><span data-line="111"><span class="sd">                        app_config.dependencies[&quot;name&quot;] = Provide(get_name)</span>
+</span><span data-line="112"><span class="sd">                        app_config.route_handlers.append(my_route_handler)</span>
+</span><span data-line="113"><span class="sd">                        return app_config</span>
+</span><span data-line="114">
+</span><span data-line="115">
+</span><span data-line="116"><span class="sd">                app = Litestar(plugins=[MyPlugin()])</span>
+</span><span data-line="117">
+</span><span data-line="118"><span class="sd">        Args:</span>
+</span><span data-line="119"><span class="sd">            app_config: The :class:`AppConfig &lt;litestar.config.app.AppConfig&gt;` instance.</span>
+</span><span data-line="120">
+</span><span data-line="121"><span class="sd">        Returns:</span>
+</span><span data-line="122"><span class="sd">            The app config object.</span>
+</span><span data-line="123"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="124">        <span class="k">return</span> <span class="n">app_config</span>  <span class="c1"># pragma: no cover</span></div>
 </div>
 
-</span><span data-line="129">
-</span><span data-line="130">
+</span><span data-line="125">
+</span><span data-line="126">
 <div class="viewcode-block" id="ReceiveRoutePlugin">
 <a class="viewcode-back" href="../../../reference/plugins/index.html#litestar.plugins.ReceiveRoutePlugin">[docs]</a>
-</span><span data-line="131"><span class="k">class</span><span class="w"> </span><span class="nc">ReceiveRoutePlugin</span><span class="p">:</span>
-</span><span data-line="132"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Receive routes as they are added to the application.&quot;&quot;&quot;</span>
-</span><span data-line="133">
-</span><span data-line="134">    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">()</span>
-</span><span data-line="135">
+</span><span data-line="127"><span class="k">class</span><span class="w"> </span><span class="nc">ReceiveRoutePlugin</span><span class="p">:</span>
+</span><span data-line="128"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Receive routes as they are added to the application.&quot;&quot;&quot;</span>
+</span><span data-line="129">
+</span><span data-line="130">    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">()</span>
+</span><span data-line="131">
 <div class="viewcode-block" id="ReceiveRoutePlugin.receive_route">
 <a class="viewcode-back" href="../../../reference/plugins/index.html#litestar.plugins.ReceiveRoutePlugin.receive_route">[docs]</a>
-</span><span data-line="136">    <span class="k">def</span><span class="w"> </span><span class="nf">receive_route</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">route</span><span class="p">:</span> <span class="n">BaseRoute</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="137"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Receive routes as they are registered on an application.&quot;&quot;&quot;</span></div>
+</span><span data-line="132">    <span class="k">def</span><span class="w"> </span><span class="nf">receive_route</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">route</span><span class="p">:</span> <span class="n">BaseRoute</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="133"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Receive routes as they are registered on an application.&quot;&quot;&quot;</span></div>
 </div>
 
-</span><span data-line="138">
-</span><span data-line="139">
+</span><span data-line="134">
+</span><span data-line="135">
 <div class="viewcode-block" id="CLIPlugin">
 <a class="viewcode-back" href="../../../reference/plugins/index.html#litestar.plugins.CLIPlugin">[docs]</a>
-</span><span data-line="140"><span class="k">class</span><span class="w"> </span><span class="nc">CLIPlugin</span><span class="p">:</span>
-</span><span data-line="141"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Plugin protocol to extend the CLI Server Lifespan.&quot;&quot;&quot;</span>
-</span><span data-line="142">
+</span><span data-line="136"><span class="k">class</span><span class="w"> </span><span class="nc">CLIPlugin</span><span class="p">:</span>
+</span><span data-line="137"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Plugin protocol to extend the CLI Server Lifespan.&quot;&quot;&quot;</span>
+</span><span data-line="138">
 <div class="viewcode-block" id="CLIPlugin.on_cli_init">
 <a class="viewcode-back" href="../../../reference/plugins/index.html#litestar.plugins.CLIPlugin.on_cli_init">[docs]</a>
-</span><span data-line="143">    <span class="k">def</span><span class="w"> </span><span class="nf">on_cli_init</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cli</span><span class="p">:</span> <span class="n">Group</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="144"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Called when the CLI is initialized.</span>
-</span><span data-line="145">
-</span><span data-line="146"><span class="sd">        This can be used to extend or override existing commands.</span>
-</span><span data-line="147">
-</span><span data-line="148"><span class="sd">        Args:</span>
-</span><span data-line="149"><span class="sd">            cli: The root :class:`click.Group` of the Litestar CLI</span>
-</span><span data-line="150">
-</span><span data-line="151"><span class="sd">        Examples:</span>
-</span><span data-line="152"><span class="sd">            .. code-block:: python</span>
+</span><span data-line="139">    <span class="k">def</span><span class="w"> </span><span class="nf">on_cli_init</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cli</span><span class="p">:</span> <span class="n">Group</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="140"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Called when the CLI is initialized.</span>
+</span><span data-line="141">
+</span><span data-line="142"><span class="sd">        This can be used to extend or override existing commands.</span>
+</span><span data-line="143">
+</span><span data-line="144"><span class="sd">        Args:</span>
+</span><span data-line="145"><span class="sd">            cli: The root :class:`click.Group` of the Litestar CLI</span>
+</span><span data-line="146">
+</span><span data-line="147"><span class="sd">        Examples:</span>
+</span><span data-line="148"><span class="sd">            .. code-block:: python</span>
+</span><span data-line="149">
+</span><span data-line="150"><span class="sd">                from litestar import Litestar</span>
+</span><span data-line="151"><span class="sd">                from litestar.plugins import CLIPlugin</span>
+</span><span data-line="152"><span class="sd">                from click import Group</span>
 </span><span data-line="153">
-</span><span data-line="154"><span class="sd">                from litestar import Litestar</span>
-</span><span data-line="155"><span class="sd">                from litestar.plugins import CLIPlugin</span>
-</span><span data-line="156"><span class="sd">                from click import Group</span>
-</span><span data-line="157">
-</span><span data-line="158">
-</span><span data-line="159"><span class="sd">                class CLIPlugin(CLIPlugin):</span>
-</span><span data-line="160"><span class="sd">                    def on_cli_init(self, cli: Group) -&gt; None:</span>
-</span><span data-line="161"><span class="sd">                        @cli.command()</span>
-</span><span data-line="162"><span class="sd">                        def is_debug_mode(app: Litestar):</span>
-</span><span data-line="163"><span class="sd">                            print(app.debug)</span>
+</span><span data-line="154">
+</span><span data-line="155"><span class="sd">                class CLIPlugin(CLIPlugin):</span>
+</span><span data-line="156"><span class="sd">                    def on_cli_init(self, cli: Group) -&gt; None:</span>
+</span><span data-line="157"><span class="sd">                        @cli.command()</span>
+</span><span data-line="158"><span class="sd">                        def is_debug_mode(app: Litestar):</span>
+</span><span data-line="159"><span class="sd">                            print(app.debug)</span>
+</span><span data-line="160">
+</span><span data-line="161">
+</span><span data-line="162"><span class="sd">                app = Litestar(plugins=[CLIPlugin()])</span>
+</span><span data-line="163"><span class="sd">        &quot;&quot;&quot;</span></div>
+
 </span><span data-line="164">
-</span><span data-line="165">
-</span><span data-line="166"><span class="sd">                app = Litestar(plugins=[CLIPlugin()])</span>
-</span><span data-line="167"><span class="sd">        &quot;&quot;&quot;</span></div>
+</span><span data-line="165">    <span class="nd">@contextmanager</span>
+</span><span data-line="166">    <span class="k">def</span><span class="w"> </span><span class="nf">server_lifespan</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">app</span><span class="p">:</span> <span class="n">Litestar</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="kc">None</span><span class="p">]:</span>
+</span><span data-line="167">        <span class="k">yield</span></div>
 
 </span><span data-line="168">
-</span><span data-line="169">    <span class="nd">@contextmanager</span>
-</span><span data-line="170">    <span class="k">def</span><span class="w"> </span><span class="nf">server_lifespan</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">app</span><span class="p">:</span> <span class="n">Litestar</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="kc">None</span><span class="p">]:</span>
-</span><span data-line="171">        <span class="k">yield</span></div>
-
-</span><span data-line="172">
-</span><span data-line="173">
+</span><span data-line="169">
 <div class="viewcode-block" id="SerializationPlugin">
 <a class="viewcode-back" href="../../../reference/plugins/index.html#litestar.plugins.SerializationPlugin">[docs]</a>
-</span><span data-line="174"><span class="k">class</span><span class="w"> </span><span class="nc">SerializationPlugin</span><span class="p">(</span><span class="n">abc</span><span class="o">.</span><span class="n">ABC</span><span class="p">):</span>
-</span><span data-line="175"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Abstract base class for plugins that extend DTO functionality&quot;&quot;&quot;</span>
-</span><span data-line="176">
+</span><span data-line="170"><span class="k">class</span><span class="w"> </span><span class="nc">SerializationPlugin</span><span class="p">(</span><span class="n">abc</span><span class="o">.</span><span class="n">ABC</span><span class="p">):</span>
+</span><span data-line="171"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Abstract base class for plugins that extend DTO functionality&quot;&quot;&quot;</span>
+</span><span data-line="172">
 <div class="viewcode-block" id="SerializationPlugin.supports_type">
 <a class="viewcode-back" href="../../../reference/plugins/index.html#litestar.plugins.SerializationPlugin.supports_type">[docs]</a>
-</span><span data-line="177">    <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
-</span><span data-line="178">    <span class="k">def</span><span class="w"> </span><span class="nf">supports_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">field_definition</span><span class="p">:</span> <span class="n">FieldDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-</span><span data-line="179"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Given a value of indeterminate type, determine if this value is supported by the plugin.</span>
-</span><span data-line="180">
-</span><span data-line="181"><span class="sd">        Args:</span>
-</span><span data-line="182"><span class="sd">            field_definition: A parsed type.</span>
-</span><span data-line="183">
-</span><span data-line="184"><span class="sd">        Returns:</span>
-</span><span data-line="185"><span class="sd">            Whether the type is supported by the plugin.</span>
-</span><span data-line="186"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="187">        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
+</span><span data-line="173">    <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
+</span><span data-line="174">    <span class="k">def</span><span class="w"> </span><span class="nf">supports_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">field_definition</span><span class="p">:</span> <span class="n">FieldDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+</span><span data-line="175"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Given a value of indeterminate type, determine if this value is supported by the plugin.</span>
+</span><span data-line="176">
+</span><span data-line="177"><span class="sd">        Args:</span>
+</span><span data-line="178"><span class="sd">            field_definition: A parsed type.</span>
+</span><span data-line="179">
+</span><span data-line="180"><span class="sd">        Returns:</span>
+</span><span data-line="181"><span class="sd">            Whether the type is supported by the plugin.</span>
+</span><span data-line="182"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="183">        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
 
-</span><span data-line="188">
+</span><span data-line="184">
 <div class="viewcode-block" id="SerializationPlugin.create_dto_for_type">
 <a class="viewcode-back" href="../../../reference/plugins/index.html#litestar.plugins.SerializationPlugin.create_dto_for_type">[docs]</a>
-</span><span data-line="189">    <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
-</span><span data-line="190">    <span class="k">def</span><span class="w"> </span><span class="nf">create_dto_for_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">field_definition</span><span class="p">:</span> <span class="n">FieldDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">type</span><span class="p">[</span><span class="n">AbstractDTO</span><span class="p">]:</span>
-</span><span data-line="191"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Given a parsed type, create a DTO class.</span>
-</span><span data-line="192">
-</span><span data-line="193"><span class="sd">        Args:</span>
-</span><span data-line="194"><span class="sd">            field_definition: A parsed type.</span>
-</span><span data-line="195">
-</span><span data-line="196"><span class="sd">        Returns:</span>
-</span><span data-line="197"><span class="sd">            A DTO class.</span>
-</span><span data-line="198"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="199">        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
+</span><span data-line="185">    <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
+</span><span data-line="186">    <span class="k">def</span><span class="w"> </span><span class="nf">create_dto_for_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">field_definition</span><span class="p">:</span> <span class="n">FieldDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">type</span><span class="p">[</span><span class="n">AbstractDTO</span><span class="p">]:</span>
+</span><span data-line="187"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Given a parsed type, create a DTO class.</span>
+</span><span data-line="188">
+</span><span data-line="189"><span class="sd">        Args:</span>
+</span><span data-line="190"><span class="sd">            field_definition: A parsed type.</span>
+</span><span data-line="191">
+</span><span data-line="192"><span class="sd">        Returns:</span>
+</span><span data-line="193"><span class="sd">            A DTO class.</span>
+</span><span data-line="194"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="195">        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
 </div>
 
-</span><span data-line="200">
-</span><span data-line="201">
+</span><span data-line="196">
+</span><span data-line="197">
 <div class="viewcode-block" id="DIPlugin">
 <a class="viewcode-back" href="../../../reference/plugins/index.html#litestar.plugins.DIPlugin">[docs]</a>
-</span><span data-line="202"><span class="k">class</span><span class="w"> </span><span class="nc">DIPlugin</span><span class="p">(</span><span class="n">abc</span><span class="o">.</span><span class="n">ABC</span><span class="p">):</span>
-</span><span data-line="203"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Extend dependency injection&quot;&quot;&quot;</span>
-</span><span data-line="204">
+</span><span data-line="198"><span class="k">class</span><span class="w"> </span><span class="nc">DIPlugin</span><span class="p">(</span><span class="n">abc</span><span class="o">.</span><span class="n">ABC</span><span class="p">):</span>
+</span><span data-line="199"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Extend dependency injection&quot;&quot;&quot;</span>
+</span><span data-line="200">
 <div class="viewcode-block" id="DIPlugin.has_typed_init">
 <a class="viewcode-back" href="../../../reference/plugins/index.html#litestar.plugins.DIPlugin.has_typed_init">[docs]</a>
-</span><span data-line="205">    <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
-</span><span data-line="206">    <span class="k">def</span><span class="w"> </span><span class="nf">has_typed_init</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">type_</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-</span><span data-line="207"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return ``True`` if ``type_`` has type information available for its</span>
-</span><span data-line="208"><span class="sd">        :func:`__init__` method that cannot be extracted from this method&#39;s type</span>
-</span><span data-line="209"><span class="sd">        annotations (e.g. a Pydantic BaseModel subclass), and</span>
-</span><span data-line="210"><span class="sd">        :meth:`DIPlugin.get_typed_init` supports extraction of these annotations.</span>
-</span><span data-line="211"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="212">        <span class="o">...</span></div>
+</span><span data-line="201">    <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
+</span><span data-line="202">    <span class="k">def</span><span class="w"> </span><span class="nf">has_typed_init</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">type_</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+</span><span data-line="203"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return ``True`` if ``type_`` has type information available for its</span>
+</span><span data-line="204"><span class="sd">        :func:`__init__` method that cannot be extracted from this method&#39;s type</span>
+</span><span data-line="205"><span class="sd">        annotations (e.g. a Pydantic BaseModel subclass), and</span>
+</span><span data-line="206"><span class="sd">        :meth:`DIPlugin.get_typed_init` supports extraction of these annotations.</span>
+</span><span data-line="207"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="208">        <span class="o">...</span></div>
 
-</span><span data-line="213">
+</span><span data-line="209">
 <div class="viewcode-block" id="DIPlugin.get_typed_init">
 <a class="viewcode-back" href="../../../reference/plugins/index.html#litestar.plugins.DIPlugin.get_typed_init">[docs]</a>
-</span><span data-line="214">    <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
-</span><span data-line="215">    <span class="k">def</span><span class="w"> </span><span class="nf">get_typed_init</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">type_</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">Signature</span><span class="p">,</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
-</span><span data-line="216"><span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Return signature and type information about the ``type_``\ s :func:`__init__`</span>
-</span><span data-line="217"><span class="sd">        method.</span>
-</span><span data-line="218"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="219">        <span class="o">...</span></div>
+</span><span data-line="210">    <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
+</span><span data-line="211">    <span class="k">def</span><span class="w"> </span><span class="nf">get_typed_init</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">type_</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">Signature</span><span class="p">,</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
+</span><span data-line="212"><span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Return signature and type information about the ``type_``\ s :func:`__init__`</span>
+</span><span data-line="213"><span class="sd">        method.</span>
+</span><span data-line="214"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="215">        <span class="o">...</span></div>
 </div>
 
-</span><span data-line="220">
-</span><span data-line="221">
+</span><span data-line="216">
+</span><span data-line="217">
 <div class="viewcode-block" id="OpenAPISchemaPlugin">
 <a class="viewcode-back" href="../../../reference/plugins/index.html#litestar.plugins.OpenAPISchemaPlugin">[docs]</a>
-</span><span data-line="222"><span class="k">class</span><span class="w"> </span><span class="nc">OpenAPISchemaPlugin</span><span class="p">(</span><span class="n">abc</span><span class="o">.</span><span class="n">ABC</span><span class="p">):</span>
-</span><span data-line="223"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Plugin to extend the support of OpenAPI schema generation for non-library types.&quot;&quot;&quot;</span>
-</span><span data-line="224">
+</span><span data-line="218"><span class="k">class</span><span class="w"> </span><span class="nc">OpenAPISchemaPlugin</span><span class="p">(</span><span class="n">abc</span><span class="o">.</span><span class="n">ABC</span><span class="p">):</span>
+</span><span data-line="219"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Plugin to extend the support of OpenAPI schema generation for non-library types.&quot;&quot;&quot;</span>
+</span><span data-line="220">
 <div class="viewcode-block" id="OpenAPISchemaPlugin.is_plugin_supported_type">
 <a class="viewcode-back" href="../../../reference/plugins/index.html#litestar.plugins.OpenAPISchemaPlugin.is_plugin_supported_type">[docs]</a>
-</span><span data-line="225">    <span class="nd">@staticmethod</span>
-</span><span data-line="226">    <span class="k">def</span><span class="w"> </span><span class="nf">is_plugin_supported_type</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-</span><span data-line="227"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Given a value of indeterminate type, determine if this value is supported by the plugin.</span>
-</span><span data-line="228">
-</span><span data-line="229"><span class="sd">        This is called by the default implementation of :meth:`is_plugin_supported_field` for</span>
-</span><span data-line="230"><span class="sd">        backwards compatibility. User&#39;s should prefer to override that method instead.</span>
-</span><span data-line="231">
-</span><span data-line="232"><span class="sd">        Args:</span>
-</span><span data-line="233"><span class="sd">            value: An arbitrary value.</span>
-</span><span data-line="234">
-</span><span data-line="235"><span class="sd">        Returns:</span>
-</span><span data-line="236"><span class="sd">            A bool indicating whether the value is supported by the plugin.</span>
-</span><span data-line="237"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="238">        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
-</span><span data-line="239">            <span class="s2">&quot;One of either is_plugin_supported_type or is_plugin_supported_field should be defined. &quot;</span>
-</span><span data-line="240">            <span class="s2">&quot;The default implementation of is_plugin_supported_field calls is_plugin_supported_type &quot;</span>
-</span><span data-line="241">            <span class="s2">&quot;for backwards compatibility. Users should prefer to override is_plugin_supported_field &quot;</span>
-</span><span data-line="242">            <span class="s2">&quot;as it receives a &#39;FieldDefinition&#39; instance which is more useful than a raw type.&quot;</span>
-</span><span data-line="243">        <span class="p">)</span></div>
+</span><span data-line="221">    <span class="nd">@staticmethod</span>
+</span><span data-line="222">    <span class="k">def</span><span class="w"> </span><span class="nf">is_plugin_supported_type</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+</span><span data-line="223"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Given a value of indeterminate type, determine if this value is supported by the plugin.</span>
+</span><span data-line="224">
+</span><span data-line="225"><span class="sd">        This is called by the default implementation of :meth:`is_plugin_supported_field` for</span>
+</span><span data-line="226"><span class="sd">        backwards compatibility. User&#39;s should prefer to override that method instead.</span>
+</span><span data-line="227">
+</span><span data-line="228"><span class="sd">        Args:</span>
+</span><span data-line="229"><span class="sd">            value: An arbitrary value.</span>
+</span><span data-line="230">
+</span><span data-line="231"><span class="sd">        Returns:</span>
+</span><span data-line="232"><span class="sd">            A bool indicating whether the value is supported by the plugin.</span>
+</span><span data-line="233"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="234">        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+</span><span data-line="235">            <span class="s2">&quot;One of either is_plugin_supported_type or is_plugin_supported_field should be defined. &quot;</span>
+</span><span data-line="236">            <span class="s2">&quot;The default implementation of is_plugin_supported_field calls is_plugin_supported_type &quot;</span>
+</span><span data-line="237">            <span class="s2">&quot;for backwards compatibility. Users should prefer to override is_plugin_supported_field &quot;</span>
+</span><span data-line="238">            <span class="s2">&quot;as it receives a &#39;FieldDefinition&#39; instance which is more useful than a raw type.&quot;</span>
+</span><span data-line="239">        <span class="p">)</span></div>
 
-</span><span data-line="244">
+</span><span data-line="240">
 <div class="viewcode-block" id="OpenAPISchemaPlugin.to_openapi_schema">
 <a class="viewcode-back" href="../../../reference/plugins/index.html#litestar.plugins.OpenAPISchemaPlugin.to_openapi_schema">[docs]</a>
-</span><span data-line="245">    <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
-</span><span data-line="246">    <span class="k">def</span><span class="w"> </span><span class="nf">to_openapi_schema</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">field_definition</span><span class="p">:</span> <span class="n">FieldDefinition</span><span class="p">,</span> <span class="n">schema_creator</span><span class="p">:</span> <span class="n">SchemaCreator</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Schema</span> <span class="o">|</span> <span class="n">Reference</span><span class="p">:</span>
-</span><span data-line="247"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Given a type annotation, transform it into an OpenAPI schema class.</span>
+</span><span data-line="241">    <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
+</span><span data-line="242">    <span class="k">def</span><span class="w"> </span><span class="nf">to_openapi_schema</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">field_definition</span><span class="p">:</span> <span class="n">FieldDefinition</span><span class="p">,</span> <span class="n">schema_creator</span><span class="p">:</span> <span class="n">SchemaCreator</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Schema</span> <span class="o">|</span> <span class="n">Reference</span><span class="p">:</span>
+</span><span data-line="243"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Given a type annotation, transform it into an OpenAPI schema class.</span>
+</span><span data-line="244">
+</span><span data-line="245"><span class="sd">        Args:</span>
+</span><span data-line="246"><span class="sd">            field_definition: An :class:`OpenAPI &lt;litestar.openapi.spec.schema.Schema&gt;` instance.</span>
+</span><span data-line="247"><span class="sd">            schema_creator: An instance of the openapi SchemaCreator.</span>
 </span><span data-line="248">
-</span><span data-line="249"><span class="sd">        Args:</span>
-</span><span data-line="250"><span class="sd">            field_definition: An :class:`OpenAPI &lt;litestar.openapi.spec.schema.Schema&gt;` instance.</span>
-</span><span data-line="251"><span class="sd">            schema_creator: An instance of the openapi SchemaCreator.</span>
-</span><span data-line="252">
-</span><span data-line="253"><span class="sd">        Returns:</span>
-</span><span data-line="254"><span class="sd">            An :class:`OpenAPI &lt;litestar.openapi.spec.schema.Schema&gt;` instance.</span>
-</span><span data-line="255"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="256">        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
+</span><span data-line="249"><span class="sd">        Returns:</span>
+</span><span data-line="250"><span class="sd">            An :class:`OpenAPI &lt;litestar.openapi.spec.schema.Schema&gt;` instance.</span>
+</span><span data-line="251"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="252">        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
 
-</span><span data-line="257">
+</span><span data-line="253">
 <div class="viewcode-block" id="OpenAPISchemaPlugin.is_plugin_supported_field">
 <a class="viewcode-back" href="../../../reference/plugins/index.html#litestar.plugins.OpenAPISchemaPlugin.is_plugin_supported_field">[docs]</a>
-</span><span data-line="258">    <span class="k">def</span><span class="w"> </span><span class="nf">is_plugin_supported_field</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">field_definition</span><span class="p">:</span> <span class="n">FieldDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-</span><span data-line="259"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Given a :class:`FieldDefinition &lt;litestar.typing.FieldDefinition&gt;` that represents an indeterminate type,</span>
-</span><span data-line="260"><span class="sd">        determine if this value is supported by the plugin</span>
-</span><span data-line="261">
-</span><span data-line="262"><span class="sd">        Args:</span>
-</span><span data-line="263"><span class="sd">            field_definition: A parsed type.</span>
-</span><span data-line="264">
-</span><span data-line="265"><span class="sd">        Returns:</span>
-</span><span data-line="266"><span class="sd">            Whether the type is supported by the plugin.</span>
-</span><span data-line="267"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="268">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_plugin_supported_type</span><span class="p">(</span><span class="n">field_definition</span><span class="o">.</span><span class="n">annotation</span><span class="p">)</span></div>
+</span><span data-line="254">    <span class="k">def</span><span class="w"> </span><span class="nf">is_plugin_supported_field</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">field_definition</span><span class="p">:</span> <span class="n">FieldDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+</span><span data-line="255"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Given a :class:`FieldDefinition &lt;litestar.typing.FieldDefinition&gt;` that represents an indeterminate type,</span>
+</span><span data-line="256"><span class="sd">        determine if this value is supported by the plugin</span>
+</span><span data-line="257">
+</span><span data-line="258"><span class="sd">        Args:</span>
+</span><span data-line="259"><span class="sd">            field_definition: A parsed type.</span>
+</span><span data-line="260">
+</span><span data-line="261"><span class="sd">        Returns:</span>
+</span><span data-line="262"><span class="sd">            Whether the type is supported by the plugin.</span>
+</span><span data-line="263"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="264">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_plugin_supported_type</span><span class="p">(</span><span class="n">field_definition</span><span class="o">.</span><span class="n">annotation</span><span class="p">)</span></div>
 
-</span><span data-line="269">
+</span><span data-line="265">
 <div class="viewcode-block" id="OpenAPISchemaPlugin.is_undefined_sentinel">
 <a class="viewcode-back" href="../../../reference/plugins/index.html#litestar.plugins.OpenAPISchemaPlugin.is_undefined_sentinel">[docs]</a>
-</span><span data-line="270">    <span class="nd">@staticmethod</span>
-</span><span data-line="271">    <span class="k">def</span><span class="w"> </span><span class="nf">is_undefined_sentinel</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-</span><span data-line="272"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return ``True`` if ``value`` should be treated as an undefined field&quot;&quot;&quot;</span>
-</span><span data-line="273">        <span class="k">return</span> <span class="kc">False</span></div>
+</span><span data-line="266">    <span class="nd">@staticmethod</span>
+</span><span data-line="267">    <span class="k">def</span><span class="w"> </span><span class="nf">is_undefined_sentinel</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+</span><span data-line="268"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return ``True`` if ``value`` should be treated as an undefined field&quot;&quot;&quot;</span>
+</span><span data-line="269">        <span class="k">return</span> <span class="kc">False</span></div>
 
-</span><span data-line="274">
+</span><span data-line="270">
 <div class="viewcode-block" id="OpenAPISchemaPlugin.is_constrained_field">
 <a class="viewcode-back" href="../../../reference/plugins/index.html#litestar.plugins.OpenAPISchemaPlugin.is_constrained_field">[docs]</a>
-</span><span data-line="275">    <span class="nd">@staticmethod</span>
-</span><span data-line="276">    <span class="k">def</span><span class="w"> </span><span class="nf">is_constrained_field</span><span class="p">(</span><span class="n">field_definition</span><span class="p">:</span> <span class="n">FieldDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-</span><span data-line="277"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return ``True`` if the field should be treated as constrained. If returning</span>
-</span><span data-line="278"><span class="sd">        ``True``, constraints should be defined in the field&#39;s extras</span>
-</span><span data-line="279"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="280">        <span class="k">return</span> <span class="kc">False</span></div>
+</span><span data-line="271">    <span class="nd">@staticmethod</span>
+</span><span data-line="272">    <span class="k">def</span><span class="w"> </span><span class="nf">is_constrained_field</span><span class="p">(</span><span class="n">field_definition</span><span class="p">:</span> <span class="n">FieldDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+</span><span data-line="273"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return ``True`` if the field should be treated as constrained. If returning</span>
+</span><span data-line="274"><span class="sd">        ``True``, constraints should be defined in the field&#39;s extras</span>
+</span><span data-line="275"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="276">        <span class="k">return</span> <span class="kc">False</span></div>
 </div>
 
-</span><span data-line="281">
-</span><span data-line="282">
-<div class="viewcode-block" id="OpenAPISpecPlugin">
-<a class="viewcode-back" href="../../../reference/plugins/index.html#litestar.plugins.OpenAPISpecPlugin">[docs]</a>
-</span><span data-line="283"><span class="k">class</span><span class="w"> </span><span class="nc">OpenAPISpecPlugin</span><span class="p">:</span>
-</span><span data-line="284"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Plugin hook for contributing OpenAPI document metadata after routes are resolved.</span>
-</span><span data-line="285">
-</span><span data-line="286"><span class="sd">    Subclasses override one or both of :meth:`get_openapi_components` (document-level) and</span>
-</span><span data-line="287"><span class="sd">    :meth:`get_openapi_security_requirements` (per-operation) to contribute fragments. Both</span>
-</span><span data-line="288"><span class="sd">    default to ``None`` so plugins are not forced to implement extension points they do not need.</span>
+</span><span data-line="277">
+</span><span data-line="278">
+</span><span data-line="279"><span class="n">PluginProtocol</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span>
+</span><span data-line="280">    <span class="n">CLIPlugin</span><span class="p">,</span>
+</span><span data-line="281">    <span class="n">InitPluginProtocol</span><span class="p">,</span>
+</span><span data-line="282">    <span class="n">OpenAPISchemaPlugin</span><span class="p">,</span>
+</span><span data-line="283">    <span class="n">ReceiveRoutePlugin</span><span class="p">,</span>
+</span><span data-line="284">    <span class="n">SerializationPlugin</span><span class="p">,</span>
+</span><span data-line="285">    <span class="n">DIPlugin</span><span class="p">,</span>
+</span><span data-line="286"><span class="p">]</span>
+</span><span data-line="287">
+</span><span data-line="288"><span class="n">PluginT</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;PluginT&quot;</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="n">PluginProtocol</span><span class="p">)</span>
 </span><span data-line="289">
-</span><span data-line="290"><span class="sd">    The optional ``include`` / ``exclude`` arguments offer a path-pattern filter for the</span>
-</span><span data-line="291"><span class="sd">    per-route hook: when set, :meth:`applies_to` rejects route handlers whose paths do not</span>
-</span><span data-line="292"><span class="sd">    match. Subclasses can also override :meth:`applies_to` for custom filtering (by tag,</span>
-</span><span data-line="293"><span class="sd">    ``opt`` key, HTTP method, etc.).</span>
-</span><span data-line="294">
-</span><span data-line="295"><span class="sd">    Args:</span>
-</span><span data-line="296"><span class="sd">        include: A regex pattern or sequence of patterns. When set, :meth:`applies_to`</span>
-</span><span data-line="297"><span class="sd">            returns ``True`` only for route handlers with at least one path matching the</span>
-</span><span data-line="298"><span class="sd">            pattern.</span>
-</span><span data-line="299"><span class="sd">        exclude: A regex pattern or sequence of patterns. When set, :meth:`applies_to`</span>
-</span><span data-line="300"><span class="sd">            returns ``False`` for route handlers with any path matching the pattern.</span>
-</span><span data-line="301"><span class="sd">            ``exclude`` takes precedence over ``include``.</span>
-</span><span data-line="302"><span class="sd">    &quot;&quot;&quot;</span>
+</span><span data-line="290">
+</span><span data-line="291"><span class="k">class</span><span class="w"> </span><span class="nc">PluginRegistry</span><span class="p">:</span>
+</span><span data-line="292">    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">{</span>  <span class="c1"># noqa: RUF023</span>
+</span><span data-line="293">        <span class="s2">&quot;init&quot;</span><span class="p">:</span> <span class="s2">&quot;Plugins that implement InitPlugin&quot;</span><span class="p">,</span>
+</span><span data-line="294">        <span class="s2">&quot;openapi&quot;</span><span class="p">:</span> <span class="s2">&quot;Plugins that implement OpenAPISchemaPlugin&quot;</span><span class="p">,</span>
+</span><span data-line="295">        <span class="s2">&quot;receive_route&quot;</span><span class="p">:</span> <span class="s2">&quot;ReceiveRoutePlugin instances&quot;</span><span class="p">,</span>
+</span><span data-line="296">        <span class="s2">&quot;serialization&quot;</span><span class="p">:</span> <span class="s2">&quot;Plugins that implement SerializationPlugin&quot;</span><span class="p">,</span>
+</span><span data-line="297">        <span class="s2">&quot;cli&quot;</span><span class="p">:</span> <span class="s2">&quot;Plugins that implement CLIPlugin&quot;</span><span class="p">,</span>
+</span><span data-line="298">        <span class="s2">&quot;di&quot;</span><span class="p">:</span> <span class="s2">&quot;DIPlugin instances&quot;</span><span class="p">,</span>
+</span><span data-line="299">        <span class="s2">&quot;_plugins_by_type&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="300">        <span class="s2">&quot;_plugins&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="301">        <span class="s2">&quot;_get_plugins_of_type&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="302">    <span class="p">}</span>
 </span><span data-line="303">
-</span><span data-line="304">    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;exclude&quot;</span><span class="p">,</span> <span class="s2">&quot;include&quot;</span><span class="p">)</span>
-</span><span data-line="305">
-<div class="viewcode-block" id="OpenAPISpecPlugin.__init__">
-<a class="viewcode-back" href="../../../reference/plugins/index.html#litestar.plugins.OpenAPISpecPlugin.__init__">[docs]</a>
-</span><span data-line="306">    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
-</span><span data-line="307">        <span class="bp">self</span><span class="p">,</span>
-</span><span data-line="308">        <span class="o">*</span><span class="p">,</span>
-</span><span data-line="309">        <span class="n">include</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="310">        <span class="n">exclude</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="311">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="312">        <span class="bp">self</span><span class="o">.</span><span class="n">include</span> <span class="o">=</span> <span class="n">include</span>
-</span><span data-line="313">        <span class="bp">self</span><span class="o">.</span><span class="n">exclude</span> <span class="o">=</span> <span class="n">exclude</span></div>
-
-</span><span data-line="314">
-<div class="viewcode-block" id="OpenAPISpecPlugin.applies_to">
-<a class="viewcode-back" href="../../../reference/plugins/index.html#litestar.plugins.OpenAPISpecPlugin.applies_to">[docs]</a>
-</span><span data-line="315">    <span class="k">def</span><span class="w"> </span><span class="nf">applies_to</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">route_handler</span><span class="p">:</span> <span class="n">HTTPRouteHandler</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-</span><span data-line="316"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return ``True`` if this plugin should contribute for ``route_handler``.</span>
-</span><span data-line="317">
-</span><span data-line="318"><span class="sd">        The default implementation honors :attr:`include` and :attr:`exclude` path patterns.</span>
-</span><span data-line="319"><span class="sd">        Subclasses can override this method for custom filtering logic.</span>
-</span><span data-line="320"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="321">        <span class="n">paths</span> <span class="o">=</span> <span class="n">route_handler</span><span class="o">.</span><span class="n">paths</span>
-</span><span data-line="322">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">exclude</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_match_any</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">exclude</span><span class="p">,</span> <span class="n">paths</span><span class="p">):</span>
-</span><span data-line="323">            <span class="k">return</span> <span class="kc">False</span>
-</span><span data-line="324">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">include</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_match_any</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">include</span><span class="p">,</span> <span class="n">paths</span><span class="p">):</span>
-</span><span data-line="325">            <span class="k">return</span> <span class="kc">False</span>
-</span><span data-line="326">        <span class="k">return</span> <span class="kc">True</span></div>
-
-</span><span data-line="327">
-</span><span data-line="328">    <span class="nd">@staticmethod</span>
-</span><span data-line="329">    <span class="k">def</span><span class="w"> </span><span class="nf">_match_any</span><span class="p">(</span><span class="n">patterns</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">paths</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-</span><span data-line="330"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Compile ``patterns`` and return ``True`` if any of ``paths`` matches.&quot;&quot;&quot;</span>
-</span><span data-line="331">        <span class="n">joined</span> <span class="o">=</span> <span class="n">patterns</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">patterns</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="k">else</span> <span class="s2">&quot;|&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">patterns</span><span class="p">)</span>
-</span><span data-line="332">        <span class="n">compiled</span><span class="p">:</span> <span class="n">Pattern</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">joined</span><span class="p">)</span>
-</span><span data-line="333">        <span class="k">return</span> <span class="nb">any</span><span class="p">(</span><span class="n">compiled</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">paths</span><span class="p">)</span>
-</span><span data-line="334">
-<div class="viewcode-block" id="OpenAPISpecPlugin.get_openapi_components">
-<a class="viewcode-back" href="../../../reference/plugins/index.html#litestar.plugins.OpenAPISpecPlugin.get_openapi_components">[docs]</a>
-</span><span data-line="335">    <span class="k">def</span><span class="w"> </span><span class="nf">get_openapi_components</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Components</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="336"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return OpenAPI components contributed by this plugin.</span>
-</span><span data-line="337">
-</span><span data-line="338"><span class="sd">        Returns:</span>
-</span><span data-line="339"><span class="sd">            Components to merge into the generated OpenAPI document, or ``None``.</span>
-</span><span data-line="340"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="341">        <span class="k">return</span> <span class="kc">None</span></div>
-
-</span><span data-line="342">
-<div class="viewcode-block" id="OpenAPISpecPlugin.get_openapi_security_requirements">
-<a class="viewcode-back" href="../../../reference/plugins/index.html#litestar.plugins.OpenAPISpecPlugin.get_openapi_security_requirements">[docs]</a>
-</span><span data-line="343">    <span class="k">def</span><span class="w"> </span><span class="nf">get_openapi_security_requirements</span><span class="p">(</span>
-</span><span data-line="344">        <span class="bp">self</span><span class="p">,</span> <span class="n">route_handler</span><span class="p">:</span> <span class="n">HTTPRouteHandler</span>
-</span><span data-line="345">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">SecurityRequirement</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="346"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return OpenAPI security requirements contributed for a route handler.</span>
-</span><span data-line="347">
-</span><span data-line="348"><span class="sd">        Args:</span>
-</span><span data-line="349"><span class="sd">            route_handler: The resolved HTTP route handler being rendered into an OpenAPI operation.</span>
-</span><span data-line="350">
-</span><span data-line="351"><span class="sd">        Returns:</span>
-</span><span data-line="352"><span class="sd">            Security requirements to append to the operation, or ``None``.</span>
-</span><span data-line="353"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="354">        <span class="k">return</span> <span class="kc">None</span></div>
-</div>
-
-</span><span data-line="355">
-</span><span data-line="356">
-</span><span data-line="357"><span class="n">PluginProtocol</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span>
-</span><span data-line="358">    <span class="n">CLIPlugin</span><span class="p">,</span>
-</span><span data-line="359">    <span class="n">InitPluginProtocol</span><span class="p">,</span>
-</span><span data-line="360">    <span class="n">OpenAPISchemaPlugin</span><span class="p">,</span>
-</span><span data-line="361">    <span class="n">OpenAPISpecPlugin</span><span class="p">,</span>
-</span><span data-line="362">    <span class="n">ReceiveRoutePlugin</span><span class="p">,</span>
-</span><span data-line="363">    <span class="n">SerializationPlugin</span><span class="p">,</span>
-</span><span data-line="364">    <span class="n">DIPlugin</span><span class="p">,</span>
-</span><span data-line="365"><span class="p">]</span>
-</span><span data-line="366">
-</span><span data-line="367"><span class="n">PluginT</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;PluginT&quot;</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="n">PluginProtocol</span><span class="p">)</span>
-</span><span data-line="368">
-</span><span data-line="369">
-</span><span data-line="370"><span class="k">class</span><span class="w"> </span><span class="nc">PluginRegistry</span><span class="p">:</span>
-</span><span data-line="371">    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">{</span>  <span class="c1"># noqa: RUF023</span>
-</span><span data-line="372">        <span class="s2">&quot;init&quot;</span><span class="p">:</span> <span class="s2">&quot;Plugins that implement InitPlugin&quot;</span><span class="p">,</span>
-</span><span data-line="373">        <span class="s2">&quot;openapi&quot;</span><span class="p">:</span> <span class="s2">&quot;Plugins that implement OpenAPISchemaPlugin&quot;</span><span class="p">,</span>
-</span><span data-line="374">        <span class="s2">&quot;openapi_spec&quot;</span><span class="p">:</span> <span class="s2">&quot;Plugins that implement OpenAPISpecPlugin&quot;</span><span class="p">,</span>
-</span><span data-line="375">        <span class="s2">&quot;receive_route&quot;</span><span class="p">:</span> <span class="s2">&quot;ReceiveRoutePlugin instances&quot;</span><span class="p">,</span>
-</span><span data-line="376">        <span class="s2">&quot;serialization&quot;</span><span class="p">:</span> <span class="s2">&quot;Plugins that implement SerializationPlugin&quot;</span><span class="p">,</span>
-</span><span data-line="377">        <span class="s2">&quot;cli&quot;</span><span class="p">:</span> <span class="s2">&quot;Plugins that implement CLIPlugin&quot;</span><span class="p">,</span>
-</span><span data-line="378">        <span class="s2">&quot;di&quot;</span><span class="p">:</span> <span class="s2">&quot;DIPlugin instances&quot;</span><span class="p">,</span>
-</span><span data-line="379">        <span class="s2">&quot;_plugins_by_type&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="380">        <span class="s2">&quot;_plugins&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="381">        <span class="s2">&quot;_get_plugins_of_type&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="382">    <span class="p">}</span>
-</span><span data-line="383">
-</span><span data-line="384">    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plugins</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">PluginProtocol</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="385">        <span class="bp">self</span><span class="o">.</span><span class="n">_plugins_by_type</span> <span class="o">=</span> <span class="p">{</span><span class="nb">type</span><span class="p">(</span><span class="n">p</span><span class="p">):</span> <span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">plugins</span><span class="p">}</span>
-</span><span data-line="386">        <span class="bp">self</span><span class="o">.</span><span class="n">_plugins</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">(</span><span class="n">plugins</span><span class="p">)</span>
-</span><span data-line="387">        <span class="bp">self</span><span class="o">.</span><span class="n">init</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">plugins</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">InitPluginProtocol</span><span class="p">))</span>
-</span><span data-line="388">        <span class="bp">self</span><span class="o">.</span><span class="n">openapi</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">plugins</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">OpenAPISchemaPlugin</span><span class="p">))</span>
-</span><span data-line="389">        <span class="bp">self</span><span class="o">.</span><span class="n">openapi_spec</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">plugins</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">OpenAPISpecPlugin</span><span class="p">))</span>
-</span><span data-line="390">        <span class="bp">self</span><span class="o">.</span><span class="n">receive_route</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">plugins</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">ReceiveRoutePlugin</span><span class="p">))</span>
-</span><span data-line="391">        <span class="bp">self</span><span class="o">.</span><span class="n">serialization</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">plugins</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">SerializationPlugin</span><span class="p">))</span>
-</span><span data-line="392">        <span class="bp">self</span><span class="o">.</span><span class="n">cli</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">plugins</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">CLIPlugin</span><span class="p">))</span>
-</span><span data-line="393">        <span class="bp">self</span><span class="o">.</span><span class="n">di</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">plugins</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">DIPlugin</span><span class="p">))</span>
-</span><span data-line="394">
-</span><span data-line="395">    <span class="k">def</span><span class="w"> </span><span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">type_</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">PluginT</span><span class="p">]</span> <span class="o">|</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PluginT</span><span class="p">:</span>
-</span><span data-line="396"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the registered plugin of ``type_``.</span>
-</span><span data-line="397">
-</span><span data-line="398"><span class="sd">        This should be used with subclasses of the plugin protocols.</span>
-</span><span data-line="399"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="400">        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">type_</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-</span><span data-line="401">            <span class="k">for</span> <span class="n">plugin</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_plugins</span><span class="p">:</span>
-</span><span data-line="402">                <span class="n">_name</span> <span class="o">=</span> <span class="n">plugin</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span>
-</span><span data-line="403">                <span class="n">_module</span> <span class="o">=</span> <span class="n">plugin</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__module__</span>
-</span><span data-line="404">                <span class="n">_qualname</span> <span class="o">=</span> <span class="p">(</span>
-</span><span data-line="405">                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">_module</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">plugin</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__qualname__</span><span class="si">}</span><span class="s2">&quot;</span>
-</span><span data-line="406">                    <span class="k">if</span> <span class="n">_module</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">_module</span> <span class="o">!=</span> <span class="s2">&quot;__builtin__&quot;</span>
-</span><span data-line="407">                    <span class="k">else</span> <span class="n">plugin</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__qualname__</span>
-</span><span data-line="408">                <span class="p">)</span>
-</span><span data-line="409">                <span class="k">if</span> <span class="n">type_</span> <span class="ow">in</span> <span class="p">{</span><span class="n">_name</span><span class="p">,</span> <span class="n">_qualname</span><span class="p">}:</span>
-</span><span data-line="410">                    <span class="k">return</span> <span class="n">cast</span><span class="p">(</span><span class="s2">&quot;PluginT&quot;</span><span class="p">,</span> <span class="n">plugin</span><span class="p">)</span>
-</span><span data-line="411">            <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No plugin of type </span><span class="si">{</span><span class="n">type_</span><span class="si">!r}</span><span class="s2"> registered&quot;</span><span class="p">)</span>
-</span><span data-line="412">        <span class="k">try</span><span class="p">:</span>
-</span><span data-line="413">            <span class="k">return</span> <span class="n">cast</span><span class="p">(</span><span class="s2">&quot;PluginT&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_plugins_by_type</span><span class="p">[</span><span class="n">type_</span><span class="p">])</span>  <span class="c1"># type: ignore[index]</span>
-</span><span data-line="414">        <span class="k">except</span> <span class="ne">KeyError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-</span><span data-line="415">            <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No plugin of type </span><span class="si">{</span><span class="n">type_</span><span class="o">.</span><span class="vm">__name__</span><span class="si">!r}</span><span class="s2"> registered&quot;</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
-</span><span data-line="416">
-</span><span data-line="417">    <span class="k">def</span><span class="w"> </span><span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">PluginProtocol</span><span class="p">]:</span>
-</span><span data-line="418">        <span class="k">return</span> <span class="nb">iter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_plugins</span><span class="p">)</span>
-</span><span data-line="419">
-</span><span data-line="420">    <span class="k">def</span><span class="w"> </span><span class="fm">__contains__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">:</span> <span class="n">PluginProtocol</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-</span><span data-line="421">        <span class="k">return</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_plugins</span>
+</span><span data-line="304">    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plugins</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">PluginProtocol</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="305">        <span class="bp">self</span><span class="o">.</span><span class="n">_plugins_by_type</span> <span class="o">=</span> <span class="p">{</span><span class="nb">type</span><span class="p">(</span><span class="n">p</span><span class="p">):</span> <span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">plugins</span><span class="p">}</span>
+</span><span data-line="306">        <span class="bp">self</span><span class="o">.</span><span class="n">_plugins</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">(</span><span class="n">plugins</span><span class="p">)</span>
+</span><span data-line="307">        <span class="bp">self</span><span class="o">.</span><span class="n">init</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">plugins</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">InitPluginProtocol</span><span class="p">))</span>
+</span><span data-line="308">        <span class="bp">self</span><span class="o">.</span><span class="n">openapi</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">plugins</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">OpenAPISchemaPlugin</span><span class="p">))</span>
+</span><span data-line="309">        <span class="bp">self</span><span class="o">.</span><span class="n">receive_route</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">plugins</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">ReceiveRoutePlugin</span><span class="p">))</span>
+</span><span data-line="310">        <span class="bp">self</span><span class="o">.</span><span class="n">serialization</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">plugins</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">SerializationPlugin</span><span class="p">))</span>
+</span><span data-line="311">        <span class="bp">self</span><span class="o">.</span><span class="n">cli</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">plugins</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">CLIPlugin</span><span class="p">))</span>
+</span><span data-line="312">        <span class="bp">self</span><span class="o">.</span><span class="n">di</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">plugins</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">DIPlugin</span><span class="p">))</span>
+</span><span data-line="313">
+</span><span data-line="314">    <span class="k">def</span><span class="w"> </span><span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">type_</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">PluginT</span><span class="p">]</span> <span class="o">|</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PluginT</span><span class="p">:</span>
+</span><span data-line="315"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the registered plugin of ``type_``.</span>
+</span><span data-line="316">
+</span><span data-line="317"><span class="sd">        This should be used with subclasses of the plugin protocols.</span>
+</span><span data-line="318"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="319">        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">type_</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+</span><span data-line="320">            <span class="k">for</span> <span class="n">plugin</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_plugins</span><span class="p">:</span>
+</span><span data-line="321">                <span class="n">_name</span> <span class="o">=</span> <span class="n">plugin</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span>
+</span><span data-line="322">                <span class="n">_module</span> <span class="o">=</span> <span class="n">plugin</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__module__</span>
+</span><span data-line="323">                <span class="n">_qualname</span> <span class="o">=</span> <span class="p">(</span>
+</span><span data-line="324">                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">_module</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">plugin</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__qualname__</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span data-line="325">                    <span class="k">if</span> <span class="n">_module</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">_module</span> <span class="o">!=</span> <span class="s2">&quot;__builtin__&quot;</span>
+</span><span data-line="326">                    <span class="k">else</span> <span class="n">plugin</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__qualname__</span>
+</span><span data-line="327">                <span class="p">)</span>
+</span><span data-line="328">                <span class="k">if</span> <span class="n">type_</span> <span class="ow">in</span> <span class="p">{</span><span class="n">_name</span><span class="p">,</span> <span class="n">_qualname</span><span class="p">}:</span>
+</span><span data-line="329">                    <span class="k">return</span> <span class="n">cast</span><span class="p">(</span><span class="s2">&quot;PluginT&quot;</span><span class="p">,</span> <span class="n">plugin</span><span class="p">)</span>
+</span><span data-line="330">            <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No plugin of type </span><span class="si">{</span><span class="n">type_</span><span class="si">!r}</span><span class="s2"> registered&quot;</span><span class="p">)</span>
+</span><span data-line="331">        <span class="k">try</span><span class="p">:</span>
+</span><span data-line="332">            <span class="k">return</span> <span class="n">cast</span><span class="p">(</span><span class="s2">&quot;PluginT&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_plugins_by_type</span><span class="p">[</span><span class="n">type_</span><span class="p">])</span>  <span class="c1"># type: ignore[index]</span>
+</span><span data-line="333">        <span class="k">except</span> <span class="ne">KeyError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+</span><span data-line="334">            <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No plugin of type </span><span class="si">{</span><span class="n">type_</span><span class="o">.</span><span class="vm">__name__</span><span class="si">!r}</span><span class="s2"> registered&quot;</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
+</span><span data-line="335">
+</span><span data-line="336">    <span class="k">def</span><span class="w"> </span><span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">PluginProtocol</span><span class="p">]:</span>
+</span><span data-line="337">        <span class="k">return</span> <span class="nb">iter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_plugins</span><span class="p">)</span>
+</span><span data-line="338">
+</span><span data-line="339">    <span class="k">def</span><span class="w"> </span><span class="fm">__contains__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">:</span> <span class="n">PluginProtocol</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+</span><span data-line="340">        <span class="k">return</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_plugins</span>
 </span></pre></div>
         </article><button class="back-to-top" type="button">
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
