@@ -6,8 +6,8 @@ Litestar 2 Changelog
 .. changelog:: 2.22.0
 
     .. change:: Deprecate ``litestar.repository`` in favor of ``advanced_alchemy``
-        :type: deprecation
-        :pr: TBD
+        :type: misc
+        :pr: 4758
 
         The ``litestar.repository`` module — including ``filters``, ``exceptions``,
         ``handlers``, ``abc``, and ``testing`` submodules — is deprecated and will

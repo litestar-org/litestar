@@ -15,14 +15,14 @@ from litestar.repository.abc._sync import AbstractSyncRepository
 try:
     from advanced_alchemy.exceptions import IntegrityError as ConflictError
     from advanced_alchemy.exceptions import RepositoryError
-    from advanced_alchemy.filters import FilterTypes
 except ImportError:  # pragma: no cover
-    from litestar.repository._exceptions import ConflictError, RepositoryError
-    from litestar.repository._filters import FilterTypes
+    from litestar.repository._exceptions import ConflictError, RepositoryError  # type: ignore[assignment]
 
 if TYPE_CHECKING:
     from collections.abc import Callable, Hashable, Iterable, MutableMapping
     from typing import Any
+
+    from advanced_alchemy.filters import FilterTypes
 
 __all__ = ("GenericAsyncMockRepository", "GenericSyncMockRepository")
 
