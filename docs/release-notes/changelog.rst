@@ -12,8 +12,8 @@ Litestar 2 Changelog
         The OpenTelemetry integration has moved from ``litestar.contrib.opentelemetry``
         to ``litestar.plugins.opentelemetry``. The contrib location is preserved as a
         deprecation shim that re-exports from the plugin location and emits
-        ``DeprecationWarning`` on access. The contrib namespace is removed in
-        Litestar 3.0.0. Update imports:
+        ``DeprecationWarning`` on access. The contrib namespace is removed
+        before 3.0.0. Update imports:
 
         .. code-block:: python
 
