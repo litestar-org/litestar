@@ -16,6 +16,7 @@ from litestar.utils.helpers import unwrap_partial
 if TYPE_CHECKING:
     from litestar._openapi.datastructures import OpenAPIContext
     from litestar.handlers.http_handlers import HTTPRouteHandler
+    from litestar.openapi.spec import SecurityRequirement
     from litestar.routes import HTTPRoute
 
 __all__ = ("create_path_item_for_route", "merge_path_item_operations")
@@ -81,8 +82,24 @@ class PathItemFactory:
             responses=responses,
             request_body=request_body,
             parameters=parameters or None,  # type: ignore[arg-type]
-            security=list(route_handler.security) if route_handler.security else None,
+            security=self.create_security_requirements(route_handler),
         )
+
+    def create_security_requirements(self, route_handler: HTTPRouteHandler) -> list[SecurityRequirement] | None:
+        """Create security requirements for the route handler.
+
+        Combines handler-level security with contributions from registered
+        :class:`OpenAPISpecPlugin <litestar.plugins.OpenAPISpecPlugin>` instances, in
+        registration order. Plugins whose :meth:`~litestar.plugins.OpenAPISpecPlugin.applies_to`
+        returns ``False`` for this handler are skipped. Returns ``None`` if no requirements result.
+        """
+        security_requirements = list(route_handler.security)
+        for contributor in self.context.openapi_spec:
+            if not contributor.applies_to(route_handler):
+                continue
+            if contributed_security := contributor.get_openapi_security_requirements(route_handler):
+                security_requirements.extend(contributed_security)
+        return security_requirements or None
 
     def create_operation_id(self, route_handler: HTTPRouteHandler, http_method: HttpMethod) -> str:
         """Create an operation id for a given route handler and http method.
