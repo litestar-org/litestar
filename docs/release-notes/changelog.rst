@@ -6,6 +6,17 @@
 .. changelog:: 3.0.0
     :date: 2364-01-27
 
+    .. change:: Deprecate ``litestar.contrib.jinja`` in favor of ``litestar.plugins.jinja``
+        :type: feature
+        :issue: 4716
+
+        Moved :class:`~litestar.plugins.jinja.JinjaTemplateEngine` to its new
+        canonical location ``litestar.plugins.jinja``. The old import path
+        ``litestar.contrib.jinja`` continues to work via a runtime-compatible
+        deprecation shim that emits a :class:`DeprecationWarning` on attribute
+        access. The shim will be removed before 3.0.0 GA. Update imports to
+        ``from litestar.plugins.jinja import JinjaTemplateEngine``.
+
     .. change:: Drop support for Pydantic 1
         :type: feature
         :breaking:

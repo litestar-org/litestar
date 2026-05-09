@@ -320,7 +320,7 @@ In addition to Jinja, Litestar supports `Mako <https://www.makotemplates.org/>`_
         .. code-block:: python
 
             from litestar import Litestar, get
-            from litestar.contrib.jinja import JinjaTemplateEngine
+            from litestar.plugins.jinja import JinjaTemplateEngine
             from litestar.response import Template
             from litestar.template.config import TemplateConfig
 
