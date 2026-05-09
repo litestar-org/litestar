@@ -47,7 +47,7 @@ Installation
     :doc:`Prometheus Instrumentation </usage/metrics/prometheus>`
         :code:`pip install 'litestar[prometheus]'`
 
-    :doc:`Open Telemetry Instrumentation </usage/metrics/open-telemetry>`
+    :doc:`Open Telemetry Instrumentation </usage/metrics/opentelemetry>`
         :code:`pip install 'litestar[opentelemetry]'`
 
     :doc:`SQLAlchemy </usage/databases/sqlalchemy/index>`
