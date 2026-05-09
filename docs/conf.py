@@ -151,6 +151,8 @@ nitpick_ignore = [
     # types in changelog that no longer exist
     (PY_ATTR, "litestar.dto.factory.DTOConfig.underscore_fields_private"),
     (PY_CLASS, "anyio.abc.BlockingPortal"),
+    (PY_CLASS, "litestar.contrib.sqlalchemy.types.JsonB"),
+    (PY_CLASS, "litestar.contrib.sqlalchemy.plugins.SQLAlchemyInitPlugin"),
     (PY_CLASS, "litestar.contrib.msgspec.MsgspecDTO"),
     (PY_CLASS, "litestar.contrib.repository.filters.NotInCollectionFilter"),
     (PY_CLASS, "litestar.contrib.repository.filters.NotInSearchFilter"),
