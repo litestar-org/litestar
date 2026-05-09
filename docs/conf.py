@@ -188,7 +188,7 @@ nitpick_ignore = [
     (PY_CLASS, "P.args"),
     (PY_CLASS, "P.kwargs"),
     (PY_CLASS, "litestar.contrib.jinja.P"),
-    (PY_CLASS, "litestar.contrib.mako.P"),
+    (PY_CLASS, "litestar.plugins.mako.P"),
     (PY_CLASS, "JWTDecodeOptions"),
     (PY_CLASS, "litestar.template.base.P"),
     (PY_CLASS, "typing.Self"),

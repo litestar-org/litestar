@@ -9,7 +9,7 @@ from bs4 import BeautifulSoup
 from litestar import MediaType, WebSocket, delete, get, patch, post, put, websocket
 from litestar.config.csrf import CSRFConfig
 from litestar.contrib.jinja import JinjaTemplateEngine
-from litestar.contrib.mako import MakoTemplateEngine
+from litestar.plugins.mako import MakoTemplateEngine
 from litestar.enums import RequestEncodingType
 from litestar.handlers import HTTPRouteHandler
 from litestar.params import Body
