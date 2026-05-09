@@ -38,3 +38,14 @@ by providing a mapping of the exception type to a callable that converts the exc
     :caption: Converting custom exceptions into problem details response.
 
 .. warning:: If the ``extra`` field is a ``Mapping``, then it's merged into the problem details response, otherwise it's included in the response with the key ``extra``.
+
+OpenAPI integration
+-------------------
+
+When ``ProblemDetailsPlugin`` is registered, it contributes a canonical ``ProblemDetails``
+schema to ``components.schemas`` of the generated OpenAPI document via
+:class:`~litestar.plugins.OpenAPISpecPlugin`. The schema mirrors the RFC 9457 fields
+(``type``, ``title``, ``status``, ``detail``, ``instance``) and allows arbitrary extension
+members through ``additionalProperties: true``. Handlers and other plugins can ``$ref``
+``#/components/schemas/ProblemDetails`` from response definitions to document
+``application/problem+json`` payloads without redeclaring the shape.
