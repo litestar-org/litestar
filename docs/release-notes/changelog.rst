@@ -6,6 +6,18 @@
 .. changelog:: 3.0.0
     :date: 2364-01-27
 
+    .. change:: Deprecate ``litestar.contrib.mako`` in favor of ``litestar.plugins.mako``
+        :type: feature
+        :issue: 4717
+
+        Moved :class:`~litestar.plugins.mako.MakoTemplateEngine` and
+        :class:`~litestar.plugins.mako.MakoTemplate` to their new canonical
+        location ``litestar.plugins.mako``. The old import path
+        ``litestar.contrib.mako`` continues to work via a runtime-compatible
+        deprecation shim that emits a :class:`DeprecationWarning` on attribute
+        access. The shim will be removed before 3.0.0 GA. Update imports to
+        ``from litestar.plugins.mako import MakoTemplateEngine``.
+
     .. change:: Drop support for Pydantic 1
         :type: feature
         :breaking:

@@ -1,5 +1,5 @@
 from litestar import Litestar
-from litestar.contrib.mako import MakoTemplateEngine
+from litestar.plugins.mako import MakoTemplateEngine
 from litestar.middleware.session.server_side import ServerSideSessionConfig
 from litestar.plugins.flash import FlashConfig, FlashPlugin
 from litestar.template.config import TemplateConfig
