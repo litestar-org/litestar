@@ -3,10 +3,13 @@ from __future__ import annotations
 from abc import ABCMeta, abstractmethod
 from typing import TYPE_CHECKING, Any, Generic, TypeVar
 
-from litestar.repository.exceptions import NotFoundError
+try:
+    from advanced_alchemy.exceptions import NotFoundError
+except ImportError:  # pragma: no cover
+    from litestar.repository._exceptions import NotFoundError  # type: ignore[assignment]
 
 if TYPE_CHECKING:
-    from litestar.repository.filters import FilterTypes
+    from advanced_alchemy.filters import FilterTypes
 
 T = TypeVar("T")
 CollectionT = TypeVar("CollectionT")

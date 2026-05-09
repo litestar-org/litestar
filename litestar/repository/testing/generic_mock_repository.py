@@ -9,8 +9,16 @@ from datetime import datetime, timezone, tzinfo
 from typing import TYPE_CHECKING, Generic, Protocol, TypeVar
 from uuid import uuid4
 
-from litestar.repository import AbstractAsyncRepository, AbstractSyncRepository, FilterTypes
-from litestar.repository.exceptions import ConflictError, RepositoryError
+from litestar.repository.abc._async import AbstractAsyncRepository
+from litestar.repository.abc._sync import AbstractSyncRepository
+
+try:
+    from advanced_alchemy.exceptions import IntegrityError as ConflictError
+    from advanced_alchemy.exceptions import RepositoryError
+    from advanced_alchemy.filters import FilterTypes
+except ImportError:  # pragma: no cover
+    from litestar.repository._exceptions import ConflictError, RepositoryError  # type: ignore[assignment]
+    from litestar.repository._filters import FilterTypes  # type: ignore[assignment]
 
 if TYPE_CHECKING:
     from collections.abc import Callable, Hashable, Iterable, MutableMapping
