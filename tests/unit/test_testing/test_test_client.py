@@ -7,6 +7,7 @@ import anyio
 from _pytest.fixtures import FixtureRequest
 
 from litestar import Controller, Request, WebSocket, delete, head, patch, put, websocket
+from litestar.exceptions import LitestarWarning
 from litestar.middleware.session.base import BaseBackendConfig
 from litestar.status_codes import HTTP_200_OK, HTTP_201_CREATED, HTTP_204_NO_CONTENT
 from litestar.stores.base import Store
@@ -435,6 +436,12 @@ def test_websocket_connect(anyio_backend: "AnyIOBackend") -> None:
             assert data == {"data": "123"}
 
 
+def test_client_warns_not_initialized() -> None:
+    with pytest.warns(LitestarWarning, match="TestClient not initialized"):
+        client = create_test_client()
+        client.get("/")
+
+
 # ASYNC TESTS
 @pytest.mark.parametrize("block,exception", [(True, TimeoutError), (False, anyio.WouldBlock)])
 @pytest.mark.parametrize(
@@ -574,3 +581,9 @@ async def test_lifespan_uses_native_loop() -> None:
 
     async with create_async_test_client([], lifespan=[lifespan]) as client:
         assert client.app.state["loop"] is asyncio.get_running_loop()
+
+
+async def test_client_warns_not_initialized_async() -> None:
+    with pytest.warns(LitestarWarning, match="AsyncTestClient not initialized"):
+        client = create_async_test_client()
+        await client.get("/")

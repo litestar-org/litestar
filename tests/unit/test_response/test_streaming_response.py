@@ -12,26 +12,34 @@ from typing import TYPE_CHECKING
 
 import anyio
 
+from litestar import asgi, get
 from litestar.background_tasks import BackgroundTask
 from litestar.response.streaming import ASGIStreamingResponse
-from litestar.testing import TestClient
+from litestar.testing import create_test_client
 
 if TYPE_CHECKING:
     from litestar.types import Message, Receive, Scope, Send
 
 
 def test_streaming_response_unknown_size() -> None:
-    app = ASGIStreamingResponse(iterator=iter(["hello", "world"]))
-    client = TestClient(app)
-    response = client.get("/")
+    @get("/")
+    async def handler() -> ASGIStreamingResponse:
+        return ASGIStreamingResponse(iterator=iter(["hello", "world"]))
+
+    with create_test_client(handler) as client:
+        response = client.get("/")
+
     assert "content-length" not in response.headers
 
 
 def test_streaming_response_known_size() -> None:
-    app = ASGIStreamingResponse(iterator=iter(["hello", "world"]), headers={"content-length": "10"})
-    client = TestClient(app)
-    response = client.get("/")
-    assert response.headers["content-length"] == "10"
+    @get("/")
+    async def handler() -> ASGIStreamingResponse:
+        return ASGIStreamingResponse(iterator=iter(["hello", "world"]), headers={"content-length": "10"})
+
+    with create_test_client(handler) as client:
+        response = client.get("/")
+        assert response.headers["content-length"] == "10"
 
 
 async def test_streaming_response_stops_if_receiving_http_disconnect_with_async_iterator(anyio_backend: str) -> None:
@@ -91,7 +99,8 @@ async def test_streaming_response_stops_if_receiving_http_disconnect_with_sync_i
 def test_streaming_response() -> None:
     filled_by_bg_task = ""
 
-    async def app(scope: "Scope", receive: "Receive", send: "Send") -> None:
+    @asgi("/")
+    async def handler(scope: "Scope", receive: "Receive", send: "Send") -> None:
         async def numbers(minimum: int, maximum: int) -> AsyncIterator[str]:
             for i in range(minimum, maximum + 1):
                 yield str(i)
@@ -110,14 +119,15 @@ def test_streaming_response() -> None:
         await response(scope, receive, send)
 
     assert not filled_by_bg_task
-    client = TestClient(app)
-    response = client.get("/")
-    assert response.text == "1, 2, 3, 4, 5"
-    assert filled_by_bg_task == "6, 7, 8, 9"  # type: ignore[comparison-overlap]
+    with create_test_client([handler]) as client:
+        response = client.get("/")
+        assert response.text == "1, 2, 3, 4, 5"
+        assert filled_by_bg_task == "6, 7, 8, 9"  # type: ignore[comparison-overlap]
 
 
 def test_streaming_response_custom_iterator() -> None:
-    async def app(scope: "Scope", receive: "Receive", send: "Send") -> None:
+    @asgi("/")
+    async def handler(scope: "Scope", receive: "Receive", send: "Send") -> None:
         class CustomAsyncIterator:
             def __init__(self) -> None:
                 self._called = 0
@@ -134,13 +144,14 @@ def test_streaming_response_custom_iterator() -> None:
         response = ASGIStreamingResponse(iterator=CustomAsyncIterator(), media_type="text/plain")
         await response(scope, receive, send)
 
-    client = TestClient(app)
-    response = client.get("/")
-    assert response.text == "12345"
+    with create_test_client([handler]) as client:
+        response = client.get("/")
+        assert response.text == "12345"
 
 
 def test_streaming_response_custom_iterable() -> None:
-    async def app(scope: "Scope", receive: "Receive", send: "Send") -> None:
+    @asgi("/")
+    async def handler(scope: "Scope", receive: "Receive", send: "Send") -> None:
         class CustomAsyncIterable:
             async def __aiter__(self) -> AsyncIterator[str]:
                 for i in range(5):
@@ -149,13 +160,14 @@ def test_streaming_response_custom_iterable() -> None:
         response = ASGIStreamingResponse(iterator=CustomAsyncIterable(), media_type="text/plain")
         await response(scope, receive, send)
 
-    client = TestClient(app)
-    response = client.get("/")
-    assert response.text == "12345"
+    with create_test_client([handler]) as client:
+        response = client.get("/")
+        assert response.text == "12345"
 
 
 def test_sync_streaming_response() -> None:
-    async def app(scope: "Scope", receive: "Receive", send: "Send") -> None:
+    @asgi("/")
+    async def handler(scope: "Scope", receive: "Receive", send: "Send") -> None:
         def numbers(minimum: int, maximum: int) -> Iterator[str]:
             for i in range(minimum, maximum + 1):
                 yield str(i)
@@ -166,6 +178,6 @@ def test_sync_streaming_response() -> None:
         response = ASGIStreamingResponse(iterator=generator, media_type="text/plain")
         await response(scope, receive, send)
 
-    client = TestClient(app)
-    response = client.get("/")
-    assert response.text == "1, 2, 3, 4, 5"
+    with create_test_client([handler]) as client:
+        response = client.get("/")
+        assert response.text == "1, 2, 3, 4, 5"
