@@ -146,10 +146,17 @@ def create_handler_signature(callback_signature: Signature) -> Signature:
     return callback_signature.replace(parameters=new_params)
 
 
-def create_stub_dependency(src: AnyCallable) -> Provide:
+def create_stub_dependency(src: AnyCallable | None) -> Provide:
     """Create a stub dependency, accepting any kwargs defined in ``src``, and
     wrap it in ``Provide``
     """
+    if src is None:
+
+        async def empty_stub() -> None:
+            return None
+
+        return Provide(empty_stub)
+
     src = unwrap_partial(src)
 
     @wraps(src)
