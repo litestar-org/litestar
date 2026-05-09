@@ -462,6 +462,10 @@ data-aria-dark="Switch to auto color mode">
 <li><a class="reference internal" href="#id3">Example</a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#openapispecplugin">OpenAPISpecPlugin</a><ul>
+<li><a class="reference internal" href="#id4">Example</a></li>
+</ul>
+</li>
 </ul>
 </div><a class="js-repo-stats repo-stats flex items-center" href="https://github.com/litestar-org/litestar"
   data-type="github" data-user="litestar-org" data-repo="litestar">
@@ -573,8 +577,8 @@ authors should make it clear in their documentation if their plugin should be in
 <section id="example">
 <h3>Example<a class="headerlink" href="#example" title="Link to this heading">¶</a></h3>
 <p>The following example shows a simple plugin that adds a route handler, and a dependency to the application.</p>
-<div class="literal-block-wrapper docutils container" id="id4">
-<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">InitPlugin</span></code> implementation example</span><a class="headerlink" href="#id4" title="Link to this code">¶</a></div>
+<div class="literal-block-wrapper docutils container" id="id5">
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">InitPlugin</span></code> implementation example</span><a class="headerlink" href="#id5" title="Link to this code">¶</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
 </span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.config.app</span><span class="w"> </span><span class="kn">import</span> <span class="n">AppConfig</span>
 </span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.di</span><span class="w"> </span><span class="kn">import</span> <span class="n">Provide</span>
@@ -640,8 +644,8 @@ that annotation.</p>
 <h3>Example<a class="headerlink" href="#id2" title="Link to this heading">¶</a></h3>
 <p>The following example shows a minimal <code class="docutils literal notranslate"><span class="pre">SerializationPlugin</span></code> implementation that mirrors the pattern used by
 <code class="docutils literal notranslate"><span class="pre">advanced-alchemy</span></code>’s <a class="reference external" href="https://advanced-alchemy.litestar.dev/latest/reference/extensions/litestar/index.html#advanced_alchemy.extensions.litestar.SQLAlchemySerializationPlugin" title="(in advanced_alchemy)"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemySerializationPlugin</span></code></a>:</p>
-<div class="literal-block-wrapper docutils container" id="id5">
-<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">SerializationPlugin</span></code> implementation example</span><a class="headerlink" href="#id5" title="Link to this code">¶</a></div>
+<div class="literal-block-wrapper docutils container" id="id6">
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">SerializationPlugin</span></code> implementation example</span><a class="headerlink" href="#id6" title="Link to this code">¶</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 </span><span data-line="2">
 </span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
@@ -712,8 +716,8 @@ injection by providing information about injectable types.</p>
 for example Pydantic’s <code class="docutils literal notranslate"><span class="pre">BaseModel</span></code> classes; These are not supported natively since,
 while they are callables, their type information is not contained within their callable
 signature (their <a class="reference internal" href="../../reference/app.html#litestar.app.Litestar.__init__" title="litestar.app.Litestar.__init__"><code class="xref py py-func docutils literal notranslate"><span class="pre">__init__()</span></code></a> method).</p>
-<div class="literal-block-wrapper docutils container" id="id6">
-<div class="code-block-caption"><span class="caption-text">Dynamically generating signature information for a custom type</span><a class="headerlink" href="#id6" title="Link to this code">¶</a></div>
+<div class="literal-block-wrapper docutils container" id="id7">
+<div class="code-block-caption"><span class="caption-text">Dynamically generating signature information for a custom type</span><a class="headerlink" href="#id7" title="Link to this code">¶</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">inspect</span><span class="w"> </span><span class="kn">import</span> <span class="n">Parameter</span><span class="p">,</span> <span class="n">Signature</span>
 </span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
 </span><span data-line="3">
@@ -779,6 +783,65 @@ This happens during the application initialization process, after routes are cre
 </span><span data-line="5">    <span class="k">def</span><span class="w"> </span><span class="nf">receive_route</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">route</span><span class="p">:</span> <span class="n">BaseRoute</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 </span><span data-line="6">        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Route registered: </span><span class="si">{</span><span class="n">route</span><span class="o">.</span><span class="n">path</span><span class="si">}</span><span class="s2"> [</span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">route</span><span class="o">.</span><span class="n">methods</span><span class="p">)</span><span class="si">}</span><span class="s2">]&quot;</span><span class="p">)</span>
 </span></pre></div>
+</div>
+</section>
+</section>
+<section id="openapispecplugin">
+<h2>OpenAPISpecPlugin<a class="headerlink" href="#openapispecplugin" title="Link to this heading">¶</a></h2>
+<p><a class="reference internal" href="../../reference/plugins/index.html#litestar.plugins.OpenAPISpecPlugin" title="litestar.plugins.OpenAPISpecPlugin"><code class="xref py py-class docutils literal notranslate"><span class="pre">OpenAPISpecPlugin</span></code></a> is a small extension point for contributing fragments
+to the generated OpenAPI document after routes have been resolved. It is distinct from
+<a class="reference internal" href="../../reference/plugins/index.html#litestar.plugins.OpenAPISchemaPlugin" title="litestar.plugins.OpenAPISchemaPlugin"><code class="xref py py-class docutils literal notranslate"><span class="pre">OpenAPISchemaPlugin</span></code></a>, which is used to extend OpenAPI schema generation
+for non-library Python types — this plugin contributes finished document pieces.</p>
+<p>Implementations may override either or both default methods:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../../reference/plugins/index.html#litestar.plugins.OpenAPISpecPlugin.get_openapi_components" title="litestar.plugins.OpenAPISpecPlugin.get_openapi_components"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_openapi_components(self)</span> <span class="pre">-&gt;</span> <span class="pre">Components</span> <span class="pre">|</span> <span class="pre">None</span></code></a>
+returns components that are merged into <code class="docutils literal notranslate"><span class="pre">components</span></code> on the document. Keys collide with
+last-wins semantics.</p></li>
+<li><p><a class="reference internal" href="../../reference/plugins/index.html#litestar.plugins.OpenAPISpecPlugin.get_openapi_security_requirements" title="litestar.plugins.OpenAPISpecPlugin.get_openapi_security_requirements"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_openapi_security_requirements(self,</span> <span class="pre">route_handler)</span> <span class="pre">-&gt;</span> <span class="pre">Sequence[SecurityRequirement]</span> <span class="pre">|</span> <span class="pre">None</span></code></a>
+returns a sequence of security requirements appended to the operation. Returning <code class="docutils literal notranslate"><span class="pre">None</span></code> contributes
+nothing for that operation.</p></li>
+</ul>
+<p>Plugins are invoked in registration order.</p>
+<section id="id4">
+<h3>Example<a class="headerlink" href="#id4" title="Link to this heading">¶</a></h3>
+<p>The following example shows a plugin that contributes a <code class="docutils literal notranslate"><span class="pre">BearerJWT</span></code> security scheme and applies
+it to every operation:</p>
+<div class="literal-block-wrapper docutils container" id="id8">
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">OpenAPISpecPlugin</span></code> implementation example</span><a class="headerlink" href="#id8" title="Link to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
+</span><span data-line="2">
+</span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
+</span><span data-line="4"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.openapi</span><span class="w"> </span><span class="kn">import</span> <span class="n">OpenAPIConfig</span>
+</span><span data-line="5"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.openapi.spec</span><span class="w"> </span><span class="kn">import</span> <span class="n">Components</span><span class="p">,</span> <span class="n">SecurityRequirement</span><span class="p">,</span> <span class="n">SecurityScheme</span>
+</span><span data-line="6"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.plugins</span><span class="w"> </span><span class="kn">import</span> <span class="n">OpenAPISpecPlugin</span>
+</span><span data-line="7">
+</span><span data-line="8">
+</span><span data-line="9"><span class="k">class</span><span class="w"> </span><span class="nc">BearerJWTSpecPlugin</span><span class="p">(</span><span class="n">OpenAPISpecPlugin</span><span class="p">):</span>
+</span><span data-line="10"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Contribute a single ``BearerJWT`` security scheme and require it on every operation.&quot;&quot;&quot;</span>
+</span><span data-line="11">
+</span><span data-line="12">    <span class="k">def</span><span class="w"> </span><span class="nf">get_openapi_components</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Components</span><span class="p">:</span>
+</span><span data-line="13">        <span class="k">return</span> <span class="n">Components</span><span class="p">(</span>
+</span><span data-line="14">            <span class="n">security_schemes</span><span class="o">=</span><span class="p">{</span>
+</span><span data-line="15">                <span class="s2">&quot;BearerJWT&quot;</span><span class="p">:</span> <span class="n">SecurityScheme</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="s2">&quot;http&quot;</span><span class="p">,</span> <span class="n">scheme</span><span class="o">=</span><span class="s2">&quot;bearer&quot;</span><span class="p">,</span> <span class="n">bearer_format</span><span class="o">=</span><span class="s2">&quot;JWT&quot;</span><span class="p">),</span>
+</span><span data-line="16">            <span class="p">},</span>
+</span><span data-line="17">        <span class="p">)</span>
+</span><span data-line="18">
+</span><span data-line="19">    <span class="k">def</span><span class="w"> </span><span class="nf">get_openapi_security_requirements</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">route_handler</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">SecurityRequirement</span><span class="p">]:</span>
+</span><span data-line="20">        <span class="k">return</span> <span class="p">[{</span><span class="s2">&quot;BearerJWT&quot;</span><span class="p">:</span> <span class="p">[]}]</span>
+</span><span data-line="21">
+</span><span data-line="22">
+</span><span data-line="23"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/items&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</span><span data-line="24"><span class="k">def</span><span class="w"> </span><span class="nf">list_items</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+</span><span data-line="25">    <span class="k">return</span> <span class="p">[]</span>
+</span><span data-line="26">
+</span><span data-line="27">
+</span><span data-line="28"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
+</span><span data-line="29">    <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">list_items</span><span class="p">],</span>
+</span><span data-line="30">    <span class="n">plugins</span><span class="o">=</span><span class="p">[</span><span class="n">BearerJWTSpecPlugin</span><span class="p">()],</span>
+</span><span data-line="31">    <span class="n">openapi_config</span><span class="o">=</span><span class="n">OpenAPIConfig</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;My API&quot;</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="s2">&quot;1.0.0&quot;</span><span class="p">),</span>
+</span><span data-line="32"><span class="p">)</span>
+</span></pre></div>
+</div>
 </div>
 </section>
 </section>

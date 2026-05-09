@@ -1026,6 +1026,8 @@ data-aria-dark="Switch to auto color mode">
 </li>
         <li><a href="reference/plugins/index.html#litestar.plugins.InitPluginProtocol.__init__">(litestar.plugins.InitPluginProtocol method)</a>
 </li>
+        <li><a href="reference/plugins/index.html#litestar.plugins.OpenAPISpecPlugin.__init__">(litestar.plugins.OpenAPISpecPlugin method)</a>
+</li>
         <li><a href="reference/plugins/problem_details.html#litestar.plugins.problem_details.ProblemDetailsConfig.__init__">(litestar.plugins.problem_details.ProblemDetailsConfig method)</a>
 </li>
         <li><a href="reference/plugins/problem_details.html#litestar.plugins.problem_details.ProblemDetailsException.__init__">(litestar.plugins.problem_details.ProblemDetailsException method)</a>
@@ -1552,6 +1554,8 @@ data-aria-dark="Switch to auto color mode">
       <li><a href="reference/plugins/prometheus.html#litestar.plugins.prometheus.PrometheusConfig.app_name">app_name (litestar.plugins.prometheus.PrometheusConfig attribute)</a>
 </li>
       <li><a href="reference/config.html#litestar.config.app.AppConfig">AppConfig (class in litestar.config.app)</a>
+</li>
+      <li><a href="reference/plugins/index.html#litestar.plugins.OpenAPISpecPlugin.applies_to">applies_to() (litestar.plugins.OpenAPISpecPlugin method)</a>
 </li>
       <li><a href="reference/middleware/constraints.html#litestar.middleware.constraints.MiddlewareConstraints.apply_after">apply_after() (litestar.middleware.constraints.MiddlewareConstraints method)</a>
 </li>
@@ -3625,10 +3629,10 @@ data-aria-dark="Switch to auto color mode">
 </li>
       <li><a href="reference/types.html#litestar.types.ExceptionHandler">ExceptionHandler (in module litestar.types)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/types.html#litestar.types.ExceptionHandlersMap">ExceptionHandlersMap (in module litestar.types)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/exceptions.html#litestar.exceptions.responses.ExceptionResponseContent">ExceptionResponseContent (class in litestar.exceptions.responses)</a>
 </li>
       <li><a href="reference/config.html#litestar.config.allowed_hosts.AllowedHostsConfig.exclude">exclude (litestar.config.allowed_hosts.AllowedHostsConfig attribute)</a>
@@ -3655,6 +3659,8 @@ data-aria-dark="Switch to auto color mode">
         <li><a href="reference/middleware/session/client_side.html#litestar.middleware.session.client_side.CookieBackendConfig.exclude">(litestar.middleware.session.client_side.CookieBackendConfig attribute)</a>
 </li>
         <li><a href="reference/middleware/session/server_side.html#litestar.middleware.session.server_side.ServerSideSessionConfig.exclude">(litestar.middleware.session.server_side.ServerSideSessionConfig attribute)</a>
+</li>
+        <li><a href="reference/plugins/index.html#litestar.plugins.OpenAPISpecPlugin.params.exclude">(litestar.plugins.OpenAPISpecPlugin parameter)</a>
 </li>
         <li><a href="reference/plugins/prometheus.html#litestar.plugins.prometheus.PrometheusConfig.exclude">(litestar.plugins.prometheus.PrometheusConfig attribute)</a>
 </li>
@@ -4335,7 +4341,11 @@ data-aria-dark="Switch to auto color mode">
         <li><a href="reference/repository/abc.html#litestar.repository.abc.AbstractSyncRepository.get_one_or_none">(litestar.repository.abc.AbstractSyncRepository method)</a>
 </li>
       </ul></li>
+      <li><a href="reference/plugins/index.html#litestar.plugins.OpenAPISpecPlugin.get_openapi_components">get_openapi_components() (litestar.plugins.OpenAPISpecPlugin method)</a>
+</li>
       <li><a href="reference/openapi/plugins.html#litestar.openapi.plugins.OpenAPIRenderPlugin.get_openapi_json_route">get_openapi_json_route() (litestar.openapi.plugins.OpenAPIRenderPlugin static method)</a>
+</li>
+      <li><a href="reference/plugins/index.html#litestar.plugins.OpenAPISpecPlugin.get_openapi_security_requirements">get_openapi_security_requirements() (litestar.plugins.OpenAPISpecPlugin method)</a>
 </li>
       <li><a href="reference/repository/abc.html#litestar.repository.abc.AbstractAsyncRepository.get_or_create">get_or_create() (litestar.repository.abc.AbstractAsyncRepository method)</a>
 
@@ -4345,10 +4355,10 @@ data-aria-dark="Switch to auto color mode">
       </ul></li>
       <li><a href="reference/middleware/rate_limit.html#litestar.middleware.rate_limit.get_remote_address">get_remote_address() (in module litestar.middleware.rate_limit)</a>
 </li>
-      <li><a href="reference/controller.html#litestar.controller.Controller.get_route_handlers">get_route_handlers() (litestar.controller.Controller method)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="reference/controller.html#litestar.controller.Controller.get_route_handlers">get_route_handlers() (litestar.controller.Controller method)</a>
+</li>
       <li><a href="reference/datastructures/secret_values.html#litestar.datastructures.secret_values.SecretValue.get_secret">get_secret() (litestar.datastructures.secret_values.SecretValue method)</a>
 </li>
       <li><a href="reference/serialization.html#litestar.serialization.get_serializer">get_serializer() (in module litestar.serialization)</a>
@@ -4976,6 +4986,8 @@ data-aria-dark="Switch to auto color mode">
       <li><a href="reference/dto/config.html#litestar.dto.config.DTOConfig.include">include (litestar.dto.config.DTOConfig attribute)</a>
 
       <ul>
+        <li><a href="reference/plugins/index.html#litestar.plugins.OpenAPISpecPlugin.params.include">(litestar.plugins.OpenAPISpecPlugin parameter)</a>
+</li>
         <li><a href="reference/plugins/pydantic.html#litestar.plugins.pydantic.PydanticInitPlugin.params.include">(litestar.plugins.pydantic.PydanticInitPlugin parameter)</a>
 </li>
         <li><a href="reference/plugins/pydantic.html#litestar.plugins.pydantic.PydanticPlugin.params.include">(litestar.plugins.pydantic.PydanticPlugin parameter)</a>
@@ -5085,10 +5097,10 @@ data-aria-dark="Switch to auto color mode">
 </li>
       <li><a href="reference/plugins/index.html#litestar.plugins.OpenAPISchemaPlugin.is_constrained_field">is_constrained_field() (litestar.plugins.OpenAPISchemaPlugin static method)</a>
 </li>
-      <li><a href="reference/typing.html#litestar.typing.FieldDefinition.is_dataclass_type">is_dataclass_type (litestar.typing.FieldDefinition property)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="reference/typing.html#litestar.typing.FieldDefinition.is_dataclass_type">is_dataclass_type (litestar.typing.FieldDefinition property)</a>
+</li>
       <li><a href="reference/typing.html#litestar.typing.FieldDefinition.is_forward_ref">is_forward_ref (litestar.typing.FieldDefinition property)</a>
 </li>
       <li><a href="reference/typing.html#litestar.typing.FieldDefinition.is_generic">is_generic (litestar.typing.FieldDefinition property)</a>
@@ -7294,6 +7306,8 @@ data-aria-dark="Switch to auto color mode">
 </li>
       <li><a href="reference/plugins/index.html#litestar.plugins.OpenAPISchemaPlugin">OpenAPISchemaPlugin (class in litestar.plugins)</a>
 </li>
+      <li><a href="reference/plugins/index.html#litestar.plugins.OpenAPISpecPlugin">OpenAPISpecPlugin (class in litestar.plugins)</a>
+</li>
       <li><a href="reference/openapi/spec.html#litestar.openapi.spec.OpenAPIType">OpenAPIType (class in litestar.openapi.spec)</a>
 </li>
       <li><a href="reference/plugins/prometheus.html#litestar.plugins.prometheus.PrometheusController.openmetrics_format">openmetrics_format (litestar.plugins.prometheus.PrometheusController attribute)</a>
@@ -8803,6 +8817,8 @@ data-aria-dark="Switch to auto color mode">
 
       <ul>
         <li><a href="reference/openapi/openapi.html#litestar.openapi.OpenAPIConfig.operation_id_creator.params.route_handler">(litestar.openapi.OpenAPIConfig.operation_id_creator parameter)</a>
+</li>
+        <li><a href="reference/plugins/index.html#litestar.plugins.OpenAPISpecPlugin.get_openapi_security_requirements.params.route_handler">(litestar.plugins.OpenAPISpecPlugin.get_openapi_security_requirements parameter)</a>
 </li>
         <li><a href="reference/routes.html#litestar.routes.ASGIRoute.params.route_handler">(litestar.routes.ASGIRoute parameter)</a>
 </li>

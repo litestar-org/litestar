@@ -475,6 +475,13 @@ data-aria-dark="Switch to auto color mode">
 <li><a class="reference internal" href="#litestar.plugins.OpenAPISchemaPlugin.to_openapi_schema"><code class="docutils literal notranslate">to_openapi_schema()</span></code></a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#litestar.plugins.OpenAPISpecPlugin"><code class="docutils literal notranslate"><span class="pre">OpenAPISpecPlugin</span></code></a><ul>
+<li><a class="reference internal" href="#litestar.plugins.OpenAPISpecPlugin.__init__"><code class="docutils literal notranslate">__init__()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.plugins.OpenAPISpecPlugin.applies_to"><code class="docutils literal notranslate">applies_to()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.plugins.OpenAPISpecPlugin.get_openapi_components"><code class="docutils literal notranslate">get_openapi_components()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.plugins.OpenAPISpecPlugin.get_openapi_security_requirements"><code class="docutils literal notranslate">get_openapi_security_requirements()</span></code></a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#litestar.plugins.ReceiveRoutePlugin"><code class="docutils literal notranslate"><span class="pre">ReceiveRoutePlugin</span></code></a><ul>
 <li><a class="reference internal" href="#litestar.plugins.ReceiveRoutePlugin.receive_route"><code class="docutils literal notranslate">receive_route()</span></code></a></li>
 </ul>
@@ -804,6 +811,70 @@ backwards compatibility. User’s should prefer to override that method instead.
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>An <a class="reference internal" href="../openapi/spec.html#litestar.openapi.spec.Schema" title="litestar.openapi.spec.schema.Schema"><code class="xref py py-class docutils literal notranslate"><span class="pre">OpenAPI</span></code></a> instance.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="litestar.plugins.OpenAPISpecPlugin">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.plugins.</span></span><span class="sig-name descname"><span class="pre">OpenAPISpecPlugin</span></span><a class="reference internal" href="../../_modules/litestar/plugins/base.html#OpenAPISpecPlugin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#litestar.plugins.OpenAPISpecPlugin" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Plugin hook for contributing OpenAPI document metadata after routes are resolved.</p>
+<p>Subclasses override one or both of <a class="reference internal" href="#litestar.plugins.OpenAPISpecPlugin.get_openapi_components" title="litestar.plugins.OpenAPISpecPlugin.get_openapi_components"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_openapi_components()</span></code></a> (document-level) and
+<a class="reference internal" href="#litestar.plugins.OpenAPISpecPlugin.get_openapi_security_requirements" title="litestar.plugins.OpenAPISpecPlugin.get_openapi_security_requirements"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_openapi_security_requirements()</span></code></a> (per-operation) to contribute fragments. Both
+default to <code class="docutils literal notranslate"><span class="pre">None</span></code> so plugins are not forced to implement extension points they do not need.</p>
+<p>The optional <code class="docutils literal notranslate"><span class="pre">include</span></code> / <code class="docutils literal notranslate"><span class="pre">exclude</span></code> arguments offer a path-pattern filter for the
+per-route hook: when set, <a class="reference internal" href="#litestar.plugins.OpenAPISpecPlugin.applies_to" title="litestar.plugins.OpenAPISpecPlugin.applies_to"><code class="xref py py-meth docutils literal notranslate"><span class="pre">applies_to()</span></code></a> rejects route handlers whose paths do not
+match. Subclasses can also override <a class="reference internal" href="#litestar.plugins.OpenAPISpecPlugin.applies_to" title="litestar.plugins.OpenAPISpecPlugin.applies_to"><code class="xref py py-meth docutils literal notranslate"><span class="pre">applies_to()</span></code></a> for custom filtering (by tag,
+<code class="docutils literal notranslate"><span class="pre">opt</span></code> key, HTTP method, etc.).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><span class="target" id="litestar.plugins.OpenAPISpecPlugin.params.include"></span><strong>include</strong><a class="paramlink headerlink reference internal" href="#litestar.plugins.OpenAPISpecPlugin.params.include">¶</a> – A regex pattern or sequence of patterns. When set, <a class="reference internal" href="#litestar.plugins.OpenAPISpecPlugin.applies_to" title="litestar.plugins.OpenAPISpecPlugin.applies_to"><code class="xref py py-meth docutils literal notranslate"><span class="pre">applies_to()</span></code></a>
+returns <code class="docutils literal notranslate"><span class="pre">True</span></code> only for route handlers with at least one path matching the
+pattern.</p></li>
+<li><p><span class="target" id="litestar.plugins.OpenAPISpecPlugin.params.exclude"></span><strong>exclude</strong><a class="paramlink headerlink reference internal" href="#litestar.plugins.OpenAPISpecPlugin.params.exclude">¶</a> – A regex pattern or sequence of patterns. When set, <a class="reference internal" href="#litestar.plugins.OpenAPISpecPlugin.applies_to" title="litestar.plugins.OpenAPISpecPlugin.applies_to"><code class="xref py py-meth docutils literal notranslate"><span class="pre">applies_to()</span></code></a>
+returns <code class="docutils literal notranslate"><span class="pre">False</span></code> for route handlers with any path matching the pattern.
+<code class="docutils literal notranslate"><span class="pre">exclude</span></code> takes precedence over <code class="docutils literal notranslate"><span class="pre">include</span></code>.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="litestar.plugins.OpenAPISpecPlugin.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">include</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Iterable</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Iterable</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../../_modules/litestar/plugins/base.html#OpenAPISpecPlugin.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#litestar.plugins.OpenAPISpecPlugin.__init__" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="litestar.plugins.OpenAPISpecPlugin.applies_to">
+<span class="sig-name descname"><span class="pre">applies_to</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">route_handler</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../handlers.html#litestar.handlers.HTTPRouteHandler" title="litestar.handlers.HTTPRouteHandler"><span class="pre">HTTPRouteHandler</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span></span><a class="reference internal" href="../../_modules/litestar/plugins/base.html#OpenAPISpecPlugin.applies_to"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#litestar.plugins.OpenAPISpecPlugin.applies_to" title="Link to this definition">¶</a></dt>
+<dd><p>Return <code class="docutils literal notranslate"><span class="pre">True</span></code> if this plugin should contribute for <code class="docutils literal notranslate"><span class="pre">route_handler</span></code>.</p>
+<p>The default implementation honors <a class="reference internal" href="../dto/config.html#litestar.dto.config.DTOConfig.include" title="litestar.dto.config.DTOConfig.include"><code class="xref py py-attr docutils literal notranslate"><span class="pre">include</span></code></a> and <a class="reference internal" href="../config.html#litestar.config.allowed_hosts.AllowedHostsConfig.exclude" title="litestar.config.allowed_hosts.AllowedHostsConfig.exclude"><code class="xref py py-attr docutils literal notranslate"><span class="pre">exclude</span></code></a> path patterns.
+Subclasses can override this method for custom filtering logic.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="litestar.plugins.OpenAPISpecPlugin.get_openapi_components">
+<span class="sig-name descname"><span class="pre">get_openapi_components</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../openapi/spec.html#litestar.openapi.spec.Components" title="litestar.openapi.spec.Components"><span class="pre">Components</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../../_modules/litestar/plugins/base.html#OpenAPISpecPlugin.get_openapi_components"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#litestar.plugins.OpenAPISpecPlugin.get_openapi_components" title="Link to this definition">¶</a></dt>
+<dd><p>Return OpenAPI components contributed by this plugin.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Components to merge into the generated OpenAPI document, or <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="litestar.plugins.OpenAPISpecPlugin.get_openapi_security_requirements">
+<span class="sig-name descname"><span class="pre">get_openapi_security_requirements</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">route_handler</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../handlers.html#litestar.handlers.HTTPRouteHandler" title="litestar.handlers.HTTPRouteHandler"><span class="pre">HTTPRouteHandler</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../openapi/spec.html#litestar.openapi.spec.SecurityRequirement" title="litestar.openapi.spec.SecurityRequirement"><span class="pre">SecurityRequirement</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../../_modules/litestar/plugins/base.html#OpenAPISpecPlugin.get_openapi_security_requirements"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#litestar.plugins.OpenAPISpecPlugin.get_openapi_security_requirements" title="Link to this definition">¶</a></dt>
+<dd><p>Return OpenAPI security requirements contributed for a route handler.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="target" id="litestar.plugins.OpenAPISpecPlugin.get_openapi_security_requirements.params.route_handler"></span><strong>route_handler</strong><a class="paramlink headerlink reference internal" href="#litestar.plugins.OpenAPISpecPlugin.get_openapi_security_requirements.params.route_handler">¶</a> – The resolved HTTP route handler being rendered into an OpenAPI operation.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Security requirements to append to the operation, or <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
 </dd>
 </dl>
 </dd></dl>
