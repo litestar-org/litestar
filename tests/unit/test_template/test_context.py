@@ -5,8 +5,8 @@ import pytest
 
 from litestar import MediaType, get
 from litestar.contrib.jinja import JinjaTemplateEngine
-from litestar.plugins.mako import MakoTemplateEngine
 from litestar.contrib.minijinja import MiniJinjaTemplateEngine
+from litestar.plugins.mako import MakoTemplateEngine
 from litestar.response.template import Template
 from litestar.template.config import TemplateConfig
 from litestar.testing import create_test_client
