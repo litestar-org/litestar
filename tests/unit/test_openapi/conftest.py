@@ -44,9 +44,11 @@ def create_person_controller() -> type[Controller]:
             from_date: Optional[Union[int, datetime, date]] = None,
             to_date: Optional[Union[int, datetime, date]] = None,
             gender: Optional[Union[Gender, list[Gender]]] = Parameter(
-                examples=[Example(value=Gender.MALE), Example(value=[Gender.MALE, Gender.OTHER])]
+                required=False, examples=[Example(value=Gender.MALE), Example(value=[Gender.MALE, Gender.OTHER])]
             ),
-            lucky_number: Optional[LuckyNumber] = Parameter(examples=[Example(value=LuckyNumber.SEVEN)]),
+            lucky_number: Optional[LuckyNumber] = Parameter(
+                required=False, examples=[Example(value=LuckyNumber.SEVEN)]
+            ),
             # header parameter
             secret_header: str = Parameter(header="secret"),
             # cookie parameter
