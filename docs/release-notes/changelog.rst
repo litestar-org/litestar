@@ -6,6 +6,23 @@
 .. changelog:: 3.0.0
     :date: 2364-01-27
 
+    .. change:: Fix OpenAPI schema incorrectly marking nullable required fields as not required
+        :type: bugfix
+        :pr: 4687
+        :issue: 4673
+
+        Fields typed as ``T | None`` (nullable) without a default value are now correctly
+        included in the OpenAPI schema's ``required`` array. Previously, Litestar conflated
+        nullability (the type can be ``None``) with optionality (having a default value),
+        causing the generated schema to diverge from the OpenAPI 3.1.0 specification.
+
+        This affected all model types: dataclasses, msgspec Structs, attrs classes, and
+        Pydantic models. For example, a field ``name: int | None`` with no default was
+        previously excluded from ``required``; it is now correctly included.
+
+        Runtime request validation behavior is unchanged — nullable parameters without
+        defaults were already enforced as required at the validation layer.
+
     .. change:: Drop support for Pydantic 1
         :type: feature
         :breaking:

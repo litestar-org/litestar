@@ -323,7 +323,7 @@ def test_spec_generation(cls: Any) -> None:
                 },
             },
             "type": "object",
-            "required": ["complex", "first_name", "id", "last_name", "union"],
+            "required": ["complex", "first_name", "id", "last_name", "optional", "union"],
             "title": f"{cls.__name__}",
         }
 

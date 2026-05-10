@@ -82,7 +82,7 @@ def test_create_parameters(person_controller: type[Controller]) -> None:
     assert is_schema_value(name.schema)
     assert name.schema.one_of
     assert len(name.schema.one_of) == 3
-    assert not name.required
+    assert name.required
     assert name.schema.examples
 
     assert from_date.param_in == ParamType.QUERY
@@ -515,3 +515,33 @@ def test_two_parameters_but_one_not_included_in_schema() -> None:
         parameter_names = {param["name"] for param in handler_schema["parameters"]}
         assert "param1" in parameter_names
         assert "param2" not in parameter_names
+
+
+@pytest.mark.parametrize(
+    ("annotation", "default", "expected_required"),
+    [
+        pytest.param(Optional[int], ..., True, id="nullable-no-default-is-required"),
+        pytest.param(Optional[int], None, False, id="nullable-with-default-is-not-required"),
+        pytest.param(int, ..., True, id="non-nullable-no-default-is-required"),
+        pytest.param(int, 0, False, id="non-nullable-with-default-is-not-required"),
+    ],
+)
+def test_nullable_query_param_required(annotation: Any, default: Any, expected_required: bool) -> None:
+    # https://github.com/litestar-org/litestar/issues/4673
+    if default is ...:
+
+        @get("/test")
+        def handler(param: annotation) -> None:  # pyright: ignore[reportInvalidTypeForm]
+            pass
+    else:
+
+        @get("/test")
+        def handler(param: annotation = default) -> None:  # pyright: ignore[reportInvalidTypeForm]
+            pass
+
+    with create_test_client(handler) as client:
+        path_item = client.app.openapi_schema.paths["/test"]  # type: ignore[index]
+        params = {p.name: p for p in (path_item.get.parameters or [])}  # type: ignore[union-attr]
+        param = params["param"]
+        assert not isinstance(param, Reference)
+        assert param.required is expected_required
