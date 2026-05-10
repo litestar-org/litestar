@@ -202,6 +202,35 @@ def test_prometheus_with_websocket() -> None:
         )
 
 
+    def test_prometheus_captures_401_from_middleware() -> None:
+        config = create_config()
+
+        def auth_middleware_factory(app: Any) -> Any:
+            async def auth_middleware(scope: Any, receive: Any, send: Any) -> None:
+                if scope.get("path") == "/protected":
+                    from litestar.exceptions import NotAuthorizedException
+
+                    raise NotAuthorizedException("unauthorized")
+                await app(scope, receive, send)
+
+            return auth_middleware
+
+        @get("/protected")
+        def protected() -> dict:
+            return {"hello": "world"}
+
+        with create_test_client([protected, PrometheusController], middleware=[config.middleware, auth_middleware_factory]) as client:
+            resp = client.get("/protected")
+            assert resp.status_code == 401
+
+            metrics = client.get("/metrics").content.decode()
+
+            assert (
+                "litestar_requests_total{app_name=\"litestar\",method=\"GET\",path=\"/protected\",status_code=\"401\"} 1.0"
+                in metrics
+            )
+
+
 @pytest.mark.parametrize("env_var", ["PROMETHEUS_MULTIPROC_DIR", "prometheus_multiproc_dir"])
 def test_procdir(monkeypatch: MonkeyPatch, tmp_path: Path, mocker: MockerFixture, env_var: str) -> None:
     proc_dir = tmp_path / "something"

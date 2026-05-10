@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING, Any, ClassVar, cast
 
 from litestar.connection.request import Request
 from litestar.enums import ScopeType
-from litestar.exceptions import MissingDependencyException
+from litestar.exceptions import MissingDependencyException, HTTPException
 from litestar.middleware.base import AbstractMiddleware
 
 __all__ = ("PrometheusMiddleware",)
@@ -155,6 +155,26 @@ class PrometheusMiddleware(AbstractMiddleware):
 
         try:
             await self.app(scope, receive, wrapped_send)
+
+        except HTTPException as exc:  # Capture Litestar HTTP exceptions (e.g. 401, 403, 404)
+            request_span["status_code"] = exc.status_code
+
+            end = time.perf_counter()
+            request_span["duration"] = end - request_span["start_time"]
+            request_span["end_time"] = end
+
+            raise
+
+        except Exception:
+            # Unexpected server-side exception
+            request_span["status_code"] = HTTP_500_INTERNAL_SERVER_ERROR
+
+            end = time.perf_counter()
+            request_span["duration"] = end - request_span["start_time"]
+            request_span["end_time"] = end
+
+            raise
+
         finally:
             extra: dict[str, Any] = {}
             if self._config.exemplars:
