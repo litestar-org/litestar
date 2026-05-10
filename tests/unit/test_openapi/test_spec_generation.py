@@ -46,7 +46,11 @@ def test_spec_generation(cls: Any) -> None:
                 },
             },
             "type": "object",
-            "required": ["complex", "first_name", "id", "last_name"],
+            "required": sorted(
+                ["complex", "first_name", "id", "last_name"]
+                + (["optional", "pets"] if cls is MsgSpecStructPerson else [])
+                + (["optional"] if cls is DataclassPerson else [])
+            ),
             "title": f"{cls.__name__}",
         }
 

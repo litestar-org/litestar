@@ -13,9 +13,9 @@ def test_spec_generation() -> None:
         first_name: str
         last_name: str
         id: str
-        optional: Optional[str]
         complex: Dict[str, List[Dict[str, str]]]
-        pets: Optional[List[DataclassPet]]
+        optional: Optional[str] = None
+        pets: Optional[List[DataclassPet]] = None
 
     @post("/")
     def handler(data: Person) -> Person:

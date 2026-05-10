@@ -94,7 +94,7 @@ def test_create_parameters(person_controller: Type[Controller]) -> None:
     assert is_schema_value(name.schema)
     assert name.schema.one_of
     assert len(name.schema.one_of) == 3
-    assert not name.required
+    assert name.required
     assert name.schema.examples
 
     assert from_date.param_in == ParamType.QUERY
@@ -599,3 +599,33 @@ def test_explicit_path_param_with_alias_excluded_when_alias_not_in_path() -> Non
         # routing also works for the aliased path parameter
         assert client.get("/foo").text == "foo"
         assert client.get("/").text == ""
+
+
+@pytest.mark.parametrize(
+    ("annotation", "default", "expected_required"),
+    [
+        pytest.param(Optional[int], ..., True, id="nullable-no-default-is-required"),
+        pytest.param(Optional[int], None, False, id="nullable-with-default-is-not-required"),
+        pytest.param(int, ..., True, id="non-nullable-no-default-is-required"),
+        pytest.param(int, 0, False, id="non-nullable-with-default-is-not-required"),
+    ],
+)
+def test_nullable_query_param_required(annotation: Any, default: Any, expected_required: bool) -> None:
+    # https://github.com/litestar-org/litestar/issues/4673
+    if default is ...:
+
+        @get("/test")
+        def handler(param: annotation) -> None:  # pyright: ignore[reportInvalidTypeForm]
+            pass
+    else:
+
+        @get("/test")
+        def handler(param: annotation = default) -> None:  # pyright: ignore[reportInvalidTypeForm]
+            pass
+
+    with create_test_client(handler) as client:
+        path_item = client.app.openapi_schema.paths["/test"]  # type: ignore[index]
+        params = {p.name: p for p in (path_item.get.parameters or [])}  # type: ignore[union-attr]
+        param = params["param"]
+        assert not isinstance(param, Reference)
+        assert param.required is expected_required

@@ -351,13 +351,17 @@ def test_is_required() -> None:
         is True
     )
 
-    assert FieldDefinition.from_annotation(Optional[str]).is_required is False
+    # Nullable type without a default is required (nullability != optionality)
+    nullable_field = FieldDefinition.from_annotation(Optional[str])
+    assert nullable_field.is_required is True
+    assert nullable_field.is_optional is True
     assert FieldDefinition.from_annotation(str).is_required is True
 
-    assert FieldDefinition.from_annotation(Any).is_required is False
+    assert FieldDefinition.from_annotation(Any).is_required is True
 
+    # from_annotation only sees the type, not the default value from the struct definition
     assert FieldDefinition.from_annotation(get_type_hints(Bar)["with_default"]).is_required is True
-    assert FieldDefinition.from_annotation(get_type_hints(Bar)["with_none_default"]).is_required is False
+    assert FieldDefinition.from_annotation(get_type_hints(Bar)["with_none_default"]).is_required is True
 
 
 def test_field_definition_bound_type() -> None:

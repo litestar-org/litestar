@@ -30,7 +30,7 @@ def test_openapi_to_typescript_converter(person_controller: Type[Controller], pe
 	first_name: string;
 	id: string;
 	last_name: string;
-	optional?: null | string;
+	optional: null | string;
 	pets?: null | {
 	age: number;
 	name: string;
@@ -175,7 +175,7 @@ def test_openapi_to_typescript_converter(person_controller: Type[Controller], pe
 	first_name: string;
 	id: string;
 	last_name: string;
-	optional?: null | string;
+	optional: null | string;
 	pets?: null | {
 	age: number;
 	name: string;
@@ -203,7 +203,7 @@ def test_openapi_to_typescript_converter(person_controller: Type[Controller], pe
 	first_name: string;
 	id: string;
 	last_name: string;
-	optional?: null | string;
+	optional: null | string;
 	pets?: null | {
 	age: number;
 	name: string;
@@ -225,7 +225,7 @@ def test_openapi_to_typescript_converter(person_controller: Type[Controller], pe
 	first_name: string;
 	id: string;
 	last_name: string;
-	optional?: null | string;
+	optional: null | string;
 	pets?: null | {
 	age: number;
 	name: string;
@@ -253,7 +253,7 @@ def test_openapi_to_typescript_converter(person_controller: Type[Controller], pe
 	first_name: string;
 	id: string;
 	last_name: string;
-	optional?: null | string;
+	optional: null | string;
 	pets?: null | {
 	age: number;
 	name: string;
@@ -271,7 +271,7 @@ def test_openapi_to_typescript_converter(person_controller: Type[Controller], pe
 	first_name: string;
 	id: string;
 	last_name: string;
-	optional?: null | string;
+	optional: null | string;
 	pets?: null | {
 	age: number;
 	name: string;
@@ -310,7 +310,7 @@ def test_openapi_to_typescript_converter(person_controller: Type[Controller], pe
 	first_name: string;
 	id: string;
 	last_name: string;
-	optional?: null | string;
+	optional: null | string;
 	pets?: null | {
 	age: number;
 	name: string;
@@ -335,7 +335,7 @@ def test_openapi_to_typescript_converter(person_controller: Type[Controller], pe
 	from_date?: null | number | string | string;
 	gender?: "A" | "F" | "M" | "O" | ("A" | "F" | "M" | "O")[] | null;
 	lucky_number?: 2 | 7 | null;
-	name?: null | string | string[];
+	name: null | string | string[];
 	page: number;
 	pageSize: number;
 	to_date?: null | number | string | string;
@@ -370,7 +370,7 @@ def test_openapi_to_typescript_converter(person_controller: Type[Controller], pe
 	first_name: string;
 	id: string;
 	last_name: string;
-	optional?: null | string;
+	optional: null | string;
 	pets?: null | {
 	age: number;
 	name: string;
@@ -449,7 +449,7 @@ def test_openapi_to_typescript_converter(person_controller: Type[Controller], pe
 	first_name: string;
 	id: string;
 	last_name: string;
-	optional?: null | string;
+	optional: null | string;
 	pets?: null | {
 	age: number;
 	name: string;
@@ -478,7 +478,7 @@ def test_openapi_to_typescript_converter(person_controller: Type[Controller], pe
 	first_name: string;
 	id: string;
 	last_name: string;
-	optional?: null | string;
+	optional: null | string;
 	pets?: null | {
 	age: number;
 	name: string;
