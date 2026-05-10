@@ -4,5 +4,5 @@ Metrics
 .. toctree::
     :titlesonly:
 
-    open-telemetry
+    opentelemetry
     prometheus

@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 from typing import TYPE_CHECKING, Any
 
 from litestar.exceptions import MissingDependencyException
@@ -12,13 +10,13 @@ try:
 except ImportError as e:
     raise MissingDependencyException("opentelemetry") from e
 
-from opentelemetry.semconv.trace import SpanAttributes
+from opentelemetry.semconv.attributes.http_attributes import HTTP_ROUTE
 
 if TYPE_CHECKING:
     from litestar.types import Scope
 
 
-def get_route_details_from_scope(scope: Scope) -> tuple[str, dict[Any, str]]:
+def get_route_details_from_scope(scope: "Scope") -> "tuple[str, dict[Any, str]]":
     """Retrieve the span name and attributes from the ASGI scope.
 
     Args:
@@ -32,6 +30,6 @@ def get_route_details_from_scope(scope: Scope) -> tuple[str, dict[Any, str]]:
     method = str(scope.get("method", "")).strip()
 
     if method and path:  # http
-        return f"{method} {path}", {SpanAttributes.HTTP_ROUTE: f"{method} {path}"}
+        return f"{method} {path}", {HTTP_ROUTE: f"{method} {path}"}
 
-    return path, {SpanAttributes.HTTP_ROUTE: path}  # websocket
+    return path, {HTTP_ROUTE: path}  # websocket

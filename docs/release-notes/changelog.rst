@@ -6,6 +6,23 @@
 .. changelog:: 3.0.0
     :date: 2364-01-27
 
+    .. change:: Fix OpenAPI schema incorrectly marking nullable required fields as not required
+        :type: bugfix
+        :pr: 4687
+        :issue: 4673
+
+        Fields typed as ``T | None`` (nullable) without a default value are now correctly
+        included in the OpenAPI schema's ``required`` array. Previously, Litestar conflated
+        nullability (the type can be ``None``) with optionality (having a default value),
+        causing the generated schema to diverge from the OpenAPI 3.1.0 specification.
+
+        This affected all model types: dataclasses, msgspec Structs, attrs classes, and
+        Pydantic models. For example, a field ``name: int | None`` with no default was
+        previously excluded from ``required``; it is now correctly included.
+
+        Runtime request validation behavior is unchanged — nullable parameters without
+        defaults were already enforced as required at the validation layer.
+
     .. change:: Drop support for Pydantic 1
         :type: feature
         :breaking:
@@ -310,6 +327,30 @@
         Use ``litestar[piccolo]`` extra installation target
         and ``litestar_piccolo`` plugin instead:
         https://github.com/litestar-org/litestar-piccolo
+
+    .. change:: Move ``litestar.contrib.opentelemetry`` to ``litestar.plugins.opentelemetry`` and add upstream parity
+        :type: feature
+        :breaking:
+        :pr: 4691
+        :issue: 4466, 4468
+
+        Move the OpenTelemetry integration from ``litestar.contrib.opentelemetry`` to
+        ``litestar.plugins.opentelemetry``. Code still using imports from the old
+        module should switch to the new path.
+
+        :class:`~litestar.plugins.opentelemetry.OpenTelemetryConfig` has been brought
+        in line with the upstream
+        ``opentelemetry.instrumentation.asgi.OpenTelemetryMiddleware`` configuration,
+        adding ``client_request_hook_handler``, ``client_response_hook_handler``,
+        ``tracer``, ``exclude``, ``exclude_opt_key``, ``exclude_urls_env_key``,
+        ``exclude_spans``, ``http_capture_headers_server_request``,
+        ``http_capture_headers_server_response``, and
+        ``http_capture_headers_sanitize_fields``.
+
+        Also fixes a ``KeyError: 'route_handler'`` raised on every request when
+        ``exclude_opt_key`` was set, and corrects the ``OpenTelemetryHookHandler``
+        signature to accept the span, ASGI scope, and ASGI message as documented by
+        upstream.
 
     .. change:: Change ``Optional`` to ``NotRequired`` for pydantic fields with ``default_factory``
         :type: bugfix
