@@ -104,6 +104,8 @@ nitpick_ignore = [
     (PY_CLASS, "abc.Collection"),
     (PY_CLASS, "advanced_alchemy.utils.dataclass.Empty"),
     (PY_CLASS, "jinja2.environment.Environment"),
+    (PY_CLASS, "mako.lookup.TemplateLookup"),
+    (PY_CLASS, "mako.template.Template"),
     (PY_CLASS, "pydantic.BaseModel"),
     (PY_CLASS, "pydantic.generics.GenericModel"),
     (PY_CLASS, "pydantic.main.BaseModel"),
@@ -142,6 +144,7 @@ nitpick_ignore = [
     (PY_OBJ, "litestar.template.base.ContextType_co"),
     (PY_CLASS, "litestar.template.base.TemplateType_co"),
     (PY_CLASS, "litestar.template.base.ContextType_co"),
+    (PY_CLASS, "litestar.template.base.ContextType"),
     (PY_CLASS, "litestar.template.base.R"),
     # intentionally undocumented
     (PY_CLASS, "BacklogStrategy"),
