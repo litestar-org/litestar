@@ -853,6 +853,19 @@ to indicate whether to bypass the middleware for the current request.</p>
 <section id="3.0.0-bugfix">
 <h3>Bugfixes<a class="headerlink" href="#3.0.0-bugfix" title="Link to this heading">¶</a></h3>
 <dl>
+<dt>Fix OpenAPI schema incorrectly marking nullable required fields as not required<a class="headerlink reference internal" href="#3.0.0-fix openapi schema incorrectly marking nullable required fields as not required" id="3.0.0-fix openapi schema incorrectly marking nullable required fields as not required">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Fields typed as <code class="docutils literal notranslate"><span class="pre">T</span> <span class="pre">|</span> <span class="pre">None</span></code> (nullable) without a default value are now correctly
+included in the OpenAPI schema’s <code class="docutils literal notranslate"><span class="pre">required</span></code> array. Previously, Litestar conflated
+nullability (the type can be <code class="docutils literal notranslate"><span class="pre">None</span></code>) with optionality (having a default value),
+causing the generated schema to diverge from the OpenAPI 3.1.0 specification.</p>
+<p>This affected all model types: dataclasses, msgspec Structs, attrs classes, and
+Pydantic models. For example, a field <code class="docutils literal notranslate"><span class="pre">name:</span> <span class="pre">int</span> <span class="pre">|</span> <span class="pre">None</span></code> with no default was
+previously excluded from <code class="docutils literal notranslate"><span class="pre">required</span></code>; it is now correctly included.</p>
+<p>Runtime request validation behavior is unchanged — nullable parameters without
+defaults were already enforced as required at the validation layer.</p>
+<p>References: <span><a class="reference external" href="https://github.com/litestar-org/litestar/issues/4673">https://github.com/litestar-org/litestar/issues/4673</a></span>, <span><a class="reference external" href="https://github.com/litestar-org/litestar/pull/4687">https://github.com/litestar-org/litestar/pull/4687</a></span></p>
+</div>
+</dd>
 <dt>Fix <code class="docutils literal notranslate"><span class="pre">raise_server_exceptions</span></code> flag in test clients<a class="headerlink reference internal" href="#3.0.0-fix" id="3.0.0-fix">#</a></dt><dd><div class="changelog-change docutils container">
 <p>Fix the <code class="docutils literal notranslate"><span class="pre">raise_server_exceptions</span></code>. This flag has been non-functional (i.e. did
 not change the behaviour at all) since version 1. This is now fixed, and
