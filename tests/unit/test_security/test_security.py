@@ -188,3 +188,72 @@ def test_abstract_security_config_setting_openapi_security_requirements(
             assert client.app.openapi_config.security == expected
         else:
             assert not client.app.openapi_config
+
+
+def test_excluded_route_gets_empty_security_in_openapi(
+    session_backend_config_memory: ServerSideSessionConfig,
+) -> None:
+    @get("/protected")
+    def protected_handler() -> dict:
+        return {"hello": "world"}
+
+    @get("/health", exclude_from_auth=True)
+    def health_handler() -> dict:
+        return {"status": "ok"}
+
+    security_config = SessionAuth[Any, ServerSideSessionBackend](
+        retrieve_user_handler=retrieve_user_handler,
+        exclude=["/health"],
+        session_backend_config=session_backend_config_memory,
+    )
+
+    with create_test_client(
+        [protected_handler, health_handler],
+        on_app_init=[security_config.on_app_init],
+        openapi_config=OpenAPIConfig(title="Test", version="1.0.0"),
+    ) as client:
+        schema = client.app.openapi_schema
+        assert schema and schema.paths
+
+        protected_op = schema.paths["/protected"].get
+        assert protected_op is not None
+        assert protected_op.security is None
+
+        health_op = schema.paths["/health"].get
+        assert health_op is not None
+        assert health_op.security == []
+
+
+def test_excluded_route_with_custom_opt_key(
+    session_backend_config_memory: ServerSideSessionConfig,
+) -> None:
+    @get("/protected")
+    def protected_handler() -> dict:
+        return {"hello": "world"}
+
+    @get("/public", skip_auth=True)
+    def public_handler() -> dict:
+        return {"status": "ok"}
+
+    security_config = SessionAuth[Any, ServerSideSessionBackend](
+        retrieve_user_handler=retrieve_user_handler,
+        exclude=["/public"],
+        exclude_opt_key="skip_auth",
+        session_backend_config=session_backend_config_memory,
+    )
+
+    with create_test_client(
+        [protected_handler, public_handler],
+        on_app_init=[security_config.on_app_init],
+        openapi_config=OpenAPIConfig(title="Test", version="1.0.0"),
+    ) as client:
+        schema = client.app.openapi_schema
+        assert schema and schema.paths
+
+        protected_op = schema.paths["/protected"].get
+        assert protected_op is not None
+        assert protected_op.security is None
+
+        public_op = schema.paths["/public"].get
+        assert public_op is not None
+        assert public_op.security == []

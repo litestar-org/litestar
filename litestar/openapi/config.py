@@ -118,6 +118,7 @@ class OpenAPIConfig:
 
     def __post_init__(self) -> None:
         self.path = normalize_path(self.path)
+        self.security_exclude_opt_keys: set[str] = set()
 
         self.default_plugin: OpenAPIRenderPlugin | None = None
         for plugin in self.render_plugins:

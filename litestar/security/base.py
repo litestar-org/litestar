@@ -99,6 +99,8 @@ class AbstractSecurityConfig(ABC, Generic[UserType, AuthType]):
             else:
                 app_config.openapi_config.security = [self.security_requirement]
 
+            app_config.openapi_config.security_exclude_opt_keys.add(self.exclude_opt_key)
+
         if self.guards:
             app_config.guards.extend(self.guards)
 

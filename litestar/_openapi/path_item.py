@@ -72,6 +72,14 @@ class PathItemFactory:
             self.context, route_handler, raises_validation_error=raises_validation_error
         )
 
+        exclude_keys = self.context.openapi_config.security_exclude_opt_keys
+        if exclude_keys and any(route_handler.opt.get(key) for key in exclude_keys):
+            security = []
+        elif route_handler.security:
+            security = list(route_handler.security)
+        else:
+            security = None
+
         return route_handler.operation_class(
             operation_id=operation_id,
             tags=sorted(route_handler.tags) if route_handler.tags else None,
@@ -81,7 +89,7 @@ class PathItemFactory:
             responses=responses,
             request_body=request_body,
             parameters=parameters or None,  # type: ignore[arg-type]
-            security=list(route_handler.security) if route_handler.security else None,
+            security=security,
         )
 
     def create_operation_id(self, route_handler: HTTPRouteHandler, http_method: HttpMethod) -> str:
