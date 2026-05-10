@@ -1,5 +1,7 @@
 """Functional tests for litestar.plugins.mako."""
 
+# pyright: reportUnnecessaryTypeIgnoreComment=false
+
 from pathlib import Path
 
 import pytest
