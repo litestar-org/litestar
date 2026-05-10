@@ -7,34 +7,61 @@ import pytest
 from _pytest.monkeypatch import MonkeyPatch
 from prometheus_client import REGISTRY
 from pytest_mock import MockerFixture
-
-from litestar import get, post, websocket_listener
-from litestar.exceptions import HTTPException
-from litestar.plugins.prometheus import PrometheusConfig, PrometheusController, PrometheusMiddleware
-from litestar.status_codes import HTTP_200_OK
-from litestar.testing import create_test_client
-
-
-def create_config(**kwargs: Any) -> PrometheusConfig:
-    collectors = list(REGISTRY._collector_to_names.keys())
-    for collector in collectors:
-        REGISTRY.unregister(collector)
-
-    PrometheusMiddleware._metrics = {}
-    return PrometheusConfig(**kwargs)
-
-
-@pytest.mark.flaky(reruns=5)
-def test_prometheus_exporter_metrics_with_http() -> None:
+ 
+def test_prometheus_captures_401_from_middleware() -> None:
     config = create_config()
 
-    @get("/duration")
-    def duration_handler() -> dict:
-        time.sleep(0.1)
+    def auth_middleware_factory(app: Any) -> Any:
+        async def auth_middleware(scope: Any, receive: Any, send: Any) -> None:
+            if scope.get("path") == "/protected":
+                from litestar.exceptions import NotAuthorizedException
+
+                raise NotAuthorizedException("unauthorized")
+            await app(scope, receive, send)
+
+        return auth_middleware
+
+    @get("/protected")
+    def protected() -> dict:
         return {"hello": "world"}
 
-    @get("/error")
-    def handler_error() -> dict:
+    with create_test_client([protected, PrometheusController], middleware=[config.middleware, auth_middleware_factory]) as client:
+        resp = client.get("/protected")
+        assert resp.status_code == 401
+
+        metrics = client.get("/metrics").content.decode()
+
+        assert (
+            "litestar_requests_total{app_name=\"litestar\",method=\"GET\",path=\"/protected\",status_code=\"401\"} 1.0"
+            in metrics
+        )
+
+
+def test_prometheus_captures_500_from_middleware() -> None:
+    config = create_config()
+
+    def error_middleware_factory(app: Any) -> Any:
+        async def error_middleware(scope: Any, receive: Any, send: Any) -> None:
+            if scope.get("path") == "/boom":
+                raise ValueError("boom")
+            await app(scope, receive, send)
+
+        return error_middleware
+
+    @get("/boom")
+    def boom() -> dict:
+        return {"ok": True}
+
+    with create_test_client([boom, PrometheusController], middleware=[config.middleware, error_middleware_factory]) as client:
+        resp = client.get("/boom")
+        assert resp.status_code == 500
+
+        metrics = client.get("/metrics").content.decode()
+
+        assert (
+            "litestar_requests_total{app_name=\"litestar\",method=\"GET\",path=\"/boom\",status_code=\"500\"} 1.0"
+            in metrics
+        )
         raise HTTPException("Error Occurred", status_code=500)
 
     with create_test_client(
