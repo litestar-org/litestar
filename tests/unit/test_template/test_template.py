@@ -12,7 +12,6 @@ from litestar import Litestar, MediaType, get
 from litestar.contrib.jinja import JinjaTemplateEngine
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.plugins.mako import MakoTemplateEngine
-from litestar.exceptions import ImproperlyConfiguredException
 from litestar.plugins.minijinja import MiniJinjaTemplateEngine
 from litestar.response.template import Template
 from litestar.template import TemplateEngineProtocol
