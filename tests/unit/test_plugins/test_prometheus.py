@@ -9,7 +9,7 @@ from prometheus_client import REGISTRY
 from pytest_mock import MockerFixture
 
 from litestar import get, post, websocket_listener
-from litestar.exceptions import HTTPException
+from litestar.exceptions import HTTPException, NotAuthorizedException, PermissionDeniedException
 from litestar.plugins.prometheus import PrometheusConfig, PrometheusController, PrometheusMiddleware
 from litestar.status_codes import HTTP_200_OK
 from litestar.testing import create_test_client
@@ -215,3 +215,70 @@ def test_procdir(monkeypatch: MonkeyPatch, tmp_path: Path, mocker: MockerFixture
         client.get("/metrics")
 
     mock_collector.assert_called_once_with(mock_registry.return_value)
+
+
+def test_prometheus_middleware_records_correct_status_for_auth_exceptions() -> None:
+    """Test that PrometheusMiddleware correctly records HTTP exception status codes.
+    
+    This test verifies the fix for the issue where NotAuthorizedException and other
+    HTTP exceptions were being recorded with status_code=200 instead of their actual
+    status codes (e.g., 401, 403).
+    """
+    config = create_config()
+
+    @get("/protected")
+    def protected_handler() -> dict:
+        raise NotAuthorizedException("Invalid token")
+
+    @get("/forbidden")
+    def forbidden_handler() -> dict:
+        raise PermissionDeniedException("Access denied")
+
+    @get("/server_error")
+    def server_error_handler() -> dict:
+        raise HTTPException("Server error", status_code=500)
+
+    with create_test_client(
+        [protected_handler, forbidden_handler, server_error_handler, PrometheusController],
+        middleware=[config.middleware],
+    ) as client:
+        # Test 401 Unauthorized
+        response = client.get("/protected")
+        assert response.status_code == 401
+
+        # Test 403 Forbidden
+        response = client.get("/forbidden")
+        assert response.status_code == 403
+
+        # Test 500 Server Error
+        response = client.get("/server_error")
+        assert response.status_code == 500
+
+        # Check metrics
+        metrics_response = client.get("/metrics")
+        assert metrics_response.status_code == HTTP_200_OK
+        metrics = metrics_response.content.decode()
+
+        # Verify 401 is recorded correctly
+        assert (
+            """litestar_requests_total{app_name="litestar",method="GET",path="/protected",status_code="401"} 1.0"""
+            in metrics
+        )
+
+        # Verify 403 is recorded correctly
+        assert (
+            """litestar_requests_total{app_name="litestar",method="GET",path="/forbidden",status_code="403"} 1.0"""
+            in metrics
+        )
+
+        # Verify 500 is recorded correctly
+        assert (
+            """litestar_requests_total{app_name="litestar",method="GET",path="/server_error",status_code="500"} 1.0"""
+            in metrics
+        )
+
+        # Verify error count is incremented for 5xx errors
+        assert (
+            """litestar_requests_error_total{app_name="litestar",method="GET",path="/server_error",status_code="500"} 1.0"""
+            in metrics
+        )

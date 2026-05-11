@@ -11,6 +11,7 @@ from litestar.config.compression import CompressionConfig
 from litestar.connection import Request
 from litestar.datastructures import Cookie, UploadFile
 from litestar.enums import RequestEncodingType
+from litestar.exceptions import NotAuthorizedException, PermissionDeniedException
 from litestar.handlers import HTTPRouteHandler
 from litestar.middleware.logging import LoggingMiddleware
 from litestar.params import Body
@@ -322,3 +323,55 @@ def test_structlog_invalid_request_body_handled() -> None:
         middleware=[LoggingMiddleware(structlog.get_logger("litestar.test"))],
     ) as client:
         assert client.post("/", headers={"Content-Type": "application/json"}, content=b'{"a": "b",}').status_code == 400
+
+
+def test_logging_middleware_records_correct_status_for_exceptions(caplog: "LogCaptureFixture") -> None:
+    """Test that LoggingMiddleware correctly logs HTTP exception status codes.
+    
+    This test verifies the fix for the issue where NotAuthorizedException and other
+    HTTP exceptions were not being logged because the log wrapper was never called
+    when an exception occurred.
+    """
+
+    @get("/protected")
+    def protected_handler() -> dict:
+        raise NotAuthorizedException("Invalid token")
+
+    @get("/forbidden")
+    def forbidden_handler() -> dict:
+        raise PermissionDeniedException("Access denied")
+
+    with (
+        create_test_client(
+            route_handlers=[protected_handler, forbidden_handler],
+            middleware=[
+                LoggingMiddleware(
+                    "litestar.test",
+                    response_log_fields=["status_code"],
+                    request_log_fields=["path", "method"],
+                )
+            ],
+        ) as client,
+        caplog.at_level(INFO),
+    ):
+        # Request that raises NotAuthorizedException (401)
+        response = client.get("/protected")
+        assert response.status_code == 401
+
+        # Request that raises PermissionDeniedException (403)
+        response = client.get("/forbidden")
+        assert response.status_code == 403
+
+        # Check that responses were logged with correct status codes
+        # We should have 4 messages: 2 requests + 2 responses
+        assert len(caplog.messages) == 4
+
+        # Check that 401 was logged
+        assert any("status_code=401" in msg for msg in caplog.messages), (
+            f"Expected 'status_code=401' in logs, but got: {caplog.messages}"
+        )
+
+        # Check that 403 was logged
+        assert any("status_code=403" in msg for msg in caplog.messages), (
+            f"Expected 'status_code=403' in logs, but got: {caplog.messages}"
+        )

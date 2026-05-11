@@ -13,7 +13,9 @@ from litestar.data_extractors import (
     ResponseExtractorField,
 )
 from litestar.enums import ScopeType
+from litestar.exceptions import HTTPException
 from litestar.middleware.base import ASGIMiddleware
+from litestar.status_codes import HTTP_500_INTERNAL_SERVER_ERROR
 from litestar.serialization import encode_json
 from litestar.utils.empty import value_or_default
 from litestar.utils.scope import get_serializer_from_scope
@@ -122,7 +124,22 @@ class LoggingMiddleware(ASGIMiddleware):
         if self.request_log_fields:
             await self.log_request(scope=scope, receive=receive)
 
-        await next_app(scope, receive, send)
+        try:
+            await next_app(scope, receive, send)
+        except HTTPException as exc:
+            # Log response with the correct status code from the exception
+            if self.response_log_fields:
+                scope_state = ScopeState.from_scope(scope)
+                scope_state.log_context[HTTP_RESPONSE_START] = {"status": exc.status_code}
+                self.log_response(scope=scope)
+            raise
+        except Exception:
+            # Log response with 500 status for unhandled exceptions
+            if self.response_log_fields:
+                scope_state = ScopeState.from_scope(scope)
+                scope_state.log_context[HTTP_RESPONSE_START] = {"status": HTTP_500_INTERNAL_SERVER_ERROR}
+                self.log_response(scope=scope)
+            raise
 
     async def log_request(self, scope: Scope, receive: Receive) -> None:
         """Extract request data and log the message.
