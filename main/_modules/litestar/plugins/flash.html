@@ -319,6 +319,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l3"><a class="reference internal" href="../../../reference/plugins/attrs.html">attrs</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../reference/plugins/flash_messages.html">flash</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../reference/plugins/htmx.html">htmx</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/plugins/minijinja.html">minijinja</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../reference/plugins/opentelemetry.html">opentelemetry</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../reference/plugins/problem_details.html">problem details</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../reference/plugins/prometheus.html">prometheus</a></li>
@@ -574,7 +575,7 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="59">            <span class="k">raise</span> <span class="n">litestar</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">ImproperlyConfiguredException</span><span class="p">(</span><span class="s2">&quot;Flash messages require a session middleware.&quot;</span><span class="p">)</span>
 </span><span data-line="60">        <span class="n">template_callable</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Any</span><span class="p">],</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="n">get_flashes</span>
 </span><span data-line="61">        <span class="k">with</span> <span class="n">suppress</span><span class="p">(</span><span class="n">MissingDependencyException</span><span class="p">):</span>
-</span><span data-line="62">            <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.contrib.minijinja</span><span class="w"> </span><span class="kn">import</span> <span class="n">MiniJinjaTemplateEngine</span><span class="p">,</span> <span class="n">_transform_state</span>
+</span><span data-line="62">            <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.plugins.minijinja</span><span class="w"> </span><span class="kn">import</span> <span class="n">MiniJinjaTemplateEngine</span><span class="p">,</span> <span class="n">_transform_state</span>
 </span><span data-line="63">
 </span><span data-line="64">            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">template_config</span><span class="o">.</span><span class="n">engine_instance</span><span class="p">,</span> <span class="n">MiniJinjaTemplateEngine</span><span class="p">):</span>
 </span><span data-line="65">                <span class="n">template_callable</span> <span class="o">=</span> <span class="n">_transform_state</span><span class="p">(</span><span class="n">get_flashes</span><span class="p">)</span>
