@@ -7,7 +7,7 @@ import pytest
 from litestar import get
 from litestar.contrib.jinja import JinjaTemplateEngine
 from litestar.contrib.mako import MakoTemplateEngine
-from litestar.contrib.minijinja import MiniJinjaTemplateEngine
+from litestar.plugins.minijinja import MiniJinjaTemplateEngine
 from litestar.response.template import Template
 from litestar.status_codes import HTTP_200_OK, HTTP_500_INTERNAL_SERVER_ERROR
 from litestar.template.config import TemplateConfig

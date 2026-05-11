@@ -1,4 +1,4 @@
-from __future__ import annotations
+"""MiniJinja template engine integration for Litestar."""
 
 import functools
 from pathlib import Path
@@ -41,15 +41,17 @@ T = TypeVar("T")
 
 
 class StateProtocol(Protocol):
-    auto_escape: str | None
-    current_block: str | None
+    auto_escape: "str | None"
+    current_block: "str | None"
     env: Environment
     name: str
 
-    def lookup(self, key: str) -> Any | None: ...
+    def lookup(self, key: str) -> "Any | None": ...
 
 
-def _transform_state(func: TemplateCallableType[Mapping[str, Any], P, T]) -> TemplateCallableType[StateProtocol, P, T]:
+def _transform_state(
+    func: TemplateCallableType["Mapping[str, Any]", P, T],
+) -> TemplateCallableType[StateProtocol, P, T]:
     """Transform a template callable to receive a ``StateProtocol`` instance as first argument.
 
     This is for wrapping callables like ``url_for()`` that receive a mapping as first argument so they can be used
@@ -96,7 +98,11 @@ class MiniJinjaTemplate(TemplateProtocol):
 class MiniJinjaTemplateEngine(TemplateEngineProtocol["MiniJinjaTemplate", StateProtocol]):
     """The engine instance."""
 
-    def __init__(self, directory: Path | list[Path] | None = None, engine_instance: Environment | None = None) -> None:
+    def __init__(
+        self,
+        directory: "Path | list[Path] | None" = None,
+        engine_instance: "Environment | None" = None,
+    ) -> None:
         """Minijinja based TemplateEngine.
 
         Args:
@@ -169,14 +175,14 @@ class MiniJinjaTemplateEngine(TemplateEngineProtocol["MiniJinjaTemplate", StateP
             None
         """
 
-        def is_decorated(func: Callable) -> bool:
+        def is_decorated(func: "Callable") -> bool:
             return hasattr(func, "__wrapped__") or func.__name__ not in globals()
 
         if not is_decorated(template_callable):
             template_callable = _transform_state(template_callable)  # type: ignore[arg-type] # pragma: no cover
         self.engine.add_global(key, pass_state(template_callable))
 
-    def render_string(self, template_string: str, context: Mapping[str, Any]) -> str:
+    def render_string(self, template_string: str, context: "Mapping[str, Any]") -> str:
         """Render a template from a string with the given context.
 
         Args:
@@ -189,7 +195,7 @@ class MiniJinjaTemplateEngine(TemplateEngineProtocol["MiniJinjaTemplate", StateP
         return self.engine.render_str(template_string, **context)
 
     @classmethod
-    def from_environment(cls, minijinja_environment: Environment) -> MiniJinjaTemplateEngine:
+    def from_environment(cls, minijinja_environment: "Environment") -> "MiniJinjaTemplateEngine":
         """Create a MiniJinjaTemplateEngine from an existing minijinja Environment instance.
 
         Args:
