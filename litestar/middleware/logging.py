@@ -15,8 +15,8 @@ from litestar.data_extractors import (
 from litestar.enums import ScopeType
 from litestar.exceptions import HTTPException
 from litestar.middleware.base import ASGIMiddleware
-from litestar.status_codes import HTTP_500_INTERNAL_SERVER_ERROR
 from litestar.serialization import encode_json
+from litestar.status_codes import HTTP_500_INTERNAL_SERVER_ERROR
 from litestar.utils.empty import value_or_default
 from litestar.utils.scope import get_serializer_from_scope
 from litestar.utils.scope.state import ScopeState
