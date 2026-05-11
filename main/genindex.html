@@ -768,10 +768,6 @@ data-aria-dark="Switch to auto color mode">
 </li>
         <li><a href="reference/contrib/jinja.html#litestar.contrib.jinja.JinjaTemplateEngine.__init__">(litestar.contrib.jinja.JinjaTemplateEngine method)</a>
 </li>
-        <li><a href="reference/contrib/mako.html#litestar.contrib.mako.MakoTemplate.__init__">(litestar.contrib.mako.MakoTemplate method)</a>
-</li>
-        <li><a href="reference/contrib/mako.html#litestar.contrib.mako.MakoTemplateEngine.__init__">(litestar.contrib.mako.MakoTemplateEngine method)</a>
-</li>
         <li><a href="reference/controller.html#litestar.controller.Controller.__init__">(litestar.controller.Controller method)</a>
 </li>
         <li><a href="reference/data_extractors.html#litestar.data_extractors.ConnectionDataExtractor.__init__">(litestar.data_extractors.ConnectionDataExtractor method)</a>
@@ -1019,6 +1015,10 @@ data-aria-dark="Switch to auto color mode">
         <li><a href="reference/plugins/htmx.html#litestar.plugins.htmx.TriggerEvent.__init__">(litestar.plugins.htmx.TriggerEvent method)</a>
 </li>
         <li><a href="reference/plugins/index.html#litestar.plugins.InitPluginProtocol.__init__">(litestar.plugins.InitPluginProtocol method)</a>
+</li>
+        <li><a href="reference/plugins/mako.html#litestar.plugins.mako.MakoTemplate.__init__">(litestar.plugins.mako.MakoTemplate method)</a>
+</li>
+        <li><a href="reference/plugins/mako.html#litestar.plugins.mako.MakoTemplateEngine.__init__">(litestar.plugins.mako.MakoTemplateEngine method)</a>
 </li>
         <li><a href="reference/plugins/minijinja.html#litestar.plugins.minijinja.MiniJinjaTemplateEngine.__init__">(litestar.plugins.minijinja.MiniJinjaTemplateEngine method)</a>
 </li>
@@ -1576,11 +1576,11 @@ data-aria-dark="Switch to auto color mode">
       <li><a href="reference/app.html#litestar.app.Litestar.emit.params.args">args (litestar.app.Litestar.emit parameter)</a>
 
       <ul>
-        <li><a href="reference/contrib/mako.html#litestar.contrib.mako.MakoTemplate.render.params.args">(litestar.contrib.mako.MakoTemplate.render parameter)</a>
-</li>
         <li><a href="reference/datastructures/index.html#litestar.datastructures.ImmutableMultiDict.params.args">(litestar.datastructures.ImmutableMultiDict parameter)</a>
 </li>
         <li><a href="reference/datastructures/index.html#litestar.datastructures.MultiDict.params.args">(litestar.datastructures.MultiDict parameter)</a>
+</li>
+        <li><a href="reference/plugins/mako.html#litestar.plugins.mako.MakoTemplate.render.params.args">(litestar.plugins.mako.MakoTemplate.render parameter)</a>
 </li>
         <li><a href="reference/typing.html#litestar.typing.FieldDefinition.args">(litestar.typing.FieldDefinition attribute)</a>
 </li>
@@ -2464,7 +2464,7 @@ data-aria-dark="Switch to auto color mode">
       <li><a href="reference/contrib/jinja.html#litestar.contrib.jinja.JinjaTemplateEngine.render_string.params.context">context (litestar.contrib.jinja.JinjaTemplateEngine.render_string parameter)</a>
 
       <ul>
-        <li><a href="reference/contrib/mako.html#litestar.contrib.mako.MakoTemplateEngine.render_string.params.context">(litestar.contrib.mako.MakoTemplateEngine.render_string parameter)</a>
+        <li><a href="reference/plugins/mako.html#litestar.plugins.mako.MakoTemplateEngine.render_string.params.context">(litestar.plugins.mako.MakoTemplateEngine.render_string parameter)</a>
 </li>
         <li><a href="reference/plugins/minijinja.html#litestar.plugins.minijinja.MiniJinjaTemplateEngine.render_string.params.context">(litestar.plugins.minijinja.MiniJinjaTemplateEngine.render_string parameter)</a>
 </li>
@@ -3198,7 +3198,7 @@ data-aria-dark="Switch to auto color mode">
       <li><a href="reference/contrib/jinja.html#litestar.contrib.jinja.JinjaTemplateEngine.params.directory">directory (litestar.contrib.jinja.JinjaTemplateEngine parameter)</a>
 
       <ul>
-        <li><a href="reference/contrib/mako.html#litestar.contrib.mako.MakoTemplateEngine.params.directory">(litestar.contrib.mako.MakoTemplateEngine parameter)</a>
+        <li><a href="reference/plugins/mako.html#litestar.plugins.mako.MakoTemplateEngine.params.directory">(litestar.plugins.mako.MakoTemplateEngine parameter)</a>
 </li>
         <li><a href="reference/plugins/minijinja.html#litestar.plugins.minijinja.MiniJinjaTemplateEngine.params.directory">(litestar.plugins.minijinja.MiniJinjaTemplateEngine parameter)</a>
 </li>
@@ -3430,7 +3430,7 @@ data-aria-dark="Switch to auto color mode">
       <li><a href="reference/contrib/jinja.html#litestar.contrib.jinja.JinjaTemplateEngine.params.engine_instance">engine_instance (litestar.contrib.jinja.JinjaTemplateEngine parameter)</a>
 
       <ul>
-        <li><a href="reference/contrib/mako.html#litestar.contrib.mako.MakoTemplateEngine.params.engine_instance">(litestar.contrib.mako.MakoTemplateEngine parameter)</a>
+        <li><a href="reference/plugins/mako.html#litestar.plugins.mako.MakoTemplateEngine.params.engine_instance">(litestar.plugins.mako.MakoTemplateEngine parameter)</a>
 </li>
         <li><a href="reference/plugins/minijinja.html#litestar.plugins.minijinja.MiniJinjaTemplateEngine.params.engine_instance">(litestar.plugins.minijinja.MiniJinjaTemplateEngine parameter)</a>
 </li>
@@ -4227,7 +4227,7 @@ data-aria-dark="Switch to auto color mode">
         <li><a href="reference/datastructures/index.html#litestar.datastructures.URL.from_scope">(litestar.datastructures.URL class method)</a>
 </li>
       </ul></li>
-      <li><a href="reference/contrib/mako.html#litestar.contrib.mako.MakoTemplateEngine.from_template_lookup">from_template_lookup() (litestar.contrib.mako.MakoTemplateEngine class method)</a>
+      <li><a href="reference/plugins/mako.html#litestar.plugins.mako.MakoTemplateEngine.from_template_lookup">from_template_lookup() (litestar.plugins.mako.MakoTemplateEngine class method)</a>
 </li>
       <li><a href="reference/file_system.html#litestar.file_system.FsspecAsyncWrapper.params.fs">fs (litestar.file_system.FsspecAsyncWrapper parameter)</a>
 </li>
@@ -4420,7 +4420,7 @@ data-aria-dark="Switch to auto color mode">
       <li><a href="reference/contrib/jinja.html#litestar.contrib.jinja.JinjaTemplateEngine.get_template">get_template() (litestar.contrib.jinja.JinjaTemplateEngine method)</a>
 
       <ul>
-        <li><a href="reference/contrib/mako.html#litestar.contrib.mako.MakoTemplateEngine.get_template">(litestar.contrib.mako.MakoTemplateEngine method)</a>
+        <li><a href="reference/plugins/mako.html#litestar.plugins.mako.MakoTemplateEngine.get_template">(litestar.plugins.mako.MakoTemplateEngine method)</a>
 </li>
         <li><a href="reference/plugins/minijinja.html#litestar.plugins.minijinja.MiniJinjaTemplateEngine.get_template">(litestar.plugins.minijinja.MiniJinjaTemplateEngine method)</a>
 </li>
@@ -5380,8 +5380,6 @@ data-aria-dark="Switch to auto color mode">
       <li><a href="reference/contrib/jinja.html#litestar.contrib.jinja.JinjaTemplateEngine.register_template_callable.params.key">key (litestar.contrib.jinja.JinjaTemplateEngine.register_template_callable parameter)</a>
 
       <ul>
-        <li><a href="reference/contrib/mako.html#litestar.contrib.mako.MakoTemplateEngine.register_template_callable.params.key">(litestar.contrib.mako.MakoTemplateEngine.register_template_callable parameter)</a>
-</li>
         <li><a href="reference/datastructures/index.html#litestar.datastructures.Cookie.key">(litestar.datastructures.Cookie attribute)</a>
 </li>
         <li><a href="reference/datastructures/index.html#litestar.datastructures.ImmutableState.__getattr__.params.key">(litestar.datastructures.ImmutableState.__getattr__ parameter)</a>
@@ -5411,6 +5409,8 @@ data-aria-dark="Switch to auto color mode">
         <li><a href="reference/middleware/session/client_side.html#litestar.middleware.session.client_side.CookieBackendConfig.key">(litestar.middleware.session.client_side.CookieBackendConfig attribute)</a>
 </li>
         <li><a href="reference/middleware/session/server_side.html#litestar.middleware.session.server_side.ServerSideSessionConfig.key">(litestar.middleware.session.server_side.ServerSideSessionConfig attribute)</a>
+</li>
+        <li><a href="reference/plugins/mako.html#litestar.plugins.mako.MakoTemplateEngine.register_template_callable.params.key">(litestar.plugins.mako.MakoTemplateEngine.register_template_callable parameter)</a>
 </li>
         <li><a href="reference/plugins/minijinja.html#litestar.plugins.minijinja.MiniJinjaTemplateEngine.register_template_callable.params.key">(litestar.plugins.minijinja.MiniJinjaTemplateEngine.register_template_callable parameter)</a>
 </li>
@@ -5486,7 +5486,7 @@ data-aria-dark="Switch to auto color mode">
       <li><a href="reference/app.html#litestar.app.Litestar.emit.params.kwargs">kwargs (litestar.app.Litestar.emit parameter)</a>
 
       <ul>
-        <li><a href="reference/contrib/mako.html#litestar.contrib.mako.MakoTemplate.render.params.kwargs">(litestar.contrib.mako.MakoTemplate.render parameter)</a>
+        <li><a href="reference/plugins/mako.html#litestar.plugins.mako.MakoTemplate.render.params.kwargs">(litestar.plugins.mako.MakoTemplate.render parameter)</a>
 </li>
       </ul></li>
   </ul></td>
@@ -5850,13 +5850,6 @@ data-aria-dark="Switch to auto color mode">
 </li>
       </ul></li>
       <li>
-    litestar.contrib.mako
-
-      <ul>
-        <li><a href="reference/contrib/mako.html#module-litestar.contrib.mako">module</a>
-</li>
-      </ul></li>
-      <li>
     litestar.controller
 
       <ul>
@@ -5905,8 +5898,6 @@ data-aria-dark="Switch to auto color mode">
         <li><a href="reference/dto/config.html#module-litestar.dto.config">module</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     litestar.dto.data_structures
 
@@ -5914,6 +5905,8 @@ data-aria-dark="Switch to auto color mode">
         <li><a href="reference/dto/data_structures.html#module-litestar.dto.data_structures">module</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     litestar.dto.dataclass_dto
 
@@ -6122,6 +6115,13 @@ data-aria-dark="Switch to auto color mode">
 
       <ul>
         <li><a href="reference/plugins/htmx.html#module-litestar.plugins.htmx">module</a>
+</li>
+      </ul></li>
+      <li>
+    litestar.plugins.mako
+
+      <ul>
+        <li><a href="reference/plugins/mako.html#module-litestar.plugins.mako">module</a>
 </li>
       </ul></li>
       <li>
@@ -6405,9 +6405,9 @@ data-aria-dark="Switch to auto color mode">
 <h2 id="M">M</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="reference/contrib/mako.html#litestar.contrib.mako.MakoTemplate">MakoTemplate (class in litestar.contrib.mako)</a>
+      <li><a href="reference/plugins/mako.html#litestar.plugins.mako.MakoTemplate">MakoTemplate (class in litestar.plugins.mako)</a>
 </li>
-      <li><a href="reference/contrib/mako.html#litestar.contrib.mako.MakoTemplateEngine">MakoTemplateEngine (class in litestar.contrib.mako)</a>
+      <li><a href="reference/plugins/mako.html#litestar.plugins.mako.MakoTemplateEngine">MakoTemplateEngine (class in litestar.plugins.mako)</a>
 </li>
       <li><a href="reference/openapi/spec.html#litestar.openapi.spec.Discriminator.mapping">mapping (litestar.openapi.spec.Discriminator attribute)</a>
 </li>
@@ -6821,8 +6821,6 @@ data-aria-dark="Switch to auto color mode">
 </li>
         <li><a href="reference/contrib/jinja.html#module-litestar.contrib.jinja">litestar.contrib.jinja</a>
 </li>
-        <li><a href="reference/contrib/mako.html#module-litestar.contrib.mako">litestar.contrib.mako</a>
-</li>
         <li><a href="reference/controller.html#module-litestar.controller">litestar.controller</a>
 </li>
         <li><a href="reference/data_extractors.html#module-litestar.data_extractors">litestar.data_extractors</a>
@@ -6898,6 +6896,8 @@ data-aria-dark="Switch to auto color mode">
         <li><a href="reference/plugins/flash_messages.html#module-litestar.plugins.flash">litestar.plugins.flash</a>
 </li>
         <li><a href="reference/plugins/htmx.html#module-litestar.plugins.htmx">litestar.plugins.htmx</a>
+</li>
+        <li><a href="reference/plugins/mako.html#module-litestar.plugins.mako">litestar.plugins.mako</a>
 </li>
         <li><a href="reference/plugins/minijinja.html#module-litestar.plugins.minijinja">litestar.plugins.minijinja</a>
 </li>
@@ -8263,7 +8263,7 @@ data-aria-dark="Switch to auto color mode">
       <li><a href="reference/contrib/jinja.html#litestar.contrib.jinja.JinjaTemplateEngine.register_template_callable">register_template_callable() (litestar.contrib.jinja.JinjaTemplateEngine method)</a>
 
       <ul>
-        <li><a href="reference/contrib/mako.html#litestar.contrib.mako.MakoTemplateEngine.register_template_callable">(litestar.contrib.mako.MakoTemplateEngine method)</a>
+        <li><a href="reference/plugins/mako.html#litestar.plugins.mako.MakoTemplateEngine.register_template_callable">(litestar.plugins.mako.MakoTemplateEngine method)</a>
 </li>
         <li><a href="reference/plugins/minijinja.html#litestar.plugins.minijinja.MiniJinjaTemplateEngine.register_template_callable">(litestar.plugins.minijinja.MiniJinjaTemplateEngine method)</a>
 </li>
@@ -8276,11 +8276,9 @@ data-aria-dark="Switch to auto color mode">
 </li>
       <li><a href="reference/dto/types.html#litestar.dto.types.RenameStrategy">RenameStrategy (in module litestar.dto.types)</a>
 </li>
-      <li><a href="reference/contrib/mako.html#litestar.contrib.mako.MakoTemplate.render">render() (litestar.contrib.mako.MakoTemplate method)</a>
+      <li><a href="reference/openapi/plugins.html#litestar.openapi.plugins.OpenAPIRenderPlugin.render">render() (litestar.openapi.plugins.OpenAPIRenderPlugin method)</a>
 
       <ul>
-        <li><a href="reference/openapi/plugins.html#litestar.openapi.plugins.OpenAPIRenderPlugin.render">(litestar.openapi.plugins.OpenAPIRenderPlugin method)</a>
-</li>
         <li><a href="reference/openapi/plugins.html#litestar.openapi.plugins.RapidocRenderPlugin.render">(litestar.openapi.plugins.RapidocRenderPlugin method)</a>
 </li>
         <li><a href="reference/openapi/plugins.html#litestar.openapi.plugins.RedocRenderPlugin.render">(litestar.openapi.plugins.RedocRenderPlugin method)</a>
@@ -8292,6 +8290,8 @@ data-aria-dark="Switch to auto color mode">
         <li><a href="reference/openapi/plugins.html#litestar.openapi.plugins.SwaggerRenderPlugin.render">(litestar.openapi.plugins.SwaggerRenderPlugin method)</a>
 </li>
         <li><a href="reference/openapi/plugins.html#litestar.openapi.plugins.YamlRenderPlugin.render">(litestar.openapi.plugins.YamlRenderPlugin method)</a>
+</li>
+        <li><a href="reference/plugins/mako.html#litestar.plugins.mako.MakoTemplate.render">(litestar.plugins.mako.MakoTemplate method)</a>
 </li>
         <li><a href="reference/response/base.html#litestar.response.base.Response.render">(litestar.response.base.Response method)</a>
 </li>
@@ -8311,7 +8311,7 @@ data-aria-dark="Switch to auto color mode">
       <li><a href="reference/contrib/jinja.html#litestar.contrib.jinja.JinjaTemplateEngine.render_string">render_string() (litestar.contrib.jinja.JinjaTemplateEngine method)</a>
 
       <ul>
-        <li><a href="reference/contrib/mako.html#litestar.contrib.mako.MakoTemplateEngine.render_string">(litestar.contrib.mako.MakoTemplateEngine method)</a>
+        <li><a href="reference/plugins/mako.html#litestar.plugins.mako.MakoTemplateEngine.render_string">(litestar.plugins.mako.MakoTemplateEngine method)</a>
 </li>
         <li><a href="reference/plugins/minijinja.html#litestar.plugins.minijinja.MiniJinjaTemplateEngine.render_string">(litestar.plugins.minijinja.MiniJinjaTemplateEngine method)</a>
 </li>
@@ -10144,19 +10144,19 @@ data-aria-dark="Switch to auto color mode">
         <li><a href="reference/response/template.html#litestar.response.template.Template">(class in litestar.response.template)</a>
 </li>
       </ul></li>
-      <li><a href="reference/contrib/mako.html#litestar.contrib.mako.MakoTemplate.params.template">template (litestar.contrib.mako.MakoTemplate parameter)</a>
+      <li><a href="reference/plugins/mako.html#litestar.plugins.mako.MakoTemplate.params.template">template (litestar.plugins.mako.MakoTemplate parameter)</a>
 </li>
       <li><a href="reference/contrib/jinja.html#litestar.contrib.jinja.JinjaTemplateEngine.register_template_callable.params.template_callable">template_callable (litestar.contrib.jinja.JinjaTemplateEngine.register_template_callable parameter)</a>
 
       <ul>
-        <li><a href="reference/contrib/mako.html#litestar.contrib.mako.MakoTemplateEngine.register_template_callable.params.template_callable">(litestar.contrib.mako.MakoTemplateEngine.register_template_callable parameter)</a>
+        <li><a href="reference/plugins/mako.html#litestar.plugins.mako.MakoTemplateEngine.register_template_callable.params.template_callable">(litestar.plugins.mako.MakoTemplateEngine.register_template_callable parameter)</a>
 </li>
         <li><a href="reference/plugins/minijinja.html#litestar.plugins.minijinja.MiniJinjaTemplateEngine.register_template_callable.params.template_callable">(litestar.plugins.minijinja.MiniJinjaTemplateEngine.register_template_callable parameter)</a>
 </li>
         <li><a href="reference/template.html#litestar.template.TemplateEngineProtocol.register_template_callable.params.template_callable">(litestar.template.TemplateEngineProtocol.register_template_callable parameter)</a>
 </li>
       </ul></li>
-      <li><a href="reference/contrib/mako.html#litestar.contrib.mako.MakoTemplate.params.template_callables">template_callables (litestar.contrib.mako.MakoTemplate parameter)</a>
+      <li><a href="reference/plugins/mako.html#litestar.plugins.mako.MakoTemplate.params.template_callables">template_callables (litestar.plugins.mako.MakoTemplate parameter)</a>
 </li>
       <li><a href="reference/app.html#litestar.app.Litestar.params.template_config">template_config (litestar.app.Litestar parameter)</a>
 
@@ -10168,14 +10168,14 @@ data-aria-dark="Switch to auto color mode">
         <li><a href="reference/testing.html#litestar.testing.create_test_client.params.template_config">(litestar.testing.create_test_client parameter)</a>
 </li>
       </ul></li>
-      <li><a href="reference/contrib/mako.html#litestar.contrib.mako.MakoTemplateEngine.from_template_lookup.params.template_lookup">template_lookup (litestar.contrib.mako.MakoTemplateEngine.from_template_lookup parameter)</a>
+      <li><a href="reference/plugins/mako.html#litestar.plugins.mako.MakoTemplateEngine.from_template_lookup.params.template_lookup">template_lookup (litestar.plugins.mako.MakoTemplateEngine.from_template_lookup parameter)</a>
 </li>
       <li><a href="reference/contrib/jinja.html#litestar.contrib.jinja.JinjaTemplateEngine.get_template.params.template_name">template_name (litestar.contrib.jinja.JinjaTemplateEngine.get_template parameter)</a>
 
       <ul>
-        <li><a href="reference/contrib/mako.html#litestar.contrib.mako.MakoTemplateEngine.get_template.params.template_name">(litestar.contrib.mako.MakoTemplateEngine.get_template parameter)</a>
-</li>
         <li><a href="reference/exceptions.html#litestar.exceptions.TemplateNotFoundException.params.template_name">(litestar.exceptions.TemplateNotFoundException parameter)</a>
+</li>
+        <li><a href="reference/plugins/mako.html#litestar.plugins.mako.MakoTemplateEngine.get_template.params.template_name">(litestar.plugins.mako.MakoTemplateEngine.get_template parameter)</a>
 </li>
         <li><a href="reference/plugins/minijinja.html#litestar.plugins.minijinja.MiniJinjaTemplateEngine.get_template.params.template_name">(litestar.plugins.minijinja.MiniJinjaTemplateEngine.get_template parameter)</a>
 </li>
@@ -10195,7 +10195,7 @@ data-aria-dark="Switch to auto color mode">
       <li><a href="reference/contrib/jinja.html#litestar.contrib.jinja.JinjaTemplateEngine.render_string.params.template_string">template_string (litestar.contrib.jinja.JinjaTemplateEngine.render_string parameter)</a>
 
       <ul>
-        <li><a href="reference/contrib/mako.html#litestar.contrib.mako.MakoTemplateEngine.render_string.params.template_string">(litestar.contrib.mako.MakoTemplateEngine.render_string parameter)</a>
+        <li><a href="reference/plugins/mako.html#litestar.plugins.mako.MakoTemplateEngine.render_string.params.template_string">(litestar.plugins.mako.MakoTemplateEngine.render_string parameter)</a>
 </li>
         <li><a href="reference/plugins/minijinja.html#litestar.plugins.minijinja.MiniJinjaTemplateEngine.render_string.params.template_string">(litestar.plugins.minijinja.MiniJinjaTemplateEngine.render_string parameter)</a>
 </li>

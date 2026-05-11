@@ -2,7 +2,7 @@
 <html lang="en" data-accent-color="amber" data-content_root="../../../">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>litestar.contrib.mako - Litestar Framework</title><link rel="shortcut icon" href="../../../_static/favicon.svg"/><link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" /><script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>litestar.plugins.mako - Litestar Framework</title><link rel="shortcut icon" href="../../../_static/favicon.svg"/><link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" /><script>
     function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
     setColorMode(localStorage._theme||"auto");
   </script><link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=15352968" />
@@ -23,7 +23,7 @@
   --sy-f-heading: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
 }
 </style>
-    <meta property="og:type" content="website"/><meta property="og:title" content="litestar.contrib.mako"/>
+    <meta property="og:type" content="website"/><meta property="og:title" content="litestar.plugins.mako"/>
   <meta property="og:image" content="_static/logo-light.png"/>
     <meta name="twitter:card" content="summary"/>
   </head>
@@ -265,7 +265,6 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2"><a class="reference internal" href="../../../reference/connection.html">connection</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../reference/contrib/index.html">contrib</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../reference/contrib/jinja.html">jinja</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../reference/contrib/mako.html">mako</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../../reference/controller.html">controller</a></li>
@@ -319,6 +318,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l3"><a class="reference internal" href="../../../reference/plugins/attrs.html">attrs</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../reference/plugins/flash_messages.html">flash</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../reference/plugins/htmx.html">htmx</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/plugins/mako.html">mako</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../reference/plugins/minijinja.html">minijinja</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../reference/plugins/opentelemetry.html">opentelemetry</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../reference/plugins/problem_details.html">problem details</a></li>
@@ -490,7 +490,7 @@ data-aria-dark="Switch to auto color mode">
         <span>/</span>
         <meta itemprop="position" content="2" />
       </li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
-        <strong itemprop="name">litestar.contrib.mako</strong>
+        <strong itemprop="name">litestar.plugins.mako</strong>
         <meta itemprop="position" content="3" />
       </li></ol>
     <div class="xl:hidden ml-1">
@@ -503,10 +503,10 @@ data-aria-dark="Switch to auto color mode">
 </div><div class="flex flex-col break-words justify-between">
       <div class="relative min-w-0 max-w-6xl px-6 pb-6 pt-8 xl:px-12">
   <article class="yue" role="main">
-          <h1>Source code for litestar.contrib.mako</h1><div class="highlight"><pre>
+          <h1>Source code for litestar.plugins.mako</h1><div class="highlight"><pre>
 <span></span><span data-line="1"><span class="c1"># pyright: reportUnnecessaryTypeIgnoreComment=false</span>
 </span><span data-line="2">
-</span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+</span><span data-line="3"><span class="sd">&quot;&quot;&quot;Mako template engine integration for Litestar.&quot;&quot;&quot;</span>
 </span><span data-line="4">
 </span><span data-line="5"><span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Mapping</span>
 </span><span data-line="6"><span class="kn">from</span><span class="w"> </span><span class="nn">functools</span><span class="w"> </span><span class="kn">import</span> <span class="n">partial</span>
@@ -540,12 +540,12 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="34">
 </span><span data-line="35">
 <div class="viewcode-block" id="MakoTemplate">
-<a class="viewcode-back" href="../../../reference/contrib/mako.html#litestar.contrib.mako.MakoTemplate">[docs]</a>
+<a class="viewcode-back" href="../../../reference/plugins/mako.html#litestar.plugins.mako.MakoTemplate">[docs]</a>
 </span><span data-line="36"><span class="k">class</span><span class="w"> </span><span class="nc">MakoTemplate</span><span class="p">(</span><span class="n">TemplateProtocol</span><span class="p">):</span>
 </span><span data-line="37"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Mako template, implementing ``TemplateProtocol``&quot;&quot;&quot;</span>
 </span><span data-line="38">
 <div class="viewcode-block" id="MakoTemplate.__init__">
-<a class="viewcode-back" href="../../../reference/contrib/mako.html#litestar.contrib.mako.MakoTemplate.__init__">[docs]</a>
+<a class="viewcode-back" href="../../../reference/plugins/mako.html#litestar.plugins.mako.MakoTemplate.__init__">[docs]</a>
 </span><span data-line="39">    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">template</span><span class="p">:</span> <span class="n">_MakoTemplate</span><span class="p">,</span> <span class="n">template_callables</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">TemplateCallableType</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 </span><span data-line="40"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize a template.</span>
 </span><span data-line="41">
@@ -559,7 +559,7 @@ data-aria-dark="Switch to auto color mode">
 
 </span><span data-line="49">
 <div class="viewcode-block" id="MakoTemplate.render">
-<a class="viewcode-back" href="../../../reference/contrib/mako.html#litestar.contrib.mako.MakoTemplate.render">[docs]</a>
+<a class="viewcode-back" href="../../../reference/plugins/mako.html#litestar.plugins.mako.MakoTemplate.render">[docs]</a>
 </span><span data-line="50">    <span class="k">def</span><span class="w"> </span><span class="nf">render</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 </span><span data-line="51"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Render a template.</span>
 </span><span data-line="52">
@@ -580,13 +580,13 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="65">
 </span><span data-line="66">
 <div class="viewcode-block" id="MakoTemplateEngine">
-<a class="viewcode-back" href="../../../reference/contrib/mako.html#litestar.contrib.mako.MakoTemplateEngine">[docs]</a>
+<a class="viewcode-back" href="../../../reference/plugins/mako.html#litestar.plugins.mako.MakoTemplateEngine">[docs]</a>
 </span><span data-line="67"><span class="k">class</span><span class="w"> </span><span class="nc">MakoTemplateEngine</span><span class="p">(</span><span class="n">TemplateEngineProtocol</span><span class="p">[</span><span class="n">MakoTemplate</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]):</span>
 </span><span data-line="68"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Mako-based TemplateEngine.&quot;&quot;&quot;</span>
 </span><span data-line="69">
 <div class="viewcode-block" id="MakoTemplateEngine.__init__">
-<a class="viewcode-back" href="../../../reference/contrib/mako.html#litestar.contrib.mako.MakoTemplateEngine.__init__">[docs]</a>
-</span><span data-line="70">    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">directory</span><span class="p">:</span> <span class="n">Path</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="n">Path</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">engine_instance</span><span class="p">:</span> <span class="n">Any</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<a class="viewcode-back" href="../../../reference/plugins/mako.html#litestar.plugins.mako.MakoTemplateEngine.__init__">[docs]</a>
+</span><span data-line="70">    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">directory</span><span class="p">:</span> <span class="s2">&quot;Path | list[Path] | None&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">engine_instance</span><span class="p">:</span> <span class="s2">&quot;Any | None&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 </span><span data-line="71"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize template engine.</span>
 </span><span data-line="72">
 </span><span data-line="73"><span class="sd">        Args:</span>
@@ -608,7 +608,7 @@ data-aria-dark="Switch to auto color mode">
 
 </span><span data-line="89">
 <div class="viewcode-block" id="MakoTemplateEngine.get_template">
-<a class="viewcode-back" href="../../../reference/contrib/mako.html#litestar.contrib.mako.MakoTemplateEngine.get_template">[docs]</a>
+<a class="viewcode-back" href="../../../reference/plugins/mako.html#litestar.plugins.mako.MakoTemplateEngine.get_template">[docs]</a>
 </span><span data-line="90">    <span class="k">def</span><span class="w"> </span><span class="nf">get_template</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">template_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MakoTemplate</span><span class="p">:</span>
 </span><span data-line="91"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Retrieve a template by matching its name (dotted path) with files in the directory or directories provided.</span>
 </span><span data-line="92">
@@ -630,7 +630,7 @@ data-aria-dark="Switch to auto color mode">
 
 </span><span data-line="108">
 <div class="viewcode-block" id="MakoTemplateEngine.register_template_callable">
-<a class="viewcode-back" href="../../../reference/contrib/mako.html#litestar.contrib.mako.MakoTemplateEngine.register_template_callable">[docs]</a>
+<a class="viewcode-back" href="../../../reference/plugins/mako.html#litestar.plugins.mako.MakoTemplateEngine.register_template_callable">[docs]</a>
 </span><span data-line="109">    <span class="k">def</span><span class="w"> </span><span class="nf">register_template_callable</span><span class="p">(</span>
 </span><span data-line="110">        <span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">template_callable</span><span class="p">:</span> <span class="n">TemplateCallableType</span><span class="p">[</span><span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">]</span>
 </span><span data-line="111">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -647,7 +647,7 @@ data-aria-dark="Switch to auto color mode">
 
 </span><span data-line="122">
 <div class="viewcode-block" id="MakoTemplateEngine.render_string">
-<a class="viewcode-back" href="../../../reference/contrib/mako.html#litestar.contrib.mako.MakoTemplateEngine.render_string">[docs]</a>
+<a class="viewcode-back" href="../../../reference/plugins/mako.html#litestar.plugins.mako.MakoTemplateEngine.render_string">[docs]</a>
 </span><span data-line="123">    <span class="k">def</span><span class="w"> </span><span class="nf">render_string</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">template_string</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">context</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 </span><span data-line="124"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Render a template from a string with the given context.</span>
 </span><span data-line="125">
@@ -663,9 +663,9 @@ data-aria-dark="Switch to auto color mode">
 
 </span><span data-line="135">
 <div class="viewcode-block" id="MakoTemplateEngine.from_template_lookup">
-<a class="viewcode-back" href="../../../reference/contrib/mako.html#litestar.contrib.mako.MakoTemplateEngine.from_template_lookup">[docs]</a>
+<a class="viewcode-back" href="../../../reference/plugins/mako.html#litestar.plugins.mako.MakoTemplateEngine.from_template_lookup">[docs]</a>
 </span><span data-line="136">    <span class="nd">@classmethod</span>
-</span><span data-line="137">    <span class="k">def</span><span class="w"> </span><span class="nf">from_template_lookup</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">template_lookup</span><span class="p">:</span> <span class="n">TemplateLookup</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MakoTemplateEngine</span><span class="p">:</span>
+</span><span data-line="137">    <span class="k">def</span><span class="w"> </span><span class="nf">from_template_lookup</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">template_lookup</span><span class="p">:</span> <span class="s2">&quot;TemplateLookup&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;MakoTemplateEngine&quot;</span><span class="p">:</span>
 </span><span data-line="138"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a template engine from an existing mako TemplateLookup instance.</span>
 </span><span data-line="139">
 </span><span data-line="140"><span class="sd">        Args:</span>
