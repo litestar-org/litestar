@@ -219,7 +219,7 @@ def test_procdir(monkeypatch: MonkeyPatch, tmp_path: Path, mocker: MockerFixture
 
 def test_prometheus_middleware_records_correct_status_for_auth_exceptions() -> None:
     """Test that PrometheusMiddleware correctly records HTTP exception status codes.
-    
+
     This test verifies the fix for the issue where NotAuthorizedException and other
     HTTP exceptions were being recorded with status_code=200 instead of their actual
     status codes (e.g., 401, 403).

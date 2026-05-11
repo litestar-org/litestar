@@ -327,7 +327,6 @@ def test_structlog_invalid_request_body_handled() -> None:
 
 def test_logging_middleware_records_correct_status_for_exceptions(caplog: "LogCaptureFixture") -> None:
     """Test that LoggingMiddleware correctly logs HTTP exception status codes.
-    
     This test verifies the fix for the issue where NotAuthorizedException and other
     HTTP exceptions were not being logged because the log wrapper was never called
     when an exception occurred.
