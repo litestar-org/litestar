@@ -13,6 +13,7 @@ plugins
     flash_messages
     htmx
     jinja
+    minijinja
     opentelemetry
     problem_details
     prometheus

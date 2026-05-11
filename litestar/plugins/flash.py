@@ -59,7 +59,7 @@ class FlashPlugin(InitPlugin):
             raise litestar.exceptions.ImproperlyConfiguredException("Flash messages require a session middleware.")
         template_callable: Callable[[Any], Any] = get_flashes
         with suppress(MissingDependencyException):
-            from litestar.contrib.minijinja import MiniJinjaTemplateEngine, _transform_state
+            from litestar.plugins.minijinja import MiniJinjaTemplateEngine, _transform_state
 
             if isinstance(self.config.template_config.engine_instance, MiniJinjaTemplateEngine):
                 template_callable = _transform_state(get_flashes)
