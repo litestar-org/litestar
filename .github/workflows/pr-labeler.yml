@@ -12,7 +12,7 @@ jobs:
       statuses: write
     runs-on: ubuntu-latest
     steps:
-    - uses: fuxingloh/multi-labeler@v4
+    - uses: fuxingloh/multi-labeler@v5
       with:
         github-token: "${{ secrets.GITHUB_TOKEN }}"
 
