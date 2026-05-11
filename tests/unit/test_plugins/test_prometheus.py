@@ -282,3 +282,42 @@ def test_prometheus_middleware_records_correct_status_for_auth_exceptions() -> N
             """litestar_requests_error_total{app_name="litestar",method="GET",path="/server_error",status_code="500"} 1.0"""
             in metrics
         )
+
+
+def test_prometheus_middleware_records_generic_exception_as_500() -> None:
+    """Test that PrometheusMiddleware records generic exceptions as 500.
+
+    This test verifies that non-HTTPException errors are recorded with status_code=500
+    in Prometheus metrics.
+    """
+    config = create_config()
+
+    @get("/generic_error")
+    def generic_error_handler() -> dict:
+        raise ValueError("Something went wrong")
+
+    with create_test_client(
+        [generic_error_handler, PrometheusController],
+        middleware=[config.middleware],
+    ) as client:
+        # Test generic exception
+        response = client.get("/generic_error")
+        # The exception is caught by Litestar's exception handler and converted to 500
+        assert response.status_code == 500
+
+        # Check metrics
+        metrics_response = client.get("/metrics")
+        assert metrics_response.status_code == HTTP_200_OK
+        metrics = metrics_response.content.decode()
+
+        # Verify 500 is recorded correctly for generic exceptions
+        assert (
+            """litestar_requests_total{app_name="litestar",method="GET",path="/generic_error",status_code="500"} 1.0"""
+            in metrics
+        )
+
+        # Verify error count is incremented
+        assert (
+            """litestar_requests_error_total{app_name="litestar",method="GET",path="/generic_error",status_code="500"} 1.0"""
+            in metrics
+        )

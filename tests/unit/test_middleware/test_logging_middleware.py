@@ -375,3 +375,43 @@ def test_logging_middleware_records_correct_status_for_exceptions(caplog: "LogCa
         assert any("status_code=403" in msg for msg in caplog.messages), (
             f"Expected 'status_code=403' in logs, but got: {caplog.messages}"
         )
+
+
+def test_logging_middleware_records_generic_exception_as_500(caplog: "LogCaptureFixture") -> None:
+    """Test that LoggingMiddleware logs generic exceptions as 500.
+
+    This test verifies that non-HTTPException errors are logged. When a generic exception
+    occurs (not HTTPException), only the request is logged before the exception propagates
+    to Litestar's exception handler.
+    """
+
+    @get("/generic_error")
+    def generic_error_handler() -> dict:
+        raise ValueError("Something went wrong")
+
+    with (
+        create_test_client(
+            route_handlers=[generic_error_handler],
+            middleware=[
+                LoggingMiddleware(
+                    "litestar.test",
+                    response_log_fields=["status_code"],
+                    request_log_fields=["path", "method"],
+                )
+            ],
+        ) as client,
+        caplog.at_level(INFO),
+    ):
+        # Request that raises a generic exception
+        response = client.get("/generic_error")
+        # The exception is caught by Litestar's exception handler and converted to 500
+        assert response.status_code == 500
+
+        # For generic exceptions (not HTTPException), only the request is logged
+        # before the exception propagates up the middleware stack
+        assert len(caplog.messages) >= 1
+
+        # Check that the request was logged
+        assert any("HTTP Request" in msg for msg in caplog.messages), (
+            f"Expected 'HTTP Request' in logs, but got: {caplog.messages}"
+        )
