@@ -7,7 +7,6 @@ from typing import TYPE_CHECKING
 from litestar.plugins import OpenAPISchemaPlugin
 from litestar.types import Empty
 from litestar.typing import FieldDefinition
-from litestar.utils.predicates import is_optional_union
 
 if TYPE_CHECKING:
     from litestar._openapi.schema_generation import SchemaCreator
@@ -26,11 +25,7 @@ class DataclassSchemaPlugin(OpenAPISchemaPlugin):
             required=sorted(
                 field.name
                 for field in dataclass_fields
-                if (
-                    field.default is MISSING
-                    and field.default_factory is MISSING
-                    and not is_optional_union(type_hints[field.name])
-                )
+                if field.default is MISSING and field.default_factory is MISSING
             ),
             property_fields={
                 field.name: FieldDefinition.from_kwarg(
