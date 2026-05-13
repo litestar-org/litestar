@@ -6,11 +6,11 @@ from pathlib import Path
 import pytest
 
 from litestar import Litestar, Request, get, post
-from litestar.contrib.jinja import JinjaTemplateEngine
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.middleware.rate_limit import RateLimitConfig
 from litestar.middleware.session.server_side import ServerSideSessionConfig
 from litestar.plugins.flash import FlashConfig, FlashPlugin, flash
+from litestar.plugins.jinja import JinjaTemplateEngine
 from litestar.plugins.mako import MakoTemplateEngine
 from litestar.plugins.minijinja import MiniJinjaTemplateEngine
 from litestar.response import Redirect, Template

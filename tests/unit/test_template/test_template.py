@@ -9,8 +9,8 @@ from typing import TYPE_CHECKING
 import pytest
 
 from litestar import Litestar, MediaType, get
-from litestar.contrib.jinja import JinjaTemplateEngine
 from litestar.exceptions import ImproperlyConfiguredException
+from litestar.plugins.jinja import JinjaTemplateEngine
 from litestar.plugins.mako import MakoTemplateEngine
 from litestar.plugins.minijinja import MiniJinjaTemplateEngine
 from litestar.response.template import Template

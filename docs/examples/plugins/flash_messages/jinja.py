@@ -1,7 +1,7 @@
 from litestar import Litestar
-from litestar.contrib.jinja import JinjaTemplateEngine
 from litestar.middleware.session.server_side import ServerSideSessionConfig
 from litestar.plugins.flash import FlashConfig, FlashPlugin
+from litestar.plugins.jinja import JinjaTemplateEngine
 from litestar.template.config import TemplateConfig
 
 template_config = TemplateConfig(engine=JinjaTemplateEngine, directory="templates")

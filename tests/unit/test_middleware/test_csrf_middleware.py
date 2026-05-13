@@ -8,10 +8,10 @@ from bs4 import BeautifulSoup
 
 from litestar import MediaType, WebSocket, delete, get, patch, post, put, websocket
 from litestar.config.csrf import CSRFConfig
-from litestar.contrib.jinja import JinjaTemplateEngine
 from litestar.enums import RequestEncodingType
 from litestar.handlers import HTTPRouteHandler
 from litestar.params import Body
+from litestar.plugins.jinja import JinjaTemplateEngine
 from litestar.plugins.mako import MakoTemplateEngine
 from litestar.response.template import Template
 from litestar.status_codes import HTTP_200_OK, HTTP_201_CREATED, HTTP_403_FORBIDDEN

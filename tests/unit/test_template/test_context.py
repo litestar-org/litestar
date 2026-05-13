@@ -4,7 +4,7 @@ from typing import Any
 import pytest
 
 from litestar import MediaType, get
-from litestar.contrib.jinja import JinjaTemplateEngine
+from litestar.plugins.jinja import JinjaTemplateEngine
 from litestar.plugins.mako import MakoTemplateEngine
 from litestar.plugins.minijinja import MiniJinjaTemplateEngine
 from litestar.response.template import Template

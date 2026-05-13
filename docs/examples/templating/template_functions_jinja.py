@@ -2,7 +2,7 @@ from pathlib import Path
 from typing import Any
 
 from litestar import Litestar, get
-from litestar.contrib.jinja import JinjaTemplateEngine
+from litestar.plugins.jinja import JinjaTemplateEngine
 from litestar.response import Template
 from litestar.template.config import TemplateConfig
 
