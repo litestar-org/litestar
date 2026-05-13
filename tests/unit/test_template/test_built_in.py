@@ -9,8 +9,8 @@ from jinja2 import DictLoader, Environment
 from mako.lookup import TemplateLookup  # type: ignore[import-untyped]
 
 from litestar import get
-from litestar.contrib.mako import MakoTemplateEngine
 from litestar.plugins.jinja import JinjaTemplateEngine
+from litestar.plugins.mako import MakoTemplateEngine
 from litestar.plugins.minijinja import MiniJinjaTemplateEngine
 from litestar.response.template import Template
 from litestar.template.config import TemplateConfig

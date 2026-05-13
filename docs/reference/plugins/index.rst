@@ -13,6 +13,7 @@ plugins
     flash_messages
     htmx
     jinja
+    mako
     minijinja
     opentelemetry
     problem_details

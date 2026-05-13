@@ -3,7 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 
 from litestar import Litestar, get
-from litestar.contrib.mako import MakoTemplateEngine
+from litestar.plugins.mako import MakoTemplateEngine
 from litestar.response import Template
 from litestar.template.config import TemplateConfig
 
