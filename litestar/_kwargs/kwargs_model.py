@@ -538,8 +538,8 @@ def _warn_deprecated_param_style(
     else:
         alternatives = {
             ParamType.QUERY: "FromQuery",
-            ParamType.HEADER: "FromHeaders",
-            ParamType.COOKIE: "FromCookies",
+            ParamType.HEADER: "FromHeader",
+            ParamType.COOKIE: "FromCookie",
             ParamType.PATH: "FromPath",
         }
         short_alternative = alternatives[param_type]
