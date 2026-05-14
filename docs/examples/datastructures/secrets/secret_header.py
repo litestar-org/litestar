@@ -7,7 +7,7 @@ from typing import Annotated
 from litestar import get
 from litestar.datastructures.secret_values import SecretString
 from litestar.exceptions import NotAuthorizedException
-from litestar.params import Parameter
+from litestar.params import HeaderParameter
 
 SECRET_VALUE = "super-secret"  # An example secret value - this should be stored securely in production.
 
@@ -18,7 +18,7 @@ class Sensitive:
 
 
 @get(sync_to_thread=False)
-def get_handler(secret: Annotated[SecretString, Parameter(header="x-secret")]) -> Sensitive:
+def get_handler(secret: Annotated[SecretString, HeaderParameter(name="x-secret")]) -> Sensitive:
     if not compare_digest(secret.get_secret(), SECRET_VALUE):
         raise NotAuthorizedException
     return Sensitive(value="sensitive data")

@@ -5,6 +5,7 @@ from uuid import UUID
 
 from litestar import Litestar, patch
 from litestar.dto import DataclassDTO, DTOConfig, DTOData
+from litestar.params import FromPath
 
 
 @dataclass
@@ -25,7 +26,7 @@ database = {peter_uuid: Person(id=peter_uuid, name="Peter", age=40)}
 
 
 @patch("/person/{person_id:uuid}", dto=PatchDTO, return_dto=None, sync_to_thread=False)
-def update_person(person_id: UUID, data: DTOData[Person]) -> Person:
+def update_person(person_id: FromPath[UUID], data: DTOData[Person]) -> Person:
     """Partially update a person."""
     return data.update_instance(database[person_id])
 
