@@ -21,21 +21,24 @@ Recap
 .. literalinclude:: /examples/todo_app/full_app.py
     :language: python
     :caption: ``app.py``
-    :lines: 28-32
-    :lineno-start: 28
+    :lines: 29-33
+    :lineno-start: 29
 
 
 A route handler set up with ``get("/")`` responds to ``GET`` requests and returns a list
 of all items on our TODO list. The optional query parameter ``done`` allows filtering
-the items by status. The type annotation of ``bool`` converts the query parameter into
-a :class:`bool`, and wrapping it in :class:`Optional <typing.Optional>` makes it optional.
+the items by status. It is declared as ``FromQuery[bool | None]``: the
+:data:`~.params.FromQuery` marker tells Litestar to read the value from the URL query
+string, the inner ``bool`` triggers conversion, and wrapping it in
+:class:`Optional <typing.Optional>` (combined with the ``= None`` default) makes it
+optional.
 
 
 .. literalinclude:: /examples/todo_app/full_app.py
     :language: python
     :caption: ``app.py``
-    :lines: 35-38
-    :lineno-start: 35
+    :lines: 36-39
+    :lineno-start: 36
 
 
 A route handler set up with ``post("/")`` responds to ``POST`` requests and adds an item
@@ -49,23 +52,24 @@ instance of the ``TodoItem`` dataclass, which - finally - gets passed into the f
 .. literalinclude:: /examples/todo_app/full_app.py
     :language: python
     :caption: ``app.py``
-    :lines: 41-46
-    :lineno-start: 41
-
+    :lines: 42-47
+    :lineno-start: 42
 
 A route handler set up with ``put("/{item_title:str}")``, making use of a path parameter,
 responds to ``PUT`` requests on the path ``/some todo title``, where ``some todo title``
-is the title of the ``TodoItem`` you wish to update. It receives the value of the path
-parameter via the function parameter of the same name ``item_title``. The ``:str``
-suffix in the path parameter means it will be treated as a string. Additionally, this
-route handler receives data of a ``TodoItem`` the same way as the ``POST`` handler.
+is the title of the ``TodoItem`` you wish to update. The handler declares
+``item_title: FromPath[str]`` to receive the captured value; the :data:`~.params.FromPath`
+marker tells Litestar this kwarg comes from the URL path, and the matching name
+(``item_title``) lines it up with the ``{item_title:str}`` slot. The ``:str`` suffix in the
+path pattern means the value is treated as a string. Additionally, this route handler
+receives data of a ``TodoItem`` the same way as the ``POST`` handler.
 
 
 .. literalinclude:: /examples/todo_app/full_app.py
     :language: python
     :caption: ``app.py``
-    :lines: 49
-    :lineno-start: 49
+    :lines: 50
+    :lineno-start: 50
 
 
 An instance of ``Litestar`` is created, including the previously defined route handlers.

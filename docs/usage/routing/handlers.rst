@@ -68,12 +68,12 @@ This is particularly useful when you want to have optional
     :caption: Defining a route handler with a path that has an optional path parameter
 
     from litestar import get
-
+    from litestar.params import FromPath
 
     @get(
        ["/some-path", "/some-path/{some_id:int}"],
     )
-    async def my_route_handler(some_id: int = 1) -> None: ...
+    async def my_route_handler(some_id: FromPath[int] = 1) -> None: ...
 
 .. _handler-function-kwargs:
 
@@ -85,12 +85,14 @@ Route handler functions or methods access various data by declaring these as ann
 
 The following sources can be accessed using annotated function :term:`kwargs <argument>`:
 
-- :ref:`path, query, header, and cookie parameters <usage/routing/parameters:the parameter function>`
+- :ref:`path, query, header, and cookie parameters <parameter-types>`, declared with
+  :data:`~.params.FromPath`, :data:`~.params.FromQuery`, :data:`~.params.FromHeader`,
+  and :data:`~.params.FromCookie`
 - :doc:`requests </usage/requests>`
 - :doc:`injected dependencies </usage/dependency-injection>`
 
 Additionally, you can specify the following special :term:`kwargs <argument>`,
-(known as "reserved keywords"):
+(known as "reserved keywords arguments"):
 
 * ``cookies``: injects the request :class:`cookies <.datastructures.cookie.Cookie>` as a parsed
   :class:`dictionary <dict>`.
@@ -102,8 +104,10 @@ Additionally, you can specify the following special :term:`kwargs <argument>`,
 * ``state`` : injects a copy of the application :class:`State <.datastructures.state.State>`.
 * ``body`` : the raw request body. Available only for `HTTP route handlers`_
 
-Note that if your parameters collide with any of the reserved :term:`keyword arguments <argument>` above, you can
-:ref:`provide an alternative name <usage/routing/parameters:Alternative names and constraints>`.
+.. tip::
+    Note that if your parameters collide with any of the reserved
+    :term:`keyword arguments <argument>` above, you can
+    :ref:`provide an alternative name <usage/routing/parameters:Aliasing>`.
 
 For example:
 
@@ -199,6 +203,7 @@ These are used exactly like :func:`@route() <.handlers.route>` with the sole exc
 
         from litestar import delete, get, patch, post, put, head
         from litestar.dto import DTOConfig, DTOData
+        from litestar.params import FromPath
         from litestar.plugins.pydantic import PydanticDTO
 
         from pydantic import BaseModel
@@ -220,25 +225,25 @@ These are used exactly like :func:`@route() <.handlers.route>` with the sole exc
 
 
         @get(path="/resources/{pk:int}")
-        async def retrieve_resource(pk: int) -> Resource: ...
+        async def retrieve_resource(pk: FromPath[int]) -> Resource: ...
 
 
         @head(path="/resources/{pk:int}")
-        async def retrieve_resource_head(pk: int) -> None: ...
+        async def retrieve_resource_head(pk: FromPath[int]) -> None: ...
 
 
         @put(path="/resources/{pk:int}")
-        async def update_resource(data: Resource, pk: int) -> Resource: ...
+        async def update_resource(data: Resource, pk: FromPath[int]) -> Resource: ...
 
 
         @patch(path="/resources/{pk:int}", dto=PartialResourceDTO)
         async def partially_update_resource(
-           data: DTOData[PartialResourceDTO], pk: int
+           data: DTOData[PartialResourceDTO], pk: FromPath[int]
         ) -> Resource: ...
 
 
         @delete(path="/resources/{pk:int}")
-        async def delete_resource(pk: int) -> None: ...
+        async def delete_resource(pk: FromPath[int]) -> None: ...
 
 Although these :term:`decorators <decorator>` are merely subclasses of :class:`~.handlers.HTTPRouteHandler` that pre-set
 the :paramref:`~.handlers.HTTPRouteHandler.http_method`, using :func:`@get() <.handlers.get>`,
@@ -396,6 +401,7 @@ containing the route handler instance and paths. It can also be used to build a 
 
     from litestar import Litestar, Request, get
     from litestar.exceptions import NotFoundException
+    from litestar.params import FromPath, FromQuery
     from litestar.response import Redirect
 
 
@@ -410,12 +416,12 @@ containing the route handler instance and paths. It can also be used to build a 
 
 
     @get("/def/{param:int}", name="three")
-    def handler_three(param: int) -> None:
+    def handler_three(param: FromPath[int]) -> None:
         pass
 
 
     @get("/{handler_name:str}", name="four")
-    def handler_four(request: Request, name: str) -> Redirect:
+    def handler_four(request: Request, name: FromQuery[str]) -> Redirect:
         handler_index = request.app.get_handler_index_by_name(name)
         if not handler_index:
             raise NotFoundException(f"no handler matching the name {name} was found")
@@ -428,7 +434,7 @@ containing the route handler instance and paths. It can also be used to build a 
 
 
     @get("/redirect/{param_value:int}", name="five")
-    def handler_five(request: Request, param_value: int) -> Redirect:
+    def handler_five(request: Request, param_value: FromPath[int]) -> Redirect:
         path = request.app.route_reverse("three", param=param_value)
         return Redirect(path=path)
 
@@ -466,13 +472,14 @@ the highest number of the :term:`keyword arguments <argument>` passed to the fun
     :caption: Using the :meth:`~.app.Litestar.route_reverse` method to build a URL path for a route handler
 
     from litestar import get, Request
+    from litestar.params import FromPath
 
 
     @get(
        ["/some-path", "/some-path/{id:int}", "/some-path/{id:int}/{val:str}"],
        name="handler_name",
     )
-    def handler(id: int = 1, val: str = "default") -> None: ...
+    def handler(id: FromPath[int] = 1, val: FromPath[str] = "default") -> None: ...
 
 
     @get("/path-info")

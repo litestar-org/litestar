@@ -1,30 +1,164 @@
 Parameters
-===========
+==========
 
-Path Parameters
+.. _parameter-types:
+
+
+Request parameters are parts of the request that can be injected into a handler function
+or dependency. They allow type-coercion, validation, and will show up in the generated
+OpenAPI schema.
+
+There are for request parameter types supported, which can be specified in two different
+forms:
+
++--------+----------------------------+---------------------------------------------------------------------------+
+| Type   | Short form                 | :class:`~typing.Annotated` Form                                           |
++========+============================+===========================================================================+
+| query  | :data:`.params.FromQuery`  | :class:`Annotated[\<type\>, QueryParameter()] <.params.QueryParameter>`   |
++--------+----------------------------+---------------------------------------------------------------------------+
+| path   | :data:`.params.FromPath`   | :class:`Annotated[\<type\>, PathParameter()] <.params.PathParameter>`     |
++--------+----------------------------+---------------------------------------------------------------------------+
+| header | :data:`.params.FromHeader` | :class:`Annotated[\<type\>, HeaderParameter()] <.params.HeaderParameter>` |
++--------+----------------------------+---------------------------------------------------------------------------+
+| cookie | :data:`.params.FromCookie` | :class:`Annotated[\<type\>, CookieParameter()] <.params.CookieParameter>` |
++--------+----------------------------+---------------------------------------------------------------------------+
+
+
+
+Parameter declarations
+----------------------
+
+Each parameter source has two equivalent declaration forms: a marker type alias for the
+common case, and an :class:`~typing.Annotated` form for when extra configuration is
+needed:
+
+.. tab-set::
+
+    .. tab-item:: Marker form
+
+        .. code-block:: python
+
+            from litestar import get
+            from litestar.params import FromCookie, FromHeader, FromPath, FromQuery
+
+            @get("/{user_id:int}")
+            async def handler(
+                user_id: FromPath[int],
+                limit: FromQuery[int],
+                token: FromHeader[str],
+                session: FromCookie[str],
+            ) -> None: ...
+
+    .. tab-item:: Annotated form
+
+        .. code-block:: python
+
+            from typing_extensions import Annotated
+
+            from litestar import get
+            from litestar.params import (
+                CookieParameter,
+                HeaderParameter,
+                PathParameter,
+                QueryParameter,
+            )
+
+            @get("/{user_id:int}")
+            async def handler(
+                user_id: Annotated[int, PathParameter(ge=1)],
+                limit: Annotated[int, QueryParameter(gt=0, le=100)],
+                token: Annotated[str, HeaderParameter(name="X-API-KEY")],
+                session: Annotated[str, CookieParameter(name="session-id")],
+            ) -> None: ...
+
+The two forms are equivalent: ``FromQuery[T]`` is just an alias for
+``Annotated[T, QueryParameter()]``. Prefer the marker form when no extra configuration
+is needed.
+
+.. admonition:: Technical details
+    :class: info
+
+    These :term:`parameters <parameter>` will be parsed from the function signature and
+    used to generate an internal data model. This model in turn will be used to validate
+    the parameters and generate the OpenAPI schema
+
+
+Optional, required and nullable
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Just like function parameters in Python, request parameters can be required, optional or
+have a default value.
+
+- Parameters declared without any default are required
+- Parameters declared with a default are optional
+- Parameters declared with ``| None`` are *nullable*, i.e. the may take a ``None``
+  value; they are still required, unless they are given a default value
+
+Defaults work exactly like defaults in regular function parameters: If the value is
+missing from the request, the handler is called with the default:
+
+.. literalinclude:: /examples/parameters/query_params_default.py
+    :language: python
+    :caption: Defining a default value for a query parameter
+
+Marking a parameter optional means the type itself permits :obj:`None`:
+
+.. literalinclude:: /examples/parameters/query_params_optional.py
+    :language: python
+    :caption: Defining an optional query parameter
+
+
+.. important::
+    Path parameters are always required because they are part of the URL itself. You can
+    only get a "missing" path parameter when the same handler is registered against
+    :ref:`multiple paths <usage/routing/parameters:path parameters>`
+    (e.g. ``["/items", "/items/{id:int}"]``), in which case the handler-side default
+    fills in for the path without the slot.
+
+
+Parameter types
 ---------------
 
-Path :term:`parameters <parameter>` are parameters declared as part of the ``path`` component of
-the URL. They are declared using a simple syntax ``{param_name:param_type}`` :
+Path parameters
+~~~~~~~~~~~~~~~
+
+Path :term:`parameters <parameter>` are declared as part of the ``path`` component of
+the URL using the syntax ``{param_name:param_type}``. The handler function receives the
+value via a parameter of the same name, declared with :data:`~.params.FromPath`:
 
 .. literalinclude:: /examples/parameters/path_parameters_1.py
     :language: python
     :caption: Defining a path parameter in a route handler
 
-In the above there are two components:
+There are two components to declaring a path parameter:
 
-1. The path :term:`parameter` is defined in the :class:`@get() <.handlers.get>` :term:`decorator`, which declares both
-   the parameter's name (``user_id``) and type (:class:`int`).
-2. The :term:`decorated <decorator>` function ``get_user`` defines a parameter with the same name as the
-   parameter defined in the ``path`` :term:`kwarg <argument>`.
+1. In the :class:`@get() <.handlers.get>` :term:`decorator`, the path component
+   declares both the parameter's name (``user_id``) and type (:class:`int`)
+2. In the handler signature, ``user_id`` is declared as
+   :data:`FromPath[int] <.params.FromPath>`, which tells Litestar to inject the matching
+   path value
 
-The correlation of parameter name ensures that the value of the path parameter will be injected into
-the function when it is called.
+Two characteristics are unique to path parameters:
 
-Supported Path Parameter Types
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+- The URL slot defines the structurally required type via the ``:type`` suffix (see
+  :ref:`usage/routing/parameters:supported path parameter types` below). Litestar
+  coerces the captured string into this type before passing it to the handler, and the
+  handler-side type annotation can request a further coercion
+  (see :ref:`usage/routing/parameters:type coercion`).
+- Path parameters cannot be declared on application
+  :ref:`layers <usage/applications:layered architecture>`
 
-Currently, the following types are supported:
+.. tip::
+    You only need to declare the path :term:`parameter` in the function signature if the
+    handler actually uses it. If the path parameter is part of the path but the function
+    does not consume it, you can omit it from the signature; it will still be validated
+    and added to the OpenAPI schema.
+
+
+Supported path parameter types
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The following types are supported in the ``{name:type}`` slot:
 
 * ``date``: Accepts date strings and time stamps.
 * ``datetime``: Accepts date-time strings and time stamps.
@@ -37,175 +171,162 @@ Currently, the following types are supported:
 * ``timedelta``: Accepts duration strings compatible with the standard (Pydantic/Msgspec) timedelta formats.
 * ``uuid``: Accepts all uuid values.
 
-The types declared in the path :term:`parameter` and the function do not need to match 1:1 - as long as
-parameter inside the function declaration is typed with a "higher" type to which the lower type can be coerced,
-this is fine. For example, consider this:
+Query parameters
+~~~~~~~~~~~~~~~~
 
-.. literalinclude:: /examples/parameters/path_parameters_2.py
-    :language: python
-    :caption: Coercing path parameters into different types
-
-The :term:`parameter` defined inside the ``path`` :term:`kwarg <argument>` is typed as :class:`int` , because the value
-passed as part of the request will be a timestamp in milliseconds without any decimals. The parameter in
-the function declaration though is typed as :class:`datetime.datetime`.
-
-This works because the int value will be automatically coerced from an :class:`int` into a :class:`~datetime.datetime`.
-
-Thus, when the function is called it will be called with a :class:`~datetime.datetime`-typed parameter.
-
-.. note:: You only need to define the :term:`parameter` in the function declaration if it is actually used inside the
-    function. If the path parameter is part of the path, but the function does not use it, it is fine to omit
-    it. It will still be validated and added to the OpenAPI schema correctly.
-
-The Parameter function
-----------------------
-
-:func:`~.params.Parameter` is a helper function wrapping a :term:`parameter` with extra information to be
-added to the OpenAPI schema.
-
-Extra validation and documentation for path params
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-If you want to add validation or enhance the OpenAPI documentation generated for a given path :term:`parameter`,
-you can do so using the `the parameter function`_:
-
-.. literalinclude:: /examples/parameters/path_parameters_3.py
-    :language: python
-    :caption: Adding extra validation and documentation to a path parameter
-
-In the above example, :func:`~.params.Parameter` is used to restrict the value of :paramref:`~.params.Parameter.version`
-to a range between 1 and 10, and then set the :paramref:`~.params.Parameter.title`,
-:paramref:`~.params.Parameter.description`, :paramref:`~.params.Parameter.examples`, and
-:paramref:`externalDocs <.params.Parameter.external_docs>` sections of the OpenAPI schema.
-
-Query Parameters
-----------------
-
-Query :term:`parameters <parameter>` are defined as :term:`keyword arguments <argument>` to handler functions.
-Every :term:`keyword argument <argument>` that is not otherwise specified (for example as a
-:ref:`path parameter <usage/routing/parameters:path parameters>`) will be interpreted as a query parameter.
+Query :term:`parameters <parameter>` are declared as :term:`parameters <argument>` on
+the handler function, typed with :data:`~.params.FromQuery` or
+``Annotated[<type>, QueryParameter()]``.
 
 .. literalinclude:: /examples/parameters/query_params.py
     :language: python
-    :caption: Defining query parameters in a route handler
+    :caption: Defining a query parameter in a route handler
 
-.. admonition:: Technical details
-    :class: info
 
-    These :term:`parameters <parameter>` will be parsed from the function signature and used to generate an internal data model.
-    This model in turn will be used to validate the parameters and generate the OpenAPI schema.
+Header parameters
+~~~~~~~~~~~~~~~~~
 
-    This ability allows you to use any number of schema/modelling libraries, including Pydantic, Msgspec, Attrs, and Dataclasses, and it will
-    follow the same kind of validation and parsing as you would get from these libraries.
+Header :term:`parameters <parameter>` are declared with :data:`~.params.FromHeader` or
+``Annotated[<type>, HeaderParameter()]``. The handler-side parameter name is used as the
+header name by default; HTTP headers are matched case-insensitively, so
+``token: FromHeader[str]`` matches both ``Token`` and ``token`` on the wire.
 
-Query :term:`parameters <parameter>` come in three basic types:
+In practice, most headers you care about have names that are not valid Python
+identifiers (e.g. ``X-API-KEY``, ``Content-Type``). In those cases, switch to
+:class:`~typing.Annotated` and set ``name=`` on :class:`~.params.HeaderParameter`:
 
-- Required
-- Required with a default value
-- Optional with a default value
+.. code-block:: python
 
-Query parameters are **required** by default. If one such a parameter has no value,
-a :exc:`~.exceptions.http_exceptions.ValidationException` will be raised.
+    from typing_extensions import Annotated
 
-Default values
-~~~~~~~~~~~~~~
+    from litestar.params import HeaderParameter
 
-In this example, ``param`` will have the value ``"hello"`` if it is not specified in the request.
-If it is passed as a query :term:`parameter` however, it will be overwritten:
 
-.. literalinclude:: /examples/parameters/query_params_default.py
-    :language: python
-    :caption: Defining a default value for a query parameter
+    async def handler(token: Annotated[str, HeaderParameter(name="X-API-KEY")]) -> None: ...
 
-Optional :term:`parameters <parameter>`
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Cookie parameters
+~~~~~~~~~~~~~~~~~
 
-Instead of only setting a default value, it is also possible to make a query parameter entirely optional.
+Cookie :term:`parameters <parameter>` are declared with
+:data:`~.params.FromCookie` or ``Annotated[<type>, CookieParameter()]``. The handler-side
+parameter name is used as the cookie name by default:
 
-Here, we give a default value of ``None`` , but still declare the type of the query parameter
-to be a :class:`string <str>`. This means that this parameter is not required.
+.. code-block:: python
 
-If it is given, it has to be a :class:`string <str>`.
-If it is not given, it will have a default value of ``None``
+    from typing_extensions import Annotated
 
-.. literalinclude:: /examples/parameters/query_params_optional.py
-    :language: python
-    :caption: Defining an optional query parameter
+    from litestar.params import CookieParameter
 
-Type coercion
--------------
 
-It is possible to coerce query :term:`parameters <parameter>` into different types.
-A query starts out as a :class:`string <str>`, but its values can be parsed into all kinds of types.
+    async def handler(session: Annotated[str, CookieParameter(name="session-id")]) -> None: ...
 
-.. literalinclude:: /examples/parameters/query_params_types.py
-    :language: python
-    :caption: Coercing query parameters into different types
-
-Alternative names and constraints
----------------------------------
-
-Sometimes you might want to "remap" query :term:`parameters <parameter>` to allow a different name in the URL
-than what is being used in the handler function. This can be done by making use of :func:`~.params.Parameter`.
-
-.. literalinclude:: /examples/parameters/query_params_remap.py
-    :language: python
-    :caption: Remapping query parameters to different names
-
-Here, we remap from ``snake_case`` in the handler function to ``camelCase`` in the URL.
-This means that for the URL ``http://127.0.0.1:8000?camelCase=foo`` , the value of ``camelCase``
-will be used for the value of the ``snake_case`` parameter.
-
-:func:`~.params.Parameter` also allows us to define additional constraints:
-
-.. literalinclude:: /examples/parameters/query_params_constraints.py
-    :language: python
-    :caption: Constraints on query parameters
-
-In this case, ``param`` is validated to be an *integer larger than 5*.
-
-Documenting enum query parameters
----------------------------------------
-
-By default, the OpenAPI schema generated for enum query :term:`parameters <parameter>` uses the enum's docstring for the
-description section of the schema. The description can be changed with the :paramref:`~.params.Parameter.description`
-parameter of the `the parameter function`_, but doing so can overwrite the descriptions of other query parameters of the
-same enum because only one schema is generated per enum. This can be avoided by using the
-:paramref:`~.params.Parameter.schema_component_key` parameter so that separate schemas are generated:
-
-.. literalinclude:: /examples/parameters/query_params_enum.py
-    :language: python
-    :caption: Query parameters with the same enum type and different descriptions
-
-In the above example, the schema for the ``q1`` query parameter references a "q1" schema component with a description of
-"This is q1". The schema for the ``q2`` query parameter references a "MyEnum" schema component with a description of "My
-enum accepts two values". The schema for the ``q3`` query parameter references a "q3" schema component with a
-description of "This is q3".
-
-If we did not pass :paramref:`~.params.Parameter.schema_component_key` arguments for :func:`~.params.Parameter` for
-``q1`` and ``q3``, then the schemas for all three query parameters would reference the same "MyEnum" schema component
-with the description "This is q1".
-
-Header and Cookie Parameters
-----------------------------
-
-Unlike *Query* :term:`parameters <parameter>`, *Header* and *Cookie* parameters have to be
-declared using `the parameter function`_ , for example:
+A combined example showing both header and cookie parameters alongside a path parameter:
 
 .. literalinclude:: /examples/parameters/header_and_cookie_parameters.py
     :language: python
     :caption: Defining header and cookie parameters
 
-As you can see in the above, header parameters are declared using the ``header``
-:term:`kwargs <argument>` and cookie parameters using the ``cookie`` :term:`kwarg <argument>`.
-Aside form this difference they work the same as query parameters.
+
+Type coercion
+-------------
+
+Every parameter starts life on the wire as a string (or for path parameters, a string captured by the URL slot).
+Litestar coerces that raw value into the inner type of the marker (``FromQuery[int]``, ``FromHeader[float]``,
+``FromPath[datetime]``, …) before passing it to the handler:
+
+.. literalinclude:: /examples/parameters/query_params_types.py
+    :language: python
+    :caption: Coercing query parameters into different types
+
+Path parameters additionally support coercion via the path-slot type itself. The handler-side type does not need to
+match the slot type one-to-one — if the slot captures an :class:`int` and the handler asks for a
+:class:`~datetime.datetime`, Litestar applies the second conversion:
+
+.. literalinclude:: /examples/parameters/path_parameters_2.py
+    :language: python
+    :caption: Coercing a path parameter into a different type
+
+The same conversion rules apply to header and cookie parameters: ``FromHeader[int]`` will parse the header value as
+an integer, ``FromCookie[datetime]`` will parse the cookie as a datetime, and so on.
+
+
+Aliasing
+--------
+
+By default, the name of the function parameter is used to retrieve the parameter data
+from the request. To decouple the two, for example to receive ``camelCase`` query keys
+while keeping ``snake_case`` Python parameter names, or to declare an ``X-``-prefixed
+header, pass ``name="..."`` to the matching specifier class:
+
+.. literalinclude:: /examples/parameters/query_params_remap.py
+    :language: python
+    :caption: Remapping a query parameter to a different URL name
+
+A request to ``http://127.0.0.1:8000?camelCase=foo`` will be received as
+``snake_case="foo"`` inside the handler.
+
+The same pattern applies to
+:class:`~.params.HeaderParameter`,:class:`~.params.CookieParameter` and
+:class:`~.params.PathParameter`.
+
+
+Validation constraints
+----------------------
+
+All parameters can be given certain validation constraints, that will be validated when
+a request is received, and represented in the OpenAPI schema.
+
+Currently supported constraints are: ``gt``, ``ge``, ``lt``, ``le``, ``multiple_of``,
+``min_length``, ``max_length``, ``min_items``, ``max_items``, and ``pattern``. A
+value that does not satisfy the constraint raises
+:exc:`~.exceptions.http_exceptions.ValidationException`:
+
+.. literalinclude:: /examples/parameters/query_params_constraints.py
+    :language: python
+    :caption: Constraining a query parameter to integers larger than 5
+
+
+OpenAPI metadata
+----------------
+
+Parameters can extend or alter their OpenAPI schema, e.g. to customize their title, add
+a description or examples:
+
+.. literalinclude:: /examples/parameters/path_parameters_3.py
+    :language: python
+    :caption: Adding  OpenAPI metadata to a path parameter
+
+
+Customizing enum schemas
+------------------------
+
+By default, the OpenAPI schema generated for an enum-typed parameter uses the enum's
+docstring for the description section of the schema. Overriding the description via
+:attr:`~.params.KwargDefinition.description` would change it for every parameter sharing
+that enum, because only one schema is generated per enum. To get distinct descriptions,
+also pass :attr:`~.params.KwargDefinition.schema_component_key` so a separate schema
+component is generated per parameter:
+
+.. literalinclude:: /examples/parameters/query_params_enum.py
+    :language: python
+    :caption: Distinct OpenAPI components for parameters sharing the same enum type
+
+In the above example, the schema for ``q1`` references a "q1" schema component with
+description "This is q1"; the schema for ``q2`` references the shared "MyEnum" component
+with description "My enum accepts two values"; and the schema for ``q3`` references a
+"q3" component with description "This is q3".
+
+Without the :attr:`~.params.KwargDefinition.schema_component_key` arguments on
+``q1`` and ``q3``, all three would share the same "MyEnum" component with description
+"This is q1" — whichever description was processed first wins.
+
 
 Layered Parameters
 ------------------
 
 As part of Litestar's :ref:`layered architecture <usage/applications:layered architecture>`, you can declare
-:term:`parameters <parameter>` not only as part of individual route handler functions, but also on other layers
-of the application:
+:term:`parameters <parameter>` not only on individual route handler functions, but also on other layers of the
+application:
 
 .. literalinclude:: /examples/parameters/layered_parameters.py
     :language: python
@@ -213,29 +334,61 @@ of the application:
 
 In the above we declare :term:`parameters <parameter>` on the :class:`Litestar app <.app.Litestar>`,
 :class:`router <.router.Router>`, and :class:`controller <.controller.Controller>` layers in addition to those
-declared in the route handler. Now, examine these more closely.
+declared in the route handler. Examine these more closely:
 
-* ``app_param`` is a cookie parameter with the key ``special-cookie``. We type it as :class:`str` by passing
-  this as an arg to the :func:`~.params.Parameter` function. This is required for us to get typing in the OpenAPI doc.
-  Additionally, this parameter is assumed to be required because it is not explicitly set as ``False`` on
-  :paramref:`~.params.Parameter.required`.
+* ``app_param`` is a cookie parameter with the key ``special-cookie``, declared via
+  :class:`~.params.CookieParameter` on the :class:`Litestar app <.app.Litestar>` with ``annotation=str``.
+  ``required=False`` makes it optional; without that argument it would be required by default.
 
-  This is important because the route handler function does not declare a parameter called ``app_param`` at all,
-  but it will still require this param to be sent as part of the request of validation will fail.
+  Because the route handler function does not declare ``app_param`` at all, the parameter is still extracted and
+  validated at the application level even though the handler never sees it.
 
-* ``router_param`` is a header parameter with the key ``MyHeader``. Because it is set as ``False`` on
-  :paramref:`~.params.Parameter.required`, it will not fail validation if not present unless explicitly declared by a
-  route handler - and in this case it is.
+* ``router_param`` is a header parameter with the key ``MyHeader``, declared via :class:`~.params.HeaderParameter`
+  on the router. It is declared ``required=False`` on the router, so it does not fail validation if absent — unless
+  the handler explicitly opts in by re-declaring it (as this one does).
 
-  Thus, it is actually required for the router handler function that declares it as an :class:`str` and not an
-  ``str | None``. If a :class:`string <str>` value is provided, it will be tested against the provided regex.
-* ``controller_param`` is a query param with the key ``controller_param``. It has an :paramref:`~.params.Parameter.lt`
-  set to ``100`` defined on the controller, which means the provided value must be less than 100.
+  The handler types it as :class:`FromHeader[str] <.params.FromHeader>` (rather than ``str | None``), making it
+  required at the handler level. If a value *is* provided, it is also tested against the router-declared regex.
 
-  Yet the route handler redeclares it with an :paramref:`~.params.Parameter.lt` set to ``50``,
-  which means for the route handler this value must be less than 50.
-* ``local_param`` is a route handler local :ref:`query parameter <usage/routing/parameters:query parameters>`, and
-  ``path_param`` is a :ref:`path parameter <usage/routing/parameters:path parameters>`.
+* ``controller_param`` is a query parameter with the key ``controller_param``, declared via
+  :class:`~.params.QueryParameter` on the controller with ``lt=100`` (value must be less than 100). The handler
+  redeclares it with ``Annotated[int, QueryParameter(lt=50)]``, tightening the constraint to less than 50 for this
+  particular route.
 
-.. note:: You cannot declare path :term:`parameters <parameter>` in different application layers. The reason for this
-    is to ensure simplicity - otherwise parameter resolution becomes very difficult to do correctly.
+* ``local_param`` is a route-handler-local :ref:`query parameter <usage/routing/parameters:query parameters>`
+  (``FromQuery[str]``), and ``path_param`` is a :ref:`path parameter <usage/routing/parameters:path parameters>`
+  (``FromPath[int]``).
+
+
+.. _deprecated-parameter-styles:
+
+Deprecated declaration styles
+-----------------------------
+
+Earlier 2.x releases accepted several other ways of declaring handler parameters. These continue to work for the
+remainder of the 2.x line, but they now emit a :class:`~.exceptions.LitestarDeprecationWarning` and will be removed
+in 3.0.
+
+.. list-table::
+    :header-rows: 1
+    :widths: 45 55
+
+    * - Deprecated
+      - Use instead
+    * - ``def h(name: str)`` *(implicit query parameter)*
+      - ``def h(name: FromQuery[str])``
+    * - ``def h(user_id: int)`` *(implicit path parameter)*
+      - ``def h(user_id: FromPath[int])``
+    * - ``Annotated[str, Parameter(query="alias")]``
+      - ``Annotated[str, QueryParameter(name="alias")]``
+    * - ``Annotated[str, Parameter(header="X-API-KEY")]``
+      - ``Annotated[str, HeaderParameter(name="X-API-KEY")]``
+    * - ``Annotated[str, Parameter(cookie="session")]``
+      - ``Annotated[str, CookieParameter(name="session")]``
+    * - ``name: str = Parameter(...)`` *(default-value style)*
+      - ``name: Annotated[str, QueryParameter(...)]``
+
+The :func:`~.params.Parameter` function itself is **not** removed and can still be used to attach pure metadata
+(``description``, ``gt``, etc.) when wrapped in :class:`~typing.Annotated`. Only its ``header``, ``cookie``, and
+``query`` keyword arguments are deprecated — passing any of those emits a :exc:`DeprecationWarning` independently of
+the handler-level warning.

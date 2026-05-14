@@ -64,12 +64,11 @@ Currently ``get_list`` will always return all items on the list, but what if you
 are interested in only those items with a specific status, for example all items that
 are not yet marked as *done*?
 
-For this you can employ query parameters; to define a query parameter, all that's needed
-is to add an otherwise unused parameter to the function. Litestar will recognize this
-and infer that it's going to be used as a query parameter. When a request is being made,
-the query parameter will be extracted from the URL, and passed to the function parameter
-of the same name.
-
+For this you can employ query parameters; to define a query parameter, add a parameter
+to the handler function and annotate it with :data:`~.params.FromQuery`, parameterised
+by the type you expect the value to have. When a request is being made, the query
+parameter will be extracted from the URL, converted to the declared type, and passed to
+the function parameter of the same name.
 
 .. literalinclude:: /examples/todo_app/get_list/query_param.py
     :caption: ``app.py``
@@ -106,10 +105,10 @@ If the query parameter equals ``1``, return all items that have ``done=True``:
 .. literalinclude:: /examples/todo_app/get_list/query_param_validate_manually.py
     :language: python
     :caption: ``app.py``
-    :lines: 23-24
-    :dedent: 2
+    :lines: 24-25
+    :dedent:
     :linenos:
-    :lineno-start: 23
+    :lineno-start: 24
 
 
 If the query parameter equals ``0``, return all items that have ``done=False``:
@@ -117,10 +116,10 @@ If the query parameter equals ``0``, return all items that have ``done=False``:
 .. literalinclude:: /examples/todo_app/get_list/query_param_validate_manually.py
     :language: python
     :caption: ``app.py``
-    :lines: 25-26
-    :dedent: 2
+    :lines: 26-27
+    :dedent:
     :linenos:
-    :lineno-start: 25
+    :lineno-start: 26
 
 Finally, if the query parameter has any other value, an :exc:`HTTPException` will be raised.
 Raising an ``HTTPException`` tells Litestar that something went wrong, and instead of
@@ -130,10 +129,10 @@ returning a normal response, it will send a response with the HTTP status code g
 .. literalinclude:: /examples/todo_app/get_list/query_param_validate_manually.py
     :language: python
     :caption: ``app.py``
-    :lines: 27
-    :dedent: 2
+    :lines: 28
+    :dedent:
     :linenos:
-    :lineno-start: 27
+    :lineno-start: 28
 
 
 .. figure:: images/done-john.png
@@ -171,17 +170,17 @@ for you should the supplied value not be a valid boolean.
 
 **What's happening here?**
 
-Since :class:`bool` is being used as the type annotation for the ``done`` parameter,
-Litestar will try to convert the value into a :class:`bool` first. Since ``john``
-(arguably) is not a representation of a boolean value, it will return an error response
-instead.
+The parameter is now declared as ``done: FromQuery[bool]``. The ``bool`` inside the
+brackets tells Litestar to convert the incoming string into a :class:`bool` before
+passing it to the handler. Since ``john`` (arguably) is not a representation of a
+boolean value, it will return an error response instead.
 
 .. literalinclude:: /examples/todo_app/get_list/query_param_validate.py
     :language: python
     :caption: ``app.py``
-    :lines: 21
+    :lines: 22
     :linenos:
-    :lineno-start: 21
+    :lineno-start: 22
 
 .. tip::
     It is important to note that this conversion is not the result of calling
@@ -193,16 +192,16 @@ instead.
     and ``0`` are converted to be :obj:`False`.
 
 
-If the conversion is successful however, ``done`` is now a :class:`bool`, which can then
-be compared against the ``TodoItem.done`` attribute:
+If the conversion is successful however, ``done`` is now a :class:`bool` (extracted from the ``FromQuery[bool]``
+declaration), which can then be compared against the ``TodoItem.done`` attribute:
 
 .. literalinclude:: /examples/todo_app/get_list/query_param_validate.py
     :language: python
     :caption: ``app.py``
-    :lines: 22
-    :dedent: 2
+    :lines: 23
+    :dedent:
     :linenos:
-    :lineno-start: 22
+    :lineno-start: 23
 
 
 .. seealso::
@@ -220,10 +219,10 @@ get **all** items, done or not, and omit the query parameter?
 
     Omitting the ``?done`` query parameter will result in an error
 
-Because the query parameter has been defined as ``done: bool`` without giving it a
-default value, it will be treated as a required parameter - just like a regular function
-parameter. If instead you want this to be optional, a default value needs to be
-supplied.
+Because the query parameter has been defined as ``done: FromQuery[bool]`` without giving
+it a default value, it will be treated as a required parameter - just like a regular
+function parameter. If instead you want this to be optional, a default value needs to
+be supplied (e.g. ``done: FromQuery[Optional[bool]] = None``).
 
 
 .. literalinclude:: /examples/todo_app/get_list/query_param_default.py
