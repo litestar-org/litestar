@@ -3,26 +3,6 @@
 Litestar 2 Changelog
 ====================
 
-.. changelog:: 2.22.0
-
-    .. change:: Move OpenTelemetry integration to ``litestar.plugins.opentelemetry``; deprecate ``litestar.contrib.opentelemetry``
-        :type: misc
-        :pr: 4759
-
-        The OpenTelemetry integration has moved from ``litestar.contrib.opentelemetry``
-        to ``litestar.plugins.opentelemetry``. The contrib location is preserved as a
-        deprecation shim that re-exports from the plugin location and emits
-        ``DeprecationWarning`` on access. The contrib namespace is removed
-        before 3.0.0. Update imports:
-
-        .. code-block:: python
-
-            # before
-            from litestar.contrib.opentelemetry import OpenTelemetryPlugin
-
-            # after
-            from litestar.plugins.opentelemetry import OpenTelemetryPlugin
-
 .. changelog:: 2.21.1
     :date: 2026-03-07
 
@@ -61,7 +41,7 @@ Litestar 2 Changelog
         :issue: 4594
 
         Add an ``after_exception`` option to
-        ``litestar.contrib.opentelemetry.OpenTelemetryConfig``, which will
+        :class:`~litestar.contrib.opentelemetry.OpenTelemetryConfig`, which will
         add that hook to the applications ``after_exception`` hooks, allowing the
         middleware to react to exception, without handling them.
 

@@ -318,7 +318,7 @@ offering client- and server-side sessions. Server-side sessions are backed by Li
 - File based sessions
 - Redis based sessions
 - Valkey based sessions
-- Database based session middleware (via ``advanced_alchemy.extensions.litestar``)
+- Database based :ref:`advanced-alchemy:usage/frameworks/litestar:Session Middleware`
 
 Setting up the middleware
 ^^^^^^^^^^^^^^^^^^^^^^^^^
