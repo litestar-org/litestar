@@ -24,10 +24,11 @@ if TYPE_CHECKING:
     from litestar.openapi.config import OpenAPIConfig
     from litestar.openapi.plugins import OpenAPIRenderPlugin
     from litestar.openapi.spec import OpenAPI, PathItem
+    from litestar.params import FromPath
     from litestar.routes import BaseRoute
 
 
-def handle_schema_path_not_found(path: str = "/") -> Response:
+def handle_schema_path_not_found(path: FromPath[str] = "/") -> Response:
     """Handler for returning HTML formatted errors from not-found schema paths.
 
     This preserves backward compatibility with the Controller-based OpenAPI implementation.
