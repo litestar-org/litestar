@@ -1,7 +1,8 @@
 import pytest
+from typing_extensions import Annotated
 
 from litestar import Controller, Router, get
-from litestar.params import Parameter
+from litestar.params import CookieParameter, FromPath, FromQuery, HeaderParameter, Parameter, QueryParameter
 from litestar.status_codes import HTTP_200_OK, HTTP_400_BAD_REQUEST
 from litestar.testing import create_test_client
 
@@ -9,12 +10,15 @@ from litestar.testing import create_test_client
 def test_layered_parameters_injected_correctly() -> None:
     class MyController(Controller):
         path = "/controller"
-        parameters = {"controller1": Parameter(lt=100), "controller2": Parameter(str, query="controller3")}
+        parameters = {
+            "controller1": Parameter(lt=100),
+            "controller2": QueryParameter(annotation=str, name="controller3"),
+        }
 
         @get("/{local:int}")
         def my_handler(
             self,
-            local: float,
+            local: FromPath[float],
             controller1: int,
             controller2: str,
             router1: str,
@@ -36,14 +40,14 @@ def test_layered_parameters_injected_correctly() -> None:
         route_handlers=[MyController],
         parameters={
             "router1": Parameter(str, pattern="^[a-zA-Z]$"),
-            "router2": Parameter(float, multiple_of=5.0, header="router3"),
+            "router2": HeaderParameter(annotation=float, multiple_of=5.0, name="router3"),
         },
     )
 
     with create_test_client(
         route_handlers=router,
         parameters={
-            "app1": Parameter(str, cookie="app4"),
+            "app1": CookieParameter(annotation=str, name="app4"),
             "app2": Parameter(list[str], min_items=2),
             "app3": Parameter(bool, required=False),
         },
@@ -73,7 +77,10 @@ def test_layered_parameters_injected_correctly() -> None:
 def test_layered_parameters_validation(parameter: str, param_type: str) -> None:
     class MyController(Controller):
         path = "/controller"
-        parameters = {"controller1": Parameter(int, lt=100), "controller2": Parameter(str, query="controller3")}
+        parameters = {
+            "controller1": Parameter(int, lt=100),
+            "controller2": QueryParameter(annotation=str, name="controller3"),
+        }
 
         @get("/{local:int}")
         def my_handler(self) -> dict:
@@ -84,14 +91,14 @@ def test_layered_parameters_validation(parameter: str, param_type: str) -> None:
         route_handlers=[MyController],
         parameters={
             "router1": Parameter(str, pattern="^[a-zA-Z]$"),
-            "router2": Parameter(float, multiple_of=5.0, header="router3"),
+            "router2": HeaderParameter(annotation=float, multiple_of=5.0, name="router3"),
         },
     )
 
     with create_test_client(
         route_handlers=router,
         parameters={
-            "app1": Parameter(str, cookie="app4"),
+            "app1": CookieParameter(annotation=str, name="app4"),
             "app2": Parameter(list[str], min_items=2),
             "app3": Parameter(bool, required=False),
         },
@@ -119,15 +126,18 @@ def test_layered_parameters_validation(parameter: str, param_type: str) -> None:
 def test_layered_parameters_defaults_and_overrides() -> None:
     class MyController(Controller):
         path = "/controller"
-        parameters = {"controller1": Parameter(int, default=50), "controller2": Parameter(str, query="controller3")}
+        parameters = {
+            "controller1": Parameter(int, default=50),
+            "controller2": QueryParameter(annotation=str, name="controller3"),
+        }
 
         @get("/{local:int}")
         def my_handler(
             self,
-            local: float,
-            controller1: int,
-            controller2: str = Parameter(str, query="controller4"),
-            app1: str = Parameter(default="moishe"),
+            local: FromPath[int],
+            controller1: FromQuery[int],
+            controller2: Annotated[str, QueryParameter(name="controller4")],
+            app1: FromQuery[str] = "moishe",
         ) -> dict:
             assert app1 == "moishe"
             assert controller2 == "jeronimo"

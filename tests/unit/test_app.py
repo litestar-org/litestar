@@ -24,6 +24,7 @@ from litestar.exceptions import (
     NotFoundException,
 )
 from litestar.handlers import BaseRouteHandler
+from litestar.params import FromPath
 from litestar.plugins import CLIPlugin
 from litestar.status_codes import HTTP_200_OK, HTTP_400_BAD_REQUEST, HTTP_500_INTERNAL_SERVER_ERROR
 from litestar.testing import TestClient, create_test_client
@@ -212,7 +213,7 @@ def test_before_send() -> None:
 
 def test_using_custom_http_exception_handler() -> None:
     @get("/{param:int}")
-    def my_route_handler(param: int) -> None: ...
+    def my_route_handler(param: FromPath[int]) -> None: ...
 
     def my_custom_handler(_: Request[Any, Any, State], __: Exception) -> Response[str]:
         return Response(content="custom message", media_type=MediaType.TEXT, status_code=HTTP_400_BAD_REQUEST)

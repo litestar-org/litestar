@@ -1,5 +1,7 @@
+from typing_extensions import Annotated
+
 from litestar import WebSocket, websocket
-from litestar.params import Parameter
+from litestar.params import FromPath, FromQuery, HeaderParameter
 from litestar.testing import create_test_client
 
 
@@ -10,9 +12,9 @@ def test_handle_websocket_params_parsing() -> None:
         headers: dict,
         query: dict,
         cookies: dict,
-        socket_id: int,
-        qp: int,
-        hp: str = Parameter(header="some-header"),
+        socket_id: FromPath[int],
+        qp: FromQuery[int],
+        hp: Annotated[str, HeaderParameter(name="some-header")],
     ) -> None:
         assert socket_id
         assert headers

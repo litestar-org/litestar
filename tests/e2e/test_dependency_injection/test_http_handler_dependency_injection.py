@@ -5,6 +5,7 @@ import pytest
 
 from litestar import Controller, get
 from litestar.di import Provide
+from litestar.params import FromPath, FromQuery
 from litestar.status_codes import HTTP_200_OK, HTTP_400_BAD_REQUEST
 from litestar.testing import create_test_client
 
@@ -33,12 +34,12 @@ async def controller_second_dependency(request: "Request[Any, Any, State]") -> d
     return {}
 
 
-def local_method_first_dependency(query_param: int) -> int:
+def local_method_first_dependency(query_param: FromQuery[int]) -> int:
     assert isinstance(query_param, int)
     return query_param
 
 
-def local_method_second_dependency(path_param: str) -> str:
+def local_method_second_dependency(path_param: FromPath[str]) -> str:
     assert isinstance(path_param, str)
     return path_param
 
@@ -110,9 +111,15 @@ def test_dependency_isolation(first_controller: type[Controller]) -> None:
         path = "/second"
 
         @get()
-        def test_method(self, first: dict[Any, Any]) -> None:
+        def test_method(self, first: FromQuery[dict[Any, Any]]) -> None:
             pass
 
-    with create_test_client([first_controller, SecondController]) as client:
+    with create_test_client(
+        [first_controller, SecondController],
+        dependencies={
+            "second": Provide(router_first_dependency, sync_to_thread=False),
+            "third": Provide(router_second_dependency),
+        },
+    ) as client:
         response = client.get("/second")
         assert response.status_code == HTTP_400_BAD_REQUEST

@@ -9,6 +9,7 @@ from litestar.datastructures.headers import MutableScopeHeaders
 from litestar.enums import ScopeType
 from litestar.exceptions import LitestarWarning, ValidationException
 from litestar.middleware import AbstractMiddleware, ASGIMiddleware, DefineMiddleware
+from litestar.params import FromPath
 from litestar.response.base import ASGIResponse
 from litestar.status_codes import HTTP_400_BAD_REQUEST
 from litestar.testing import create_test_client
@@ -358,7 +359,7 @@ def test_asgi_middleware_should_exclude_scope() -> None:
             await next_app(scope, receive, send)
 
     @get("/{file_name:str}")
-    def handler(file_name: str) -> str:
+    def handler(file_name: FromPath[str]) -> str:
         return file_name
 
     with create_test_client([handler], middleware=[SubclassMiddleware()]) as client:

@@ -1,5 +1,7 @@
+from typing_extensions import Annotated
+
 from litestar import get
-from litestar.params import Parameter
+from litestar.params import QueryParameter
 from litestar.status_codes import HTTP_200_OK
 from litestar.testing import create_test_client
 
@@ -9,7 +11,7 @@ def test_params_default() -> None:
 
     @get(path=test_path)
     def test_method(
-        page_size: int = Parameter(query="pageSize", gt=0, le=100, default=10),
+        page_size: Annotated[int, QueryParameter(name="pageSize", gt=0, le=100)] = 10,
     ) -> None:
         assert page_size
 

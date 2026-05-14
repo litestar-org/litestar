@@ -12,6 +12,7 @@ from pytest_mock import MockerFixture
 
 from litestar import MediaType, get
 from litestar.file_system import BaseFileSystem, BaseLocalFileSystem, FileSystemRegistry, maybe_wrap_fsspec_file_system
+from litestar.params import FromPath
 from litestar.static_files import _get_fs_info, create_static_files_router
 from litestar.status_codes import HTTP_200_OK
 from litestar.testing import create_test_client
@@ -148,7 +149,7 @@ def test_sub_path_under_static_path(
     path.write_text("content", "utf-8")
 
     @get("/static/sub/{f:str}", media_type=MediaType.TEXT)
-    def handler(f: str) -> str:
+    def handler(f: FromPath[str]) -> str:
         return f
 
     with create_test_client([create_static_files_router(path="/static", directories=[tmpdir]), handler]) as client:
