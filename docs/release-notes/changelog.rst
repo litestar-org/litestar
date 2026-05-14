@@ -3,22 +3,6 @@
 Litestar 2 Changelog
 ====================
 
-.. changelog:: 2.22.0
-
-    .. change:: Deprecate ``litestar.repository`` in favor of ``advanced_alchemy``
-        :type: misc
-        :pr: 4758
-
-        The ``litestar.repository`` module — including ``filters``, ``exceptions``,
-        ``handlers``, ``abc``, and ``testing`` submodules — is deprecated and will
-        be removed before 3.0.0. Migrate to ``advanced_alchemy``: use
-        ``advanced_alchemy.filters`` for filter types, ``advanced_alchemy.exceptions``
-        for repository exceptions, and ``advanced_alchemy.repository.SQLAlchemyAsyncRepository``
-        / ``SQLAlchemySyncRepository`` for the abstract base, and
-        ``advanced_alchemy.repository.memory.SQLAlchemyAsyncMockRepository`` /
-        ``SQLAlchemySyncMockRepository`` as the drop-in replacement for the
-        generic mock repository under ``litestar.repository.testing``.
-
 .. changelog:: 2.21.1
     :date: 2026-03-07
 
@@ -46,7 +30,7 @@ Litestar 2 Changelog
         :issue: 4596
         :pr: 4597
 
-        Fix a regression introduced in github.com/litestar-org/litestar/pull/4459, that
+        Fix a regression introced in github.com/litestar-org/litestar/pull/4459, that
         would lead to lead to async generators returned from bound methods of DI
         providers being recognised as a synchronous callable, instead of an async
         generator.
