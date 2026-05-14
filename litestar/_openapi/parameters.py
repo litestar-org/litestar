@@ -115,18 +115,16 @@ class ParameterFactory:
             param_in = ParamType.PATH
             is_required = True
             result = self.schema_creator.for_field_definition(field_definition)
-        elif kwarg_definition and kwarg_definition.header:
-            parameter_name = kwarg_definition.header
-            param_in = ParamType.HEADER
+        elif kwarg_definition is not None:
+            param_in = kwarg_definition.param_type
             is_required = field_definition.is_required
-        elif kwarg_definition and kwarg_definition.cookie:
-            parameter_name = kwarg_definition.cookie
-            param_in = ParamType.COOKIE
-            is_required = field_definition.is_required
+            parameter_name = kwarg_definition.name or parameter_name
+            if param_in == ParamType.PATH:
+                is_required = True
+                result = self.schema_creator.for_field_definition(field_definition)
         else:
             is_required = field_definition.is_required
             param_in = ParamType.QUERY
-            parameter_name = kwarg_definition.query if kwarg_definition and kwarg_definition.query else parameter_name
 
         if not result:
             result = self.schema_creator.for_field_definition(field_definition)
@@ -160,12 +158,7 @@ class ParameterFactory:
 
         parameter_name = field_name
         if isinstance(field.kwarg_definition, ParameterKwarg):
-            parameter_name = (
-                field.kwarg_definition.query
-                or field.kwarg_definition.header
-                or field.kwarg_definition.cookie
-                or field_name
-            )
+            parameter_name = field.kwarg_definition.name or field_name
 
         field_definition = FieldDefinition.from_kwarg(
             inner_types=field.inner_types,
@@ -203,6 +196,14 @@ class ParameterFactory:
                 # exclude parameters that are marked as not included in the schema
                 continue
 
+            if (
+                isinstance(kwarg_definition, ParameterKwarg)
+                and kwarg_definition.param_type == ParamType.PATH
+                and (kwarg_definition.name or field_name) not in self.path_parameters
+            ):
+                # explicit path parameter that isn't part of this route's URL
+                continue
+
             if provider := self.dependency_providers.get(field_name):
                 self.create_parameters_for_field_definitions(fields=provider.parsed_fn_signature.parameters)
             else:
@@ -219,12 +220,24 @@ class ParameterFactory:
         handler_fields = self.route_handler.parsed_fn_signature.parameters
         # not all path parameters have to be consumed by the handler. Because even not
         # consumed path parameters must still be specified, we create stub parameters
-        # for the unconsumed ones so a correct OpenAPI schema can be generated
+        # for the unconsumed ones so a correct OpenAPI schema can be generated.
+        # A handler field is considered to consume a path parameter either by sharing its
+        # name, or by aliasing it via ``PathParameter(name=...)`` /
+        # ``Annotated[T, PathParameter(name=...)]``.
+        consumed_via_field_name = handler_fields.keys() & self.path_parameters.keys()
+        consumed_via_alias = {
+            field.kwarg_definition.name
+            for field in handler_fields.values()
+            if isinstance(field.kwarg_definition, ParameterKwarg)
+            and field.kwarg_definition.param_type == ParamType.PATH
+            and field.kwarg_definition.name in self.path_parameters
+        }
         dependency_fields = {
             name for dep in self.dependency_providers.values() for name in dep.parsed_fn_signature.parameters
         }
-        params_not_consumed_by_handler = set(self.path_parameters) - handler_fields.keys()
-        unconsumed_path_parameters = params_not_consumed_by_handler - dependency_fields
+        unconsumed_path_parameters = (
+            set(self.path_parameters) - consumed_via_field_name - consumed_via_alias - dependency_fields
+        )
         handler_fields.update(
             {
                 param_name: FieldDefinition.from_kwarg(self.path_parameters[param_name].type, name=param_name)

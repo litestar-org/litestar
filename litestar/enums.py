@@ -70,6 +70,7 @@ class ParamType(str, Enum):
     QUERY = "query"
     COOKIE = "cookie"
     HEADER = "header"
+    DEPENDENCY = "dependency"
 
 
 class CompressionEncoding(str, Enum):
