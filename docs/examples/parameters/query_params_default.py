@@ -1,10 +1,11 @@
 from typing import Dict
 
 from litestar import Litestar, get
+from litestar.params import FromQuery
 
 
 @get("/", sync_to_thread=False)
-def index(param: str = "hello") -> Dict[str, str]:
+def index(param: FromQuery[str] = "hello") -> Dict[str, str]:
     return {"param": param}
 
 

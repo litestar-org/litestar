@@ -1,18 +1,20 @@
+import dataclasses
 from typing import List, Optional, Tuple
 
-from polyfactory.factories.pydantic_factory import ModelFactory
-from pydantic import BaseModel
+from polyfactory.factories.dataclass_factory import DataclassFactory
 
 from litestar import Litestar, get
 from litestar.pagination import AbstractSyncCursorPaginator, CursorPagination
+from litestar.params import FromQuery
 
 
-class Person(BaseModel):
+@dataclasses.dataclass
+class Person:
     id: str
     name: str
 
 
-class PersonFactory(ModelFactory[Person]):
+class PersonFactory(DataclassFactory[Person]):
     __model__ = Person
 
 
@@ -34,7 +36,7 @@ paginator = PersonCursorPaginator()
 # we now create a regular handler. The handler will receive a single query parameter - 'cursor', which
 # we will pass to the paginator.
 @get("/people", sync_to_thread=False)
-def people_handler(cursor: Optional[str], results_per_page: int) -> CursorPagination[str, Person]:
+def people_handler(cursor: FromQuery[Optional[str]], results_per_page: FromQuery[int]) -> CursorPagination[str, Person]:
     return paginator(cursor=cursor, results_per_page=results_per_page)
 
 

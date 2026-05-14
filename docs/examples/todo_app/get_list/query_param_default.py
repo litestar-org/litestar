@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from typing import List, Optional
 
 from litestar import Litestar, get
+from litestar.params import FromQuery
 
 
 @dataclass
@@ -18,7 +19,7 @@ TODO_LIST: List[TodoItem] = [
 
 
 @get("/")
-async def get_list(done: Optional[bool] = None) -> List[TodoItem]:
+async def get_list(done: FromQuery[Optional[bool]] = None) -> List[TodoItem]:
     if done is None:
         return TODO_LIST
     return [item for item in TODO_LIST if item.done == done]

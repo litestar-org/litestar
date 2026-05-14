@@ -1,6 +1,7 @@
 from typing import Dict, Optional
 
 from litestar import Litestar, Request, get
+from litestar.params import FromQuery
 
 
 async def before_request_handler(request: Request) -> Optional[Dict[str, str]]:
@@ -12,7 +13,7 @@ async def before_request_handler(request: Request) -> Optional[Dict[str, str]]:
 
 
 @get("/")
-async def handler(request: Request, name: str) -> Dict[str, str]:
+async def handler(request: Request, name: FromQuery[str]) -> Dict[str, str]:
     message: str = request.state["message"]
     return {"message": message}
 

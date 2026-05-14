@@ -6,6 +6,7 @@ from sqlalchemy.orm import Mapped
 from litestar import Litestar, get
 from litestar.di import Provide
 from litestar.pagination import AbstractAsyncOffsetPaginator, OffsetPagination
+from litestar.params import FromQuery
 from litestar.plugins.sqlalchemy import SQLAlchemyAsyncConfig, SQLAlchemyInitPlugin, base
 
 if TYPE_CHECKING:
@@ -32,7 +33,9 @@ class PersonOffsetPaginator(AbstractAsyncOffsetPaginator[Person]):
 # Create a route handler. The handler will receive two query parameters - 'limit' and 'offset', which is passed
 # to the paginator instance. Also create a dependency 'paginator' which will be injected into the handler.
 @get("/people", dependencies={"paginator": Provide(PersonOffsetPaginator)})
-async def people_handler(paginator: PersonOffsetPaginator, limit: int, offset: int) -> OffsetPagination[Person]:
+async def people_handler(
+    paginator: PersonOffsetPaginator, limit: FromQuery[int], offset: FromQuery[int]
+) -> OffsetPagination[Person]:
     return await paginator(limit=limit, offset=offset)
 
 

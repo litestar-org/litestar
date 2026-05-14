@@ -3,6 +3,7 @@ from typing import List
 
 from litestar import Litestar, get
 from litestar.exceptions import HTTPException
+from litestar.params import FromQuery
 
 
 @dataclass
@@ -19,7 +20,7 @@ TODO_LIST: List[TodoItem] = [
 
 
 @get("/")
-async def get_list(done: str) -> List[TodoItem]:
+async def get_list(done: FromQuery[str]) -> List[TodoItem]:
     if done == "1":
         return [item for item in TODO_LIST if item.done]
     if done == "0":
