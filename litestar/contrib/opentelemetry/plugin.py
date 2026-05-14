@@ -1,53 +1,28 @@
-from __future__ import annotations
-
+# ruff: noqa: F401
 from typing import TYPE_CHECKING
 
-from litestar.contrib.opentelemetry.config import OpenTelemetryConfig
-from litestar.contrib.opentelemetry.middleware import OpenTelemetryInstrumentationMiddleware
-from litestar.middleware.base import DefineMiddleware
-from litestar.plugins import InitPlugin
+from litestar.utils import warn_deprecation
+
+__all__ = ("OpenTelemetryPlugin",)
+
+
+def __getattr__(attr_name: str) -> object:
+    if attr_name in __all__:
+        from litestar.plugins.opentelemetry import OpenTelemetryPlugin
+
+        warn_deprecation(
+            deprecated_name=f"litestar.contrib.opentelemetry.plugin.{attr_name}",
+            version="2.22.0",
+            kind="import",
+            removal_in="3.0.0",
+            info=f"importing {attr_name} from 'litestar.contrib.opentelemetry.plugin' is deprecated, please "
+            f"import it from 'litestar.plugins.opentelemetry' instead",
+        )
+        value = globals()[attr_name] = locals()[attr_name]
+        return value
+
+    raise AttributeError(f"module {__name__!r} has no attribute {attr_name!r}")  # pragma: no cover
+
 
 if TYPE_CHECKING:
-    from litestar.config.app import AppConfig
-    from litestar.types.composite_types import Middleware
-
-
-class OpenTelemetryPlugin(InitPlugin):
-    """OpenTelemetry Plugin."""
-
-    __slots__ = ("_middleware", "config")
-
-    def __init__(self, config: OpenTelemetryConfig | None = None) -> None:
-        self.config = config or OpenTelemetryConfig()
-        self._middleware: DefineMiddleware | None = None
-        super().__init__()
-
-    @property
-    def middleware(self) -> DefineMiddleware:
-        if self._middleware:
-            return self._middleware
-        return DefineMiddleware(OpenTelemetryInstrumentationMiddleware, config=self.config)
-
-    def on_app_init(self, app_config: AppConfig) -> AppConfig:
-        app_config.middleware, _middleware = self._pop_otel_middleware(app_config.middleware)
-        if self.config.after_exception_hook_handler:
-            app_config.after_exception.append(self.config.after_exception_hook_handler)
-        return app_config
-
-    @staticmethod
-    def _pop_otel_middleware(middlewares: list[Middleware]) -> tuple[list[Middleware], DefineMiddleware | None]:
-        """Get the OpenTelemetry middleware if it is enabled in the application.
-        Remove the middleware from the list of middlewares if it is found.
-        """
-        otel_middleware: DefineMiddleware | None = None
-        other_middlewares = []
-        for middleware in middlewares:
-            if (
-                isinstance(middleware, DefineMiddleware)
-                and isinstance(middleware.middleware, type)
-                and issubclass(middleware.middleware, OpenTelemetryInstrumentationMiddleware)
-            ):
-                otel_middleware = middleware
-            else:
-                other_middlewares.append(middleware)
-        return other_middlewares, otel_middleware
+    from litestar.plugins.opentelemetry import OpenTelemetryPlugin
