@@ -36,7 +36,7 @@ T = TypeVar("T")
 class MakoTemplate(TemplateProtocol):
     """Mako template, implementing ``TemplateProtocol``"""
 
-    def __init__(self, template: _MakoTemplate, template_callables: list[tuple[str, TemplateCallableType]]) -> None:
+    def __init__(self, template: Any, template_callables: list[tuple[str, Any]]) -> None:
         """Initialize a template.
 
         Args:
@@ -135,7 +135,7 @@ class MakoTemplateEngine(TemplateEngineProtocol[MakoTemplate, Mapping[str, Any]]
         return template.render(**context)  # type: ignore[no-any-return]
 
     @classmethod
-    def from_template_lookup(cls, template_lookup: TemplateLookup) -> MakoTemplateEngine:
+    def from_template_lookup(cls, template_lookup: Any) -> MakoTemplateEngine:
         """Create a template engine from an existing mako TemplateLookup instance.
 
         Args:
