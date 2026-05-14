@@ -35,6 +35,7 @@ else:
     from minijinja import pass_state
 
 __all__ = (
+    "MiniJinjaTemplate",
     "MiniJinjaTemplateEngine",
     "StateProtocol",
 )
@@ -75,7 +76,7 @@ class MiniJinjaTemplate(TemplateProtocol):
         template: Base ``MiniJinjaTemplate`` used by the underlying minijinja engine
     """
 
-    def __init__(self, engine: Environment, template_name: str) -> None:
+    def __init__(self, engine: Any, template_name: str) -> None:
         super().__init__()
         self.engine = engine
         self.template_name = template_name
@@ -99,7 +100,7 @@ class MiniJinjaTemplate(TemplateProtocol):
 class MiniJinjaTemplateEngine(TemplateEngineProtocol["MiniJinjaTemplate", StateProtocol]):
     """The engine instance."""
 
-    def __init__(self, directory: Path | list[Path] | None = None, engine_instance: Environment | None = None) -> None:
+    def __init__(self, directory: Path | list[Path] | None = None, engine_instance: Any | None = None) -> None:
         """Minijinja based TemplateEngine.
 
         Args:
@@ -193,7 +194,7 @@ class MiniJinjaTemplateEngine(TemplateEngineProtocol["MiniJinjaTemplate", StateP
         return self.engine.render_str(template_string, **context)
 
     @classmethod
-    def from_environment(cls, minijinja_environment: Environment) -> MiniJinjaTemplateEngine:
+    def from_environment(cls, minijinja_environment: Any) -> MiniJinjaTemplateEngine:
         """Create a MiniJinjaTemplateEngine from an existing minijinja Environment instance.
 
         Args:
