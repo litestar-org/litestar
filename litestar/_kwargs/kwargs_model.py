@@ -561,7 +561,7 @@ def _warn_deprecated_param_style(
                 f"{param_type_name} parameter {field_name!r} declared using deprecated annotated "
                 f"'param: Annotated[<type>, Parameter(...)]' style. Use "
                 f"'{short_alternative}[<type>]' or "
-                f"'Annotated[<type>, {param_type_name.title()}Param(...)]' instead"
+                f"'Annotated[<type>, {param_type_name.title()}Parameter(...)]' instead"
             )
         else:
             raise ValueError(f"Unknown style {style!r}")

@@ -421,10 +421,10 @@ containing the route handler instance and paths. It can also be used to build a 
 
 
     @get("/{handler_name:str}", name="four")
-    def handler_four(request: Request, name: FromQuery[str]) -> Redirect:
-        handler_index = request.app.get_handler_index_by_name(name)
+    def handler_four(request: Request, handler_name: FromPath[str]) -> Redirect:
+        handler_index = request.app.get_handler_index_by_name(handler_name)
         if not handler_index:
-            raise NotFoundException(f"no handler matching the name {name} was found")
+            raise NotFoundException(f"no handler matching the name {handler_name} was found")
 
         # handler_index == { "paths": ["/"], "handler": ..., "qualname": ... }
         # do something with the handler index below, e.g. send a redirect response to the handler, or access
